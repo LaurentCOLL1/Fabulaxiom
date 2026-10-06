@@ -2,37 +2,41 @@
 
 ## Immediate objective
 
-Finish M0 prerequisite qualification for the provisional Tauri 2 + React/TypeScript + Rust architecture.
+Create and qualify the first executable Fabulaxiom desktop skeleton.
 
-## Already verified
+## M0 prerequisites now verified
 
-- Git is installed and operational.
-- Python 3.12.4 is installed.
-- Node.js 24.16.0 and npm 11.11.0 are installed.
-- Ollama 0.35.1 is installed.
-- Ollama has an installed local-model inventory.
-- `qwen3.5:9b` successfully generated text.
-- `ollama ps` reported `100% GPU` repeatedly with a `65536` context window.
-
-## Manual checks still required on the Windows machine
-
-1. Force visible output from the Ollama local HTTP API.
-2. Force visible GPU/driver output from Windows.
-3. Inspect the recent Ollama server log to identify the actual GPU backend if the log exposes it.
-4. Verify Microsoft C++ Build Tools / MSVC availability.
-5. Install Rust through rustup and select the stable MSVC toolchain.
-6. Verify `rustc`, `cargo` and `rustup show active-toolchain`.
+- Git installed and operational.
+- Python 3.12.4 installed.
+- Node.js 24.16.0 and npm 11.11.0 installed.
+- Microsoft C++ Build Tools present.
+- Microsoft Edge WebView2 Runtime present.
+- Rustup 1.29.1 installed.
+- Rust 1.99.0 / Cargo 1.99.0 installed.
+- Active Rust toolchain is `stable-x86_64-pc-windows-msvc`.
+- Ollama 0.35.1 installed.
+- Ollama HTTP API reachable.
+- AMD Radeon RX 6750 XT detected.
+- Ollama active compute backend identified as Vulkan.
+- Real local generation proven with GPU acceleration.
 
 ## Architecture qualification gate
 
-Only after the toolchain checks above pass:
+Next sequence:
 
 1. create the initial Tauri 2 + React/TypeScript executable skeleton;
 2. prove that it launches on the target Windows machine;
 3. add a minimal Rust command callable from the frontend;
 4. prove local read-only communication with the Ollama HTTP API;
 5. add automated frontend/Rust tests and GitHub CI;
-6. then freeze the M0/M1 architecture decision.
+6. only then mark ADR-007 accepted and complete M0.
+
+## Known non-blocking issues to retain
+
+- Ollama AMD-driver warning;
+- potentially incompatible external `ggml-base.dll` in PATH;
+- two corrupt Ollama manifests;
+- these issues must be handled separately and must not be silently erased from project state.
 
 ## Deliberately deferred
 

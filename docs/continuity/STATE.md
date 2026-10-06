@@ -34,44 +34,43 @@ Confirmed constraints:
 
 ## M0 evidence received from the operator — 2026-10-06
 
-The following values were executed and reported from the target Windows machine:
+Verified on the target Windows machine:
 
-- Windows command output: `Windows 10 Pro`, version `2009`, build `26220`.
-  - This is recorded exactly as reported; the product-name label is not used to infer the actual commercial Windows generation.
 - Git: `2.55.0.windows.3`.
 - Python: `3.12.4`.
 - Node.js: `24.16.0`.
 - npm: `11.11.0`.
-- Rust/Cargo: not installed / commands not found.
+- Rustup: `1.29.1`.
+- Rust compiler: `rustc 1.99.0`.
+- Cargo: `1.99.0`.
+- Active Rust toolchain: `stable-x86_64-pc-windows-msvc`.
+- Microsoft C++ Build Tools: found at `C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools`.
+- Microsoft Edge WebView2 Runtime: `154.0.4258.53`.
 - Ollama: `0.35.1`.
-- Ollama model inventory: 30 installed model entries observed.
-- `qwen3.5:9b` runtime:
-  - reported runtime size: `7.7 GB`;
-  - processor: `100% GPU`;
-  - context: `65536`;
-  - repeated `ollama ps` observations remained at `100% GPU`.
-- A French long-form generation completed successfully with `qwen3.5:9b`.
+- Ollama local HTTP API: reachable and returned version `0.35.1`.
+- GPU: AMD Radeon RX 6750 XT.
+- AMD driver reported by Windows: `32.0.21045.5002`.
+- Ollama GPU backend: **Vulkan**.
+- Ollama detected `12.0 GiB` total GPU memory.
+- `qwen3.5:9b` loaded with 34/34 model layers offloaded to the GPU.
+- Repeated `ollama ps` observations reported `100% GPU` with context `65536`.
+- A French long-form generation completed successfully.
 
-### Evidence not yet complete
+### Non-blocking environment warnings recorded
 
-- The explicit `/api/version` test produced no visible payload in the pasted console output and must be re-run with forced JSON rendering.
-- The `Win32_VideoController` query produced no visible device row in the pasted output and must be re-run with forced list/string formatting.
-- GPU acceleration is proven, but the exact Ollama backend implementation (for example Vulkan vs ROCm/HIP) is not yet proven.
-- Microsoft C++ Build Tools availability has not yet been verified.
-- Rust/MSVC toolchain has not yet been installed and verified.
+- Ollama logs report: `AMD driver is too old. Update your AMD driver to enable GPU inference.`
+  - Despite this warning, the active Vulkan backend successfully performs GPU inference.
+  - Do not interpret this warning as proof that the currently working Vulkan path is failing.
+- Ollama reports a potentially incompatible `ggml-base.dll` found in the user's PATH under a WinGet llama.cpp package.
+- Ollama reports corrupt manifests for:
+  - `Claude-Fable5:MiniCPM5-1B-Claude-Opus-Fable5-Thinking-Q8_0.gguf`
+  - `llama-mesh:LLaMA-Mesh-Q5_K_S.gguf`
+- These warnings do not currently block the verified `qwen3.5:9b` Vulkan inference path.
+- The `Win32_VideoController.AdapterRAM` value is not used as authoritative VRAM evidence because the Ollama runtime directly reports 12.0 GiB for the active GPU.
 
 See `docs/qualification/M0_WINDOWS_OLLAMA_QUALIFICATION.md` for the detailed qualification record.
 
-## Target hardware currently declared
-
-- RAM: 32 GB
-- GPU: AMD Radeon RX 6750 XT
-- VRAM: 12 GB
-- CUDA instructions are not applicable to this target GPU.
-
 ## Architecture status
-
-The original React + Tauri + Python/FastAPI proposal is no longer the preferred starting architecture.
 
 Current provisional M0/M1 recommendation:
 
@@ -84,13 +83,13 @@ Current provisional M0/M1 recommendation:
 - Python may remain a development tool or become an optional sidecar later only if a concrete feature justifies the packaging cost;
 - vector search remains deferred until the structured-memory foundation is working.
 
-This recommendation remains provisional until the required Windows/Tauri toolchain is installed and a minimal desktop skeleton is built successfully.
+All required local prerequisites for attempting the first Tauri skeleton are now present. The architecture remains provisional until a minimal desktop application successfully builds and launches on the target machine.
 
 ## Development status
 
-No production application feature code exists yet.
+Repository governance and M0 prerequisite qualification are in PR #1.
 
-Repository governance is in PR #1. M0 environment qualification is partially complete.
+The next legitimate step is the first executable Tauri skeleton.
 
 ## Acceptance rule
 

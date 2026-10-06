@@ -15,109 +15,133 @@ They are **operator-observed evidence**. They were not executed remotely by the 
 | Python | `3.12.4` | PASS |
 | Node.js | `24.16.0` | PASS |
 | npm | `11.11.0` | PASS |
-| rustc | command not found | BLOCKED |
-| cargo | command not found | BLOCKED |
+| rustup | `1.29.1` | PASS |
+| rustc | `1.99.0` | PASS |
+| cargo | `1.99.0` | PASS |
+| Rust toolchain | `stable-x86_64-pc-windows-msvc` | PASS |
+| Microsoft C++ Build Tools | VS 2022 BuildTools detected | PASS |
+| WebView2 Runtime | `154.0.4258.53` | PASS |
 | Ollama | `0.35.1` | PASS |
 
-## Ollama inventory
+## Ollama local API
 
-30 installed model entries were observed:
+Observed response:
 
-1. `captioner-zimage:latest`
-2. `tinyrick/Qwen3.6-35B-A3B-uncensored-heretic-vision-llmfan46:Q4_K_M`
-3. `qwen3-vl:8b`
-4. `svjack/gpt-oss-20b-heretic_open:latest`
-5. `svjack/gpt-oss-20b-heretic:latest`
-6. `huihui_ai/qwen3.5-abliterated:9b`
-7. `laguna-xs-2.1:Q4_K_M`
-8. `ornith:9b`
-9. `north-mini-code-1.0:Q4_K_M`
-10. `devstral-small-2:24b`
-11. `gpt-oss:20b`
-12. `granite4.1:3b`
-13. `qwen3.5:4b`
-14. `Laurent-Adult-Prose-12B-FR-v2.2.4-Balanced50:latest`
-15. `Laurent-Adult-Prose-12B-FR-v2.2.4-Balanced50-Diagnostic:latest`
-16. `hf.co/bartowski/Mistral-Nemo-Instruct-2407-GGUF:Q4_K_M`
-17. `hf.co/bartowski/magnum-v4-12b-GGUF:Q4_K_M`
-18. `goekdenizguelmez/JOSIEFIED-Qwen3:8b`
-19. `jimscard/new-adult-writer:latest`
-20. `MrTails/Tails-assistant-ai-v3.0.0:latest`
-21. `moophlo/Satyr-V0.1-4B:latest`
-22. `huihui_ai/qwen2.5-coder-abliterate:7b`
-23. `studiobrn/uncensoredmodAI:latest`
-24. `FableForge-AI/mythos-9b-enhanced:latest`
-25. `deepseek-r1:32b`
-26. `deepseek-r1:14b`
-27. `richardyoung/qwythos-9b-abliterated:Q8_0`
-28. `qwen3.6:27b`
-29. `qwen3.5:9b`
-30. `qwen2.5-coder:7b-instruct`
+```json
+{
+  "version": "0.35.1"
+}
+```
 
-No installed model is assumed to be an embeddings model solely from its name.
+Status: **PASS**
 
-## GPU execution test
+## GPU identity
+
+Windows reported:
+
+- GPU: `AMD Radeon RX 6750 XT`
+- Driver: `32.0.21045.5002`
+- Video processor: `AMD Radeon Graphics Processor (0x73DF)`
+
+The WMI `AdapterRAM` value is not treated as authoritative for VRAM capacity because the Ollama runtime reports the active device directly.
+
+## Ollama GPU backend
+
+The Ollama server log explicitly reported:
+
+- `OLLAMA_VULKAN:true`
+- inference library: `Vulkan`
+- device: `Vulkan0`
+- description: `AMD Radeon RX 6750 XT`
+- total GPU memory: `12.0 GiB`
+
+A loaded inference run further reported:
+
+- Vulkan backend loaded from Ollama's `ggml-vulkan.dll`;
+- GPU visible as AMD Radeon RX 6750 XT;
+- 34/34 model layers offloaded to GPU;
+- model buffer, KV cache and compute buffers allocated on Vulkan0.
+
+Therefore:
+
+- Local inference: **PASS**
+- GPU acceleration: **PASS**
+- Exact backend: **PASS — Vulkan**
+
+## Real generation test
 
 Test model: `qwen3.5:9b`
-
-Prompt category: long-form French narrative-planning explanation.
 
 Observed `ollama ps` repeatedly reported:
 
 - runtime size: `7.7 GB`;
 - processor: `100% GPU`;
-- context: `65536`;
-- model remained loaded across repeated observations.
+- context: `65536`.
 
-The requested generation completed successfully.
+The requested French long-form generation completed successfully.
 
-### Qualification
-
-- Local inference: **PASS**
-- GPU offload/acceleration: **PASS**
-- Exact AMD backend implementation: **PENDING**
-
-The output proves GPU use but does not identify whether Ollama is using Vulkan, ROCm/HIP or another supported backend path.
-
-## Local HTTP API
-
-The first `Invoke-RestMethod http://127.0.0.1:11434/api/version` attempt did not show a visible payload in the pasted transcript.
-
-Status: **PENDING explicit rendered response**
-
-This is not treated as a failure because `ollama run` and `ollama ps` both successfully interacted with the local Ollama service.
-
-## GPU identity / driver evidence
-
-The first `Win32_VideoController` query did not show a visible device row in the pasted transcript.
-
-Declared target remains:
-
-- AMD Radeon RX 6750 XT;
-- 12 GB VRAM.
-
-Status: **PENDING forced-formatted Windows evidence**
+Status: **PASS**
 
 ## Tauri prerequisite state
 
-Rust/Cargo are absent.
+Observed:
 
-Before a Tauri skeleton can be qualified, verify/install:
+- Microsoft C++ Build Tools found at:
+  `C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools`
+- Microsoft Edge WebView2 Runtime:
+  `154.0.4258.53`
+- rustup:
+  `1.29.1`
+- rustc:
+  `1.99.0 (b940084d7 2026-09-28)`
+- cargo:
+  `1.99.0 (5f94df478 2026-08-27)`
+- active toolchain:
+  `stable-x86_64-pc-windows-msvc`
+- host:
+  `x86_64-pc-windows-msvc`
 
-- Microsoft C++ Build Tools with Desktop development with C++;
-- Rust via rustup;
-- stable MSVC Rust toolchain.
+Status: **PASS for attempting the first Tauri build**
 
-WebView2 is expected on supported modern Windows systems, but the application build itself will be the practical qualification.
+## Non-blocking warnings
 
-## M0 conclusion
+### AMD driver warning
 
-The most important local-AI uncertainty is resolved: Ollama can perform a real generation while reporting `100% GPU`.
+Ollama logged:
 
-M0 is **not complete** because:
+`AMD driver is too old. Update your AMD driver to enable GPU inference.`
 
-- exact backend is still unconfirmed;
-- explicit API response remains to be captured;
-- C++ Build Tools are not yet verified;
-- Rust/MSVC is not installed;
-- no Tauri executable has been built yet.
+However, Ollama subsequently selected and successfully used the Vulkan backend on the RX 6750 XT. The warning is retained as an environment issue, but the verified Vulkan inference path is working.
+
+### Potentially incompatible ggml library in PATH
+
+Ollama reported:
+
+`potentially incompatible library detected in PATH`
+
+for a `ggml-base.dll` located under a separately installed WinGet llama.cpp package.
+
+This is retained as a diagnostic risk because PATH/library collisions may cause future runtime instability even though the verified run succeeded.
+
+### Corrupt Ollama manifests
+
+Ollama reported bad/corrupt manifests for:
+
+- `registry.ollama.ai/library/Claude-Fable5:MiniCPM5-1B-Claude-Opus-Fable5-Thinking-Q8_0.gguf`
+- `registry.ollama.ai/library/llama-mesh:LLaMA-Mesh-Q5_K_S.gguf`
+
+These do not block the verified qwen3.5:9b run but should be repaired or removed later.
+
+## M0 prerequisite conclusion
+
+The Windows/Tauri prerequisite gate is now **PASS**.
+
+M0 itself is **not complete** yet because the Fabulaxiom Tauri application has not been built, launched and tested on the target machine.
+
+Next acceptance step:
+
+1. build the initial Tauri 2 + React/TypeScript application;
+2. launch it successfully;
+3. exercise a Rust command from the frontend;
+4. exercise a read-only Ollama API request from the application;
+5. add automated tests and CI.
