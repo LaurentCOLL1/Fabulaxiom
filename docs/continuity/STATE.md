@@ -45,7 +45,7 @@ Verified on the target Windows machine:
 - active Rust toolchain: `stable-x86_64-pc-windows-msvc`
 - Microsoft C++ Build Tools present
 - Microsoft Edge WebView2 Runtime present
-- Ollama: `0.35.1`
+- Ollama previously qualified at `0.35.1`; after restart on 2026-10-06 the local API reported `0.40.0`
 - Ollama local HTTP API reachable
 - GPU: AMD Radeon RX 6750 XT
 - active Ollama compute backend: Vulkan
@@ -102,17 +102,19 @@ ADR-007 remains provisional until M0 also proves:
 
 ## Security gate before Ollama application integration
 
-Ollama currently reports:
+Loopback remediation has started.
 
-`OLLAMA_HOST=http://0.0.0.0:11434`
+Operator-observed evidence now confirms:
 
-Fabulaxiom's local-first policy requires Ollama to be rebound to loopback before application integration.
+- user-level `OLLAMA_HOST`: `127.0.0.1:11434`
+- machine-level `OLLAMA_HOST`: not defined
+- Ollama was restarted after applying the user-level value
+- local API responded successfully on `http://127.0.0.1:11434/api/version`
+- the restarted API reported Ollama `0.40.0`
 
-Expected target:
+The first listener-verification method using `Get-NetTCPConnection` returned no matching CIM object even though the HTTP request had just succeeded. This is treated as **inconclusive listener evidence**, not as proof of a network failure.
 
-`127.0.0.1:11434`
-
-This is a blocking prerequisite for the next Ollama-integration commit.
+The loopback gate remains open until an independent socket check confirms that no `0.0.0.0:11434` / `[::]:11434` listener exists.
 
 ## Known non-blocking environment warnings
 

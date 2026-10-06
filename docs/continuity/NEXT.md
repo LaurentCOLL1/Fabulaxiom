@@ -14,23 +14,20 @@ Secure Ollama's network binding, then add read-only Ollama integration to the al
 
 ## Required operator step before Ollama integration
 
-Ollama currently listens on:
+The desired user-level setting is now present:
 
-`0.0.0.0:11434`
+`OLLAMA_HOST=127.0.0.1:11434`
 
-This exposes the server beyond loopback.
+and the restarted local API returned Ollama `0.40.0`.
 
-Before Fabulaxiom may connect to Ollama, rebind the Ollama server to:
+Remaining loopback qualification:
 
-`127.0.0.1:11434`
+1. verify the actual listener with an independent socket inspection method;
+2. reject any `0.0.0.0:11434` or `[::]:11434` listener;
+3. confirm a loopback listener on `127.0.0.1:11434` or `[::1]:11434`;
+4. confirm a real local model still runs with GPU acceleration.
 
-Then verify:
-
-1. the user-level `OLLAMA_HOST` value;
-2. Ollama restarts successfully;
-3. `http://127.0.0.1:11434/api/version` responds;
-4. Windows shows the listener on loopback rather than `0.0.0.0`;
-5. a real local model still runs with GPU acceleration.
+Do not treat the failed `Get-NetTCPConnection` lookup as proof that Ollama is unavailable because the HTTP API request succeeded immediately beforehand.
 
 ## After the loopback gate passes
 
