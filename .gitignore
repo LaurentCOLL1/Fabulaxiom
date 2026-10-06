@@ -21,6 +21,7 @@ coverage/
 
 # Rust / Tauri
 target/
+src-tauri/gen/
 
 # IDE / OS
 .vscode/
