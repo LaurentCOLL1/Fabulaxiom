@@ -6,7 +6,7 @@
 - Visibility: private
 - Default branch: `main`
 - Current working branch: `feat/m0-tauri-skeleton-20261006`
-- Current phase: M0 desktop skeleton and local-integration qualification
+- Current phase: M0 terminalization
 
 ## Product identity
 
@@ -45,45 +45,70 @@ Verified on the target Windows machine:
 - active Rust toolchain: `stable-x86_64-pc-windows-msvc`
 - Microsoft C++ Build Tools present
 - Microsoft Edge WebView2 Runtime present
-- Ollama previously qualified at `0.35.1`; after restart on 2026-10-06 the local API reported `0.40.0`
+- Ollama: `0.40.0`
 - Ollama local HTTP API reachable
 - GPU: AMD Radeon RX 6750 XT
 - active Ollama compute backend: Vulkan
 - Ollama observed 12.0 GiB GPU memory
 - qwen3.5:9b real generation completed with 100% GPU reported
 
-Detailed evidence remains in:
+Detailed prerequisite evidence:
 `docs/qualification/M0_WINDOWS_OLLAMA_QUALIFICATION.md`.
 
-## M0 desktop skeleton qualification — 2026-10-06
+## M0 desktop and local-integration qualification
 
-The first Fabulaxiom executable skeleton has now been tested on the target Windows machine.
+The executable Fabulaxiom stack is now operator-qualified on the target Windows machine.
 
-Observed:
+Latest exact source SHA tested locally:
 
-- exact branch head before test:
-  `cc9626c54e00787aa97e3e02af5491d4faed78f6`
+`fe43c7dd859fda77628e569834a243e6ade21806`
+
+Observed on that exact SHA:
+
+- exact HEAD check: PASS
+- generated `src-tauri/gen/` correctly ignored by Git: PASS
+- Ollama local API `0.40.0`: PASS
 - `npm install`: PASS
-- npm audit result: 0 vulnerabilities
+- npm audit: 0 vulnerabilities
+- frontend Vitest suite: 2/2 PASS
 - `npm run build`: PASS
 - Vite production build: PASS
+- Rust unit tests: 2/2 PASS
+- `cargo check`: PASS
 - `npm run tauri dev`: PASS
-- Rust/Tauri compile: PASS
 - `target\debug\fabulaxiom.exe` launched successfully
-- frontend button `Tester le pont Rust` returned:
-  - `PASS`
-  - `Fabulaxiom`
-  - `M0 desktop skeleton`
-  - `React -> Tauri -> Rust operational`
+- frontend button `Tester le pont Rust`: PASS
+- frontend button `Vérifier Ollama local`: PASS
+- observed Ollama status:
+  `Ollama 0.40.0 disponible sur http://127.0.0.1:11434`
 
-Therefore the React → Tauri → Rust bridge is **QUALIFIED** on the target machine.
+No manuscript, prompt or narrative content is transmitted by the M0 Ollama status path.
 
 Detailed evidence:
 `docs/qualification/M0_DESKTOP_SKELETON_QUALIFICATION.md`.
 
+## Exact-head GitHub CI
+
+For exact head:
+
+`fe43c7dd859fda77628e569834a243e6ade21806`
+
+GitHub Actions:
+
+- workflow: `M0 CI`
+- run: `37542052212`
+- result: `completed/success`
+- frontend tests: PASS
+- frontend production build: PASS
+- Rust tests: PASS
+- Rust check: PASS
+- dependency-lock artifact generation: PASS
+
 ## Architecture status
 
-Current M0/M1 architecture:
+ADR-007 is now **Accepted**.
+
+M0/M1 architecture:
 
 - Tauri 2 desktop shell
 - React + TypeScript frontend
@@ -94,46 +119,51 @@ Current M0/M1 architecture:
 - Python remains available for development tooling or a future optional sidecar if justified
 - vector search remains deferred until the structured-memory foundation works
 
-The executable desktop architecture is now proven on the target machine.
-
-ADR-007 remains provisional until M0 also proves:
-- read-only Ollama communication from inside the application
-- automated frontend/Rust checks and CI
+This architecture is proven by both operator execution and exact-head CI.
 
 ## Ollama loopback security gate
 
-The Ollama network-security gate is now **PASS**.
+The Ollama network-security gate is **PASS**.
 
-Final operator-observed evidence after disabling **Expose Ollama to the network** and restarting Ollama:
+Final operator-observed evidence:
 
-- user-level `OLLAMA_HOST`: `127.0.0.1:11434`;
-- machine-level `OLLAMA_HOST`: not defined;
-- local API version: `0.40.0`;
-- Windows listener: `127.0.0.1:11434`;
-- current server log: `OLLAMA_HOST:http://127.0.0.1:11434`;
-- current server log: `Listening on 127.0.0.1:11434 (version 0.40.0)`;
-- `127.0.0.1:11434`: accessible;
-- `172.24.96.1:11434`: not accessible;
-- `192.168.1.200:11434`: not accessible;
-- `10.100.0.2:11434`: not accessible.
+- user-level `OLLAMA_HOST`: `127.0.0.1:11434`
+- machine-level `OLLAMA_HOST`: not defined
+- local API version: `0.40.0`
+- Windows listener: `127.0.0.1:11434`
+- current server log: `Listening on 127.0.0.1:11434 (version 0.40.0)`
+- all tested non-loopback local interfaces: not accessible
 
-The former all-interface exposure was caused by Ollama Desktop's **Expose Ollama to the network** setting.
+The former all-interface exposure was caused by Ollama Desktop's **Expose Ollama to the network** setting and has been corrected.
 
 ## Known non-blocking environment warnings
 
-- Ollama AMD-driver warning while Vulkan inference still works
+- Ollama AMD-driver warning while Vulkan inference works
 - potentially incompatible external `ggml-base.dll` in PATH
 - two corrupt Ollama manifests
 
 These warnings remain recorded and must not be silently erased.
 
+## M0 terminalization status
+
+Functional and security acceptance is **PASS**.
+
+M0 is not marked `COMPLETE` yet because dependency lockfiles still need to be committed:
+
+- `package-lock.json`
+- `src-tauri/Cargo.lock`
+
+After those lockfiles are committed, CI must use the committed locks deterministically and pass on the terminal exact head before PR #2 is merged.
+
 ## Development status
 
 - PR #1: COMPLETE + MERGED
-- PR #2: active M0 desktop qualification
-- desktop skeleton: PASS on target Windows machine
-- Ollama loopback security gate: PASS
-- next qualification target: read-only Fabulaxiom → Rust → local Ollama API plus automated CI
+- PR #2: active, M0 terminalization
+- architecture: ACCEPTED
+- local functional qualification: PASS
+- Ollama security gate: PASS
+- exact-head CI on pre-lock terminal candidate: PASS
+- remaining: commit dependency locks, deterministic final CI, merge/normalize M0
 
 ## Acceptance rule
 
@@ -143,4 +173,6 @@ A milestone may only be marked complete after:
 - its tests have been executed;
 - the observed result is recorded;
 - known failures are documented;
+- reproducibility inputs are versioned;
+- terminal exact-head CI passes;
 - the next dependent milestone is not started on an unverified assumption.

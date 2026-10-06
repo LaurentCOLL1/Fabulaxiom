@@ -2,45 +2,52 @@
 
 ## Immediate objective
 
-Secure Ollama's network binding, then add read-only Ollama integration to the already-qualified Fabulaxiom desktop skeleton.
+Finish M0 terminalization. Do not start M1 yet.
 
-## Already qualified
+## Qualified
 
 - Windows/Tauri prerequisites: PASS
 - React/TypeScript production build: PASS
 - Tauri/Rust compilation: PASS
 - Fabulaxiom desktop launch: PASS
-- React → Tauri → Rust command bridge: PASS
+- React → Tauri → Rust bridge: PASS
+- Ollama loopback security gate: PASS
+- read-only Rust → Ollama local API integration: PASS
+- frontend Ollama status panel: PASS
+- frontend tests: PASS
+- Rust tests: PASS
+- cargo check: PASS
+- exact-head GitHub CI on `fe43c7dd859fda77628e569834a243e6ade21806`: PASS
+- ADR-007 architecture decision: ACCEPTED
 
-## Ollama loopback security gate
+## Remaining M0 terminalization
 
-The security gate is **PASS**.
+Exactly two generated dependency locks remain to be versioned:
 
-Ollama 0.40.0 is bound to `127.0.0.1:11434`, and all tested non-loopback local interfaces are unable to connect.
+- `package-lock.json`
+- `src-tauri/Cargo.lock`
 
-## Next authorized implementation
+They were generated successfully both locally and in GitHub CI.
 
-The current branch is authorized to add:
+After they are committed:
 
-1. a Rust-side read-only Ollama client fixed to `127.0.0.1:11434`;
-2. a Tauri command returning availability, version and endpoint;
-3. a frontend Ollama status panel;
-4. strict timeout, no redirect and no proxy behavior;
-5. frontend and Rust unit tests;
-6. Windows GitHub CI.
+1. change CI frontend installation from `npm install` to `npm ci`;
+2. run Cargo validation with `--locked`;
+3. require terminal exact-head CI success;
+4. record the terminal SHA and CI run;
+5. mark M0 `COMPLETE`;
+6. merge PR #2;
+7. re-fetch `main`;
+8. normalize continuity documents on `main`;
+9. only then authorize M1.
 
-Acceptance requires both:
-- local operator test on the target PC;
-- exact-head GitHub CI success.
-
-No manuscript content may be transmitted during this milestone.
-
-## Deliberately deferred
+## Deliberately deferred until M0 merge
 
 Do not yet:
 
-- add generation from manuscripts;
 - add SQLite persistence;
+- add project/universe CRUD;
+- add generation from manuscripts;
 - add a Python/FastAPI runtime service;
 - commit to a vector database;
 - commit to a rich-text editor;
