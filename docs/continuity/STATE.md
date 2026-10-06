@@ -6,7 +6,8 @@
 - Visibility: private
 - Default branch: `main`
 - Initial baseline commit: `a5d677256a7cf7cbd1b114138021341cab12f966`
-- Current phase: project bootstrap
+- Current working branch: `chore/bootstrap-governance-20261006`
+- Current phase: M0 environment and architecture qualification
 
 ## Product identity
 
@@ -31,36 +32,65 @@ Confirmed constraints:
 9. Manuscripts and private local data must not be transmitted to external services without explicit consent.
 10. Reliability of narrative memory and controlled modification take priority over the number of AI features.
 
-## Target environment currently known
+## M0 evidence received from the operator — 2026-10-06
 
-- Primary OS: Windows 11
+The following values were executed and reported from the target Windows machine:
+
+- Windows command output: `Windows 10 Pro`, version `2009`, build `26220`.
+  - This is recorded exactly as reported; the product-name label is not used to infer the actual commercial Windows generation.
+- Git: `2.55.0.windows.3`.
+- Python: `3.12.4`.
+- Node.js: `24.16.0`.
+- npm: `11.11.0`.
+- Rust/Cargo: not installed / commands not found.
+- Ollama: `0.35.1`.
+- Ollama model inventory: 30 installed model entries observed.
+- `qwen3.5:9b` runtime:
+  - reported runtime size: `7.7 GB`;
+  - processor: `100% GPU`;
+  - context: `65536`;
+  - repeated `ollama ps` observations remained at `100% GPU`.
+- A French long-form generation completed successfully with `qwen3.5:9b`.
+
+### Evidence not yet complete
+
+- The explicit `/api/version` test produced no visible payload in the pasted console output and must be re-run with forced JSON rendering.
+- The `Win32_VideoController` query produced no visible device row in the pasted output and must be re-run with forced list/string formatting.
+- GPU acceleration is proven, but the exact Ollama backend implementation (for example Vulkan vs ROCm/HIP) is not yet proven.
+- Microsoft C++ Build Tools availability has not yet been verified.
+- Rust/MSVC toolchain has not yet been installed and verified.
+
+See `docs/qualification/M0_WINDOWS_OLLAMA_QUALIFICATION.md` for the detailed qualification record.
+
+## Target hardware currently declared
+
 - RAM: 32 GB
 - GPU: AMD Radeon RX 6750 XT
 - VRAM: 12 GB
-- Ollama: already installed, exact version/backend still to be verified
-- CUDA instructions are not applicable to the target GPU.
+- CUDA instructions are not applicable to this target GPU.
 
 ## Architecture status
 
-No application architecture is final yet.
+The original React + Tauri + Python/FastAPI proposal is no longer the preferred starting architecture.
 
-The following stack remains a candidate only:
+Current provisional M0/M1 recommendation:
 
-- React + TypeScript
-- Tauri desktop shell
-- Python + FastAPI local backend
-- SQLite
-- SQLite FTS5
-- local vector search
-- Ollama local API
+- Tauri 2 desktop shell;
+- React + TypeScript frontend;
+- Rust/Tauri application core;
+- SQLite + FTS5 for authoritative local persistence and textual search;
+- direct local HTTP integration with Ollama;
+- no mandatory Python/FastAPI runtime for M0/M1;
+- Python may remain a development tool or become an optional sidecar later only if a concrete feature justifies the packaging cost;
+- vector search remains deferred until the structured-memory foundation is working.
 
-Before freezing this stack, the project must compare packaging/maintenance tradeoffs on Windows, especially the cost of shipping a Python backend inside a Tauri desktop application.
+This recommendation remains provisional until the required Windows/Tauri toolchain is installed and a minimal desktop skeleton is built successfully.
 
 ## Development status
 
-No production application code exists yet.
+No production application feature code exists yet.
 
-The current task is repository governance and project bootstrap.
+Repository governance is in PR #1. M0 environment qualification is partially complete.
 
 ## Acceptance rule
 

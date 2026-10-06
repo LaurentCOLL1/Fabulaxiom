@@ -2,40 +2,43 @@
 
 ## Immediate objective
 
-Complete the technical bootstrap before implementing product features.
+Finish M0 prerequisite qualification for the provisional Tauri 2 + React/TypeScript + Rust architecture.
 
-## Required sequence
+## Already verified
 
-1. Verify the local development environment on Windows:
-   - Git;
-   - Python;
-   - Node.js;
-   - Rust/Cargo if Tauri remains a candidate;
-   - Ollama version;
-   - Ollama listening endpoint;
-   - installed model inventory;
-   - actual Ollama compute backend and observed GPU use on the AMD Radeon RX 6750 XT.
+- Git is installed and operational.
+- Python 3.12.4 is installed.
+- Node.js 24.16.0 and npm 11.11.0 are installed.
+- Ollama 0.35.1 is installed.
+- Ollama has an installed local-model inventory.
+- `qwen3.5:9b` successfully generated text.
+- `ollama ps` reported `100% GPU` repeatedly with a `65536` context window.
 
-2. Decide the first architecture after comparison of:
-   - desktop Tauri + frontend + packaged Python backend;
-   - desktop Tauri with fewer backend boundaries;
-   - local web application with Python backend;
-   - any simpler architecture that preserves local-first constraints.
+## Manual checks still required on the Windows machine
 
-3. Freeze only the architecture needed for Milestone M0/M1.
+1. Force visible output from the Ollama local HTTP API.
+2. Force visible GPU/driver output from Windows.
+3. Inspect the recent Ollama server log to identify the actual GPU backend if the log exposes it.
+4. Verify Microsoft C++ Build Tools / MSVC availability.
+5. Install Rust through rustup and select the stable MSVC toolchain.
+6. Verify `rustc`, `cargo` and `rustup show active-toolchain`.
 
-4. Create the initial executable skeleton.
+## Architecture qualification gate
 
-5. Add automated tests before moving into narrative-memory features.
+Only after the toolchain checks above pass:
 
-## Manual evidence expected from the Windows machine
+1. create the initial Tauri 2 + React/TypeScript executable skeleton;
+2. prove that it launches on the target Windows machine;
+3. add a minimal Rust command callable from the frontend;
+4. prove local read-only communication with the Ollama HTTP API;
+5. add automated frontend/Rust tests and GitHub CI;
+6. then freeze the M0/M1 architecture decision.
 
-The user will run the requested PowerShell commands locally and provide their outputs. Do not claim that hardware, Ollama acceleration or packaging works until those outputs are observed.
-
-## Not authorized yet
+## Deliberately deferred
 
 Do not yet:
 
+- add a Python/FastAPI runtime service;
 - commit to a vector database;
 - commit to a rich-text editor;
 - download an embeddings model automatically;
