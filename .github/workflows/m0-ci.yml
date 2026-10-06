@@ -40,3 +40,14 @@ jobs:
 
       - name: Rust check
         run: cargo check --manifest-path src-tauri/Cargo.toml
+
+      - name: Preserve generated dependency locks
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: m0-dependency-locks
+          path: |
+            package-lock.json
+            src-tauri/Cargo.lock
+          if-no-files-found: error
+          retention-days: 7
