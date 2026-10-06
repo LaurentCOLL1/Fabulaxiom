@@ -4,30 +4,14 @@
 
 Verify that the Ollama server used by Fabulaxiom is restricted to loopback before application integration.
 
-## Operator-observed evidence
+## Configuration intent
 
-Before restart:
+Observed environment:
 
 - user-level `OLLAMA_HOST`: `127.0.0.1:11434`
 - machine-level `OLLAMA_HOST`: not defined
 
-Ollama executable:
-
-`C:\Users\lauco\AppData\Local\Programs\Ollama\ollama.exe`
-
-Ollama desktop application:
-
-`C:\Users\lauco\AppData\Local\Programs\Ollama\ollama app.exe`
-
-The running Ollama processes were stopped, the user-level variable was saved again as `127.0.0.1:11434`, and Ollama was restarted.
-
-## API result after restart
-
-Request:
-
-`http://127.0.0.1:11434/api/version`
-
-Observed response:
+After restart, the local API responded:
 
 ```json
 {
@@ -35,30 +19,77 @@ Observed response:
 }
 ```
 
-Status: **PASS**
+Local loopback API access: **PASS**
 
-This also records that Ollama upgraded from the previously observed `0.35.1` to `0.40.0` by the time of this restart.
+## Independent listener evidence
 
-## Listener verification
+A later qualification produced decisive evidence.
 
-The first check used:
+### Windows socket table
 
-`Get-NetTCPConnection -LocalPort 11434 -State Listen`
+`Get-NetTCPConnection` reported:
 
-PowerShell returned no matching `MSFT_NetTCPConnection` object.
+- local address: `::`
+- local port: `11434`
+- owning process: Ollama server
 
-Because the HTTP API request to `127.0.0.1:11434` had just succeeded, this result is classified as:
+### Current Ollama server log
 
-**INCONCLUSIVE**
+The current Ollama 0.40.0 server log reported:
 
-It is not accepted as proof that Ollama had no listener, and it is not accepted as proof of loopback-only binding.
+```text
+OLLAMA_HOST:http://0.0.0.0:11434
+Listening on [::]:11434 (version 0.40.0)
+```
 
-## Current decision
+### Non-loopback reachability
+
+Observed local-interface connection tests:
+
+- `172.24.96.1:11434`: ACCESSIBLE
+- `192.168.1.200:11434`: ACCESSIBLE
+- `10.100.0.2:11434`: not accessible
+
+The first two successful non-loopback connections prove that the Ollama server is exposed beyond loopback.
+
+## Root cause
+
+The environment variable is not the final authority when the Ollama desktop app has its own **Expose Ollama to the network** setting enabled.
+
+Current Ollama desktop source defines that UI setting as `settings.Expose`.
+
+Current Ollama server-launch source explicitly performs:
+
+```go
+if settings.Expose {
+    env["OLLAMA_HOST"] = "0.0.0.0"
+}
+```
+
+Therefore the desktop setting overrides the inherited user-level `OLLAMA_HOST=127.0.0.1:11434` before starting `ollama serve`.
+
+## Decision
 
 Loopback configuration value: **PASS**
 
 Loopback API access: **PASS**
 
-Actual socket binding: **PENDING independent verification**
+Actual socket binding: **FAIL**
 
-The next qualification uses `netstat -ano` and process correlation rather than depending solely on `Get-NetTCPConnection`.
+Security gate: **FAIL**
+
+## Required remediation
+
+1. Open Ollama Desktop.
+2. Open Settings.
+3. Turn **Expose Ollama to the network** OFF.
+4. Fully quit Ollama.
+5. Restart Ollama from the Windows Start menu.
+6. Re-run listener and non-loopback accessibility checks.
+7. Require:
+   - loopback API PASS;
+   - no `0.0.0.0:11434` / `[::]:11434` bind;
+   - non-loopback local addresses unable to connect;
+   - real local GPU inference still operational.
+
+Fabulaxiom must not add its Ollama client until this security gate passes.

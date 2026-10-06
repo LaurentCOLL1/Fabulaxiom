@@ -20,14 +20,30 @@ The desired user-level setting is now present:
 
 and the restarted local API returned Ollama `0.40.0`.
 
-Remaining loopback qualification:
+Independent verification has now proven that Ollama is still exposed on all interfaces.
 
-1. verify the actual listener with an independent socket inspection method;
-2. reject any `0.0.0.0:11434` or `[::]:11434` listener;
-3. confirm a loopback listener on `127.0.0.1:11434` or `[::1]:11434`;
-4. confirm a real local model still runs with GPU acceleration.
+Observed:
 
-Do not treat the failed `Get-NetTCPConnection` lookup as proof that Ollama is unavailable because the HTTP API request succeeded immediately beforehand.
+- `Get-NetTCPConnection`: `:: :11434`;
+- current server log: `OLLAMA_HOST:http://0.0.0.0:11434`;
+- current server log: `Listening on [::]:11434`;
+- local network address `192.168.1.200:11434`: accessible;
+- local adapter address `172.24.96.1:11434`: accessible.
+
+Root cause: the Ollama desktop setting **Expose Ollama to the network** is enabled. In current Ollama source code, that setting explicitly overwrites `OLLAMA_HOST` with `0.0.0.0`.
+
+Required operator sequence:
+
+1. open the Ollama desktop application;
+2. open Settings;
+3. turn **Expose Ollama to the network** OFF;
+4. fully quit Ollama from its tray/taskbar menu;
+5. restart Ollama from the Windows Start menu;
+6. verify the current log reports a loopback bind and no all-interface bind;
+7. verify non-loopback local addresses can no longer connect to port 11434;
+8. verify local API and GPU inference still work.
+
+Do not add Ollama client code to Fabulaxiom until this gate passes.
 
 ## After the loopback gate passes
 

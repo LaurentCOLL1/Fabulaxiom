@@ -112,9 +112,19 @@ Operator-observed evidence now confirms:
 - local API responded successfully on `http://127.0.0.1:11434/api/version`
 - the restarted API reported Ollama `0.40.0`
 
-The first listener-verification method using `Get-NetTCPConnection` returned no matching CIM object even though the HTTP request had just succeeded. This is treated as **inconclusive listener evidence**, not as proof of a network failure.
+A second independent socket qualification proved the current bind is **not loopback-only**:
 
-The loopback gate remains open until an independent socket check confirms that no `0.0.0.0:11434` / `[::]:11434` listener exists.
+- `Get-NetTCPConnection` reported local address `::` on port `11434`;
+- the current Ollama 0.40.0 server log reported `OLLAMA_HOST:http://0.0.0.0:11434`;
+- the same log reported `Listening on [::]:11434`;
+- `192.168.1.200:11434` was reachable from the local machine;
+- another local interface, `172.24.96.1:11434`, was also reachable.
+
+Therefore the Ollama network-security gate is **FAIL**.
+
+Root cause is now identified in the Ollama desktop application: its **Expose Ollama to the network** setting maps to the stored `Expose` flag. Current Ollama source code explicitly sets `OLLAMA_HOST=0.0.0.0` whenever that flag is true, overriding the inherited user-level `OLLAMA_HOST=127.0.0.1:11434`.
+
+Required remediation: disable **Expose Ollama to the network** in the Ollama desktop Settings, fully quit Ollama, restart it from the Windows Start menu, then re-run the listener qualification.
 
 ## Known non-blocking environment warnings
 
