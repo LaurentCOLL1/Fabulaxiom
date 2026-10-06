@@ -5,9 +5,8 @@
 - Repository: `LaurentCOLL1/Fabulaxiom`
 - Visibility: private
 - Default branch: `main`
-- Initial baseline commit: `a5d677256a7cf7cbd1b114138021341cab12f966`
-- Current working branch: `chore/bootstrap-governance-20261006`
-- Current phase: M0 environment and architecture qualification
+- Current working branch: `feat/m0-tauri-skeleton-20261006`
+- Current phase: M0 desktop skeleton and local-integration qualification
 
 ## Product identity
 
@@ -17,7 +16,7 @@
 
 ## Confirmed product principles
 
-Fabulaxiom is intended to be a local-first application for long-form fiction, novels, sagas and shared fictional universes.
+Fabulaxiom is a local-first application for long-form fiction, novels, sagas and shared fictional universes.
 
 Confirmed constraints:
 
@@ -32,64 +31,103 @@ Confirmed constraints:
 9. Manuscripts and private local data must not be transmitted to external services without explicit consent.
 10. Reliability of narrative memory and controlled modification take priority over the number of AI features.
 
-## M0 evidence received from the operator — 2026-10-06
+## M0 prerequisite qualification
 
 Verified on the target Windows machine:
 
-- Git: `2.55.0.windows.3`.
-- Python: `3.12.4`.
-- Node.js: `24.16.0`.
-- npm: `11.11.0`.
-- Rustup: `1.29.1`.
-- Rust compiler: `rustc 1.99.0`.
-- Cargo: `1.99.0`.
-- Active Rust toolchain: `stable-x86_64-pc-windows-msvc`.
-- Microsoft C++ Build Tools: found at `C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools`.
-- Microsoft Edge WebView2 Runtime: `154.0.4258.53`.
-- Ollama: `0.35.1`.
-- Ollama local HTTP API: reachable and returned version `0.35.1`.
-- GPU: AMD Radeon RX 6750 XT.
-- AMD driver reported by Windows: `32.0.21045.5002`.
-- Ollama GPU backend: **Vulkan**.
-- Ollama detected `12.0 GiB` total GPU memory.
-- `qwen3.5:9b` loaded with 34/34 model layers offloaded to the GPU.
-- Repeated `ollama ps` observations reported `100% GPU` with context `65536`.
-- A French long-form generation completed successfully.
+- Git: `2.55.0.windows.3`
+- Python: `3.12.4`
+- Node.js: `24.16.0`
+- npm: `11.11.0`
+- Rustup: `1.29.1`
+- Rust compiler: `1.99.0`
+- Cargo: `1.99.0`
+- active Rust toolchain: `stable-x86_64-pc-windows-msvc`
+- Microsoft C++ Build Tools present
+- Microsoft Edge WebView2 Runtime present
+- Ollama: `0.35.1`
+- Ollama local HTTP API reachable
+- GPU: AMD Radeon RX 6750 XT
+- active Ollama compute backend: Vulkan
+- Ollama observed 12.0 GiB GPU memory
+- qwen3.5:9b real generation completed with 100% GPU reported
 
-### Non-blocking environment warnings recorded
+Detailed evidence remains in:
+`docs/qualification/M0_WINDOWS_OLLAMA_QUALIFICATION.md`.
 
-- Ollama logs report: `AMD driver is too old. Update your AMD driver to enable GPU inference.`
-  - Despite this warning, the active Vulkan backend successfully performs GPU inference.
-  - Do not interpret this warning as proof that the currently working Vulkan path is failing.
-- Ollama reports a potentially incompatible `ggml-base.dll` found in the user's PATH under a WinGet llama.cpp package.
-- Ollama reports corrupt manifests for:
-  - `Claude-Fable5:MiniCPM5-1B-Claude-Opus-Fable5-Thinking-Q8_0.gguf`
-  - `llama-mesh:LLaMA-Mesh-Q5_K_S.gguf`
-- These warnings do not currently block the verified `qwen3.5:9b` Vulkan inference path.
-- The `Win32_VideoController.AdapterRAM` value is not used as authoritative VRAM evidence because the Ollama runtime directly reports 12.0 GiB for the active GPU.
+## M0 desktop skeleton qualification — 2026-10-06
 
-See `docs/qualification/M0_WINDOWS_OLLAMA_QUALIFICATION.md` for the detailed qualification record.
+The first Fabulaxiom executable skeleton has now been tested on the target Windows machine.
+
+Observed:
+
+- exact branch head before test:
+  `cc9626c54e00787aa97e3e02af5491d4faed78f6`
+- `npm install`: PASS
+- npm audit result: 0 vulnerabilities
+- `npm run build`: PASS
+- Vite production build: PASS
+- `npm run tauri dev`: PASS
+- Rust/Tauri compile: PASS
+- `target\debug\fabulaxiom.exe` launched successfully
+- frontend button `Tester le pont Rust` returned:
+  - `PASS`
+  - `Fabulaxiom`
+  - `M0 desktop skeleton`
+  - `React -> Tauri -> Rust operational`
+
+Therefore the React → Tauri → Rust bridge is **QUALIFIED** on the target machine.
+
+Detailed evidence:
+`docs/qualification/M0_DESKTOP_SKELETON_QUALIFICATION.md`.
 
 ## Architecture status
 
-Current provisional M0/M1 recommendation:
+Current M0/M1 architecture:
 
-- Tauri 2 desktop shell;
-- React + TypeScript frontend;
-- Rust/Tauri application core;
-- SQLite + FTS5 for authoritative local persistence and textual search;
-- direct local HTTP integration with Ollama;
-- no mandatory Python/FastAPI runtime for M0/M1;
-- Python may remain a development tool or become an optional sidecar later only if a concrete feature justifies the packaging cost;
-- vector search remains deferred until the structured-memory foundation is working.
+- Tauri 2 desktop shell
+- React + TypeScript frontend
+- Rust/Tauri application core
+- SQLite + FTS5 for authoritative local persistence and textual search
+- direct local HTTP integration with Ollama
+- no mandatory Python/FastAPI runtime for M0/M1
+- Python remains available for development tooling or a future optional sidecar if justified
+- vector search remains deferred until the structured-memory foundation works
 
-All required local prerequisites for attempting the first Tauri skeleton are now present. The architecture remains provisional until a minimal desktop application successfully builds and launches on the target machine.
+The executable desktop architecture is now proven on the target machine.
+
+ADR-007 remains provisional until M0 also proves:
+- read-only Ollama communication from inside the application
+- automated frontend/Rust checks and CI
+
+## Security gate before Ollama application integration
+
+Ollama currently reports:
+
+`OLLAMA_HOST=http://0.0.0.0:11434`
+
+Fabulaxiom's local-first policy requires Ollama to be rebound to loopback before application integration.
+
+Expected target:
+
+`127.0.0.1:11434`
+
+This is a blocking prerequisite for the next Ollama-integration commit.
+
+## Known non-blocking environment warnings
+
+- Ollama AMD-driver warning while Vulkan inference still works
+- potentially incompatible external `ggml-base.dll` in PATH
+- two corrupt Ollama manifests
+
+These warnings remain recorded and must not be silently erased.
 
 ## Development status
 
-Repository governance and M0 prerequisite qualification are in PR #1.
-
-The next legitimate step is the first executable Tauri skeleton.
+- PR #1: COMPLETE + MERGED
+- PR #2: active M0 desktop qualification
+- desktop skeleton: PASS on target Windows machine
+- next required operator action: bind Ollama to loopback and verify it
 
 ## Acceptance rule
 

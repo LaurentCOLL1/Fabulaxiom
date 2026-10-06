@@ -2,51 +2,60 @@
 
 ## Immediate objective
 
-Create and qualify the first executable Fabulaxiom desktop skeleton.
+Secure Ollama's network binding, then add read-only Ollama integration to the already-qualified Fabulaxiom desktop skeleton.
 
-## M0 prerequisites now verified
+## Already qualified
 
-- Git installed and operational.
-- Python 3.12.4 installed.
-- Node.js 24.16.0 and npm 11.11.0 installed.
-- Microsoft C++ Build Tools present.
-- Microsoft Edge WebView2 Runtime present.
-- Rustup 1.29.1 installed.
-- Rust 1.99.0 / Cargo 1.99.0 installed.
-- Active Rust toolchain is `stable-x86_64-pc-windows-msvc`.
-- Ollama 0.35.1 installed.
-- Ollama HTTP API reachable.
-- AMD Radeon RX 6750 XT detected.
-- Ollama active compute backend identified as Vulkan.
-- Real local generation proven with GPU acceleration.
+- Windows/Tauri prerequisites: PASS
+- React/TypeScript production build: PASS
+- Tauri/Rust compilation: PASS
+- Fabulaxiom desktop launch: PASS
+- React → Tauri → Rust command bridge: PASS
 
-## Architecture qualification gate
+## Required operator step before Ollama integration
 
-Next sequence:
+Ollama currently listens on:
 
-1. create the initial Tauri 2 + React/TypeScript executable skeleton;
-2. prove that it launches on the target Windows machine;
-3. add a minimal Rust command callable from the frontend;
-4. prove local read-only communication with the Ollama HTTP API;
-5. add automated frontend/Rust tests and GitHub CI;
-6. only then mark ADR-007 accepted and complete M0.
+`0.0.0.0:11434`
 
-## Known non-blocking issues to retain
+This exposes the server beyond loopback.
 
-- Ollama AMD-driver warning;
-- potentially incompatible external `ggml-base.dll` in PATH;
-- two corrupt Ollama manifests;
-- these issues must be handled separately and must not be silently erased from project state.
+Before Fabulaxiom may connect to Ollama, rebind the Ollama server to:
+
+`127.0.0.1:11434`
+
+Then verify:
+
+1. the user-level `OLLAMA_HOST` value;
+2. Ollama restarts successfully;
+3. `http://127.0.0.1:11434/api/version` responds;
+4. Windows shows the listener on loopback rather than `0.0.0.0`;
+5. a real local model still runs with GPU acceleration.
+
+## After the loopback gate passes
+
+The next code change is authorized to add:
+
+1. a Rust-side read-only Ollama client;
+2. a Tauri command returning:
+   - availability;
+   - Ollama version;
+   - configured local endpoint;
+3. a frontend status panel;
+4. strict timeout/error handling;
+5. no cloud endpoint and no manuscript transmission.
+
+Then add automated frontend/Rust tests and GitHub CI.
 
 ## Deliberately deferred
 
 Do not yet:
 
+- add generation from manuscripts;
+- add SQLite persistence;
 - add a Python/FastAPI runtime service;
 - commit to a vector database;
 - commit to a rich-text editor;
 - download an embeddings model automatically;
 - design cloud synchronization;
-- add online services;
-- treat any AI-generated fact as canonical;
-- implement advanced generation before the persistence model is reliable.
+- treat any AI-generated fact as canonical.
