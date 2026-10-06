@@ -100,31 +100,24 @@ ADR-007 remains provisional until M0 also proves:
 - read-only Ollama communication from inside the application
 - automated frontend/Rust checks and CI
 
-## Security gate before Ollama application integration
+## Ollama loopback security gate
 
-Loopback remediation has started.
+The Ollama network-security gate is now **PASS**.
 
-Operator-observed evidence now confirms:
+Final operator-observed evidence after disabling **Expose Ollama to the network** and restarting Ollama:
 
-- user-level `OLLAMA_HOST`: `127.0.0.1:11434`
-- machine-level `OLLAMA_HOST`: not defined
-- Ollama was restarted after applying the user-level value
-- local API responded successfully on `http://127.0.0.1:11434/api/version`
-- the restarted API reported Ollama `0.40.0`
+- user-level `OLLAMA_HOST`: `127.0.0.1:11434`;
+- machine-level `OLLAMA_HOST`: not defined;
+- local API version: `0.40.0`;
+- Windows listener: `127.0.0.1:11434`;
+- current server log: `OLLAMA_HOST:http://127.0.0.1:11434`;
+- current server log: `Listening on 127.0.0.1:11434 (version 0.40.0)`;
+- `127.0.0.1:11434`: accessible;
+- `172.24.96.1:11434`: not accessible;
+- `192.168.1.200:11434`: not accessible;
+- `10.100.0.2:11434`: not accessible.
 
-A second independent socket qualification proved the current bind is **not loopback-only**:
-
-- `Get-NetTCPConnection` reported local address `::` on port `11434`;
-- the current Ollama 0.40.0 server log reported `OLLAMA_HOST:http://0.0.0.0:11434`;
-- the same log reported `Listening on [::]:11434`;
-- `192.168.1.200:11434` was reachable from the local machine;
-- another local interface, `172.24.96.1:11434`, was also reachable.
-
-Therefore the Ollama network-security gate is **FAIL**.
-
-Root cause is now identified in the Ollama desktop application: its **Expose Ollama to the network** setting maps to the stored `Expose` flag. Current Ollama source code explicitly sets `OLLAMA_HOST=0.0.0.0` whenever that flag is true, overriding the inherited user-level `OLLAMA_HOST=127.0.0.1:11434`.
-
-Required remediation: disable **Expose Ollama to the network** in the Ollama desktop Settings, fully quit Ollama, restart it from the Windows Start menu, then re-run the listener qualification.
+The former all-interface exposure was caused by Ollama Desktop's **Expose Ollama to the network** setting.
 
 ## Known non-blocking environment warnings
 
@@ -139,7 +132,8 @@ These warnings remain recorded and must not be silently erased.
 - PR #1: COMPLETE + MERGED
 - PR #2: active M0 desktop qualification
 - desktop skeleton: PASS on target Windows machine
-- next required operator action: bind Ollama to loopback and verify it
+- Ollama loopback security gate: PASS
+- next qualification target: read-only Fabulaxiom → Rust → local Ollama API plus automated CI
 
 ## Acceptance rule
 

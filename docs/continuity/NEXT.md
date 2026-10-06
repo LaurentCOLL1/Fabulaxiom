@@ -12,53 +12,28 @@ Secure Ollama's network binding, then add read-only Ollama integration to the al
 - Fabulaxiom desktop launch: PASS
 - React → Tauri → Rust command bridge: PASS
 
-## Required operator step before Ollama integration
+## Ollama loopback security gate
 
-The desired user-level setting is now present:
+The security gate is **PASS**.
 
-`OLLAMA_HOST=127.0.0.1:11434`
+Ollama 0.40.0 is bound to `127.0.0.1:11434`, and all tested non-loopback local interfaces are unable to connect.
 
-and the restarted local API returned Ollama `0.40.0`.
+## Next authorized implementation
 
-Independent verification has now proven that Ollama is still exposed on all interfaces.
+The current branch is authorized to add:
 
-Observed:
+1. a Rust-side read-only Ollama client fixed to `127.0.0.1:11434`;
+2. a Tauri command returning availability, version and endpoint;
+3. a frontend Ollama status panel;
+4. strict timeout, no redirect and no proxy behavior;
+5. frontend and Rust unit tests;
+6. Windows GitHub CI.
 
-- `Get-NetTCPConnection`: `:: :11434`;
-- current server log: `OLLAMA_HOST:http://0.0.0.0:11434`;
-- current server log: `Listening on [::]:11434`;
-- local network address `192.168.1.200:11434`: accessible;
-- local adapter address `172.24.96.1:11434`: accessible.
+Acceptance requires both:
+- local operator test on the target PC;
+- exact-head GitHub CI success.
 
-Root cause: the Ollama desktop setting **Expose Ollama to the network** is enabled. In current Ollama source code, that setting explicitly overwrites `OLLAMA_HOST` with `0.0.0.0`.
-
-Required operator sequence:
-
-1. open the Ollama desktop application;
-2. open Settings;
-3. turn **Expose Ollama to the network** OFF;
-4. fully quit Ollama from its tray/taskbar menu;
-5. restart Ollama from the Windows Start menu;
-6. verify the current log reports a loopback bind and no all-interface bind;
-7. verify non-loopback local addresses can no longer connect to port 11434;
-8. verify local API and GPU inference still work.
-
-Do not add Ollama client code to Fabulaxiom until this gate passes.
-
-## After the loopback gate passes
-
-The next code change is authorized to add:
-
-1. a Rust-side read-only Ollama client;
-2. a Tauri command returning:
-   - availability;
-   - Ollama version;
-   - configured local endpoint;
-3. a frontend status panel;
-4. strict timeout/error handling;
-5. no cloud endpoint and no manuscript transmission.
-
-Then add automated frontend/Rust tests and GitHub CI.
+No manuscript content may be transmitted during this milestone.
 
 ## Deliberately deferred
 

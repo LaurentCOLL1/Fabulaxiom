@@ -1,5 +1,9 @@
 import { useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
+import {
+  formatOllamaSummary,
+  type OllamaStatus,
+} from "./ollama";
 
 type BootstrapStatus = {
   app_name: string;
@@ -9,21 +13,40 @@ type BootstrapStatus = {
 
 function App() {
   const [status, setStatus] = useState<BootstrapStatus | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [pending, setPending] = useState(false);
+  const [bridgeError, setBridgeError] = useState<string | null>(null);
+  const [bridgePending, setBridgePending] = useState(false);
+
+  const [ollamaStatus, setOllamaStatus] = useState<OllamaStatus | null>(null);
+  const [ollamaError, setOllamaError] = useState<string | null>(null);
+  const [ollamaPending, setOllamaPending] = useState(false);
 
   async function verifyRustBridge() {
-    setPending(true);
-    setError(null);
+    setBridgePending(true);
+    setBridgeError(null);
 
     try {
       const result = await invoke<BootstrapStatus>("bootstrap_status");
       setStatus(result);
     } catch (reason) {
       setStatus(null);
-      setError(String(reason));
+      setBridgeError(String(reason));
     } finally {
-      setPending(false);
+      setBridgePending(false);
+    }
+  }
+
+  async function verifyOllama() {
+    setOllamaPending(true);
+    setOllamaError(null);
+
+    try {
+      const result = await invoke<OllamaStatus>("ollama_status");
+      setOllamaStatus(result);
+    } catch (reason) {
+      setOllamaStatus(null);
+      setOllamaError(String(reason));
+    } finally {
+      setOllamaPending(false);
     }
   }
 
@@ -38,41 +61,82 @@ function App() {
         </p>
       </section>
 
-      <section className="card" aria-labelledby="bootstrap-title">
-        <div>
-          <p className="card-kicker">Premier contrôle exécutable</p>
-          <h2 id="bootstrap-title">Pont React → Tauri → Rust</h2>
-          <p>
-            Ce test ne modifie aucun manuscrit et ne contacte aucun service
-            externe. Il vérifie uniquement que l'interface peut appeler le cœur
-            Rust de l'application.
-          </p>
-        </div>
-
-        <button type="button" onClick={verifyRustBridge} disabled={pending}>
-          {pending ? "Vérification…" : "Tester le pont Rust"}
-        </button>
-
-        {status && (
-          <div className="result success" role="status">
-            <strong>PASS</strong>
-            <span>{status.app_name}</span>
-            <span>{status.milestone}</span>
-            <span>{status.rust_bridge}</span>
+      <div className="card-grid">
+        <section className="card" aria-labelledby="bootstrap-title">
+          <div>
+            <p className="card-kicker">Contrôle exécutable</p>
+            <h2 id="bootstrap-title">Pont React → Tauri → Rust</h2>
+            <p>
+              Vérifie que l'interface peut appeler le cœur Rust de
+              l'application, sans modifier de manuscrit.
+            </p>
           </div>
-        )}
 
-        {error && (
-          <div className="result failure" role="alert">
-            <strong>ÉCHEC</strong>
-            <span>{error}</span>
+          <button
+            type="button"
+            onClick={verifyRustBridge}
+            disabled={bridgePending}
+          >
+            {bridgePending ? "Vérification…" : "Tester le pont Rust"}
+          </button>
+
+          {status && (
+            <div className="result success" role="status">
+              <strong>PASS</strong>
+              <span>{status.app_name}</span>
+              <span>{status.milestone}</span>
+              <span>{status.rust_bridge}</span>
+            </div>
+          )}
+
+          {bridgeError && (
+            <div className="result failure" role="alert">
+              <strong>ÉCHEC</strong>
+              <span>{bridgeError}</span>
+            </div>
+          )}
+        </section>
+
+        <section className="card" aria-labelledby="ollama-title">
+          <div>
+            <p className="card-kicker">Service IA local</p>
+            <h2 id="ollama-title">Ollama en lecture seule</h2>
+            <p>
+              Fabulaxiom interroge uniquement l'API de version sur
+              127.0.0.1:11434. Aucun manuscrit ni prompt n'est transmis.
+            </p>
           </div>
-        )}
-      </section>
+
+          <button
+            type="button"
+            onClick={verifyOllama}
+            disabled={ollamaPending}
+          >
+            {ollamaPending ? "Vérification…" : "Vérifier Ollama local"}
+          </button>
+
+          {ollamaStatus && (
+            <div
+              className={`result ${ollamaStatus.available ? "success" : "failure"}`}
+              role="status"
+            >
+              <strong>{ollamaStatus.available ? "PASS" : "INDISPONIBLE"}</strong>
+              <span>{formatOllamaSummary(ollamaStatus)}</span>
+            </div>
+          )}
+
+          {ollamaError && (
+            <div className="result failure" role="alert">
+              <strong>ÉCHEC IPC</strong>
+              <span>{ollamaError}</span>
+            </div>
+          )}
+        </section>
+      </div>
 
       <footer>
-        Ollama sera testé depuis l'application seulement après validation de ce
-        premier pont local.
+        M0 utilise uniquement des contrôles locaux. Les fonctions de génération
+        narrative restent désactivées à ce stade.
       </footer>
     </main>
   );
