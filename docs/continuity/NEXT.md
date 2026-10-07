@@ -2,55 +2,36 @@
 
 ## Immediate objective
 
-Finish M0 terminalization. Do not start M1 yet.
+Run terminal deterministic M0 CI with the committed dependency lockfiles.
 
-## Qualified
+## Terminal CI contract
 
-- Windows/Tauri prerequisites: PASS
-- React/TypeScript production build: PASS
-- Tauri/Rust compilation: PASS
-- Fabulaxiom desktop launch: PASS
-- React → Tauri → Rust bridge: PASS
-- Ollama loopback security gate: PASS
-- read-only Rust → Ollama local API integration: PASS
-- frontend Ollama status panel: PASS
-- frontend tests: PASS
-- Rust tests: PASS
-- cargo check: PASS
-- exact-head GitHub CI on `fe43c7dd859fda77628e569834a243e6ade21806`: PASS
-- ADR-007 architecture decision: ACCEPTED
+The workflow must enforce:
 
-## Remaining M0 terminalization
+1. `npm ci`;
+2. `cargo test --locked`;
+3. `cargo check --locked`;
+4. no mutation of `package-lock.json` or `src-tauri/Cargo.lock`.
 
-Exactly two generated dependency locks remain to be versioned:
+If the exact-head workflow is fully `completed/success`:
 
-- `package-lock.json`
-- `src-tauri/Cargo.lock`
+1. record terminal SHA and run ID;
+2. mark M0 `COMPLETE`;
+3. mark PR #2 ready;
+4. merge PR #2 with expected-head protection;
+5. re-fetch live `main`;
+6. normalize continuity documents post-merge;
+7. only then authorize M1.
 
-They were generated successfully both locally and in GitHub CI.
+## Deliberately deferred
 
-After they are committed:
+Do not yet add:
 
-1. change CI frontend installation from `npm install` to `npm ci`;
-2. run Cargo validation with `--locked`;
-3. require terminal exact-head CI success;
-4. record the terminal SHA and CI run;
-5. mark M0 `COMPLETE`;
-6. merge PR #2;
-7. re-fetch `main`;
-8. normalize continuity documents on `main`;
-9. only then authorize M1.
-
-## Deliberately deferred until M0 merge
-
-Do not yet:
-
-- add SQLite persistence;
-- add project/universe CRUD;
-- add generation from manuscripts;
-- add a Python/FastAPI runtime service;
-- commit to a vector database;
-- commit to a rich-text editor;
-- download an embeddings model automatically;
-- design cloud synchronization;
-- treat any AI-generated fact as canonical.
+- SQLite persistence;
+- Universe/Series/Novel/Chapter/Scene CRUD;
+- manuscript generation;
+- Python/FastAPI runtime service;
+- vector database;
+- rich-text editor;
+- embedding downloads;
+- cloud synchronization.

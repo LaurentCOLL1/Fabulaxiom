@@ -22,12 +22,13 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version: "24"
+          cache: npm
 
       - name: Setup Rust stable
         uses: dtolnay/rust-toolchain@stable
 
-      - name: Install frontend dependencies
-        run: npm install
+      - name: Install frontend dependencies from lockfile
+        run: npm ci
 
       - name: Frontend tests
         run: npm run test:ci
@@ -35,19 +36,16 @@ jobs:
       - name: Frontend production build
         run: npm run build
 
-      - name: Rust tests
-        run: cargo test --manifest-path src-tauri/Cargo.toml --all-targets
+      - name: Rust tests from lockfile
+        run: cargo test --manifest-path src-tauri/Cargo.toml --all-targets --locked
 
-      - name: Rust check
-        run: cargo check --manifest-path src-tauri/Cargo.toml
+      - name: Rust check from lockfile
+        run: cargo check --manifest-path src-tauri/Cargo.toml --locked
 
-      - name: Preserve generated dependency locks
-        if: always()
-        uses: actions/upload-artifact@v7
-        with:
-          name: m0-dependency-locks
-          path: |
-            package-lock.json
-            src-tauri/Cargo.lock
-          if-no-files-found: error
-          retention-days: 7
+      - name: Verify dependency locks are unchanged
+        shell: pwsh
+        run: |
+          git diff --exit-code -- package-lock.json src-tauri/Cargo.lock
+          if ($LASTEXITCODE -ne 0) {
+            throw "Dependency lockfiles changed during deterministic CI."
+          }
