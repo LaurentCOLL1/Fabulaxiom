@@ -4,53 +4,53 @@
 
 **M1 — Persistence and project foundation**
 
-## M1.1
+## Completed subdivision
 
-**COMPLETE + MERGED**
+**M1.1 — SQLite foundation and migration runner**
 
-Merge commit:
+Status:
 
-`d212de93cc869bfbe0e047a12594d23e1732d5cb`
+**COMPLETE + MERGED + NORMALIZED**
 
-This normalization PR must pass exact-head CI and merge before implementation of M1.2 starts.
-
-## Next subdivision
+## Authorized subdivision
 
 **M1.2 — Project hierarchy schema**
 
-M1.2 becomes the only authorized implementation subdivision after this normalization is merged.
+M1.2 is the only implementation subdivision currently authorized.
 
 ## Required deliverables
 
-1. add an ordered SQLite migration for the project hierarchy;
+1. add an ordered SQLite migration from schema v1 to the hierarchy schema;
 2. add Universe;
 3. add optional Series;
 4. add Novel;
 5. add Chapter;
 6. add Scene;
 7. use stable immutable identifiers independent of names;
-8. define deterministic ordering fields for Series/Novel/Chapter/Scene where applicable;
+8. define deterministic ordering fields where applicable;
 9. define foreign-key relationships and deletion/update rules;
-10. add CHECK/UNIQUE constraints needed for structural integrity;
+10. add CHECK/UNIQUE constraints required for structural integrity;
 11. test valid hierarchy creation;
 12. test optional Series behavior;
 13. test ordering constraints;
-14. test rejected orphaned references;
-15. test migration idempotence from M1.1 schema v1 to the new version;
-16. keep M1.2 schema-only: no CRUD UI/service yet;
-17. require deterministic exact-head CI and Windows database migration qualification.
+14. test rejection of orphaned references;
+15. test identifier immutability;
+16. test migration idempotence from M1.1 schema v1;
+17. keep M1.2 schema-only: no CRUD application service/UI;
+18. require deterministic exact-head CI;
+19. qualify migration of the target Windows database from schema v1.
 
 ## Acceptance boundary
 
 M1.2 is complete only when:
 
-- schema migration is versioned;
-- automated integrity tests pass;
+- migration v2 is committed;
+- schema-level integrity tests pass;
 - existing M1.1 tests remain green;
 - frontend build remains green;
-- dependency locks stay unchanged unless an explicitly justified dependency is added;
+- dependency lockfiles remain unchanged;
 - exact-head CI is fully successful;
-- the target Windows database migrates cleanly from schema v1;
+- the target Windows database migrates cleanly from schema v1 to v2;
 - its PR is merged;
 - post-merge continuity normalization is complete.
 
@@ -58,7 +58,7 @@ M1.2 is complete only when:
 
 Do not yet implement:
 
-- full create/read/update/delete services;
+- general create/read/update/delete services;
 - project hierarchy forms/screens;
 - text revision history;
 - backup/restore;
@@ -67,4 +67,4 @@ Do not yet implement:
 - manuscript generation;
 - canonical-fact extraction.
 
-Those belong to later M1/M2 subdivisions.
+Those belong to later subdivisions.
