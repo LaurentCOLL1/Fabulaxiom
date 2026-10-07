@@ -2,7 +2,7 @@
 
 ## Goal
 
-Establish Fabulaxiom's authoritative local persistence layer before adding narrative-memory intelligence.
+Establish Fabulaxiom's authoritative local persistence layer and usable no-AI project foundation before narrative-memory intelligence.
 
 ## M1.1 — SQLite foundation and migration runner
 
@@ -28,11 +28,15 @@ Delivered:
 
 ## M1.2 — Project hierarchy schema
 
-Status: **IN PROGRESS**
+Status: **COMPLETE + MERGED + NORMALIZED**
 
-Deliverables:
+Implementation merge:
 
-- migration v2;
+`91b80e529679d3bc407b5f6ca49e578d86de1d44`
+
+Delivered:
+
+- schema migration v2;
 - Universe;
 - optional Series;
 - Novel;
@@ -40,28 +44,36 @@ Deliverables:
 - Scene;
 - immutable stable IDs;
 - deterministic sibling ordering;
-- cross-universe consistency;
-- explicit conservative referential rules;
-- indexes for child foreign-key lookups;
+- cross-Universe consistency;
+- conservative referential rules;
+- indexes for foreign-key child lookups;
 - schema-level integrity tests;
-- migration from schema v1 to schema v2;
-- Windows migration qualification.
-
-Boundary:
-
-M1.2 is schema-only. General CRUD services and project-editing UI remain M1.3 work.
+- production migration from schema v1 to schema v2;
+- Windows migration qualification;
+- exact-head CI.
 
 ## M1.3 — No-AI CRUD service
 
+Status: **AUTHORIZED**
+
 Deliverables:
 
-- Rust application services for create/read/update/delete;
-- explicit transactions;
-- basic React screens/forms;
+- Rust application services for hierarchy create/read/update/delete;
+- explicit transactions for compound mutations;
+- deterministic service/Tauri errors;
+- basic React hierarchy screens/forms;
+- optional-Series workflow;
 - no AI requirement;
-- integrity/error handling.
+- CRUD and rollback/integrity tests;
+- Windows interactive qualification.
+
+Boundary:
+
+M1.3 must remain useful with Ollama unavailable. Narrative AI behavior is out of scope.
 
 ## M1.4 — Text revisions and provenance foundation
+
+Status: pending
 
 Deliverables:
 
@@ -72,6 +84,8 @@ Deliverables:
 - source/provenance primitives for later canonical facts.
 
 ## M1.5 — Backup and restore baseline
+
+Status: pending
 
 Deliverables:
 

@@ -27,9 +27,9 @@ Detailed plan:
 
 Subdivision status:
 
-- M1.1 — SQLite foundation and migration runner: **COMPLETE + MERGED**
-- M1.2 — Project hierarchy schema: **NEXT**
-- M1.3 — No-AI CRUD service: pending
+- M1.1 — SQLite foundation and migration runner: **COMPLETE + MERGED + NORMALIZED**
+- M1.2 — Project hierarchy schema: **COMPLETE + MERGED + NORMALIZED**
+- M1.3 — No-AI CRUD service: **AUTHORIZED / NEXT**
 - M1.4 — Text revisions and provenance foundation: pending
 - M1.5 — Backup and restore baseline: pending
 
@@ -38,10 +38,10 @@ M1 deliverables overall:
 - SQLite schema and migrations;
 - Universe → optional Series → Novel → Chapter → Scene hierarchy;
 - stable IDs;
+- no-AI hierarchy CRUD;
 - text version history;
 - transactions and integrity checks;
-- backup/restore baseline;
-- no-AI CRUD flow.
+- backup/restore baseline.
 
 ## M2 — Narrative entities and canonical facts
 

@@ -4,60 +4,75 @@
 
 **M1 — Persistence and project foundation**
 
-## Current subdivision
+## Completed subdivision
 
 **M1.2 — Project hierarchy schema**
 
 Status:
 
-**WINDOWS QUALIFIED — TERMINAL CI + MERGE REQUIRED**
+**COMPLETE + MERGED + NORMALIZED**
 
-## Completed qualification
+Implementation merge:
 
-Implementation SHA:
+`91b80e529679d3bc407b5f6ca49e578d86de1d44`
 
-`3d4b2eaf95e13bfa93580a4295ac20e93a076798`
+Terminal exact-head CI:
 
-Deterministic CI:
-
-- run `37644123751`;
+- run `37646868694`;
 - completed/success;
 - 13 Rust tests PASS;
 - frontend tests/build PASS;
 - lockfiles unchanged.
 
-Windows qualification:
+Windows migration qualification:
 
-- schema-v1 production database backed up;
-- production migration v1 → v2 PASS;
-- migrations 1 + 2 PASS;
+- production schema v1 → v2 PASS;
 - hierarchy tables 5/5 PASS;
 - STRICT 5/5 PASS;
 - immutable-ID triggers 5/5 PASS;
-- foreign keys ON;
-- foreign-key check empty;
-- integrity check OK;
-- final worktree clean.
+- foreign keys/integrity PASS.
 
-## Immediate sequence
+## Authorized subdivision
 
-1. commit the Windows qualification evidence;
-2. require Fabulaxiom CI on that new exact head;
-3. if every deterministic check is successful, merge PR #9 with expected-head protection;
-4. re-fetch live `main`;
-5. create and qualify M1.2 post-merge normalization;
-6. merge normalization;
-7. only then authorize M1.3.
+**M1.3 — No-AI CRUD service**
 
-## M1.3 remains unauthorized
+M1.3 is the only implementation subdivision currently authorized.
 
-Do not yet implement:
+## Required deliverables
 
-- hierarchy CRUD services;
-- hierarchy editing UI;
-- text revision history;
+1. define Rust application-layer models/DTOs for Universe, Series, Novel, Chapter and Scene;
+2. implement create/read/update/delete services over the schema-v2 tables;
+3. keep immutable IDs immutable;
+4. preserve deterministic sibling ordering;
+5. enforce Universe/Series/Novel ownership invariants through the existing schema and service validation;
+6. wrap multi-step mutations in explicit transactions;
+7. return deterministic typed/service errors suitable for the Tauri boundary;
+8. expose the minimum Tauri commands required by the CRUD screens;
+9. add basic React hierarchy screens/forms usable without Ollama;
+10. allow Series to remain optional for a Novel;
+11. test create/read/update/delete for every hierarchy level;
+12. test invalid/orphan/cross-Universe mutations;
+13. test transaction rollback for compound mutations;
+14. test application behavior with Ollama unavailable;
+15. preserve all M1.1/M1.2 database tests;
+16. preserve committed dependency locks unless a new dependency is explicitly justified;
+17. require deterministic exact-head CI;
+18. require Windows interactive CRUD qualification;
+19. merge the M1.3 PR;
+20. complete post-merge continuity normalization before M1.4.
+
+## Boundary
+
+M1.3 is a no-AI CRUD milestone.
+
+Do not implement yet:
+
+- text revision history/provenance;
 - backup/restore;
 - FTS;
-- embeddings;
+- embeddings/vector search;
 - manuscript generation;
-- canonical-fact extraction.
+- canonical-fact extraction;
+- consistency engine.
+
+Those belong to later subdivisions/milestones.

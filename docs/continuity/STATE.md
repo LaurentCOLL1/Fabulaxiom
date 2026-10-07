@@ -26,29 +26,37 @@ Final normalization merge:
 
 #### M1.2 — Project hierarchy schema
 
-**WINDOWS QUALIFIED — FINAL EXACT-HEAD CI + MERGE PENDING**
+**COMPLETE + MERGED + NORMALIZED**
 
-Branch:
+Implementation PR:
 
-`feat/m1-2-project-hierarchy-schema-20261007`
+**#9 — feat: implement M1.2 project hierarchy schema**
+
+Implementation merge:
+
+`91b80e529679d3bc407b5f6ca49e578d86de1d44`
 
 Qualified implementation SHA:
 
 `3d4b2eaf95e13bfa93580a4295ac20e93a076798`
 
-GitHub CI on that implementation SHA:
+Qualification evidence commit:
+
+`0da679859c77ef231c6b33e9e91c7264c8d7b5f6`
+
+Deterministic exact-head CI:
 
 - workflow: `Fabulaxiom CI`;
-- run: `37644123751`;
+- terminal run: `37646868694`;
 - result: `completed/success`;
+- frontend tests/build: PASS;
 - Rust tests: 13/13 PASS;
-- frontend tests: 4/4 PASS;
-- lockfiles unchanged.
+- `cargo check --locked`: PASS;
+- dependency lockfiles unchanged.
 
 Windows production migration qualification:
 
-- exact source HEAD: PASS;
-- existing schema v1 detected before launch;
+- schema-v1 production database detected;
 - pre-migration SQLite backup created;
 - migration v1 → v2: PASS;
 - migrations 1 and 2 present exactly once;
@@ -67,31 +75,52 @@ Detailed evidence:
 
 `docs/qualification/M1_2_PROJECT_HIERARCHY_SCHEMA.md`
 
-M1.2 remains schema-only. CRUD services and project hierarchy UI remain deferred to M1.3.
+Delivered schema:
 
-## M1.2 schema decisions
+- Universe;
+- optional Series;
+- Novel;
+- Chapter;
+- Scene;
+- immutable non-name IDs;
+- deterministic sibling ordering;
+- cross-universe Series/Novel integrity;
+- conservative `RESTRICT` update/delete behavior;
+- child-key indexes;
+- migration v2 from the M1.1 schema.
 
-- all hierarchy tables use SQLite `STRICT`;
-- IDs are non-empty `TEXT PRIMARY KEY` values and are protected by immutable-ID triggers;
-- Series belongs to exactly one Universe;
-- Novel belongs to exactly one Universe and may optionally belong to a Series;
-- a composite foreign key prevents a Novel from referencing a Series in a different Universe;
-- Chapter belongs to exactly one Novel;
-- Scene belongs to exactly one Chapter;
-- sibling `sort_order` values are non-negative and unique within their parent scope;
-- foreign-key child lookups are indexed where not already covered by a UNIQUE index;
-- schema version is 2.
+#### M1.3 — No-AI CRUD service
+
+**AUTHORIZED**
+
+M1.3 is now the only implementation subdivision authorized.
+
+Scope:
+
+- Rust application services for hierarchy create/read/update/delete;
+- explicit transaction boundaries;
+- application-level validation and deterministic errors;
+- basic React screens/forms for hierarchy editing;
+- no AI requirement or Ollama dependency for CRUD;
+- tests proving CRUD integrity against schema v2.
+
+M1.4+ remain unauthorized until M1.3 is complete, merged, and normalized.
 
 ## Reproducibility contract
 
-- no new dependency is introduced by M1.2;
-- `package-lock.json` and `src-tauri/Cargo.lock` remain unchanged;
+- `package-lock.json` committed;
+- `src-tauri/Cargo.lock` committed;
 - CI uses `npm ci`;
 - Rust CI uses Cargo `--locked`;
-- lockfile mutation is rejected in CI.
+- dependency-lock mutation is rejected in CI.
 
 ## Governance rule
 
-M1.2 is not complete until the qualification evidence commit receives final exact-head CI, PR #9 merges, and post-merge normalization completes.
+Every subdivision must:
 
-M1.3 is not yet authorized.
+- begin from freshly fetched live `main`;
+- use a dedicated branch and pull request;
+- preserve deterministic dependency locks;
+- pass exact-head CI;
+- receive Windows operator qualification when local behavior is part of acceptance;
+- be merged and normalized before a dependent subdivision begins.

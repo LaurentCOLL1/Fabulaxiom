@@ -30,20 +30,24 @@ Architecture retenue :
 
 M1.1 — SQLite foundation and migration runner est **COMPLETE + MERGED + NORMALIZED**.
 
-Le socle SQLite inclut désormais :
+M1.2 — Project hierarchy schema est **COMPLETE + MERGED + NORMALIZED**.
+
+Le socle persistant comprend désormais :
 
 - SQLite embarqué via rusqlite ;
-- base sous le répertoire de données locales de l'application ;
 - migrations transactionnelles versionnées ;
 - clés étrangères activées et vérifiées par connexion ;
-- tests d'intégrité/rollback ;
+- schéma v2 Universe → Series optionnelle → Novel → Chapter → Scene ;
+- IDs stables et immuables ;
+- ordre déterministe des éléments frères ;
+- contraintes d'intégrité inter-univers ;
 - qualification Windows et CI déterministe.
 
 La subdivision actuellement autorisée est :
 
-**M1.2 — Project hierarchy schema**
+**M1.3 — No-AI CRUD service**
 
-Elle ajoutera le schéma Universe → Series optionnelle → Novel → Chapter → Scene, sans encore ajouter le CRUD applicatif.
+Elle ajoutera les services Rust et les écrans/formulaires React de base pour créer, lire, modifier et supprimer la hiérarchie narrative sans dépendre d'Ollama.
 
 ## Documentation d'autorité
 
