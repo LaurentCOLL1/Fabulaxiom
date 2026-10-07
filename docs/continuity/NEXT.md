@@ -1,46 +1,34 @@
 # Fabulaxiom — Next Authorized Work
 
-## Current milestone
-
-**M1 — Persistence and project foundation**
-
-## Authorized subdivision
+## Current subdivision
 
 **M1.1 — SQLite foundation and migration runner**
 
-M1.1 is the only implementation subdivision currently authorized.
+Status:
 
-## Required deliverables
+**QUALIFIED — FINAL EXACT-HEAD CI + MERGE REQUIRED**
 
-1. select and add the SQLite Rust dependency;
-2. establish a deterministic application data-directory strategy;
-3. create a database connection service in Rust;
-4. enable `PRAGMA foreign_keys = ON` on every connection;
-5. add an explicit schema-version / migration table;
-6. implement an ordered migration runner;
-7. create only the minimal initial metadata schema needed to prove migrations;
-8. provide a transaction baseline;
-9. test fresh database creation;
-10. test repeat/idempotent migration;
-11. prove foreign-key enforcement;
-12. prove failed transactional work does not leave partial state;
-13. prove database creation/migration on the target Windows machine;
-14. keep the application usable without Ollama;
-15. run deterministic exact-head CI with committed lockfiles.
+## Qualified
 
-## Acceptance boundary
+- Windows implementation qualification: PASS
+- SQLite schema/migration evidence: PASS
+- dependency lock committed: PASS
+- exact-head CI on `59923690d08687efd42b452e3e29976131a4be8b`: PASS
+- CI run `37636677552`: `completed/success`
 
-M1.1 is complete only when:
+## Immediate sequence
 
-- source and dependency locks are committed;
-- automated Rust tests pass;
-- frontend build remains green;
-- exact-head CI is fully successful;
-- Windows operator qualification proves the database path and migrations;
-- its PR is merged;
-- post-merge continuity normalization is complete.
+1. commit the recorded qualification evidence;
+2. run Fabulaxiom CI on that new exact head;
+3. require every deterministic check to pass;
+4. merge PR #5 with expected-head protection;
+5. re-fetch live `main`;
+6. create post-merge continuity normalization;
+7. require normalization CI success;
+8. merge normalization;
+9. only then authorize M1.2.
 
-## Not authorized in M1.1
+## Not authorized
 
 Do not yet implement:
 
@@ -51,5 +39,3 @@ Do not yet implement:
 - embeddings/vector search;
 - manuscript generation;
 - automatic canonical-fact extraction.
-
-Those belong to later subdivisions.

@@ -1,4 +1,4 @@
-name: M0 CI
+name: Fabulaxiom CI
 
 on:
   pull_request:
@@ -45,7 +45,7 @@ jobs:
       - name: Verify dependency locks are unchanged
         shell: pwsh
         run: |
-          git diff --exit-code -- package-lock.json src-tauri/Cargo.lock
+          git --no-pager diff --exit-code -- package-lock.json src-tauri/Cargo.lock
           if ($LASTEXITCODE -ne 0) {
             throw "Dependency lockfiles changed during deterministic CI."
           }

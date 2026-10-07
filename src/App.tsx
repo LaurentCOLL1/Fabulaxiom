@@ -1,6 +1,10 @@
 import { useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import {
+  formatDatabaseSummary,
+  type DatabaseStatus,
+} from "./database";
+import {
   formatOllamaSummary,
   type OllamaStatus,
 } from "./ollama";
@@ -19,6 +23,12 @@ function App() {
   const [ollamaStatus, setOllamaStatus] = useState<OllamaStatus | null>(null);
   const [ollamaError, setOllamaError] = useState<string | null>(null);
   const [ollamaPending, setOllamaPending] = useState(false);
+
+  const [databaseStatus, setDatabaseStatus] = useState<DatabaseStatus | null>(
+    null,
+  );
+  const [databaseError, setDatabaseError] = useState<string | null>(null);
+  const [databasePending, setDatabasePending] = useState(false);
 
   async function verifyRustBridge() {
     setBridgePending(true);
@@ -50,10 +60,25 @@ function App() {
     }
   }
 
+  async function verifyDatabase() {
+    setDatabasePending(true);
+    setDatabaseError(null);
+
+    try {
+      const result = await invoke<DatabaseStatus>("database_status");
+      setDatabaseStatus(result);
+    } catch (reason) {
+      setDatabaseStatus(null);
+      setDatabaseError(String(reason));
+    } finally {
+      setDatabasePending(false);
+    }
+  }
+
   return (
     <main className="app-shell">
       <section className="hero">
-        <p className="eyebrow">M0 · qualification du socle</p>
+        <p className="eyebrow">M1.1 · fondation de persistance</p>
         <h1>Fabulaxiom</h1>
         <p className="tagline">
           Mémoire narrative locale pour construire des romans, des sagas et des
@@ -64,11 +89,11 @@ function App() {
       <div className="card-grid">
         <section className="card" aria-labelledby="bootstrap-title">
           <div>
-            <p className="card-kicker">Contrôle exécutable</p>
+            <p className="card-kicker">Socle desktop</p>
             <h2 id="bootstrap-title">Pont React → Tauri → Rust</h2>
             <p>
               Vérifie que l'interface peut appeler le cœur Rust de
-              l'application, sans modifier de manuscrit.
+              l'application.
             </p>
           </div>
 
@@ -97,13 +122,53 @@ function App() {
           )}
         </section>
 
+        <section className="card" aria-labelledby="database-title">
+          <div>
+            <p className="card-kicker">Persistance locale</p>
+            <h2 id="database-title">SQLite et migrations</h2>
+            <p>
+              Crée ou ouvre la base locale de Fabulaxiom, applique les
+              migrations et vérifie l'activation des clés étrangères.
+            </p>
+          </div>
+
+          <button
+            type="button"
+            onClick={verifyDatabase}
+            disabled={databasePending}
+          >
+            {databasePending
+              ? "Vérification…"
+              : "Vérifier la base locale"}
+          </button>
+
+          {databaseStatus && (
+            <div
+              className={`result ${databaseStatus.available ? "success" : "failure"}`}
+              role="status"
+            >
+              <strong>
+                {databaseStatus.available ? "PASS" : "INDISPONIBLE"}
+              </strong>
+              <span>{formatDatabaseSummary(databaseStatus)}</span>
+            </div>
+          )}
+
+          {databaseError && (
+            <div className="result failure" role="alert">
+              <strong>ÉCHEC IPC</strong>
+              <span>{databaseError}</span>
+            </div>
+          )}
+        </section>
+
         <section className="card" aria-labelledby="ollama-title">
           <div>
-            <p className="card-kicker">Service IA local</p>
+            <p className="card-kicker">Service IA facultatif</p>
             <h2 id="ollama-title">Ollama en lecture seule</h2>
             <p>
-              Fabulaxiom interroge uniquement l'API de version sur
-              127.0.0.1:11434. Aucun manuscrit ni prompt n'est transmis.
+              Ce contrôle reste indépendant de la base : Fabulaxiom doit
+              fonctionner même si Ollama est arrêté.
             </p>
           </div>
 
@@ -135,8 +200,8 @@ function App() {
       </div>
 
       <footer>
-        M0 utilise uniquement des contrôles locaux. Les fonctions de génération
-        narrative restent désactivées à ce stade.
+        M1.1 établit uniquement la persistance locale et les migrations. Aucun
+        contenu narratif n'est encore enregistré.
       </footer>
     </main>
   );
