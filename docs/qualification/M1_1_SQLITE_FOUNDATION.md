@@ -2,74 +2,137 @@
 
 ## Status
 
-**IMPLEMENTATION PREPARED — WINDOWS QUALIFICATION PENDING**
+**WINDOWS QUALIFIED — EXACT-HEAD CI PENDING**
 
 ## Selected SQLite integration
 
 - Rust crate: `rusqlite 0.40.2`
 - SQLite linkage: `bundled`
-- rationale: Fabulaxiom controls its own application database and must package reliably on Windows without depending on a system SQLite installation.
+- database path:
+  `app_local_data_dir()/database/fabulaxiom.sqlite3`
 
-## Database location strategy
+SQLite foreign-key enforcement is explicitly enabled and verified per connection. SQLite documents foreign-key enforcement as a per-connection setting, so Fabulaxiom does not rely on a default. 
 
-The production database resolves through Tauri:
+## Qualified implementation source
 
-`app_local_data_dir()/database/fabulaxiom.sqlite3`
+Exact implementation SHA tested before qualification documentation:
 
-The application installation directory and Git repository are never used for production database storage.
+`ccbc9c63220c1a8a641595c0ed2d370660cff1ca`
 
-## Connection contract
+## Dependency lock qualification
 
-Every connection must:
+Dependency resolution changed only:
 
-- enable `PRAGMA foreign_keys = ON`;
-- verify that foreign-key enforcement is actually enabled;
-- configure a finite busy timeout.
+`src-tauri/Cargo.lock`
 
-## Migration contract
+Observed additions include:
 
-Fabulaxiom maintains an explicit:
+- `rusqlite 0.40.2`
+- `libsqlite3-sys 0.38.2`
+- transitive SQLite support crates
 
-`schema_migrations(version, name, applied_at_utc)`
+The lockfile was committed separately in:
 
-table.
+`88a5f107e31b56af14535e64c8cf96e632f5c878`
 
-Migrations:
+That commit contains exactly `src-tauri/Cargo.lock`.
 
-- are ordered and versioned;
-- run inside transactions;
-- record their version only after migration SQL succeeds;
-- are safe to run repeatedly;
-- reject schema versions unknown to the current application.
+## Automated Windows results
 
-Initial schema version:
+### Rust
 
-`1`
+`cargo test --all-targets --locked`
 
-Initial metadata table:
+Result:
 
-`app_metadata`
+- 6 tests passed
+- 0 failed
 
-No Universe/Series/Novel/Chapter/Scene schema is authorized in M1.1.
-
-## Automated acceptance tests prepared
+Qualified database tests:
 
 - fresh file-backed database creation;
-- initial migration and metadata record;
 - migration idempotence;
 - foreign-key enforcement;
-- rollback of failed transactional schema work.
+- failed transactional schema work rolls back.
 
-## Windows operator acceptance pending
+Existing M0 Ollama tests also remained green.
 
-The target Windows machine must still prove:
+`cargo check --locked`: **PASS**
 
-- dependency-lock update is exact;
-- Rust tests pass;
-- frontend tests/build stay green;
-- Fabulaxiom launches;
-- the database status control reports PASS;
-- the reported path is under the Tauri local app-data directory;
-- schema version is `1`;
-- foreign keys are ON;
-- Fabulaxiom still launches and the database works when Ollama is not required.
+### Frontend
+
+`npm ci`: **PASS**
+
+`npm run test:ci`:
+
+- 2 test files passed
+- 4 tests passed
+- 0 failures
+
+`npm run build`: **PASS**
+
+## Interactive Windows qualification
+
+### Rust bridge
+
+Observed:
+
+```text
+PASS
+Fabulaxiom
+M1.1 persistence foundation
+React -> Tauri -> Rust operational
+```
+
+### SQLite status
+
+Observed:
+
+```text
+PASS
+SQLite schema v1 · clés étrangères ON ·
+C:\Users\lauco\AppData\Local\com.fabulaxiom.desktop\database\fabulaxiom.sqlite3
+```
+
+### Database file
+
+Observed:
+
+- file present
+- size: 20480 bytes
+
+### Read-only schema inspection
+
+Observed:
+
+```json
+{"migrations": [[1, "001_create_app_metadata"]], "schema_owner": "fabulaxiom"}
+```
+
+## Ollama independence evidence
+
+Before the interactive Tauri launch, Ollama processes were stopped and:
+
+`http://127.0.0.1:11434/api/version`
+
+was confirmed inaccessible.
+
+Fabulaxiom then launched and the SQLite qualification succeeded.
+
+During the interactive session, the Ollama status control later reported Ollama 0.40.0 available, meaning Ollama had restarted independently. Therefore the UI run is not treated as evidence that Ollama remained absent for the entire session.
+
+Database independence is additionally established structurally and through the Rust test suite:
+
+- the database service does not call the Ollama client;
+- file-backed creation/migration tests run without Ollama;
+- foreign-key and transaction tests run without Ollama.
+
+## Acceptance remaining
+
+M1.1 may not be marked complete until:
+
+1. the qualification evidence is committed;
+2. its PR is open;
+3. deterministic exact-head CI passes with committed lockfiles unchanged;
+4. the PR is merged;
+5. post-merge continuity normalization is complete.

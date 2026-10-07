@@ -4,24 +4,42 @@
 
 **M1.1 — SQLite foundation and migration runner**
 
-Status: **IMPLEMENTATION PREPARED — LOCK + WINDOWS QUALIFICATION REQUIRED**
+Status: **WINDOWS QUALIFIED — PR + EXACT-HEAD CI REQUIRED**
+
+## Qualified
+
+- exact M1.1 implementation fetched and tested on Windows
+- `rusqlite 0.40.2` bundled SQLite linkage
+- `Cargo.lock` updated and committed
+- Rust tests: 6/6 PASS
+- Cargo check `--locked`: PASS
+- frontend tests: 4/4 PASS
+- frontend build: PASS
+- Tauri launch: PASS
+- database status UI: PASS
+- database path under Tauri local app-data directory
+- schema version: 1
+- foreign keys: ON
+- migration record: `001_create_app_metadata`
+- schema owner: `fabulaxiom`
 
 ## Immediate sequence
 
-1. fetch the exact M1.1 branch head on the target Windows machine;
-2. resolve the new `rusqlite` dependency and update only `src-tauri/Cargo.lock`;
-3. run frontend tests and production build;
-4. run Rust tests;
-5. run Cargo check;
-6. launch Fabulaxiom;
-7. use `Vérifier la base locale`;
-8. record the database path, schema version and foreign-key state;
-9. prove the database path is outside the repository and installation directory;
-10. prove the database status path does not require Ollama;
-11. commit only the intended dependency-lock change;
-12. push the exact branch head;
-13. restore/enforce deterministic `--locked` CI;
-14. require exact-head CI success before M1.1 completion.
+1. record the Windows qualification on the M1.1 branch;
+2. open the M1.1 pull request;
+3. run deterministic exact-head CI;
+4. require:
+   - `npm ci`;
+   - frontend tests/build;
+   - `cargo test --locked`;
+   - `cargo check --locked`;
+   - no dependency-lock mutation;
+5. correct any exact-head failure without bypass;
+6. when CI is fully green, mark M1.1 complete;
+7. merge with expected-head protection;
+8. re-fetch live `main`;
+9. perform post-merge continuity normalization;
+10. only then authorize M1.2.
 
 ## Not authorized
 
