@@ -1,121 +1,35 @@
 # M0 Desktop and Local Integration Qualification — 2026-10-07
 
+## Decision
+
+**M0 COMPLETE**
+
 ## Scope
 
-This qualification proves the initial executable Fabulaxiom desktop foundation:
+Qualified execution path:
 
 `React -> Tauri -> Rust -> local Ollama status API`
 
-It does not qualify SQLite, manuscript persistence, narrative-memory features or text generation from user content.
+M0 does not include SQLite persistence, narrative-memory features, or manuscript generation.
 
-## Repository
+## Local operator qualification
 
-Repository:
-`LaurentCOLL1/Fabulaxiom`
+Latest executable source tested locally:
 
-Branch:
-`feat/m0-tauri-skeleton-20261006`
-
-Latest exact source SHA tested locally:
 `fe43c7dd859fda77628e569834a243e6ade21806`
 
-## Operator-observed qualification on the exact SHA
+PASS:
 
-### Repository integrity
-
-- origin:
-  `https://github.com/LaurentCOLL1/Fabulaxiom.git`
-- exact expected source SHA matched local HEAD
-- generated Tauri directory `src-tauri/gen/` was correctly ignored
-- result: **PASS**
-
-### Ollama local API
-
-Observed:
-
-```json
-{
-  "version": "0.40.0"
-}
-```
-
-Endpoint:
-
-`http://127.0.0.1:11434`
-
-Result: **PASS**
-
-### JavaScript dependencies
-
-`npm install`
-
-Observed:
-
-- installation completed successfully
-- 0 vulnerabilities
-
-Result: **PASS**
-
-### Frontend unit tests
-
-`npm run test:ci`
-
-Observed:
-
-- test files: 1 passed
-- tests: 2 passed
-- failures: 0
-
-Result: **PASS**
-
-### Frontend production build
-
-`npm run build`
-
-Observed:
-
-- TypeScript compile completed
-- Vite 8.0.16 production build completed
-- 19 modules transformed
-
-Result: **PASS**
-
-### Rust tests
-
-`cargo test --manifest-path src-tauri/Cargo.toml --all-targets`
-
-Observed:
-
-- `ollama_version_response_deserializes`: PASS
-- `ollama_endpoint_is_fixed_to_ipv4_loopback`: PASS
-- Rust tests: 2 passed, 0 failed
-
-Result: **PASS**
-
-### Rust compile validation
-
-`cargo check --manifest-path src-tauri/Cargo.toml`
-
-Result: **PASS**
-
-### Tauri desktop launch
-
-`npm run tauri dev`
-
-Observed:
-
-- Vite dev server started on localhost:1420
-- Fabulaxiom Rust crate compiled
-- executable started:
-  `target\debug\fabulaxiom.exe`
-
-Result: **PASS**
-
-### Frontend to Rust bridge
-
-The operator clicked:
-
-`Tester le pont Rust`
+- exact repository/head integrity;
+- generated Tauri schemas ignored correctly;
+- Ollama 0.40.0 loopback API;
+- frontend unit tests 2/2;
+- frontend production build;
+- Rust unit tests 2/2;
+- cargo check;
+- Tauri desktop launch;
+- React → Tauri → Rust bridge;
+- read-only local Ollama status check.
 
 Observed:
 
@@ -126,55 +40,63 @@ M0 desktop skeleton
 React -> Tauri -> Rust operational
 ```
 
-Result: **PASS**
-
-### Read-only local Ollama integration
-
-The operator clicked:
-
-`Vérifier Ollama local`
-
-Observed:
-
 ```text
 PASS
 Ollama 0.40.0 disponible sur http://127.0.0.1:11434
 ```
 
-The M0 path sends no manuscript or prompt content. It only queries the local Ollama version endpoint.
+## Security qualification
 
-Result: **PASS**
+PASS:
 
-## Exact-head GitHub CI
+- `OLLAMA_HOST=127.0.0.1:11434`;
+- current listener loopback-only;
+- non-loopback local interfaces inaccessible;
+- no manuscript/prompt transmission in M0 status path.
 
-Exact SHA:
-`fe43c7dd859fda77628e569834a243e6ade21806`
+## Reproducibility qualification
 
-Workflow:
-`M0 CI`
+Committed lockfiles:
 
-Run:
-`37542052212`
+- `package-lock.json`;
+- `src-tauri/Cargo.lock`.
 
-Observed:
+Lockfile commit:
 
-- frontend install: PASS
-- frontend tests: PASS
-- frontend production build: PASS
-- Rust tests: PASS
-- Rust check: PASS
-- dependency lock artifact: PASS
-- overall result: `completed/success`
+`f875cb98fcec818fea856d502ae89375b3793712`
+
+Terminal deterministic implementation head:
+
+`6fbea03be2b6058aa14d1cddcaffc7f840ebf81c`
+
+GitHub Actions:
+
+- workflow: `M0 CI`;
+- run: `37561269046`;
+- result: `completed/success`.
+
+Validated:
+
+- `npm ci`;
+- frontend tests;
+- frontend production build;
+- `cargo test --locked`;
+- `cargo check --locked`;
+- lockfiles remained unchanged.
 
 ## Architecture acceptance
 
-The Tauri 2 + React/TypeScript + Rust/Tauri architecture is **ACCEPTED** for M0/M1.
+ADR-007 is **Accepted** for M0/M1:
 
-## Remaining terminalization gate
+- Tauri 2;
+- React + TypeScript;
+- Rust/Tauri core;
+- SQLite + FTS5 planned for M1;
+- direct local Ollama integration;
+- no mandatory Python/FastAPI runtime.
 
-Functional M0 qualification is complete, but M0 remains open until the two dependency lockfiles are committed and a deterministic final CI passes:
+## Completion boundary
 
-- `package-lock.json`
-- `src-tauri/Cargo.lock`
+M0 is functionally and deterministically complete.
 
-After versioning them, CI must use locked dependency installation/resolution and succeed on the terminal exact head.
+M1 remains unauthorized until M0 is merged to `main` and post-merge continuity normalization is completed.

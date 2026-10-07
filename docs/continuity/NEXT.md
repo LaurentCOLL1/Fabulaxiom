@@ -2,36 +2,45 @@
 
 ## Immediate objective
 
-Run terminal deterministic M0 CI with the committed dependency lockfiles.
+Merge and normalize completed M0.
 
-## Terminal CI contract
+## M0
 
-The workflow must enforce:
+**COMPLETE**
 
-1. `npm ci`;
-2. `cargo test --locked`;
-3. `cargo check --locked`;
-4. no mutation of `package-lock.json` or `src-tauri/Cargo.lock`.
+Terminal qualified implementation SHA:
 
-If the exact-head workflow is fully `completed/success`:
+`6fbea03be2b6058aa14d1cddcaffc7f840ebf81c`
 
-1. record terminal SHA and run ID;
-2. mark M0 `COMPLETE`;
-3. mark PR #2 ready;
-4. merge PR #2 with expected-head protection;
+Terminal deterministic CI:
+
+- workflow: `M0 CI`;
+- run: `37561269046`;
+- conclusion: `success`.
+
+## Required sequence
+
+1. run exact-head CI on this completion-documentation commit;
+2. if and only if it is fully successful, mark PR #2 ready;
+3. re-fetch PR #2 and verify exact head/mergeability;
+4. merge PR #2 using expected-head protection;
 5. re-fetch live `main`;
-6. normalize continuity documents post-merge;
-7. only then authorize M1.
+6. create post-merge continuity normalization;
+7. run exact-head CI for normalization;
+8. merge normalization;
+9. re-fetch live `main`;
+10. only then authorize M1.
 
-## Deliberately deferred
+## M1
+
+**NOT AUTHORIZED YET**
 
 Do not yet add:
 
 - SQLite persistence;
 - Universe/Series/Novel/Chapter/Scene CRUD;
+- text version history;
+- backup/restore;
 - manuscript generation;
-- Python/FastAPI runtime service;
-- vector database;
-- rich-text editor;
-- embedding downloads;
-- cloud synchronization.
+- vector search;
+- rich-text editor.

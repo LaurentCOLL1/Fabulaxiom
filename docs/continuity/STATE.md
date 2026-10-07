@@ -6,80 +6,103 @@
 - Visibility: private
 - Default branch: `main`
 - Current working branch: `feat/m0-tauri-skeleton-20261006`
-- Current phase: M0 terminal deterministic qualification
+- Current phase: M0 COMPLETE, pending PR merge and post-merge normalization
 
-## M0 acceptance summary
+## M0 status
 
-- Windows/Tauri prerequisites: PASS
-- React/TypeScript build: PASS
-- Tauri/Rust compile and launch: PASS
-- React → Tauri → Rust bridge: PASS
-- Ollama loopback security gate: PASS
-- read-only Rust → Ollama 0.40.0 status check: PASS
-- frontend tests: PASS
-- Rust tests: PASS
-- cargo check: PASS
-- ADR-007 architecture: ACCEPTED
+**M0 — Environment and architecture qualification: COMPLETE**
 
-## Reproducibility inputs
+Terminal implementation/CI qualification:
 
-Committed lockfiles:
+- exact SHA: `6fbea03be2b6058aa14d1cddcaffc7f840ebf81c`;
+- workflow: `M0 CI`;
+- run: `37561269046`;
+- result: `completed/success`.
 
-- `package-lock.json`
-  - name: `fabulaxiom`
-  - version: `0.1.0`
-  - lockfileVersion: `3`
-  - root package entry present
-- `src-tauri/Cargo.lock`
-  - lockfile version: `4`
-  - `cargo metadata --locked`: PASS
+The deterministic CI contract passed:
 
-Lockfile commit:
+- `npm ci`: PASS;
+- frontend tests: PASS;
+- frontend production build: PASS;
+- `cargo test --locked`: PASS;
+- `cargo check --locked`: PASS;
+- dependency lockfiles unchanged: PASS.
 
-`f875cb98fcec818fea856d502ae89375b3793712`
+## Operator qualification
+
+Target Windows execution is PASS for:
+
+- exact source checkout;
+- React/TypeScript build;
+- Tauri/Rust compile and launch;
+- React → Tauri → Rust command bridge;
+- read-only Rust → Ollama 0.40.0 status integration;
+- frontend tests;
+- Rust tests;
+- cargo check.
+
+Observed application results:
+
+```text
+PASS
+Fabulaxiom
+M0 desktop skeleton
+React -> Tauri -> Rust operational
+```
+
+```text
+PASS
+Ollama 0.40.0 disponible sur http://127.0.0.1:11434
+```
+
+## Reproducibility
+
+Committed:
+
+- `package-lock.json` — lockfileVersion 3;
+- `src-tauri/Cargo.lock` — lockfile version 4.
+
+CI is locked to those dependency graphs.
 
 ## Architecture
 
-Accepted M0/M1 architecture:
+ADR-007: **Accepted**
 
-- Tauri 2 desktop shell
-- React + TypeScript frontend
-- Rust/Tauri application core
-- SQLite + FTS5 planned for M1
-- direct local Ollama integration
-- no mandatory Python/FastAPI runtime for M0/M1
+M0/M1 architecture:
+
+- Tauri 2 desktop shell;
+- React + TypeScript frontend;
+- Rust/Tauri application core;
+- SQLite + FTS5 planned for M1 authoritative persistence/search;
+- direct local Ollama HTTP integration;
+- no mandatory Python/FastAPI runtime for M0/M1.
 
 ## Ollama security
 
-- `OLLAMA_HOST=127.0.0.1:11434`
-- Ollama version: `0.40.0`
-- listener: loopback only
-- tested non-loopback local interfaces: not accessible
-- active GPU backend: Vulkan on AMD Radeon RX 6750 XT
+Security gate: **PASS**
+
+- Ollama Desktop network exposure: OFF;
+- `OLLAMA_HOST=127.0.0.1:11434`;
+- Ollama 0.40.0;
+- listener loopback-only;
+- tested non-loopback local interfaces unavailable;
+- active compute backend: Vulkan;
+- GPU: AMD Radeon RX 6750 XT.
 
 ## Known non-blocking environment warnings
 
-- Ollama AMD-driver warning while Vulkan inference works
-- potentially incompatible external `ggml-base.dll` in PATH
-- two corrupt Ollama manifests
+- Ollama AMD-driver warning while Vulkan inference works;
+- potentially incompatible external `ggml-base.dll` in PATH;
+- two corrupt Ollama manifests.
 
-## M0 terminalization status
-
-Functional acceptance: PASS  
-Security acceptance: PASS  
-Architecture acceptance: PASS  
-Dependency lockfiles committed: PASS
-
-Remaining gate: terminal deterministic CI must pass on the exact current head using:
-
-- `npm ci`
-- Cargo `--locked`
-- lockfile mutation check
-
-M0 is not `COMPLETE` until that terminal exact-head CI passes.
+These warnings remain recorded.
 
 ## Development status
 
-- PR #1: COMPLETE + MERGED
-- PR #2: active, M0 terminal deterministic qualification
-- M1: NOT AUTHORIZED
+- PR #1: COMPLETE + MERGED;
+- PR #2: M0 COMPLETE, pending final docs-head CI and merge;
+- M1: NOT AUTHORIZED until PR #2 is merged and post-merge continuity normalization is complete.
+
+## Acceptance rule
+
+No dependent milestone starts before the completed milestone is merged and normalized on live `main`.

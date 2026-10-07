@@ -4,16 +4,32 @@ The V1 is the complete first product target. It is intentionally larger than the
 
 ## M0 — Environment and architecture qualification
 
+**Status: COMPLETE**
+
+Terminal qualification:
+
+- implementation/CI qualification SHA: `6fbea03be2b6058aa14d1cddcaffc7f840ebf81c`;
+- deterministic M0 CI run: `37561269046`;
+- result: `completed/success`;
+- architecture ADR-007: ACCEPTED;
+- local Windows execution: PASS;
+- Ollama loopback security: PASS;
+- dependency lockfiles committed and enforced.
+
 Deliverables:
 
 - verified Windows development toolchain;
 - verified Ollama version, endpoint and actual compute backend;
-- initial model-role benchmark plan;
 - architecture decision for the first implementation;
-- runnable hello-world application;
-- basic test runner and CI.
+- runnable desktop application;
+- React → Tauri → Rust bridge;
+- read-only local Ollama status integration;
+- frontend and Rust test runners;
+- deterministic Windows CI.
 
 ## M1 — Persistence and project foundation
+
+**Status: NOT STARTED**
 
 Deliverables:
 
