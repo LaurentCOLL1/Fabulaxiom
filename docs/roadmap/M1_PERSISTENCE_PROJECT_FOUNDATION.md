@@ -54,26 +54,30 @@ Delivered:
 
 ## M1.3 — No-AI CRUD service
 
-Status: **AUTHORIZED**
+Status: **COMPLETE + MERGED + NORMALIZED**
 
-Deliverables:
+Implementation merge:
 
-- Rust application services for hierarchy create/read/update/delete;
-- explicit transactions for compound mutations;
+`49424f1ecafa1be3c4f47b806231b6644e9c73a4`
+
+Delivered:
+
+- Rust application models/DTOs for Universe, Series, Novel, Chapter and Scene;
+- hierarchy create/read/update/delete service;
+- explicit transactions for compound mutations and reordering;
 - deterministic service/Tauri errors;
+- thin Tauri command boundary;
 - basic React hierarchy screens/forms;
-- optional-Series workflow;
-- no AI requirement;
-- CRUD and rollback/integrity tests;
-- Windows interactive qualification.
-
-Boundary:
-
-M1.3 must remain useful with Ollama unavailable. Narrative AI behavior is out of scope.
+- optional-Series workflow and cross-Universe protection;
+- no Ollama dependency for CRUD;
+- CRUD, reorder, rollback and integrity tests;
+- Windows interactive qualification with Ollama stopped;
+- exact-head terminal CI;
+- post-merge normalization.
 
 ## M1.4 — Text revisions and provenance foundation
 
-Status: pending
+Status: **AUTHORIZED**
 
 Deliverables:
 
@@ -82,6 +86,10 @@ Deliverables:
 - timestamps;
 - current revision pointer;
 - source/provenance primitives for later canonical facts.
+
+Boundary:
+
+M1.4 establishes durable revision/provenance persistence. It does not authorize backup/restore, search/embeddings, canonical-fact extraction, consistency logic or narrative AI.
 
 ## M1.5 — Backup and restore baseline
 
