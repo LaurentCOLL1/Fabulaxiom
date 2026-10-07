@@ -4,10 +4,7 @@ The V1 is the complete first product target. It is intentionally larger than the
 
 ## M0 — Environment and architecture qualification
 
-**Status: COMPLETE + MERGED**
-
-Merge commit:
-`dae2c4e45536180caab564ac9b7e5493fd9c044b`
+**Status: COMPLETE + MERGED + NORMALIZED**
 
 Deliverables completed:
 
@@ -23,12 +20,20 @@ Deliverables completed:
 
 ## M1 — Persistence and project foundation
 
-**Status: AUTHORIZED — NOT STARTED**
+**Status: IN PROGRESS**
 
 Detailed plan:
 `docs/roadmap/M1_PERSISTENCE_PROJECT_FOUNDATION.md`
 
-Deliverables:
+Subdivision status:
+
+- M1.1 — SQLite foundation and migration runner: **COMPLETE + MERGED**
+- M1.2 — Project hierarchy schema: **NEXT**
+- M1.3 — No-AI CRUD service: pending
+- M1.4 — Text revisions and provenance foundation: pending
+- M1.5 — Backup and restore baseline: pending
+
+M1 deliverables overall:
 
 - SQLite schema and migrations;
 - Universe → optional Series → Novel → Chapter → Scene hierarchy;

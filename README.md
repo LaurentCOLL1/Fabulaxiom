@@ -15,23 +15,35 @@ Fabulaxiom est une application locale de création et de gestion d'histoires, de
 
 ## État actuel
 
-**M0 — Environment and architecture qualification : COMPLETE + MERGED**
+**M0 — Environment and architecture qualification : COMPLETE + MERGED + NORMALIZED**
 
-Architecture retenue pour M0/M1 :
+Architecture retenue :
 
 - Tauri 2 ;
 - React + TypeScript ;
 - cœur applicatif Rust/Tauri ;
-- SQLite + FTS5 pour la persistance/recherche structurée à partir de M1 ;
+- SQLite + FTS5 pour la persistance/recherche structurée ;
 - intégration Ollama locale directe sur la boucle locale ;
 - aucun runtime Python/FastAPI obligatoire pour M0/M1.
 
-Le socle desktop, le pont React → Tauri → Rust, l'accès Ollama local en lecture seule, les tests et la CI déterministe sont qualifiés.
+**M1 — Persistence and project foundation : IN PROGRESS**
 
-**M1 — Persistence and project foundation est maintenant autorisé.**
+M1.1 — SQLite foundation and migration runner est **COMPLETE + MERGED**.
 
-La première subdivision est décrite dans :
-`docs/roadmap/M1_PERSISTENCE_PROJECT_FOUNDATION.md`.
+Le socle SQLite inclut désormais :
+
+- SQLite embarqué via rusqlite ;
+- base sous le répertoire de données locales de l'application ;
+- migrations transactionnelles versionnées ;
+- clés étrangères activées et vérifiées par connexion ;
+- tests d'intégrité/rollback ;
+- qualification Windows et CI déterministe.
+
+La prochaine subdivision est :
+
+**M1.2 — Project hierarchy schema**
+
+Elle ajoutera le schéma Universe → Series optionnelle → Novel → Chapter → Scene, sans encore ajouter le CRUD applicatif.
 
 ## Documentation d'autorité
 
