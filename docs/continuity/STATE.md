@@ -5,104 +5,59 @@
 - Repository: `LaurentCOLL1/Fabulaxiom`
 - Visibility: private
 - Default branch: `main`
-- Current working branch: `feat/m0-tauri-skeleton-20261006`
-- Current phase: M0 COMPLETE, pending PR merge and post-merge normalization
+- Live main after M0 merge: `dae2c4e45536180caab564ac9b7e5493fd9c044b`
+- Current normalization branch: `docs/m0-post-merge-normalization-20261007`
 
-## M0 status
+## Milestone state
 
-**M0 — Environment and architecture qualification: COMPLETE**
+### M0 — Environment and architecture qualification
 
-Terminal implementation/CI qualification:
+**COMPLETE + MERGED**
 
-- exact SHA: `6fbea03be2b6058aa14d1cddcaffc7f840ebf81c`;
-- workflow: `M0 CI`;
-- run: `37561269046`;
-- result: `completed/success`.
+- PR #2: merged
+- merge commit on `main`: `dae2c4e45536180caab564ac9b7e5493fd9c044b`
+- final PR head: `1692c514753eaf0a89284943e74c4e757cb9abbc`
+- final PR CI run: `37562085953` — success
+- deterministic implementation CI: `37561269046` — success
+- architecture ADR-007: ACCEPTED
+- operator Windows qualification: PASS
+- Ollama loopback security gate: PASS
+- dependency locks committed and enforced: PASS
 
-The deterministic CI contract passed:
+### M1 — Persistence and project foundation
 
-- `npm ci`: PASS;
-- frontend tests: PASS;
-- frontend production build: PASS;
-- `cargo test --locked`: PASS;
-- `cargo check --locked`: PASS;
-- dependency lockfiles unchanged: PASS.
+**AUTHORIZED — NOT STARTED**
 
-## Operator qualification
+Detailed plan:
+`docs/roadmap/M1_PERSISTENCE_PROJECT_FOUNDATION.md`
 
-Target Windows execution is PASS for:
+First authorized subdivision:
 
-- exact source checkout;
-- React/TypeScript build;
-- Tauri/Rust compile and launch;
-- React → Tauri → Rust command bridge;
-- read-only Rust → Ollama 0.40.0 status integration;
-- frontend tests;
-- Rust tests;
-- cargo check.
+**M1.1 — SQLite foundation and migration runner**
 
-Observed application results:
+## Accepted architecture
 
-```text
-PASS
-Fabulaxiom
-M0 desktop skeleton
-React -> Tauri -> Rust operational
-```
-
-```text
-PASS
-Ollama 0.40.0 disponible sur http://127.0.0.1:11434
-```
-
-## Reproducibility
-
-Committed:
-
-- `package-lock.json` — lockfileVersion 3;
-- `src-tauri/Cargo.lock` — lockfile version 4.
-
-CI is locked to those dependency graphs.
-
-## Architecture
-
-ADR-007: **Accepted**
-
-M0/M1 architecture:
-
-- Tauri 2 desktop shell;
-- React + TypeScript frontend;
-- Rust/Tauri application core;
-- SQLite + FTS5 planned for M1 authoritative persistence/search;
-- direct local Ollama HTTP integration;
-- no mandatory Python/FastAPI runtime for M0/M1.
-
-## Ollama security
-
-Security gate: **PASS**
-
-- Ollama Desktop network exposure: OFF;
-- `OLLAMA_HOST=127.0.0.1:11434`;
-- Ollama 0.40.0;
-- listener loopback-only;
-- tested non-loopback local interfaces unavailable;
-- active compute backend: Vulkan;
-- GPU: AMD Radeon RX 6750 XT.
+- Tauri 2 desktop shell
+- React + TypeScript frontend
+- Rust/Tauri application core
+- SQLite + FTS5 for authoritative persistence/search
+- direct local Ollama integration
+- no mandatory Python/FastAPI runtime for M0/M1
 
 ## Known non-blocking environment warnings
 
-- Ollama AMD-driver warning while Vulkan inference works;
-- potentially incompatible external `ggml-base.dll` in PATH;
-- two corrupt Ollama manifests.
+- Ollama AMD-driver warning while Vulkan inference works
+- potentially incompatible external `ggml-base.dll` in PATH
+- two corrupt Ollama manifests
 
-These warnings remain recorded.
+These remain documented and do not block M1.1.
 
-## Development status
+## Governance rule
 
-- PR #1: COMPLETE + MERGED;
-- PR #2: M0 COMPLETE, pending final docs-head CI and merge;
-- M1: NOT AUTHORIZED until PR #2 is merged and post-merge continuity normalization is complete.
+Each subdivision must:
 
-## Acceptance rule
-
-No dependent milestone starts before the completed milestone is merged and normalized on live `main`.
+- start from fresh live `main`;
+- use a dedicated branch/PR;
+- keep dependency locks deterministic;
+- pass exact-head CI;
+- be merged before the dependent subdivision begins.

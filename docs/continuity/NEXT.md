@@ -1,46 +1,36 @@
 # Fabulaxiom — Next Authorized Work
 
-## Immediate objective
+## Current milestone
 
-Merge and normalize completed M0.
+**M1 — Persistence and project foundation**
 
-## M0
+Status: **AUTHORIZED**
 
-**COMPLETE**
+## First authorized subdivision
 
-Terminal qualified implementation SHA:
+**M1.1 — SQLite foundation and migration runner**
 
-`6fbea03be2b6058aa14d1cddcaffc7f840ebf81c`
+Required deliverables:
 
-Terminal deterministic CI:
+1. add the SQLite Rust dependency selected for the project;
+2. establish the application data-directory strategy;
+3. create a migration runner with an explicit schema version table;
+4. enable foreign keys on every database connection;
+5. create a minimal initial schema foundation without yet implementing full project CRUD;
+6. add transaction/integrity tests;
+7. prove database creation/migration on Windows;
+8. keep the UI functional without Ollama;
+9. run deterministic exact-head CI.
 
-- workflow: `M0 CI`;
-- run: `37561269046`;
-- conclusion: `success`.
+## Not authorized in M1.1
 
-## Required sequence
+Do not yet implement:
 
-1. run exact-head CI on this completion-documentation commit;
-2. if and only if it is fully successful, mark PR #2 ready;
-3. re-fetch PR #2 and verify exact head/mergeability;
-4. merge PR #2 using expected-head protection;
-5. re-fetch live `main`;
-6. create post-merge continuity normalization;
-7. run exact-head CI for normalization;
-8. merge normalization;
-9. re-fetch live `main`;
-10. only then authorize M1.
+- full Universe/Series/Novel/Chapter/Scene CRUD;
+- text revision history UI;
+- backup/restore UI;
+- FTS search;
+- embeddings/vector search;
+- manuscript generation.
 
-## M1
-
-**NOT AUTHORIZED YET**
-
-Do not yet add:
-
-- SQLite persistence;
-- Universe/Series/Novel/Chapter/Scene CRUD;
-- text version history;
-- backup/restore;
-- manuscript generation;
-- vector search;
-- rich-text editor.
+Those belong to later M1 subdivisions.
