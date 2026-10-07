@@ -145,9 +145,17 @@ Delivered M1.3 foundation:
 
 #### M1.4 — Text revisions and provenance foundation
 
-**AUTHORIZED**
+**IN PROGRESS**
 
-M1.4 is now the only implementation subdivision authorized.
+Branch:
+
+`feat/m1-4-text-revisions-provenance-20261007`
+
+Base `main` at subdivision start:
+
+`d75971ca0540c6811d8728ec4f6431d39125bbb2`
+
+M1.4 remains the only implementation subdivision authorized.
 
 Scope:
 

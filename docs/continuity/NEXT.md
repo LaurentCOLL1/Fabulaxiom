@@ -49,11 +49,21 @@ Windows qualification:
 - qualification data cleanup PASS;
 - final worktree clean.
 
-## Authorized subdivision
+## Current subdivision
 
 **M1.4 — Text revisions and provenance foundation**
 
-M1.4 is the only implementation subdivision currently authorized.
+Status: **IN PROGRESS**
+
+Branch:
+
+`feat/m1-4-text-revisions-provenance-20261007`
+
+Base `main` at subdivision start:
+
+`d75971ca0540c6811d8728ec4f6431d39125bbb2`
+
+M1.4 remains the only implementation subdivision currently authorized.
 
 ## Required deliverables
 
