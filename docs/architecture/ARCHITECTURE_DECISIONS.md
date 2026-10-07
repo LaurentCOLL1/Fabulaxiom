@@ -12,7 +12,7 @@ This document records architecture decisions and prevents tentative ideas from b
 | ADR-004 | Accepted | SQLite is the preferred starting point for structured persistence unless a concrete blocker is demonstrated. |
 | ADR-005 | Accepted | The data model must support stable entity identifiers independent of names. |
 | ADR-006 | Accepted | AI output must be validated before it mutates canonical state. |
-| ADR-007 | Provisional | M0/M1 preferred shell: Tauri 2 + React/TypeScript + Rust/Tauri core. Final acceptance requires a successful Windows skeleton build. |
+| ADR-007 | Accepted | M0/M1 shell is Tauri 2 + React/TypeScript + Rust/Tauri core. Qualified by target-Windows execution, local Ollama integration, unit tests and Windows CI. |
 | ADR-008 | Open | Rich-text editor choice. |
 | ADR-009 | Open | Local vector-search implementation. |
 | ADR-010 | Deferred | Do not ship Python/FastAPI as a mandatory runtime for M0/M1. Add a Python sidecar later only if a concrete feature justifies it. |
@@ -34,7 +34,7 @@ Costs:
 - complicates installer, diagnostics and cancellation/streaming;
 - violates the project's preference to avoid unnecessary services unless Python is actually needed.
 
-### Option B — Tauri 2 + React/TypeScript + Rust/Tauri core — preferred for M0/M1
+### Option B — Tauri 2 + React/TypeScript + Rust/Tauri core — accepted for M0/M1
 
 Core components:
 
@@ -63,8 +63,8 @@ Tradeoffs:
 
 Advantages:
 
-- fastest initial development using the already-installed Python runtime;
-- no Rust requirement for the first prototype.
+- fast initial development using the installed Python runtime;
+- no Rust requirement for a browser-based prototype.
 
 Costs:
 
@@ -73,15 +73,30 @@ Costs:
 - packaging into a polished Windows application is deferred rather than solved;
 - likely creates later migration work for desktop integration.
 
-## Provisional conclusion
+## Acceptance evidence for ADR-007
 
-Use Option B for M0/M1 if the Windows Tauri toolchain qualifies successfully.
+The selected Option B has been proven on the target Windows machine and in GitHub Actions.
+
+Target-machine evidence includes:
+
+- React/TypeScript production build;
+- Tauri/Rust compilation;
+- executable desktop launch;
+- React → Tauri → Rust invocation;
+- read-only Rust → Ollama 0.40.0 call restricted to `127.0.0.1:11434`;
+- frontend unit tests;
+- Rust unit tests;
+- `cargo check`.
+
+Exact-head Windows GitHub CI also passed those automated checks.
+
+Therefore Option B is accepted for M0/M1.
 
 Python 3.12 remains available for development scripts, experiments and future optional workers, but it is not part of the mandatory production runtime at this stage.
 
 ## Architectural invariants
 
-Whatever stack is selected, it must support:
+Whatever future components are added, the system must support:
 
 - database migrations;
 - transactions and referential integrity;
