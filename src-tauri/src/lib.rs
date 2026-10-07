@@ -1,3 +1,5 @@
+mod database;
+
 use std::time::Duration;
 
 use reqwest::{redirect::Policy, Client};
@@ -26,11 +28,20 @@ struct OllamaStatus {
     error: Option<String>,
 }
 
+#[derive(Debug, Serialize, PartialEq)]
+struct DatabaseStatus {
+    available: bool,
+    path: Option<String>,
+    schema_version: Option<i64>,
+    foreign_keys: bool,
+    error: Option<String>,
+}
+
 #[tauri::command]
 fn bootstrap_status() -> BootstrapStatus {
     BootstrapStatus {
         app_name: "Fabulaxiom",
-        milestone: "M0 desktop skeleton",
+        milestone: "M1.1 persistence foundation",
         rust_bridge: "React -> Tauri -> Rust operational",
     }
 }
@@ -105,10 +116,83 @@ async fn ollama_status() -> OllamaStatus {
     read_ollama_status().await
 }
 
+#[tauri::command]
+fn database_status(app: tauri::AppHandle) -> DatabaseStatus {
+    let path = match database::database_path(&app) {
+        Ok(path) => path,
+        Err(error) => {
+            return DatabaseStatus {
+                available: false,
+                path: None,
+                schema_version: None,
+                foreign_keys: false,
+                error: Some(error.to_string()),
+            };
+        }
+    };
+
+    let display_path = path.to_string_lossy().into_owned();
+
+    let connection = match database::open_database(&path) {
+        Ok(connection) => connection,
+        Err(error) => {
+            return DatabaseStatus {
+                available: false,
+                path: Some(display_path),
+                schema_version: None,
+                foreign_keys: false,
+                error: Some(error.to_string()),
+            };
+        }
+    };
+
+    let schema_version = match database::current_schema_version(&connection) {
+        Ok(version) => version,
+        Err(error) => {
+            return DatabaseStatus {
+                available: false,
+                path: Some(display_path),
+                schema_version: None,
+                foreign_keys: false,
+                error: Some(error.to_string()),
+            };
+        }
+    };
+
+    let foreign_keys = match database::foreign_keys_enabled(&connection) {
+        Ok(enabled) => enabled,
+        Err(error) => {
+            return DatabaseStatus {
+                available: false,
+                path: Some(display_path),
+                schema_version: Some(schema_version),
+                foreign_keys: false,
+                error: Some(error.to_string()),
+            };
+        }
+    };
+
+    DatabaseStatus {
+        available: schema_version == database::CURRENT_SCHEMA_VERSION && foreign_keys,
+        path: Some(display_path),
+        schema_version: Some(schema_version),
+        foreign_keys,
+        error: if schema_version == database::CURRENT_SCHEMA_VERSION && foreign_keys {
+            None
+        } else {
+            Some("qualification SQLite incomplète".to_string())
+        },
+    }
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
-        .invoke_handler(tauri::generate_handler![bootstrap_status, ollama_status])
+        .invoke_handler(tauri::generate_handler![
+            bootstrap_status,
+            database_status,
+            ollama_status
+        ])
         .run(tauri::generate_context!())
         .expect("error while running Fabulaxiom");
 }

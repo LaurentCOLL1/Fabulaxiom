@@ -1,46 +1,29 @@
 # Fabulaxiom — Next Authorized Work
 
-## Current milestone
-
-**M1 — Persistence and project foundation**
-
-## Authorized subdivision
+## Current subdivision
 
 **M1.1 — SQLite foundation and migration runner**
 
-M1.1 is the only implementation subdivision currently authorized.
+Status: **IMPLEMENTATION PREPARED — LOCK + WINDOWS QUALIFICATION REQUIRED**
 
-## Required deliverables
+## Immediate sequence
 
-1. select and add the SQLite Rust dependency;
-2. establish a deterministic application data-directory strategy;
-3. create a database connection service in Rust;
-4. enable `PRAGMA foreign_keys = ON` on every connection;
-5. add an explicit schema-version / migration table;
-6. implement an ordered migration runner;
-7. create only the minimal initial metadata schema needed to prove migrations;
-8. provide a transaction baseline;
-9. test fresh database creation;
-10. test repeat/idempotent migration;
-11. prove foreign-key enforcement;
-12. prove failed transactional work does not leave partial state;
-13. prove database creation/migration on the target Windows machine;
-14. keep the application usable without Ollama;
-15. run deterministic exact-head CI with committed lockfiles.
+1. fetch the exact M1.1 branch head on the target Windows machine;
+2. resolve the new `rusqlite` dependency and update only `src-tauri/Cargo.lock`;
+3. run frontend tests and production build;
+4. run Rust tests;
+5. run Cargo check;
+6. launch Fabulaxiom;
+7. use `Vérifier la base locale`;
+8. record the database path, schema version and foreign-key state;
+9. prove the database path is outside the repository and installation directory;
+10. prove the database status path does not require Ollama;
+11. commit only the intended dependency-lock change;
+12. push the exact branch head;
+13. restore/enforce deterministic `--locked` CI;
+14. require exact-head CI success before M1.1 completion.
 
-## Acceptance boundary
-
-M1.1 is complete only when:
-
-- source and dependency locks are committed;
-- automated Rust tests pass;
-- frontend build remains green;
-- exact-head CI is fully successful;
-- Windows operator qualification proves the database path and migrations;
-- its PR is merged;
-- post-merge continuity normalization is complete.
-
-## Not authorized in M1.1
+## Not authorized
 
 Do not yet implement:
 
@@ -51,5 +34,3 @@ Do not yet implement:
 - embeddings/vector search;
 - manuscript generation;
 - automatic canonical-fact extraction.
-
-Those belong to later subdivisions.
