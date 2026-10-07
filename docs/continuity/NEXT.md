@@ -36,7 +36,7 @@ Windows migration qualification:
 
 **M1.3 — No-AI CRUD service**
 
-Status: **IN PROGRESS**
+Status: **WINDOWS QUALIFIED — FINAL EXACT-HEAD CI REQUIRED**
 
 Branch:
 
@@ -46,7 +46,41 @@ Base `main` at subdivision start:
 
 `4f90a66a30c72446bfab3dc20429429b6e4217b7`
 
-M1.3 remains the only implementation subdivision currently authorized.
+Qualified implementation SHA:
+
+`6259bd3b4759b683bf4bb7c2c6efdf693ddfebac`
+
+Pre-evidence exact-head CI:
+
+- run `37665443163`;
+- completed/success;
+- frontend 8/8 PASS;
+- Rust 20/20 PASS;
+- build/check PASS;
+- lockfiles unchanged.
+
+Windows qualification:
+
+- Ollama stopped and API inaccessible;
+- full hierarchy CRUD PASS;
+- optional-Series workflow PASS;
+- reorder/rename/delete-guard flows PASS;
+- CRUD independence from Ollama PASS;
+- final foreign-key/integrity checks PASS;
+- qualification data cleanup PASS;
+- final worktree clean.
+
+## Immediate sequence
+
+1. commit this Windows qualification evidence;
+2. require `Fabulaxiom CI` on the new exact head;
+3. merge PR #11 only if that exact-head CI is terminal success;
+4. re-fetch live `main`;
+5. create post-merge M1.3 continuity normalization;
+6. qualify and merge that normalization;
+7. only then determine whether M1.4 is authorized by live authority.
+
+M1.4 remains unauthorized.
 
 ## Required deliverables
 

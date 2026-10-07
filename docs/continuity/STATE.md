@@ -91,7 +91,11 @@ Delivered schema:
 
 #### M1.3 — No-AI CRUD service
 
-**IN PROGRESS**
+**WINDOWS QUALIFIED — FINAL EXACT-HEAD CI + MERGE PENDING**
+
+Implementation PR:
+
+**#11 — feat: implement M1.3 no-AI CRUD service**
 
 Branch:
 
@@ -101,18 +105,51 @@ Base `main` at subdivision start:
 
 `4f90a66a30c72446bfab3dc20429429b6e4217b7`
 
-M1.3 remains the only implementation subdivision authorized.
+Qualified implementation SHA:
 
-Scope:
+`6259bd3b4759b683bf4bb7c2c6efdf693ddfebac`
 
-- Rust application services for hierarchy create/read/update/delete;
-- explicit transaction boundaries;
-- application-level validation and deterministic errors;
-- basic React screens/forms for hierarchy editing;
-- no AI requirement or Ollama dependency for CRUD;
-- tests proving CRUD integrity against schema v2.
+Deterministic exact-head CI before Windows qualification:
 
-M1.4+ remain unauthorized until M1.3 is complete, merged, and normalized.
+- workflow: `Fabulaxiom CI`;
+- run: `37665443163`;
+- result: `completed/success`;
+- frontend tests: 8/8 PASS;
+- frontend build: PASS;
+- Rust tests: 20/20 PASS;
+- `cargo check --locked`: PASS;
+- dependency lockfiles unchanged.
+
+Windows no-AI CRUD qualification:
+
+- exact source HEAD: PASS;
+- live `origin/main` exact: PASS;
+- live feature branch exact: PASS;
+- worktree clean before and after qualification;
+- Ollama process absent;
+- Ollama API inaccessible at `127.0.0.1:11434`;
+- local frontend tests/build: PASS;
+- local Rust tests/check: PASS;
+- Rust bridge: PASS;
+- SQLite schema v2 / foreign keys ON: PASS;
+- Ollama status: expected `INDISPONIBLE`;
+- Universe / Series / Novel / Chapter / Scene create-read-update-delete: PASS;
+- optional Series workflow: PASS;
+- deterministic sibling reorder: PASS;
+- same-Universe Novel Series changes: PASS;
+- cross-Universe Series not offered/rejected by the qualified flow: PASS;
+- parent deletion with children rejected with `has_children`: PASS;
+- CRUD remained operational while Ollama stayed stopped;
+- all `QUAL-M13-*` qualification data removed;
+- `PRAGMA foreign_key_check`: empty;
+- `PRAGMA integrity_check`: `ok`;
+- Ollama remained stopped through final verification.
+
+Detailed evidence:
+
+`docs/qualification/M1_3_NO_AI_CRUD_SERVICE.md`
+
+M1.4+ remain unauthorized until this qualification evidence receives terminal exact-head CI, PR #11 merges, and post-merge normalization completes.
 
 ## Reproducibility contract
 
