@@ -1,7 +1,15 @@
 mod database;
+mod hierarchy;
+mod hierarchy_commands;
 
 use std::time::Duration;
 
+use hierarchy_commands::{
+    create_chapter, create_novel, create_scene, create_series, create_universe, delete_chapter,
+    delete_novel, delete_scene, delete_series, delete_universe, hierarchy_snapshot, rename_chapter,
+    rename_novel, rename_scene, rename_series, rename_universe, reorder_chapter, reorder_novel,
+    reorder_scene, reorder_series, set_novel_series,
+};
 use reqwest::{redirect::Policy, Client};
 use serde::{Deserialize, Serialize};
 
@@ -41,7 +49,7 @@ struct DatabaseStatus {
 fn bootstrap_status() -> BootstrapStatus {
     BootstrapStatus {
         app_name: "Fabulaxiom",
-        milestone: "M1.2 project hierarchy schema",
+        milestone: "M1.3 no-AI CRUD service",
         rust_bridge: "React -> Tauri -> Rust operational",
     }
 }
@@ -191,7 +199,28 @@ pub fn run() {
         .invoke_handler(tauri::generate_handler![
             bootstrap_status,
             database_status,
-            ollama_status
+            ollama_status,
+            hierarchy_snapshot,
+            create_universe,
+            rename_universe,
+            delete_universe,
+            create_series,
+            rename_series,
+            reorder_series,
+            delete_series,
+            create_novel,
+            rename_novel,
+            set_novel_series,
+            reorder_novel,
+            delete_novel,
+            create_chapter,
+            rename_chapter,
+            reorder_chapter,
+            delete_chapter,
+            create_scene,
+            rename_scene,
+            reorder_scene,
+            delete_scene
         ])
         .run(tauri::generate_context!())
         .expect("error while running Fabulaxiom");
