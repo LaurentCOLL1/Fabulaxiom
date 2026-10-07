@@ -32,6 +32,8 @@ M1.1 — SQLite foundation and migration runner est **COMPLETE + MERGED + NORMAL
 
 M1.2 — Project hierarchy schema est **COMPLETE + MERGED + NORMALIZED**.
 
+M1.3 — No-AI CRUD service est **COMPLETE + MERGED + NORMALIZED**.
+
 Le socle persistant comprend désormais :
 
 - SQLite embarqué via rusqlite ;
@@ -41,13 +43,17 @@ Le socle persistant comprend désormais :
 - IDs stables et immuables ;
 - ordre déterministe des éléments frères ;
 - contraintes d'intégrité inter-univers ;
+- services Rust CRUD avec erreurs déterministes et transactions explicites ;
+- commandes Tauri minces ;
+- écrans/formulaires React utilisables pour toute la hiérarchie ;
+- CRUD opérationnel avec Ollama arrêté ;
 - qualification Windows et CI déterministe.
 
 La subdivision actuellement autorisée est :
 
-**M1.3 — No-AI CRUD service**
+**M1.4 — Text revisions and provenance foundation**
 
-Elle ajoutera les services Rust et les écrans/formulaires React de base pour créer, lire, modifier et supprimer la hiérarchie narrative sans dépendre d'Ollama.
+Elle ajoutera la fondation de révisions de texte de scène et les primitives de provenance nécessaires aux futures données canoniques, sans commencer les fonctions narratives IA.
 
 ## Documentation d'autorité
 

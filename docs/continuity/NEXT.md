@@ -6,57 +6,36 @@
 
 ## Completed subdivision
 
-**M1.2 — Project hierarchy schema**
+**M1.3 — No-AI CRUD service**
 
 Status:
 
 **COMPLETE + MERGED + NORMALIZED**
 
+Implementation PR:
+
+**#11 — feat: implement M1.3 no-AI CRUD service**
+
 Implementation merge:
 
-`91b80e529679d3bc407b5f6ca49e578d86de1d44`
-
-Terminal exact-head CI:
-
-- run `37646868694`;
-- completed/success;
-- 13 Rust tests PASS;
-- frontend tests/build PASS;
-- lockfiles unchanged.
-
-Windows migration qualification:
-
-- production schema v1 → v2 PASS;
-- hierarchy tables 5/5 PASS;
-- STRICT 5/5 PASS;
-- immutable-ID triggers 5/5 PASS;
-- foreign keys/integrity PASS.
-
-## Current subdivision
-
-**M1.3 — No-AI CRUD service**
-
-Status: **WINDOWS QUALIFIED — FINAL EXACT-HEAD CI REQUIRED**
-
-Branch:
-
-`feat/m1-3-no-ai-crud-service-20261007`
-
-Base `main` at subdivision start:
-
-`4f90a66a30c72446bfab3dc20429429b6e4217b7`
+`49424f1ecafa1be3c4f47b806231b6644e9c73a4`
 
 Qualified implementation SHA:
 
 `6259bd3b4759b683bf4bb7c2c6efdf693ddfebac`
 
-Pre-evidence exact-head CI:
+Qualification evidence SHA:
 
-- run `37665443163`;
+`d9df8151b0c3336e0a12c65a7ba7841cab4e091b`
+
+Terminal exact-head CI:
+
+- run `37684422252`;
 - completed/success;
-- frontend 8/8 PASS;
-- Rust 20/20 PASS;
-- build/check PASS;
+- frontend tests 8/8 PASS;
+- frontend build PASS;
+- Rust tests 20/20 PASS;
+- `cargo check --locked` PASS;
 - lockfiles unchanged.
 
 Windows qualification:
@@ -70,53 +49,43 @@ Windows qualification:
 - qualification data cleanup PASS;
 - final worktree clean.
 
-## Immediate sequence
+## Authorized subdivision
 
-1. commit this Windows qualification evidence;
-2. require `Fabulaxiom CI` on the new exact head;
-3. merge PR #11 only if that exact-head CI is terminal success;
-4. re-fetch live `main`;
-5. create post-merge M1.3 continuity normalization;
-6. qualify and merge that normalization;
-7. only then determine whether M1.4 is authorized by live authority.
+**M1.4 — Text revisions and provenance foundation**
 
-M1.4 remains unauthorized.
+M1.4 is the only implementation subdivision currently authorized.
 
 ## Required deliverables
 
-1. define Rust application-layer models/DTOs for Universe, Series, Novel, Chapter and Scene;
-2. implement create/read/update/delete services over the schema-v2 tables;
-3. keep immutable IDs immutable;
-4. preserve deterministic sibling ordering;
-5. enforce Universe/Series/Novel ownership invariants through the existing schema and service validation;
-6. wrap multi-step mutations in explicit transactions;
-7. return deterministic typed/service errors suitable for the Tauri boundary;
-8. expose the minimum Tauri commands required by the CRUD screens;
-9. add basic React hierarchy screens/forms usable without Ollama;
-10. allow Series to remain optional for a Novel;
-11. test create/read/update/delete for every hierarchy level;
-12. test invalid/orphan/cross-Universe mutations;
-13. test transaction rollback for compound mutations;
-14. test application behavior with Ollama unavailable;
-15. preserve all M1.1/M1.2 database tests;
-16. preserve committed dependency locks unless a new dependency is explicitly justified;
-17. require deterministic exact-head CI;
-18. require Windows interactive CRUD qualification;
-19. merge the M1.3 PR;
-20. complete post-merge continuity normalization before M1.4.
+1. add scene text revision persistence;
+2. use immutable revision identifiers independent of mutable text;
+3. record deterministic revision timestamps;
+4. provide an explicit current-revision pointer/state for each Scene;
+5. add source/provenance primitives suitable for later canonical-fact attribution;
+6. preserve the existing Universe → optional Series → Novel → Chapter → Scene CRUD;
+7. preserve M1.1/M1.2/M1.3 transaction and referential-integrity guarantees;
+8. keep revision/provenance mutations transactional where multiple rows/state changes are involved;
+9. expose deterministic application/Tauri errors rather than opaque SQLite failures where an application error is possible;
+10. keep M1.4 useful without Ollama and do not make AI a persistence dependency;
+11. preserve committed dependency locks unless a new dependency is explicitly justified;
+12. add automated tests for revision immutability, current-revision behavior, provenance primitives and rollback;
+13. require deterministic exact-head CI;
+14. require Windows qualification for the real local database and user-visible revision flow introduced by M1.4;
+15. merge the M1.4 PR;
+16. complete post-merge continuity normalization before M1.5.
 
 ## Boundary
 
-M1.3 is a no-AI CRUD milestone.
+M1.4 is the text-revision and provenance **foundation**.
 
 Do not implement yet:
 
-- text revision history/provenance;
-- backup/restore;
-- FTS;
+- application-level backup/restore (M1.5);
+- FTS/search milestone work;
 - embeddings/vector search;
+- narrative entities/canonical-fact engine;
+- consistency engine;
 - manuscript generation;
-- canonical-fact extraction;
-- consistency engine.
+- AI-assisted narrative mutation.
 
 Those belong to later subdivisions/milestones.

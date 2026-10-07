@@ -75,44 +75,30 @@ Detailed evidence:
 
 `docs/qualification/M1_2_PROJECT_HIERARCHY_SCHEMA.md`
 
-Delivered schema:
-
-- Universe;
-- optional Series;
-- Novel;
-- Chapter;
-- Scene;
-- immutable non-name IDs;
-- deterministic sibling ordering;
-- cross-universe Series/Novel integrity;
-- conservative `RESTRICT` update/delete behavior;
-- child-key indexes;
-- migration v2 from the M1.1 schema.
-
 #### M1.3 — No-AI CRUD service
 
-**WINDOWS QUALIFIED — FINAL EXACT-HEAD CI + MERGE PENDING**
+**COMPLETE + MERGED + NORMALIZED**
 
 Implementation PR:
 
 **#11 — feat: implement M1.3 no-AI CRUD service**
 
-Branch:
+Implementation merge:
 
-`feat/m1-3-no-ai-crud-service-20261007`
-
-Base `main` at subdivision start:
-
-`4f90a66a30c72446bfab3dc20429429b6e4217b7`
+`49424f1ecafa1be3c4f47b806231b6644e9c73a4`
 
 Qualified implementation SHA:
 
 `6259bd3b4759b683bf4bb7c2c6efdf693ddfebac`
 
-Deterministic exact-head CI before Windows qualification:
+Qualification evidence commit:
+
+`d9df8151b0c3336e0a12c65a7ba7841cab4e091b`
+
+Terminal exact-head CI:
 
 - workflow: `Fabulaxiom CI`;
-- run: `37665443163`;
+- run: `37684422252`;
 - result: `completed/success`;
 - frontend tests: 8/8 PASS;
 - frontend build: PASS;
@@ -122,34 +108,57 @@ Deterministic exact-head CI before Windows qualification:
 
 Windows no-AI CRUD qualification:
 
-- exact source HEAD: PASS;
-- live `origin/main` exact: PASS;
-- live feature branch exact: PASS;
-- worktree clean before and after qualification;
-- Ollama process absent;
-- Ollama API inaccessible at `127.0.0.1:11434`;
+- exact implementation source and clean worktree: PASS;
+- Ollama process absent and loopback API inaccessible;
 - local frontend tests/build: PASS;
 - local Rust tests/check: PASS;
 - Rust bridge: PASS;
 - SQLite schema v2 / foreign keys ON: PASS;
-- Ollama status: expected `INDISPONIBLE`;
-- Universe / Series / Novel / Chapter / Scene create-read-update-delete: PASS;
-- optional Series workflow: PASS;
-- deterministic sibling reorder: PASS;
-- same-Universe Novel Series changes: PASS;
-- cross-Universe Series not offered/rejected by the qualified flow: PASS;
-- parent deletion with children rejected with `has_children`: PASS;
-- CRUD remained operational while Ollama stayed stopped;
-- all `QUAL-M13-*` qualification data removed;
+- Ollama status expected unavailable;
+- full Universe / Series / Novel / Chapter / Scene CRUD: PASS;
+- optional-Series workflow: PASS;
+- deterministic reorder: PASS;
+- rename at every hierarchy level: PASS;
+- cross-Universe Series protection: PASS;
+- parent deletion guards with `has_children`: PASS;
+- CRUD remained operational with Ollama stopped;
+- qualification data cleanup: PASS;
 - `PRAGMA foreign_key_check`: empty;
 - `PRAGMA integrity_check`: `ok`;
-- Ollama remained stopped through final verification.
+- final worktree clean;
+- Ollama remained stopped.
 
 Detailed evidence:
 
 `docs/qualification/M1_3_NO_AI_CRUD_SERVICE.md`
 
-M1.4+ remain unauthorized until this qualification evidence receives terminal exact-head CI, PR #11 merges, and post-merge normalization completes.
+Delivered M1.3 foundation:
+
+- Rust application models/DTOs separate from SQLite rows;
+- CRUD service for all five hierarchy levels;
+- explicit transaction boundaries for compound mutations;
+- deterministic application/Tauri error payloads;
+- thin Tauri commands;
+- React hierarchy CRUD workspace;
+- no Ollama dependency for CRUD;
+- preserved M1.1/M1.2 persistence guarantees.
+
+#### M1.4 — Text revisions and provenance foundation
+
+**AUTHORIZED**
+
+M1.4 is now the only implementation subdivision authorized.
+
+Scope:
+
+- scene text revisions;
+- immutable revision IDs;
+- timestamps;
+- current revision pointer;
+- source/provenance primitives for later canonical facts;
+- preserve the existing no-AI hierarchy CRUD and persistence guarantees.
+
+M1.5+ remain unauthorized until M1.4 is complete, qualified, merged, and normalized.
 
 ## Reproducibility contract
 

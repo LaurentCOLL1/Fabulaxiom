@@ -2,7 +2,7 @@
 
 ## Status
 
-**WINDOWS QUALIFIED — FINAL EXACT-HEAD CI REQUIRED**
+**COMPLETE + MERGED + NORMALIZED**
 
 ## Scope
 
@@ -12,15 +12,15 @@ M1.3 delivers the first usable Fabulaxiom hierarchy CRUD without any dependency 
 
 Narrative AI, text revisions/provenance, backup/restore, FTS, embeddings, manuscript generation, canonical-fact extraction and consistency-engine work remain out of scope.
 
-## Qualified implementation source
+## Implementation
 
 Implementation PR:
 
 **#11 — feat: implement M1.3 no-AI CRUD service**
 
-Branch:
+Implementation merge:
 
-`feat/m1-3-no-ai-crud-service-20261007`
+`49424f1ecafa1be3c4f47b806231b6644e9c73a4`
 
 Base `main` at subdivision start:
 
@@ -29,6 +29,10 @@ Base `main` at subdivision start:
 Exact implementation SHA qualified on Windows:
 
 `6259bd3b4759b683bf4bb7c2c6efdf693ddfebac`
+
+Qualification evidence SHA:
+
+`d9df8151b0c3336e0a12c65a7ba7841cab4e091b`
 
 ## Delivered architecture
 
@@ -60,7 +64,7 @@ Qualified behavior:
 - Novel may remain standalone in a Universe;
 - Novel may belong to a Series in the same Universe;
 - same-Universe Series assignment/change is supported;
-- cross-Universe Series use is rejected/prevented by the qualified flow and schema invariants;
+- cross-Universe Series use is rejected/prevented by service/UI/schema invariants;
 - deterministic sibling ordering is preserved;
 - reorder operations avoid transient UNIQUE-order collisions;
 - parent deletion with remaining children returns deterministic `has_children` behavior;
@@ -77,7 +81,7 @@ Deterministic application error codes include:
 - `order_conflict`;
 - `database`.
 
-## GitHub exact-head CI before Windows qualification
+## Implementation CI
 
 Workflow:
 
@@ -95,45 +99,20 @@ Result:
 
 **completed / success**
 
-Successful deterministic steps:
-
-- checkout;
-- Node.js setup;
-- Rust setup;
-- `npm ci`;
-- frontend tests;
-- frontend production build;
-- `cargo test --locked`;
-- `cargo check --locked`;
-- dependency-lock mutation check.
-
-Frontend result:
+Frontend:
 
 - 3 test files PASS;
 - 8 tests PASS;
-- 0 failures.
+- 0 failures;
+- production build PASS.
 
-Rust result:
+Rust:
 
 - 20 tests PASS;
-- 0 failures.
+- 0 failures;
+- `cargo check --locked`: PASS.
 
-The Rust suite includes the preserved M1.1/M1.2 database tests plus M1.3 tests covering:
-
-- Universe CRUD and child deletion guard;
-- Series CRUD, invalid Universe rejection and reorder;
-- standalone Novel;
-- Novel in Series;
-- optional Series;
-- same-Universe Series change;
-- cross-Universe Series rejection;
-- Novel rename/reorder and Chapter deletion guard;
-- Chapter CRUD/reorder and Scene deletion guard;
-- Scene CRUD/reorder/delete;
-- composed mutation rollback;
-- deterministic Tauri error serialization.
-
-Dependency locks remained unchanged:
+Dependency locks unchanged:
 
 - `package-lock.json`;
 - `src-tauri/Cargo.lock`.
@@ -158,7 +137,7 @@ Observed immediately before qualification:
 - `remote.origin.fetch = +refs/heads/*:refs/remotes/origin/*`: PASS;
 - live `origin/main = 4f90a66a30c72446bfab3dc20429429b6e4217b7`: PASS;
 - live feature branch `= 6259bd3b4759b683bf4bb7c2c6efdf693ddfebac`: PASS;
-- local HEAD `= 6259bd3b4759b683bf4bb7c2c6efdf693ddfebac`: PASS;
+- local HEAD exact: PASS;
 - upstream exact: PASS.
 
 ### Ollama-off precondition
@@ -193,31 +172,17 @@ Reproducibility:
 
 ## Interactive Windows qualification with Ollama stopped
 
-Fabulaxiom launched from the exact qualified source with Ollama still stopped.
-
 ### Rust bridge
 
-Action:
+`Tester le pont Rust`: **PASS**
 
-`Tester le pont Rust`
+Observed milestone:
 
-Observed:
-
-**PASS**
-
-- Fabulaxiom;
-- `M1.3 no-AI CRUD service`;
-- React → Tauri → Rust operational.
+`M1.3 no-AI CRUD service`
 
 ### SQLite
 
-Action:
-
-`Vérifier la base locale`
-
-Observed:
-
-**PASS**
+`Vérifier la base locale`: **PASS**
 
 - SQLite schema v2;
 - foreign keys ON;
@@ -225,21 +190,13 @@ Observed:
 
 ### Ollama
 
-Action:
+`Vérifier Ollama local`: **INDISPONIBLE — EXPECTED**
 
-`Vérifier Ollama local`
+The local Ollama API remained inaccessible. This is an acceptance success because M1.3 CRUD must work without Ollama.
 
-Observed:
+### CRUD qualification
 
-**INDISPONIBLE — EXPECTED**
-
-The local Ollama API remained inaccessible.
-
-This is an acceptance success for M1.3 because CRUD must remain usable with Ollama stopped.
-
-### CRUD qualification data
-
-The operator exercised temporary `QUAL-M13-*` data covering:
+Temporary `QUAL-M13-*` data exercised:
 
 - two Universes;
 - same-Universe and cross-Universe Series fixtures;
@@ -252,17 +209,15 @@ The operator exercised temporary `QUAL-M13-*` data covering:
 - delete guards while children remained;
 - leaf-to-parent cleanup.
 
-All requested `QUAL-M13-*` interactive tests passed.
-
-Observed acceptance behavior included:
+All requested interactive tests passed, including:
 
 - optional Series: PASS;
 - same-Universe Series assignment/change: PASS;
-- cross-Universe Series not offered to the qualified Novel flow: PASS;
+- cross-Universe Series protection: PASS;
 - rename Universe/Series/Novel/Chapter/Scene: PASS;
 - Series/Novel/Chapter/Scene reorder: PASS;
-- Chapter deletion with Scenes present rejected with `has_children`: PASS;
-- Novel deletion with Chapters present rejected with `has_children`: PASS;
+- Chapter deletion with Scenes rejected with `has_children`: PASS;
+- Novel deletion with Chapters rejected with `has_children`: PASS;
 - Universe deletion while descendants remain rejected: PASS;
 - CRUD remained responsive and functional while Ollama stayed stopped: PASS.
 
@@ -274,30 +229,38 @@ After closing Fabulaxiom:
 - final worktree clean: PASS;
 - `PRAGMA foreign_key_check`: empty;
 - `PRAGMA integrity_check`: `ok`;
-- remaining `QUAL-M13-*` rows:
-  - Universes: 0;
-  - Series: 0;
-  - Novels: 0;
-  - Chapters: 0;
-  - Scenes: 0;
+- remaining `QUAL-M13-*` rows: 0 for Universes, Series, Novels, Chapters and Scenes;
 - Ollama remained stopped: PASS.
+
+## Terminal evidence-commit CI
+
+The Windows qualification was recorded in evidence commit:
+
+`d9df8151b0c3336e0a12c65a7ba7841cab4e091b`
+
+Workflow:
+
+`Fabulaxiom CI`
+
+Run:
+
+`37684422252`
+
+Result:
+
+**completed / success**
+
+All deterministic steps passed on that exact evidence head:
+
+- `npm ci`;
+- frontend tests;
+- frontend production build;
+- `cargo test --locked`;
+- `cargo check --locked`;
+- dependency-lock mutation check.
 
 ## Conclusion
 
-M1.3 implementation and Windows no-AI CRUD qualification are accepted for the implementation SHA:
+M1.3 satisfied implementation, deterministic CI, real Windows no-AI CRUD qualification, integrity, exact-head evidence requalification, merge and post-merge normalization requirements.
 
-`6259bd3b4759b683bf4bb7c2c6efdf693ddfebac`
-
-This evidence commit creates a new PR head. The prior CI run `37665443163` remains historical evidence for the qualified implementation SHA but cannot authorize merge of the new evidence SHA.
-
-## Acceptance remaining
-
-M1.3 may not be marked COMPLETE until:
-
-1. this Windows qualification evidence is committed;
-2. `Fabulaxiom CI` passes completely on that new exact head;
-3. PR #11 is merged with expected-head protection;
-4. live `main` is re-fetched;
-5. post-merge M1.3 continuity normalization is created, exact-head qualified and merged.
-
-M1.4 remains unauthorized until all five gates are complete.
+M1.4 may begin only from live normalized `main`.
