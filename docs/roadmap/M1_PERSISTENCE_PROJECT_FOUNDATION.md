@@ -8,13 +8,9 @@ Establish Fabulaxiom's authoritative local persistence layer before adding narra
 
 Status: **COMPLETE + MERGED + NORMALIZED**
 
-Implementation merge:
+Final normalization merge:
 
-`d212de93cc869bfbe0e047a12594d23e1732d5cb`
-
-Normalization merge:
-
-`807949c3e23812416aa1282541c7c3ecbf6e693f`
+`d99da744fc04303c0c094a8aa6a2daab9983136f`
 
 Delivered:
 
@@ -25,7 +21,6 @@ Delivered:
 - `PRAGMA foreign_keys = ON` enforced and verified per connection;
 - transaction helper/baseline;
 - initial metadata schema;
-- fresh database, idempotence, foreign-key and rollback tests;
 - deterministic dependency locks;
 - Windows operator qualification;
 - exact-head CI;
@@ -33,26 +28,28 @@ Delivered:
 
 ## M1.2 — Project hierarchy schema
 
-Status: **AUTHORIZED**
+Status: **IN PROGRESS**
 
 Deliverables:
 
+- migration v2;
 - Universe;
 - optional Series;
 - Novel;
 - Chapter;
 - Scene;
-- stable immutable IDs independent of names;
-- deterministic ordering fields;
-- explicit referential rules;
-- structural CHECK/UNIQUE constraints;
+- immutable stable IDs;
+- deterministic sibling ordering;
+- cross-universe consistency;
+- explicit conservative referential rules;
+- indexes for child foreign-key lookups;
 - schema-level integrity tests;
-- migration from M1.1 schema version 1 to schema version 2;
+- migration from schema v1 to schema v2;
 - Windows migration qualification.
 
 Boundary:
 
-M1.2 is schema-only. No general CRUD application service or project-editing UI is authorized yet.
+M1.2 is schema-only. General CRUD services and project-editing UI remain M1.3 work.
 
 ## M1.3 — No-AI CRUD service
 

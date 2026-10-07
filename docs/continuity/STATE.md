@@ -12,8 +12,6 @@
 
 **COMPLETE + MERGED + NORMALIZED**
 
-M0 is closed.
-
 ### M1 — Persistence and project foundation
 
 **IN PROGRESS**
@@ -22,82 +20,56 @@ M0 is closed.
 
 **COMPLETE + MERGED + NORMALIZED**
 
-Authoritative evidence:
+Final normalization merge:
 
-- PR #5: merged
-- merge commit:
-  `d212de93cc869bfbe0e047a12594d23e1732d5cb`
-- final PR head:
-  `11fc259816ac4f4e98672aa42c9176d140f783fd`
-- terminal exact-head CI:
-  - workflow: `Fabulaxiom CI`
-  - run: `37637727620`
-  - result: `completed/success`
-- normalization PR #6: merged
-- normalization merge commit:
-  `807949c3e23812416aa1282541c7c3ecbf6e693f`
-- normalization CI:
-  - run: `37639124930`
-  - result: `completed/success`
-- Windows qualification: PASS
-- `rusqlite 0.40.2` with bundled SQLite
-- schema version 1
-- foreign keys ON per connection
-- transactional migration runner
-- migration `001_create_app_metadata`
-- Rust tests: 6/6 PASS
-- frontend tests: 4/4 PASS
-- deterministic lockfile checks: PASS
-
-Detailed evidence:
-
-`docs/qualification/M1_1_SQLITE_FOUNDATION.md`
+`d99da744fc04303c0c094a8aa6a2daab9983136f`
 
 #### M1.2 — Project hierarchy schema
 
-**AUTHORIZED**
+**IMPLEMENTATION IN PROGRESS**
 
-M1.2 is now the only authorized implementation subdivision.
+Branch:
 
-Scope:
+`feat/m1-2-project-hierarchy-schema-20261007`
 
+Authorized implementation:
+
+- schema migration v2;
 - Universe;
 - optional Series;
 - Novel;
 - Chapter;
 - Scene;
-- stable immutable IDs independent of names;
-- deterministic ordering fields;
-- referential and structural integrity rules;
-- migration from schema v1;
+- immutable non-name IDs;
+- deterministic sibling ordering;
+- cross-universe Series/Novel integrity;
+- conservative `RESTRICT` update/delete behavior;
 - schema-level tests;
 - Windows migration qualification.
 
-No CRUD application service or project hierarchy UI is authorized yet; that belongs to M1.3.
+M1.2 remains schema-only. CRUD services and project hierarchy UI remain deferred to M1.3.
+
+## M1.2 schema decisions
+
+- all hierarchy tables use SQLite `STRICT`;
+- IDs are non-empty `TEXT PRIMARY KEY` values and are protected by immutable-ID triggers;
+- Series belongs to exactly one Universe;
+- Novel belongs to exactly one Universe and may optionally belong to a Series;
+- a composite foreign key prevents a Novel from referencing a Series in a different Universe;
+- Chapter belongs to exactly one Novel;
+- Scene belongs to exactly one Chapter;
+- sibling `sort_order` values are non-negative and unique within their parent scope;
+- foreign-key child lookups are indexed where not already covered by a UNIQUE index;
+- schema version advances from 1 to 2.
 
 ## Reproducibility contract
 
-- `package-lock.json` committed
-- `src-tauri/Cargo.lock` committed
-- CI uses `npm ci`
-- Rust CI uses Cargo `--locked`
-- lockfile mutation is rejected in CI
-
-## Known non-blocking environment warnings
-
-- Ollama AMD-driver warning while Vulkan inference works
-- potentially incompatible external `ggml-base.dll` in PATH
-- two corrupt Ollama manifests
-
-These remain documented and do not block M1.2.
+- no new dependency is introduced by M1.2;
+- `package-lock.json` and `src-tauri/Cargo.lock` must remain unchanged;
+- CI uses `npm ci`;
+- Rust CI uses Cargo `--locked`;
+- lockfile mutation is rejected in CI.
 
 ## Governance rule
 
-Every subdivision must:
-
-- begin from freshly fetched live `main`;
-- use a dedicated branch and pull request;
-- preserve deterministic dependency locks;
-- pass exact-head CI;
-- receive Windows operator qualification when local behavior is part of acceptance;
-- be merged and normalized before a dependent subdivision begins.
+M1.2 is not complete until exact-head CI, Windows migration qualification, merge, and post-merge normalization all pass.
