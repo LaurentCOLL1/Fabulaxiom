@@ -10,62 +10,54 @@
 
 Status:
 
-**IMPLEMENTATION + QUALIFICATION**
+**WINDOWS QUALIFIED — TERMINAL CI + MERGE REQUIRED**
 
-## Implementation contract
+## Completed qualification
 
-The M1.2 branch must deliver:
+Implementation SHA:
 
-1. schema migration version 2;
-2. Universe table;
-3. optional Series hierarchy;
-4. Novel table;
-5. Chapter table;
-6. Scene table;
-7. stable immutable IDs independent of names;
-8. deterministic non-negative sibling ordering;
-9. explicit conservative foreign-key update/delete rules;
-10. cross-universe Series/Novel protection;
-11. indexes required for foreign-key child lookup;
-12. valid hierarchy tests;
-13. optional-Series tests;
-14. cross-universe rejection tests;
-15. ordering uniqueness tests;
-16. orphan rejection tests;
-17. immutable-ID tests;
-18. schema v1 → v2 migration test;
-19. migration idempotence;
-20. exact-head CI;
-21. target Windows migration qualification from the existing schema-v1 database.
+`3d4b2eaf95e13bfa93580a4295ac20e93a076798`
 
-## Acceptance boundary
+Deterministic CI:
 
-M1.2 remains schema-only.
+- run `37644123751`;
+- completed/success;
+- 13 Rust tests PASS;
+- frontend tests/build PASS;
+- lockfiles unchanged.
 
-Do not implement:
+Windows qualification:
+
+- schema-v1 production database backed up;
+- production migration v1 → v2 PASS;
+- migrations 1 + 2 PASS;
+- hierarchy tables 5/5 PASS;
+- STRICT 5/5 PASS;
+- immutable-ID triggers 5/5 PASS;
+- foreign keys ON;
+- foreign-key check empty;
+- integrity check OK;
+- final worktree clean.
+
+## Immediate sequence
+
+1. commit the Windows qualification evidence;
+2. require Fabulaxiom CI on that new exact head;
+3. if every deterministic check is successful, merge PR #9 with expected-head protection;
+4. re-fetch live `main`;
+5. create and qualify M1.2 post-merge normalization;
+6. merge normalization;
+7. only then authorize M1.3.
+
+## M1.3 remains unauthorized
+
+Do not yet implement:
 
 - hierarchy CRUD services;
 - hierarchy editing UI;
-- text revisions;
+- text revision history;
 - backup/restore;
 - FTS;
 - embeddings;
 - manuscript generation;
 - canonical-fact extraction.
-
-Those remain unauthorized until later subdivisions.
-
-## Next action after deterministic CI
-
-If exact-head CI is fully green, perform the Windows qualification against:
-
-`%LOCALAPPDATA%\com.fabulaxiom.desktop\database\fabulaxiom.sqlite3`
-
-Expected result:
-
-- existing schema v1 migrates transactionally to schema v2;
-- migration history contains versions 1 and 2 exactly once;
-- foreign keys remain ON;
-- `PRAGMA foreign_key_check` returns no rows;
-- the five hierarchy tables are present;
-- Fabulaxiom reports `SQLite schema v2`.

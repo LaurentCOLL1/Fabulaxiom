@@ -26,26 +26,46 @@ Final normalization merge:
 
 #### M1.2 — Project hierarchy schema
 
-**IMPLEMENTATION IN PROGRESS**
+**WINDOWS QUALIFIED — FINAL EXACT-HEAD CI + MERGE PENDING**
 
 Branch:
 
 `feat/m1-2-project-hierarchy-schema-20261007`
 
-Authorized implementation:
+Qualified implementation SHA:
 
-- schema migration v2;
-- Universe;
-- optional Series;
-- Novel;
-- Chapter;
-- Scene;
-- immutable non-name IDs;
-- deterministic sibling ordering;
-- cross-universe Series/Novel integrity;
-- conservative `RESTRICT` update/delete behavior;
-- schema-level tests;
-- Windows migration qualification.
+`3d4b2eaf95e13bfa93580a4295ac20e93a076798`
+
+GitHub CI on that implementation SHA:
+
+- workflow: `Fabulaxiom CI`;
+- run: `37644123751`;
+- result: `completed/success`;
+- Rust tests: 13/13 PASS;
+- frontend tests: 4/4 PASS;
+- lockfiles unchanged.
+
+Windows production migration qualification:
+
+- exact source HEAD: PASS;
+- existing schema v1 detected before launch;
+- pre-migration SQLite backup created;
+- migration v1 → v2: PASS;
+- migrations 1 and 2 present exactly once;
+- hierarchy tables 5/5 present;
+- SQLite STRICT 5/5;
+- immutable-ID triggers 5/5;
+- foreign keys ON;
+- `PRAGMA foreign_key_check`: empty;
+- `PRAGMA integrity_check`: `ok`;
+- Rust bridge: PASS;
+- database status: PASS;
+- Ollama local status: PASS;
+- worktree clean.
+
+Detailed evidence:
+
+`docs/qualification/M1_2_PROJECT_HIERARCHY_SCHEMA.md`
 
 M1.2 remains schema-only. CRUD services and project hierarchy UI remain deferred to M1.3.
 
@@ -60,16 +80,18 @@ M1.2 remains schema-only. CRUD services and project hierarchy UI remain deferred
 - Scene belongs to exactly one Chapter;
 - sibling `sort_order` values are non-negative and unique within their parent scope;
 - foreign-key child lookups are indexed where not already covered by a UNIQUE index;
-- schema version advances from 1 to 2.
+- schema version is 2.
 
 ## Reproducibility contract
 
 - no new dependency is introduced by M1.2;
-- `package-lock.json` and `src-tauri/Cargo.lock` must remain unchanged;
+- `package-lock.json` and `src-tauri/Cargo.lock` remain unchanged;
 - CI uses `npm ci`;
 - Rust CI uses Cargo `--locked`;
 - lockfile mutation is rejected in CI.
 
 ## Governance rule
 
-M1.2 is not complete until exact-head CI, Windows migration qualification, merge, and post-merge normalization all pass.
+M1.2 is not complete until the qualification evidence commit receives final exact-head CI, PR #9 merges, and post-merge normalization completes.
+
+M1.3 is not yet authorized.

@@ -2,7 +2,7 @@
 
 ## Status
 
-**IMPLEMENTED — EXACT-HEAD CI PENDING**
+**WINDOWS QUALIFIED — FINAL EXACT-HEAD CI REQUIRED**
 
 ## Scope
 
@@ -44,38 +44,156 @@ Tables:
 
 The composite Series/Novel key guarantees that a novel with a non-null `series_id` can only reference a Series belonging to the same `universe_id`.
 
-## Automated Rust acceptance
+## Exact implementation SHA qualified on Windows
 
-Required tests:
+`3d4b2eaf95e13bfa93580a4295ac20e93a076798`
 
-- fresh database reaches schema v2;
-- migrations are idempotent;
-- schema v1 migrates to v2;
-- valid hierarchy accepts both standalone and Series novels;
-- cross-Universe Series reference is rejected;
-- sibling ordering collisions are rejected;
-- orphan references are rejected;
-- all hierarchy IDs are immutable;
-- `PRAGMA foreign_key_check` reports no violations;
-- existing foreign-key and transaction rollback tests remain green.
+## GitHub exact-head CI
+
+Workflow:
+
+`Fabulaxiom CI`
+
+Run:
+
+`37644123751`
+
+Result:
+
+**completed / success**
+
+Successful deterministic steps:
+
+- checkout;
+- Node setup;
+- Rust setup;
+- `npm ci`;
+- frontend tests;
+- frontend production build;
+- `cargo test --locked`;
+- `cargo check --locked`;
+- dependency-lock mutation check.
+
+Rust result:
+
+- 13 tests passed;
+- 0 failed.
+
+M1.2 coverage includes:
+
+- schema v1 → v2 migration;
+- migration idempotence;
+- standalone and Series novels;
+- cross-Universe Series rejection;
+- deterministic sibling ordering;
+- orphan rejection;
+- immutable hierarchy IDs;
+- `PRAGMA foreign_key_check` with no violations;
+- existing foreign-key and rollback tests.
+
+## Windows qualification
+
+The target Windows clone was revalidated at the exact implementation SHA.
+
+Observed:
+
+- repository clean before qualification;
+- remote `main` exact:
+  `d99da744fc04303c0c094a8aa6a2daab9983136f`;
+- branch HEAD exact:
+  `3d4b2eaf95e13bfa93580a4295ac20e93a076798`;
+- frontend tests: 4/4 PASS;
+- frontend build: PASS;
+- Rust tests: 13/13 PASS;
+- `cargo check --locked`: PASS;
+- dependency lockfiles unchanged;
+- worktree clean.
+
+### Pre-migration state
+
+Production database:
+
+`C:\Users\lauco\AppData\Local\com.fabulaxiom.desktop\database\fabulaxiom.sqlite3`
+
+Before migration:
+
+- schema version 1 only;
+- migration `001_create_app_metadata`;
+- tables: `app_metadata`, `schema_migrations`.
+
+A SQLite backup was created before migration:
+
+`C:\Users\lauco\AppData\Local\com.fabulaxiom.desktop\database\fabulaxiom.before-m1-2-v1.20261007-174440.sqlite3`
+
+### Interactive application qualification
+
+Rust bridge:
+
+**PASS**
+
+Database status:
+
+**PASS**
+
+Ollama local status:
+
+**PASS**
+
+The database-status action migrated the existing production database transactionally from schema v1 to schema v2.
+
+### Post-migration evidence
+
+Migration history:
+
+1. `001_create_app_metadata`
+2. `002_create_project_hierarchy`
+
+Hierarchy tables:
+
+- `universes`: present;
+- `series`: present;
+- `novels`: present;
+- `chapters`: present;
+- `scenes`: present.
+
+All five hierarchy tables report SQLite `strict=1`.
+
+Immutable-ID triggers:
+
+- `universes_id_immutable`;
+- `series_id_immutable`;
+- `novels_id_immutable`;
+- `chapters_id_immutable`;
+- `scenes_id_immutable`.
+
+Integrity:
+
+- foreign keys: ON;
+- `PRAGMA foreign_key_check`: empty;
+- `PRAGMA integrity_check`: `ok`.
+
+Final repository state:
+
+- HEAD unchanged at the qualified SHA;
+- worktree clean.
 
 ## Dependency contract
 
 M1.2 adds no dependency.
 
-Expected unchanged files:
+Confirmed unchanged:
 
-- `package-lock.json`
-- `src-tauri/Cargo.lock`
+- `package-lock.json`;
+- `src-tauri/Cargo.lock`.
 
-## Windows acceptance still required
+## Acceptance remaining
 
-After exact-head CI passes:
+M1.2 may not be marked COMPLETE until:
 
-1. migrate the existing target Windows database from v1 to v2;
-2. verify migration rows 1 and 2 exactly once;
-3. verify all five hierarchy tables;
-4. verify foreign keys ON;
-5. verify `PRAGMA foreign_key_check` is empty;
-6. verify Fabulaxiom displays schema v2;
-7. record the exact qualified SHA.
+1. this Windows qualification evidence is committed;
+2. final exact-head CI passes on that new documentation SHA;
+3. PR #9 is merged;
+4. live `main` is re-fetched;
+5. post-merge continuity normalization is merged.
+
+M1.3 remains unauthorized until all five gates are complete.
