@@ -2,7 +2,7 @@
 
 ## Status
 
-**WINDOWS QUALIFIED — EXACT-HEAD CI PENDING**
+**QUALIFIED — MERGE + POST-MERGE NORMALIZATION PENDING**
 
 ## Selected SQLite integration
 
@@ -11,11 +11,11 @@
 - database path:
   `app_local_data_dir()/database/fabulaxiom.sqlite3`
 
-SQLite foreign-key enforcement is explicitly enabled and verified per connection. SQLite documents foreign-key enforcement as a per-connection setting, so Fabulaxiom does not rely on a default. 
+SQLite foreign-key enforcement is explicitly enabled and verified per connection.
 
 ## Qualified implementation source
 
-Exact implementation SHA tested before qualification documentation:
+Exact implementation SHA tested locally:
 
 `ccbc9c63220c1a8a641595c0ed2d370660cff1ca`
 
@@ -25,25 +25,22 @@ Dependency resolution changed only:
 
 `src-tauri/Cargo.lock`
 
-Observed additions include:
-
-- `rusqlite 0.40.2`
-- `libsqlite3-sys 0.38.2`
-- transitive SQLite support crates
-
-The lockfile was committed separately in:
+Lock commit:
 
 `88a5f107e31b56af14535e64c8cf96e632f5c878`
 
 That commit contains exactly `src-tauri/Cargo.lock`.
+
+Observed locked dependencies include:
+
+- `rusqlite 0.40.2`
+- `libsqlite3-sys 0.38.2`
 
 ## Automated Windows results
 
 ### Rust
 
 `cargo test --all-targets --locked`
-
-Result:
 
 - 6 tests passed
 - 0 failed
@@ -53,9 +50,7 @@ Qualified database tests:
 - fresh file-backed database creation;
 - migration idempotence;
 - foreign-key enforcement;
-- failed transactional schema work rolls back.
-
-Existing M0 Ollama tests also remained green.
+- rollback of failed transactional schema work.
 
 `cargo check --locked`: **PASS**
 
@@ -67,15 +62,13 @@ Existing M0 Ollama tests also remained green.
 
 - 2 test files passed
 - 4 tests passed
-- 0 failures
+- 0 failed
 
 `npm run build`: **PASS**
 
 ## Interactive Windows qualification
 
 ### Rust bridge
-
-Observed:
 
 ```text
 PASS
@@ -86,8 +79,6 @@ React -> Tauri -> Rust operational
 
 ### SQLite status
 
-Observed:
-
 ```text
 PASS
 SQLite schema v1 · clés étrangères ON ·
@@ -96,43 +87,53 @@ C:\Users\lauco\AppData\Local\com.fabulaxiom.desktop\database\fabulaxiom.sqlite3
 
 ### Database file
 
-Observed:
-
-- file present
+- present
 - size: 20480 bytes
 
 ### Read-only schema inspection
-
-Observed:
 
 ```json
 {"migrations": [[1, "001_create_app_metadata"]], "schema_owner": "fabulaxiom"}
 ```
 
-## Ollama independence evidence
+## Ollama independence note
 
-Before the interactive Tauri launch, Ollama processes were stopped and:
+Ollama was stopped and its HTTP API confirmed inaccessible before the Tauri launch. During the later interactive session, Ollama became available again, so continuous absence is not claimed.
 
-`http://127.0.0.1:11434/api/version`
+Database independence is supported by the separate Rust database module and its tests, none of which call the Ollama client.
 
-was confirmed inaccessible.
+## Exact-head GitHub CI
 
-Fabulaxiom then launched and the SQLite qualification succeeded.
+Head:
 
-During the interactive session, the Ollama status control later reported Ollama 0.40.0 available, meaning Ollama had restarted independently. Therefore the UI run is not treated as evidence that Ollama remained absent for the entire session.
+`59923690d08687efd42b452e3e29976131a4be8b`
 
-Database independence is additionally established structurally and through the Rust test suite:
+Workflow:
 
-- the database service does not call the Ollama client;
-- file-backed creation/migration tests run without Ollama;
-- foreign-key and transaction tests run without Ollama.
+`Fabulaxiom CI`
+
+Run:
+
+`37636677552`
+
+Result:
+
+**completed / success**
+
+Every deterministic step passed, including:
+
+- `npm ci`;
+- frontend tests;
+- frontend production build;
+- `cargo test --locked`;
+- `cargo check --locked`;
+- dependency-lock mutation check.
 
 ## Acceptance remaining
 
-M1.1 may not be marked complete until:
+M1.1 may be marked COMPLETE only after:
 
-1. the qualification evidence is committed;
-2. its PR is open;
-3. deterministic exact-head CI passes with committed lockfiles unchanged;
-4. the PR is merged;
-5. post-merge continuity normalization is complete.
+1. this qualification evidence is committed;
+2. final exact-head CI passes on that commit;
+3. PR #5 is merged;
+4. post-merge continuity normalization is merged.
