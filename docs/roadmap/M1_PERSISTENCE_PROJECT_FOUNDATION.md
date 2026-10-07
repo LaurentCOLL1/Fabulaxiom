@@ -6,11 +6,15 @@ Establish Fabulaxiom's authoritative local persistence layer before adding narra
 
 ## M1.1 — SQLite foundation and migration runner
 
-Status: **COMPLETE + MERGED**
+Status: **COMPLETE + MERGED + NORMALIZED**
 
-Merge commit:
+Implementation merge:
 
 `d212de93cc869bfbe0e047a12594d23e1732d5cb`
+
+Normalization merge:
+
+`807949c3e23812416aa1282541c7c3ecbf6e693f`
 
 Delivered:
 
@@ -24,11 +28,12 @@ Delivered:
 - fresh database, idempotence, foreign-key and rollback tests;
 - deterministic dependency locks;
 - Windows operator qualification;
-- exact-head CI.
+- exact-head CI;
+- post-merge normalization.
 
 ## M1.2 — Project hierarchy schema
 
-Status: **AUTHORIZED AFTER M1.1 NORMALIZATION**
+Status: **AUTHORIZED**
 
 Deliverables:
 
@@ -37,10 +42,12 @@ Deliverables:
 - Novel;
 - Chapter;
 - Scene;
-- stable immutable IDs;
-- ordering fields and referential rules;
+- stable immutable IDs independent of names;
+- deterministic ordering fields;
+- explicit referential rules;
+- structural CHECK/UNIQUE constraints;
 - schema-level integrity tests;
-- migration from M1.1 schema version 1;
+- migration from M1.1 schema version 1 to schema version 2;
 - Windows migration qualification.
 
 Boundary:

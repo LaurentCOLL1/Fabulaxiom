@@ -4,25 +4,31 @@
 
 **M1 — Persistence and project foundation**
 
-## M1.1
+## Completed subdivision
 
-**COMPLETE + MERGED**
+**M1.1 — SQLite foundation and migration runner**
 
-Merge commit:
+Status:
+
+**COMPLETE + MERGED + NORMALIZED**
+
+Implementation merge:
 
 `d212de93cc869bfbe0e047a12594d23e1732d5cb`
 
-This normalization PR must pass exact-head CI and merge before implementation of M1.2 starts.
+Normalization merge:
 
-## Next subdivision
+`807949c3e23812416aa1282541c7c3ecbf6e693f`
+
+## Authorized subdivision
 
 **M1.2 — Project hierarchy schema**
 
-M1.2 becomes the only authorized implementation subdivision after this normalization is merged.
+M1.2 is the only implementation subdivision currently authorized.
 
 ## Required deliverables
 
-1. add an ordered SQLite migration for the project hierarchy;
+1. add ordered migration version 2 for the hierarchy schema;
 2. add Universe;
 3. add optional Series;
 4. add Novel;
@@ -30,15 +36,18 @@ M1.2 becomes the only authorized implementation subdivision after this normaliza
 6. add Scene;
 7. use stable immutable identifiers independent of names;
 8. define deterministic ordering fields for Series/Novel/Chapter/Scene where applicable;
-9. define foreign-key relationships and deletion/update rules;
+9. define explicit foreign-key relationships and conservative deletion/update rules;
 10. add CHECK/UNIQUE constraints needed for structural integrity;
-11. test valid hierarchy creation;
-12. test optional Series behavior;
-13. test ordering constraints;
-14. test rejected orphaned references;
-15. test migration idempotence from M1.1 schema v1 to the new version;
-16. keep M1.2 schema-only: no CRUD UI/service yet;
-17. require deterministic exact-head CI and Windows database migration qualification.
+11. add indexes for foreign-key child columns used by integrity checks and future access patterns;
+12. test valid hierarchy creation;
+13. test novels with and without a Series;
+14. test that a Novel cannot reference a Series from another Universe;
+15. test deterministic ordering uniqueness;
+16. test rejected orphaned references;
+17. test migration from M1.1 schema v1 to schema v2;
+18. test migration idempotence;
+19. keep M1.2 schema-only: no CRUD UI/service yet;
+20. require deterministic exact-head CI and Windows database migration qualification.
 
 ## Acceptance boundary
 
@@ -46,11 +55,11 @@ M1.2 is complete only when:
 
 - schema migration is versioned;
 - automated integrity tests pass;
-- existing M1.1 tests remain green;
+- all M1.1 tests remain green;
 - frontend build remains green;
 - dependency locks stay unchanged unless an explicitly justified dependency is added;
 - exact-head CI is fully successful;
-- the target Windows database migrates cleanly from schema v1;
+- the target Windows database migrates cleanly from schema v1 to schema v2;
 - its PR is merged;
 - post-merge continuity normalization is complete.
 
