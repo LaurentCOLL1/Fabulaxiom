@@ -5,7 +5,6 @@
 - Repository: `LaurentCOLL1/Fabulaxiom`
 - Visibility: private
 - Default branch: `main`
-- M1.1 working branch: `feat/m1-1-sqlite-foundation-20261007`
 
 ## Milestone state
 
@@ -17,113 +16,79 @@ M0 is closed.
 
 ### M1 — Persistence and project foundation
 
-**IN PROGRESS — M1.1 ONLY**
+**IN PROGRESS**
 
-Current subdivision:
+#### M1.1 — SQLite foundation and migration runner
 
-**M1.1 — SQLite foundation and migration runner**
+**COMPLETE + MERGED — POST-MERGE NORMALIZATION IN PROGRESS**
 
-Status:
+Authoritative evidence:
 
-**QUALIFIED — MERGE + POST-MERGE NORMALIZATION PENDING**
-
-## M1.1 implementation
-
-- SQLite wrapper: `rusqlite 0.40.2`
-- SQLite linkage: `bundled`
-- production database:
-  `app_local_data_dir()/database/fabulaxiom.sqlite3`
-- explicit `schema_migrations` table
-- foreign keys enabled and verified on every connection
-- migration application is transactional
-- initial schema version: `1`
-- initial metadata table only; project hierarchy CRUD remains out of scope
-
-## Windows qualification
-
-Qualified implementation source:
-
-`ccbc9c63220c1a8a641595c0ed2d370660cff1ca`
-
-Observed:
-
+- PR #5: merged
+- merge commit:
+  `d212de93cc869bfbe0e047a12594d23e1732d5cb`
+- final PR head:
+  `11fc259816ac4f4e98672aa42c9176d140f783fd`
+- terminal exact-head CI:
+  - workflow: `Fabulaxiom CI`
+  - run: `37637727620`
+  - result: `completed/success`
+- Windows qualification: PASS
+- `rusqlite 0.40.2` with bundled SQLite
+- database path under Tauri local app-data
+- schema version 1
+- foreign keys ON per connection
+- transactional migration runner
+- initial migration `001_create_app_metadata`
 - Rust tests: 6/6 PASS
-- `cargo check --locked`: PASS
-- `npm ci`: PASS
 - frontend tests: 4/4 PASS
-- frontend production build: PASS
-- Tauri launch: PASS
-- Rust bridge: PASS
-- database status UI: PASS
-- database path:
-  `C:\Users\lauco\AppData\Local\com.fabulaxiom.desktop\database\fabulaxiom.sqlite3`
-- schema version: `1`
-- foreign keys: ON
-- migration: `001_create_app_metadata`
-- `schema_owner`: `fabulaxiom`
+- deterministic lockfile checks: PASS
 
-## Reproducibility
+Detailed evidence:
 
-SQLite dependency-lock commit:
+`docs/qualification/M1_1_SQLITE_FOUNDATION.md`
 
-`88a5f107e31b56af14535e64c8cf96e632f5c878`
+#### M1.2 — Project hierarchy schema
 
-That commit contains exactly:
+**AUTHORIZED AFTER THIS NORMALIZATION MERGES**
 
-`src-tauri/Cargo.lock`
+Scope:
 
-## Exact-head CI
+- Universe;
+- optional Series;
+- Novel;
+- Chapter;
+- Scene;
+- stable immutable IDs;
+- ordering fields;
+- referential/integrity rules;
+- schema-level tests.
 
-Qualification head:
+No CRUD UI/service is authorized yet; that belongs to M1.3.
 
-`59923690d08687efd42b452e3e29976131a4be8b`
+## Reproducibility contract
 
-Workflow:
-
-`Fabulaxiom CI`
-
-Run:
-
-`37636677552`
-
-Result:
-
-**completed / success**
-
-Successful checks:
-
-- checkout
-- Node setup
-- Rust setup
-- `npm ci`
-- frontend tests
-- frontend production build
-- `cargo test --locked`
-- `cargo check --locked`
-- dependency-lock mutation check
-
-## Remaining M1.1 acceptance gates
-
-M1.1 is not yet marked COMPLETE because governance still requires:
-
-1. qualification evidence commit;
-2. final exact-head CI on that evidence commit;
-3. merge of PR #5 with expected-head protection;
-4. re-fetch live `main`;
-5. post-merge continuity normalization.
-
-Only after those gates may M1.2 be authorized.
-
-## Windows Git configuration
-
-The local clone's `origin` refspec was repaired to:
-
-`+refs/heads/*:refs/remotes/origin/*`
-
-This is local Git configuration only and does not alter repository source.
+- `package-lock.json` committed
+- `src-tauri/Cargo.lock` committed
+- CI uses `npm ci`
+- Rust CI uses Cargo `--locked`
+- lockfile mutation is rejected in CI
 
 ## Known non-blocking environment warnings
 
 - Ollama AMD-driver warning while Vulkan inference works
 - potentially incompatible external `ggml-base.dll` in PATH
 - two corrupt Ollama manifests
+
+These remain documented and do not block M1.2.
+
+## Governance rule
+
+Every subdivision must:
+
+- begin from freshly fetched live `main`;
+- use a dedicated branch and pull request;
+- preserve deterministic dependency locks;
+- pass exact-head CI;
+- receive Windows operator qualification when local behavior is part of acceptance;
+- be merged and normalized before a dependent subdivision begins.

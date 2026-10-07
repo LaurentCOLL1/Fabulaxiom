@@ -6,30 +6,29 @@ Establish Fabulaxiom's authoritative local persistence layer before adding narra
 
 ## M1.1 — SQLite foundation and migration runner
 
-Status: **AUTHORIZED**
+Status: **COMPLETE + MERGED**
 
-Deliverables:
+Merge commit:
 
-- SQLite dependency and connection service in Rust;
-- deterministic database location under the application data directory;
-- schema-version/migration table;
-- ordered migration runner;
-- `PRAGMA foreign_keys = ON` enforced per connection;
+`d212de93cc869bfbe0e047a12594d23e1732d5cb`
+
+Delivered:
+
+- bundled SQLite through `rusqlite 0.40.2`;
+- deterministic application-local database path;
+- schema migration table;
+- ordered transactional migration runner;
+- `PRAGMA foreign_keys = ON` enforced and verified per connection;
 - transaction helper/baseline;
-- initial database metadata schema;
-- tests for fresh database creation, repeat migration, rollback/integrity behavior;
-- CI using committed dependency locks;
-- Windows operator qualification.
-
-Acceptance:
-
-- a fresh local database can be created;
-- migrations are idempotent;
-- foreign-key enforcement is proven;
-- failed transactional work does not leave partial state;
-- no Ollama dependency is required.
+- initial metadata schema;
+- fresh database, idempotence, foreign-key and rollback tests;
+- deterministic dependency locks;
+- Windows operator qualification;
+- exact-head CI.
 
 ## M1.2 — Project hierarchy schema
+
+Status: **AUTHORIZED AFTER M1.1 NORMALIZATION**
 
 Deliverables:
 
@@ -40,7 +39,13 @@ Deliverables:
 - Scene;
 - stable immutable IDs;
 - ordering fields and referential rules;
-- schema-level integrity tests.
+- schema-level integrity tests;
+- migration from M1.1 schema version 1;
+- Windows migration qualification.
+
+Boundary:
+
+M1.2 is schema-only. No general CRUD application service or project-editing UI is authorized yet.
 
 ## M1.3 — No-AI CRUD service
 
