@@ -20,24 +20,26 @@ M0 is closed.
 
 #### M1.1 — SQLite foundation and migration runner
 
-**COMPLETE + MERGED — POST-MERGE NORMALIZATION IN PROGRESS**
+**COMPLETE + MERGED + NORMALIZED**
 
 Authoritative evidence:
 
-- PR #5: merged
-- merge commit:
+- implementation PR: #5
+- M1.1 merge commit:
   `d212de93cc869bfbe0e047a12594d23e1732d5cb`
-- final PR head:
+- final implementation PR head:
   `11fc259816ac4f4e98672aa42c9176d140f783fd`
-- terminal exact-head CI:
+- terminal implementation CI:
   - workflow: `Fabulaxiom CI`
   - run: `37637727620`
   - result: `completed/success`
+- post-merge normalization PR: #6
+- normalization merge commit:
+  `807949c3e23812416aa1282541c7c3ecbf6e693f`
 - Windows qualification: PASS
-- `rusqlite 0.40.2` with bundled SQLite
-- database path under Tauri local app-data
+- bundled `rusqlite 0.40.2`
 - schema version 1
-- foreign keys ON per connection
+- per-connection foreign-key enforcement
 - transactional migration runner
 - initial migration `001_create_app_metadata`
 - Rust tests: 6/6 PASS
@@ -50,7 +52,9 @@ Detailed evidence:
 
 #### M1.2 — Project hierarchy schema
 
-**AUTHORIZED AFTER THIS NORMALIZATION MERGES**
+**AUTHORIZED**
+
+M1.2 is now the only authorized implementation subdivision.
 
 Scope:
 
@@ -59,12 +63,14 @@ Scope:
 - Novel;
 - Chapter;
 - Scene;
-- stable immutable IDs;
-- ordering fields;
+- stable immutable IDs independent of names;
+- deterministic ordering fields;
 - referential/integrity rules;
-- schema-level tests.
+- migration from schema v1;
+- schema-level tests;
+- Windows migration qualification.
 
-No CRUD UI/service is authorized yet; that belongs to M1.3.
+No CRUD service/UI is authorized yet; that belongs to M1.3.
 
 ## Reproducibility contract
 
