@@ -15,18 +15,33 @@ Fabulaxiom est une application locale de création et de gestion d'histoires, de
 
 ## État actuel
 
-Le dépôt vient d'être initialisé. Aucun choix d'architecture applicative n'est encore considéré comme définitif.
+**M0 — Environment and architecture qualification : COMPLETE + MERGED**
 
-La prochaine étape est la validation de l'environnement Windows/Ollama et la décision d'architecture du premier jalon technique.
+Architecture retenue pour M0/M1 :
+
+- Tauri 2 ;
+- React + TypeScript ;
+- cœur applicatif Rust/Tauri ;
+- SQLite + FTS5 pour la persistance/recherche structurée à partir de M1 ;
+- intégration Ollama locale directe sur la boucle locale ;
+- aucun runtime Python/FastAPI obligatoire pour M0/M1.
+
+Le socle desktop, le pont React → Tauri → Rust, l'accès Ollama local en lecture seule, les tests et la CI déterministe sont qualifiés.
+
+**M1 — Persistence and project foundation est maintenant autorisé.**
+
+La première subdivision est décrite dans :
+`docs/roadmap/M1_PERSISTENCE_PROJECT_FOUNDATION.md`.
 
 ## Documentation d'autorité
 
 - `docs/continuity/STATE.md` — état courant du projet ;
 - `docs/continuity/NEXT.md` — prochaine étape autorisée ;
 - `docs/roadmap/FABULAXIOM_ROADMAP_V1.md` — feuille de route V1 ;
-- `docs/architecture/ARCHITECTURE_DECISIONS.md` — décisions et options d'architecture ;
-- `docs/PRODUCT_SCOPE_V1.md` — périmètre fonctionnel visé pour la V1.
+- `docs/roadmap/M1_PERSISTENCE_PROJECT_FOUNDATION.md` — plan détaillé M1 ;
+- `docs/architecture/ARCHITECTURE_DECISIONS.md` — décisions d'architecture ;
+- `docs/PRODUCT_SCOPE_V1.md` — périmètre fonctionnel V1.
 
 ## Développement
 
-Le développement sera réalisé par jalons testables. Chaque jalon doit produire un résultat utilisable, documenté et vérifiable avant le suivant.
+Chaque jalon doit produire un résultat utilisable, documenté, testé et reproductible avant le suivant.

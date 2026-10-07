@@ -4,32 +4,29 @@ The V1 is the complete first product target. It is intentionally larger than the
 
 ## M0 — Environment and architecture qualification
 
-**Status: COMPLETE**
+**Status: COMPLETE + MERGED**
 
-Terminal qualification:
+Merge commit:
+`dae2c4e45536180caab564ac9b7e5493fd9c044b`
 
-- implementation/CI qualification SHA: `6fbea03be2b6058aa14d1cddcaffc7f840ebf81c`;
-- deterministic M0 CI run: `37561269046`;
-- result: `completed/success`;
-- architecture ADR-007: ACCEPTED;
-- local Windows execution: PASS;
-- Ollama loopback security: PASS;
-- dependency lockfiles committed and enforced.
-
-Deliverables:
+Deliverables completed:
 
 - verified Windows development toolchain;
-- verified Ollama version, endpoint and actual compute backend;
-- architecture decision for the first implementation;
+- verified Ollama endpoint and Vulkan compute backend;
+- accepted Tauri 2 + React/TypeScript + Rust architecture;
 - runnable desktop application;
 - React → Tauri → Rust bridge;
-- read-only local Ollama status integration;
-- frontend and Rust test runners;
+- loopback-only read-only Ollama status integration;
+- frontend and Rust tests;
+- committed dependency locks;
 - deterministic Windows CI.
 
 ## M1 — Persistence and project foundation
 
-**Status: NOT STARTED**
+**Status: AUTHORIZED — NOT STARTED**
+
+Detailed plan:
+`docs/roadmap/M1_PERSISTENCE_PROJECT_FOUNDATION.md`
 
 Deliverables:
 
@@ -98,8 +95,6 @@ Deliverables:
 - severity and proposed fixes;
 - no automatic manuscript correction.
 
-Special tests include homonyms, flashbacks, incorrect beliefs, asymmetric relationships, simultaneous novels, past retcons, alternate branches, approximate dates and deliberately wrong AI extraction.
-
 ## M7 — Assisted writing
 
 Deliverables:
@@ -141,7 +136,3 @@ Deliverables:
 - tested restore;
 - Windows packaging and installer;
 - release qualification.
-
-## Completion principle
-
-Each milestone must end in a usable, testable state. Fabulaxiom must not become a text generator whose persistent-memory and integrity model is added only at the end.
