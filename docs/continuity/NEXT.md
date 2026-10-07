@@ -32,11 +32,21 @@ Windows migration qualification:
 - immutable-ID triggers 5/5 PASS;
 - foreign keys/integrity PASS.
 
-## Authorized subdivision
+## Current subdivision
 
 **M1.3 — No-AI CRUD service**
 
-M1.3 is the only implementation subdivision currently authorized.
+Status: **IN PROGRESS**
+
+Branch:
+
+`feat/m1-3-no-ai-crud-service-20261007`
+
+Base `main` at subdivision start:
+
+`4f90a66a30c72446bfab3dc20429429b6e4217b7`
+
+M1.3 remains the only implementation subdivision currently authorized.
 
 ## Required deliverables
 

@@ -91,9 +91,17 @@ Delivered schema:
 
 #### M1.3 — No-AI CRUD service
 
-**AUTHORIZED**
+**IN PROGRESS**
 
-M1.3 is now the only implementation subdivision authorized.
+Branch:
+
+`feat/m1-3-no-ai-crud-service-20261007`
+
+Base `main` at subdivision start:
+
+`4f90a66a30c72446bfab3dc20429429b6e4217b7`
+
+M1.3 remains the only implementation subdivision authorized.
 
 Scope:
 
