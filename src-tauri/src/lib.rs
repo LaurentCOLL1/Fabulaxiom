@@ -41,7 +41,7 @@ struct DatabaseStatus {
 fn bootstrap_status() -> BootstrapStatus {
     BootstrapStatus {
         app_name: "Fabulaxiom",
-        milestone: "M1.1 persistence foundation",
+        milestone: "M1.2 project hierarchy schema",
         rust_bridge: "React -> Tauri -> Rust operational",
     }
 }

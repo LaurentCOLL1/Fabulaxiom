@@ -4,76 +4,60 @@
 
 **M1 — Persistence and project foundation**
 
-## Completed subdivision
-
-**M1.1 — SQLite foundation and migration runner**
-
-Status:
-
-**COMPLETE + MERGED + NORMALIZED**
-
-Implementation merge:
-
-`d212de93cc869bfbe0e047a12594d23e1732d5cb`
-
-Normalization merge:
-
-`807949c3e23812416aa1282541c7c3ecbf6e693f`
-
-## Authorized subdivision
+## Current subdivision
 
 **M1.2 — Project hierarchy schema**
 
-M1.2 is the only implementation subdivision currently authorized.
+Status:
 
-## Required deliverables
+**WINDOWS QUALIFIED — TERMINAL CI + MERGE REQUIRED**
 
-1. add ordered migration version 2 for the hierarchy schema;
-2. add Universe;
-3. add optional Series;
-4. add Novel;
-5. add Chapter;
-6. add Scene;
-7. use stable immutable identifiers independent of names;
-8. define deterministic ordering fields for Series/Novel/Chapter/Scene where applicable;
-9. define explicit foreign-key relationships and conservative deletion/update rules;
-10. add CHECK/UNIQUE constraints needed for structural integrity;
-11. add indexes for foreign-key child columns used by integrity checks and future access patterns;
-12. test valid hierarchy creation;
-13. test novels with and without a Series;
-14. test that a Novel cannot reference a Series from another Universe;
-15. test deterministic ordering uniqueness;
-16. test rejected orphaned references;
-17. test migration from M1.1 schema v1 to schema v2;
-18. test migration idempotence;
-19. keep M1.2 schema-only: no CRUD UI/service yet;
-20. require deterministic exact-head CI and Windows database migration qualification.
+## Completed qualification
 
-## Acceptance boundary
+Implementation SHA:
 
-M1.2 is complete only when:
+`3d4b2eaf95e13bfa93580a4295ac20e93a076798`
 
-- schema migration is versioned;
-- automated integrity tests pass;
-- all M1.1 tests remain green;
-- frontend build remains green;
-- dependency locks stay unchanged unless an explicitly justified dependency is added;
-- exact-head CI is fully successful;
-- the target Windows database migrates cleanly from schema v1 to schema v2;
-- its PR is merged;
-- post-merge continuity normalization is complete.
+Deterministic CI:
 
-## Not authorized in M1.2
+- run `37644123751`;
+- completed/success;
+- 13 Rust tests PASS;
+- frontend tests/build PASS;
+- lockfiles unchanged.
+
+Windows qualification:
+
+- schema-v1 production database backed up;
+- production migration v1 → v2 PASS;
+- migrations 1 + 2 PASS;
+- hierarchy tables 5/5 PASS;
+- STRICT 5/5 PASS;
+- immutable-ID triggers 5/5 PASS;
+- foreign keys ON;
+- foreign-key check empty;
+- integrity check OK;
+- final worktree clean.
+
+## Immediate sequence
+
+1. commit the Windows qualification evidence;
+2. require Fabulaxiom CI on that new exact head;
+3. if every deterministic check is successful, merge PR #9 with expected-head protection;
+4. re-fetch live `main`;
+5. create and qualify M1.2 post-merge normalization;
+6. merge normalization;
+7. only then authorize M1.3.
+
+## M1.3 remains unauthorized
 
 Do not yet implement:
 
-- full create/read/update/delete services;
-- project hierarchy forms/screens;
+- hierarchy CRUD services;
+- hierarchy editing UI;
 - text revision history;
 - backup/restore;
-- FTS search;
-- embeddings/vector search;
+- FTS;
+- embeddings;
 - manuscript generation;
 - canonical-fact extraction.
-
-Those belong to later M1/M2 subdivisions.
