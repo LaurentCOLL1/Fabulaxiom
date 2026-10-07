@@ -10,7 +10,7 @@ use rusqlite::{params, Connection, Transaction};
 use tauri::Manager;
 
 pub const DATABASE_FILENAME: &str = "fabulaxiom.sqlite3";
-pub const CURRENT_SCHEMA_VERSION: i64 = 2;
+pub const CURRENT_SCHEMA_VERSION: i64 = 3;
 
 const MIGRATION_TABLE_SQL: &str = r#"
 CREATE TABLE IF NOT EXISTS schema_migrations (
@@ -155,6 +155,70 @@ BEGIN
 END;
 "#,
     },
+    Migration {
+        version: 3,
+        name: "003_create_scene_text_revisions",
+        sql: r#"
+CREATE TABLE scene_text_revisions (
+    id TEXT PRIMARY KEY NOT NULL CHECK (length(trim(id)) > 0),
+    scene_id TEXT NOT NULL,
+    revision_number INTEGER NOT NULL CHECK (revision_number > 0),
+    content TEXT NOT NULL,
+    created_at_utc TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    parent_revision_id TEXT,
+    UNIQUE (id, scene_id),
+    UNIQUE (scene_id, revision_number),
+    FOREIGN KEY (scene_id)
+        REFERENCES scenes(id)
+        ON UPDATE RESTRICT
+        ON DELETE RESTRICT,
+    FOREIGN KEY (parent_revision_id, scene_id)
+        REFERENCES scene_text_revisions(id, scene_id)
+        ON UPDATE RESTRICT
+        ON DELETE RESTRICT
+) STRICT;
+
+CREATE INDEX idx_scene_text_revisions_scene
+    ON scene_text_revisions(scene_id, revision_number);
+
+CREATE INDEX idx_scene_text_revisions_parent
+    ON scene_text_revisions(parent_revision_id, scene_id)
+    WHERE parent_revision_id IS NOT NULL;
+
+CREATE TABLE scene_revision_heads (
+    scene_id TEXT PRIMARY KEY NOT NULL,
+    revision_id TEXT NOT NULL UNIQUE,
+    FOREIGN KEY (scene_id)
+        REFERENCES scenes(id)
+        ON UPDATE RESTRICT
+        ON DELETE RESTRICT,
+    FOREIGN KEY (revision_id, scene_id)
+        REFERENCES scene_text_revisions(id, scene_id)
+        ON UPDATE RESTRICT
+        ON DELETE RESTRICT
+) STRICT;
+
+CREATE TRIGGER scene_text_revisions_immutable
+BEFORE UPDATE ON scene_text_revisions
+BEGIN
+    SELECT RAISE(ABORT, 'scene text revisions are immutable');
+END;
+
+CREATE TRIGGER scene_text_revisions_no_delete
+BEFORE DELETE ON scene_text_revisions
+BEGIN
+    SELECT RAISE(ABORT, 'scene text revisions are append-only');
+END;
+
+CREATE TRIGGER scene_revision_heads_scene_id_immutable
+BEFORE UPDATE OF scene_id ON scene_revision_heads
+WHEN NEW.scene_id <> OLD.scene_id
+BEGIN
+    SELECT RAISE(ABORT, 'scene revision head scene id is immutable');
+END;
+"#,
+    },
+
 ];
 
 #[derive(Debug)]
@@ -421,7 +485,7 @@ mod tests {
                 .query_row("SELECT COUNT(*) FROM schema_migrations", [], |row| row.get(0))
                 .expect("migration count");
 
-            assert_eq!(migration_count, 2);
+            assert_eq!(migration_count, 3);
 
             let owner: String = connection
                 .query_row(
@@ -451,11 +515,11 @@ mod tests {
             .query_row("SELECT COUNT(*) FROM schema_migrations", [], |row| row.get(0))
             .expect("migration count");
 
-        assert_eq!(migration_count, 2);
+        assert_eq!(migration_count, 3);
     }
 
     #[test]
-    fn schema_v1_migrates_to_v2() {
+    fn schema_v1_migrates_to_current_schema() {
         let mut connection = memory_connection();
 
         ensure_migration_table(&connection).expect("migration table");
@@ -466,9 +530,9 @@ mod tests {
             1
         );
 
-        let migrated = run_migrations(&mut connection).expect("migrate to v2");
+        let migrated = run_migrations(&mut connection).expect("migrate to current schema");
 
-        assert_eq!(migrated, 2);
+        assert_eq!(migrated, 3);
 
         let hierarchy_table_count: i64 = connection
             .query_row(
@@ -481,6 +545,106 @@ mod tests {
             .expect("hierarchy table count");
 
         assert_eq!(hierarchy_table_count, 5);
+    }
+
+    #[test]
+    fn schema_v2_migrates_to_v3_with_revision_foundation() {
+        let mut connection = memory_connection();
+
+        ensure_migration_table(&connection).expect("migration table");
+        apply_migration(&mut connection, MIGRATIONS[0]).expect("migration v1");
+        apply_migration(&mut connection, MIGRATIONS[1]).expect("migration v2");
+
+        assert_eq!(
+            current_schema_version(&connection).expect("schema version v2"),
+            2
+        );
+
+        let migrated = run_migrations(&mut connection).expect("migrate to v3");
+        assert_eq!(migrated, 3);
+
+        let revision_tables: i64 = connection
+            .query_row(
+                "SELECT COUNT(*) FROM pragma_table_list
+                 WHERE name IN ('scene_text_revisions', 'scene_revision_heads')
+                   AND strict = 1",
+                [],
+                |row| row.get(0),
+            )
+            .expect("revision tables");
+
+        assert_eq!(revision_tables, 2);
+
+        let trigger_count: i64 = connection
+            .query_row(
+                "SELECT COUNT(*) FROM sqlite_master
+                 WHERE type = 'trigger'
+                   AND name IN (
+                     'scene_text_revisions_immutable',
+                     'scene_text_revisions_no_delete',
+                     'scene_revision_heads_scene_id_immutable'
+                   )",
+                [],
+                |row| row.get(0),
+            )
+            .expect("revision trigger count");
+
+        assert_eq!(trigger_count, 3);
+    }
+
+    #[test]
+    fn revision_schema_enforces_append_only_history_and_same_scene_head() {
+        let connection = migrated_memory_connection();
+
+        insert_universe(&connection, "u1");
+        insert_novel(&connection, "n1", "u1", None, 0);
+        insert_chapter(&connection, "c1", "n1", 0);
+        insert_scene(&connection, "sc1", "c1", 0);
+        insert_scene(&connection, "sc2", "c1", 1);
+
+        connection
+            .execute(
+                "INSERT INTO scene_text_revisions
+                 (id, scene_id, revision_number, content)
+                 VALUES ('r1', 'sc1', 1, 'Version one')",
+                [],
+            )
+            .expect("insert revision");
+
+        let cross_scene_head = connection.execute(
+            "INSERT INTO scene_revision_heads (scene_id, revision_id)
+             VALUES ('sc2', 'r1')",
+            [],
+        );
+        assert!(
+            cross_scene_head.is_err(),
+            "head must point to a revision from the same scene"
+        );
+
+        connection
+            .execute(
+                "INSERT INTO scene_revision_heads (scene_id, revision_id)
+                 VALUES ('sc1', 'r1')",
+                [],
+            )
+            .expect("insert valid head");
+
+        assert!(
+            connection
+                .execute(
+                    "UPDATE scene_text_revisions SET content = 'mutated' WHERE id = 'r1'",
+                    [],
+                )
+                .is_err(),
+            "saved revisions must be immutable"
+        );
+
+        assert!(
+            connection
+                .execute("DELETE FROM scene_text_revisions WHERE id = 'r1'", [])
+                .is_err(),
+            "saved revisions must be append-only"
+        );
     }
 
     #[test]

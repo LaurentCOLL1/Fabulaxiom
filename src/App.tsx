@@ -79,7 +79,7 @@ function App() {
   return (
     <main className="app-shell">
       <section className="hero">
-        <p className="eyebrow">M1.3 · service CRUD sans IA</p>
+        <p className="eyebrow">M1.4 · révisions de texte et provenance</p>
         <h1>Fabulaxiom</h1>
         <p className="tagline">
           Mémoire narrative locale pour construire des romans, des sagas et des
@@ -96,8 +96,8 @@ function App() {
             <h2 id="diagnostics-title">Socle local</h2>
           </div>
           <p>
-            Le CRUD ci-dessus n'appelle jamais Ollama. Le contrôle Ollama reste
-            volontairement indépendant.
+            Le CRUD et les révisions de texte n'appellent jamais Ollama. Le contrôle
+            Ollama reste volontairement indépendant.
           </p>
         </div>
 
@@ -222,8 +222,9 @@ function App() {
       </section>
 
       <footer>
-        M1.3 ajoute le CRUD hiérarchique local sans dépendance Ollama. Les
-        fonctions narratives IA restent hors périmètre.
+        M1.4 ajoute l'historique immuable du texte de scène et son pointeur
+        courant, sans dépendance Ollama. Les fonctions narratives IA restent
+        hors périmètre.
       </footer>
     </main>
   );
