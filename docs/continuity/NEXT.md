@@ -4,42 +4,29 @@
 
 **M1.1 — SQLite foundation and migration runner**
 
-Status: **WINDOWS QUALIFIED — PR + EXACT-HEAD CI REQUIRED**
+Status:
+
+**QUALIFIED — FINAL EXACT-HEAD CI + MERGE REQUIRED**
 
 ## Qualified
 
-- exact M1.1 implementation fetched and tested on Windows
-- `rusqlite 0.40.2` bundled SQLite linkage
-- `Cargo.lock` updated and committed
-- Rust tests: 6/6 PASS
-- Cargo check `--locked`: PASS
-- frontend tests: 4/4 PASS
-- frontend build: PASS
-- Tauri launch: PASS
-- database status UI: PASS
-- database path under Tauri local app-data directory
-- schema version: 1
-- foreign keys: ON
-- migration record: `001_create_app_metadata`
-- schema owner: `fabulaxiom`
+- Windows implementation qualification: PASS
+- SQLite schema/migration evidence: PASS
+- dependency lock committed: PASS
+- exact-head CI on `59923690d08687efd42b452e3e29976131a4be8b`: PASS
+- CI run `37636677552`: `completed/success`
 
 ## Immediate sequence
 
-1. record the Windows qualification on the M1.1 branch;
-2. open the M1.1 pull request;
-3. run deterministic exact-head CI;
-4. require:
-   - `npm ci`;
-   - frontend tests/build;
-   - `cargo test --locked`;
-   - `cargo check --locked`;
-   - no dependency-lock mutation;
-5. correct any exact-head failure without bypass;
-6. when CI is fully green, mark M1.1 complete;
-7. merge with expected-head protection;
-8. re-fetch live `main`;
-9. perform post-merge continuity normalization;
-10. only then authorize M1.2.
+1. commit the recorded qualification evidence;
+2. run Fabulaxiom CI on that new exact head;
+3. require every deterministic check to pass;
+4. merge PR #5 with expected-head protection;
+5. re-fetch live `main`;
+6. create post-merge continuity normalization;
+7. require normalization CI success;
+8. merge normalization;
+9. only then authorize M1.2.
 
 ## Not authorized
 
