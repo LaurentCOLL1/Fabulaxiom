@@ -28,7 +28,7 @@ Architecture retenue :
 
 **M1 — Persistence and project foundation : IN PROGRESS**
 
-M1.1 — SQLite foundation and migration runner est **COMPLETE + MERGED**.
+M1.1 — SQLite foundation and migration runner est **COMPLETE + MERGED + NORMALIZED**.
 
 Le socle SQLite inclut désormais :
 
@@ -39,7 +39,7 @@ Le socle SQLite inclut désormais :
 - tests d'intégrité/rollback ;
 - qualification Windows et CI déterministe.
 
-La prochaine subdivision est :
+La subdivision actuellement autorisée est :
 
 **M1.2 — Project hierarchy schema**
 
