@@ -20,7 +20,7 @@ Deliverables completed:
 
 ## M1 — Persistence and project foundation
 
-**Status: IN PROGRESS**
+**Status: COMPLETE + MERGED + NORMALIZED**
 
 Detailed plan:
 `docs/roadmap/M1_PERSISTENCE_PROJECT_FOUNDATION.md`
@@ -31,7 +31,7 @@ Subdivision status:
 - M1.2 — Project hierarchy schema: **COMPLETE + MERGED + NORMALIZED**
 - M1.3 — No-AI CRUD service: **COMPLETE + MERGED + NORMALIZED**
 - M1.4 — Text revisions and provenance foundation: **COMPLETE + MERGED + NORMALIZED**
-- M1.5 — Backup and restore baseline: **AUTHORIZED / NEXT**
+- M1.5 — Backup and restore baseline: **COMPLETE + MERGED + NORMALIZED**
 
 M1 deliverables overall:
 
@@ -44,6 +44,10 @@ M1 deliverables overall:
 - backup/restore baseline.
 
 ## M2 — Narrative entities and canonical facts
+
+**Status: PLANNING AUTHORIZED / IMPLEMENTATION NOT YET AUTHORIZED**
+
+A detailed M2 roadmap and subdivision acceptance gates must be qualified before M2 code begins.
 
 Deliverables:
 

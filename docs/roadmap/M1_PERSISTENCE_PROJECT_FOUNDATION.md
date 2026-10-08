@@ -96,15 +96,27 @@ Delivered:
 
 ## M1.5 — Backup and restore baseline
 
-Status: **AUTHORIZED**
+Status: **COMPLETE + MERGED + NORMALIZED**
 
-Deliverables:
+Implementation merge:
 
-- application-level backup;
-- restore into a controlled location;
-- integrity verification;
-- tested recovery path.
+`282b325fb6c588a70df08a5128415c8fa0a0f72e`
+
+Delivered:
+
+- application-owned consistent SQLite snapshots using `VACUUM INTO`;
+- unique non-overwriting backup names;
+- validation of schema owner, migration lineage, foreign keys and integrity;
+- restore to a separately verified new SQLite file without overwriting the old database;
+- durable active-database marker and preservation of old backups;
+- minimal Tauri command boundary and React confirmation flow;
+- deterministic frontend/Rust tests and Windows Ollama-off qualification;
+- terminal CI on exact evidence SHA `152b40e616f40799abc61f9ce8db142e3b19340b`, run `37720676744` (success).
+
+Detailed evidence:
+
+`docs/qualification/M1_5_BACKUP_RESTORE_BASELINE.md`
 
 ## M1 completion
 
-M1 becomes COMPLETE only after all subdivisions are merged and normalized.
+**M1 is COMPLETE + MERGED + NORMALIZED.** M1.1–M1.5 have all been accepted. M2 requires its own detailed, approved plan before implementing new feature code.

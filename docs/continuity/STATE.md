@@ -14,7 +14,7 @@
 
 ### M1 — Persistence and project foundation
 
-**IN PROGRESS**
+**COMPLETE + MERGED + NORMALIZED**
 
 #### M1.1 — SQLite foundation and migration runner
 
@@ -202,41 +202,80 @@ Delivered M1.4 foundation:
 
 #### M1.5 — Backup and restore baseline
 
-**WINDOWS QUALIFIED — FINAL EXACT-HEAD CI AND MERGE PENDING**
+**COMPLETE + MERGED + NORMALIZED**
 
 Implementation PR: **#15 — feat: implement M1.5 safe SQLite backup and restore baseline**
 
-Branch: `feat/m1-5-backup-restore-baseline-20261008`
+Implementation merge:
 
-Base `main`: `2c942c5b58f316a5f02f69abfcf3883fb9d5929e`
+`282b325fb6c588a70df08a5128415c8fa0a0f72e`
 
 Windows-qualified implementation SHA:
 
 `7f968075f632843144c9833f61cc51910b538530`
 
-Pre-evidence exact-head CI:
+Windows qualification evidence commit:
 
-- workflow `Fabulaxiom CI`, run `37718677686`: `completed/success`;
-- frontend 13/13, Rust 37/37 PASS;
-- build, `cargo check --locked`, lockfile immutability PASS.
+`152b40e616f40799abc61f9ce8db142e3b19340b`
+
+Terminal exact-head CI:
+
+- workflow: `Fabulaxiom CI`;
+- run: `37720676744`;
+- result: `completed/success`;
+- frontend tests: 13/13 PASS;
+- Rust tests: 37/37 PASS;
+- frontend production build: PASS;
+- `cargo check --locked`: PASS;
+- dependency lockfiles unchanged.
 
 Windows qualification:
 
-- live main and PR head exact, clean worktree: PASS;
-- local frontend tests 13/13, Rust tests 37/37, production build/check: PASS;
-- schema v3, Rust bridge: PASS; Ollama `INDISPONIBLE` as required;
-- app-created, validated SQLite backup: PASS;
-- operator-reported new-file restore and UI reload: PASS;
-- hierarchy, three historical revisions and current revision retained: PASS;
-- backup location recorded in the detailed evidence;
-- historical M1.2/M1.4 operator backups not deleted or modified by this workflow;
-- three nonfatal Rust warnings observed, no compilation/test failure.
+- exact main/PR HEAD and local worktree clean: PASS;
+- SQLite schema v3 and Tauri/Rust bridge PASS;
+- Ollama unavailable as intended;
+- application-created verified backup: PASS;
+- UI-confirmed restore and reload: PASS;
+- 1 Universe, 1 Novel, 1 Scene, 3 revisions, 1 current revision head preserved;
+- previous active database is not overwritten by the restore design;
+- operator historic backups are preserved;
+- actual restored database path and independent post-restore integrity PRAGMAs were not supplied as evidence;
+- three nonfatal Rust unused-code warnings remain tracked.
 
 Detailed evidence:
 
 `docs/qualification/M1_5_BACKUP_RESTORE_BASELINE.md`
 
-M1.5 remains the only implementation subdivision authorized until merged and normalized. M1 is not COMPLETE. M2+ remain unauthorized.
+Delivered:
+
+- SQLite-consistent `VACUUM INTO` snapshot to app-owned unique backup files;
+- schema owner, migration and integrity validation;
+- new non-overwriting database file for restore;
+- durable activation marker and old database preservation;
+- deterministic Rust/Tauri errors and explicit restore confirmation;
+- React backup/list/restore controls without Ollama;
+- source preservation, failure and backup/restore automated tests.
+
+### M1 closure
+
+M1.1–M1.5 are all **COMPLETE + MERGED + NORMALIZED**. M1's database, hierarchy, revision history and backup/restore baseline are delivered and qualified. This is **not** a declaration that V1 as a whole is complete.
+
+### M2 — Narrative entities and canonical facts
+
+**NEXT — PLANNING AUTHORIZED ONLY**
+
+Detailed M2 subdivisions and acceptance rules must be designed and committed before any M2 implementation branch is authorized.
+
+M2 planning scope from `docs/roadmap/FABULAXIOM_ROADMAP_V1.md`:
+
+- entities: characters, places, organizations, objects, events, world rules;
+- aliases and renames with stable identity;
+- source/provenance to scene text revision/passage;
+- canon/draft/suggestion/variant/unknown/ambiguous/contradictory statuses;
+- temporal validity and uncertainty;
+- human approval before any AI suggestion becomes canonical.
+
+M2 implementation and M3+ remain unauthorized until the specific detailed M2 authority is accepted.
 
 ## Reproducibility contract
 
