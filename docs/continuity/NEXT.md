@@ -51,7 +51,28 @@ Accepted plan: `docs/roadmap/M2_NARRATIVE_ENTITIES_CANONICAL_FACTS.md`.
 
 ## Only authorized implementation
 
-**M2.1 — Entity registry schema and migration: AUTHORIZED**
+**M2.1 — Entity registry schema and migration: WINDOWS QUALIFIED / EXACT-HEAD CI PENDING**
+
+Implementation PR: **#20 — feat: implement M2.1 narrative entity registry schema v4**.
+
+Branch: `feat/m2-1-entity-registry-schema-20261008`
+
+Qualified implementation SHA: `c7a663d88ba2538714d42fdd366719cd54fe6f70`.
+
+Pre-evidence exact-head CI run `37795098224`: `completed/success`; frontend 13/13, Rust 44/44, build/check/lockfiles PASS.
+
+Real Windows v3→v4 qualification PASS. The actual restored active database, activation marker, v3 backup hash, M1 table rows, scene revisions/current head and SQLite v4 integrity were independently checked. Detailed report: `docs/qualification/M2_1_ENTITY_REGISTRY_SCHEMA.md`.
+
+## Required next gates
+
+1. commit the operator Windows qualification evidence on PR #20;
+2. require **new terminal `Fabulaxiom CI` on the evidence commit exact SHA**; earlier CI is historical;
+3. only with successful exact-head CI, re-fetch live main/PR and merge #20 with expected-head protection;
+4. re-fetch post-merge live `main`;
+5. create a separate M2.1 post-merge authority normalization PR, qualify its own exact-head CI and merge;
+6. only then confirm whether M2.2 is authorized from the live normalized authorities.
+
+**M2.2–M2.5 and M3+ remain unauthorized until the appropriate gates.**
 
 - Schema v3 → v4, additive and migration-safe;
 - `STRICT` Universe-scoped entities for six kinds: character, place, organization, object, event, world_rule;

@@ -10,7 +10,7 @@ use rusqlite::{params, Connection, Transaction};
 use tauri::Manager;
 
 pub const DATABASE_FILENAME: &str = "fabulaxiom.sqlite3";
-pub const CURRENT_SCHEMA_VERSION: i64 = 3;
+pub const CURRENT_SCHEMA_VERSION: i64 = 4;
 
 const MIGRATION_TABLE_SQL: &str = r#"
 CREATE TABLE IF NOT EXISTS schema_migrations (
@@ -215,6 +215,81 @@ BEFORE UPDATE OF scene_id ON scene_revision_heads
 WHEN NEW.scene_id <> OLD.scene_id
 BEGIN
     SELECT RAISE(ABORT, 'scene revision head scene id is immutable');
+END;
+"#,
+    },
+    Migration {
+        version: 4,
+        name: "004_create_narrative_entity_registry",
+        sql: r#"
+-- Universe-scoped entities. Distinct entities may intentionally share a name.
+-- Kind and owning Universe form immutable identity; only display name can change.
+CREATE TABLE narrative_entities (
+    id TEXT PRIMARY KEY NOT NULL CHECK (length(trim(id)) > 0),
+    universe_id TEXT NOT NULL,
+    kind TEXT NOT NULL CHECK (
+        kind IN (
+            'character',
+            'place',
+            'organization',
+            'object',
+            'event',
+            'world_rule'
+        )
+    ),
+    name TEXT NOT NULL CHECK (length(trim(name)) > 0),
+    created_at_utc TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE (id, universe_id),
+    FOREIGN KEY (universe_id)
+        REFERENCES universes(id)
+        ON UPDATE RESTRICT
+        ON DELETE RESTRICT
+) STRICT;
+
+CREATE INDEX idx_narrative_entities_universe_kind
+    ON narrative_entities(universe_id, kind, id);
+
+CREATE TABLE entity_aliases (
+    id TEXT PRIMARY KEY NOT NULL CHECK (length(trim(id)) > 0),
+    entity_id TEXT NOT NULL,
+    universe_id TEXT NOT NULL,
+    alias TEXT NOT NULL CHECK (length(trim(alias)) > 0),
+    UNIQUE (entity_id, alias),
+    FOREIGN KEY (entity_id, universe_id)
+        REFERENCES narrative_entities(id, universe_id)
+        ON UPDATE RESTRICT
+        ON DELETE RESTRICT
+) STRICT;
+
+CREATE INDEX idx_entity_aliases_entity_scope
+    ON entity_aliases(entity_id, universe_id);
+
+CREATE TRIGGER narrative_entities_id_immutable
+BEFORE UPDATE OF id ON narrative_entities
+WHEN NEW.id <> OLD.id
+BEGIN
+    SELECT RAISE(ABORT, 'narrative entity id is immutable');
+END;
+
+CREATE TRIGGER narrative_entities_identity_immutable
+BEFORE UPDATE OF universe_id, kind ON narrative_entities
+WHEN NEW.universe_id <> OLD.universe_id OR NEW.kind <> OLD.kind
+BEGIN
+    SELECT RAISE(ABORT, 'narrative entity ownership and kind are immutable');
+END;
+
+CREATE TRIGGER entity_aliases_id_immutable
+BEFORE UPDATE OF id ON entity_aliases
+WHEN NEW.id <> OLD.id
+BEGIN
+    SELECT RAISE(ABORT, 'entity alias id is immutable');
+END;
+
+CREATE TRIGGER entity_aliases_ownership_immutable
+BEFORE UPDATE OF entity_id, universe_id ON entity_aliases
+WHEN NEW.entity_id <> OLD.entity_id OR NEW.universe_id <> OLD.universe_id
+BEGIN
+    SELECT RAISE(ABORT, 'entity alias ownership is immutable');
 END;
 "#,
     },
@@ -486,7 +561,7 @@ mod tests {
                 .query_row("SELECT COUNT(*) FROM schema_migrations", [], |row| row.get(0))
                 .expect("migration count");
 
-            assert_eq!(migration_count, 3);
+            assert_eq!(migration_count, 4);
 
             let owner: String = connection
                 .query_row(
@@ -516,7 +591,7 @@ mod tests {
             .query_row("SELECT COUNT(*) FROM schema_migrations", [], |row| row.get(0))
             .expect("migration count");
 
-        assert_eq!(migration_count, 3);
+        assert_eq!(migration_count, 4);
     }
 
     #[test]
@@ -533,7 +608,7 @@ mod tests {
 
         let migrated = run_migrations(&mut connection).expect("migrate to current schema");
 
-        assert_eq!(migrated, 3);
+        assert_eq!(migrated, 4);
 
         let hierarchy_table_count: i64 = connection
             .query_row(
@@ -562,7 +637,7 @@ mod tests {
         );
 
         let migrated = run_migrations(&mut connection).expect("migrate to v3");
-        assert_eq!(migrated, 3);
+        assert_eq!(migrated, 4);
 
         let revision_tables: i64 = connection
             .query_row(
@@ -646,6 +721,311 @@ mod tests {
                 .is_err(),
             "saved revisions must be append-only"
         );
+    }
+
+    #[test]
+    fn schema_v3_migrates_to_v4_without_losing_revision_history() {
+        let mut connection = memory_connection();
+        ensure_migration_table(&connection).expect("migration table");
+
+        for migration in &MIGRATIONS[..3] {
+            apply_migration(&mut connection, *migration).expect("apply pre-v4 migration");
+        }
+        assert_eq!(current_schema_version(&connection).expect("v3"), 3);
+
+        insert_universe(&connection, "u1");
+        insert_novel(&connection, "n1", "u1", None, 0);
+        insert_chapter(&connection, "c1", "n1", 0);
+        insert_scene(&connection, "sc1", "c1", 0);
+
+        for (id, number, parent, content) in [
+            ("r1", 1, None, "Début"),
+            ("r2", 2, Some("r1"), "Suite"),
+            ("r3", 3, Some("r1"), "Nouvelle variante"),
+        ] {
+            connection
+                .execute(
+                    "INSERT INTO scene_text_revisions
+                     (id, scene_id, revision_number, content, parent_revision_id)
+                     VALUES (?1, 'sc1', ?2, ?3, ?4)",
+                    params![id, number, content, parent],
+                )
+                .expect("insert pre-v4 text revision");
+        }
+        connection
+            .execute(
+                "INSERT INTO scene_revision_heads (scene_id, revision_id)
+                 VALUES ('sc1', 'r3')",
+                [],
+            )
+            .expect("current revision head");
+
+        assert_eq!(run_migrations(&mut connection).expect("v4 upgrade"), 4);
+        assert_eq!(run_migrations(&mut connection).expect("idempotent rerun"), 4);
+
+        let migration_count: i64 = connection
+            .query_row("SELECT COUNT(*) FROM schema_migrations", [], |row| row.get(0))
+            .expect("migration count");
+        assert_eq!(migration_count, 4);
+
+        let revision_count: i64 = connection
+            .query_row(
+                "SELECT COUNT(*) FROM scene_text_revisions WHERE scene_id = 'sc1'",
+                [],
+                |row| row.get(0),
+            )
+            .expect("revision count");
+        assert_eq!(revision_count, 3);
+
+        let head: String = connection
+            .query_row(
+                "SELECT revision_id FROM scene_revision_heads WHERE scene_id = 'sc1'",
+                [],
+                |row| row.get(0),
+            )
+            .expect("current head");
+        assert_eq!(head, "r3");
+
+        let quoted: String = connection
+            .query_row(
+                "SELECT content FROM scene_text_revisions WHERE id = 'r1'",
+                [],
+                |row| row.get(0),
+            )
+            .expect("immutable original text");
+        assert_eq!(quoted, "Début");
+
+        let strict_count: i64 = connection
+            .query_row(
+                "SELECT COUNT(*) FROM pragma_table_list
+                 WHERE name IN ('narrative_entities', 'entity_aliases') AND strict = 1",
+                [],
+                |row| row.get(0),
+            )
+            .expect("strict registry");
+        assert_eq!(strict_count, 2);
+
+        let failures: i64 = connection
+            .query_row("SELECT COUNT(*) FROM pragma_foreign_key_check", [], |row| row.get(0))
+            .expect("foreign-key check");
+        assert_eq!(failures, 0);
+        let integrity: String = connection
+            .query_row("PRAGMA integrity_check", [], |row| row.get(0))
+            .expect("integrity");
+        assert_eq!(integrity, "ok");
+    }
+
+    #[test]
+    fn entity_registry_accepts_six_kinds_and_duplicate_names() {
+        let connection = migrated_memory_connection();
+        insert_universe(&connection, "u1");
+        insert_universe(&connection, "u2");
+
+        let kinds = [
+            "character",
+            "place",
+            "organization",
+            "object",
+            "event",
+            "world_rule",
+        ];
+
+        for (index, kind) in kinds.iter().enumerate() {
+            connection
+                .execute(
+                    "INSERT INTO narrative_entities (id, universe_id, kind, name)
+                     VALUES (?1, 'u1', ?2, 'Same display name')",
+                    params![format!("e{index}"), kind],
+                )
+                .expect("supported kind");
+        }
+
+        connection
+            .execute(
+                "INSERT INTO narrative_entities (id, universe_id, kind, name)
+                 VALUES ('elsewhere', 'u2', 'character', 'Same display name')",
+                [],
+            )
+            .expect("name duplicates across universes are allowed");
+
+        let count: i64 = connection
+            .query_row("SELECT COUNT(*) FROM narrative_entities", [], |row| row.get(0))
+            .expect("entity count");
+        assert_eq!(count, 7);
+
+        assert!(
+            connection
+                .execute(
+                    "INSERT INTO narrative_entities (id, universe_id, kind, name)
+                     VALUES ('invalid', 'u1', 'creature', 'Unknown kind')",
+                    [],
+                )
+                .is_err()
+        );
+        assert!(
+            connection
+                .execute(
+                    "INSERT INTO narrative_entities (id, universe_id, kind, name)
+                     VALUES ('blank', 'u1', 'character', '  ')",
+                    [],
+                )
+                .is_err()
+        );
+        assert!(
+            connection
+                .execute(
+                    "INSERT INTO narrative_entities (id, universe_id, kind, name)
+                     VALUES ('missing', 'no-universe', 'place', 'Orphan')",
+                    [],
+                )
+                .is_err()
+        );
+
+        connection
+            .execute(
+                "UPDATE narrative_entities SET name = 'New display name' WHERE id = 'e0'",
+                [],
+            )
+            .expect("rename preserves entity identity");
+
+        for sql in [
+            "UPDATE narrative_entities SET id = 'new-id' WHERE id = 'e0'",
+            "UPDATE narrative_entities SET universe_id = 'u2' WHERE id = 'e0'",
+            "UPDATE narrative_entities SET kind = 'place' WHERE id = 'e0'",
+        ] {
+            assert!(connection.execute(sql, []).is_err(), "{sql}");
+        }
+
+        assert!(
+            connection
+                .execute("DELETE FROM universes WHERE id = 'u1'", [])
+                .is_err(),
+            "universe with entities must be restricted"
+        );
+    }
+
+    #[test]
+    fn aliases_have_distinct_immutable_identity_and_strict_owner() {
+        let connection = migrated_memory_connection();
+        insert_universe(&connection, "u1");
+        insert_universe(&connection, "u2");
+
+        connection
+            .execute(
+                "INSERT INTO narrative_entities (id, universe_id, kind, name)
+                 VALUES ('e1', 'u1', 'character', 'Elise')",
+                [],
+            )
+            .expect("first character");
+        connection
+            .execute(
+                "INSERT INTO narrative_entities (id, universe_id, kind, name)
+                 VALUES ('e2', 'u2', 'character', 'Elise')",
+                [],
+            )
+            .expect("second character");
+
+        connection
+            .execute(
+                "INSERT INTO entity_aliases (id, entity_id, universe_id, alias)
+                 VALUES ('a1', 'e1', 'u1', 'Éli')",
+                [],
+            )
+            .expect("alias");
+
+        connection
+            .execute(
+                "INSERT INTO entity_aliases (id, entity_id, universe_id, alias)
+                 VALUES ('a2', 'e2', 'u2', 'Éli')",
+                [],
+            )
+            .expect("same alias may exist in other universe");
+
+        for sql in [
+            "INSERT INTO entity_aliases (id, entity_id, universe_id, alias) VALUES ('a3', 'e1', 'u1', 'Éli')",
+            "INSERT INTO entity_aliases (id, entity_id, universe_id, alias) VALUES ('a3', 'e1', 'u2', 'Mismatch')",
+            "INSERT INTO entity_aliases (id, entity_id, universe_id, alias) VALUES ('a3', 'missing', 'u1', 'Orphan')",
+            "INSERT INTO entity_aliases (id, entity_id, universe_id, alias) VALUES ('a3', 'e1', 'u1', '   ')",
+            "UPDATE entity_aliases SET id = 'new' WHERE id = 'a1'",
+            "UPDATE entity_aliases SET entity_id = 'e2' WHERE id = 'a1'",
+            "UPDATE entity_aliases SET universe_id = 'u2' WHERE id = 'a1'",
+        ] {
+            assert!(connection.execute(sql, []).is_err(), "{sql}");
+        }
+
+        connection
+            .execute(
+                "UPDATE entity_aliases SET alias = 'Elly' WHERE id = 'a1'",
+                [],
+            )
+            .expect("editable alias text");
+
+        assert!(
+            connection
+                .execute("DELETE FROM narrative_entities WHERE id = 'e1'", [])
+                .is_err(),
+            "entity with aliases cannot be deleted"
+        );
+    }
+
+    #[test]
+    fn entity_registry_transaction_failure_rolls_back_all_changes() {
+        let mut connection = migrated_memory_connection();
+        insert_universe(&connection, "u1");
+
+        let result = with_transaction(&mut connection, |transaction| {
+            transaction.execute(
+                "INSERT INTO narrative_entities (id, universe_id, kind, name)
+                 VALUES ('e1', 'u1', 'character', 'Name')",
+                [],
+            )?;
+            transaction.execute(
+                "INSERT INTO entity_aliases (id, entity_id, universe_id, alias)
+                 VALUES ('bad', 'e1', 'unknown', 'Invalid owner')",
+                [],
+            )?;
+            Ok(())
+        });
+
+        assert!(result.is_err(), "composite operation must fail");
+        let count: i64 = connection
+            .query_row("SELECT COUNT(*) FROM narrative_entities", [], |row| row.get(0))
+            .expect("entity count");
+        assert_eq!(count, 0, "failed transaction cannot leave a partial entity");
+    }
+
+    #[test]
+    fn v4_fresh_schema_has_expected_immutable_triggers_and_indexes() {
+        let connection = migrated_memory_connection();
+        let trigger_count: i64 = connection
+            .query_row(
+                "SELECT COUNT(*) FROM sqlite_master
+                 WHERE type='trigger' AND name IN (
+                   'narrative_entities_id_immutable',
+                   'narrative_entities_identity_immutable',
+                   'entity_aliases_id_immutable',
+                   'entity_aliases_ownership_immutable'
+                 )",
+                [],
+                |row| row.get(0),
+            )
+            .expect("registry triggers");
+        assert_eq!(trigger_count, 4);
+
+        let index_count: i64 = connection
+            .query_row(
+                "SELECT COUNT(*) FROM sqlite_master
+                 WHERE type='index' AND name IN (
+                   'idx_narrative_entities_universe_kind',
+                   'idx_entity_aliases_entity_scope'
+                 )",
+                [],
+                |row| row.get(0),
+            )
+            .expect("registry indexes");
+        assert_eq!(index_count, 2);
+
+        assert!(foreign_keys_enabled(&connection).expect("foreign keys"));
     }
 
     #[test]

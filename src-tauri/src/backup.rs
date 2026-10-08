@@ -88,6 +88,8 @@ pub struct DataCounts {
     pub scenes: i64,
     pub revisions: i64,
     pub current_heads: i64,
+    pub entities: i64,
+    pub aliases: i64,
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -276,14 +278,20 @@ fn validate_connection(connection: &Connection) -> Result<DataCounts, BackupErro
         (1, "001_create_app_metadata"),
         (2, "002_create_project_hierarchy"),
         (3, "003_create_scene_text_revisions"),
+        (4, "004_create_narrative_entity_registry"),
     ];
-    if migrations.len() != CURRENT_SCHEMA_VERSION as usize ||
-       migrations.iter().zip(expected).any(|((version, name), (v, n))| *version != v || name != n)
+    // M1.5 application backups created before schema v4 remain restorable.
+    // Every version and name must form an exact supported migration prefix.
+    let supported_version = migrations.len() == CURRENT_SCHEMA_VERSION as usize
+        || migrations.len() == (CURRENT_SCHEMA_VERSION - 1) as usize;
+    if !supported_version
+        || migrations.iter().zip(expected).any(|((version, name), (v, n))| *version != v || name != n)
     {
         return Err(BackupError::Integrity(
             "Version ou lineage de migrations non prise en charge.".to_string(),
         ));
     }
+    let has_entity_registry = migrations.len() == CURRENT_SCHEMA_VERSION as usize;
     fn count(connection: &Connection, table: &str) -> Result<i64, BackupError> {
         // Names in this match are fixed by the application, never supplied by callers.
         let sql = match table {
@@ -306,6 +314,16 @@ fn validate_connection(connection: &Connection) -> Result<DataCounts, BackupErro
         scenes: count(connection, "scenes")?,
         revisions: count(connection, "scene_text_revisions")?,
         current_heads: count(connection, "scene_revision_heads")?,
+        entities: if has_entity_registry {
+            connection.query_row("SELECT COUNT(*) FROM narrative_entities", [], |r| r.get(0))?
+        } else {
+            0
+        },
+        aliases: if has_entity_registry {
+            connection.query_row("SELECT COUNT(*) FROM entity_aliases", [], |r| r.get(0))?
+        } else {
+            0
+        },
     })
 }
 
@@ -450,23 +468,48 @@ pub fn restore_backup(root: &Path, backup_name: &str) -> Result<RestoreResult, B
     // Reject links, corrupted databases, unrelated SQLite files and unsupported schema versions.
     let source_counts = read_validated_database(&backup_path)?;
     let source = Connection::open_with_flags(&backup_path, OpenFlags::SQLITE_OPEN_READ_ONLY)?;
+    let source_version: i64 = source.query_row(
+        "SELECT COALESCE(MAX(version), 0) FROM schema_migrations",
+        [],
+        |row| row.get(0),
+    )?;
 
     let (file_name, restored) =
         reserve_unique_file(&database_directory(root), RESTORED_PREFIX)?;
-    let copy = vacuum_copy(&source, &restored);
-    let result = match copy {
-        Ok(counts) => counts,
+    // The activation marker is deliberately not modified until this entire
+    // copy/upgrade/verification sequence has succeeded.
+    let copy_and_upgrade = (|| -> Result<DataCounts, BackupError> {
+        let copy_counts = vacuum_copy(&source, &restored)?;
+        if copy_counts != source_counts {
+            return Err(BackupError::Integrity(
+                "La restauration ne conserve pas tous les compteurs.".to_string(),
+            ));
+        }
+        if source_version < CURRENT_SCHEMA_VERSION {
+            // Upgrade only the fresh restored file, NEVER the original backup.
+            let migrated = database::open_database(&restored)
+                .map_err(|error| BackupError::Integrity(format!(
+                    "Migration de la copie restaurée impossible : {error}"
+                )))?;
+            drop(migrated);
+        }
+        let verified = read_validated_database(&restored)?;
+        if verified != source_counts {
+            return Err(BackupError::Integrity(
+                "Les données de la restauration migrée ont changé.".to_string(),
+            ));
+        }
+        OpenOptions::new().write(true).open(&restored)?.sync_all()?;
+        Ok(verified)
+    })();
+    let result = match copy_and_upgrade {
+        Ok(result) => result,
         Err(error) => {
+            // The new, still-inactive restore file is owned by this attempt.
             let _ = fs::remove_file(&restored);
             return Err(error);
         }
     };
-    if result != source_counts {
-        let _ = fs::remove_file(&restored);
-        return Err(BackupError::Integrity(
-            "La restauration ne conserve pas tous les compteurs.".to_string(),
-        ));
-    }
     activate_new_database(root, &file_name)?;
     Ok(RestoreResult {
         previous_database_path: string_path(&previous),
@@ -505,7 +548,7 @@ mod tests {
         let live = seeded(&dir);
         let created = create_backup(&dir).unwrap();
         assert!(Path::new(&created.backup.path).exists());
-        assert_eq!(created.schema_version, 3);
+        assert_eq!(created.schema_version, 4);
         assert_eq!(created.counts.revisions, 1);
         assert_eq!(created.counts.current_heads, 1);
         assert_eq!(list_backups(&dir).unwrap().len(), 1);
@@ -513,6 +556,129 @@ mod tests {
         assert_eq!(validate_connection(&db).unwrap().revisions, 1);
         drop(db);
         fs::remove_dir_all(dir).unwrap();
+    }
+
+    #[test]
+    fn v4_backup_restore_preserves_entity_registry_and_aliases() {
+        let dir = root("entity-registry");
+        let live = seeded(&dir);
+        {
+            let connection = database::open_database(&live).expect("v4 database");
+            connection
+                .execute(
+                    "INSERT INTO narrative_entities (id, universe_id, kind, name)
+                     VALUES ('entity-1', 'u1', 'character', 'Ariane')",
+                    [],
+                )
+                .expect("entity");
+            connection
+                .execute(
+                    "INSERT INTO entity_aliases (id, entity_id, universe_id, alias)
+                     VALUES ('alias-1', 'entity-1', 'u1', 'Ari')",
+                    [],
+                )
+                .expect("alias");
+        }
+
+        let saved = create_backup(&dir).expect("backup");
+        assert_eq!(saved.schema_version, 4);
+        assert_eq!(saved.counts.entities, 1);
+        assert_eq!(saved.counts.aliases, 1);
+        assert_eq!(saved.counts.revisions, 1);
+
+        let restored = restore_backup(&dir, &saved.backup.file_name).expect("restore");
+        assert_eq!(restored.schema_version, 4);
+        assert_eq!(restored.counts.entities, 1);
+        assert_eq!(restored.counts.aliases, 1);
+        let active = database::open_database(Path::new(&restored.active_database_path))
+            .expect("active restored");
+        let alias: String = active
+            .query_row(
+                "SELECT alias FROM entity_aliases WHERE id = 'alias-1'",
+                [],
+                |row| row.get(0),
+            )
+            .expect("persisted alias");
+        assert_eq!(alias, "Ari");
+        drop(active);
+        fs::remove_dir_all(dir).expect("cleanup temp fixture");
+    }
+
+    #[test]
+    fn legacy_v3_backup_restores_into_new_v4_copy_without_changing_backup() {
+        let dir = root("legacy-v3-to-v4");
+        let live = seeded(&dir);
+
+        {
+            let connection = database::open_database(&live).expect("seeded v4");
+            connection
+                .execute_batch(
+                    "DROP TABLE entity_aliases;
+                     DROP TABLE narrative_entities;
+                     DELETE FROM schema_migrations WHERE version = 4;",
+                )
+                .expect("prepare legacy v3 fixture");
+        }
+
+        let (backup_name, legacy_backup) =
+            reserve_unique_file(&backup_directory(&dir), BACKUP_PREFIX)
+                .expect("reserved legacy backup");
+        {
+            let connection = Connection::open_with_flags(&live, OpenFlags::SQLITE_OPEN_READ_ONLY)
+                .expect("legacy v3 source");
+            let destination = legacy_backup.to_str().expect("test path is UTF-8");
+            connection
+                .execute("VACUUM INTO ?1", params![destination])
+                .expect("legacy application backup");
+        }
+        assert_eq!(
+            read_validated_database(&legacy_backup)
+                .expect("legacy backup accepted")
+                .revisions,
+            1
+        );
+        let original_bytes = fs::read(&legacy_backup).expect("legacy bytes");
+        let restored = restore_backup(&dir, &backup_name).expect("safe legacy restore");
+
+        assert_ne!(restored.active_database_path, restored.previous_database_path);
+        assert_eq!(restored.schema_version, 4);
+        assert_eq!(restored.counts.revisions, 1);
+        assert_eq!(restored.counts.entities, 0);
+        assert_eq!(restored.counts.aliases, 0);
+        assert_eq!(
+            resolve_active_database_path(&dir).expect("activation marker"),
+            PathBuf::from(&restored.active_database_path)
+        );
+
+        let upgraded = database::open_database(Path::new(&restored.active_database_path))
+            .expect("upgraded restored database");
+        assert_eq!(
+            database::current_schema_version(&upgraded).expect("new schema"),
+            4
+        );
+        let head: String = upgraded
+            .query_row(
+                "SELECT revision_id FROM scene_revision_heads WHERE scene_id = 's1'",
+                [],
+                |row| row.get(0),
+            )
+            .expect("revision head");
+        assert_eq!(head, "r1");
+        drop(upgraded);
+
+        assert_eq!(
+            fs::read(&legacy_backup).expect("unchanged backup"),
+            original_bytes
+        );
+        let old = Connection::open_with_flags(&live, OpenFlags::SQLITE_OPEN_READ_ONLY)
+            .expect("old database");
+        assert_eq!(
+            database::current_schema_version(&old).expect("old schema unchanged"),
+            3
+        );
+        drop(old);
+
+        fs::remove_dir_all(dir).expect("remove isolated test fixtures");
     }
 
     #[test]
