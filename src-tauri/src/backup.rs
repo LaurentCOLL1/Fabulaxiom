@@ -605,6 +605,83 @@ mod tests {
     }
 
     #[test]
+    fn legacy_v3_backup_restores_into_new_v4_copy_without_changing_backup() {
+        let dir = root("legacy-v3-to-v4");
+        let live = seeded(&dir);
+
+        {
+            let connection = database::open_database(&live).expect("seeded v4");
+            connection
+                .execute_batch(
+                    "DROP TABLE entity_aliases;
+                     DROP TABLE narrative_entities;
+                     DELETE FROM schema_migrations WHERE version = 4;",
+                )
+                .expect("prepare legacy v3 fixture");
+        }
+
+        let (backup_name, legacy_backup) =
+            reserve_unique_file(&backup_directory(&dir), BACKUP_PREFIX)
+                .expect("reserved legacy backup");
+        {
+            let connection = Connection::open_with_flags(&live, OpenFlags::SQLITE_OPEN_READ_ONLY)
+                .expect("legacy v3 source");
+            let destination = legacy_backup.to_str().expect("test path is UTF-8");
+            connection
+                .execute("VACUUM INTO ?1", params![destination])
+                .expect("legacy application backup");
+        }
+        assert_eq!(
+            read_validated_database(&legacy_backup)
+                .expect("legacy backup accepted")
+                .revisions,
+            1
+        );
+        let original_bytes = fs::read(&legacy_backup).expect("legacy bytes");
+        let restored = restore_backup(&dir, &backup_name).expect("safe legacy restore");
+
+        assert_ne!(restored.active_database_path, restored.previous_database_path);
+        assert_eq!(restored.schema_version, 4);
+        assert_eq!(restored.counts.revisions, 1);
+        assert_eq!(restored.counts.entities, 0);
+        assert_eq!(restored.counts.aliases, 0);
+        assert_eq!(
+            resolve_active_database_path(&dir).expect("activation marker"),
+            PathBuf::from(&restored.active_database_path)
+        );
+
+        let upgraded = database::open_database(Path::new(&restored.active_database_path))
+            .expect("upgraded restored database");
+        assert_eq!(
+            database::current_schema_version(&upgraded).expect("new schema"),
+            4
+        );
+        let head: String = upgraded
+            .query_row(
+                "SELECT revision_id FROM scene_revision_heads WHERE scene_id = 's1'",
+                [],
+                |row| row.get(0),
+            )
+            .expect("revision head");
+        assert_eq!(head, "r1");
+        drop(upgraded);
+
+        assert_eq!(
+            fs::read(&legacy_backup).expect("unchanged backup"),
+            original_bytes
+        );
+        let old = Connection::open_with_flags(&live, OpenFlags::SQLITE_OPEN_READ_ONLY)
+            .expect("old database");
+        assert_eq!(
+            database::current_schema_version(&old).expect("old schema unchanged"),
+            3
+        );
+        drop(old);
+
+        fs::remove_dir_all(dir).expect("remove isolated test fixtures");
+    }
+
+    #[test]
     fn restore_activates_new_file_and_preserves_original_and_provenance() {
         let dir = root("restore");
         let live = seeded(&dir);
