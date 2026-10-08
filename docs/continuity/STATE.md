@@ -202,7 +202,13 @@ Delivered M1.4 foundation:
 
 #### M1.5 — Backup and restore baseline
 
-**AUTHORIZED**
+**IN PROGRESS**
+
+Branch: `feat/m1-5-backup-restore-baseline-20261008`
+
+Base `main`: `2c942c5b58f316a5f02f69abfcf3883fb9d5929e`
+
+M1.5 is the only authorized implementation subdivision; M2+ remain forbidden.
 
 M1.5 is now the only authorized implementation subdivision.
 
