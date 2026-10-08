@@ -6,6 +6,7 @@ import {
   type ReactNode,
 } from "react";
 import { invoke } from "@tauri-apps/api/core";
+import RevisionWorkspace from "./RevisionWorkspace";
 import {
   formatHierarchyError,
   newHierarchyId,
@@ -141,6 +142,7 @@ export default function HierarchyWorkspace() {
   const [selectedUniverseId, setSelectedUniverseId] = useState("");
   const [selectedNovelId, setSelectedNovelId] = useState("");
   const [selectedChapterId, setSelectedChapterId] = useState("");
+  const [selectedSceneId, setSelectedSceneId] = useState("");
   const [universeName, setUniverseName] = useState("");
   const [seriesName, setSeriesName] = useState("");
   const [novelTitle, setNovelTitle] = useState("");
@@ -240,6 +242,16 @@ export default function HierarchyWorkspace() {
 
   useEffect(() => {
     if (
+      selectedSceneId &&
+      selectedChapterScenes.some((item) => item.id === selectedSceneId)
+    ) {
+      return;
+    }
+    setSelectedSceneId(selectedChapterScenes[0]?.id ?? "");
+  }, [selectedChapterScenes, selectedSceneId]);
+
+  useEffect(() => {
+    if (
       novelSeriesId &&
       !universeSeries.some((item) => item.id === novelSeriesId)
     ) {
@@ -328,6 +340,9 @@ export default function HierarchyWorkspace() {
   );
   const selectedChapter = snapshot.chapters.find(
     (item) => item.id === selectedChapterId,
+  );
+  const selectedScene = snapshot.scenes.find(
+    (item) => item.id === selectedSceneId,
   );
 
   return (
@@ -646,7 +661,9 @@ export default function HierarchyWorkspace() {
                 key={item.id}
                 id={item.id}
                 label={item.title}
+                selected={item.id === selectedSceneId}
                 busy={busy}
+                onOpen={() => setSelectedSceneId(item.id)}
                 onRename={(value) =>
                   mutate("rename_scene", { id: item.id, value })
                 }
@@ -678,9 +695,18 @@ export default function HierarchyWorkspace() {
         </section>
       </div>
 
+      <RevisionWorkspace
+        scene={
+          selectedScene
+            ? { id: selectedScene.id, title: selectedScene.title }
+            : null
+        }
+      />
+
       <p className="workspace-note">
         Les suppressions suivent les contraintes SQLite RESTRICT : un parent
         contenant encore des enfants est refusé avec une erreur déterministe.
+        Une scène possédant des révisions est également protégée.
       </p>
     </section>
   );

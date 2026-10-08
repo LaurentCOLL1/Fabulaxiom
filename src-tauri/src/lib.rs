@@ -1,6 +1,8 @@
 mod database;
 mod hierarchy;
 mod hierarchy_commands;
+mod revision_commands;
+mod revisions;
 
 use std::time::Duration;
 
@@ -9,6 +11,9 @@ use hierarchy_commands::{
     delete_novel, delete_scene, delete_series, delete_universe, hierarchy_snapshot, rename_chapter,
     rename_novel, rename_scene, rename_series, rename_universe, reorder_chapter, reorder_novel,
     reorder_scene, reorder_series, set_novel_series,
+};
+use revision_commands::{
+    create_scene_text_revision, scene_revision_history, set_current_scene_revision,
 };
 use reqwest::{redirect::Policy, Client};
 use serde::{Deserialize, Serialize};
@@ -49,7 +54,7 @@ struct DatabaseStatus {
 fn bootstrap_status() -> BootstrapStatus {
     BootstrapStatus {
         app_name: "Fabulaxiom",
-        milestone: "M1.3 no-AI CRUD service",
+        milestone: "M1.4 text revisions and provenance foundation",
         rust_bridge: "React -> Tauri -> Rust operational",
     }
 }
@@ -220,7 +225,10 @@ pub fn run() {
             create_scene,
             rename_scene,
             reorder_scene,
-            delete_scene
+            delete_scene,
+            scene_revision_history,
+            create_scene_text_revision,
+            set_current_scene_revision
         ])
         .run(tauri::generate_context!())
         .expect("error while running Fabulaxiom");

@@ -1135,13 +1135,29 @@ pub fn rename_scene(
 
 pub fn delete_scene(connection: &mut Connection, id: String) -> Result<(), HierarchyError> {
     let id = required_text(id, "L'identifiant")?;
-    let changed = connection
-        .execute("DELETE FROM scenes WHERE id = ?1", params![id])
-        .map_err(database_error)?;
-    if changed == 0 {
-        return Err(HierarchyError::NotFound("Scène"));
-    }
-    Ok(())
+    with_service_transaction(connection, |transaction| {
+        ensure_exists(transaction, "scenes", &id, "Scène")?;
+
+        let revision_count: i64 = transaction
+            .query_row(
+                "SELECT COUNT(*) FROM scene_text_revisions WHERE scene_id = ?1",
+                params![id],
+                |row| row.get(0),
+            )
+            .map_err(database_error)?;
+
+        if revision_count > 0 {
+            return Err(HierarchyError::HasChildren {
+                entity: "la scène",
+                child_count: revision_count,
+            });
+        }
+
+        transaction
+            .execute("DELETE FROM scenes WHERE id = ?1", params![id])
+            .map_err(database_error)?;
+        Ok(())
+    })
 }
 
 pub fn reorder_scene(
@@ -1461,6 +1477,34 @@ mod tests {
             get_scene(&connection, "sc2"),
             Err(HierarchyError::NotFound("Scène"))
         ));
+    }
+
+    #[test]
+    fn scene_with_saved_revisions_cannot_be_deleted() {
+        let mut connection = connection();
+        create_universe(&mut connection, universe("u1", "One")).expect("universe");
+        create_novel(&mut connection, novel("n1", "u1", None, "Novel")).expect("novel");
+        create_chapter(&mut connection, chapter("c1", "n1", "Chapter")).expect("chapter");
+        create_scene(&mut connection, scene("sc1", "c1", "Scene")).expect("scene");
+
+        connection
+            .execute(
+                "INSERT INTO scene_text_revisions
+                 (id, scene_id, revision_number, content)
+                 VALUES ('r1', 'sc1', 1, 'Persistent text')",
+                [],
+            )
+            .expect("revision");
+
+        let result = delete_scene(&mut connection, "sc1".to_string());
+        assert!(matches!(
+            result,
+            Err(HierarchyError::HasChildren {
+                entity: "la scène",
+                child_count: 1
+            })
+        ));
+        assert_eq!(get_scene(&connection, "sc1").expect("scene remains").id, "sc1");
     }
 
     #[test]

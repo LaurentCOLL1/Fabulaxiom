@@ -145,20 +145,52 @@ Delivered M1.3 foundation:
 
 #### M1.4 — Text revisions and provenance foundation
 
-**AUTHORIZED**
+**WINDOWS QUALIFIED — FINAL EXACT-HEAD CI AND MERGE PENDING**
 
-M1.4 is now the only implementation subdivision authorized.
+Implementation PR:
 
-Scope:
+**#13 — feat: implement M1.4 text revisions and provenance foundation**
 
-- scene text revisions;
-- immutable revision IDs;
-- timestamps;
-- current revision pointer;
-- source/provenance primitives for later canonical facts;
-- preserve the existing no-AI hierarchy CRUD and persistence guarantees.
+Branch:
 
-M1.5+ remain unauthorized until M1.4 is complete, qualified, merged, and normalized.
+`feat/m1-4-text-revisions-provenance-20261007`
+
+Base `main` at subdivision start:
+
+`d75971ca0540c6811d8728ec4f6431d39125bbb2`
+
+Qualified implementation SHA:
+
+`d62fe92e4c01e5a58a6fbf85bdcf465267b41ea6`
+
+Implementation CI:
+
+- `Fabulaxiom CI` run `37688250040`: `completed/success`;
+- frontend: 10/10 PASS; Rust: 29/29 PASS;
+- frontend build and `cargo check --locked`: PASS;
+- dependency lockfiles unchanged.
+
+Windows qualification:
+
+- clean local worktree and live exact SHA verified;
+- Ollama process absent and loopback API inaccessible;
+- schema-v2 production database preflight integrity: PASS;
+- pre-migration backup created via SQLite backup API, checksum recorded;
+- local frontend 10/10, Rust 29/29, build/check: PASS;
+- production schema v2 → v3 migration and app startup: PASS;
+- Rust bridge: PASS, SQLite schema v3/foreign keys ON: PASS;
+- Ollama status: expected `INDISPONIBLE`;
+- operator-reported v1 → v2 → restore v1 → new v3 scene-text revision flow: PASS;
+- final SQLite revisions=3 and current heads=1;
+- migrations v1/v2/v3 present, two revision tables STRICT;
+- `PRAGMA foreign_key_check`: empty; `PRAGMA integrity_check`: `ok`;
+- worktree clean and Ollama still stopped.
+
+Detailed evidence:
+
+`docs/qualification/M1_4_TEXT_REVISIONS_PROVENANCE.md`
+
+M1.4 remains the only implementation subdivision authorized until qualified, merged and normalized. M1.5+ remain unauthorized.
 
 ## Reproducibility contract
 
