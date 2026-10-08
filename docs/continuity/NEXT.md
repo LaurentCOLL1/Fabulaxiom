@@ -39,9 +39,9 @@ Evidence: `docs/qualification/M1_5_BACKUP_RESTORE_BASELINE.md`.
 
 **M2 — Narrative entities and canonical facts**
 
-**PLANNING AUTHORIZED ONLY — NO IMPLEMENTATION SUBDIVISION AUTHORIZED YET**
+**M2 DETAILED PLANNING PR IN PROGRESS — IMPLEMENTATION NOT YET AUTHORIZED**
 
-First prepare a dedicated `docs/roadmap/M2_NARRATIVE_ENTITIES_CANONICAL_FACTS.md` plan and governance proposal from live `main`. The plan must define sequenced subdivisions, scope and acceptance, especially:
+The proposed plan is `docs/roadmap/M2_NARRATIVE_ENTITIES_CANONICAL_FACTS.md`. It defines five bounded subdivisions. Once the plan itself receives terminal exact-head CI and merges, **M2.1 — Entity registry schema and migration** becomes the only authorized implementation subdivision. The plan must define sequenced subdivisions, scope and acceptance, especially:
 
 1. structured entities (characters, places, organizations, objects, events, rules) with stable IDs and aliases;
 2. a provenance model tied to existing scene revisions and source passages;
@@ -56,7 +56,7 @@ First prepare a dedicated `docs/roadmap/M2_NARRATIVE_ENTITIES_CANONICAL_FACTS.md
 ## Governance
 
 - Do not begin M2 code solely because M1 is completed.
-- Qualify and merge the detailed M2 planning authority first, then authorize its first bounded implementation subdivision.
+- Qualify and merge the detailed M2 planning authority first. Only then authorize M2.1; M2.2+ remain forbidden.
 - M3+ remain unauthorized.
 - Preserve both historical operator backups and app-owned backups; do not silently reset, overwrite or delete production SQLite data.
 - Re-fetch live `main`, PRs and all exact-head CI before any mutation.
