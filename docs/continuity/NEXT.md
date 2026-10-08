@@ -35,28 +35,36 @@ Real Windows qualification:
 
 Evidence: `docs/qualification/M1_5_BACKUP_RESTORE_BASELINE.md`.
 
-## Next milestone
+## Current milestone
 
-**M2 — Narrative entities and canonical facts**
+**M2 — Narrative entities and canonical facts: IN PROGRESS**
 
-**M2 DETAILED PLANNING PR IN PROGRESS — IMPLEMENTATION NOT YET AUTHORIZED**
+Detailed planning PR: **#17 — docs: plan M2 and authorize M2.1 schema after acceptance**.
 
-The proposed plan is `docs/roadmap/M2_NARRATIVE_ENTITIES_CANONICAL_FACTS.md`. It defines five bounded subdivisions. Once the plan itself receives terminal exact-head CI and merges, **M2.1 — Entity registry schema and migration** becomes the only authorized implementation subdivision. The plan must define sequenced subdivisions, scope and acceptance, especially:
+Planning merge: `4a9115ec362a0efae696ebc94b5101fa46d7a03a`.
 
-1. structured entities (characters, places, organizations, objects, events, rules) with stable IDs and aliases;
-2. a provenance model tied to existing scene revisions and source passages;
-3. status semantics: canon, draft, suggestion, variant, unknown, ambiguous, contradictory;
-4. validity times and distinctions between unknown vs false;
-5. manual review and explicit promotion to canon, never silent AI updates;
-6. constrained deletion and referential integrity with migrations/rollback;
-7. deterministic no-AI creation, editing, queries and approval;
-8. automated regression tests and Windows/operator evidence;
-9. M2 subdivision boundaries with exact-head CI and post-merge normalization.
+Planning exact SHA: `44669d9070870624b845ab0825ebd555eef0dcbc`.
+
+Terminal `Fabulaxiom CI` run `37722657799`: `completed/success`.
+
+Accepted plan: `docs/roadmap/M2_NARRATIVE_ENTITIES_CANONICAL_FACTS.md`.
+
+## Only authorized implementation
+
+**M2.1 — Entity registry schema and migration: AUTHORIZED**
+
+- Schema v3 → v4, additive and migration-safe;
+- `STRICT` Universe-scoped entities for six kinds: character, place, organization, object, event, world_rule;
+- separately identified entity aliases;
+- stable immutable IDs and ownership/kind;
+- CHECK, UNIQUE, FK RESTRICT and relevant indexes;
+- preserve all existing M1 data and active restored-database marker;
+- deterministic Rust/schema tests and exact-head CI;
+- Windows qualification with coherent backup of the **resolved active** SQLite database before migration;
+- evidence requalification, protected merge and post-merge normalization.
+
+**M2.2–M2.5 and M3+ are forbidden until their own authority gates.**
 
 ## Governance
 
-- Do not begin M2 code solely because M1 is completed.
-- Qualify and merge the detailed M2 planning authority first. Only then authorize M2.1; M2.2+ remain forbidden.
-- M3+ remain unauthorized.
-- Preserve both historical operator backups and app-owned backups; do not silently reset, overwrite or delete production SQLite data.
-- Re-fetch live `main`, PRs and all exact-head CI before any mutation.
+Do not introduce entity CRUD UI, fact records, canon status, provenance extraction, FTS, search or Ollama functions in M2.1. Preserve historic and application-owned backups. Never migrate the operator's Windows database from GitHub. Re-fetch main, PR heads and exact-head CI before mutation.

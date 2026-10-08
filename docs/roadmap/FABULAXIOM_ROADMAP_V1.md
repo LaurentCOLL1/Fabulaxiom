@@ -45,11 +45,11 @@ M1 deliverables overall:
 
 ## M2 — Narrative entities and canonical facts
 
-**Status: DETAILED PLAN PROPOSED / IMPLEMENTATION STILL NOT AUTHORIZED**
+**Status: IN PROGRESS — M2.1 AUTHORIZED**
 
-Proposed detailed roadmap: `docs/roadmap/M2_NARRATIVE_ENTITIES_CANONICAL_FACTS.md`.
+Accepted detailed roadmap: `docs/roadmap/M2_NARRATIVE_ENTITIES_CANONICAL_FACTS.md`.
 
-Upon terminal exact-head CI and merge of that planning authority, only M2.1 (entity registry schema and migration) may begin. M2.2–M2.5 must follow sequentially and each requires post-merge normalization.
+Planning PR #17 merged with terminal exact-head CI success. Only M2.1 (entity registry schema and migration) is authorized. M2.2–M2.5 require their own acceptance and post-merge normalization.
 
 Deliverables:
 
