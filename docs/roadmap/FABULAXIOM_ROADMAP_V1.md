@@ -30,8 +30,8 @@ Subdivision status:
 - M1.1 — SQLite foundation and migration runner: **COMPLETE + MERGED + NORMALIZED**
 - M1.2 — Project hierarchy schema: **COMPLETE + MERGED + NORMALIZED**
 - M1.3 — No-AI CRUD service: **COMPLETE + MERGED + NORMALIZED**
-- M1.4 — Text revisions and provenance foundation: **AUTHORIZED / NEXT**
-- M1.5 — Backup and restore baseline: pending
+- M1.4 — Text revisions and provenance foundation: **COMPLETE + MERGED + NORMALIZED**
+- M1.5 — Backup and restore baseline: **AUTHORIZED / NEXT**
 
 M1 deliverables overall:
 

@@ -34,6 +34,8 @@ M1.2 — Project hierarchy schema est **COMPLETE + MERGED + NORMALIZED**.
 
 M1.3 — No-AI CRUD service est **COMPLETE + MERGED + NORMALIZED**.
 
+M1.4 — Text revisions and provenance foundation est **COMPLETE + MERGED + NORMALIZED**.
+
 Le socle persistant comprend désormais :
 
 - SQLite embarqué via rusqlite ;
@@ -47,13 +49,16 @@ Le socle persistant comprend désormais :
 - commandes Tauri minces ;
 - écrans/formulaires React utilisables pour toute la hiérarchie ;
 - CRUD opérationnel avec Ollama arrêté ;
+- révisions de texte de scène immuables, historique append-only et provenance par parent ;
+- pointeur de révision courante et restauration non destructive ;
+- migration SQLite v3 qualifiée sur Windows ;
 - qualification Windows et CI déterministe.
 
 La subdivision actuellement autorisée est :
 
-**M1.4 — Text revisions and provenance foundation**
+**M1.5 — Backup and restore baseline**
 
-Elle ajoutera la fondation de révisions de texte de scène et les primitives de provenance nécessaires aux futures données canoniques, sans commencer les fonctions narratives IA.
+Elle ajoutera la sauvegarde/restauration applicative contrôlée et sa validation d'intégrité. Les sauvegardes manuelles antérieures restent conservées jusqu'à qualification de cette nouvelle fonction. L'IA narrative et la recherche restent hors périmètre.
 
 ## Documentation d'autorité
 

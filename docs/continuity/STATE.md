@@ -145,52 +145,75 @@ Delivered M1.3 foundation:
 
 #### M1.4 — Text revisions and provenance foundation
 
-**WINDOWS QUALIFIED — FINAL EXACT-HEAD CI AND MERGE PENDING**
+**COMPLETE + MERGED + NORMALIZED**
 
 Implementation PR:
 
 **#13 — feat: implement M1.4 text revisions and provenance foundation**
 
-Branch:
+Implementation merge:
 
-`feat/m1-4-text-revisions-provenance-20261007`
-
-Base `main` at subdivision start:
-
-`d75971ca0540c6811d8728ec4f6431d39125bbb2`
+`75ab73b176b481f64b0e7f8c510b4ede0c617e31`
 
 Qualified implementation SHA:
 
 `d62fe92e4c01e5a58a6fbf85bdcf465267b41ea6`
 
-Implementation CI:
+Windows qualification evidence commit:
 
-- `Fabulaxiom CI` run `37688250040`: `completed/success`;
-- frontend: 10/10 PASS; Rust: 29/29 PASS;
+`e6b3bf13399604a3b4922f9510a1c6761d9e5775`
+
+Terminal exact-head CI:
+
+- workflow: `Fabulaxiom CI`;
+- run: `37709917550`;
+- result: `completed/success`;
+- frontend tests: 10/10 PASS;
+- Rust tests: 29/29 PASS;
 - frontend build and `cargo check --locked`: PASS;
-- dependency lockfiles unchanged.
+- lockfiles unchanged.
 
 Windows qualification:
 
-- clean local worktree and live exact SHA verified;
-- Ollama process absent and loopback API inaccessible;
-- schema-v2 production database preflight integrity: PASS;
-- pre-migration backup created via SQLite backup API, checksum recorded;
-- local frontend 10/10, Rust 29/29, build/check: PASS;
-- production schema v2 → v3 migration and app startup: PASS;
-- Rust bridge: PASS, SQLite schema v3/foreign keys ON: PASS;
-- Ollama status: expected `INDISPONIBLE`;
-- operator-reported v1 → v2 → restore v1 → new v3 scene-text revision flow: PASS;
-- final SQLite revisions=3 and current heads=1;
-- migrations v1/v2/v3 present, two revision tables STRICT;
-- `PRAGMA foreign_key_check`: empty; `PRAGMA integrity_check`: `ok`;
-- worktree clean and Ollama still stopped.
+- source exact, worktree clean, Ollama stopped;
+- production SQLite schema v2 backed up via SQLite Backup API; SHA256 preserved;
+- production migration v2 → v3 PASS;
+- two `STRICT` revision tables and three migrations present;
+- immutable append-only scene text revisions, lineage and current pointer;
+- operator-reported create v1/v2, restore v1 and save v3 scenario PASS;
+- persisted three revisions, one current head;
+- `PRAGMA foreign_key_check`: empty;
+- `PRAGMA integrity_check`: `ok`;
+- Ollama remained stopped through qualification.
 
 Detailed evidence:
 
 `docs/qualification/M1_4_TEXT_REVISIONS_PROVENANCE.md`
 
-M1.4 remains the only implementation subdivision authorized until qualified, merged and normalized. M1.5+ remain unauthorized.
+Delivered M1.4 foundation:
+
+- schema v3 for scene text revisions and explicit current heads;
+- immutable revision IDs, database timestamps and per-scene revision ordering;
+- parent revision provenance;
+- transactional creation and pointer changes;
+- guarded scene deletion with existing revision history;
+- Rust/Tauri revision commands and React editor/history;
+- no dependency on Ollama.
+
+#### M1.5 — Backup and restore baseline
+
+**AUTHORIZED**
+
+M1.5 is now the only authorized implementation subdivision.
+
+Scope:
+
+- application-level backup, controlled restore and verified integrity;
+- preserve schema migrations and M1.1–M1.4 data;
+- deterministic errors, strict transaction/integrity gates and Windows qualification;
+- do not delete older operator backups.
+
+M2+ and other unapproved work remain unauthorized. M1 is not yet complete until M1.5 and its normalization finish.
 
 ## Reproducibility contract
 
