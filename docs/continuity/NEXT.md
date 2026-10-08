@@ -53,7 +53,9 @@ Windows qualification:
 
 **M1.4 — Text revisions and provenance foundation**
 
-Status: **IN PROGRESS**
+Status: **WINDOWS QUALIFIED — FINAL EXACT-HEAD CI REQUIRED**
+
+Implementation PR: **#13 — feat: implement M1.4 text revisions and provenance foundation**
 
 Branch:
 
@@ -63,7 +65,37 @@ Base `main` at subdivision start:
 
 `d75971ca0540c6811d8728ec4f6431d39125bbb2`
 
-M1.4 remains the only implementation subdivision currently authorized.
+Qualified implementation SHA:
+
+`d62fe92e4c01e5a58a6fbf85bdcf465267b41ea6`
+
+Pre-evidence exact-head CI:
+
+- run `37688250040`: completed/success;
+- 10 frontend / 29 Rust tests PASS;
+- build/check and lockfile checks PASS.
+
+Windows M1.4 qualification:
+
+- pre-migration v2 backup and SHA256 recorded;
+- production v2 → v3: PASS;
+- scene text v1/v2/restore/v3 scenario: operator-reported PASS;
+- 3 saved revisions and 1 current head;
+- foreign keys/integrity: PASS;
+- application usable with Ollama stopped;
+- final local HEAD exact and worktree clean.
+
+## Immediate sequence
+
+1. commit M1.4 Windows qualification evidence on PR #13;
+2. requalify the **new** PR head with terminal `Fabulaxiom CI`;
+3. merge #13 only after terminal success on the exact new SHA;
+4. re-fetch post-merge live `main`;
+5. create M1.4 post-merge normalization PR;
+6. qualify its exact head and merge;
+7. only then determine if M1.5 is authorized.
+
+M1.5 remains unauthorized.
 
 ## Required deliverables
 
