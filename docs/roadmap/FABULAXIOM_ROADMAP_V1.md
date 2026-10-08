@@ -133,6 +133,14 @@ Deliverables:
 - spoiler management;
 - dashboards for contradictions and pending validations.
 
+## Extension proposée — Atelier de références visuelles et ComfyUI local
+
+**PROPOSAL ONLY — NOT AUTHORIZED FOR IMPLEMENTATION**
+
+See `docs/roadmap/V1_VISUAL_REFERENCES_COMFYUI_PROPOSAL.md` and issue #19.
+
+The user requests images of narrative characters, scenes, events and situations as optional inspiration and visual evaluation aids. Potential phases: local image import/gallery and associations after narrative identity foundation; then an opt-in ComfyUI local connector and variation/consistency workflows. The exact milestone and subdivision authorization must be accepted through a separate roadmap governance PR. This proposal does not change M2.1's schema-only boundaries or authorize any ComfyUI code.
+
 ## M9 — Import, export, resilience and distribution
 
 Deliverables:
