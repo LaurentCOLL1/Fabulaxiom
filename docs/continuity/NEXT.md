@@ -51,7 +51,13 @@ Accepted plan: `docs/roadmap/M2_NARRATIVE_ENTITIES_CANONICAL_FACTS.md`.
 
 ## Only authorized implementation
 
-**M2.1 — Entity registry schema and migration: AUTHORIZED**
+**M2.1 — Entity registry schema and migration: IN PROGRESS**
+
+Branch: `feat/m2-1-entity-registry-schema-20261008`
+
+Base `main`: `5fc54f234227ad43a91ffe28fe2662453221e31e`
+
+Qualify schema v4 via PR exact-head CI, then Windows backup of the resolved active v3 database before allowing the production migration. Record migration/integrity evidence on a fresh SHA before protected merge.
 
 - Schema v3 → v4, additive and migration-safe;
 - `STRICT` Universe-scoped entities for six kinds: character, place, organization, object, event, world_rule;

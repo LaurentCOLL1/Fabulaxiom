@@ -280,6 +280,16 @@ Proposed subdivisions:
 
 M2.1 — Entity registry schema and migration is the only implementation subdivision authorized. M2.2+ remain unauthorized.
 
+#### M2.1 — Entity registry schema and migration
+
+**IN PROGRESS — IMPLEMENTATION NOT YET QUALIFIED**
+
+Branch: `feat/m2-1-entity-registry-schema-20261008`
+
+Base `main` at start: `5fc54f234227ad43a91ffe28fe2662453221e31e`
+
+Scope: additive SQLite schema v3 → v4, STRICT narrative entities and aliases, six allowed kinds, immutable identity, Universe-scoped foreign keys, deterministic Rust migration tests. No CRUD UI, facts or ComfyUI work.
+
 M2 planning scope from `docs/roadmap/FABULAXIOM_ROADMAP_V1.md`:
 
 - entities: characters, places, organizations, objects, events, world rules;
