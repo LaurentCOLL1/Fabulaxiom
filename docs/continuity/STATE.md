@@ -202,24 +202,41 @@ Delivered M1.4 foundation:
 
 #### M1.5 — Backup and restore baseline
 
-**IN PROGRESS**
+**WINDOWS QUALIFIED — FINAL EXACT-HEAD CI AND MERGE PENDING**
+
+Implementation PR: **#15 — feat: implement M1.5 safe SQLite backup and restore baseline**
 
 Branch: `feat/m1-5-backup-restore-baseline-20261008`
 
 Base `main`: `2c942c5b58f316a5f02f69abfcf3883fb9d5929e`
 
-M1.5 is the only authorized implementation subdivision; M2+ remain forbidden.
+Windows-qualified implementation SHA:
 
-M1.5 is now the only authorized implementation subdivision.
+`7f968075f632843144c9833f61cc51910b538530`
 
-Scope:
+Pre-evidence exact-head CI:
 
-- application-level backup, controlled restore and verified integrity;
-- preserve schema migrations and M1.1–M1.4 data;
-- deterministic errors, strict transaction/integrity gates and Windows qualification;
-- do not delete older operator backups.
+- workflow `Fabulaxiom CI`, run `37718677686`: `completed/success`;
+- frontend 13/13, Rust 37/37 PASS;
+- build, `cargo check --locked`, lockfile immutability PASS.
 
-M2+ and other unapproved work remain unauthorized. M1 is not yet complete until M1.5 and its normalization finish.
+Windows qualification:
+
+- live main and PR head exact, clean worktree: PASS;
+- local frontend tests 13/13, Rust tests 37/37, production build/check: PASS;
+- schema v3, Rust bridge: PASS; Ollama `INDISPONIBLE` as required;
+- app-created, validated SQLite backup: PASS;
+- operator-reported new-file restore and UI reload: PASS;
+- hierarchy, three historical revisions and current revision retained: PASS;
+- backup location recorded in the detailed evidence;
+- historical M1.2/M1.4 operator backups not deleted or modified by this workflow;
+- three nonfatal Rust warnings observed, no compilation/test failure.
+
+Detailed evidence:
+
+`docs/qualification/M1_5_BACKUP_RESTORE_BASELINE.md`
+
+M1.5 remains the only implementation subdivision authorized until merged and normalized. M1 is not COMPLETE. M2+ remain unauthorized.
 
 ## Reproducibility contract
 

@@ -46,13 +46,32 @@ Windows acceptance:
 
 **M1.5 — Backup and restore baseline**
 
-Status: **IN PROGRESS**
+Status: **WINDOWS QUALIFIED — FINAL EXACT-HEAD CI REQUIRED**
+
+Implementation PR: **#15 — feat: implement M1.5 safe SQLite backup and restore baseline**
 
 Branch: `feat/m1-5-backup-restore-baseline-20261008`
 
 Base `main`: `2c942c5b58f316a5f02f69abfcf3883fb9d5929e`
 
-M1.5 is the only implementation subdivision currently authorized.
+Windows-qualified source HEAD: `7f968075f632843144c9833f61cc51910b538530`.
+
+Pre-evidence CI: `Fabulaxiom CI` run `37718677686` completed/success; frontend 13/13, Rust 37/37, build/check, locks PASS.
+
+Windows qualification: SQLite v3, Rust bridge, Ollama-off, application backup and restore, three preserved text revisions, hierarchy and current pointer: PASS.
+
+Detailed report: `docs/qualification/M1_5_BACKUP_RESTORE_BASELINE.md`.
+
+## Immediate sequence
+
+1. commit this Windows qualification evidence to PR #15;
+2. require new `Fabulaxiom CI` terminal success on the exact evidence SHA;
+3. merge PR #15 only with the expected-head lease;
+4. re-fetch live `main`;
+5. create a separate post-merge M1.5 normalization PR and qualify its own exact-head CI;
+6. merge normalization, re-fetch `main` and only then determine if M1 is COMPLETE or M2 can be authorized.
+
+M1 is not COMPLETE and M2 remains unauthorized until these gates finish.
 
 ## Required deliverables
 
