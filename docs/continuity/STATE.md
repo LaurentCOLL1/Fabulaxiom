@@ -282,13 +282,40 @@ M2.1 — Entity registry schema and migration is the only implementation subdivi
 
 #### M2.1 — Entity registry schema and migration
 
-**IN PROGRESS — IMPLEMENTATION NOT YET QUALIFIED**
+**WINDOWS QUALIFIED — NEW EXACT-HEAD CI AND MERGE PENDING**
+
+Implementation PR: **#20 — feat: implement M2.1 narrative entity registry schema v4**.
 
 Branch: `feat/m2-1-entity-registry-schema-20261008`
 
-Base `main` at start: `5fc54f234227ad43a91ffe28fe2662453221e31e`
+Original base `main`: `5fc54f234227ad43a91ffe28fe2662453221e31e`
 
-Scope: additive SQLite schema v3 → v4, STRICT narrative entities and aliases, six allowed kinds, immutable identity, Universe-scoped foreign keys, deterministic Rust migration tests. No CRUD UI, facts or ComfyUI work.
+Latest synchronized `main` before qualification: `bf56b5817e55faa01ab9c43eacfbf88dc95e4a3b`.
+
+Qualified implementation SHA: `c7a663d88ba2538714d42fdd366719cd54fe6f70`.
+
+Pre-evidence exact-head CI: `Fabulaxiom CI` run `37795098224`, `completed/success`, all frontend/Rust/build/check/lockfile steps PASS.
+
+Windows M2.1 qualification: PASS.
+- Local exact SHA and worktree clean; frontend 13/13, Rust 44/44, build/check PASS;
+- resolved actual M1.5 restored active SQLite database, not the default database;
+- schema-v3 operator backup verified and SHA256 recorded;
+- v3 → v4 migration in the real Tauri application: PASS;
+- SQLite v4 and foreign keys ON, Ollama unavailable as intended;
+- all seven existing hierarchy/revision-related table data sets retained identically;
+- three text revisions and one current-revision pointer preserved;
+- two v4 registry STRICT tables, four immutable-identity triggers and two indexes verified;
+- schema migrations 1–4 verified; new registry empty as expected;
+- `PRAGMA foreign_key_check` empty; `PRAGMA integrity_check` `ok`;
+- activation marker unchanged and original v3 backup hash unchanged;
+- final HEAD exact, worktree CLEAN, Ollama OFF.
+- Existing bootstrap bridge still displays M1.5 milestone; this was explicitly expected and is not a failed v4 qualification.
+
+Detailed evidence: `docs/qualification/M2_1_ENTITY_REGISTRY_SCHEMA.md`.
+
+Scope remains schema-only: six Universe-scoped narrative entity kinds, aliases, immutable identity and FK restrictions, migration and backup/restore compatibility. No entity CRUD UI, facts, Ollama or ComfyUI code.
+
+**M2.2+ remain unauthorized until M2.1 is merged and post-merge normalized.**
 
 M2 planning scope from `docs/roadmap/FABULAXIOM_ROADMAP_V1.md`:
 
