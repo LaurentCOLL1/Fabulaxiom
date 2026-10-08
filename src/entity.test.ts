@@ -1,5 +1,5 @@
 import {describe,expect,it} from "vitest";
-import {NARRATIVE_KINDS,KIND_LABELS,isNarrativeKind,formatEntityError} from "./entity";
+import {NARRATIVE_KINDS,KIND_LABELS,isNarrativeKind,formatEntityError,updateAliasDraft} from "./entity";
 describe("M2.2 entity DTO helpers",()=>{
   it("supports precisely six schema kinds",()=>{
     expect(NARRATIVE_KINDS).toHaveLength(6);
@@ -50,6 +50,27 @@ describe("M2.2 alias UI regression",()=>{
     expect(html).toContain("alias-1");
     expect(html).toContain("Renommer");
     expect(html).toContain("Supprimer");
+  });
+  it("captures input synchronously so a deferred state updater never reads a cleared event",()=>{
+    const previous:Record<string,string>={"entity-1":"Ancien","entity-2":"Alias conservé"};
+    // Mimic React clearing the handler's currentTarget before state is evaluated.
+    let currentTarget:{value:string}|null={value:"Ariane"};
+    const capturedValue=currentTarget.value;
+    currentTarget=null;
+    const deferred=()=>updateAliasDraft(previous,"entity-1",capturedValue);
+    expect(currentTarget).toBeNull();
+    expect(deferred()).toEqual({
+      "entity-1":"Ariane",
+      "entity-2":"Alias conservé",
+    });
+    expect(previous["entity-1"]).toBe("Ancien");
+  });
+  it("keeps each entity's alias input independent while clearing a successful draft",()=>{
+    const values=updateAliasDraft({},"first","Ari");
+    const withSecond=updateAliasDraft(values,"second","Eli");
+    const cleared=updateAliasDraft(withSecond,"first","");
+    expect(cleared).toEqual({first:"",second:"Eli"});
+    expect(withSecond.first).toBe("Ari");
   });
   it("handles an empty alias list without crashing",()=>{
     const html=renderToStaticMarkup(createElement(EntityAliasList,{

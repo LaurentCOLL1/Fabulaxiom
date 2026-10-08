@@ -1,7 +1,7 @@
 import {useEffect,useState,type FormEvent} from "react";
 import {invoke} from "@tauri-apps/api/core";
 import {KIND_LABELS,NARRATIVE_KINDS,decodeEntitySnapshot,formatEntityError,newEntityId,
-  type EntitySnapshot,type NarrativeKind,type EntityAlias} from "./entity";
+  updateAliasDraft,type EntitySnapshot,type NarrativeKind,type EntityAlias} from "./entity";
 import EntityAliasList from "./EntityAliasList";
 import type {HierarchySnapshot,Universe} from "./hierarchy";
 
@@ -130,7 +130,11 @@ export default function EntityWorkspace() {
         <form className="inline-form" onSubmit={e=>void addAlias(e,entity.id)}>
           <input aria-label={"Nouvel alias de "+entity.name} disabled={busy}
             value={aliasInputs[entity.id]??""} placeholder="Nouvel alias"
-            onChange={e=>setAliasInputs(prev=>({...prev,[entity.id]:e.currentTarget.value}))}/>
+            onChange={e=>{
+              // Capture while the DOM event is active: React may run the updater later.
+              const value=e.currentTarget.value;
+              setAliasInputs(prev=>updateAliasDraft(prev,entity.id,value));
+            }}/>
           <button type="submit" disabled={busy||!(aliasInputs[entity.id]??"").trim()}>
             Ajouter
           </button>

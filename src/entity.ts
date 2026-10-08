@@ -9,6 +9,12 @@ export type NarrativeEntity = {
 };
 export type EntityAlias = {id:string; entity_id:string; universe_id:string; alias:string};
 export type EntitySnapshot = {entities:NarrativeEntity[]; aliases:EntityAlias[]};
+/** Accept a captured string, never a React event whose currentTarget may be cleared. */
+export function updateAliasDraft(
+  current: Readonly<Record<string,string>>, entityId:string, capturedValue:string
+):Record<string,string> {
+  return {...current,[entityId]:capturedValue};
+}
 export function newEntityId(prefix:"entity" | "alias"):string {
   return prefix + "-" + crypto.randomUUID();
 }
