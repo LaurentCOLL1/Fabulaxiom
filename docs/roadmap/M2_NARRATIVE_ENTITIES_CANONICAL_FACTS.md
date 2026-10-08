@@ -2,13 +2,15 @@
 
 ## Authority and prerequisites
 
-**PROPOSED PLAN — M2.1 AUTHORIZATION EFFECTIVE ONLY AFTER THIS PLAN PR PASSES EXACT-HEAD CI AND MERGES**
+**PLAN ACCEPTED — M2.1 AUTHORIZED**
+
+Planning PR #17 merged as `4a9115ec362a0efae696ebc94b5101fa46d7a03a` after exact-head `Fabulaxiom CI` run `37722657799` completed/success.
 
 Project: Fabulaxiom. Prior milestone M1 is **COMPLETE + MERGED + NORMALIZED**.
 
 Planning base `main`: `b16be2ed3e6326c88b565b305bcaba2a6d590462`.
 
-This plan subdivides the roadmap's M2 milestone into bounded, sequential deliverables. Until this planning PR is merged, **no M2 implementation is authorized**.
+This plan subdivides the roadmap's M2 milestone into bounded, sequential deliverables. The planning PR is merged: **M2.1 alone is authorized**.
 
 M1.1–M1.5 are preserved:
 - SQLite migrations, integrity checks and backups;
@@ -82,7 +84,7 @@ All M2 foundational CRUD, facts, review and inspection must remain usable when O
 
 ### M2.1 — Entity registry schema and migration
 
-**NEXT IMPLEMENTATION SUBDIVISION, AUTHORIZED ONLY AFTER THIS PLANNING PR MERGES**
+**AUTHORIZED — ONLY M2.1 IMPLEMENTATION SUBDIVISION**
 
 Scope:
 - additive SQLite migration from current schema v3 to v4, with `STRICT` entity/alias tables;
