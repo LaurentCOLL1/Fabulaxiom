@@ -2,9 +2,9 @@
 
 ## Gate
 
-**WINDOWS QUALIFIED — FINAL EXACT-HEAD CI PENDING**
+**COMPLETE + MERGED + NORMALIZED**
 
-M1.4 is **not** COMPLETE yet. Merge and post-merge normalization are required before M1.5.
+M1.4 qualification, terminal exact-head CI and implementation merge are complete. M1.5 becomes authorized only once this normalization PR is merged.
 
 ## Live source and operator environment
 
@@ -112,17 +112,29 @@ Reported by operator after closing the application:
 
 Revision history was **intentionally retained**. The M1.4 append-only revision schema and scene deletion guard prevent deleting a scene with saved revisions through normal CRUD. No test data was destroyed.
 
+## Final exact-head CI and merge
+
+Evidence commit:
+
+`e6b3bf13399604a3b4922f9510a1c6761d9e5775`
+
+Terminal CI:
+
+- workflow `Fabulaxiom CI`;
+- run `37709917550`;
+- `completed/success`;
+- all frontend, Rust, build/check and lockfile steps: PASS.
+
+The previous run `37688250040` is historical implementation evidence. The merge was authorized by the final evidence-commit run above.
+
+Implementation PR #13 merged using expected-head protection.
+
+Merge commit:
+
+`75ab73b176b481f64b0e7f8c510b4ede0c617e31`
+
+Post-merge live `main` re-fetched and verified at this merge commit.
+
 ## Governance conclusion
 
-M1.4 implementation on `d62fe92e4c01e5a58a6fbf85bdcf465267b41ea6` is accepted by deterministic tests and real Windows operator qualification.
-
-The **new qualification-documentation commit** must receive its *own* terminal exact-head `Fabulaxiom CI`; run `37688250040` becomes historical for merge authorization.
-
-Required next gates:
-
-1. commit this qualification evidence in PR #13;
-2. verify all PR-triggered CI jobs success on the new exact HEAD;
-3. merge #13 with expected HEAD lease;
-4. re-fetch `main`;
-5. prepare and merge a separately qualified post-merge M1.4 normalization PR;
-6. only then authorize any M1.5 implementation.
+M1.4 implementation and production Windows migration/revision history qualification have completed all gates. This document is part of the separately qualified post-merge normalization. M1.5 work may start only from `main` after normalization merge.

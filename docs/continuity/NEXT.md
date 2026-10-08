@@ -6,128 +6,76 @@
 
 ## Completed subdivision
 
-**M1.3 — No-AI CRUD service**
-
-Status:
-
-**COMPLETE + MERGED + NORMALIZED**
-
-Implementation PR:
-
-**#11 — feat: implement M1.3 no-AI CRUD service**
-
-Implementation merge:
-
-`49424f1ecafa1be3c4f47b806231b6644e9c73a4`
-
-Qualified implementation SHA:
-
-`6259bd3b4759b683bf4bb7c2c6efdf693ddfebac`
-
-Qualification evidence SHA:
-
-`d9df8151b0c3336e0a12c65a7ba7841cab4e091b`
-
-Terminal exact-head CI:
-
-- run `37684422252`;
-- completed/success;
-- frontend tests 8/8 PASS;
-- frontend build PASS;
-- Rust tests 20/20 PASS;
-- `cargo check --locked` PASS;
-- lockfiles unchanged.
-
-Windows qualification:
-
-- Ollama stopped and API inaccessible;
-- full hierarchy CRUD PASS;
-- optional-Series workflow PASS;
-- reorder/rename/delete-guard flows PASS;
-- CRUD independence from Ollama PASS;
-- final foreign-key/integrity checks PASS;
-- qualification data cleanup PASS;
-- final worktree clean.
-
-## Current subdivision
-
 **M1.4 — Text revisions and provenance foundation**
 
-Status: **WINDOWS QUALIFIED — FINAL EXACT-HEAD CI REQUIRED**
+Status: **COMPLETE + MERGED + NORMALIZED**
 
 Implementation PR: **#13 — feat: implement M1.4 text revisions and provenance foundation**
 
-Branch:
+Implementation merge:
 
-`feat/m1-4-text-revisions-provenance-20261007`
-
-Base `main` at subdivision start:
-
-`d75971ca0540c6811d8728ec4f6431d39125bbb2`
+`75ab73b176b481f64b0e7f8c510b4ede0c617e31`
 
 Qualified implementation SHA:
 
 `d62fe92e4c01e5a58a6fbf85bdcf465267b41ea6`
 
-Pre-evidence exact-head CI:
+Qualification evidence SHA:
 
-- run `37688250040`: completed/success;
-- 10 frontend / 29 Rust tests PASS;
-- build/check and lockfile checks PASS.
+`e6b3bf13399604a3b4922f9510a1c6761d9e5775`
 
-Windows M1.4 qualification:
+Terminal exact-head CI:
 
-- pre-migration v2 backup and SHA256 recorded;
-- production v2 → v3: PASS;
-- scene text v1/v2/restore/v3 scenario: operator-reported PASS;
-- 3 saved revisions and 1 current head;
-- foreign keys/integrity: PASS;
-- application usable with Ollama stopped;
-- final local HEAD exact and worktree clean.
+- run `37709917550`;
+- completed/success;
+- frontend tests 10/10 PASS;
+- Rust tests 29/29 PASS;
+- frontend build, `cargo check --locked`, lockfiles PASS.
 
-## Immediate sequence
+Windows acceptance:
 
-1. commit M1.4 Windows qualification evidence on PR #13;
-2. requalify the **new** PR head with terminal `Fabulaxiom CI`;
-3. merge #13 only after terminal success on the exact new SHA;
-4. re-fetch post-merge live `main`;
-5. create M1.4 post-merge normalization PR;
-6. qualify its exact head and merge;
-7. only then determine if M1.5 is authorized.
+- pre-migration SQLite v2 backup and SHA256 recorded;
+- production migration v2 → v3 PASS;
+- two STRICT revision tables and three migrations;
+- UI revision creation/restoration history scenario PASS;
+- preserved three revisions / one current head;
+- foreign-key check empty; integrity check ok;
+- Ollama stopped, HEAD exact, worktree clean.
 
-M1.5 remains unauthorized.
+## Authorized subdivision
+
+**M1.5 — Backup and restore baseline**
+
+M1.5 is the only implementation subdivision currently authorized.
 
 ## Required deliverables
 
-1. add scene text revision persistence;
-2. use immutable revision identifiers independent of mutable text;
-3. record deterministic revision timestamps;
-4. provide an explicit current-revision pointer/state for each Scene;
-5. add source/provenance primitives suitable for later canonical-fact attribution;
-6. preserve the existing Universe → optional Series → Novel → Chapter → Scene CRUD;
-7. preserve M1.1/M1.2/M1.3 transaction and referential-integrity guarantees;
-8. keep revision/provenance mutations transactional where multiple rows/state changes are involved;
-9. expose deterministic application/Tauri errors rather than opaque SQLite failures where an application error is possible;
-10. keep M1.4 useful without Ollama and do not make AI a persistence dependency;
-11. preserve committed dependency locks unless a new dependency is explicitly justified;
-12. add automated tests for revision immutability, current-revision behavior, provenance primitives and rollback;
-13. require deterministic exact-head CI;
-14. require Windows qualification for the real local database and user-visible revision flow introduced by M1.4;
-15. merge the M1.4 PR;
-16. complete post-merge continuity normalization before M1.5.
+1. provide an application-level backup command for Fabulaxiom's local database;
+2. produce a consistent SQLite snapshot using the supported backup API or equivalent SQLite-consistent method;
+3. store backups at an explicit controlled destination without overwriting existing backups;
+4. validate source and backup integrity, migration/schema compatibility and foreign keys;
+5. provide an application-level restore path with a safe, controlled destination and integrity verification;
+6. never overwrite a live database, existing source file or the operator's pre-M1.2/pre-M1.4 backups without explicit safe controls;
+7. design rollback or failure behavior so an interrupted restore cannot partially corrupt an existing database;
+8. preserve historical scene revisions, provenance and current-revision pointers exactly;
+9. isolate filesystem access in Rust services behind minimal Tauri commands and deterministic errors;
+10. include usable, explicit React backup/restore controls with safety-focused confirmation where necessary;
+11. test backup consistency, restore integrity, source/target failures, rollback, and no unintended mutation;
+12. preserve existing M1.1–M1.4 tests and lockfiles; avoid new dependencies unless justified;
+13. require terminal exact-head Windows CI and target-machine backup/restore qualification;
+14. merge the M1.5 implementation PR only after qualified evidence receives new exact-head CI;
+15. post-merge normalize M1.5 before considering M1 complete.
 
 ## Boundary
 
-M1.4 is the text-revision and provenance **foundation**.
+M1.5 is the backup/restore **baseline** only.
 
-Do not implement yet:
+Do not implement:
 
-- application-level backup/restore (M1.5);
-- FTS/search milestone work;
-- embeddings/vector search;
-- narrative entities/canonical-fact engine;
-- consistency engine;
-- manuscript generation;
-- AI-assisted narrative mutation.
+- FTS/semantic search or embeddings;
+- canonical-fact extraction and narrative entities;
+- consistency analysis;
+- AI generation or manuscript generation;
+- other unapproved M2+ features.
 
-Those belong to later subdivisions/milestones.
+Do not silently delete or supersede preexisting operator backups.

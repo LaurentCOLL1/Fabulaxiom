@@ -77,23 +77,26 @@ Delivered:
 
 ## M1.4 — Text revisions and provenance foundation
 
-Status: **AUTHORIZED**
+Status: **COMPLETE + MERGED + NORMALIZED**
 
-Deliverables:
+Implementation merge:
 
-- scene text revisions;
-- immutable revision IDs;
-- timestamps;
-- current revision pointer;
-- source/provenance primitives for later canonical facts.
+`75ab73b176b481f64b0e7f8c510b4ede0c617e31`
 
-Boundary:
+Delivered:
 
-M1.4 establishes durable revision/provenance persistence. It does not authorize backup/restore, search/embeddings, canonical-fact extraction, consistency logic or narrative AI.
+- SQLite schema v3 and migration v2 → v3;
+- immutable append-only scene text revisions;
+- database timestamps and immutable revision IDs;
+- current revision pointer with non-destructive restore;
+- parent-revision provenance;
+- safe transaction behavior and scene-deletion guard;
+- Rust/Tauri commands and React revision editor/history;
+- frontend and Rust tests, exact-head CI and real Windows qualification with Ollama stopped.
 
 ## M1.5 — Backup and restore baseline
 
-Status: pending
+Status: **AUTHORIZED**
 
 Deliverables:
 
