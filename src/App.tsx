@@ -2,6 +2,7 @@ import { useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import HierarchyWorkspace from "./HierarchyWorkspace";
 import EntityWorkspace from "./EntityWorkspace";
+import EntityErrorBoundary from "./EntityErrorBoundary";
 import BackupWorkspace from "./BackupWorkspace";
 import {
   formatDatabaseSummary,
@@ -93,7 +94,9 @@ function App() {
 
       <HierarchyWorkspace />
 
-      <EntityWorkspace />
+      <EntityErrorBoundary>
+        <EntityWorkspace />
+      </EntityErrorBoundary>
 
       <section className="diagnostics" aria-labelledby="diagnostics-title">
         <div className="section-heading">

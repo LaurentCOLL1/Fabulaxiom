@@ -1,7 +1,8 @@
 import {useEffect,useState,type FormEvent} from "react";
 import {invoke} from "@tauri-apps/api/core";
-import {KIND_LABELS,NARRATIVE_KINDS,formatEntityError,newEntityId,
-  type EntitySnapshot,type NarrativeKind} from "./entity";
+import {KIND_LABELS,NARRATIVE_KINDS,decodeEntitySnapshot,formatEntityError,newEntityId,
+  type EntitySnapshot,type NarrativeKind,type EntityAlias} from "./entity";
+import EntityAliasList from "./EntityAliasList";
 import type {HierarchySnapshot,Universe} from "./hierarchy";
 
 const EMPTY:EntitySnapshot={entities:[],aliases:[]};
@@ -24,7 +25,7 @@ export default function EntityWorkspace() {
   }
   async function reload(id:string) {
     if(!id){setData(EMPTY);return;}
-    setData(await invoke<EntitySnapshot>("entity_snapshot",{input:{universe_id:id}}));
+    setData(decodeEntitySnapshot(await invoke<unknown>("entity_snapshot",{input:{universe_id:id}})));
   }
   useEffect(()=>{
     void loadUniverses().catch((e:unknown)=>setError(formatEntityError(e)));
@@ -32,8 +33,8 @@ export default function EntityWorkspace() {
   useEffect(()=>{
     let active=true;
     if(!universeId){setData(EMPTY);return;}
-    void invoke<EntitySnapshot>("entity_snapshot",{input:{universe_id:universeId}})
-      .then(result=>{if(active)setData(result);})
+    void invoke<unknown>("entity_snapshot",{input:{universe_id:universeId}})
+      .then(result=>{if(active)setData(decodeEntitySnapshot(result));})
       .catch((e:unknown)=>{if(active)setError(formatEntityError(e));});
     return ()=>{active=false;};
   },[universeId]);
@@ -63,6 +64,15 @@ export default function EntityWorkspace() {
     if(await mutate("create_entity_alias",{
       id:newEntityId("alias"),entity_id:id,alias
     }))setAliasInputs(prev=>({...prev,[id]:""}));
+  }
+  function renameAlias(alias:EntityAlias) {
+    const value=window.prompt("Renommer l'alias :",alias.alias);
+    if(value!==null&&value.trim()&&value.trim()!==alias.alias)
+      void mutate("rename_entity_alias",{id:alias.id,alias:value.trim()});
+  }
+  function deleteAlias(alias:EntityAlias) {
+    if(window.confirm("Supprimer l'alias ?"))
+      void mutate("delete_entity_alias",{id:alias.id});
   }
   return <section className="workspace" aria-labelledby="narrative-entities-title">
     <div className="workspace-heading">
@@ -114,25 +124,9 @@ export default function EntityWorkspace() {
             }}>Supprimer</button>
         </div>
         <h4>Alias</h4>
-        <div className="entity-list">
-          {data.aliases.filter(a=>a.entity_id===entity.id).map(a=>
-            <div className="entity-row" key={a.id}>
-              <span>{a.alias}</span><code>{a.id}</code>
-              <div className="entity-actions">
-                <button className="secondary" type="button" disabled={busy}
-                  onClick={()=>{
-                    const value=window.prompt("Renommer l'alias :",a.alias);
-                    if(value!==null&&value.trim()&&value.trim()!==a.alias)
-                      void mutate("rename_entity_alias",{id:a.id,alias:value.trim()});
-                  }}>Renommer</button>
-                <button className="danger" type="button" disabled={busy}
-                  onClick={()=>{
-                    if(window.confirm("Supprimer l'alias ?"))
-                      void mutate("delete_entity_alias",{id:a.id});
-                  }}>Supprimer</button>
-              </div>
-            </div>)}
-        </div>
+        <EntityAliasList
+          aliases={data.aliases.filter(a=>a.entity_id===entity.id)}
+          busy={busy} onRename={renameAlias} onDelete={deleteAlias}/>
         <form className="inline-form" onSubmit={e=>void addAlias(e,entity.id)}>
           <input aria-label={"Nouvel alias de "+entity.name} disabled={busy}
             value={aliasInputs[entity.id]??""} placeholder="Nouvel alias"

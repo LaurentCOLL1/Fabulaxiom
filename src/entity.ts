@@ -28,3 +28,34 @@ export function formatEntityError(reason:unknown):string {
   if(reason instanceof Error) return reason.message;
   return String(reason);
 }
+
+/** Reject malformed IPC snapshots before React tries to render alias records. */
+export function decodeEntitySnapshot(value: unknown): EntitySnapshot {
+  if (!value || typeof value !== "object") {
+    throw new Error("Réponse du registre narratif invalide.");
+  }
+  const snapshot = value as {entities?:unknown; aliases?:unknown};
+  if (!Array.isArray(snapshot.entities) || !Array.isArray(snapshot.aliases)) {
+    throw new Error("Réponse du registre narratif incomplète (entités ou alias).");
+  }
+  for (const entity of snapshot.entities) {
+    if (!entity || typeof entity !== "object" ||
+        typeof entity.id !== "string" ||
+        typeof entity.universe_id !== "string" ||
+        typeof entity.name !== "string" ||
+        typeof entity.created_at_utc !== "string" ||
+        typeof entity.kind !== "string" || !isNarrativeKind(entity.kind)) {
+      throw new Error("Enregistrement d'entité invalide reçu depuis Rust.");
+    }
+  }
+  for (const alias of snapshot.aliases) {
+    if (!alias || typeof alias !== "object" ||
+        typeof alias.id !== "string" ||
+        typeof alias.entity_id !== "string" ||
+        typeof alias.universe_id !== "string" ||
+        typeof alias.alias !== "string") {
+      throw new Error("Enregistrement d'alias invalide reçu depuis Rust.");
+    }
+  }
+  return value as EntitySnapshot;
+}
