@@ -2,9 +2,9 @@
 
 ## Gate
 
-**WINDOWS QUALIFIED — FINAL EXACT-HEAD CI REQUIRED**
+**COMPLETE + MERGED + NORMALIZED**
 
-This evidence qualifies the Windows implementation SHA below. M1.5 is **not COMPLETE** until the evidence commit receives new terminal exact-head CI, PR #15 merges, and post-merge normalization is separately qualified and merged. M2 remains unauthorized.
+This record preserves the qualified M1.5 implementation and Windows backup/restore evidence. The final evidence commit received terminal CI, PR #15 merged and the project authority is being normalized in a separately qualified PR. M2 code still requires an approved detailed M2 scope.
 
 ## Source and Git authority
 
@@ -144,13 +144,36 @@ The Rust test suite passed cases covering:
 
 These are controlled automated tests; the operator-qualified Windows flow is additional live evidence.
 
-## Merge gates
+## Terminal exact-head CI and merge
 
-1. commit this M1.5 Windows evidence on PR #15;
-2. rerun and require **terminal exact-head** `Fabulaxiom CI` on the evidence commit;
-3. merge PR #15 using `expected_head_sha` only if all checks are success;
-4. re-fetch live `main` and authorities;
-5. create and qualify a separate M1.5 post-merge normalization PR;
-6. merge that normalization, re-fetch `main`, then determine M1 completion and future authorization from the live authority.
+Qualification evidence commit:
 
-M2 remains unauthorized before the last gate.
+`152b40e616f40799abc61f9ce8db142e3b19340b`
+
+Terminal `Fabulaxiom CI` run:
+
+`37720676744` — **completed/success**
+
+- frontend tests: 13/13 PASS;
+- Rust tests: 37/37 PASS;
+- frontend production build: PASS;
+- `cargo check --locked`: PASS;
+- dependency lockfiles unchanged.
+
+The previous implementation SHA CI `37718677686` is historical only and was **not** reused to authorize merging the documentation SHA.
+
+PR #15 merged with expected-head protection.
+
+Implementation merge:
+
+`282b325fb6c588a70df08a5128415c8fa0a0f72e`
+
+Post-merge live `main` re-fetched and confirmed at this merge commit.
+
+## Governance conclusion
+
+M1.5 implementation, Windows operator qualification, exact-head evidence requalification and implementation merge are complete. This document is part of the separate M1.5 post-merge normalization that closes M1.
+
+M2 is only authorized for roadmap/architecture planning, not implementation, until a detailed M2 authority is accepted.
+
+The historic M1.2 and M1.4 operator SQLite backups and all app-created backups must remain preserved.

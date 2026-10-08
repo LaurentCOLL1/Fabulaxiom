@@ -22,11 +22,11 @@ Architecture retenue :
 - Tauri 2 ;
 - React + TypeScript ;
 - cœur applicatif Rust/Tauri ;
-- SQLite + FTS5 pour la persistance/recherche structurée ;
+- SQLite pour la persistance structurée (FTS5 est planifié pour M4) ;
 - intégration Ollama locale directe sur la boucle locale ;
 - aucun runtime Python/FastAPI obligatoire pour M0/M1.
 
-**M1 — Persistence and project foundation : IN PROGRESS**
+**M1 — Persistence and project foundation : COMPLETE + MERGED + NORMALIZED**
 
 M1.1 — SQLite foundation and migration runner est **COMPLETE + MERGED + NORMALIZED**.
 
@@ -35,6 +35,8 @@ M1.2 — Project hierarchy schema est **COMPLETE + MERGED + NORMALIZED**.
 M1.3 — No-AI CRUD service est **COMPLETE + MERGED + NORMALIZED**.
 
 M1.4 — Text revisions and provenance foundation est **COMPLETE + MERGED + NORMALIZED**.
+
+M1.5 — Backup and restore baseline est **COMPLETE + MERGED + NORMALIZED**.
 
 Le socle persistant comprend désormais :
 
@@ -52,13 +54,20 @@ Le socle persistant comprend désormais :
 - révisions de texte de scène immuables, historique append-only et provenance par parent ;
 - pointeur de révision courante et restauration non destructive ;
 - migration SQLite v3 qualifiée sur Windows ;
+- sauvegardes SQLite vérifiées avec noms non écrasants ;
+- restauration vers une nouvelle base indépendante, avec activation contrôlée sans écraser la précédente ;
+- conservation de l'historique de révisions et des sauvegardes antérieures ;
 - qualification Windows et CI déterministe.
 
-La subdivision actuellement autorisée est :
+Le prochain jalon de la feuille de route est :
 
-**M1.5 — Backup and restore baseline**
+**M2 — Narrative entities and canonical facts**
 
-Elle ajoutera la sauvegarde/restauration applicative contrôlée et sa validation d'intégrité. Les sauvegardes manuelles antérieures restent conservées jusqu'à qualification de cette nouvelle fonction. L'IA narrative et la recherche restent hors périmètre.
+**PLANNING AUTHORIZED — implementation subdivision not yet authorized.**
+
+M2 nécessite d'abord une roadmap détaillée, des subdivisions ordonnées, des règles de validation humaine et des critères de qualification explicites. Aucune extraction IA ni fonctionnalité M2 n'est encore implémentée ou autorisée.
+
+Les anciennes sauvegardes opérateur M1.2 et M1.4 restent conservées.
 
 ## Documentation d'autorité
 
