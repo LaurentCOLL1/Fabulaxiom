@@ -45,9 +45,11 @@ M1 deliverables overall:
 
 ## M2 — Narrative entities and canonical facts
 
-**Status: PLANNING AUTHORIZED / IMPLEMENTATION NOT YET AUTHORIZED**
+**Status: DETAILED PLAN PROPOSED / IMPLEMENTATION STILL NOT AUTHORIZED**
 
-A detailed M2 roadmap and subdivision acceptance gates must be qualified before M2 code begins.
+Proposed detailed roadmap: `docs/roadmap/M2_NARRATIVE_ENTITIES_CANONICAL_FACTS.md`.
+
+Upon terminal exact-head CI and merge of that planning authority, only M2.1 (entity registry schema and migration) may begin. M2.2–M2.5 must follow sequentially and each requires post-merge normalization.
 
 Deliverables:
 

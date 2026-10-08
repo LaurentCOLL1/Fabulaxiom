@@ -262,9 +262,21 @@ M1.1–M1.5 are all **COMPLETE + MERGED + NORMALIZED**. M1's database, hierarchy
 
 ### M2 — Narrative entities and canonical facts
 
-**NEXT — PLANNING AUTHORIZED ONLY**
+**PLANNING AUTHORITY PENDING MERGE — M2.1 TO BE AUTHORIZED ONLY AFTER PLAN ACCEPTANCE**
 
-Detailed M2 subdivisions and acceptance rules must be designed and committed before any M2 implementation branch is authorized.
+Detailed proposed plan:
+
+`docs/roadmap/M2_NARRATIVE_ENTITIES_CANONICAL_FACTS.md`
+
+Proposed subdivisions:
+
+- M2.1 — Entity registry schema and migration;
+- M2.2 — No-AI entity and alias CRUD;
+- M2.3 — Fact registry and exact revision provenance;
+- M2.4 — Canon status and review service;
+- M2.5 — Sourced-facts and human review UI.
+
+Only the M2.1 implementation subdivision will become authorized when the M2 planning PR is terminal CI-qualified and merged. Until then, no M2 code is authorized.
 
 M2 planning scope from `docs/roadmap/FABULAXIOM_ROADMAP_V1.md`:
 
@@ -275,7 +287,7 @@ M2 planning scope from `docs/roadmap/FABULAXIOM_ROADMAP_V1.md`:
 - temporal validity and uncertainty;
 - human approval before any AI suggestion becomes canonical.
 
-M2 implementation and M3+ remain unauthorized until the specific detailed M2 authority is accepted.
+M2 implementation remains unauthorized until the detailed M2 planning PR is accepted. M2.2+ and M3+ remain forbidden until their own gates pass.
 
 ## Reproducibility contract
 
