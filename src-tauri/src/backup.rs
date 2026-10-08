@@ -323,7 +323,8 @@ fn vacuum_copy(connection: &Connection, destination: &Path) -> Result<DataCounts
         .ok_or_else(|| BackupError::Validation("Chemin de destination non UTF-8.".to_string()))?;
     connection.execute("VACUUM INTO ?1", params![sql_path])?;
     let counts = read_validated_database(destination)?;
-    File::open(destination)?.sync_all()?;
+    // Windows FlushFileBuffers requires a writable file handle.
+    OpenOptions::new().write(true).open(destination)?.sync_all()?;
     Ok(counts)
 }
 
