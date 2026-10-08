@@ -59,15 +59,21 @@ Le socle persistant comprend désormais :
 - conservation de l'historique de révisions et des sauvegardes antérieures ;
 - qualification Windows et CI déterministe.
 
-Le prochain jalon de la feuille de route est :
+## M2 — Entités narratives et faits canoniques
 
-**M2 — Narrative entities and canonical facts**
+**IN PROGRESS**
 
-**PLANNING AUTHORIZED — implementation subdivision not yet authorized.**
+M2.1 — Entity registry schema and migration est **COMPLETE + MERGED + NORMALIZED**.
 
-M2 nécessite d'abord une roadmap détaillée, des subdivisions ordonnées, des règles de validation humaine et des critères de qualification explicites. Aucune extraction IA ni fonctionnalité M2 n'est encore implémentée ou autorisée.
+SQLite v4 ajoute un registre d'entités narratives lié à chaque univers et une table d'alias. Les six types pris en charge au niveau schéma sont : personnages, lieux, organisations, objets, événements et règles du monde. Le schéma préserve les identifiants et les contraintes d'intégrité.
 
-Les anciennes sauvegardes opérateur M1.2 et M1.4 restent conservées.
+La migration réelle v3 → v4 a été qualifiée sur Windows avec une sauvegarde vérifiée de la base restaurée réellement active. Le contrôle a confirmé la conservation des données M1, notamment des trois révisions textuelles et du pointeur courant. Les sauvegardes opérateur préexistantes sont conservées.
+
+**M2.2 — No-AI entity and alias CRUD : AUTHORIZED / NEXT**
+
+M2.2 ajoutera les services Rust/Tauri et les écrans React pour gérer les six types d'entités et leurs alias sans Ollama. Aucun service de faits canoniques ou moteur narratif IA n'est encore autorisé.
+
+Une proposition distincte d'atelier visuel local ComfyUI pour les personnages, scènes et événements figure dans `docs/roadmap/V1_VISUAL_REFERENCES_COMFYUI_PROPOSAL.md`. Elle est **documentée mais non autorisée à l'implémentation**.
 
 ## Documentation d'autorité
 

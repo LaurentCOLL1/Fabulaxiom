@@ -49,43 +49,45 @@ Terminal `Fabulaxiom CI` run `37722657799`: `completed/success`.
 
 Accepted plan: `docs/roadmap/M2_NARRATIVE_ENTITIES_CANONICAL_FACTS.md`.
 
+## Completed subdivision
+
+**M2.1 — Entity registry schema and migration: COMPLETE + MERGED + NORMALIZED**
+
+Implementation PR: #20.
+
+Implementation merge: `6c58b3bd4f0588436da8ba45adb875f897f426b2`.
+
+Windows-qualified source SHA: `c7a663d88ba2538714d42fdd366719cd54fe6f70`.
+
+Evidence SHA: `88fa3b22904b92d4ecdcb32ed7fd01dc23e24a4c`.
+
+Terminal exact-head `Fabulaxiom CI`: run `37814949619`, `completed/success`, frontend 13/13, Rust 44/44, build/check/lockfiles PASS.
+
+Real Windows v3 → v4 qualification: PASS. Source data/scene revisions/head preserved, migration 1–4, STRICT registry tables, triggers/indexes, foreign keys/integrity PASS, backup and active marker unchanged.
+
+Evidence: `docs/qualification/M2_1_ENTITY_REGISTRY_SCHEMA.md`.
+
 ## Only authorized implementation
 
-**M2.1 — Entity registry schema and migration: WINDOWS QUALIFIED / EXACT-HEAD CI PENDING**
+**M2.2 — No-AI entity and alias CRUD: AUTHORIZED**
 
-Implementation PR: **#20 — feat: implement M2.1 narrative entity registry schema v4**.
+The M2 roadmap's M2.2 contract is now the only implementation scope:
 
-Branch: `feat/m2-1-entity-registry-schema-20261008`
+1. Rust service models/DTOs for all six kinds of narrative entity, plus alias records.
+2. Create/read/list/rename/delete without changing entity ID, owning Universe or kind.
+3. Explicit restrictions for deleting entities with aliases, no silent cascade.
+4. Preserve same-name distinct identities; no name-based foreign keys.
+5. Thin Tauri commands and usable React forms for Universe-scoped entity/alias management.
+6. Deterministic errors, explicit transactions where needed, rollback and negative-path tests.
+7. Preserve M1/M2.1 schema, revision history, active database, backups, and deterministic lockfiles.
+8. No Ollama dependency; prove real UI CRUD works with Ollama stopped.
+9. Qualify the exact PR source on GitHub and operator Windows, document evidence, requalify its new SHA.
+10. Protected merge and separate post-merge M2.2 normalization before M2.3.
 
-Qualified implementation SHA: `c7a663d88ba2538714d42fdd366719cd54fe6f70`.
+Do not implement fact storage, canon review, source anchors, timeline, automatic narrative AI, image galleries or ComfyUI in M2.2. These belong to future, separately authorized work.
 
-Pre-evidence exact-head CI run `37795098224`: `completed/success`; frontend 13/13, Rust 44/44, build/check/lockfiles PASS.
-
-Real Windows v3→v4 qualification PASS. The actual restored active database, activation marker, v3 backup hash, M1 table rows, scene revisions/current head and SQLite v4 integrity were independently checked. Detailed report: `docs/qualification/M2_1_ENTITY_REGISTRY_SCHEMA.md`.
-
-## Required next gates
-
-1. commit the operator Windows qualification evidence on PR #20;
-2. require **new terminal `Fabulaxiom CI` on the evidence commit exact SHA**; earlier CI is historical;
-3. only with successful exact-head CI, re-fetch live main/PR and merge #20 with expected-head protection;
-4. re-fetch post-merge live `main`;
-5. create a separate M2.1 post-merge authority normalization PR, qualify its own exact-head CI and merge;
-6. only then confirm whether M2.2 is authorized from the live normalized authorities.
-
-**M2.2–M2.5 and M3+ remain unauthorized until the appropriate gates.**
-
-- Schema v3 → v4, additive and migration-safe;
-- `STRICT` Universe-scoped entities for six kinds: character, place, organization, object, event, world_rule;
-- separately identified entity aliases;
-- stable immutable IDs and ownership/kind;
-- CHECK, UNIQUE, FK RESTRICT and relevant indexes;
-- preserve all existing M1 data and active restored-database marker;
-- deterministic Rust/schema tests and exact-head CI;
-- Windows qualification with coherent backup of the **resolved active** SQLite database before migration;
-- evidence requalification, protected merge and post-merge normalization.
-
-**M2.2–M2.5 and M3+ are forbidden until their own authority gates.**
+**M2.3–M2.5 and M3+ remain unauthorized.** The ComfyUI visual reference extension is still proposal-only.
 
 ## Governance
 
-Do not introduce entity CRUD UI, fact records, canon status, provenance extraction, FTS, search or Ollama functions in M2.1. Preserve historic and application-owned backups. Never migrate the operator's Windows database from GitHub. Re-fetch main, PR heads and exact-head CI before mutation.
+Always re-fetch exact live `main`, PR heads and CI before mutation. Preserve historical operator SQLite backups. Revalidate every new source/document SHA, and do not use an old CI run as authorization to merge a new HEAD.

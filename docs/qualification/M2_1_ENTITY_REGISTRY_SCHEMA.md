@@ -2,7 +2,7 @@
 
 ## Status
 
-**WINDOWS QUALIFIED — TERMINAL EXACT-HEAD EVIDENCE CI REQUIRED**
+**COMPLETE + MERGED + NORMALIZED**
 
 Implementation PR: **#20 — feat: implement M2.1 narrative entity registry schema v4**.
 
@@ -122,18 +122,33 @@ After the app was closed, an external Python SQLite read-only check reported:
 
 This verification compares the **logical row values** to the v3 backup; it does not assert identical raw SQLite file bytes after the schema migration.
 
-## Conclusion and remaining governance gates
+## Terminal qualification and implementation merge
 
-Windows implementation acceptance: **PASS**, bound to exact SHA `c7a663d88ba2538714d42fdd366719cd54fe6f70`.
+Qualified implementation source SHA:
 
-The evidence commit will change the PR HEAD; run `37795098224` becomes historical and **cannot authorize merging that new HEAD**.
+`c7a663d88ba2538714d42fdd366719cd54fe6f70`
 
-Remaining:
-1. qualification evidence commit;
-2. terminal exact-head PR CI on new SHA;
-3. protected merge of PR #20, only after re-fetch and success;
-4. re-fetch `main`;
-5. post-merge M2.1 normalization PR, terminal exact-head CI, and merge;
-6. only then determine M2.2 authorization from live authorities.
+Windows evidence commit SHA:
 
-**M2.2 and all later subdivisions remain unauthorized now.**
+`88fa3b22904b92d4ecdcb32ed7fd01dc23e24a4c`
+
+Terminal exact-head evidence CI:
+
+- workflow: `Fabulaxiom CI`;
+- run: `37814949619`;
+- result: **completed/success**;
+- all Node/front-end, Rust test/check and dependency-lock steps PASS.
+
+Implementation PR #20 was merged with `expected_head_sha` protection after re-fetching the live head, base and exact-head CI.
+
+Implementation merge SHA:
+
+`6c58b3bd4f0588436da8ba45adb875f897f426b2`
+
+Post-merge `main` was re-fetched and confirmed at this merge SHA.
+
+## Governance conclusion
+
+M2.1 migration v3→v4 and its Windows data preservation/integrity qualification are accepted. This evidence report is included in a separately CI-qualified post-merge normalization. **Only after that normalization PR merges may M2.2 begin.**
+
+No ComfyUI image implementation, canonical facts or higher M2 subdivision is authorized by the completion of M2.1.

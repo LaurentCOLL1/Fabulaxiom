@@ -2,7 +2,7 @@
 
 ## Authority and prerequisites
 
-**PLAN ACCEPTED — M2.1 AUTHORIZED**
+**PLAN ACCEPTED — M2.1 COMPLETE + MERGED + NORMALIZED; M2.2 AUTHORIZED**
 
 Planning PR #17 merged as `4a9115ec362a0efae696ebc94b5101fa46d7a03a` after exact-head `Fabulaxiom CI` run `37722657799` completed/success.
 
@@ -10,7 +10,7 @@ Project: Fabulaxiom. Prior milestone M1 is **COMPLETE + MERGED + NORMALIZED**.
 
 Planning base `main`: `b16be2ed3e6326c88b565b305bcaba2a6d590462`.
 
-This plan subdivides the roadmap's M2 milestone into bounded, sequential deliverables. The planning PR is merged: **M2.1 alone is authorized**.
+This plan subdivides M2 into bounded, sequential deliverables. M2.1 has now been qualified on real Windows, merged and normalized. **M2.2 alone is authorized**.
 
 M1.1–M1.5 are preserved:
 - SQLite migrations, integrity checks and backups;
@@ -84,7 +84,9 @@ All M2 foundational CRUD, facts, review and inspection must remain usable when O
 
 ### M2.1 — Entity registry schema and migration
 
-**AUTHORIZED — ONLY M2.1 IMPLEMENTATION SUBDIVISION**
+**COMPLETE + MERGED + NORMALIZED**
+
+Implementation PR #20 merged at `6c58b3bd4f0588436da8ba45adb875f897f426b2`; terminal evidence-head CI run `37814949619` completed/success and real Windows v3→v4 migration/integrity qualified. Evidence: `docs/qualification/M2_1_ENTITY_REGISTRY_SCHEMA.md`.
 
 Scope:
 - additive SQLite migration from current schema v3 to v4, with `STRICT` entity/alias tables;
@@ -109,7 +111,7 @@ Boundary: **schema/migration only**; do not add entity CRUD UI, facts, aliases e
 
 ### M2.2 — No-AI entity and alias CRUD
 
-**NOT AUTHORIZED until M2.1 COMPLETE + MERGED + NORMALIZED**
+**AUTHORIZED — ONLY M2.2 IMPLEMENTATION SUBDIVISION**
 
 Scope:
 - Rust service models/DTOs and deterministic errors for create/read/list/rename/delete;
