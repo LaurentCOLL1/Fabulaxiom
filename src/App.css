@@ -422,3 +422,52 @@ footer {
     flex-direction: column;
   }
 }
+
+.backup-workspace {
+  margin: 0 0 1.5rem;
+  padding: 1.5rem;
+  border: 1px solid #2a2e3a;
+  border-radius: 1.35rem;
+  background: rgba(18, 21, 29, 0.94);
+}
+
+.backup-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1rem;
+}
+
+.backup-pane {
+  display: grid;
+  align-content: start;
+  gap: 0.8rem;
+  min-width: 0;
+  padding: 1rem;
+  background: #171a23;
+  border: 1px solid #2a2e3a;
+  border-radius: 1rem;
+}
+
+.backup-pane h3,
+.backup-pane p {
+  margin: 0;
+}
+
+.backup-pane p {
+  line-height: 1.5;
+  color: #b9bdca;
+}
+
+.backup-label {
+  font-weight: 700;
+  color: #c8ccda;
+}
+
+.backup-pane code {
+  overflow-wrap: anywhere;
+  color: #aaa6ff;
+}
+
+.backup-workspace .result {
+  margin-bottom: 0.8rem;
+}

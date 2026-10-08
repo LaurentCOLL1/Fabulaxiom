@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import HierarchyWorkspace from "./HierarchyWorkspace";
+import BackupWorkspace from "./BackupWorkspace";
 import {
   formatDatabaseSummary,
   type DatabaseStatus,
@@ -79,13 +80,15 @@ function App() {
   return (
     <main className="app-shell">
       <section className="hero">
-        <p className="eyebrow">M1.4 · révisions de texte et provenance</p>
+        <p className="eyebrow">M1.5 · sauvegarde et restauration locale</p>
         <h1>Fabulaxiom</h1>
         <p className="tagline">
           Mémoire narrative locale pour construire des romans, des sagas et des
           univers cohérents.
         </p>
       </section>
+
+      <BackupWorkspace />
 
       <HierarchyWorkspace />
 
@@ -222,8 +225,8 @@ function App() {
       </section>
 
       <footer>
-        M1.4 ajoute l'historique immuable du texte de scène et son pointeur
-        courant, sans dépendance Ollama. Les fonctions narratives IA restent
+        M1.5 protège la base et les révisions par des sauvegardes contrôlées
+        et une restauration non destructive. Les fonctions narratives IA restent
         hors périmètre.
       </footer>
     </main>
