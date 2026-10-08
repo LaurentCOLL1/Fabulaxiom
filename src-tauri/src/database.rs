@@ -265,7 +265,8 @@ pub fn database_path<R: tauri::Runtime>(
         .app_local_data_dir()
         .map_err(|error| DatabaseError::Path(error.to_string()))?;
 
-    Ok(app_data_dir.join("database").join(DATABASE_FILENAME))
+    crate::backup::resolve_active_database_path(&app_data_dir)
+        .map_err(|error| DatabaseError::Path(error.to_string()))
 }
 
 pub fn open_database(path: &Path) -> Result<Connection, DatabaseError> {

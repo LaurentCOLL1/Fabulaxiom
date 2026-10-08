@@ -1,3 +1,5 @@
+mod backup;
+mod backup_commands;
 mod database;
 mod hierarchy;
 mod hierarchy_commands;
@@ -5,6 +7,8 @@ mod revision_commands;
 mod revisions;
 
 use std::time::Duration;
+
+use backup_commands::{backup_status, create_database_backup, restore_database_backup};
 
 use hierarchy_commands::{
     create_chapter, create_novel, create_scene, create_series, create_universe, delete_chapter,
@@ -54,7 +58,7 @@ struct DatabaseStatus {
 fn bootstrap_status() -> BootstrapStatus {
     BootstrapStatus {
         app_name: "Fabulaxiom",
-        milestone: "M1.4 text revisions and provenance foundation",
+        milestone: "M1.5 backup and restore baseline",
         rust_bridge: "React -> Tauri -> Rust operational",
     }
 }
@@ -204,6 +208,9 @@ pub fn run() {
         .invoke_handler(tauri::generate_handler![
             bootstrap_status,
             database_status,
+            backup_status,
+            create_database_backup,
+            restore_database_backup,
             ollama_status,
             hierarchy_snapshot,
             create_universe,
