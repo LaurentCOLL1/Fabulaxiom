@@ -69,7 +69,13 @@ Evidence: `docs/qualification/M2_1_ENTITY_REGISTRY_SCHEMA.md`.
 
 ## Only authorized implementation
 
-**M2.2 — No-AI entity and alias CRUD: AUTHORIZED**
+**M2.2 — No-AI entity and alias CRUD: IN PROGRESS**
+
+Branch: `feat/m2-2-entity-alias-crud-20261008`
+
+Start base `main`: `70beb4f998ba3e587533dd7a90689eadeae4f4c3`.
+
+Rust entity/alias service and Tauri command boundary are under implementation; React UI, tests and exact-head qualification must follow. M2.3+ remain unauthorized.
 
 The M2 roadmap's M2.2 contract is now the only implementation scope:
 

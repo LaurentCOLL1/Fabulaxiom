@@ -321,7 +321,13 @@ Delivered M2.1 scope:
 
 #### M2.2 — No-AI entity and alias CRUD
 
-**AUTHORIZED — ONLY CURRENT IMPLEMENTATION SUBDIVISION**
+**IN PROGRESS — NOT YET QUALIFIED**
+
+Branch: `feat/m2-2-entity-alias-crud-20261008`
+
+Start base `main`: `70beb4f998ba3e587533dd7a90689eadeae4f4c3`.
+
+Only M2.2 is authorized; no M2.3+ development.
 
 Scope:
 - Rust service models/DTOs and deterministic create/read/list/rename/delete errors;
