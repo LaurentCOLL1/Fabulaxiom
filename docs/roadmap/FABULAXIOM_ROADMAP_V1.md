@@ -45,11 +45,11 @@ M1 deliverables overall:
 
 ## M2 — Narrative entities and canonical facts
 
-**Status: IN PROGRESS — M2.1 AUTHORIZED**
+**Status: IN PROGRESS — M2.1 COMPLETE + MERGED + NORMALIZED; M2.2 AUTHORIZED**
 
 Accepted detailed roadmap: `docs/roadmap/M2_NARRATIVE_ENTITIES_CANONICAL_FACTS.md`.
 
-Planning PR #17 merged with terminal exact-head CI success. Only M2.1 (entity registry schema and migration) is authorized. M2.2–M2.5 require their own acceptance and post-merge normalization.
+Planning PR #17 and the M2.1 implementation/Windows qualification/normalization have been accepted. M2.1 introduced SQLite schema v4 and Universe-scoped narrative entities/aliases. **M2.2 — No-AI entity and alias CRUD** is the only currently authorized implementation subdivision. M2.3–M2.5 remain blocked until their own acceptance and post-merge normalization.
 
 Deliverables:
 

@@ -262,71 +262,77 @@ M1.1–M1.5 are all **COMPLETE + MERGED + NORMALIZED**. M1's database, hierarchy
 
 ### M2 — Narrative entities and canonical facts
 
-**PLANNING ACCEPTED — M2.1 AUTHORIZED**
+**IN PROGRESS**
 
-Planning PR #17 merged at `4a9115ec362a0efae696ebc94b5101fa46d7a03a` after terminal exact-head `Fabulaxiom CI` run `37722657799` succeeded on `44669d9070870624b845ab0825ebd555eef0dcbc`.
+Detailed planning PR #17 merged at `4a9115ec362a0efae696ebc94b5101fa46d7a03a`.
 
-Accepted detailed plan:
-
-`docs/roadmap/M2_NARRATIVE_ENTITIES_CANONICAL_FACTS.md`
-
-Proposed subdivisions:
-
-- M2.1 — Entity registry schema and migration;
-- M2.2 — No-AI entity and alias CRUD;
-- M2.3 — Fact registry and exact revision provenance;
-- M2.4 — Canon status and review service;
-- M2.5 — Sourced-facts and human review UI.
-
-M2.1 — Entity registry schema and migration is the only implementation subdivision authorized. M2.2+ remain unauthorized.
+Accepted roadmap: `docs/roadmap/M2_NARRATIVE_ENTITIES_CANONICAL_FACTS.md`.
 
 #### M2.1 — Entity registry schema and migration
 
-**WINDOWS QUALIFIED — NEW EXACT-HEAD CI AND MERGE PENDING**
+**COMPLETE + MERGED + NORMALIZED**
 
 Implementation PR: **#20 — feat: implement M2.1 narrative entity registry schema v4**.
 
-Branch: `feat/m2-1-entity-registry-schema-20261008`
+Implementation merge:
 
-Original base `main`: `5fc54f234227ad43a91ffe28fe2662453221e31e`
+`6c58b3bd4f0588436da8ba45adb875f897f426b2`
 
-Latest synchronized `main` before qualification: `bf56b5817e55faa01ab9c43eacfbf88dc95e4a3b`.
+Qualified implementation SHA:
 
-Qualified implementation SHA: `c7a663d88ba2538714d42fdd366719cd54fe6f70`.
+`c7a663d88ba2538714d42fdd366719cd54fe6f70`
 
-Pre-evidence exact-head CI: `Fabulaxiom CI` run `37795098224`, `completed/success`, all frontend/Rust/build/check/lockfile steps PASS.
+Windows qualification evidence SHA:
 
-Windows M2.1 qualification: PASS.
-- Local exact SHA and worktree clean; frontend 13/13, Rust 44/44, build/check PASS;
-- resolved actual M1.5 restored active SQLite database, not the default database;
-- schema-v3 operator backup verified and SHA256 recorded;
-- v3 → v4 migration in the real Tauri application: PASS;
-- SQLite v4 and foreign keys ON, Ollama unavailable as intended;
-- all seven existing hierarchy/revision-related table data sets retained identically;
-- three text revisions and one current-revision pointer preserved;
-- two v4 registry STRICT tables, four immutable-identity triggers and two indexes verified;
-- schema migrations 1–4 verified; new registry empty as expected;
-- `PRAGMA foreign_key_check` empty; `PRAGMA integrity_check` `ok`;
-- activation marker unchanged and original v3 backup hash unchanged;
-- final HEAD exact, worktree CLEAN, Ollama OFF.
-- Existing bootstrap bridge still displays M1.5 milestone; this was explicitly expected and is not a failed v4 qualification.
+`88fa3b22904b92d4ecdcb32ed7fd01dc23e24a4c`
 
-Detailed evidence: `docs/qualification/M2_1_ENTITY_REGISTRY_SCHEMA.md`.
+Terminal exact-head CI:
 
-Scope remains schema-only: six Universe-scoped narrative entity kinds, aliases, immutable identity and FK restrictions, migration and backup/restore compatibility. No entity CRUD UI, facts, Ollama or ComfyUI code.
+- workflow: `Fabulaxiom CI`;
+- run: `37814949619`;
+- `completed/success`;
+- frontend 13/13, Rust 44/44 tests PASS;
+- frontend build, `cargo check --locked` and lockfile check PASS.
 
-**M2.2+ remain unauthorized until M2.1 is merged and post-merge normalized.**
+Windows production schema-v3 → schema-v4 qualification:
 
-M2 planning scope from `docs/roadmap/FABULAXIOM_ROADMAP_V1.md`:
+- actual restored active database resolved from M1.5 activation marker, not assumed default;
+- source and backup verified before migration, backup SHA256 preserved;
+- migration v4 applied by Tauri, four migrations recorded exactly once;
+- both new narrative registry/alias tables STRICT;
+- four immutable-identity triggers, two indexes;
+- six narrative kinds constrained at schema level;
+- existing hierarchy, metadata, revision and current-head rows unchanged in logical value;
+- three scene text revisions and one current revision head preserved;
+- `PRAGMA foreign_key_check` empty and `PRAGMA integrity_check` `ok`;
+- no Ollama dependency; final worktree CLEAN;
+- original backup and active activation marker unchanged.
 
-- entities: characters, places, organizations, objects, events, world rules;
-- aliases and renames with stable identity;
-- source/provenance to scene text revision/passage;
-- canon/draft/suggestion/variant/unknown/ambiguous/contradictory statuses;
-- temporal validity and uncertainty;
-- human approval before any AI suggestion becomes canonical.
+Detailed evidence:
 
-M2.1 is authorized from live normalized planning `main`; M2.2+ and M3+ remain forbidden until their own acceptance and normalization gates pass.
+`docs/qualification/M2_1_ENTITY_REGISTRY_SCHEMA.md`
+
+Delivered M2.1 scope:
+- SQLite schema v4 for Universe-scoped narrative entity registry and aliases;
+- immutable IDs, entity kind and Universe ownership; FK restrictions/indexes;
+- M1.5 v3/v4 backup and safe legacy-v3 restore compatibility;
+- deterministic regression tests;
+- **no** entity CRUD UI, fact/canon engine, image/ComfyUI code.
+
+#### M2.2 — No-AI entity and alias CRUD
+
+**AUTHORIZED — ONLY CURRENT IMPLEMENTATION SUBDIVISION**
+
+Scope:
+- Rust service models/DTOs and deterministic create/read/list/rename/delete errors;
+- thin Tauri command boundary and usable React screens for six entity kinds and alias management;
+- immutable kind/Universe identity, distinct IDs and restrictive referential behavior;
+- transactional multi-step operations and rollback;
+- fully usable with Ollama stopped.
+
+M2.3–M2.5 and M3+ remain unauthorized until their own acceptance, merge and normalization gates.
+
+The proposed ComfyUI image/reference atelier is tracked in issue #19 and the accepted **proposal-only** V1 roadmap addition. No image/ComfyUI implementation is authorized by M2.1 or M2.2.
 
 ## Reproducibility contract
 
