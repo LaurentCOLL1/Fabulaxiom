@@ -69,13 +69,15 @@ Evidence: `docs/qualification/M2_1_ENTITY_REGISTRY_SCHEMA.md`.
 
 ## Only authorized implementation
 
-**M2.2 — No-AI entity and alias CRUD: IN PROGRESS**
+**M2.2 — No-AI entity and alias CRUD: WINDOWS QUALIFIED; MERGE PENDING**
 
 Branch: `feat/m2-2-entity-alias-crud-20261008`
 
 Start base `main`: `70beb4f998ba3e587533dd7a90689eadeae4f4c3`.
 
-Rust entity/alias service and Tauri command boundary are under implementation; React UI, tests and exact-head qualification must follow. M2.3+ remain unauthorized.
+M2.2 Rust service, Tauri commands and React UI are implemented. **Windows interactive and persistence qualification PASS** on exact source `b54fffd8e1f0224372e3b99cee07cb6df3203973`: 13/13 operator scenarios, 21/21 frontend and 51/51 Rust tests, Ollama OFF, post-interactive SQLite v4 integrity PASS, backup/history preservation PASS. Evidence: `docs/qualification/M2_2_ENTITY_ALIAS_CRUD.md`.
+
+**Next gate:** re-fetch and qualify the **new documentary HEAD** with terminal `pull_request` CI; merge PR #23 protected with its expected head SHA; then separate post-merge normalization PR and exact-head CI. M2.3+ remain unauthorized until that normalization completes.
 
 The M2 roadmap's M2.2 contract is now the only implementation scope:
 
