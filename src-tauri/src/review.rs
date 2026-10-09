@@ -86,7 +86,7 @@ impl ReviewError {
         let (code, message) = match self {
             Self::NotFound => ("not_found", "Fait ou univers introuvable."),
             Self::CrossUniverse => ("cross_universe", "Le fait ne correspond pas à cet univers."),
-            Self::Validation(msg) => ("validation", msg),
+            Self::Validation(msg) => ("validation", *msg),
             Self::InvalidStatus => ("invalid_status", "Statut de fait inconnu."),
             Self::InvalidTransition => ("invalid_transition", "Transition de revue interdite."),
             Self::StaleRevision => ("stale_revision", "La version attendue n'est plus courante."),
