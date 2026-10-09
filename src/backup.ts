@@ -10,6 +10,7 @@ export type DataCounts = {
   aliases: number;
   facts: number;
   fact_sources: number;
+  review_events: number;
 };
 
 export type BackupEntry = {
@@ -56,7 +57,8 @@ export function formatCounts(counts: DataCounts): string {
     counts.aliases +
     " alias · " +
     counts.facts + " faits · " +
-    counts.fact_sources + " citations"
+    counts.fact_sources + " citations · " +
+    counts.review_events + " revues"
   );
 }
 
