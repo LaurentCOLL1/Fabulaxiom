@@ -80,7 +80,11 @@ Evidence: `docs/qualification/M2_1_ENTITY_REGISTRY_SCHEMA.md`.
 
 ## Only next authorized implementation
 
-**M2.3 — Fact registry and exact revision provenance: AUTHORIZED ONLY AFTER M2.2 NORMALIZATION MERGES.**
+**M2.3 — Fact registry and exact revision provenance: WINDOWS QUALIFIED; PR #25 MERGE PENDING.**
+
+Starting live `main`: `70d8c5ca079eb94ef93ae7f5ee684503f99400cd`. Implementation branch: `feat/m2-3-fact-registry-exact-provenance-20261009`.
+
+The operator safely completed v4→v5 on the M1.5 restored-active SQLite, after verifying a new non-overwriting v4 backup. Windows UI 8/8 PASS; read-only audit of full original data digests, migrations 1–5, STRICT tables, triggers/indexes, foreign keys, integrity, backup SHA-256 and three scene revisions/current pointer PASS. Qualified source: `4d3b4b6015d477c3a6a5c3750d9743174e9c44a7`; exact-source CI run `37879358744` terminal success (21/21 frontend, 61/61 Rust). Evidence: `docs/qualification/M2_3_IMPLEMENTATION_GATE.md`. **Next:** evidence HEAD new CI, protected merge of #25, then separate normalized-doc PR and exact-head CI. M2.4+/ComfyUI remain unauthorized.
 
 The future dedicated M2.3 PR must start by re-fetching live `main`, `STATE.md`, `NEXT.md`, the detailed M2 roadmap and the M2.2 evidence report. M2.3 scope (nothing beyond):
 
