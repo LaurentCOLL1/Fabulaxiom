@@ -321,28 +321,40 @@ Delivered M2.1 scope:
 
 #### M2.2 — No-AI entity and alias CRUD
 
-**WINDOWS QUALIFIED — IMPLEMENTATION MERGE / NORMALIZATION PENDING**
+**COMPLETE + MERGED + NORMALIZED** — normalized after independent post-merge PR acceptance.
 
-Windows-qualified source: `b54fffd8e1f0224372e3b99cee07cb6df3203973`; operator interactive alias / entity scenarios **13/13 PASS** on real Windows with Ollama OFF. Local preflight **21/21 frontend, 51/51 Rust PASS**; SQLite v4 postinteractive checks, eight alias rows, nine entity rows, one same-name pair with different IDs, 3 scene revisions and current pointer preservation PASS. Details: `docs/qualification/M2_2_ENTITY_ALIAS_CRUD.md`.
+Implementation PR: **#23 — feat: implement M2.2 no-AI narrative entity and alias CRUD**.
 
-CI on Windows-qualified source: `Fabulaxiom CI` run `37831790345`, `completed/success`. **Documentary evidence commit has a new SHA and requires its own terminal exact-head CI before protected implementation merge.** Post-merge normalization remains mandatory; M2.3+ still blocked.
+- Original base `main`: `70beb4f998ba3e587533dd7a90689eadeae4f4c3`.
+- Windows-qualified code source: `b54fffd8e1f0224372e3b99cee07cb6df3203973`.
+- Targeted React alias crash fix: synchronous `currentTarget.value` capture, per-entity alias drafts, IPC response validation and scoped render error boundary.
+- Source-head `Fabulaxiom CI`: `37831790345`, `completed/success`.
+- Operator Windows evidence commit: `a96870f823f24cb8962c9b0f43336ccb883ad5c3`.
+- Evidence exact-head `Fabulaxiom CI`: run `37864503602`, event `pull_request`, `completed/success`; Windows job and every step successful.
+- Protected implementation merge PR #23: `ad7211fa2f292b8bd9812e299dbb6be96214eb89`, with expected head SHA `a96870f823f24cb8962c9b0f43336ccb883ad5c3`.
+- The separate normalization PR must have terminal exact-head CI and be merged before this normalized status takes effect.
 
-Branch: `feat/m2-2-entity-alias-crud-20261008`
+Real Windows acceptance on qualified source:
 
-Start base `main`: `70beb4f998ba3e587533dd7a90689eadeae4f4c3`.
+- `npm ci`, frontend **21/21** tests, frontend build, Rust **51/51** tests, `cargo check --locked`, lockfile checks: PASS; worktree CLEAN.
+- **13/13 operator interactive cases PASS**: six kinds, create/add/rename/delete alias, duplicate rejection, per-entity drafts, same-name distinct character identities, restrictive parent deletion, remaining modules visible with Ollama OFF.
+- Actual restored SQLite database resolved through M1.5 active marker, not assumed default.
+- Postinteractive schema v4, four migrations, two STRICT tables, four immutable-identity triggers, required indexes, `foreign_key_check=[]`, `integrity_check=ok`: PASS.
+- Postinteractive 9 narrative entities and 8 aliases preserved; two same-name character rows have distinct IDs; 3 immutable scene text revisions and 1 current pointer unchanged, with matching pre/post SHA-256 digests.
+- Historical pre-M2.1 operator backup SHA-256 preserved; no local database or backup cleanup or restoration performed.
+- Nonfatal Rust warnings remain deferred to a separately qualified change.
 
-Only M2.2 is authorized; no M2.3+ development.
+Detailed evidence: `docs/qualification/M2_2_ENTITY_ALIAS_CRUD.md`.
 
-Scope:
-- Rust service models/DTOs and deterministic create/read/list/rename/delete errors;
-- thin Tauri command boundary and usable React screens for six entity kinds and alias management;
-- immutable kind/Universe identity, distinct IDs and restrictive referential behavior;
-- transactional multi-step operations and rollback;
-- fully usable with Ollama stopped.
+Delivered M2.2: Rust/Tauri/React no-AI CRUD for six Universe-scoped narrative entity kinds and owner-scoped aliases, deterministic validation/negative paths, stable identity and restrictive deletion. No canon/facts, chronology, search, AI-writing or visual/ComfyUI implementation.
 
-M2.3–M2.5 and M3+ remain unauthorized until their own acceptance, merge and normalization gates.
+#### M2.3 — Fact registry and exact revision provenance
 
-The proposed ComfyUI image/reference atelier is tracked in issue #19 and the accepted **proposal-only** V1 roadmap addition. No image/ComfyUI implementation is authorized by M2.1 or M2.2.
+**NEXT AUTHORIZED IMPLEMENTATION — effective only after the separate M2.2 normalization PR is merged and re-fetched.**
+
+The accepted `docs/roadmap/M2_NARRATIVE_ENTITIES_CANONICAL_FACTS.md` M2.3 contract is limited to a normalized fact registry, exact immutable Scene revision citations, UTF-8 byte-range validation, same-Universe provenance, transaction rollback and no automatic canon promotion. M2.4–M2.5, M3+ and the ComfyUI visual atelier remain unauthorized.
+
+The proposed ComfyUI image/reference atelier remains tracked in issue #19 and the accepted **proposal-only** V1 roadmap addition.
 
 ## Reproducibility contract
 

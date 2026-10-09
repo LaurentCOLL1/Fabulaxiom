@@ -9,8 +9,9 @@
 - Defensive UI fix: `63ad536ee08d8fd7edbe44561c8864ada212f14a`.
 - Final targeted event-value fix and Windows-qualified source: `b54fffd8e1f0224372e3b99cee07cb6df3203973`.
 - Source-head `Fabulaxiom CI`: run **37831790345**, `pull_request`, `completed/success`; Windows frontend/Rust job and all steps passed.
-- **The documentary evidence commit changes the PR HEAD. Its CI must be re-fetched and pass on that new exact HEAD before implementation merge.**
-- At evidence authoring: implementation merge and post-merge normalization **pending**; M2.3+ are **not authorized**.
+- Documentary evidence HEAD: `a96870f823f24cb8962c9b0f43336ccb883ad5c3`; exact-head `Fabulaxiom CI` run **37864503602**, `pull_request`, **completed/success** with the Windows job and every step successful.
+- Implementation PR #23 **merged** with `expected_head_sha=`a96870f823f24cb8962c9b0f43336ccb883ad5c3` and re-fetched on `main` at merge SHA `ad7211fa2f292b8bd9812e299dbb6be96214eb89`.
+- This separate normalization PR must pass exact-head CI and merge before M2.2 is declared NORMALIZED. M2.3+ remain unauthorized up to that boundary.
 
 ## Delivered scope
 
@@ -83,14 +84,15 @@ This is an operator observation, not an automated UI-end-to-end test; no unperfo
 - Existing backups, active restored database, scene revisions and current pointer preserved; migrations were **not** reapplied as a new migration.
 - Final operator summary: `M2.2 WINDOWS QUALIFICATION : PASS`; `INTERACTIVE TESTS : 13/13 PASS (OPERATOR)`; `POST-INTERACTIVE SQLITE : PASS`; `WORKTREE : CLEAN`.
 
-## Governance / next gate
+## Post-merge normalization closure
 
-1. Re-fetch implementation PR #23, main, branch and **new evidence commit SHA**.
-2. Require terminal successful `Fabulaxiom CI` `pull_request` on the **exact new documentary HEAD**, including its job steps and unchanged lockfiles.
-3. Merge PR #23 only using `expected_head_sha` and current base revalidation; no historical-CI substitution.
-4. Re-fetch `main`, then open a **separate** M2.2 normalization PR updating current authorities and roadmap truth.
-5. Require terminal exact-head CI on normalization PR, protected merge and re-fetch of normalized authorities.
-6. Only then consider M2.3 authorization according to normalized governance. Do not implement M2.3 during M2.2 closure.
+- Original source qualified on real Windows: `b54fffd8e1f0224372e3b99cee07cb6df3203973`; operator interactive 13/13 PASS, and read-only posttest SQLite checks PASS.
+- Evidence commit: `a96870f823f24cb8962c9b0f43336ccb883ad5c3`; full `Fabulaxiom CI` run `37864503602` completed/success on that exact pull-request HEAD, including all Windows steps and dependency lock check.
+- Implementation PR #23 merged safely with the expected evidence-head SHA.
+- Implementation merge commit `ad7211fa2f292b8bd9812e299dbb6be96214eb89` was re-fetched as exact `main`; PR #23 re-fetched as closed/merged with matching merge commit.
+- No M2.2 app code changes are part of normalization; only documentation status and roadmap scope change.
+- The **separate** normalization PR requires its **own** terminal successful `pull_request` CI, protected expected-HEAD merge, and postmerge authority re-fetch.
+- Only then may M2.3 be considered the next authorized subdivision; it has **not** been started or implemented by this M2.2 closure. No ComfyUI implementation is authorized.
 
 ## Future visual extension — preserve without implementation
 
