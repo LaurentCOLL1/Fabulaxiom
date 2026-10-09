@@ -45,13 +45,17 @@ M1 deliverables overall:
 
 ## M2 — Narrative entities and canonical facts
 
-**Status: IN PROGRESS — M2.1 and M2.2 COMPLETE + MERGED + NORMALIZED; M2.3 NEXT AUTHORIZED after normalization merge**
+**Status: IN PROGRESS — M2.1–M2.3 COMPLETE + MERGED + NORMALIZED; M2.4 NEXT AFTER M2.3 NORMALIZATION**
 
 Accepted detailed roadmap: `docs/roadmap/M2_NARRATIVE_ENTITIES_CANONICAL_FACTS.md`.
 
 M2.1 delivered SQLite v4 and Universe-scoped entity/alias registry. M2.2 implementation PR #23 merged at `ad7211fa2f292b8bd9812e299dbb6be96214eb89` after real Windows qualification on `b54fffd8e1f0224372e3b99cee07cb6df3203973` (13/13 interactive, 21/21 frontend and 51/51 Rust PASS, Ollama stopped, restored-active SQLite/backup/revisions preserved) and evidence-head CI `37864503602` on `a96870f823f24cb8962c9b0f43336ccb883ad5c3` (terminal success). See `docs/qualification/M2_2_ENTITY_ALIAS_CRUD.md`.
 
-**M2.3 — Fact registry and exact revision provenance** becomes the sole next authorized implementation only after this independent M2.2 normalization PR is CI-qualified and merged. M2.4–M2.5 and M3+ remain blocked; visual ComfyUI extension remains proposal-only.
+**M2.3 — Fact registry and exact revision provenance: COMPLETE + MERGED + NORMALIZED** after separate post-merge normalization acceptance.
+
+PR #25 implemented SQLite v5 STRICT narrative fact/source registry and Rust/Tauri manual create/read/list with exact immutable revision citation spans, same-Universe validation, explicit sourced/unsourced facts and atomic rollback. Qualified code `4d3b4b6015d477c3a6a5c3750d9743174e9c44a7` (21/21 React, 61/61 Rust, 8/8 Windows operator GUI checks, controlled v4→v5 and fully preserved v4 baseline/backup); exact-evidence CI `37961014980` passed on `b015f7df80f38d75375a0e2615fd62d4c40ee1b8`. Implementation merged at `e6e80c26316f11054348a18a235fd08c600e136e`. Evidence: `docs/qualification/M2_3_IMPLEMENTATION_GATE.md`.
+
+**M2.4 — Canon status and human review service** is the sole next subdivision, conditional on M2.3 normalization merge and re-fetch. M2.5+, AI extraction and ComfyUI remain unauthorized. No standalone React fact editor is yet delivered.
 
 Deliverables:
 

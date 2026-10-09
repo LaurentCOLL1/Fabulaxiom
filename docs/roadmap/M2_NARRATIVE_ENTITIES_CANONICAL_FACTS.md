@@ -2,7 +2,7 @@
 
 ## Authority and prerequisites
 
-**PLAN ACCEPTED — M2.1 and M2.2 COMPLETE + MERGED + NORMALIZED; M2.3 NEXT AFTER M2.2 NORMALIZATION**
+**PLAN ACCEPTED — M2.1–M2.3 COMPLETE + MERGED + NORMALIZED; M2.4 NEXT AFTER M2.3 NORMALIZATION**
 
 Planning PR #17 merged as `4a9115ec362a0efae696ebc94b5101fa46d7a03a` after exact-head `Fabulaxiom CI` run `37722657799` completed/success.
 
@@ -10,7 +10,7 @@ Project: Fabulaxiom. Prior milestone M1 is **COMPLETE + MERGED + NORMALIZED**.
 
 Planning base `main`: `b16be2ed3e6326c88b565b305bcaba2a6d590462`.
 
-This plan subdivides M2 into bounded sequential deliverables. M2.1 and M2.2 have passed Windows qualification, protected implementation merge and (once the independent normalization PR is merged) normalization. M2.2 implementation PR #23 merged at `ad7211fa2f292b8bd9812e299dbb6be96214eb89` after evidence-head CI run `37864503602` succeeded on `a96870f823f24cb8962c9b0f43336ccb883ad5c3`. **Only M2.3 may be authorized after normalization is merged**, and only within its existing accepted scope.
+This plan subdivides M2 into bounded sequential deliverables. M2.1–M2.3 have passed their qualification, protected implementation merge and (upon acceptance of the independent normalization PR) normalizations. M2.2 merged via PR #23; M2.3 merged via PR #25 at `e6e80c26316f11054348a18a235fd08c600e136e` after exact evidence CI `37961014980` succeeded. **M2.4 is the next possible implementation only after M2.3 normalization merges and normalized main is re-fetched**, bounded strictly to human canon status and review.
 
 M1.1–M1.5 are preserved:
 - SQLite migrations, integrity checks and backups;
@@ -131,7 +131,9 @@ Acceptance:
 
 ### M2.3 — Fact registry and exact revision provenance
 
-**NEXT AUTHORIZED ONLY AFTER M2.2 NORMALIZATION MERGES — NOT IMPLEMENTED BY THIS DOCUMENTARY PR**
+**COMPLETE + MERGED + NORMALIZED — after independent post-merge normalization PR approval.**
+
+Implementation PR #25 merged at `e6e80c26316f11054348a18a235fd08c600e136e`; qualified Windows code `4d3b4b6015d477c3a6a5c3750d9743174e9c44a7`; evidence-head CI `37961014980` terminal SUCCESS on `b015f7df80f38d75375a0e2615fd62d4c40ee1b8`. Pre-v5 backup SHA-256 `c624241080d6e820398cc502b4db206fcaba457405083ce806c302a6ce464976`; real v4→v5, 9 entities, 8 aliases, 3 scene revisions/current head and all old table digests preserved. UI 8/8 PASS; frontend 21/21, Rust 61/61 PASS. See `docs/qualification/M2_3_IMPLEMENTATION_GATE.md`. No fact-editor React UI or canon state is delivered.
 
 Scope:
 - normalized structured fact records with stable IDs and associated entity IDs;
@@ -151,7 +153,7 @@ Acceptance:
 
 ### M2.4 — Canon status and review service
 
-**NOT AUTHORIZED until M2.3 COMPLETE + MERGED + NORMALIZED**
+**NEXT AUTHORIZED ONLY AFTER M2.3 NORMALIZATION MERGES — DO NOT IMPLEMENT IN THIS DOCUMENTARY PR**
 
 Scope:
 - deterministic status lifecycle with vocabulary above;
