@@ -1,6 +1,6 @@
 # M2.4 — Human-governed fact status and append-only review qualification
 
-**EXACT SOURCE WINDOWS QUALIFIED — IMPLEMENTATION PR #27 MERGE AND NORMALIZATION PENDING**
+**IMPLEMENTATION PROTECTED-MERGED — INDEPENDENT NORMALIZATION PENDING**
 
 Authority: live normalized `main=ebaaf62933dadf6f0662ca749227a0b340b8a7e3`, M2.3 COMPLETE + MERGED + NORMALIZED.
 Branch: `feat/m2-4-canon-status-review-20261009`.
@@ -16,7 +16,7 @@ Branch: `feat/m2-4-canon-status-review-20261009`.
 ## Required CI
 - `npm ci`, frontend tests/build, `cargo test --all-targets --locked`, `cargo check --locked`, unchanged `package-lock.json` and `Cargo.lock`.
 - V1–V6 migration test, **v5→v6** on existing fact/source and exact scene revision/head data; idempotence; STRICT, FK and integrity checks.
-- Rust tests: default draft; manual suggestion and approval/revocation; invalid transitions; stale concurrent revision; signed human confirmation; many unresolved statuses; immutable audit history; cross-Universe FK; entity renames; no altered source or fact.
+- Rust tests: default draft; manual suggestion and approval/revocation; invalid transitions; stale concurrent revision; explicit confirmation phrase (not cryptographic signature or authenticated identity); many unresolved statuses; immutable audit history; cross-Universe FK; entity renames; no altered source or fact.
 - Backup service must restore historical v3/v4/v5 files into **new v6 copies**, never overwrite source, retain all old backup hashes and M1.5 active marker. Review events must be included in counts and checked for a valid chain.
 - All assertions must pass **on the exact pull_request head SHA** after every source change.
 
@@ -28,7 +28,7 @@ Branch: `feat/m2-4-canon-status-review-20261009`.
 5. With Ollama off, operator verifies v6 diagnostic and original hierarchy/9 entities/8 aliases/3 scene revisions/1 current head, no blank screen, and no M2.5 fact review UI claimed.
 6. After app exit, read-only audit v6: exact six migration rows, STRICT review table, trigger/index/FK invariants, zero review events before any operator review, old table counts/content digests exactly matching pre-v6 manifest, backups unchanged, `foreign_key_check=[]`, `integrity_check=ok`.
 7. Any manual review API exercise needs explicit safe test facts, separate from production data or operator-authorized test setup; do not write unrequested fact/review rows into the user's main database. UI 8/8 migration tests are not proof of fact review API usage.
-8. Windows migration and isolated review tests passed. **Still outstanding:** evidence commit, new SHA exact-head green CI, protected implementation merge and independent normalization PR/CI; **M2.5 is blocked until M2.4 NORMALIZED**.
+8. Windows migration and isolated review tests passed, documentary evidence committed and its new SHA CI passed, protected implementation merge completed. **Still outstanding: separate normalization PR, exact-head CI and protected merge.** M2.5 is blocked until M2.4 NORMALIZED.
 
 
 ## Operator evidence — 9 October 2026
@@ -45,7 +45,7 @@ Branch: `feat/m2-4-canon-status-review-20261009`.
 
 **Qualification boundary:** these Windows results qualify SQLite migration, existing GUI non-regression and *in-memory Rust review service* behavior. They are **not** an E2E Tauri IPC interaction or a manual Windows React review UI test, and the self-declared reviewer label is not authenticated. No production fact/review test rows were inserted. No AI/Ollama automatic canon promotion was introduced.
 
-**Outstanding GitHub gates:** create an evidence-only documentary commit on PR #27; requalify **all** `pull_request` jobs on its **new** exact HEAD, protected merge PR #27 with expected SHA, then **separate** post-merge normalization PR/CI and re-fetch normalized authorities. M2.5 and ComfyUI implementation remain unauthorized before M2.4 normalization.
+**Completed GitHub gates:** evidence HEAD `b53405779b04c16525ba48a266bd096096af7020`, `Fabulaxiom CI` run `37989040863` `pull_request` completed/success with all 13 Windows steps, protected merge of PR #27 using that expected HEAD to `main=3a069572d00e1680c42b0f13b800e28687c5f0eb` and re-fetch confirmation. **Only outstanding gate:** separate docs-only M2.4 normalization PR, terminal exact-head CI, protected merge and authoritative `main` re-fetch. M2.5 and ComfyUI implementation remain unauthorized before M2.4 normalization.
 
 ## Deferred
 Existing issue #19 + `docs/roadmap/V1_VISUAL_REFERENCES_COMFYUI_PROPOSAL.md` retain the request for local ComfyUI/manual imported visual references, but implementation remains unauthorized.

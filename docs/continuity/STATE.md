@@ -362,21 +362,25 @@ Implementation PR #25; Windows-qualified source `4d3b4b6015d477c3a6a5c3750d97431
 - Delivered local Rust/Tauri structured fact create/read/list with explicit sourced/unsourced provenance, immutable Scene revision anchors, checked UTF-8 byte spans, same-Universe guards and atomic rollback; **no React fact-entry UI**, canon status/review, AI extraction or ComfyUI implementation.
 - Detailed evidence: `docs/qualification/M2_3_IMPLEMENTATION_GATE.md`.
 
-#### M2.4 — Canon status and review service
+#### M2.4 — Canon status and human review service
 
-**WINDOWS SOURCE QUALIFIED — PR #27 EVIDENCE HEAD CI / MERGE / NORMALIZATION PENDING**
+**COMPLETE + MERGED + NORMALIZED — effective only after the independent M2.4 normalization PR completes its exact-HEAD CI and protected merge.**
 
-Live normalized main: `ebaaf62933dadf6f0662ca749227a0b340b8a7e3`, after PR #26 merged. M2.4 branch: `feat/m2-4-canon-status-review-20261009`.
+Implementation PR #27 merged into `main` at `3a069572d00e1680c42b0f13b800e28687c5f0eb`; qualified source HEAD `aad56bd59fdb87be5ac1eda99b1969452bf61a26`, qualification evidence HEAD `b53405779b04c16525ba48a266bd096096af7020`. Exact source `Fabulaxiom CI` run `37974831473` and evidence-HEAD run `37989040863`: both terminal SUCCESS, 13/13 Windows steps. Source qualification: 21/21 React, 71/71 Rust; operator real Windows reviewed 8/8 isolated Rust tests plus 8/8 existing-UI non-regression checks, Ollama OFF.
 
-Additive SQLite v6 `fact_review_events` (append-only), Rust/Tauri manual status transitions and durable human-declared review lineage. The seven allowed status values remain separate from immutable v5 fact text/provenance; canon promotion and revocation require explicit operator-provided action + confirmation. Reviewer labels are **self-declared, not authenticated**. No AI-driven canon changes and no React fact editor (M2.5).
+Delivered SQLite **v6**, STRICT append-only `fact_review_events`, explicit seven-state review service via Rust/Tauri, `draft` default, deterministic status transitions, durable audit history, optimistic revision guards, cross-Universe FK, explicit approval and revocation confirmation. Human reviewer name is **self-declared, not authenticated**; no silent AI promotion.
 
-Exact qualified source `aad56bd59fdb87be5ac1eda99b1969452bf61a26`; `Fabulaxiom CI` run `37974831473` terminal success: 21/21 React, 71/71 Rust, locked build/check. Operator Windows v5→v6 migration after a new SHA-256 verified consistent v5 backup `db02961d7a30c6a6522bd52faeab8ceb09e26c1a4a6a58be467d142806e22fee`: **PASS**; 8/8 existing GUI checks PASS with Ollama OFF. Independent postmigration read-only audit: exact schema migrations 1–6; STRICT table/triggers/indexes/FK/integrity; all prior original-table digests, nine entities/eight aliases, three scene revisions/one head and all backups preserved. Isolated **8/8 real Windows Rust review-service tests PASS** with production v6 snapshot SHA-256 unchanged before/after (`67dfd9194ff884762bbffaa39d774df10fadcd74cbc9e6774e36d323e4506fc6`). No production fact/review rows inserted. **Not** an end-to-end React/Tauri fact review UI or authenticated reviewer test; reviewer labels are self-declared. Evidence: `docs/qualification/M2_4_CANON_REVIEW_IMPLEMENTATION_GATE.md`.
+Real restored-active Windows v5→v6 migration occurred **only after** separate non-overwriting consistent pre-v6 v5 backup SHA-256 `db02961d7a30c6a6522bd52faeab8ceb09e26c1a4a6a58be467d142806e22fee`, with older backups intact. Independent read-only postmigration audit of six migrations, STRICT/triggers/indexes, integrity and foreign keys, every previous table digest, nine entities/eight aliases, three scene revisions and one current head: PASS. Isolated Windows Rust review tests **8/8 PASS** with production v6 SQLite logical snapshot unchanged before/after (`67dfd9194ff884762bbffaa39d774df10fadcd74cbc9e6774e36d323e4506fc6`). No production facts or review events inserted.
 
-**Still required:** documentary evidence commit → new exact-head CI → protected merge PR #27 → independent normalization PR and its own exact-head CI/merge. M2.5+ and ComfyUI remain unauthorized.
+**Not delivered:** a dedicated React fact/review UI, end-to-end fact-review IPC GUI acceptance, authenticated reviewer identity, AI fact extraction, or ComfyUI. Detailed evidence: `docs/qualification/M2_4_CANON_REVIEW_IMPLEMENTATION_GATE.md`. Existing PR and governance are not authorization to implement the next subdivision before this independent normalization merges.
 
-Bounded to the accepted `docs/roadmap/M2_NARRATIVE_ENTITIES_CANONICAL_FACTS.md` M2.4 status-review contract: deterministic canon/draft/suggestion/variant/unknown/ambiguous/contradictory vocabulary, explicit human-only promotion to canon, durable review audit history, no auto-promotion or Ollama requirement, strict rollback and Windows acceptance. M2.5, M3+ and ComfyUI remain unauthorized.
+#### M2.5 — Usable sourced-facts and human review UI
 
-Visual references/optional local ComfyUI atelier remain **proposal only**, under issue #19 and `docs/roadmap/V1_VISUAL_REFERENCES_COMFYUI_PROPOSAL.md`.
+**ONLY NEXT AUTHORIZED SUBDIVISION — effective after M2.4 normalization is merged, current `main` is re-fetched and the detailed roadmap is re-read.**
+
+Implement the accepted `docs/roadmap/M2_NARRATIVE_ENTITIES_CANONICAL_FACTS.md` M2.5 UI scope only: accessible human fact creation/inspection, exact citations/provenance, visible status and review history, deliberate canon approval/revocation affordances and safe errors, explicit handling of unknown/ambiguous/contradictory/variant states. No fabricated provenance, no silent canon promotion or Ollama dependency. Retain history, backups, and activation marker. Require exact-head PR CI and real Windows acceptance followed by evidence CI, protected merge and separate normalization.
+
+ComfyUI visual reference atelier remains a **proposal only** under issue #19 and `docs/roadmap/V1_VISUAL_REFERENCES_COMFYUI_PROPOSAL.md`; M3+ and AI writing/extraction remain unauthorized.
 
 ## Reproducibility contract
 

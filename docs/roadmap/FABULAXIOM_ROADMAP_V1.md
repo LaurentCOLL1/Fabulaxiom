@@ -45,7 +45,7 @@ M1 deliverables overall:
 
 ## M2 — Narrative entities and canonical facts
 
-**Status: IN PROGRESS — M2.1–M2.3 COMPLETE + MERGED + NORMALIZED; M2.4 NEXT AFTER M2.3 NORMALIZATION**
+**Status: IN PROGRESS — M2.1–M2.4 COMPLETE + MERGED + NORMALIZED after separate M2.4 normalization; M2.5 NEXT only then**
 
 Accepted detailed roadmap: `docs/roadmap/M2_NARRATIVE_ENTITIES_CANONICAL_FACTS.md`.
 
@@ -55,7 +55,11 @@ M2.1 delivered SQLite v4 and Universe-scoped entity/alias registry. M2.2 impleme
 
 PR #25 implemented SQLite v5 STRICT narrative fact/source registry and Rust/Tauri manual create/read/list with exact immutable revision citation spans, same-Universe validation, explicit sourced/unsourced facts and atomic rollback. Qualified code `4d3b4b6015d477c3a6a5c3750d9743174e9c44a7` (21/21 React, 61/61 Rust, 8/8 Windows operator GUI checks, controlled v4→v5 and fully preserved v4 baseline/backup); exact-evidence CI `37961014980` passed on `b015f7df80f38d75375a0e2615fd62d4c40ee1b8`. Implementation merged at `e6e80c26316f11054348a18a235fd08c600e136e`. Evidence: `docs/qualification/M2_3_IMPLEMENTATION_GATE.md`.
 
-**M2.4 — Canon status and human review service** is the sole next subdivision, conditional on M2.3 normalization merge and re-fetch. M2.5+, AI extraction and ComfyUI remain unauthorized. No standalone React fact editor is yet delivered.
+**M2.4 — Canon status and human review service: COMPLETE + MERGED + NORMALIZED** after separate M2.4 normalization acceptance.
+
+PR #27 added SQLite v6 STRICT append-only review events and manual Rust/Tauri review/history/status APIs with `draft` default and seven distinct status values. Explicit `APPROVE_CANON`/`REVOKE_CANON` confirmation required. Windows-qualified code `aad56bd59fdb87be5ac1eda99b1969452bf61a26`: 21/21 frontend, 71/71 Rust, 8/8 existing GUI checks, 8/8 isolated review-service Rust tests, v5→v6 controlled migration with exact data/backup preservation. Evidence-HEAD CI `37989040863` succeeded on `b53405779b04c16525ba48a266bd096096af7020`, protected implementation merge `3a069572d00e1680c42b0f13b800e28687c5f0eb`. The reviewer label is not authenticated. Neither a dedicated React review interface nor its E2E IPC acceptance is delivered. Evidence: `docs/qualification/M2_4_CANON_REVIEW_IMPLEMENTATION_GATE.md`.
+
+**M2.5 — Usable sourced-facts and human review UI** is the sole next subdivision, conditional on independent M2.4 normalization merge and fresh governance re-fetch. M3+, AI extraction and ComfyUI remain unauthorized.
 
 Deliverables:
 

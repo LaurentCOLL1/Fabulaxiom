@@ -79,9 +79,17 @@ La PR #25 est fusionnée à `e6e80c26316f11054348a18a235fd08c600e136e`. SQLite *
 
 La migration réelle v4 → v5 a été qualifiée sur Windows après une sauvegarde cohérente vérifiée. **8/8 contrôles d'interface**, **21/21 tests React** et **61/61 tests Rust** PASS ; les neuf entités, huit alias, trois révisions et leur pointeur courant ont été conservés. Voir `docs/qualification/M2_3_IMPLEMENTATION_GATE.md`.
 
-**Limite importante :** le registre des faits est disponible via les services/commandes Tauri, **pas encore via un écran React de saisie ou de révision des faits**. Aucune suggestion n'est automatiquement promue en canon. Le cycle des statuts canoniques, la validation humaine et le moteur IA ne sont pas livrés.
+**Limite importante :** le registre des faits est disponible via les services/commandes Tauri, **pas encore via un écran React de saisie ou de révision des faits**. Aucune suggestion ne peut devenir automatiquement canonique. La revue des statuts est désormais accessible aux intégrations via Rust/Tauri M2.4, mais l'interface de revue et le moteur IA ne sont pas livrés.
 
-**M2.4 — Statuts canon et service de revue humaine : prochaine subdivision seulement après la normalisation M2.3.**
+**M2.4 — Statuts canoniques et service de revue humaine : COMPLETE + MERGED + NORMALIZED** après fusion de la PR de normalisation dédiée.
+
+Implémentation PR #27 fusionnée à `3a069572d00e1680c42b0f13b800e28687c5f0eb`. SQLite **v6** ajoute `fact_review_events`, un journal de décisions de revue `STRICT` dont les événements ne peuvent pas être modifiés ou supprimés par les commandes normales. Les fonctions Rust/Tauri permettent de consulter les statuts et l'historique, de demander une transition déterministe et d'approuver ou révoquer explicitement le canon. Sept statuts : `draft`, `suggestion`, `canon`, `variant`, `unknown`, `ambiguous`, `contradictory`.
+
+Qualification : **21/21 tests frontend**, **71/71 Rust**, **8/8 contrôles existants de l'interface Windows**, **8/8 tests Rust de revue isolée**, migration réelle v5→v6 et conservation vérifiée de toutes les données historiques, sauvegardes et pointeurs. Voir `docs/qualification/M2_4_CANON_REVIEW_IMPLEMENTATION_GATE.md`.
+
+**À distinguer :** le nom du relecteur est déclaré, non authentifié. Le service ne constitue pas un écran React de gestion de faits : aucun test d'interaction E2E de revue via la fenêtre Tauri n'est revendiqué. Ollama est facultatif et aucune promotion au canon n'est automatique.
+
+**M2.5 — Interface utilisable de faits sourcés et revue humaine : prochaine étape uniquement après normalisation M2.4.**
 
 Une proposition distincte d'atelier visuel local ComfyUI pour les personnages, scènes et événements figure dans `docs/roadmap/V1_VISUAL_REFERENCES_COMFYUI_PROPOSAL.md`. Elle est **documentée mais non autorisée à l'implémentation**.
 
@@ -94,9 +102,10 @@ Une proposition distincte d'atelier visuel local ComfyUI pour les personnages, s
 - **Protéger le projet** : créer des sauvegardes applicatives SQLite et restaurer une sauvegarde dans une nouvelle base sans écraser l'ancienne ; un marqueur sélectionne la base active.
 - **Travailler hors IA** : les opérations précédentes restent disponibles sans Ollama ; le diagnostic Ollama est indépendant.
 
-- **Gérer des faits structurés au niveau Rust/Tauri (M2.3)** : créer et consulter des faits sourcés ou non sourcés et leurs citations exactes ; fonctionnalités réservées aux interfaces de commande/aux intégrations, sans formulaire React dédié à ce stade.
+- **Gérer des faits structurés au niveau Rust/Tauri (M2.3)** : créer et consulter des faits sourcés ou non sourcés et leurs citations exactes ; fonctions destinées aux intégrations, sans formulaire React dédié à ce stade.
+- **Examiner les statuts de faits via les commandes Rust/Tauri (M2.4)** : lire les événements de revue, consulter le statut d'un fait et enregistrer une décision explicite (dont l'approbation ou la révocation du canon), avec historique conservé. Une intégration technique est requise ; aucun écran React de revue n'existe encore.
 
-La revue et promotion humaine au canon (M2.4), l'interface de travail sur les faits (M2.5), la chronologie, la recherche sémantique, l'aide à l'écriture et l'atelier visuel ComfyUI ne sont **pas encore implémentés**.
+L'**interface graphique** de revue et de promotion humaine au canon (M2.5), la chronologie, la recherche sémantique, l'aide à l'écriture et l'atelier visuel ComfyUI ne sont **pas encore implémentés**. Les services de revue M2.4 sont accessibles au niveau Rust/Tauri uniquement.
 
 ## Documentation d'autorité
 
@@ -107,6 +116,7 @@ La revue et promotion humaine au canon (M2.4), l'interface de travail sur les fa
 - `docs/roadmap/M2_NARRATIVE_ENTITIES_CANONICAL_FACTS.md` — plan détaillé M2 ;
 - `docs/qualification/M2_2_ENTITY_ALIAS_CRUD.md` — preuves de qualification M2.2 ;
 - `docs/qualification/M2_3_IMPLEMENTATION_GATE.md` — qualification M2.3, sauvegarde v4 et migration Windows v5 ;
+- `docs/qualification/M2_4_CANON_REVIEW_IMPLEMENTATION_GATE.md` — qualification M2.4, sauvegarde v5 et migration Windows v6 ;
 - `docs/roadmap/V1_VISUAL_REFERENCES_COMFYUI_PROPOSAL.md` — proposition visuelle non implémentée ;
 - `docs/architecture/ARCHITECTURE_DECISIONS.md` — décisions d'architecture ;
 - `docs/PRODUCT_SCOPE_V1.md` — périmètre fonctionnel V1.

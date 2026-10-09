@@ -86,28 +86,21 @@ Implementation PR #25 merged into `main=e6e80c26316f11054348a18a235fd08c600e136e
 
 Source CI `37879358744` and evidence CI `37961014980`: terminal SUCCESS, all Windows steps PASS. Local 21/21 frontend, 61/61 Rust and 8/8 UI checks PASS with Ollama OFF. Real SQLite v4→v5 migration on M1.5 restored-active DB and independent read-only audit PASS: five exact migrations, STRICT fact/source tables, FK/integrity, full prior row digests, nine entities, eight aliases, three revisions, one head and all historical backup custodial hashes preserved. Evidence: `docs/qualification/M2_3_IMPLEMENTATION_GATE.md`.
 
+## Completed subdivision — M2.4
+
+**M2.4 — Canon status and human review service: COMPLETE + MERGED + NORMALIZED** only after this separate documentation normalization PR is fully exact-HEAD-CI qualified and protected-merged.
+
+Implementation PR #27 protected-merged at `main=3a069572d00e1680c42b0f13b800e28687c5f0eb`. Windows qualified source `aad56bd59fdb87be5ac1eda99b1969452bf61a26`; evidence HEAD `b53405779b04c16525ba48a266bd096096af7020` had its exact `pull_request` run `37989040863` terminal success (13/13 Windows CI steps); source CI `37974831473` success (21/21 frontend, 71/71 Rust).
+
+Real Windows migration to SQLite v6 and full existing data/backup integrity PASS, with pre-v6 verified backup SHA-256 `db02961d7a30c6a6522bd52faeab8ceb09e26c1a4a6a58be467d142806e22fee`, 8/8 existing GUI controls (Ollama OFF), 8/8 isolated Rust human-review tests and unchanged production v6 DB snapshot SHA-256 `67dfd9194ff884762bbffaa39d774df10fadcd74cbc9e6774e36d323e4506fc6`. Exact history/current head and nine entities/eight aliases preserved. The reviewer label is self-declared and **not** an authenticated identity. There is no Windows E2E React fact-review screen or E2E IPC invocation acceptance yet; no production fact rows created. See `docs/qualification/M2_4_CANON_REVIEW_IMPLEMENTATION_GATE.md`.
+
 ## Only next authorized implementation
 
-**M2.4 — Canon status and human review service: WINDOWS SOURCE QUALIFIED, IMPLEMENTATION PR #27 MERGE PENDING.**
+**M2.5 — Usable sourced-facts and human review UI: AUTHORIZE ONLY AFTER M2.4 NORMALIZATION MERGES AND LIVE MAIN IS RE-FETCHED.**
 
-Starting normalized `main=ebaaf62933dadf6f0662ca749227a0b340b8a7e3`; implementation branch `feat/m2-4-canon-status-review-20261009`. Exact Windows-qualified source `aad56bd59fdb87be5ac1eda99b1969452bf61a26`; CI run `37974831473` terminal green (21/21 frontend, 71/71 Rust). SQLite v6 migration **completed after** non-overwriting pre-v6 v5 backup with verified SHA-256 `db02961d7a30c6a6522bd52faeab8ceb09e26c1a4a6a58be467d142806e22fee`. UI 8/8 PASS; independent SQLite v6 data-integrity/migration audit PASS; eight isolated Windows Rust human-review tests PASS with production SQLite logical snapshot unchanged (`67dfd9194ff884762bbffaa39d774df10fadcd74cbc9e6774e36d323e4506fc6`). This **does not** qualify E2E Tauri IPC fact review or a React fact editor; reviewer labels are not authenticated. No test review rows written to the active database. See `docs/qualification/M2_4_CANON_REVIEW_IMPLEMENTATION_GATE.md`.
+Constrain M2.5 to the accepted M2 subdivision contract: a usable React/Tauri workflow for browsing/creating structured narrative facts with exact source revision passages and optional fictional validity descriptors; visible current status, uncertain/contradictory/variant handling, review history, and explicit human-only canon approval/revocation. Ensure deterministic negative paths, no silent promotion, no unauthenticated identity claims, no Ollama dependency, no implicit source/canon conflation; preserve immutable scene revisions and historical backups. Require tests, exact-head Windows CI and operator functional acceptance on isolated or safely governed data, evidence and protected merge, and another independent normalization before the full M2 completion claim.
 
-**Only next work:** evidence-only HEAD commit; full new SHA `pull_request` CI; protected merge #27; separate M2.4 normalization PR with new exact-head CI and protected merge. No M2.5, AI review UI or ComfyUI implementation before normalized authority.
-
-Scope: a deterministic human-declared status service, append-only review events, explicit approvals/revocations, atomicity and negative-path evidence, no Ollama. M2.5 React UI, AI extraction, ComfyUI and later milestones remain unauthorized.
-
-Bounded scope from the accepted detailed M2 roadmap:
-
-1. Deterministic canon/draft/suggestion/variant/unknown/ambiguous/contradictory state vocabulary and allowed transitions.
-2. Explicit human confirmation and durable review records; no suggestion becomes canon automatically.
-3. Separate uncertain, variant and contradictory facts; auditable status history despite display-name changes.
-4. Transaction/rollback, same-Universe ownership, stable error payloads, no Ollama dependency.
-5. Protect SQLite v5 records, backups, activation marker and scene-provenance history; new migration only under governed Windows backup/qualification.
-6. Exact-head PR CI, real Windows operator acceptance, evidence commit, protected merge and separate normalization before any M2.5 development.
-
-Do not add a fact-editor UI, AI extractor, chronology, FTS5, embeddings or ComfyUI in M2.4 beyond its accepted review-service contract. M2.5, M3+ and the proposal-only ComfyUI visual atelier (issue #19) remain **NOT AUTHORIZED** until their own gates.
-
-This normalization PR is **documents only**; do not start M2.4 implementation inside it.
+M2.5 **is not to be implemented in this documentary PR**. M3+, AI extractor/embeddings, and proposed ComfyUI visual atelier (issue #19; `docs/roadmap/V1_VISUAL_REFERENCES_COMFYUI_PROPOSAL.md`) remain unauthorized.
 
 ## Governance
 
