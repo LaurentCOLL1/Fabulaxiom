@@ -67,34 +67,35 @@ Real Windows v3 → v4 qualification: PASS. Source data/scene revisions/head pre
 
 Evidence: `docs/qualification/M2_1_ENTITY_REGISTRY_SCHEMA.md`.
 
-## Only authorized implementation
+## Completed subdivision — M2.2
 
-**M2.2 — No-AI entity and alias CRUD: WINDOWS QUALIFIED; MERGE PENDING**
+**M2.2 — No-AI entity and alias CRUD: COMPLETE + MERGED + NORMALIZED** — takes effect only after this separate normalization PR merges and `main` is re-fetched.
 
-Branch: `feat/m2-2-entity-alias-crud-20261008`
+- Implementation PR: **#23**; Windows-qualified source: `b54fffd8e1f0224372e3b99cee07cb6df3203973`.
+- Qualified code CI `37831790345` and evidence-head CI `37864503602` on `a96870f823f24cb8962c9b0f43336ccb883ad5c3`: both `completed/success`, exact `pull_request` SHA confirmed.
+- Protected implementation merge: `ad7211fa2f292b8bd9812e299dbb6be96214eb89`.
+- Real Windows: **13/13 interactive cases**, **21/21 frontend** and **51/51 Rust** tests, `cargo check --locked` / frontend build / lockfiles: PASS; Ollama OFF.
+- SQLite v4 after interactive tests: 9 entities, 8 aliases, one duplicate-name character pair with distinct IDs, 3 scene revisions / 1 pointer preserved, valid STRICT/migrations/FK/integrity, active restored database and historical backup preserved.
+- Evidence: `docs/qualification/M2_2_ENTITY_ALIAS_CRUD.md`.
 
-Start base `main`: `70beb4f998ba3e587533dd7a90689eadeae4f4c3`.
+## Only next authorized implementation
 
-M2.2 Rust service, Tauri commands and React UI are implemented. **Windows interactive and persistence qualification PASS** on exact source `b54fffd8e1f0224372e3b99cee07cb6df3203973`: 13/13 operator scenarios, 21/21 frontend and 51/51 Rust tests, Ollama OFF, post-interactive SQLite v4 integrity PASS, backup/history preservation PASS. Evidence: `docs/qualification/M2_2_ENTITY_ALIAS_CRUD.md`.
+**M2.3 — Fact registry and exact revision provenance: AUTHORIZED ONLY AFTER M2.2 NORMALIZATION MERGES.**
 
-**Next gate:** re-fetch and qualify the **new documentary HEAD** with terminal `pull_request` CI; merge PR #23 protected with its expected head SHA; then separate post-merge normalization PR and exact-head CI. M2.3+ remain unauthorized until that normalization completes.
+The future dedicated M2.3 PR must start by re-fetching live `main`, `STATE.md`, `NEXT.md`, the detailed M2 roadmap and the M2.2 evidence report. M2.3 scope (nothing beyond):
 
-The M2 roadmap's M2.2 contract is now the only implementation scope:
+1. Stable structured fact IDs and entity associations in the correct Universe.
+2. Explicit sourced/unsourced provenance; optional citations to immutable Scene revision rows, not merely current-head pointers.
+3. UTF-8 `[start,end)` byte offsets, exact excerpt/source fidelity and bounds checks.
+4. Same-Universe consistency across entities, revisions and cited material.
+5. Atomic multi-row writes and deterministic rollback/negative-path tests.
+6. No Ollama required; no invented citations and no automatic canon promotion.
+7. Preserve all historical backups, SQLite restored-active pointer, revision lineage, dependency lockfiles and prior UX.
+8. Windows operator qualification, evidence commit, exact-head PR CI, protected merge and separate post-merge normalization before M2.4.
 
-1. Rust service models/DTOs for all six kinds of narrative entity, plus alias records.
-2. Create/read/list/rename/delete without changing entity ID, owning Universe or kind.
-3. Explicit restrictions for deleting entities with aliases, no silent cascade.
-4. Preserve same-name distinct identities; no name-based foreign keys.
-5. Thin Tauri commands and usable React forms for Universe-scoped entity/alias management.
-6. Deterministic errors, explicit transactions where needed, rollback and negative-path tests.
-7. Preserve M1/M2.1 schema, revision history, active database, backups, and deterministic lockfiles.
-8. No Ollama dependency; prove real UI CRUD works with Ollama stopped.
-9. Qualify the exact PR source on GitHub and operator Windows, document evidence, requalify its new SHA.
-10. Protected merge and separate post-merge M2.2 normalization before M2.3.
+**M2.4–M2.5, M3+ and ComfyUI remain NOT AUTHORIZED.** Visual references via optional local ComfyUI and manual import are retained as proposal-only in issue #19 and `docs/roadmap/V1_VISUAL_REFERENCES_COMFYUI_PROPOSAL.md`.
 
-Do not implement fact storage, canon review, source anchors, timeline, automatic narrative AI, image galleries or ComfyUI in M2.2. These belong to future, separately authorized work.
-
-**M2.3–M2.5 and M3+ remain unauthorized.** The ComfyUI visual reference extension is still proposal-only.
+Do not implement M2.3 inside the M2.2 normalization PR.
 
 ## Governance
 

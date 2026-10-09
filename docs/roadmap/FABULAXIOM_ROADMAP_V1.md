@@ -45,11 +45,13 @@ M1 deliverables overall:
 
 ## M2 — Narrative entities and canonical facts
 
-**Status: IN PROGRESS — M2.1 COMPLETE + MERGED + NORMALIZED; M2.2 AUTHORIZED**
+**Status: IN PROGRESS — M2.1 and M2.2 COMPLETE + MERGED + NORMALIZED; M2.3 NEXT AUTHORIZED after normalization merge**
 
 Accepted detailed roadmap: `docs/roadmap/M2_NARRATIVE_ENTITIES_CANONICAL_FACTS.md`.
 
-Planning PR #17 and the M2.1 implementation/Windows qualification/normalization have been accepted. M2.1 introduced SQLite schema v4 and Universe-scoped narrative entities/aliases. **M2.2 — No-AI entity and alias CRUD** is the only currently authorized implementation subdivision. M2.3–M2.5 remain blocked until their own acceptance and post-merge normalization.
+M2.1 delivered SQLite v4 and Universe-scoped entity/alias registry. M2.2 implementation PR #23 merged at `ad7211fa2f292b8bd9812e299dbb6be96214eb89` after real Windows qualification on `b54fffd8e1f0224372e3b99cee07cb6df3203973` (13/13 interactive, 21/21 frontend and 51/51 Rust PASS, Ollama stopped, restored-active SQLite/backup/revisions preserved) and evidence-head CI `37864503602` on `a96870f823f24cb8962c9b0f43336ccb883ad5c3` (terminal success). See `docs/qualification/M2_2_ENTITY_ALIAS_CRUD.md`.
+
+**M2.3 — Fact registry and exact revision provenance** becomes the sole next authorized implementation only after this independent M2.2 normalization PR is CI-qualified and merged. M2.4–M2.5 and M3+ remain blocked; visual ComfyUI extension remains proposal-only.
 
 Deliverables:
 

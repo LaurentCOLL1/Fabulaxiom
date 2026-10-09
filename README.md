@@ -69,11 +69,24 @@ SQLite v4 ajoute un registre d'entités narratives lié à chaque univers et une
 
 La migration réelle v3 → v4 a été qualifiée sur Windows avec une sauvegarde vérifiée de la base restaurée réellement active. Le contrôle a confirmé la conservation des données M1, notamment des trois révisions textuelles et du pointeur courant. Les sauvegardes opérateur préexistantes sont conservées.
 
-**M2.2 — No-AI entity and alias CRUD : AUTHORIZED / NEXT**
+**M2.2 — No-AI entity and alias CRUD : COMPLETE + MERGED + NORMALIZED** après fusion de la PR de normalisation dédiée.
 
-M2.2 ajoutera les services Rust/Tauri et les écrans React pour gérer les six types d'entités et leurs alias sans Ollama. Aucun service de faits canoniques ou moteur narratif IA n'est encore autorisé.
+La PR #23 d'implémentation a été fusionnée à `ad7211fa2f292b8bd9812e299dbb6be96214eb89` après les qualifications Windows (13/13 tests interactifs, 21/21 frontend, 51/51 Rust, base SQLite active et historique vérifiés). Les formulaires React et services Rust/Tauri permettent de créer, consulter, renommer et supprimer des entités narratives ainsi que leurs alias, avec identifiants immuables, rejet des doublons d'alias par entité et garde de suppression des entités liées, même avec Ollama arrêté.
+
+**M2.3 — Registre des faits et provenance exacte : prochaine subdivision autorisée uniquement après la normalisation M2.2.** Le stockage de faits canoniques, leur validation et l'extraction IA ne sont pas livrés à ce stade.
 
 Une proposition distincte d'atelier visuel local ComfyUI pour les personnages, scènes et événements figure dans `docs/roadmap/V1_VISUAL_REFERENCES_COMFYUI_PROPOSAL.md`. Elle est **documentée mais non autorisée à l'implémentation**.
+
+## Utilisations actuellement disponibles
+
+- **Organiser un univers narratif** : créer une hiérarchie Univers → Série facultative → Roman → Chapitre → Scène ; modifier les noms et l'ordre dans les limites des garde-fous.
+- **Rédiger et retrouver l'historique d'une scène** : sauvegarder de nouvelles révisions, consulter leur historique et changer la révision courante sans écraser les versions antérieures.
+- **Gérer les personnages et éléments de l'univers** : ajouter des personnages, lieux, organisations, objets, événements et règles du monde, avec identifiants stables même en cas de noms identiques.
+- **Gérer les alias** : créer plusieurs alias par entité, les renommer ou les supprimer ; les doublons sur une même entité sont refusés.
+- **Protéger le projet** : créer des sauvegardes applicatives SQLite et restaurer une sauvegarde dans une nouvelle base sans écraser l'ancienne ; un marqueur sélectionne la base active.
+- **Travailler hors IA** : les opérations précédentes restent disponibles sans Ollama ; le diagnostic Ollama est indépendant.
+
+Ces fonctionnalités sont distinctes des projets futurs (faits et canon humain M2.3–M2.5, chronologie, recherche sémantique, aide à l'écriture et atelier ComfyUI), qui **ne sont pas encore implémentés**.
 
 ## Documentation d'autorité
 
@@ -81,6 +94,9 @@ Une proposition distincte d'atelier visuel local ComfyUI pour les personnages, s
 - `docs/continuity/NEXT.md` — prochaine étape autorisée ;
 - `docs/roadmap/FABULAXIOM_ROADMAP_V1.md` — feuille de route V1 ;
 - `docs/roadmap/M1_PERSISTENCE_PROJECT_FOUNDATION.md` — plan détaillé M1 ;
+- `docs/roadmap/M2_NARRATIVE_ENTITIES_CANONICAL_FACTS.md` — plan détaillé M2 ;
+- `docs/qualification/M2_2_ENTITY_ALIAS_CRUD.md` — preuves de qualification M2.2 ;
+- `docs/roadmap/V1_VISUAL_REFERENCES_COMFYUI_PROPOSAL.md` — proposition visuelle non implémentée ;
 - `docs/architecture/ARCHITECTURE_DECISIONS.md` — décisions d'architecture ;
 - `docs/PRODUCT_SCOPE_V1.md` — périmètre fonctionnel V1.
 

@@ -2,7 +2,7 @@
 
 ## Authority and prerequisites
 
-**PLAN ACCEPTED — M2.1 COMPLETE + MERGED + NORMALIZED; M2.2 AUTHORIZED**
+**PLAN ACCEPTED — M2.1 and M2.2 COMPLETE + MERGED + NORMALIZED; M2.3 NEXT AFTER M2.2 NORMALIZATION**
 
 Planning PR #17 merged as `4a9115ec362a0efae696ebc94b5101fa46d7a03a` after exact-head `Fabulaxiom CI` run `37722657799` completed/success.
 
@@ -10,7 +10,7 @@ Project: Fabulaxiom. Prior milestone M1 is **COMPLETE + MERGED + NORMALIZED**.
 
 Planning base `main`: `b16be2ed3e6326c88b565b305bcaba2a6d590462`.
 
-This plan subdivides M2 into bounded, sequential deliverables. M2.1 has now been qualified on real Windows, merged and normalized. **M2.2 alone is authorized**.
+This plan subdivides M2 into bounded sequential deliverables. M2.1 and M2.2 have passed Windows qualification, protected implementation merge and (once the independent normalization PR is merged) normalization. M2.2 implementation PR #23 merged at `ad7211fa2f292b8bd9812e299dbb6be96214eb89` after evidence-head CI run `37864503602` succeeded on `a96870f823f24cb8962c9b0f43336ccb883ad5c3`. **Only M2.3 may be authorized after normalization is merged**, and only within its existing accepted scope.
 
 M1.1–M1.5 are preserved:
 - SQLite migrations, integrity checks and backups;
@@ -111,7 +111,9 @@ Boundary: **schema/migration only**; do not add entity CRUD UI, facts, aliases e
 
 ### M2.2 — No-AI entity and alias CRUD
 
-**AUTHORIZED — ONLY M2.2 IMPLEMENTATION SUBDIVISION**
+**COMPLETE + MERGED + NORMALIZED** (effective after independent normalization PR merge).
+
+Qualified Windows code `b54fffd8e1f0224372e3b99cee07cb6df3203973`; operator interactive 13/13 PASS with Ollama OFF; frontend 21/21, Rust 51/51 PASS; postinteractive SQLite v4 integrity and source history/backup preservation PASS. Evidence: `docs/qualification/M2_2_ENTITY_ALIAS_CRUD.md`. Exact-head documentary CI `37864503602` on `a96870f823f24cb8962c9b0f43336ccb883ad5c3`: `completed/success`. Protected PR #23 implementation merge: `ad7211fa2f292b8bd9812e299dbb6be96214eb89`.
 
 Scope:
 - Rust service models/DTOs and deterministic errors for create/read/list/rename/delete;
@@ -129,7 +131,7 @@ Acceptance:
 
 ### M2.3 — Fact registry and exact revision provenance
 
-**NOT AUTHORIZED until M2.2 COMPLETE + MERGED + NORMALIZED**
+**NEXT AUTHORIZED ONLY AFTER M2.2 NORMALIZATION MERGES — NOT IMPLEMENTED BY THIS DOCUMENTARY PR**
 
 Scope:
 - normalized structured fact records with stable IDs and associated entity IDs;
