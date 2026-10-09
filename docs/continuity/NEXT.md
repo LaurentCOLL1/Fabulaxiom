@@ -88,9 +88,11 @@ Source CI `37879358744` and evidence CI `37961014980`: terminal SUCCESS, all Win
 
 ## Only next authorized implementation
 
-**M2.4 — Canon status and human review service: IN PROGRESS, NOT QUALIFIED.**
+**M2.4 — Canon status and human review service: WINDOWS SOURCE QUALIFIED, IMPLEMENTATION PR #27 MERGE PENDING.**
 
-Starting live normalized `main=ebaaf62933dadf6f0662ca749227a0b340b8a7e3`; implementation branch `feat/m2-4-canon-status-review-20261009`. SQLite v6 is ADDITIVE and the operator's v5 database **must not** be opened with M2.4 until a new independently verified pre-v6 SQLite-consistent backup of its actual restored active file is secured after terminal exact-head CI. Do not touch historical backups or active marker. See `docs/qualification/M2_4_CANON_REVIEW_IMPLEMENTATION_GATE.md`.
+Starting normalized `main=ebaaf62933dadf6f0662ca749227a0b340b8a7e3`; implementation branch `feat/m2-4-canon-status-review-20261009`. Exact Windows-qualified source `aad56bd59fdb87be5ac1eda99b1969452bf61a26`; CI run `37974831473` terminal green (21/21 frontend, 71/71 Rust). SQLite v6 migration **completed after** non-overwriting pre-v6 v5 backup with verified SHA-256 `db02961d7a30c6a6522bd52faeab8ceb09e26c1a4a6a58be467d142806e22fee`. UI 8/8 PASS; independent SQLite v6 data-integrity/migration audit PASS; eight isolated Windows Rust human-review tests PASS with production SQLite logical snapshot unchanged (`67dfd9194ff884762bbffaa39d774df10fadcd74cbc9e6774e36d323e4506fc6`). This **does not** qualify E2E Tauri IPC fact review or a React fact editor; reviewer labels are not authenticated. No test review rows written to the active database. See `docs/qualification/M2_4_CANON_REVIEW_IMPLEMENTATION_GATE.md`.
+
+**Only next work:** evidence-only HEAD commit; full new SHA `pull_request` CI; protected merge #27; separate M2.4 normalization PR with new exact-head CI and protected merge. No M2.5, AI review UI or ComfyUI implementation before normalized authority.
 
 Scope: a deterministic human-declared status service, append-only review events, explicit approvals/revocations, atomicity and negative-path evidence, no Ollama. M2.5 React UI, AI extraction, ComfyUI and later milestones remain unauthorized.
 
