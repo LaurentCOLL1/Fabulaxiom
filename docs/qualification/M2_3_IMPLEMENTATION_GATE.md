@@ -1,35 +1,24 @@
-# M2.3 — Fact registry and immutable revision provenance (implementation qualification plan)
+# M2.3 — Windows qualification evidence
 
-## State
-**IMPLEMENTATION / CI IN PROGRESS — NOT WINDOWS QUALIFIED, NOT MERGED**
+**WINDOWS QUALIFIED; PR #25 MERGE AND NORMALIZATION PENDING**
 
-Base live normalized `main`: `70d8c5ca079eb94ef93ae7f5ee684503f99400cd`.
-Branch `feat/m2-3-fact-registry-exact-provenance-20261009`. Database migration **v4→v5 has NOT run on operator Windows**.
+Exact implemented and locally tested HEAD: `4d3b4b6015d477c3a6a5c3750d9743174e9c44a7`. Exact-source `Fabulaxiom CI` run `37879358744`: `completed/success` on `pull_request`, every Windows job step successful. Frontend 21/21, Rust 61/61, frontend build, cargo check locked, dependency locks PASS. Operator local re-run also PASS; worktree CLEAN.
 
-## Bounded scope
-- Add `narrative_facts` and `fact_sources` as SQLite STRICT tables with FK restrictions and immutable fact/source provenance.
-- Atomic manual Rust/Tauri source/fact creation and read/list, all local and independent from Ollama.
-- The explicit `sourced` / `unsourced` provenance classification is **not** a canon-review state. No automatic canon promotion or IA extraction.
-- Source anchored to an immutable `scene_text_revisions.id` rather than `scene_revision_heads`; UTF-8 `[start,end)` byte offset and exact quoted passage verified against the immutable revision text.
-- Cross-Universe citations prohibited; optional `exact|approximate|relative|unknown` validity descriptors, no calendar engine.
-- Backup path resolution and support for old application v3/v4 backups must remain non-destructive. The v5 migration is additive.
-- No source extraction UI, FTS5, chronology, M2.4/M2.5, AI generation or ComfyUI.
+## Windows SQLite v4 → v5
 
-## CI and mandatory tests
-- `npm ci`; frontend tests/build; Rust tests `--locked`; `cargo check --locked`; unchanged lockfiles.
-- Fresh v1–v5 schema, explicit v4→v5 migration preserving entity/alias, scene revisions and current head.
-- Source span validation: invalid boundaries inside UTF-8 graphemes/code points, negative/empty/out-of-range offsets, incorrect exact quote, wrong Universe/revision, absent entity, duplicate source IDs, second-row transaction rollback.
-- No canon promotion; no assumed Gregorian calendar; multiple Universes distinct identities and strict foreign keys; SQLite `foreign_key_check=[]`, `integrity_check=ok`.
-- Existing application backups and restored active database must be preserved. Verify legacy v3 and v4 backup restoration into **new** migrated v5 files with unchanged original files.
+With Fabulaxiom and Ollama stopped, the operator resolved the M1.5 actual restored-active SQLite using its existing activation marker and independently created a consistent v4 backup and manifest before the application-driven migration.
 
-## Windows operator boundary (DO NOT START MIGRATION YET)
-1. Re-fetch live `main`, the M2.3 branch/PR, HEAD and all `pull_request` jobs on the exact source SHA. Stop on any non-success.
-2. Before opening any M2.3 executable, fully exit Fabulaxiom. Read the live M1.5 activation marker and derive the **actual** restored-active SQLite path, not the default filename. Verify the same marker reported by the app.
-3. Create a NEW separate **SQLite-consistent backup** of the active v4 database with Python's SQLite backup API, a collision-resistant path, exclusive-create semantics, SHA256, owner/migration/FK/integrity/revision digests. Do not overwrite prior M1.2/M1.4/M1.5 or pre-M2.1 backups.
-4. Only after backing up and qualifying the pristine v4 source may the v5 app run and apply migration v4→v5 exactly once. Do not force migrations manually.
-5. With Ollama stopped, confirm UI hierarchy, entity/alias CRUD, revisions, backups and diagnostics still work. M2.3 has no human fact-review UI yet; inspect API/schema and tests separately.
-6. After app exit, inspect the actual active SQLite read-only: v5, five migration rows, new STRICT fact/source tables, FK/triggers/indexes, exact-preserved original nine entities/eight aliases (unless operator intentionally changed data), three scene revisions, one current pointer; source/content and backup SHA256 unchanged; both integrity PRAGMAs pass.
-7. Operator reports concrete logs and any warning. Only then record qualification evidence commit, invalidate old SHA CI, requalify the exact evidence-head CI, merge protected, and normalize in a separate PR.
+Backup SHA-256: `c624241080d6e820398cc502b4db206fcaba457405083ce806c302a6ce464976`; backup size 176128 bytes. Historical pre-M2.1 backup SHA-256 `f8ec1a1f32f97a0b4f39eeb238c307e5a192854cdd6c4206a05a97b6a385c987` also preserved. No restore, deletion or overwrite.
 
-## Deferred
-- M2.4 human canon status/review, M2.5 sourced-fact UI, all later milestones, and optional local ComfyUI image references (issue #19) are excluded.
+After controlled application startup: SQLite schema v5 reported without error, **8/8 operator UI checks PASS**, hierarchy and six entity kinds visible, 9 entities and 8 aliases preserved including two homonymous characters with distinct IDs, 3 immutable scene revisions and 1 current head available, Ollama unavailable without disruption, no React blank screen.
+
+The independent **read-only post-migration audit PASS**: migrations 1–5, new `narrative_facts` and `fact_sources` STRICT, required triggers/indexes, empty fact/source tables as expected, `PRAGMA foreign_key_check=[]`, `PRAGMA integrity_check=ok`, and every preexisting table count/content digest equal to the pre-v5 manifest. Current activation pointer unchanged and local source CLEAN.
+
+Revision history SHA-256 before/after: `b5af6edaba9fc143d0c319b9408316aa61b934ed7e123241a7a43010536f71e3`.
+Current head SHA-256 before/after: `8fe7aeb570f121c05083aa3cee06f95bf5fb6c98922c3357f00327ef8c708ce0`.
+
+The fact create/read/list API and UTF-8 citation validations have passed Rust tests; **no fact editing React UI has been implemented or manually qualified**, and no canon promotion occurs.
+
+## Remaining governance
+
+New documentary commit invalidates historical SHA CI; require fresh terminal successful exact-head PR CI before protected implementation merge with `expected_head_sha`. Next, separate post-merge normalization PR and new exact-head CI. M2.4+, ComfyUI and AI fact extraction remain unauthorized.
