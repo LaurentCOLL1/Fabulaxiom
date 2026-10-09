@@ -21,7 +21,7 @@ describe("M2.5 user-visible narrative fact governance",()=>{
   it("renders a dedicated workspace even before IPC data is loaded",()=>{
     const html=renderToStaticMarkup(createElement(FactWorkspace));
     expect(html).toContain("Faits narratifs et canon");
-    expect(html).toContain("Aucune promotion automatique");
+    expect(html).toContain("Un fait nouveau est toujours un brouillon");
     expect(html).toContain("fact-universe");
   });
   it("rejects absent, cross-universe and malformed fact snapshots",()=>{

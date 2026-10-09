@@ -3,7 +3,7 @@ import {invoke} from "@tauri-apps/api/core";
 import type {HierarchySnapshot,Universe} from "./hierarchy";
 import type {NarrativeEntity,EntitySnapshot} from "./entity";
 import {decodeEntitySnapshot,KIND_LABELS} from "./entity";
-import type {SceneRevisionHistory,SceneTextRevision} from "./revisions";
+import type {SceneRevisionHistory} from "./revisions";
 import {
   FACT_STATUSES,STATUS_LABELS,decodeFactSnapshot,decodeReviewSnapshot,
   decodeReviewHistory,quoteFromSelection,verifySourceEvidence,reviewAction,
