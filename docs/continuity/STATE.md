@@ -321,7 +321,17 @@ Delivered M2.1 scope:
 
 #### M2.2 — No-AI entity and alias CRUD
 
-**AUTHORIZED — ONLY CURRENT IMPLEMENTATION SUBDIVISION**
+**WINDOWS QUALIFIED — IMPLEMENTATION MERGE / NORMALIZATION PENDING**
+
+Windows-qualified source: `b54fffd8e1f0224372e3b99cee07cb6df3203973`; operator interactive alias / entity scenarios **13/13 PASS** on real Windows with Ollama OFF. Local preflight **21/21 frontend, 51/51 Rust PASS**; SQLite v4 postinteractive checks, eight alias rows, nine entity rows, one same-name pair with different IDs, 3 scene revisions and current pointer preservation PASS. Details: `docs/qualification/M2_2_ENTITY_ALIAS_CRUD.md`.
+
+CI on Windows-qualified source: `Fabulaxiom CI` run `37831790345`, `completed/success`. **Documentary evidence commit has a new SHA and requires its own terminal exact-head CI before protected implementation merge.** Post-merge normalization remains mandatory; M2.3+ still blocked.
+
+Branch: `feat/m2-2-entity-alias-crud-20261008`
+
+Start base `main`: `70beb4f998ba3e587533dd7a90689eadeae4f4c3`.
+
+Only M2.2 is authorized; no M2.3+ development.
 
 Scope:
 - Rust service models/DTOs and deterministic create/read/list/rename/delete errors;
