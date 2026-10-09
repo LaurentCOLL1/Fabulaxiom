@@ -3,6 +3,8 @@ import { invoke } from "@tauri-apps/api/core";
 import HierarchyWorkspace from "./HierarchyWorkspace";
 import EntityWorkspace from "./EntityWorkspace";
 import EntityErrorBoundary from "./EntityErrorBoundary";
+import FactWorkspace from "./FactWorkspace";
+import FactErrorBoundary from "./FactErrorBoundary";
 import BackupWorkspace from "./BackupWorkspace";
 import {
   formatDatabaseSummary,
@@ -82,7 +84,7 @@ function App() {
   return (
     <main className="app-shell">
       <section className="hero">
-        <p className="eyebrow">M2.2 · entités narratives sans IA</p>
+        <p className="eyebrow">M2.5 · faits sourcés et revue humaine sans IA</p>
         <h1>Fabulaxiom</h1>
         <p className="tagline">
           Mémoire narrative locale pour construire des romans, des sagas et des
@@ -97,6 +99,10 @@ function App() {
       <EntityErrorBoundary>
         <EntityWorkspace />
       </EntityErrorBoundary>
+
+      <FactErrorBoundary>
+        <FactWorkspace />
+      </FactErrorBoundary>
 
       <section className="diagnostics" aria-labelledby="diagnostics-title">
         <div className="section-heading">

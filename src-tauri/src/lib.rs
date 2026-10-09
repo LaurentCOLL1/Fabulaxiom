@@ -16,7 +16,7 @@ use std::time::Duration;
 
 use backup_commands::{backup_status, create_database_backup, restore_database_backup};
 
-use fact_commands::{create_narrative_fact, facts_snapshot};
+use fact_commands::{create_narrative_fact, facts_snapshot, fact_source_revision};
 use review_commands::{fact_review_snapshot, review_fact_history, review_narrative_fact};
 use entity_commands::{
     create_entity_alias, create_narrative_entity, delete_entity_alias,
@@ -258,6 +258,7 @@ pub fn run() {
             delete_entity_alias,
             facts_snapshot,
             create_narrative_fact,
+            fact_source_revision,
             fact_review_snapshot,
             review_fact_history,
             review_narrative_fact
