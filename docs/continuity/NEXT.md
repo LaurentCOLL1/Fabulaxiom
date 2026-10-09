@@ -78,28 +78,30 @@ Evidence: `docs/qualification/M2_1_ENTITY_REGISTRY_SCHEMA.md`.
 - SQLite v4 after interactive tests: 9 entities, 8 aliases, one duplicate-name character pair with distinct IDs, 3 scene revisions / 1 pointer preserved, valid STRICT/migrations/FK/integrity, active restored database and historical backup preserved.
 - Evidence: `docs/qualification/M2_2_ENTITY_ALIAS_CRUD.md`.
 
+## Completed subdivision — M2.3
+
+**M2.3 — Fact registry and exact revision provenance: COMPLETE + MERGED + NORMALIZED**, effective when the separate normalization PR is terminal-CI-qualified and merged.
+
+Implementation PR #25 merged into `main=e6e80c26316f11054348a18a235fd08c600e136e` from evidence HEAD `b015f7df80f38d75375a0e2615fd62d4c40ee1b8`, after Windows-qualified source `4d3b4b6015d477c3a6a5c3750d9743174e9c44a7`.
+
+Source CI `37879358744` and evidence CI `37961014980`: terminal SUCCESS, all Windows steps PASS. Local 21/21 frontend, 61/61 Rust and 8/8 UI checks PASS with Ollama OFF. Real SQLite v4→v5 migration on M1.5 restored-active DB and independent read-only audit PASS: five exact migrations, STRICT fact/source tables, FK/integrity, full prior row digests, nine entities, eight aliases, three revisions, one head and all historical backup custodial hashes preserved. Evidence: `docs/qualification/M2_3_IMPLEMENTATION_GATE.md`.
+
 ## Only next authorized implementation
 
-**M2.3 — Fact registry and exact revision provenance: WINDOWS QUALIFIED; PR #25 MERGE PENDING.**
+**M2.4 — Canon status and human review service: AUTHORIZED ONLY AFTER M2.3 NORMALIZATION MERGES AND MAIN IS RE-FETCHED.**
 
-Starting live `main`: `70d8c5ca079eb94ef93ae7f5ee684503f99400cd`. Implementation branch: `feat/m2-3-fact-registry-exact-provenance-20261009`.
+Bounded scope from the accepted detailed M2 roadmap:
 
-The operator safely completed v4→v5 on the M1.5 restored-active SQLite, after verifying a new non-overwriting v4 backup. Windows UI 8/8 PASS; read-only audit of full original data digests, migrations 1–5, STRICT tables, triggers/indexes, foreign keys, integrity, backup SHA-256 and three scene revisions/current pointer PASS. Qualified source: `4d3b4b6015d477c3a6a5c3750d9743174e9c44a7`; exact-source CI run `37879358744` terminal success (21/21 frontend, 61/61 Rust). Evidence: `docs/qualification/M2_3_IMPLEMENTATION_GATE.md`. **Next:** evidence HEAD new CI, protected merge of #25, then separate normalized-doc PR and exact-head CI. M2.4+/ComfyUI remain unauthorized.
+1. Deterministic canon/draft/suggestion/variant/unknown/ambiguous/contradictory state vocabulary and allowed transitions.
+2. Explicit human confirmation and durable review records; no suggestion becomes canon automatically.
+3. Separate uncertain, variant and contradictory facts; auditable status history despite display-name changes.
+4. Transaction/rollback, same-Universe ownership, stable error payloads, no Ollama dependency.
+5. Protect SQLite v5 records, backups, activation marker and scene-provenance history; new migration only under governed Windows backup/qualification.
+6. Exact-head PR CI, real Windows operator acceptance, evidence commit, protected merge and separate normalization before any M2.5 development.
 
-The future dedicated M2.3 PR must start by re-fetching live `main`, `STATE.md`, `NEXT.md`, the detailed M2 roadmap and the M2.2 evidence report. M2.3 scope (nothing beyond):
+Do not add a fact-editor UI, AI extractor, chronology, FTS5, embeddings or ComfyUI in M2.4 beyond its accepted review-service contract. M2.5, M3+ and the proposal-only ComfyUI visual atelier (issue #19) remain **NOT AUTHORIZED** until their own gates.
 
-1. Stable structured fact IDs and entity associations in the correct Universe.
-2. Explicit sourced/unsourced provenance; optional citations to immutable Scene revision rows, not merely current-head pointers.
-3. UTF-8 `[start,end)` byte offsets, exact excerpt/source fidelity and bounds checks.
-4. Same-Universe consistency across entities, revisions and cited material.
-5. Atomic multi-row writes and deterministic rollback/negative-path tests.
-6. No Ollama required; no invented citations and no automatic canon promotion.
-7. Preserve all historical backups, SQLite restored-active pointer, revision lineage, dependency lockfiles and prior UX.
-8. Windows operator qualification, evidence commit, exact-head PR CI, protected merge and separate post-merge normalization before M2.4.
-
-**M2.4–M2.5, M3+ and ComfyUI remain NOT AUTHORIZED.** Visual references via optional local ComfyUI and manual import are retained as proposal-only in issue #19 and `docs/roadmap/V1_VISUAL_REFERENCES_COMFYUI_PROPOSAL.md`.
-
-Do not implement M2.3 inside the M2.2 normalization PR.
+This normalization PR is **documents only**; do not start M2.4 implementation inside it.
 
 ## Governance
 

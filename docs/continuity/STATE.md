@@ -350,18 +350,25 @@ Delivered M2.2: Rust/Tauri/React no-AI CRUD for six Universe-scoped narrative en
 
 #### M2.3 — Fact registry and exact revision provenance
 
-**WINDOWS QUALIFIED — IMPLEMENTATION PR #25 MERGE AND NORMALIZATION PENDING**
+**COMPLETE + MERGED + NORMALIZED — effective after the independent M2.3 normalization PR passes exact-head CI and is merged.**
 
-Exact authorized starting main: `70d8c5ca079eb94ef93ae7f5ee684503f99400cd`.
-Branch: `feat/m2-3-fact-registry-exact-provenance-20261009`.
+Implementation PR #25; Windows-qualified source `4d3b4b6015d477c3a6a5c3750d9743174e9c44a7`; qualification evidence commit `b015f7df80f38d75375a0e2615fd62d4c40ee1b8`; implementation merge on `main` `e6e80c26316f11054348a18a235fd08c600e136e`.
 
-Implementation scope: additive SQLite v5 fact/source registry; atomic Rust/Tauri manual create/read/list; source anchors to immutable scene revisions; UTF-8 byte boundaries; same-Universe ownership; explicit sourced/unsourced facts; optional fictional-time descriptor; v3/v4 backup compatibility. This is *not* human canon review, automatic AI fact extraction, a React fact review UI, or ComfyUI.
+- Exact-source CI `37879358744` and exact-evidence-head CI `37961014980`: both `completed/success`, all Windows job steps PASS.
+- Operator Windows local build/tests **21/21 frontend and 61/61 Rust PASS**, Rust check locked and dependency locks unchanged; UI **8/8 PASS**, Ollama OFF.
+- Controlled additive SQLite v4→v5 on actual restored-active DB only after verified non-overwriting v4 operator backup SHA256 `c624241080d6e820398cc502b4db206fcaba457405083ce806c302a6ce464976`.
+- Read-only postmigration audit **PASS**: migrations 1–5, fact/source STRICT schema, required triggers and indexes, `foreign_key_check=[]` / `integrity_check=ok`; all historical table contents/digests and both historical backup custodial hashes preserved.
+- Nine original entities and eight aliases, homonymous character distinct IDs, three immutable scene revisions and current pointer retained exactly. New fact/source tables empty as expected prior to API use.
+- Delivered local Rust/Tauri structured fact create/read/list with explicit sourced/unsourced provenance, immutable Scene revision anchors, checked UTF-8 byte spans, same-Universe guards and atomic rollback; **no React fact-entry UI**, canon status/review, AI extraction or ComfyUI implementation.
+- Detailed evidence: `docs/qualification/M2_3_IMPLEMENTATION_GATE.md`.
 
-Qualified source `4d3b4b6015d477c3a6a5c3750d9743174e9c44a7`; `Fabulaxiom CI` exact-source run `37879358744` terminal success (21/21 frontend, 61/61 Rust, lockfiles). The operator completed controlled v4→v5 migration after independent SQLite-consistent pre-v5 backup (SHA-256 `c624241080d6e820398cc502b4db206fcaba457405083ce806c302a6ce464976`). UI 8/8 PASS with Ollama OFF; read-only audit after migration confirms exact 5 migrations, STRICT/triggers/indexes, integrity/FK, original row digests, 9 entities, 8 aliases, 3 immutable scene revisions, 1 current pointer and unchanged active marker/backups. The Rust fact API was tested via unit tests, not through a new React fact editing UI. Evidence: `docs/qualification/M2_3_IMPLEMENTATION_GATE.md`. **Remaining:** fresh CI on new evidence HEAD; protected implementation PR #25 merge; separate post-merge normalization. M2.4+ remains unauthorized.
+#### M2.4 — Canon status and review service
 
-The accepted `docs/roadmap/M2_NARRATIVE_ENTITIES_CANONICAL_FACTS.md` M2.3 contract is limited to a normalized fact registry, exact immutable Scene revision citations, UTF-8 byte-range validation, same-Universe provenance, transaction rollback and no automatic canon promotion. M2.4–M2.5, M3+ and the ComfyUI visual atelier remain unauthorized.
+**NEXT AUTHORIZED IMPLEMENTATION — only after the separate M2.3 normalization PR merges and live normalized main/authorities are re-fetched.**
 
-The proposed ComfyUI image/reference atelier remains tracked in issue #19 and the accepted **proposal-only** V1 roadmap addition.
+Bounded to the accepted `docs/roadmap/M2_NARRATIVE_ENTITIES_CANONICAL_FACTS.md` M2.4 status-review contract: deterministic canon/draft/suggestion/variant/unknown/ambiguous/contradictory vocabulary, explicit human-only promotion to canon, durable review audit history, no auto-promotion or Ollama requirement, strict rollback and Windows acceptance. M2.5, M3+ and ComfyUI remain unauthorized.
+
+Visual references/optional local ComfyUI atelier remain **proposal only**, under issue #19 and `docs/roadmap/V1_VISUAL_REFERENCES_COMFYUI_PROPOSAL.md`.
 
 ## Reproducibility contract
 

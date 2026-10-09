@@ -73,7 +73,15 @@ La migration réelle v3 → v4 a été qualifiée sur Windows avec une sauvegard
 
 La PR #23 d'implémentation a été fusionnée à `ad7211fa2f292b8bd9812e299dbb6be96214eb89` après les qualifications Windows (13/13 tests interactifs, 21/21 frontend, 51/51 Rust, base SQLite active et historique vérifiés). Les formulaires React et services Rust/Tauri permettent de créer, consulter, renommer et supprimer des entités narratives ainsi que leurs alias, avec identifiants immuables, rejet des doublons d'alias par entité et garde de suppression des entités liées, même avec Ollama arrêté.
 
-**M2.3 — Registre des faits et provenance exacte : prochaine subdivision autorisée uniquement après la normalisation M2.2.** Le stockage de faits canoniques, leur validation et l'extraction IA ne sont pas livrés à ce stade.
+**M2.3 — Registre des faits et provenance exacte : COMPLETE + MERGED + NORMALIZED** après fusion de la PR de normalisation dédiée.
+
+La PR #25 est fusionnée à `e6e80c26316f11054348a18a235fd08c600e136e`. SQLite **v5** ajoute les tables STRICT `narrative_facts` et `fact_sources`. Les services **Rust/Tauri** permettent de créer et consulter manuellement des faits sourcés ou non sourcés, avec identifiants durables, citations rattachées aux révisions immuables des scènes, bornes d'octets UTF-8 et contrôles d'univers/transaction. Les opérations restent locales et ne requièrent pas Ollama.
+
+La migration réelle v4 → v5 a été qualifiée sur Windows après une sauvegarde cohérente vérifiée. **8/8 contrôles d'interface**, **21/21 tests React** et **61/61 tests Rust** PASS ; les neuf entités, huit alias, trois révisions et leur pointeur courant ont été conservés. Voir `docs/qualification/M2_3_IMPLEMENTATION_GATE.md`.
+
+**Limite importante :** le registre des faits est disponible via les services/commandes Tauri, **pas encore via un écran React de saisie ou de révision des faits**. Aucune suggestion n'est automatiquement promue en canon. Le cycle des statuts canoniques, la validation humaine et le moteur IA ne sont pas livrés.
+
+**M2.4 — Statuts canon et service de revue humaine : prochaine subdivision seulement après la normalisation M2.3.**
 
 Une proposition distincte d'atelier visuel local ComfyUI pour les personnages, scènes et événements figure dans `docs/roadmap/V1_VISUAL_REFERENCES_COMFYUI_PROPOSAL.md`. Elle est **documentée mais non autorisée à l'implémentation**.
 
@@ -86,7 +94,9 @@ Une proposition distincte d'atelier visuel local ComfyUI pour les personnages, s
 - **Protéger le projet** : créer des sauvegardes applicatives SQLite et restaurer une sauvegarde dans une nouvelle base sans écraser l'ancienne ; un marqueur sélectionne la base active.
 - **Travailler hors IA** : les opérations précédentes restent disponibles sans Ollama ; le diagnostic Ollama est indépendant.
 
-Ces fonctionnalités sont distinctes des projets futurs (faits et canon humain M2.3–M2.5, chronologie, recherche sémantique, aide à l'écriture et atelier ComfyUI), qui **ne sont pas encore implémentés**.
+- **Gérer des faits structurés au niveau Rust/Tauri (M2.3)** : créer et consulter des faits sourcés ou non sourcés et leurs citations exactes ; fonctionnalités réservées aux interfaces de commande/aux intégrations, sans formulaire React dédié à ce stade.
+
+La revue et promotion humaine au canon (M2.4), l'interface de travail sur les faits (M2.5), la chronologie, la recherche sémantique, l'aide à l'écriture et l'atelier visuel ComfyUI ne sont **pas encore implémentés**.
 
 ## Documentation d'autorité
 
@@ -96,6 +106,7 @@ Ces fonctionnalités sont distinctes des projets futurs (faits et canon humain M
 - `docs/roadmap/M1_PERSISTENCE_PROJECT_FOUNDATION.md` — plan détaillé M1 ;
 - `docs/roadmap/M2_NARRATIVE_ENTITIES_CANONICAL_FACTS.md` — plan détaillé M2 ;
 - `docs/qualification/M2_2_ENTITY_ALIAS_CRUD.md` — preuves de qualification M2.2 ;
+- `docs/qualification/M2_3_IMPLEMENTATION_GATE.md` — qualification M2.3, sauvegarde v4 et migration Windows v5 ;
 - `docs/roadmap/V1_VISUAL_REFERENCES_COMFYUI_PROPOSAL.md` — proposition visuelle non implémentée ;
 - `docs/architecture/ARCHITECTURE_DECISIONS.md` — décisions d'architecture ;
 - `docs/PRODUCT_SCOPE_V1.md` — périmètre fonctionnel V1.

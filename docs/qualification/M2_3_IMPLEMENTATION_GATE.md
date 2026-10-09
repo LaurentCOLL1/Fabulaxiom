@@ -1,6 +1,6 @@
 # M2.3 — Windows qualification evidence
 
-**WINDOWS QUALIFIED; PR #25 MERGE AND NORMALIZATION PENDING**
+**IMPLEMENTATION MERGED — POST-MERGE NORMALIZATION PENDING**
 
 Exact implemented and locally tested HEAD: `4d3b4b6015d477c3a6a5c3750d9743174e9c44a7`. Exact-source `Fabulaxiom CI` run `37879358744`: `completed/success` on `pull_request`, every Windows job step successful. Frontend 21/21, Rust 61/61, frontend build, cargo check locked, dependency locks PASS. Operator local re-run also PASS; worktree CLEAN.
 
@@ -21,4 +21,4 @@ The fact create/read/list API and UTF-8 citation validations have passed Rust te
 
 ## Remaining governance
 
-New documentary commit invalidates historical SHA CI; require fresh terminal successful exact-head PR CI before protected implementation merge with `expected_head_sha`. Next, separate post-merge normalization PR and new exact-head CI. M2.4+, ComfyUI and AI fact extraction remain unauthorized.
+Source `4d3b4b6015d477c3a6a5c3750d9743174e9c44a7` qualified on Windows. Evidence document HEAD `b015f7df80f38d75375a0e2615fd62d4c40ee1b8` passed **Fabulaxiom CI** run `37961014980`, event `pull_request`, `completed/success` with all Windows job steps. PR #25 was **protected-merged using that expected HEAD**, producing `main=e6e80c26316f11054348a18a235fd08c600e136e`. Main and the merged PR were independently re-fetched and confirmed. A separate docs-only M2.3 post-merge normalization PR must now obtain **its own terminal exact-head CI** and protected merge before M2.4 is considered authorized. No M2.4/M2.5, ComfyUI or AI extraction implemented by this documentation change.
