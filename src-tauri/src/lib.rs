@@ -3,6 +3,8 @@ mod backup_commands;
 mod database;
 mod entity;
 mod entity_commands;
+mod facts;
+mod fact_commands;
 mod hierarchy;
 mod hierarchy_commands;
 mod revision_commands;
@@ -12,6 +14,7 @@ use std::time::Duration;
 
 use backup_commands::{backup_status, create_database_backup, restore_database_backup};
 
+use fact_commands::{create_narrative_fact, facts_snapshot};
 use entity_commands::{
     create_entity_alias, create_narrative_entity, delete_entity_alias,
     delete_narrative_entity, entity_snapshot, rename_entity_alias,
@@ -249,7 +252,9 @@ pub fn run() {
             delete_narrative_entity,
             create_entity_alias,
             rename_entity_alias,
-            delete_entity_alias
+            delete_entity_alias,
+            facts_snapshot,
+            create_narrative_fact
         ])
         .run(tauri::generate_context!())
         .expect("error while running Fabulaxiom");

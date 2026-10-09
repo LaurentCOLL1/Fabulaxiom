@@ -80,7 +80,11 @@ Evidence: `docs/qualification/M2_1_ENTITY_REGISTRY_SCHEMA.md`.
 
 ## Only next authorized implementation
 
-**M2.3 — Fact registry and exact revision provenance: AUTHORIZED ONLY AFTER M2.2 NORMALIZATION MERGES.**
+**M2.3 — Fact registry and exact revision provenance: IN PROGRESS — NOT QUALIFIED.**
+
+Starting live `main`: `70d8c5ca079eb94ef93ae7f5ee684503f99400cd`. Implementation branch: `feat/m2-3-fact-registry-exact-provenance-20261009`.
+
+The additive v5 migration must **not** be run on the operator restored active SQLite until exact-head GitHub CI succeeds, the M1.5 marker resolves the actual active database, and a separately verified non-overwriting backup is made. Do not touch operator backups, current heads or historical revisions. M2.4+ and ComfyUI stay unauthorized.
 
 The future dedicated M2.3 PR must start by re-fetching live `main`, `STATE.md`, `NEXT.md`, the detailed M2 roadmap and the M2.2 evidence report. M2.3 scope (nothing beyond):
 

@@ -10,7 +10,7 @@ use rusqlite::{params, Connection, Transaction};
 use tauri::Manager;
 
 pub const DATABASE_FILENAME: &str = "fabulaxiom.sqlite3";
-pub const CURRENT_SCHEMA_VERSION: i64 = 4;
+pub const CURRENT_SCHEMA_VERSION: i64 = 5;
 
 const MIGRATION_TABLE_SQL: &str = r#"
 CREATE TABLE IF NOT EXISTS schema_migrations (
@@ -294,6 +294,94 @@ END;
 "#,
     },
 
+    Migration {
+        version: 5,
+        name: "005_create_narrative_fact_provenance",
+        sql: r#"
+-- Additive M2.3 registry. There is no canon/review status until M2.4.
+CREATE TABLE narrative_facts (
+    id TEXT PRIMARY KEY NOT NULL CHECK(length(trim(id)) > 0),
+    entity_id TEXT NOT NULL,
+    universe_id TEXT NOT NULL,
+    fact_key TEXT NOT NULL CHECK(length(trim(fact_key)) > 0),
+    fact_value TEXT NOT NULL CHECK(length(trim(fact_value)) > 0),
+    provenance_kind TEXT NOT NULL CHECK(provenance_kind IN ('sourced','unsourced')),
+    validity_kind TEXT CHECK(validity_kind IN ('exact','approximate','relative','unknown')),
+    validity_text TEXT,
+    created_at_utc TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(id, universe_id),
+    CHECK(
+        (validity_kind IS NULL AND validity_text IS NULL)
+        OR (validity_kind IS NOT NULL AND validity_text IS NOT NULL
+            AND length(trim(validity_text)) > 0)
+    ),
+    FOREIGN KEY (entity_id, universe_id)
+        REFERENCES narrative_entities(id, universe_id)
+        ON UPDATE RESTRICT ON DELETE RESTRICT
+) STRICT;
+CREATE INDEX idx_narrative_facts_entity ON narrative_facts(entity_id, universe_id);
+CREATE INDEX idx_narrative_facts_universe ON narrative_facts(universe_id, id);
+
+CREATE TABLE fact_sources (
+    id TEXT PRIMARY KEY NOT NULL CHECK(length(trim(id)) > 0),
+    fact_id TEXT NOT NULL UNIQUE,
+    universe_id TEXT NOT NULL,
+    revision_id TEXT NOT NULL,
+    start_byte INTEGER NOT NULL CHECK(start_byte >= 0),
+    end_byte INTEGER NOT NULL CHECK(end_byte > start_byte),
+    quoted_text TEXT NOT NULL CHECK(length(quoted_text) > 0),
+    FOREIGN KEY (fact_id, universe_id)
+        REFERENCES narrative_facts(id, universe_id)
+        ON UPDATE RESTRICT ON DELETE RESTRICT,
+    FOREIGN KEY (revision_id)
+        REFERENCES scene_text_revisions(id)
+        ON UPDATE RESTRICT ON DELETE RESTRICT
+) STRICT;
+CREATE INDEX idx_fact_sources_revision ON fact_sources(revision_id);
+
+-- An exact byte-for-byte UTF-8 quote from a revision in the SAME Universe
+-- is mandatory even for direct SQL insertions. Rust also checks char boundaries.
+CREATE TRIGGER fact_sources_exact_passage
+BEFORE INSERT ON fact_sources
+BEGIN
+    SELECT CASE WHEN (
+        SELECT provenance_kind FROM narrative_facts WHERE id=NEW.fact_id
+    ) IS NOT 'sourced' THEN RAISE(ABORT, 'sourced fact required') END;
+    SELECT CASE WHEN NOT EXISTS (
+        SELECT 1 FROM scene_text_revisions r
+        JOIN scenes s ON s.id=r.scene_id
+        JOIN chapters c ON c.id=s.chapter_id
+        JOIN novels n ON n.id=c.novel_id
+        WHERE r.id=NEW.revision_id
+          AND n.universe_id=NEW.universe_id
+          AND CAST(NEW.quoted_text AS BLOB) =
+              substr(CAST(r.content AS BLOB), NEW.start_byte+1, NEW.end_byte-NEW.start_byte)
+    ) THEN RAISE(ABORT, 'source revision universe or exact UTF-8 passage mismatch') END;
+END;
+
+CREATE TRIGGER narrative_facts_immutable
+BEFORE UPDATE ON narrative_facts
+BEGIN
+    SELECT RAISE(ABORT, 'narrative facts are immutable in M2.3');
+END;
+CREATE TRIGGER narrative_facts_no_delete
+BEFORE DELETE ON narrative_facts
+BEGIN
+    SELECT RAISE(ABORT, 'narrative facts cannot be removed in M2.3');
+END;
+CREATE TRIGGER fact_sources_immutable
+BEFORE UPDATE ON fact_sources
+BEGIN
+    SELECT RAISE(ABORT, 'fact sources are immutable');
+END;
+CREATE TRIGGER fact_sources_no_delete
+BEFORE DELETE ON fact_sources
+BEGIN
+    SELECT RAISE(ABORT, 'fact sources cannot be removed');
+END;
+"#,
+    },
+
 ];
 
 #[derive(Debug)]
@@ -561,7 +649,7 @@ mod tests {
                 .query_row("SELECT COUNT(*) FROM schema_migrations", [], |row| row.get(0))
                 .expect("migration count");
 
-            assert_eq!(migration_count, 4);
+            assert_eq!(migration_count, 5);
 
             let owner: String = connection
                 .query_row(
@@ -591,7 +679,7 @@ mod tests {
             .query_row("SELECT COUNT(*) FROM schema_migrations", [], |row| row.get(0))
             .expect("migration count");
 
-        assert_eq!(migration_count, 4);
+        assert_eq!(migration_count, 5);
     }
 
     #[test]
@@ -608,7 +696,7 @@ mod tests {
 
         let migrated = run_migrations(&mut connection).expect("migrate to current schema");
 
-        assert_eq!(migrated, 4);
+        assert_eq!(migrated, 5);
 
         let hierarchy_table_count: i64 = connection
             .query_row(
@@ -637,7 +725,7 @@ mod tests {
         );
 
         let migrated = run_migrations(&mut connection).expect("migrate to v3");
-        assert_eq!(migrated, 4);
+        assert_eq!(migrated, 5);
 
         let revision_tables: i64 = connection
             .query_row(
@@ -760,13 +848,13 @@ mod tests {
             )
             .expect("current revision head");
 
-        assert_eq!(run_migrations(&mut connection).expect("v4 upgrade"), 4);
-        assert_eq!(run_migrations(&mut connection).expect("idempotent rerun"), 4);
+        assert_eq!(run_migrations(&mut connection).expect("v5 upgrade"), 5);
+        assert_eq!(run_migrations(&mut connection).expect("idempotent rerun"), 5);
 
         let migration_count: i64 = connection
             .query_row("SELECT COUNT(*) FROM schema_migrations", [], |row| row.get(0))
             .expect("migration count");
-        assert_eq!(migration_count, 4);
+        assert_eq!(migration_count, 5);
 
         let revision_count: i64 = connection
             .query_row(
@@ -1026,6 +1114,65 @@ mod tests {
         assert_eq!(index_count, 2);
 
         assert!(foreign_keys_enabled(&connection).expect("foreign keys"));
+    }
+
+
+    #[test]
+    fn schema_v4_to_v5_preserves_entity_alias_revision_and_current_head() {
+        let mut connection=memory_connection();
+        ensure_migration_table(&connection).expect("migration table");
+        for migration in &MIGRATIONS[..4] {
+            apply_migration(&mut connection,*migration).expect("legacy migration");
+        }
+        assert_eq!(current_schema_version(&connection).unwrap(),4);
+        insert_universe(&connection,"u1");
+        insert_novel(&connection,"n1","u1",None,0);
+        insert_chapter(&connection,"c1","n1",0);
+        insert_scene(&connection,"s1","c1",0);
+        connection.execute_batch(
+            "INSERT INTO scene_text_revisions(id,scene_id,revision_number,content)
+             VALUES('r1','s1',1,'Texte immuable');
+             INSERT INTO scene_revision_heads(scene_id,revision_id) VALUES('s1','r1');
+             INSERT INTO narrative_entities(id,universe_id,kind,name)
+             VALUES('e1','u1','character','Nom');
+             INSERT INTO entity_aliases(id,entity_id,universe_id,alias)
+             VALUES('a1','e1','u1','Surnom');"
+        ).expect("M2.2 rows");
+        assert_eq!(run_migrations(&mut connection).unwrap(),5);
+        assert_eq!(run_migrations(&mut connection).unwrap(),5);
+        let migration_count:i64=connection.query_row(
+            "SELECT COUNT(*) FROM schema_migrations",[],|r|r.get(0)
+        ).unwrap();
+        assert_eq!(migration_count,5);
+        for (table,expected) in [
+            ("scene_text_revisions",1),("scene_revision_heads",1),
+            ("narrative_entities",1),("entity_aliases",1),
+            ("narrative_facts",0),("fact_sources",0)
+        ] {
+            let sql=format!("SELECT COUNT(*) FROM {table}");
+            let count:i64=connection.query_row(&sql,[],|r|r.get(0)).unwrap();
+            assert_eq!(count,expected,"{table}");
+        }
+        let head:String=connection.query_row(
+            "SELECT revision_id FROM scene_revision_heads WHERE scene_id='s1'",
+            [],|r|r.get(0)
+        ).unwrap();
+        assert_eq!(head,"r1");
+        let text:String=connection.query_row(
+            "SELECT content FROM scene_text_revisions WHERE id='r1'",
+            [],|r|r.get(0)
+        ).unwrap();
+        assert_eq!(text,"Texte immuable");
+        let strict:i64=connection.query_row(
+            "SELECT COUNT(*) FROM pragma_table_list
+             WHERE name IN ('narrative_facts','fact_sources') AND strict=1",
+            [],|r|r.get(0)
+        ).unwrap();
+        assert_eq!(strict,2);
+        let fk_violations:Vec<_>=connection.prepare("PRAGMA foreign_key_check").unwrap()
+            .query_map([],|_|Ok(())).unwrap()
+            .collect::<rusqlite::Result<Vec<_>>>().unwrap();
+        assert!(fk_violations.is_empty());
     }
 
     #[test]

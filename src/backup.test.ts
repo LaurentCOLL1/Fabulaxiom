@@ -19,7 +19,7 @@ describe("backup UI helpers", () => {
     expect(formatCounts({
       universes: 1, series: 0, novels: 2, chapters: 3,
       scenes: 4, revisions: 5, current_heads: 2,
-      entities: 6, aliases: 7,
+      entities: 6, aliases: 7, facts: 8, fact_sources: 4,
     })).toContain("5 révisions");
   });
 

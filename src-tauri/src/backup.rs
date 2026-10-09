@@ -90,6 +90,8 @@ pub struct DataCounts {
     pub current_heads: i64,
     pub entities: i64,
     pub aliases: i64,
+    pub facts: i64,
+    pub fact_sources: i64,
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -279,11 +281,11 @@ fn validate_connection(connection: &Connection) -> Result<DataCounts, BackupErro
         (2, "002_create_project_hierarchy"),
         (3, "003_create_scene_text_revisions"),
         (4, "004_create_narrative_entity_registry"),
+        (5, "005_create_narrative_fact_provenance"),
     ];
-    // M1.5 application backups created before schema v4 remain restorable.
-    // Every version and name must form an exact supported migration prefix.
-    let supported_version = migrations.len() == CURRENT_SCHEMA_VERSION as usize
-        || migrations.len() == (CURRENT_SCHEMA_VERSION - 1) as usize;
+    // Legacy schema-v3 and v4 application backups can still be restored
+    // into new, separately migrated v5 database files.
+    let supported_version = (3..=CURRENT_SCHEMA_VERSION as usize).contains(&migrations.len());
     if !supported_version
         || migrations.iter().zip(expected).any(|((version, name), (v, n))| *version != v || name != n)
     {
@@ -291,7 +293,21 @@ fn validate_connection(connection: &Connection) -> Result<DataCounts, BackupErro
             "Version ou lineage de migrations non prise en charge.".to_string(),
         ));
     }
-    let has_entity_registry = migrations.len() == CURRENT_SCHEMA_VERSION as usize;
+    let has_entity_registry = migrations.len() >= 4;
+    let has_fact_registry = migrations.len() >= 5;
+    if has_fact_registry {
+        let incoherent: i64 = connection.query_row(
+            "SELECT COUNT(*) FROM narrative_facts f
+             WHERE (f.provenance_kind='sourced') <>
+                   EXISTS(SELECT 1 FROM fact_sources s WHERE s.fact_id=f.id)",
+            [], |r| r.get(0),
+        )?;
+        if incoherent != 0 {
+            return Err(BackupError::Integrity(
+                "Registre des faits : provenance manquante ou contradictoire.".to_string(),
+            ));
+        }
+    }
     fn count(connection: &Connection, table: &str) -> Result<i64, BackupError> {
         // Names in this match are fixed by the application, never supplied by callers.
         let sql = match table {
@@ -324,6 +340,12 @@ fn validate_connection(connection: &Connection) -> Result<DataCounts, BackupErro
         } else {
             0
         },
+        facts: if has_fact_registry {
+            connection.query_row("SELECT COUNT(*) FROM narrative_facts", [], |r| r.get(0))?
+        } else { 0 },
+        fact_sources: if has_fact_registry {
+            connection.query_row("SELECT COUNT(*) FROM fact_sources", [], |r| r.get(0))?
+        } else { 0 },
     })
 }
 
@@ -548,7 +570,7 @@ mod tests {
         let live = seeded(&dir);
         let created = create_backup(&dir).unwrap();
         assert!(Path::new(&created.backup.path).exists());
-        assert_eq!(created.schema_version, 4);
+        assert_eq!(created.schema_version, 5);
         assert_eq!(created.counts.revisions, 1);
         assert_eq!(created.counts.current_heads, 1);
         assert_eq!(list_backups(&dir).unwrap().len(), 1);
@@ -581,13 +603,13 @@ mod tests {
         }
 
         let saved = create_backup(&dir).expect("backup");
-        assert_eq!(saved.schema_version, 4);
+        assert_eq!(saved.schema_version, 5);
         assert_eq!(saved.counts.entities, 1);
         assert_eq!(saved.counts.aliases, 1);
         assert_eq!(saved.counts.revisions, 1);
 
         let restored = restore_backup(&dir, &saved.backup.file_name).expect("restore");
-        assert_eq!(restored.schema_version, 4);
+        assert_eq!(restored.schema_version, 5);
         assert_eq!(restored.counts.entities, 1);
         assert_eq!(restored.counts.aliases, 1);
         let active = database::open_database(Path::new(&restored.active_database_path))
@@ -604,8 +626,57 @@ mod tests {
         fs::remove_dir_all(dir).expect("cleanup temp fixture");
     }
 
+
     #[test]
-    fn legacy_v3_backup_restores_into_new_v4_copy_without_changing_backup() {
+    fn legacy_v4_backup_restores_into_v5_without_overwriting_backup() {
+        let dir = root("legacy-v4-to-v5");
+        let live = seeded(&dir);
+        {
+            let connection = database::open_database(&live).expect("seed v5");
+            connection.execute(
+                "INSERT INTO narrative_entities(id,universe_id,kind,name)
+                 VALUES('e1','u1','character','Ariane')", [],
+            ).expect("entity");
+            // Simulate a genuine historical v4 backup, with no v5 objects.
+            connection.execute_batch(
+                "DROP TABLE fact_sources;
+                 DROP TABLE narrative_facts;
+                 DELETE FROM schema_migrations WHERE version=5;"
+            ).expect("downgrade isolated fixture");
+        }
+        let (name, saved) = reserve_unique_file(&backup_directory(&dir), BACKUP_PREFIX)
+            .expect("reserve historical fixture");
+        {
+            let source=Connection::open_with_flags(&live,OpenFlags::SQLITE_OPEN_READ_ONLY)
+                .expect("v4 fixture");
+            source.execute("VACUUM INTO ?1",params![saved.to_str().unwrap()])
+                .expect("create historical backup");
+        }
+        let before=fs::read(&saved).expect("before");
+        let result=restore_backup(&dir,&name).expect("restore v4 to v5 copy");
+        assert_eq!(result.schema_version, 5);
+        assert_eq!(result.counts.entities, 1);
+        assert_eq!(result.counts.facts, 0);
+        assert_eq!(result.counts.fact_sources, 0);
+        let active=Connection::open_with_flags(
+            Path::new(&result.active_database_path), OpenFlags::SQLITE_OPEN_READ_ONLY
+        ).expect("read restored v5");
+        assert_eq!(database::current_schema_version(&active).unwrap(),5);
+        let name:String=active.query_row(
+            "SELECT name FROM narrative_entities WHERE id='e1'",[],|r|r.get(0)
+        ).expect("entity preserved");
+        assert_eq!(name, "Ariane");
+        drop(active);
+        assert_eq!(fs::read(&saved).unwrap(),before);
+        let original=Connection::open_with_flags(&live,OpenFlags::SQLITE_OPEN_READ_ONLY)
+            .expect("original v4");
+        assert_eq!(database::current_schema_version(&original).unwrap(),4);
+        drop(original);
+        fs::remove_dir_all(dir).expect("cleanup isolated fixtures");
+    }
+
+    #[test]
+    fn legacy_v3_backup_restores_into_new_v5_copy_without_changing_backup() {
         let dir = root("legacy-v3-to-v4");
         let live = seeded(&dir);
 
@@ -613,9 +684,11 @@ mod tests {
             let connection = database::open_database(&live).expect("seeded v4");
             connection
                 .execute_batch(
-                    "DROP TABLE entity_aliases;
+                    "DROP TABLE fact_sources;
+                     DROP TABLE narrative_facts;
+                     DROP TABLE entity_aliases;
                      DROP TABLE narrative_entities;
-                     DELETE FROM schema_migrations WHERE version = 4;",
+                     DELETE FROM schema_migrations WHERE version IN (5,4);",
                 )
                 .expect("prepare legacy v3 fixture");
         }
@@ -641,7 +714,7 @@ mod tests {
         let restored = restore_backup(&dir, &backup_name).expect("safe legacy restore");
 
         assert_ne!(restored.active_database_path, restored.previous_database_path);
-        assert_eq!(restored.schema_version, 4);
+        assert_eq!(restored.schema_version, 5);
         assert_eq!(restored.counts.revisions, 1);
         assert_eq!(restored.counts.entities, 0);
         assert_eq!(restored.counts.aliases, 0);
@@ -654,7 +727,7 @@ mod tests {
             .expect("upgraded restored database");
         assert_eq!(
             database::current_schema_version(&upgraded).expect("new schema"),
-            4
+            5
         );
         let head: String = upgraded
             .query_row(

@@ -77,6 +77,7 @@ pub enum EntityError {
     NotFound(&'static str),
     Validation(String),
     HasChildren { count: i64 },
+    HasFacts { count: i64 },
     Database(rusqlite::Error),
 }
 
@@ -96,6 +97,10 @@ impl EntityError {
                 message: format!(
                     "Suppression refusée : cette entité possède encore {count} alias."
                 ),
+            },
+            Self::HasFacts { count } => EntityErrorPayload {
+                code: "has_facts",
+                message: format!("Suppression refusée : cette entité possède encore {count} faits."),
             },
             Self::Database(_) => EntityErrorPayload {
                 code: "database",
@@ -251,6 +256,11 @@ pub fn delete_entity(db: &mut Connection, id: &str) -> Result<(), EntityError> {
     if count > 0 {
         return Err(EntityError::HasChildren { count });
     }
+    let facts: i64 = db.query_row(
+        "SELECT COUNT(*) FROM narrative_facts WHERE entity_id=?1",
+        params![id], |r| r.get(0),
+    )?;
+    if facts > 0 { return Err(EntityError::HasFacts { count: facts }); }
     db.execute("DELETE FROM narrative_entities WHERE id=?1", params![id])?;
     Ok(())
 }
