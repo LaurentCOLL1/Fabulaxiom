@@ -88,7 +88,11 @@ Source CI `37879358744` and evidence CI `37961014980`: terminal SUCCESS, all Win
 
 ## Only next authorized implementation
 
-**M2.4 — Canon status and human review service: AUTHORIZED ONLY AFTER M2.3 NORMALIZATION MERGES AND MAIN IS RE-FETCHED.**
+**M2.4 — Canon status and human review service: IN PROGRESS, NOT QUALIFIED.**
+
+Starting live normalized `main=ebaaf62933dadf6f0662ca749227a0b340b8a7e3`; implementation branch `feat/m2-4-canon-status-review-20261009`. SQLite v6 is ADDITIVE and the operator's v5 database **must not** be opened with M2.4 until a new independently verified pre-v6 SQLite-consistent backup of its actual restored active file is secured after terminal exact-head CI. Do not touch historical backups or active marker. See `docs/qualification/M2_4_CANON_REVIEW_IMPLEMENTATION_GATE.md`.
+
+Scope: a deterministic human-declared status service, append-only review events, explicit approvals/revocations, atomicity and negative-path evidence, no Ollama. M2.5 React UI, AI extraction, ComfyUI and later milestones remain unauthorized.
 
 Bounded scope from the accepted detailed M2 roadmap:
 

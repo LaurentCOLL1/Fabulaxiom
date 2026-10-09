@@ -10,7 +10,7 @@ use rusqlite::{params, Connection, Transaction};
 use tauri::Manager;
 
 pub const DATABASE_FILENAME: &str = "fabulaxiom.sqlite3";
-pub const CURRENT_SCHEMA_VERSION: i64 = 5;
+pub const CURRENT_SCHEMA_VERSION: i64 = 6;
 
 const MIGRATION_TABLE_SQL: &str = r#"
 CREATE TABLE IF NOT EXISTS schema_migrations (
@@ -382,6 +382,72 @@ END;
 "#,
     },
 
+    Migration {
+        version: 6,
+        name: "006_create_human_fact_review_log",
+        sql: r#"
+-- M2.4: append-only human review history; fact and source records remain immutable.
+-- Current status = the last review event; no event means 'draft'.
+CREATE TABLE fact_review_events (
+    id TEXT PRIMARY KEY NOT NULL CHECK(length(trim(id)) > 0),
+    fact_id TEXT NOT NULL,
+    universe_id TEXT NOT NULL,
+    revision_number INTEGER NOT NULL CHECK(revision_number > 0),
+    previous_status TEXT NOT NULL CHECK(previous_status IN
+        ('draft','suggestion','canon','variant','unknown','ambiguous','contradictory')),
+    next_status TEXT NOT NULL CHECK(next_status IN
+        ('draft','suggestion','canon','variant','unknown','ambiguous','contradictory')),
+    action_kind TEXT NOT NULL CHECK(action_kind IN ('set_status','approve_canon','revoke_canon')),
+    actor_kind TEXT NOT NULL CHECK(actor_kind='human'),
+    reviewer_label TEXT NOT NULL CHECK(length(trim(reviewer_label)) > 0),
+    human_confirmation INTEGER NOT NULL CHECK(human_confirmation IN (0,1)),
+    reason TEXT NOT NULL CHECK(length(trim(reason)) > 0),
+    recorded_at_utc TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE (fact_id,revision_number),
+    FOREIGN KEY (fact_id,universe_id)
+        REFERENCES narrative_facts(id,universe_id)
+        ON UPDATE RESTRICT ON DELETE RESTRICT
+) STRICT;
+CREATE INDEX idx_fact_review_events_universe_fact
+    ON fact_review_events(universe_id,fact_id,revision_number);
+
+CREATE TRIGGER fact_review_events_guard_insert
+BEFORE INSERT ON fact_review_events
+BEGIN
+    SELECT CASE WHEN NEW.revision_number != (
+        SELECT COALESCE(MAX(revision_number),0)+1
+        FROM fact_review_events WHERE fact_id=NEW.fact_id
+    ) THEN RAISE(ABORT,'review revision mismatch') END;
+    SELECT CASE WHEN NEW.previous_status != COALESCE((
+        SELECT next_status FROM fact_review_events
+        WHERE fact_id=NEW.fact_id ORDER BY revision_number DESC LIMIT 1
+    ),'draft') THEN RAISE(ABORT,'review previous status mismatch') END;
+    SELECT CASE WHEN NEW.previous_status = NEW.next_status
+        THEN RAISE(ABORT,'review must change status') END;
+    SELECT CASE WHEN NEW.next_status='canon' AND
+        (NEW.action_kind!='approve_canon' OR NEW.human_confirmation!=1)
+        THEN RAISE(ABORT,'canon requires explicit human approval') END;
+    SELECT CASE WHEN NEW.next_status!='canon' AND NEW.action_kind='approve_canon'
+        THEN RAISE(ABORT,'invalid approve-canon action') END;
+    SELECT CASE WHEN NEW.previous_status='canon' AND NEW.next_status!='canon'
+        AND (NEW.action_kind!='revoke_canon' OR NEW.human_confirmation!=1)
+        THEN RAISE(ABORT,'revocation requires explicit human action') END;
+    SELECT CASE WHEN NEW.previous_status!='canon' AND NEW.action_kind='revoke_canon'
+        THEN RAISE(ABORT,'invalid revoke-canon action') END;
+    SELECT CASE WHEN NEW.action_kind='set_status' AND NEW.human_confirmation!=0
+        THEN RAISE(ABORT,'status editing is not canon approval') END;
+END;
+CREATE TRIGGER fact_review_events_no_update BEFORE UPDATE ON fact_review_events
+BEGIN
+    SELECT RAISE(ABORT,'review history is immutable');
+END;
+CREATE TRIGGER fact_review_events_no_delete BEFORE DELETE ON fact_review_events
+BEGIN
+    SELECT RAISE(ABORT,'review history is immutable');
+END;
+"#,
+    },
+
 ];
 
 #[derive(Debug)]
@@ -649,7 +715,7 @@ mod tests {
                 .query_row("SELECT COUNT(*) FROM schema_migrations", [], |row| row.get(0))
                 .expect("migration count");
 
-            assert_eq!(migration_count, 5);
+            assert_eq!(migration_count, 6);
 
             let owner: String = connection
                 .query_row(
@@ -679,7 +745,7 @@ mod tests {
             .query_row("SELECT COUNT(*) FROM schema_migrations", [], |row| row.get(0))
             .expect("migration count");
 
-        assert_eq!(migration_count, 5);
+        assert_eq!(migration_count, 6);
     }
 
     #[test]
@@ -696,7 +762,7 @@ mod tests {
 
         let migrated = run_migrations(&mut connection).expect("migrate to current schema");
 
-        assert_eq!(migrated, 5);
+        assert_eq!(migrated, 6);
 
         let hierarchy_table_count: i64 = connection
             .query_row(
@@ -725,7 +791,7 @@ mod tests {
         );
 
         let migrated = run_migrations(&mut connection).expect("migrate to v3");
-        assert_eq!(migrated, 5);
+        assert_eq!(migrated, 6);
 
         let revision_tables: i64 = connection
             .query_row(
@@ -848,13 +914,13 @@ mod tests {
             )
             .expect("current revision head");
 
-        assert_eq!(run_migrations(&mut connection).expect("v5 upgrade"), 5);
-        assert_eq!(run_migrations(&mut connection).expect("idempotent rerun"), 5);
+        assert_eq!(run_migrations(&mut connection).expect("v6 upgrade"), 6);
+        assert_eq!(run_migrations(&mut connection).expect("idempotent rerun"), 6);
 
         let migration_count: i64 = connection
             .query_row("SELECT COUNT(*) FROM schema_migrations", [], |row| row.get(0))
             .expect("migration count");
-        assert_eq!(migration_count, 5);
+        assert_eq!(migration_count, 6);
 
         let revision_count: i64 = connection
             .query_row(
@@ -1138,12 +1204,12 @@ mod tests {
              INSERT INTO entity_aliases(id,entity_id,universe_id,alias)
              VALUES('a1','e1','u1','Surnom');"
         ).expect("M2.2 rows");
-        assert_eq!(run_migrations(&mut connection).unwrap(),5);
-        assert_eq!(run_migrations(&mut connection).unwrap(),5);
+        assert_eq!(run_migrations(&mut connection).unwrap(),6);
+        assert_eq!(run_migrations(&mut connection).unwrap(),6);
         let migration_count:i64=connection.query_row(
             "SELECT COUNT(*) FROM schema_migrations",[],|r|r.get(0)
         ).unwrap();
-        assert_eq!(migration_count,5);
+        assert_eq!(migration_count,6);
         for (table,expected) in [
             ("scene_text_revisions",1),("scene_revision_heads",1),
             ("narrative_entities",1),("entity_aliases",1),
@@ -1173,6 +1239,63 @@ mod tests {
             .query_map([],|_|Ok(())).unwrap()
             .collect::<rusqlite::Result<Vec<_>>>().unwrap();
         assert!(fk_violations.is_empty());
+    }
+
+
+    #[test]
+    fn schema_v5_to_v6_preserves_facts_sources_and_scene_head() {
+        let mut db = memory_connection();
+        ensure_migration_table(&db).unwrap();
+        for migration in &MIGRATIONS[..5] {
+            apply_migration(&mut db,*migration).unwrap();
+        }
+        assert_eq!(current_schema_version(&db).unwrap(),5);
+        db.execute_batch(
+            "INSERT INTO universes(id,name) VALUES('u1','Universe');
+             INSERT INTO novels(id,universe_id,title,sort_order) VALUES('n1','u1','Novel',0);
+             INSERT INTO chapters(id,novel_id,title,sort_order) VALUES('c1','n1','Chapter',0);
+             INSERT INTO scenes(id,chapter_id,title,sort_order) VALUES('s1','c1','Scene',0);
+             INSERT INTO scene_text_revisions(id,scene_id,revision_number,content)
+             VALUES('r1','s1',1,'A persistent scene');
+             INSERT INTO scene_revision_heads(scene_id,revision_id) VALUES('s1','r1');
+             INSERT INTO narrative_entities(id,universe_id,kind,name)
+             VALUES('e1','u1','character','Ariane');
+             INSERT INTO narrative_facts(id,entity_id,universe_id,fact_key,fact_value,provenance_kind)
+             VALUES('f1','e1','u1','setting','City','sourced');
+             INSERT INTO fact_sources(id,fact_id,universe_id,revision_id,start_byte,end_byte,quoted_text)
+             VALUES('citation','f1','u1','r1',2,12,'persistent');"
+        ).unwrap();
+        let before: Vec<(String,String)> = db.prepare(
+            "SELECT id,fact_value FROM narrative_facts ORDER BY id"
+        ).unwrap().query_map([],|r|Ok((r.get(0)?,r.get(1)?))).unwrap()
+            .collect::<rusqlite::Result<Vec<_>>>().unwrap();
+        assert_eq!(run_migrations(&mut db).unwrap(),6);
+        assert_eq!(run_migrations(&mut db).unwrap(),6);
+        let after: Vec<(String,String)> = db.prepare(
+            "SELECT id,fact_value FROM narrative_facts ORDER BY id"
+        ).unwrap().query_map([],|r|Ok((r.get(0)?,r.get(1)?))).unwrap()
+            .collect::<rusqlite::Result<Vec<_>>>().unwrap();
+        assert_eq!(before,after);
+        let source:String=db.query_row(
+            "SELECT quoted_text FROM fact_sources WHERE fact_id='f1'",[],|r|r.get(0)
+        ).unwrap();
+        assert_eq!(source,"persistent");
+        let head:String=db.query_row(
+            "SELECT revision_id FROM scene_revision_heads WHERE scene_id='s1'",[],|r|r.get(0)
+        ).unwrap();
+        assert_eq!(head,"r1");
+        let strict:i64=db.query_row(
+            "SELECT COUNT(*) FROM pragma_table_list WHERE name='fact_review_events' AND strict=1",
+            [],|r|r.get(0)
+        ).unwrap();
+        assert_eq!(strict,1);
+        let audit_count:i64=db.query_row("SELECT COUNT(*) FROM fact_review_events",[],|r|r.get(0)).unwrap();
+        assert_eq!(audit_count,0);
+        assert_eq!(db.query_row("PRAGMA integrity_check",[],|r|r.get::<_,String>(0)).unwrap(),"ok");
+        let violations:Vec<_>=db.prepare("PRAGMA foreign_key_check").unwrap()
+            .query_map([],|_|Ok(())).unwrap()
+            .collect::<rusqlite::Result<Vec<_>>>().unwrap();
+        assert!(violations.is_empty());
     }
 
     #[test]
