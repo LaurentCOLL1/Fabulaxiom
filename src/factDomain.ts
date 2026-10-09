@@ -107,6 +107,13 @@ export function quoteFromSelection(
   if(!Number.isSafeInteger(startUtf16)||!Number.isSafeInteger(endUtf16)
     ||startUtf16<0||startUtf16>=endUtf16||endUtf16>content.length)
     throw new Error("Sélectionnez un passage non vide dans la révision.");
+  // A browser selection uses UTF-16. Refuse positions inside a surrogate pair.
+  for(const point of [startUtf16,endUtf16]) {
+    if(point>0 && point<content.length
+      && content.charCodeAt(point-1)>=0xD800 && content.charCodeAt(point-1)<=0xDBFF
+      && content.charCodeAt(point)>=0xDC00 && content.charCodeAt(point)<=0xDFFF)
+      throw new Error("La sélection coupe un caractère Unicode.");
+  }
   const byteEncoder=new TextEncoder();
   const start=byteEncoder.encode(content.slice(0,startUtf16)).length;
   const end=byteEncoder.encode(content.slice(0,endUtf16)).length;

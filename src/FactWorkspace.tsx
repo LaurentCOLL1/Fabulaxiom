@@ -9,7 +9,7 @@ import {
   decodeReviewHistory,quoteFromSelection,verifySourceEvidence,reviewAction,
   newFactId,formatFactError,type FactSnapshot,type ReviewSnapshot,
   type ReviewHistory,type FactRecord,type FactStatus,type SelectedQuote,type SourceEvidence,
-} from "./factWorkspace";
+} from "./factDomain";
 
 const EMPTY_HIERARCHY:HierarchySnapshot={
   universes:[],series:[],novels:[],chapters:[],scenes:[],

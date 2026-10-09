@@ -5,7 +5,7 @@ import {
   decodeFactSnapshot,decodeReviewSnapshot,decodeReviewHistory,
   quoteFromSelection,verifySourceEvidence,reviewAction,formatFactError,
   STATUS_LABELS,
-} from "./factWorkspace";
+} from "./factDomain";
 import FactWorkspace from "./FactWorkspace";
 
 const f={id:"f1",entity_id:"e1",universe_id:"u1",fact_key:"lieu",
@@ -65,7 +65,7 @@ describe("M2.5 user-visible narrative fact governance",()=>{
   it("verifies exact historical revision content, not just the claimed quote",()=>{
     const evidence={fact_id:"f1",universe_id:"u1",revision_id:"r1",scene_id:"scene1",
       revision_number:1,content:"Été 🐈 magique",quoted_text:"🐈 ",
-      start_byte:5,end_byte:10};
+      start_byte:6,end_byte:11};
     expect(verifySourceEvidence(evidence,"u1",src).scene_id).toBe("scene1");
     expect(()=>verifySourceEvidence({...evidence,content:"Été ! magique"},"u1",src))
       .toThrow(/texte cité/);
