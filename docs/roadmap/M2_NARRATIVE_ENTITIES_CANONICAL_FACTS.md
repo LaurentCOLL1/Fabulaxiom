@@ -2,7 +2,7 @@
 
 ## Authority and prerequisites
 
-**PLAN ACCEPTED — M2.1–M2.3 COMPLETE + MERGED + NORMALIZED; M2.4 NEXT AFTER M2.3 NORMALIZATION**
+**PLAN ACCEPTED — M2.1–M2.4 COMPLETE + MERGED + NORMALIZED after M2.4 normalization; M2.5 NEXT only then**
 
 Planning PR #17 merged as `4a9115ec362a0efae696ebc94b5101fa46d7a03a` after exact-head `Fabulaxiom CI` run `37722657799` completed/success.
 
@@ -10,7 +10,7 @@ Project: Fabulaxiom. Prior milestone M1 is **COMPLETE + MERGED + NORMALIZED**.
 
 Planning base `main`: `b16be2ed3e6326c88b565b305bcaba2a6d590462`.
 
-This plan subdivides M2 into bounded sequential deliverables. M2.1–M2.3 have passed their qualification, protected implementation merge and (upon acceptance of the independent normalization PR) normalizations. M2.2 merged via PR #23; M2.3 merged via PR #25 at `e6e80c26316f11054348a18a235fd08c600e136e` after exact evidence CI `37961014980` succeeded. **M2.4 is the next possible implementation only after M2.3 normalization merges and normalized main is re-fetched**, bounded strictly to human canon status and review.
+This plan subdivides M2 into bounded sequential deliverables. M2.1–M2.3 have passed their qualification, protected implementation merge and (upon acceptance of the independent normalization PR) normalizations. M2.2 merged via PR #23; M2.3 merged via PR #25 at `e6e80c26316f11054348a18a235fd08c600e136e` after exact evidence CI `37961014980` succeeded. **M2.4 is implemented and protected-merged via PR #27**. **M2.5 becomes the only next possible implementation after the independent M2.4 normalization merges and normalized main is re-fetched**.
 
 M1.1–M1.5 are preserved:
 - SQLite migrations, integrity checks and backups;
@@ -153,7 +153,9 @@ Acceptance:
 
 ### M2.4 — Canon status and review service
 
-**NEXT AUTHORIZED ONLY AFTER M2.3 NORMALIZATION MERGES — DO NOT IMPLEMENT IN THIS DOCUMENTARY PR**
+**COMPLETE + MERGED + NORMALIZED after separate post-merge normalization acceptance.**
+
+Implementation PR #27 protected-merged at `3a069572d00e1680c42b0f13b800e28687c5f0eb`. Qualified source `aad56bd59fdb87be5ac1eda99b1969452bf61a26`, evidence HEAD `b53405779b04c16525ba48a266bd096096af7020`, evidence `Fabulaxiom CI` `37989040863` terminal SUCCESS (13/13 Windows CI steps); source run `37974831473` terminal SUCCESS (21/21 React, 71/71 Rust). Controlled SQLite v5→v6 after separate SHA-256 verified backup, exact data-integrity audit and existing GUI 8/8 PASS; isolated real Windows Rust review tests 8/8 PASS with no production SQLite changes. New append-only STRICT `fact_review_events`, status/history and deliberate approve/revoke operations. **Not a React fact-review UI nor an authenticated human identity claim.** See `docs/qualification/M2_4_CANON_REVIEW_IMPLEMENTATION_GATE.md`.
 
 Scope:
 - deterministic status lifecycle with vocabulary above;
@@ -170,7 +172,7 @@ Acceptance:
 
 ### M2.5 — Usable sourced-facts and human review UI
 
-**NOT AUTHORIZED until M2.4 COMPLETE + MERGED + NORMALIZED**
+**NEXT AUTHORIZED ONLY AFTER M2.4 NORMALIZATION MERGES AND CURRENT MAIN IS RE-FETCHED — NOT IMPLEMENTED IN THIS DOCUMENTARY PR**
 
 Scope:
 - React flow for entering facts, attaching/verifying source passages and viewing cited revision;
