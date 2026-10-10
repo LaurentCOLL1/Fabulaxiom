@@ -17,7 +17,7 @@ describe("M2.5 workspace cross-panel invalidation",()=>{
   it("notifies listening panels for successful hierarchy, entity and revision writes",()=>{
     const events=new EventTarget();
     const observed:string[]=[];
-    for(const name of [WORKSPACE_HIERARCHY_CHANGED,WORKSPACE_ENTITY_CHANGED,WORKSPACE_REVISION_CHANGED]){
+    for(const name of [WORKSPACE_HIERARCHY_CHANGED,WORKSPACE_ENTITY_CHANGED,WORKSPACE_REVISION_CHANGED] as const){
       events.addEventListener(name,()=>observed.push(name));
       announceWorkspaceChange(name,events);
     }
