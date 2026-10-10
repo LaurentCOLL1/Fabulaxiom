@@ -232,3 +232,125 @@ fn schema_transaction_rolls_back_fully_on_invalid_candidate_reapply() {
     ).unwrap();
     assert_eq!(count,1);
 }
+
+
+#[test]
+fn populated_v6_m2_citations_and_human_review_are_preserved_byte_for_byte() {
+    let mut db = v6();
+    // These are immutable, existing M2 records, not new M3 interpretations.
+    db.execute_batch(r#"
+        INSERT INTO universes(id,name) VALUES ('u1','Moonlands');
+        INSERT INTO novels(id,universe_id,title,sort_order)
+            VALUES ('n1','u1','Archive',0);
+        INSERT INTO chapters(id,novel_id,title,sort_order)
+            VALUES ('c1','n1','Chapter',0);
+        INSERT INTO scenes(id,chapter_id,title,sort_order)
+            VALUES ('s1','c1','Scene',0);
+        INSERT INTO scene_text_revisions(id,scene_id,revision_number,content)
+            VALUES ('r1','s1',1,'Éclipse 🌕 au lac');
+        INSERT INTO scene_revision_heads(scene_id,revision_id) VALUES ('s1','r1');
+        INSERT INTO narrative_entities(id,universe_id,kind,name)
+            VALUES ('e1','u1','event','Éclipse');
+        INSERT INTO narrative_facts(id,entity_id,universe_id,fact_key,fact_value,provenance_kind)
+            VALUES ('f1','e1','u1','signal','Éclipse','sourced');
+        INSERT INTO fact_sources(id,fact_id,universe_id,revision_id,start_byte,end_byte,quoted_text)
+            VALUES ('source1','f1','u1','r1',0,8,'Éclipse');
+        INSERT INTO fact_review_events
+            (id,fact_id,universe_id,revision_number,previous_status,next_status,
+             action_kind,actor_kind,reviewer_label,human_confirmation,reason)
+            VALUES
+            ('review1','f1','u1',1,'draft','suggestion','set_status','human',
+             'operator',0,'Human suggestion'),
+            ('review2','f1','u1',2,'suggestion','canon','approve_canon','human',
+             'operator',1,'Reviewed exact source');
+    "#).expect("populated M2 v6 baseline");
+
+    let original: (String,String,String,i64,i64,i64) = db.query_row(
+        "SELECT r.content, s.quoted_text, h.revision_id, s.end_byte,
+                (SELECT COUNT(*) FROM fact_review_events),
+                (SELECT COUNT(*) FROM schema_migrations)
+         FROM scene_text_revisions r
+         JOIN fact_sources s ON s.revision_id=r.id
+         JOIN scene_revision_heads h ON h.scene_id=r.scene_id
+         WHERE r.id='r1'",
+        [], |row| Ok((row.get(0)?,row.get(1)?,row.get(2)?,
+                     row.get(3)?,row.get(4)?,row.get(5)?))
+    ).expect("before candidate");
+    assert_eq!(original.1.as_bytes(), "Éclipse".as_bytes());
+    assert_eq!(original.3, 8);
+    assert_eq!(original.4, 2);
+    assert_eq!(original.5, 6);
+
+    stage_isolated(&mut db);
+    let retained: (String,String,String,i64,i64,i64) = db.query_row(
+        "SELECT r.content, s.quoted_text, h.revision_id, s.end_byte,
+                (SELECT COUNT(*) FROM fact_review_events),
+                (SELECT COUNT(*) FROM schema_migrations)
+         FROM scene_text_revisions r
+         JOIN fact_sources s ON s.revision_id=r.id
+         JOIN scene_revision_heads h ON h.scene_id=r.scene_id
+         WHERE r.id='r1'",
+        [], |row| Ok((row.get(0)?,row.get(1)?,row.get(2)?,
+                     row.get(3)?,row.get(4)?,row.get(5)?))
+    ).expect("after candidate");
+    assert_eq!(retained, original, "old M2 rows must be preserved exactly");
+    let canon_status: String = db.query_row(
+        "SELECT next_status FROM fact_review_events
+         WHERE fact_id='f1' ORDER BY revision_number DESC LIMIT 1",
+        [], |row| row.get(0)
+    ).expect("human canon review retained");
+    assert_eq!(canon_status, "canon");
+    assert_eq!(db.query_row(
+        "SELECT COUNT(*) FROM pragma_foreign_key_check",
+        [], |row| row.get::<_, i64>(0)
+    ).expect("FK integrity"), 0);
+    assert_eq!(db.query_row(
+        "PRAGMA integrity_check", [], |row| row.get::<_, String>(0)
+    ).expect("SQLite integrity"), "ok");
+}
+
+#[test]
+fn precedence_evidence_must_refer_to_historical_revision_in_same_universe() {
+    let mut db = v6();
+    db.execute_batch(r#"
+        INSERT INTO universes(id,name) VALUES ('u1','One'),('u2','Two');
+        INSERT INTO novels(id,universe_id,title,sort_order)
+            VALUES ('n1','u1','One',0),('n2','u2','Two',0);
+        INSERT INTO chapters(id,novel_id,title,sort_order)
+            VALUES ('c1','n1','C1',0),('c2','n2','C2',0);
+        INSERT INTO scenes(id,chapter_id,title,sort_order)
+            VALUES ('s1','c1','S1',0),('s2','c2','S2',0);
+        INSERT INTO scene_text_revisions(id,scene_id,revision_number,content)
+            VALUES ('r1','s1',1,'Earlier'),
+                   ('r2','s2',1,'Elsewhere');
+    "#).expect("two distinct source universes");
+    stage_isolated(&mut db);
+    anchor(&db,"a","u1");
+    anchor(&db,"b","u1");
+
+    let wrong = db.execute(
+        "INSERT INTO world_time_precedences
+         (id,universe_id,before_anchor_id,after_anchor_id,reason,source_revision_id)
+         VALUES ('bad','u1','a','b','Cross-universe source','r2')", []
+    );
+    assert!(wrong.is_err(), "foreign-world historical evidence must be rejected");
+    let after_failure: i64 = db.query_row(
+        "SELECT COUNT(*) FROM world_time_precedences",
+        [], |row| row.get(0)
+    ).expect("no partial write");
+    assert_eq!(after_failure, 0);
+
+    db.execute(
+        "INSERT INTO world_time_precedences
+         (id,universe_id,before_anchor_id,after_anchor_id,reason,source_revision_id)
+         VALUES ('good','u1','a','b','Cited assertion','r1')", []
+    ).expect("in-universe immutable source accepted");
+    assert_eq!(db.query_row(
+        "SELECT COUNT(*) FROM world_time_precedences",
+        [], |row| row.get::<_,i64>(0)
+    ).expect("one valid assertion"), 1);
+    assert_eq!(db.query_row(
+        "SELECT COUNT(*) FROM pragma_foreign_key_check",
+        [], |row| row.get::<_,i64>(0)
+    ).expect("foreign keys"), 0);
+}
