@@ -108,9 +108,11 @@ Une proposition distincte d'atelier visuel local ComfyUI pour les personnages, s
 
 **Non encore livrés :** la chronologie et les connaissances des personnages (M3), les recherches FTS5/sémantiques (M4), la génération/extraction IA (M5), le moteur automatique de cohérence (M6) et l'atelier d'images ComfyUI. Ce dernier reste une proposition distincte (issue #19), même si ComfyUI fonctionne déjà localement.
 
-## Prochaine étape : M3 (planification seulement)
+## Prochaine étape : normalisation M3 puis M3.1 uniquement
 
-La chronologie du monde, l'ordre de narration, les révélations au lecteur, les connaissances/croyances et les relations évolutives relèvent de **M3**, non encore implémenté. Une proposition détaillée et bornée figure dans `docs/roadmap/M3_TIME_KNOWLEDGE_RELATIONSHIPS.md`; elle doit être acceptée par une PR de planification avec CI exacte et normalisation indépendante avant tout nouveau code ou migration SQLite. L'atelier visuel local ComfyUI reste une proposition séparée, non autorisée à l'implémentation.
+La planification M3 a été fusionnée par la PR #31 à `68db746754e01b441870e0653f17f10ebfc7be2f`, après sa CI exacte #38050865413 (13/13 étapes Windows). Elle organise six phases distinctes : temps fictif et schéma, chronologie manuelle, relations historiques directionnelles, croyances/connaissances, révélations narrateur/lecteur et états narratifs évolutifs. Voir `docs/roadmap/M3_TIME_KNOWLEDGE_RELATIONSHIPS.md`.
+
+**Aucune fonctionnalité M3 n'est encore livrée.** Après la qualification et la fusion d'une normalisation documentaire indépendante, **seule M3.1** peut être développée dans une nouvelle PR. Toute migration SQLite v6→v7 sur la machine de production exige une sauvegarde cohérente préalable et une qualification Windows distincte. M3.2–M3.6, M4+ et ComfyUI ne sont pas autorisés par cette planification. L'atelier visuel ComfyUI reste une proposition future (issue #19).
 
 ## Documentation d'autorité
 
@@ -119,6 +121,8 @@ La chronologie du monde, l'ordre de narration, les révélations au lecteur, les
 - `docs/roadmap/FABULAXIOM_ROADMAP_V1.md` — feuille de route V1 ;
 - `docs/roadmap/M1_PERSISTENCE_PROJECT_FOUNDATION.md` — plan détaillé M1 ;
 - `docs/roadmap/M2_NARRATIVE_ENTITIES_CANONICAL_FACTS.md` — plan détaillé M2 ;
+- `docs/roadmap/M3_TIME_KNOWLEDGE_RELATIONSHIPS.md` — plan gouverné M3, sans implémentation ;
+- `docs/qualification/M3_PLANNING_POST_MERGE_NORMALIZATION.md` — qualification documentaire indépendante de la planification M3 ;
 - `docs/qualification/M2_2_ENTITY_ALIAS_CRUD.md` — preuves de qualification M2.2 ;
 - `docs/qualification/M2_3_IMPLEMENTATION_GATE.md` — qualification M2.3, sauvegarde v4 et migration Windows v5 ;
 - `docs/qualification/M2_4_CANON_REVIEW_IMPLEMENTATION_GATE.md` — qualification M2.4, sauvegarde v5 et migration Windows v6 ;

@@ -1,6 +1,6 @@
-# M3 — Time, Knowledge and Relationships (Proposed Governed Roadmap)
+# M3 — Time, Knowledge and Relationships (Accepted Governed Roadmap)
 
-**PROPOSAL ONLY — NOT ACCEPTED, NO M3 IMPLEMENTATION OR SQLITE MIGRATION AUTHORIZED BY THIS DOCUMENT UNTIL THE PLANNING PR IS QUALIFIED, PROTECTED-MERGED, AND ITS INDEPENDENT NORMALIZATION IS COMPLETED.**
+**PLANNING ACCEPTED VIA PR #31; EFFECTIVE AUTHORIZATION FOR M3.1 ONLY AFTER THE INDEPENDENT PLANNING-NORMALIZATION PR PASSES ITS OWN EXACT-HEAD CI, MERGES WITH `expected_head_sha`, AND THE NEW `main` IS RE-FETCHED.** No M3 runtime code or SQLite v7 was introduced by planning.
 
 Origin authority: Fabulaxiom V1 roadmap, M3 deliverables after fully normalized M2. Normalized main checkpoint: `f13b4f8c249866ff60a19d7895b6cfaede56398a` (protected merge of M2.5 normalization PR #30). Existing SQLite schema is **v6**, with immutable scene-revision anchors, stable Universe-scoped entities, optional fact validity, human-governed fact statuses and append-only review events.
 
@@ -19,18 +19,18 @@ Do not impose a Gregorian epoch; fictional calendars, multiple clocks, approxima
 - **Local-first and no Ollama dependency** for every M3 manual workflow; Rust/Tauri/React + existing SQLite, no cloud, external API, FTS5, embeddings, AI extraction or generation.
 - All links reference immutable identifiers for Universe, Entity, Scene and (when supported) the exact **immutable revision**; don't key on display name or the current scene-head pointer. Same-name characters remain different identities. The same Universe may span multiple Novels; links across unrelated Universes fail deterministically.
 - Preserve existing M1.5 restored-active pointer; migration from v6, if authorized, must be **additive**, transactionally guarded and preceded by a new SQLite-consistent, non-overwritten operator backup + SHA256 manifest and full table-by-table logical digests. Preserve existing historical backups, their digests, scene revisions/heads, facts/sources and review events; never re-run migrations as fresh work.
-- Time supports **unknown**, **exact-in-fictional-calendar**, **approximate window**, and **relative ordering**. Keep raw calendar fields and user-declared precision; never call `Date.parse` as an implicit fictional timestamp and never fabricate a start/end or a total order where only a partial order is known.
+- Time supports **unknown**, **exact-in-fictional-calendar**, **approximate window**, and **relative ordering**. Distinct fictional calendars require an explicitly authored mapping before their dates can be compared; absence of a mapping must yield an indeterminate result, not an invented ordering. Keep raw calendar fields and user-declared precision; never call `Date.parse` as an implicit fictional timestamp and never fabricate a start/end or a total order where only a partial order is known.
 - Explicit **world / narration / reveal** coordinate types must not be interchanged or auto-derived. Relative constraints that form cycles, invalid same-world references or impossible declared exact bounds must be rejected with deterministic errors, without removing old history. An "unknown" state is not a claim of impossibility.
 - A person's **knowledge**, **belief**, **lie**, and **reader-visible information** are different assertions. A character may sincerely believe a false statement; that does not rewrite the world's canonical fact. Reviewer self-labels remain unauthenticated; no automatic canon promotion or retcon.
 - Relationships are **directional and time-dependent**; `A trusts B` is not equivalent to `B trusts A`. Changes retain stable actor/object IDs, their human-entered reasons, optional sources, temporal position, and historical revisions. Negations and unknowns must be expressible without inventing certainty.
 - Location, possession, injury and life-state change are **manual state transitions with uncertainty**. No auto-inferred contradiction proof or automatic story rewrite (M6); no advanced graphical relationship map or shared multi-novel timeline dashboard (M8).
 - Do not add M4 FTS5/embeddings, M5 AI, M6 consistency engine, M7 writing assistance, M8 dashboards or proposed ComfyUI visual atelier (issue #19). ComfyUI remains proposal only, and manual imported imagery stays a separate future scope.
 
-## Sequential proposed subdivisions (one at a time)
+## Sequential governed subdivisions (one at a time)
 
 ### M3.1 — World-time foundation and schema
 
-Scope *only after governance accepts this plan and separate planning normalization*: draft precise schema contract, implement **one additive v6→v7 migration** for time anchors, calendar definitions scoped per Universe and relative precedence constraints; immutable IDs and source/revision links where appropriate; explicit precision/unknown representations, foreign keys, indexes and STRICT tables, cycle constraints mediated by deterministic Rust transactions. No GUI chronology editor, relationships or character knowledge here.
+Scope *only after independent planning normalization is qualified, merged, and its authority re-fetched*: draft precise schema contract, implement **one additive v6→v7 migration** for time anchors, calendar definitions scoped per Universe and relative precedence constraints; immutable IDs and source/revision links where appropriate; explicit precision/unknown representations, foreign keys, indexes and STRICT tables, cycle constraints mediated by deterministic Rust transactions. No GUI chronology editor, relationships or character knowledge here.
 
 Acceptance: migration unit fixtures for empty and populated v6; migration rollback and idempotence; same-Universe foreign key rejection, no names-as-FKs, no implied Gregorian calendar, no cycles, preserve preexisting row content/SQLite active pointer. CI on exact PR SHA then operator Windows pre-v7 backup, controlled launch and read-only post-v7 audit. Evidence-commit CI, protected merge, separate post-merge normalization.
 
@@ -71,6 +71,8 @@ Acceptance: multiple changes at same/unknown times, non-owner possessions and lo
 - The M2.5 isolated test database under `com.fabulaxiom.m25qual35fb842c` and its 3 facts/2 sources/11 review events remain historical acceptance evidence; **do not purge or reuse it as an empty fixture**. Test new features using a freshly identified separate, owned test database/worktree.
 - Manual UI failure or stale data is a blocker even if SQLite/CI succeeds. No automatic merge from historical workflows, no scripted reset-hard, no destructive data cleanup and no implicit calendar assumptions.
 
-## Immediate next work — planning only
+## Next governed gate — M3.1 only
 
-This proposal is **not accepted** merely because M2 is normalized. Run exact-head documentation CI, review scope and incompatibilities, protected-merge planning PR and then a separate independent governance-normalization PR. **M3.1 implementation remains blocked until those planning/authority gates explicitly authorize it.** No M3 code, SQLite v7, M4+, release or ComfyUI implementation is authorized by this document alone.
+Planning PR #31 was merged with GitHub `expected_head_sha=5127ced6c5e175b0919c736c658036382794487e` into `main=68db746754e01b441870e0653f17f10ebfc7be2f` after the exact-head `pull_request` CI run `38050865413` completed/success (one Windows job, 13/13 steps). The M3 plan becomes **ACCEPTED + MERGED + NORMALIZED** only when the independent normalization PR passes **its own** terminal exact-head CI, merges under a fresh SHA guard and `main` is re-fetched. Then authorize **M3.1 schema design and controlled implementation only**, separately from M3.2–M3.6. SQLite v7 is not authorized for production migration until an operator-verified active-database backup, snapshot evidence and target-Windows acceptance gate. M4+, releases and ComfyUI remain excluded.
+
+GitHub reports `main.protected=false`; an `expected_head_sha` merge guards against a moving PR head but is **not** GitHub branch-protection enforcement. This distinction must not be hidden in acceptance evidence.
