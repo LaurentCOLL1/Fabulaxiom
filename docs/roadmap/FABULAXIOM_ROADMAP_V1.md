@@ -45,7 +45,7 @@ M1 deliverables overall:
 
 ## M2 — Narrative entities and canonical facts
 
-**Status: M2.1–M2.4 NORMALIZED, M2.5 IMPLEMENTATION MERGED; M2 NORMALIZATION PENDING. M2 COMPLETE + MERGED + NORMALIZED effective only after separate M2.5 normalization CI/merge.**
+**Status: COMPLETE + MERGED + NORMALIZED.** All M2.1–M2.5 are normalized after protected PR #30 merge `f13b4f8c249866ff60a19d7895b6cfaede56398a`, exact-head Windows CI #38041908126 SUCCESS. V1 remains incomplete; M3 implementation not authorized.
 
 Accepted detailed roadmap: `docs/roadmap/M2_NARRATIVE_ENTITIES_CANONICAL_FACTS.md`.
 
@@ -59,7 +59,7 @@ PR #25 implemented SQLite v5 STRICT narrative fact/source registry and Rust/Taur
 
 PR #27 added SQLite v6 STRICT append-only review events and manual Rust/Tauri review/history/status APIs with `draft` default and seven distinct status values. Explicit `APPROVE_CANON`/`REVOKE_CANON` confirmation required. Windows-qualified code `aad56bd59fdb87be5ac1eda99b1969452bf61a26`: 21/21 frontend, 71/71 Rust, 8/8 existing GUI checks, 8/8 isolated review-service Rust tests, v5→v6 controlled migration with exact data/backup preservation. Evidence-HEAD CI `37989040863` succeeded on `b53405779b04c16525ba48a266bd096096af7020`, protected implementation merge `3a069572d00e1680c42b0f13b800e28687c5f0eb`. The reviewer label is not authenticated. Neither a dedicated React review interface nor its E2E IPC acceptance is delivered. Evidence: `docs/qualification/M2_4_CANON_REVIEW_IMPLEMENTATION_GATE.md`.
 
-**M2.5 — Usable sourced-facts and human review UI:** implementation PR #29 merged at `f1e7ea99d26ad3390c7c47bfb339f26d730a44f1` from evidence SHA `6f55fc3fc7eab6f2288a54619c0bef70e521f47e` after exact-head CI #38040227617 (32/32 frontend, 72/72 Rust, all 13 Windows steps). Real Windows isolated UI acceptance and independent SQLite v6 verification PASS: 3 facts / 2 exact historical UTF-8 sources / 11 immutable review events, 8/8 hierarchy, 8/8 corrected synchronization, 9/9 facts, 10/10 human review. Source authority becomes fully normalized **only after the separate documentation PR**. No M3, AI extraction or ComfyUI implementation is authorized by this milestone closure.
+**M2.5 — Usable sourced-facts and human review UI:** implementation PR #29 merged at `f1e7ea99d26ad3390c7c47bfb339f26d730a44f1` from evidence SHA `6f55fc3fc7eab6f2288a54619c0bef70e521f47e` after exact-head CI #38040227617 (32/32 frontend, 72/72 Rust, all 13 Windows steps). Real Windows isolated UI acceptance and independent SQLite v6 verification PASS: 3 facts / 2 exact historical UTF-8 sources / 11 immutable review events, 8/8 hierarchy, 8/8 corrected synchronization, 9/9 facts, 10/10 human review. Source authority is now **COMPLETE + MERGED + NORMALIZED** after protected PR #30 merge `f13b4f8c249866ff60a19d7895b6cfaede56398a` and its own exact-head CI #38041908126 SUCCESS. No M3, AI extraction or ComfyUI implementation is authorized by this milestone closure.
 
 Deliverables:
 
@@ -71,6 +71,8 @@ Deliverables:
 - human validation workflow.
 
 ## M3 — Time, knowledge and relationships
+
+**PLANNING PROPOSAL ONLY — NOT YET ACCEPTED OR AUTHORIZED FOR IMPLEMENTATION.** Proposed detailed scope: `docs/roadmap/M3_TIME_KNOWLEDGE_RELATIONSHIPS.md`. Requires an exact-head-CI-qualified planning PR, protected merge and independent planning-normalization before M3.1 code. No SQLite v7, M3 UI, M4+ or ComfyUI code in this planning PR.
 
 Deliverables:
 

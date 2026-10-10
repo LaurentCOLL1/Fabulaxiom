@@ -262,7 +262,7 @@ M1.1–M1.5 are all **COMPLETE + MERGED + NORMALIZED**. M1's database, hierarchy
 
 ### M2 — Narrative entities and canonical facts
 
-**IMPLEMENTATION MERGED; POST-MERGE NORMALIZATION PENDING (M2.5)**
+**COMPLETE + MERGED + NORMALIZED** — M2.5 independent normalization PR #30 protected-merged at `f13b4f8c249866ff60a19d7895b6cfaede56398a` after its exact-head CI #38041908126 (13/13 Windows job steps SUCCESS). M2 is closed; M3 has not been implemented or authorized.
 
 Detailed planning PR #17 merged at `4a9115ec362a0efae696ebc94b5101fa46d7a03a`.
 
@@ -376,7 +376,7 @@ Real restored-active Windows v5→v6 migration occurred **only after** separate 
 
 #### M2.5 — Usable sourced-facts and human review UI
 
-**IMPLEMENTATION COMPLETE + MERGED; SEPARATE NORMALIZATION PENDING.** This status becomes **COMPLETE + MERGED + NORMALIZED** only after the dedicated normalization PR passes exact-head `pull_request` CI and is protected-merged.
+**COMPLETE + MERGED + NORMALIZED.** Implementation PR #29 and independent normalization PR #30 are both protected-merged; the latter passed exact-head `pull_request` CI #38041908126 (13/13 steps).
 
 - Implementation PR **#29** protected-merged on `main` at `f1e7ea99d26ad3390c7c47bfb339f26d730a44f1` from **exact evidence HEAD** `6f55fc3fc7eab6f2288a54619c0bef70e521f47e`. `Fabulaxiom CI` run **38040227617**, event `pull_request`, `completed/success`, **13/13** Windows steps, frontend **32/32**, Rust **72/72**, frontend build, `cargo check --locked`, locks unchanged.
 - Qualified implementation source `7eaaf45ae164c9336df7e01c9da6787e4971d59e`, exact-source CI **38017441504** `completed/success`. Windows operator qualified: 8/8 hierarchy fixture actions; 8/8 corrected cross-workspace refreshing (`Aucun univers` blocker fixed); 9/9 sourced/unsourced fact UI cases; 10/10 human-review interaction checklist with no Ollama.
@@ -387,7 +387,7 @@ Real restored-active Windows v5→v6 migration occurred **only after** separate 
 
 ### M2 milestone closure boundary
 
-**M2.1–M2.4 are normalized. M2.5 implementation is merged; M2 milestone closure is CONDITIONAL on this independent normalization PR completing its own terminal exact-HEAD CI and protected merge.** After that merge and a new authoritative `main` re-fetch, M2 may be recorded **COMPLETE + MERGED + NORMALIZED**; V1 and M3 are **not** thereby complete. M3 implementation is **not authorized by this PR**: assess M3 planning/scope separately from the newly normalized authorities before beginning work. ComfyUI imagery stays an unimplemented proposal (issue #19).
+**M2.1–M2.5 and M2 milestone COMPLETE + MERGED + NORMALIZED** after protected PR #30 merge `f13b4f8c249866ff60a19d7895b6cfaede56398a`, exact normalization CI #38041908126 SUCCESS. This is NOT V1 completion and it does NOT authorize M3 implementation. Next: independently evaluate the proposed bounded M3 roadmap in `docs/roadmap/M3_TIME_KNOWLEDGE_RELATIONSHIPS.md` through a separate planning PR and a separate planning normalization gate. ComfyUI imagery remains an unimplemented proposal (issue #19).
 
 ## Reproducibility contract
 

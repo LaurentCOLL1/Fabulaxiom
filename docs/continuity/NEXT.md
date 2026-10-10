@@ -37,7 +37,7 @@ Evidence: `docs/qualification/M1_5_BACKUP_RESTORE_BASELINE.md`.
 
 ## Current milestone
 
-**M2 — Narrative entities and canonical facts: IN PROGRESS**
+**M2 — Narrative entities and canonical facts: COMPLETE + MERGED + NORMALIZED**, after PR #30 merge `f13b4f8c249866ff60a19d7895b6cfaede56398a` and exact normalization CI #38041908126 (13/13 success).
 
 Detailed planning PR: **#17 — docs: plan M2 and authorize M2.1 schema after acceptance**.
 
@@ -94,16 +94,16 @@ Implementation PR #27 protected-merged at `main=3a069572d00e1680c42b0f13b800e286
 
 Real Windows migration to SQLite v6 and full existing data/backup integrity PASS, with pre-v6 verified backup SHA-256 `db02961d7a30c6a6522bd52faeab8ceb09e26c1a4a6a58be467d142806e22fee`, 8/8 existing GUI controls (Ollama OFF), 8/8 isolated Rust human-review tests and unchanged production v6 DB snapshot SHA-256 `67dfd9194ff884762bbffaa39d774df10fadcd74cbc9e6774e36d323e4506fc6`. Exact history/current head and nine entities/eight aliases preserved. The reviewer label is self-declared and **not** an authenticated identity. There is no Windows E2E React fact-review screen or E2E IPC invocation acceptance yet; no production fact rows created. See `docs/qualification/M2_4_CANON_REVIEW_IMPLEMENTATION_GATE.md`.
 
-## M2.5 — Implementation merge complete; normalization pending
+## M2.5 — COMPLETE + MERGED + NORMALIZED
 
 - PR #29 successfully protected-merged at `f1e7ea99d26ad3390c7c47bfb339f26d730a44f1` from evidence HEAD `6f55fc3fc7eab6f2288a54619c0bef70e521f47e`, after source qualification `7eaaf45ae164c9336df7e01c9da6787e4971d59e`. Exact evidence-head `pull_request` CI **38040227617**: `completed/success`, 13/13 Windows steps, frontend 32/32, Rust 72/72, `cargo check --locked`, locks unchanged.
 - Real Windows operator qualification: hierarchy 8/8, stale-Universe sync correction 8/8, sourced/unsourced fact entry and exact UTF-8 historical citations 9/9, explicit human review interaction checklist 10/10. Independent v6 SQLite read-only audit: **3 facts, 2 exact source anchors, 11 append-only review events**; source revision and prior narrative contents preserved. Earlier 10-event audit script incorrect; actual 11 rows must remain untouched.
 - Production restored-active v6 logical digest `67dfd9194ff884762bbffaa39d774df10fadcd74cbc9e6774e36d323e4506fc6` unchanged. Isolated v6 test database digest `cff8a04f29ec60757c02ef9ed186be40c806cfcc6a2cfd11fa8072be44f273cb`. Verified isolated pre-fact backup `9e738d58519e1a0e3c1750d71726b661132fcbc0211fddea3178f6314bbfc7cf`, all historic pre-M2.1/v4/v5 backups intact.
 - Reviewer identity self-declared, not authenticated. No AI extraction, no automatic canon promotion, no new dependencies or SQLite v7. Evidence: `docs/qualification/M2_5_SOURCED_FACTS_REVIEW_UI.md`.
 
-**ONLY CURRENTLY AUTHORIZED ACTION:** qualify and protected-merge the **separate documentary M2.5 post-merge normalization PR**, with **fresh exact-head `Fabulaxiom CI`** on all jobs, and re-fetch main after merge. M2 can be marked `COMPLETE + MERGED + NORMALIZED` **only after that gate passes**.
+**ONLY CURRENTLY AUTHORIZED ACTION: M3 PLANNING / GOVERNANCE**, using the proposed bounded document `docs/roadmap/M3_TIME_KNOWLEDGE_RELATIONSHIPS.md`. The plan must pass exact-head `Fabulaxiom CI`, protected planning PR merge and **separate post-planning normalization** before any M3.1 code or SQLite v7 change. No M3 implementation is currently authorized.
 
-**Do not implement M3 or ComfyUI now.** After normalization, re-fetch `STATE.md`, `NEXT.md`, V1 roadmap, detailed M2 roadmap and architecture decisions. Evaluate/accept a bounded M3 roadmap in its own planning/governance step before any M3 code. ComfyUI visual atelier remains the proposal in issue #19, not authorized implementation.
+**Do not implement M3 or ComfyUI now.** M2 normalized authority has been re-fetched at `f13b4f8c249866ff60a19d7895b6cfaede56398a`. Review and qualify the M3 **planning** proposal independently; ComfyUI visual atelier remains the unimplemented proposal in issue #19. No M3 code, migration, release or target-Windows operation is authorized by this planning PR.
 
 ## Governance and distribution
 
