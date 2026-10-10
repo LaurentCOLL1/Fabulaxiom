@@ -15,6 +15,9 @@ mod revisions;
 // Offline, in-memory-only M3.1 candidate: never run on operator database.
 #[cfg(test)]
 mod world_time_schema_tests;
+// Candidate only: fail-closed v6 inspection with disposable in-memory fixtures.
+#[cfg(test)]
+mod world_time_preflight;
 
 use std::time::Duration;
 
