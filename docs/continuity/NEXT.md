@@ -35,7 +35,7 @@ Real Windows qualification:
 
 Evidence: `docs/qualification/M1_5_BACKUP_RESTORE_BASELINE.md`.
 
-## Current milestone
+## Completed milestone — M2
 
 **M2 — Narrative entities and canonical facts: COMPLETE + MERGED + NORMALIZED**, after PR #30 merge `f13b4f8c249866ff60a19d7895b6cfaede56398a` and exact normalization CI #38041908126 (13/13 success).
 
@@ -101,9 +101,13 @@ Real Windows migration to SQLite v6 and full existing data/backup integrity PASS
 - Production restored-active v6 logical digest `67dfd9194ff884762bbffaa39d774df10fadcd74cbc9e6774e36d323e4506fc6` unchanged. Isolated v6 test database digest `cff8a04f29ec60757c02ef9ed186be40c806cfcc6a2cfd11fa8072be44f273cb`. Verified isolated pre-fact backup `9e738d58519e1a0e3c1750d71726b661132fcbc0211fddea3178f6314bbfc7cf`, all historic pre-M2.1/v4/v5 backups intact.
 - Reviewer identity self-declared, not authenticated. No AI extraction, no automatic canon promotion, no new dependencies or SQLite v7. Evidence: `docs/qualification/M2_5_SOURCED_FACTS_REVIEW_UI.md`.
 
-**ONLY CURRENTLY AUTHORIZED ACTION: M3 PLANNING / GOVERNANCE**, using the proposed bounded document `docs/roadmap/M3_TIME_KNOWLEDGE_RELATIONSHIPS.md`. The plan must pass exact-head `Fabulaxiom CI`, protected planning PR merge and **separate post-planning normalization** before any M3.1 code or SQLite v7 change. No M3 implementation is currently authorized.
+**CURRENT AUTHORIZATION GATE: independent post-planning M3 normalization.** Planning PR #31 merged as `68db746754e01b441870e0653f17f10ebfc7be2f` from `5127ced6c5e175b0919c736c658036382794487e`, after exact-head `pull_request` run `38050865413` (`completed/success`; one Windows job, 13/13 steps). Its six changed paths are exclusively documentary. **Only after** this separate normalization PR's new exact-head CI, SHA-guarded merge, and fresh `main` re-fetch may work begin on **M3.1 alone**. M3.2–M3.6, M4+, ComfyUI and any unqualified production v7 migration remain unauthorized.
 
-**Do not implement M3 or ComfyUI now.** M2 normalized authority has been re-fetched at `f13b4f8c249866ff60a19d7895b6cfaede56398a`. Review and qualify the M3 **planning** proposal independently; ComfyUI visual atelier remains the unimplemented proposal in issue #19. No M3 code, migration, release or target-Windows operation is authorized by this planning PR.
+**Next exact step:** qualify/merge `docs/qualification/M3_PLANNING_POST_MERGE_NORMALIZATION.md` and the associated authority updates. The governed M3 roadmap is `docs/roadmap/M3_TIME_KNOWLEDGE_RELATIONSHIPS.md`. After normalization, M3.1 may be implemented in its own PR, without authorizing M3.2 or running SQLite migration on an operator machine before the separate backup/Windows qualification. The ComfyUI atelier remains a future unimplemented proposal (issue #19).
+
+## Branch-protection truth
+
+GitHub reports `main.protected=false` for this private repository; repository ruleset access returned a plan restriction (HTTP 403). Existing merges use a **SHA compare-and-swap guard (`expected_head_sha`)**, not a formally enforced protected branch. Continue the exact-head CI, scope, and re-fetch gates without misrepresenting the repository configuration.
 
 ## Governance and distribution
 
