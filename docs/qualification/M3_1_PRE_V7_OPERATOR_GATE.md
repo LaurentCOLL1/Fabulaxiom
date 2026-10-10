@@ -15,6 +15,14 @@ The current normal app launch calls `database::open_database`, which executes al
 
 SQLite's [Online Backup API](https://www.sqlite.org/backup.html) and `VACUUM INTO` permit consistent database snapshots; copying only a live SQLite main file is insufficient, particularly with WAL. SQLite [`PRAGMA integrity_check`](https://www.sqlite.org/pragma.html#pragma_integrity_check) does **not** detect foreign-key failures; independently check `foreign_key_check`. Read-only opening needs an explicit read-only mode; do not treat an `immutable=1` URI on a live database as normal proof of consistency.
 
+## Disposable file-backed migration rehearsal
+
+The test-only Rust module `src-tauri/src/world_time_file_migration_tests.rs` rehearses an atomic candidate upgrade on **new, disposable test databases only**. It creates a v6 database with existing immutable scene text and human fact reviews, **closes its SQLite connection before any `fs::copy`**, and applies the candidate SQL plus a simulated v7 registry record on a **separate test copy** in one transaction.
+
+The acceptance assertions are deliberate: the new copy reaches v7 with three STRICT tables, M2 human-approved canon and Unicode historical revision preserved, both SQLite integrity checks pass, and the original v6 file and its sealed test copy remain byte-identical to their pre-test bytes. A deliberately failing migration must rollback the candidate copy to v6 and preserve legacy content. Empty v6 copy coverage is included.
+
+**These `fs::copy` calls are suitable only for *closed disposable test databases*. Never copy a live SQLite main file this way in the operator protocol.** Actual live/restored production pre-v7 custody requires an independently qualified SQLite-consistent backup, verified non-overwriting manifest, active pointer protection, and deliberate opt-in. These tests do not generate a production-safe backup or an operator authorization.
+
 ## Target-Windows operator prerequisites (not yet authorized to execute)
 
 1. Announce all interactive actions in advance, including any required terminal confirmation, `q` exit, privilege prompt or app close. Confirm Fabulaxiom, Tauri and Ollama are stopped when required. No scripted `reset --hard`, mass cleanup or blind deletion.
