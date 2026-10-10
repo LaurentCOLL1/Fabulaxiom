@@ -72,7 +72,7 @@ Deliverables:
 
 ## M3 — Time, knowledge and relationships
 
-**PLANNING PROPOSAL ONLY — NOT YET ACCEPTED OR AUTHORIZED FOR IMPLEMENTATION.** Proposed detailed scope: `docs/roadmap/M3_TIME_KNOWLEDGE_RELATIONSHIPS.md`. Requires an exact-head-CI-qualified planning PR, protected merge and independent planning-normalization before M3.1 code. No SQLite v7, M3 UI, M4+ or ComfyUI code in this planning PR.
+**PLANNING PR #31 MERGED; NORMALIZATION PENDING.** Planning source `5127ced6c5e175b0919c736c658036382794487e` merged into `main=68db746754e01b441870e0653f17f10ebfc7be2f` after exact-head CI run `38050865413` (`completed/success`, one Windows job, 13/13 steps). The detailed plan is `docs/roadmap/M3_TIME_KNOWLEDGE_RELATIONSHIPS.md`. Once a separate normalization PR passes its own exact-head CI, merges under `expected_head_sha` and new `main` is re-fetched, **M3.1 only** becomes authorized for implementation through a separate bounded PR. M3.2–M3.6, production SQLite v7 migration without preflight, M4+, and ComfyUI remain unauthorized.
 
 Deliverables:
 
