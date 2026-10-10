@@ -18,6 +18,9 @@ mod world_time_schema_tests;
 // Candidate only: fail-closed v6 inspection with disposable in-memory fixtures.
 #[cfg(test)]
 mod world_time_preflight;
+// Only disposable closed-file v6->v7 candidate copy rehearsals.
+#[cfg(test)]
+mod world_time_file_migration_tests;
 
 use std::time::Duration;
 
