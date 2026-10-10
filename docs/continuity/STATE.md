@@ -262,7 +262,7 @@ M1.1–M1.5 are all **COMPLETE + MERGED + NORMALIZED**. M1's database, hierarchy
 
 ### M2 — Narrative entities and canonical facts
 
-**IN PROGRESS**
+**IMPLEMENTATION MERGED; POST-MERGE NORMALIZATION PENDING (M2.5)**
 
 Detailed planning PR #17 merged at `4a9115ec362a0efae696ebc94b5101fa46d7a03a`.
 
@@ -376,19 +376,18 @@ Real restored-active Windows v5→v6 migration occurred **only after** separate 
 
 #### M2.5 — Usable sourced-facts and human review UI
 
-**CURRENT IMPLEMENTATION PR #29: WINDOWS SOURCE-HEAD QUALIFIED; PENDING EVIDENCE-HEAD CI, PROTECTED MERGE AND SEPARATE NORMALIZATION. NOT MERGED OR NORMALIZED.**
+**IMPLEMENTATION COMPLETE + MERGED; SEPARATE NORMALIZATION PENDING.** This status becomes **COMPLETE + MERGED + NORMALIZED** only after the dedicated normalization PR passes exact-head `pull_request` CI and is protected-merged.
 
-Source `7eaaf45ae164c9336df7e01c9da6787e4971d59e`, exact `Fabulaxiom CI` run `38017441504` terminal SUCCESS (13/13 Windows steps; 32/32 frontend and 72/72 Rust). Operator ran the separately identified isolated Tauri worktree and SQLite v6 without Ollama: 8/8 hierarchy-fixture actions, 8/8 correction-of-stale-`Aucun univers` checks, 9/9 sourced and unsourced facts UI checks, and 10/10 human-review interaction checklist. Independent post-review SQLite read-only acceptance: 3 facts, 2 UTF-8 revision-exact sources, **11/11** append-only review events (8+2+1), including explicit canon approval and revocation. Three final statuses: `draft`, `suggestion`, `unknown`. A previous audit script expected 10 events and was incorrect; the actual 11-event chain must be preserved. Operator self-declared reviewer labels are not authenticated.
+- Implementation PR **#29** protected-merged on `main` at `f1e7ea99d26ad3390c7c47bfb339f26d730a44f1` from **exact evidence HEAD** `6f55fc3fc7eab6f2288a54619c0bef70e521f47e`. `Fabulaxiom CI` run **38040227617**, event `pull_request`, `completed/success`, **13/13** Windows steps, frontend **32/32**, Rust **72/72**, frontend build, `cargo check --locked`, locks unchanged.
+- Qualified implementation source `7eaaf45ae164c9336df7e01c9da6787e4971d59e`, exact-source CI **38017441504** `completed/success`. Windows operator qualified: 8/8 hierarchy fixture actions; 8/8 corrected cross-workspace refreshing (`Aucun univers` blocker fixed); 9/9 sourced/unsourced fact UI cases; 10/10 human-review interaction checklist with no Ollama.
+- Read-only SQLite v6 source/provenance/human-review audit: **3 facts / 2 source anchors / 11 immutable review events**, 8+2+1 contiguous review histories, explicit canon approval and revocation, no fabricated source, Unicode citation byte spans `[0,10)` and `[51,66)`, persisted three statuses `draft`, `suggestion`, `unknown`. Corrected mistaken 10-event script expectation: do not delete an actual event.
+- Isolated Tauri `com.fabulaxiom.m25qual35fb842c` production-separated v6 test database; operator existing records preserved. Production restored-active v6 snapshot SHA256 `67dfd9194ff884762bbffaa39d774df10fadcd74cbc9e6774e36d323e4506fc6` unchanged. Isolated final logical digest `cff8a04f29ec60757c02ef9ed186be40c806cfcc6a2cfd11fa8072be44f273cb`; isolated pre-fact backup SHA256 `9e738d58519e1a0e3c1750d71726b661132fcbc0211fddea3178f6314bbfc7cf` retained; historical pre-M2.1/v4/v5 backups all hash-verified. An earlier v4 SHA mismatch in a PowerShell script was refuted by independent hashing plus v4 manifest/SQLite integrity, not a corrupted backup.
+- New isolated React fact workspace with independent error boundary, Universe/entity and revision synchronization, exact historical UTF-8 citations, optional fictional validity, distinct seven statuses and human-only approval/revocation with append-only review history. Human reviewer label remains **self-declared, not authenticated**. No automatic canon promotion, no cloud or Ollama requirement, no migration after v6.
+- Detailed acceptance: `docs/qualification/M2_5_SOURCED_FACTS_REVIEW_UI.md`; independent normalization: `docs/qualification/M2_5_POST_MERGE_NORMALIZATION.md`.
 
-Production restored-active SQLite schema/data SHA256 `67dfd9194ff884762bbffaa39d774df10fadcd74cbc9e6774e36d323e4506fc6` unchanged, historical pre-M2.1/v4/v5 backups intact, independently verified isolated pre-fact v6 backup SHA256 `9e738d58519e1a0e3c1750d71726b661132fcbc0211fddea3178f6314bbfc7cf`; all pre-fact narrative data retained. Isolated current logical digest `cff8a04f29ec60757c02ef9ed186be40c806cfcc6a2cfd11fa8072be44f273cb`. No new dependencies or database migration. See `docs/qualification/M2_5_SOURCED_FACTS_REVIEW_UI.md`.
+### M2 milestone closure boundary
 
-**The Windows PASS above is not permission to merge without new CI on the qualification documentation commit**, nor to begin M3 or ComfyUI. M2 completion requires independent normalization after PR #29 protected merge.
-
-**ONLY NEXT AUTHORIZED SUBDIVISION — effective after M2.4 normalization is merged, current `main` is re-fetched and the detailed roadmap is re-read.**
-
-Implement the accepted `docs/roadmap/M2_NARRATIVE_ENTITIES_CANONICAL_FACTS.md` M2.5 UI scope only: accessible human fact creation/inspection, exact citations/provenance, visible status and review history, deliberate canon approval/revocation affordances and safe errors, explicit handling of unknown/ambiguous/contradictory/variant states. No fabricated provenance, no silent canon promotion or Ollama dependency. Retain history, backups, and activation marker. Require exact-head PR CI and real Windows acceptance followed by evidence CI, protected merge and separate normalization.
-
-ComfyUI visual reference atelier remains a **proposal only** under issue #19 and `docs/roadmap/V1_VISUAL_REFERENCES_COMFYUI_PROPOSAL.md`; M3+ and AI writing/extraction remain unauthorized.
+**M2.1–M2.4 are normalized. M2.5 implementation is merged; M2 milestone closure is CONDITIONAL on this independent normalization PR completing its own terminal exact-HEAD CI and protected merge.** After that merge and a new authoritative `main` re-fetch, M2 may be recorded **COMPLETE + MERGED + NORMALIZED**; V1 and M3 are **not** thereby complete. M3 implementation is **not authorized by this PR**: assess M3 planning/scope separately from the newly normalized authorities before beginning work. ComfyUI imagery stays an unimplemented proposal (issue #19).
 
 ## Reproducibility contract
 
