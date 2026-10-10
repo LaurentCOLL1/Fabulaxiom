@@ -100,6 +100,13 @@ fn fictitious_dates_are_never_converted_to_gregorian_or_total_order() {
     universe(&db,"u1");
     calendar(&db,"fiction1","u1");
     stage_isolated(&mut db);
+    assert!(db.execute(
+        "UPDATE fictional_calendars SET definition_text='rewritten rules'
+         WHERE id='fiction1'", []
+    ).is_err(), "no silent calendar reinterpretation");
+    assert!(db.execute(
+        "DELETE FROM fictional_calendars WHERE id='fiction1'", []
+    ).is_err(), "calendar definition history must be preserved");
     db.execute(
         "INSERT INTO world_time_anchors
          (id,universe_id,calendar_id,time_kind,exact_label,precision_text)
