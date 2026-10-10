@@ -31,6 +31,13 @@ All three tables are **SQLite STRICT** and preserve legacy M2 tables, immutable 
 
 **Candidate limitations (must be resolved before final M3.1 acceptance):** no production v7 registration; no customer/operator backup/restore qualification; no explicit calendar conversion engine; no automatic ordering of exact/approximate labels; no time-anchor supersession UI. Validation of mutually impossible exact bounds requires an explicit comparable-calendar contract and/or refusing unsupported comparability rather than inventing dates.
 
+## Exact-head qualification history (do not reuse old SHA results)
+
+- Candidate HEAD \`44e2a048f2c1e1a8df90a51a385d2bd676552149\`: exact \`pull_request\` CI **#38071703495 FAILED** (77 Rust PASS, 3 new test failures). Two fixtures attempted calendar insertion before applying the test-only SQL and one mistakenly used \`execute\` for multiple SQL statements. No migration or production write occurred.
+- Corrective HEAD \`c1db5b84f937694caf2840e278195d49ab6933ae\`: exact \`pull_request\` CI **#38073397298 completed/success**, **13/13 Windows steps**, **80/80 Rust tests**, frontend tests and build PASS, \`cargo check --locked\` PASS, unchanged dependency locks. This proves the *isolated candidate at that SHA*, not an operator v7 migration.
+- After that success, additional isolated M2 nonregression tests were added: full Unicode UTF-8 source citation, original immutable revision pointer, existing human review/canon event history and same-Universe validation for chronology precedence sources. **The new HEAD requires its own terminal exact-head CI; #38073397298 is no longer sufficient for the current PR.**
+- The qualification test source is \`src-tauri/src/world_time_schema_tests.rs\`; the schema candidate is \`src-tauri/sql/m3_1_world_time_v7_candidate.sql\`. No runtime registration, no SQLite v7 activation, no operator database access.
+
 ## Hard gate before registering or running v7
 
 1. Accept and qualify this isolated schema candidate on current exact PR HEAD with all Windows `Fabulaxiom CI` steps and Rust tests. Do not treat a CI PASS as Windows data migration acceptance.
