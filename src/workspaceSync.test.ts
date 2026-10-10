@@ -25,4 +25,4 @@ describe("M2.5 workspace cross-panel invalidation",()=>{
       WORKSPACE_HIERARCHY_CHANGED,WORKSPACE_ENTITY_CHANGED,WORKSPACE_REVISION_CHANGED
     ]);
   });
-);
+});
