@@ -389,6 +389,14 @@ Real restored-active Windows v5→v6 migration occurred **only after** separate 
 
 **M2.1–M2.5 and M2 milestone COMPLETE + MERGED + NORMALIZED** after protected PR #30 merge `f13b4f8c249866ff60a19d7895b6cfaede56398a`, exact normalization CI #38041908126 SUCCESS. This is NOT V1 completion and it does NOT authorize M3 implementation. Next: independently evaluate the proposed bounded M3 roadmap in `docs/roadmap/M3_TIME_KNOWLEDGE_RELATIONSHIPS.md` through a separate planning PR and a separate planning normalization gate. ComfyUI imagery remains an unimplemented proposal (issue #19).
 
+### M3 — Time, knowledge and relationships: planning merged, normalization gate pending
+
+Planning PR **#31** merged with `expected_head_sha=5127ced6c5e175b0919c736c658036382794487e` at `main=68db746754e01b441870e0653f17f10ebfc7be2f`. Its exact-head `pull_request` CI run **38050865413** completed/success (one Windows job, 13/13 steps). Six documentary files only; no M3 code, SQLite v7, dependency or lockfile modification. The accepted proposed divisions are **M3.1** world-time schema, **M3.2** manual chronology UX, **M3.3** directional relationship history, **M3.4** character beliefs/knowledge, **M3.5** narrator/reader reveals, **M3.6** evolving narrative state. Detailed roadmap: `docs/roadmap/M3_TIME_KNOWLEDGE_RELATIONSHIPS.md`.
+
+**Normalization condition:** the plan is `ACCEPTED + MERGED + NORMALIZED` **only after** an independent post-planning normalization PR passes a new terminal exact-head CI and SHA-guarded merge, then `main` is re-fetched. At that point authorize **M3.1 only**, using its own PR and required pre-v7 SQLite backup/Windows qualification; do not authorize M3.2+, AI, ComfyUI or production migration simply from planning. Evidence: `docs/qualification/M3_PLANNING_POST_MERGE_NORMALIZATION.md`.
+
+**GitHub enforcement distinction:** branch API currently reports `main.protected=false`; `expected_head_sha` prevents merging an unexpected PR head but does not create formal branch protection. No change to historical M2 backups, production M1.5 active database, test fixture SQLite v6 or preserved review history is involved in planning.
+
 ## Reproducibility contract
 
 - `package-lock.json` committed;
