@@ -376,6 +376,14 @@ Real restored-active Windows v5→v6 migration occurred **only after** separate 
 
 #### M2.5 — Usable sourced-facts and human review UI
 
+**CURRENT IMPLEMENTATION PR #29: WINDOWS SOURCE-HEAD QUALIFIED; PENDING EVIDENCE-HEAD CI, PROTECTED MERGE AND SEPARATE NORMALIZATION. NOT MERGED OR NORMALIZED.**
+
+Source `7eaaf45ae164c9336df7e01c9da6787e4971d59e`, exact `Fabulaxiom CI` run `38017441504` terminal SUCCESS (13/13 Windows steps; 32/32 frontend and 72/72 Rust). Operator ran the separately identified isolated Tauri worktree and SQLite v6 without Ollama: 8/8 hierarchy-fixture actions, 8/8 correction-of-stale-`Aucun univers` checks, 9/9 sourced and unsourced facts UI checks, and 10/10 human-review interaction checklist. Independent post-review SQLite read-only acceptance: 3 facts, 2 UTF-8 revision-exact sources, **11/11** append-only review events (8+2+1), including explicit canon approval and revocation. Three final statuses: `draft`, `suggestion`, `unknown`. A previous audit script expected 10 events and was incorrect; the actual 11-event chain must be preserved. Operator self-declared reviewer labels are not authenticated.
+
+Production restored-active SQLite schema/data SHA256 `67dfd9194ff884762bbffaa39d774df10fadcd74cbc9e6774e36d323e4506fc6` unchanged, historical pre-M2.1/v4/v5 backups intact, independently verified isolated pre-fact v6 backup SHA256 `9e738d58519e1a0e3c1750d71726b661132fcbc0211fddea3178f6314bbfc7cf`; all pre-fact narrative data retained. Isolated current logical digest `cff8a04f29ec60757c02ef9ed186be40c806cfcc6a2cfd11fa8072be44f273cb`. No new dependencies or database migration. See `docs/qualification/M2_5_SOURCED_FACTS_REVIEW_UI.md`.
+
+**The Windows PASS above is not permission to merge without new CI on the qualification documentation commit**, nor to begin M3 or ComfyUI. M2 completion requires independent normalization after PR #29 protected merge.
+
 **ONLY NEXT AUTHORIZED SUBDIVISION — effective after M2.4 normalization is merged, current `main` is re-fetched and the detailed roadmap is re-read.**
 
 Implement the accepted `docs/roadmap/M2_NARRATIVE_ENTITIES_CANONICAL_FACTS.md` M2.5 UI scope only: accessible human fact creation/inspection, exact citations/provenance, visible status and review history, deliberate canon approval/revocation affordances and safe errors, explicit handling of unknown/ambiguous/contradictory/variant states. No fabricated provenance, no silent canon promotion or Ollama dependency. Retain history, backups, and activation marker. Require exact-head PR CI and real Windows acceptance followed by evidence CI, protected merge and separate normalization.
