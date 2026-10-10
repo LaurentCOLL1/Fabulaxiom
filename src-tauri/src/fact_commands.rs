@@ -1,4 +1,4 @@
-use crate::{database, facts::{self, CreateFactInput, FactError, FactErrorPayload, FactRecord, FactSnapshot, FactUniverseInput}};
+use crate::{database, facts::{self, CreateFactInput, FactError, FactErrorPayload, FactRecord, FactSnapshot, FactUniverseInput, FactEvidenceInput, SourceRevisionEvidence}};
 
 fn with_connection<T,F>(
     app: &tauri::AppHandle, operation: F,
@@ -25,4 +25,13 @@ pub fn create_narrative_fact(
     app: tauri::AppHandle, input: CreateFactInput,
 )->Result<FactRecord,FactErrorPayload>{
     with_connection(&app,|db|facts::create_fact(db,input))
+}
+
+#[tauri::command]
+pub fn fact_source_revision(
+    app: tauri::AppHandle, input: FactEvidenceInput,
+) -> Result<SourceRevisionEvidence,FactErrorPayload> {
+    with_connection(&app,|db|facts::source_revision_evidence(
+        db,&input.fact_id,&input.universe_id
+    ))
 }

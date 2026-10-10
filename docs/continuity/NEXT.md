@@ -94,6 +94,12 @@ Implementation PR #27 protected-merged at `main=3a069572d00e1680c42b0f13b800e286
 
 Real Windows migration to SQLite v6 and full existing data/backup integrity PASS, with pre-v6 verified backup SHA-256 `db02961d7a30c6a6522bd52faeab8ceb09e26c1a4a6a58be467d142806e22fee`, 8/8 existing GUI controls (Ollama OFF), 8/8 isolated Rust human-review tests and unchanged production v6 DB snapshot SHA-256 `67dfd9194ff884762bbffaa39d774df10fadcd74cbc9e6774e36d323e4506fc6`. Exact history/current head and nine entities/eight aliases preserved. The reviewer label is self-declared and **not** an authenticated identity. There is no Windows E2E React fact-review screen or E2E IPC invocation acceptance yet; no production fact rows created. See `docs/qualification/M2_4_CANON_REVIEW_IMPLEMENTATION_GATE.md`.
 
+## M2.5 Windows acceptance checkpoint — implementation PR still open
+
+M2.5 source head `7eaaf45ae164c9336df7e01c9da6787e4971d59e` is **Windows operator-qualified**, with exact pull_request CI `38017441504` SUCCESS (32/32 frontend, 72/72 Rust, locked build). Isolated local-only Tauri ID `com.fabulaxiom.m25qual35fb842c` keeps operator's restored-active production SQLite v6 untouched. GUI checks: 8/8 fixture hierarchy, 8/8 cross-panel sync after repairing `Aucun univers`, 9/9 sourced/unsourced fact creation, 10/10 human-review interactions. Post-review independent read-only audit: **3 facts / 2 exact UTF-8 citations / 11 immutable review events** (8+2+1), append-only history, approval/revocation, all prior narrative data preserved; zero SQL writes during audit. Production logical SHA256 unchanged `67dfd9194ff884762bbffaa39d774df10fadcd74cbc9e6774e36d323e4506fc6`; all historical operator backups and isolated pre-fact backup SHA256 `9e738d58519e1a0e3c1750d71726b661132fcbc0211fddea3178f6314bbfc7cf` PASS. The earlier 10-event audit expectation was inaccurate; no event was deleted. See `docs/qualification/M2_5_SOURCED_FACTS_REVIEW_UI.md`.
+
+**Current hard boundary:** PR #29 **not yet merged or normalized**. Create an evidence-document commit, re-fetch exact HEAD and all workflow jobs, require terminal success on that new SHA before protected implementation merge. Only then open/qualify/merge a **separate M2.5 normalization PR**, re-fetch main, and authorize the next milestone solely from normalized live authority. No M3, AI extraction, or ComfyUI code now.
+
 ## Only next authorized implementation
 
 **M2.5 — Usable sourced-facts and human review UI: AUTHORIZE ONLY AFTER M2.4 NORMALIZATION MERGES AND LIVE MAIN IS RE-FETCHED.**

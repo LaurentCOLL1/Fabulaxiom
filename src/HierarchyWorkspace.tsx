@@ -7,6 +7,7 @@ import {
 } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import RevisionWorkspace from "./RevisionWorkspace";
+import {announceWorkspaceChange,WORKSPACE_HIERARCHY_CHANGED} from "./workspaceSync";
 import {
   formatHierarchyError,
   newHierarchyId,
@@ -264,6 +265,7 @@ export default function HierarchyWorkspace() {
     setError(null);
     try {
       await invoke(command, { input });
+      announceWorkspaceChange(WORKSPACE_HIERARCHY_CHANGED);
       await refresh();
     } catch (reason) {
       setError(formatHierarchyError(reason));

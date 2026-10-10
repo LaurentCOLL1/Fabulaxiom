@@ -38,6 +38,25 @@ pub struct FactSnapshot {
     pub records: Vec<FactRecord>,
 }
 
+#[derive(Debug, Clone, Serialize, PartialEq, Eq)]
+pub struct SourceRevisionEvidence {
+    pub fact_id: String,
+    pub universe_id: String,
+    pub revision_id: String,
+    pub scene_id: String,
+    pub revision_number: i64,
+    pub content: String,
+    pub quoted_text: String,
+    pub start_byte: i64,
+    pub end_byte: i64,
+}
+
+#[derive(Debug, Clone, Deserialize)]
+pub struct FactEvidenceInput {
+    pub fact_id: String,
+    pub universe_id: String,
+}
+
 #[derive(Debug, Clone, Deserialize, PartialEq, Eq)]
 pub struct FactUniverseInput {
     pub universe_id: String,
@@ -164,6 +183,44 @@ pub fn get_fact(db: &Connection, id: &str) -> Result<FactRecord, FactError> {
         return Err(FactError::Validation("Fait sans provenance cohérente."));
     }
     Ok(FactRecord { fact, source })
+}
+
+/// Read the historical immutable scene revision of an existing citation, without
+/// following the current scene pointer or changing the source record.
+pub fn source_revision_evidence(
+    db: &Connection, fact_id: &str, universe_id: &str
+) -> Result<SourceRevisionEvidence, FactError> {
+    let fact_id = required(fact_id)?;
+    let universe_id = required(universe_id)?;
+    let record = get_fact(db, &fact_id)?;
+    if record.fact.universe_id != universe_id {
+        return Err(FactError::CrossUniverse);
+    }
+    let source = record.source.ok_or(
+        FactError::Validation("Ce fait n'a pas de citation de révision.")
+    )?;
+    let row: Option<(String, i64, String, String)> = db.query_row(
+        "SELECT r.scene_id, r.revision_number, r.content, n.universe_id
+         FROM scene_text_revisions r
+         JOIN scenes s ON s.id=r.scene_id
+         JOIN chapters c ON c.id=s.chapter_id
+         JOIN novels n ON n.id=c.novel_id
+         WHERE r.id=?1",
+        params![source.revision_id], |r| Ok((r.get(0)?,r.get(1)?,r.get(2)?,r.get(3)?))
+    ).optional()?;
+    let (scene_id, revision_number, content, source_universe) =
+        row.ok_or(FactError::NotFound("Révision"))?;
+    if source_universe != universe_id { return Err(FactError::CrossUniverse); }
+    let start=usize::try_from(source.start_byte).map_err(|_| FactError::InvalidSpan)?;
+    let end=usize::try_from(source.end_byte).map_err(|_| FactError::InvalidSpan)?;
+    if start >= end || content.get(start..end) != Some(source.quoted_text.as_str()) {
+        return Err(FactError::SourceMismatch);
+    }
+    Ok(SourceRevisionEvidence {
+        fact_id, universe_id, revision_id:source.revision_id,
+        scene_id, revision_number, content, quoted_text:source.quoted_text,
+        start_byte:source.start_byte, end_byte:source.end_byte,
+    })
 }
 
 pub fn snapshot(db: &Connection, universe_id: &str) -> Result<FactSnapshot, FactError> {
@@ -350,6 +407,28 @@ mod tests {
         assert_eq!(get_fact(&db, "f1").unwrap(), created);
         assert_eq!(snapshot(&db, "u1").unwrap().records[0], created);
     }
+    #[test]
+    fn cited_historical_revision_read_is_exact_even_after_head_change() {
+        let mut db = fixture();
+        create_fact(&mut db, sourced("f1")).unwrap();
+        let before=source_revision_evidence(&db,"f1","u1").unwrap();
+        assert_eq!(before.revision_id,"r1");
+        assert_eq!(before.scene_id,"s1");
+        assert_eq!(&before.content[0..10],"Été 🐈");
+        assert_eq!(before.quoted_text,"Été 🐈");
+        db.execute_batch("INSERT INTO scene_text_revisions(id,scene_id,revision_number,content)
+            VALUES('r-new','s1',2,'Le texte a changé');
+            UPDATE scene_revision_heads SET revision_id='r-new' WHERE scene_id='s1';").unwrap();
+        let after=source_revision_evidence(&db,"f1","u1").unwrap();
+        assert_eq!(after,before);
+        assert!(matches!(source_revision_evidence(&db,"f1","u2"),Err(FactError::CrossUniverse)));
+        assert!(matches!(source_revision_evidence(&db,"missing","u1"),
+            Err(FactError::NotFound("Fait"))));
+        create_fact(&mut db,unsourced("u-fact","e1")).unwrap();
+        assert!(matches!(source_revision_evidence(&db,"u-fact","u1"),
+            Err(FactError::Validation(_))));
+    }
+
     #[test]
     fn rejects_split_utf8_out_of_bounds_empty_and_mismatched_quote() {
         let mut db = fixture();

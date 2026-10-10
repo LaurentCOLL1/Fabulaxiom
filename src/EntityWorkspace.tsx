@@ -3,6 +3,7 @@ import {invoke} from "@tauri-apps/api/core";
 import {KIND_LABELS,NARRATIVE_KINDS,decodeEntitySnapshot,formatEntityError,newEntityId,
   updateAliasDraft,type EntitySnapshot,type NarrativeKind,type EntityAlias} from "./entity";
 import EntityAliasList from "./EntityAliasList";
+import {announceWorkspaceChange,WORKSPACE_ENTITY_CHANGED} from "./workspaceSync";
 import type {HierarchySnapshot,Universe} from "./hierarchy";
 
 const EMPTY:EntitySnapshot={entities:[],aliases:[]};
@@ -43,6 +44,7 @@ export default function EntityWorkspace() {
     setBusy(true);setError(null);
     try {
       await invoke(command,{input});
+      announceWorkspaceChange(WORKSPACE_ENTITY_CHANGED);
       await reload(universeId);
       return true;
     } catch(e) {
