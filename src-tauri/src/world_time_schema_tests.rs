@@ -98,8 +98,8 @@ fn isolated_candidate_adds_three_strict_tables_without_rewriting_v6() {
 fn fictitious_dates_are_never_converted_to_gregorian_or_total_order() {
     let mut db=v6();
     universe(&db,"u1");
-    calendar(&db,"fiction1","u1");
     stage_isolated(&mut db);
+    calendar(&db,"fiction1","u1");
     assert!(db.execute(
         "UPDATE fictional_calendars SET definition_text='rewritten rules'
          WHERE id='fiction1'", []
@@ -138,8 +138,8 @@ fn fictitious_dates_are_never_converted_to_gregorian_or_total_order() {
 #[test]
 fn foreign_keys_reject_cross_universe_calendar_anchor_and_precedence() {
     let mut db=v6(); universe(&db,"u1"); universe(&db,"u2");
-    calendar(&db,"one","u1"); calendar(&db,"two","u2");
     stage_isolated(&mut db);
+    calendar(&db,"one","u1"); calendar(&db,"two","u2");
     assert!(db.execute(
         "INSERT INTO world_time_anchors(id,universe_id,calendar_id,time_kind,exact_label)
          VALUES ('bad','u2','one','exact','Cycle X')", []
@@ -178,13 +178,13 @@ fn event_links_require_event_kind_not_display_name() {
 #[test]
 fn original_revision_ownership_is_independent_of_current_head() {
     let mut db=v6(); universe(&db,"u1"); universe(&db,"u2");
-    db.execute(
+    db.execute_batch(
         "INSERT INTO novels(id,universe_id,title,sort_order)
          VALUES ('n2','u2','Other novel',0);
          INSERT INTO chapters(id,novel_id,title,sort_order) VALUES ('c2','n2','C',0);
          INSERT INTO scenes(id,chapter_id,title,sort_order) VALUES ('s2','c2','Scene',0);
          INSERT INTO scene_text_revisions(id,scene_id,revision_number,content)
-         VALUES ('r2','s2',1,'Original text')",[]
+         VALUES ('r2','s2',1,'Original text');"
     ).expect("existing historical revision");
     stage_isolated(&mut db);
     assert!(db.execute(
