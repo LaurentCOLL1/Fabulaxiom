@@ -41,7 +41,8 @@ CREATE TABLE world_time_anchors (
     CHECK(
         (time_kind='exact' AND calendar_id IS NOT NULL
           AND exact_label IS NOT NULL AND length(trim(exact_label))>0
-          AND window_start_text IS NULL AND window_end_text IS NULL)
+          AND window_start_text IS NULL AND window_end_text IS NULL
+          AND (precision_text IS NULL OR length(trim(precision_text))>0))
         OR
         (time_kind='approximate' AND calendar_id IS NOT NULL
           AND exact_label IS NULL
@@ -137,8 +138,10 @@ END;
 
 -- Correction must be modeled explicitly through future governed supersession,
 -- not by silently editing or deleting previously asserted chronology.
-CREATE TRIGGER fictional_calendars_identity_guard BEFORE UPDATE OF id, universe_id
-ON fictional_calendars BEGIN SELECT RAISE(ABORT,'calendar identity immutable'); END;
+CREATE TRIGGER fictional_calendars_no_update BEFORE UPDATE ON fictional_calendars
+BEGIN SELECT RAISE(ABORT,'fictional calendar definition immutable'); END;
+CREATE TRIGGER fictional_calendars_no_delete BEFORE DELETE ON fictional_calendars
+BEGIN SELECT RAISE(ABORT,'fictional calendar definition immutable'); END;
 CREATE TRIGGER world_time_anchors_no_update BEFORE UPDATE ON world_time_anchors
 BEGIN SELECT RAISE(ABORT,'world time anchors immutable'); END;
 CREATE TRIGGER world_time_anchors_no_delete BEFORE DELETE ON world_time_anchors
