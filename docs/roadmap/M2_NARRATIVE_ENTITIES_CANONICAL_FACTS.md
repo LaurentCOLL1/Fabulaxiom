@@ -2,7 +2,7 @@
 
 ## Authority and prerequisites
 
-**PLAN ACCEPTED — M2.1–M2.4 COMPLETE + MERGED + NORMALIZED after M2.4 normalization; M2.5 NEXT only then**
+**PLAN ACCEPTED — M2.1–M2.4 NORMALIZED; M2.5 IMPLEMENTATION MERGED, POST-MERGE NORMALIZATION PENDING. M2 closure CONDITIONAL.**
 
 Planning PR #17 merged as `4a9115ec362a0efae696ebc94b5101fa46d7a03a` after exact-head `Fabulaxiom CI` run `37722657799` completed/success.
 
@@ -10,7 +10,7 @@ Project: Fabulaxiom. Prior milestone M1 is **COMPLETE + MERGED + NORMALIZED**.
 
 Planning base `main`: `b16be2ed3e6326c88b565b305bcaba2a6d590462`.
 
-This plan subdivides M2 into bounded sequential deliverables. M2.1–M2.3 have passed their qualification, protected implementation merge and (upon acceptance of the independent normalization PR) normalizations. M2.2 merged via PR #23; M2.3 merged via PR #25 at `e6e80c26316f11054348a18a235fd08c600e136e` after exact evidence CI `37961014980` succeeded. **M2.4 is implemented and protected-merged via PR #27**. **M2.5 becomes the only next possible implementation after the independent M2.4 normalization merges and normalized main is re-fetched**.
+This plan subdivides M2 into bounded sequential deliverables. M2.1–M2.3 have passed their qualification, protected implementation merge and (upon acceptance of the independent normalization PR) normalizations. M2.2 merged via PR #23; M2.3 merged via PR #25 at `e6e80c26316f11054348a18a235fd08c600e136e` after exact evidence CI `37961014980` succeeded. **M2.4 is implemented and protected-merged via PR #27**. M2.5 was implemented and merged via PR #29 at `f1e7ea99d26ad3390c7c47bfb339f26d730a44f1` and now awaits independent post-merge normalization.
 
 M1.1–M1.5 are preserved:
 - SQLite migrations, integrity checks and backups;
@@ -172,7 +172,9 @@ Acceptance:
 
 ### M2.5 — Usable sourced-facts and human review UI
 
-**NEXT AUTHORIZED ONLY AFTER M2.4 NORMALIZATION MERGES AND CURRENT MAIN IS RE-FETCHED — NOT IMPLEMENTED IN THIS DOCUMENTARY PR**
+**IMPLEMENTED + PROTECTED MERGED via PR #29 (merge `f1e7ea99d26ad3390c7c47bfb339f26d730a44f1`); independent normalization PR pending. M2 milestone may be declared COMPLETE + MERGED + NORMALIZED only once that PR's own exact-head CI passes and it is merged.**
+
+Qualified implementation `7eaaf45ae164c9336df7e01c9da6787e4971d59e`; Windows tests and independent isolated SQLite v6 acceptance: two Universes, two Novels, three preserved scene text revisions, 3 new facts/2 same-revision UTF-8 citations/11 immutable review events, human-only canon approval and revocation, production/backup hashes unchanged. Evidence-head `6f55fc3fc7eab6f2288a54619c0bef70e521f47e`, `Fabulaxiom CI` #38040227617 terminal success with 32/32 frontend, 72/72 Rust, 13/13 Windows steps. Reviewer label is self-declared, not authenticated. See `docs/qualification/M2_5_SOURCED_FACTS_REVIEW_UI.md` and `docs/qualification/M2_5_POST_MERGE_NORMALIZATION.md`.
 
 Scope:
 - React flow for entering facts, attaching/verifying source passages and viewing cited revision;
