@@ -61,7 +61,7 @@ Le socle persistant comprend désormais :
 
 ## M2 — Entités narratives et faits canoniques
 
-**Implémentation M2.5 fusionnée ; normalisation documentaire M2 en cours.** Le statut COMPLETE + MERGED + NORMALIZED ne prend effet qu'après fusion de la PR de normalisation dédiée.
+**M2.1 à M2.5 : COMPLETE + MERGED + NORMALIZED.** PR #30 de normalisation fusionnée à `f13b4f8c249866ff60a19d7895b6cfaede56398a` après CI exacte #38041908126. Les fonctionnalités M2 décrites ci-dessous sont livrées ; cela ne signifie pas que la V1 est terminée.
 
 M2.1 — Entity registry schema and migration est **COMPLETE + MERGED + NORMALIZED**.
 
@@ -87,7 +87,7 @@ Qualification : **21/21 tests frontend**, **71/71 Rust**, **8/8 contrôles exist
 
 **À distinguer :** le nom du relecteur est déclaré, non authentifié. Le service ne constitue pas un écran React de gestion de faits : aucun test d'interaction E2E de revue via la fenêtre Tauri n'est revendiqué. Ollama est facultatif et aucune promotion au canon n'est automatique.
 
-**M2.5 — Interface de faits sourcés et revue humaine : implémentation fusionnée, normalisation finale en cours.** PR #29 fusionnée à `f1e7ea99d26ad3390c7c47bfb339f26d730a44f1` après la CI exacte #38040227617 (32/32 frontend, 72/72 Rust) et la qualification Windows isolée sans Ollama. L'écran React permet de saisir des faits sourcés ou non sourcés, citer la révision de scène historique exacte, consulter les sept statuts, l'historique de revue et confirmer explicitement l'approbation/révocation canonique. Tests Windows : 8/8 hiérarchie, 8/8 synchronisation, 9/9 faits, 10/10 revue ; audit indépendant SQLite v6 : 3 faits, 2 sources et 11 événements immuables dans une base isolée. La base réelle et les sauvegardes sont restées intactes. Voir `docs/qualification/M2_5_SOURCED_FACTS_REVIEW_UI.md`.
+**M2.5 — Interface de faits sourcés et revue humaine : COMPLETE + MERGED + NORMALIZED.** PR #29 fusionnée à `f1e7ea99d26ad3390c7c47bfb339f26d730a44f1` après la CI exacte #38040227617 (32/32 frontend, 72/72 Rust) et la qualification Windows isolée sans Ollama. L'écran React permet de saisir des faits sourcés ou non sourcés, citer la révision de scène historique exacte, consulter les sept statuts, l'historique de revue et confirmer explicitement l'approbation/révocation canonique. Tests Windows : 8/8 hiérarchie, 8/8 synchronisation, 9/9 faits, 10/10 revue ; audit indépendant SQLite v6 : 3 faits, 2 sources et 11 événements immuables dans une base isolée. La base réelle et les sauvegardes sont restées intactes. Voir `docs/qualification/M2_5_SOURCED_FACTS_REVIEW_UI.md`.
 
 Une proposition distincte d'atelier visuel local ComfyUI pour les personnages, scènes et événements figure dans `docs/roadmap/V1_VISUAL_REFERENCES_COMFYUI_PROPOSAL.md`. Elle est **documentée mais non autorisée à l'implémentation**.
 
@@ -107,6 +107,10 @@ Une proposition distincte d'atelier visuel local ComfyUI pour les personnages, s
 - **Utiliser l'application sans Ollama** : les fonctions manuelles M2 ne requièrent ni modèle actif ni service distant. L'identité du réviseur est une étiquette déclarée, pas une authentification.
 
 **Non encore livrés :** la chronologie et les connaissances des personnages (M3), les recherches FTS5/sémantiques (M4), la génération/extraction IA (M5), le moteur automatique de cohérence (M6) et l'atelier d'images ComfyUI. Ce dernier reste une proposition distincte (issue #19), même si ComfyUI fonctionne déjà localement.
+
+## Prochaine étape : M3 (planification seulement)
+
+La chronologie du monde, l'ordre de narration, les révélations au lecteur, les connaissances/croyances et les relations évolutives relèvent de **M3**, non encore implémenté. Une proposition détaillée et bornée figure dans `docs/roadmap/M3_TIME_KNOWLEDGE_RELATIONSHIPS.md`; elle doit être acceptée par une PR de planification avec CI exacte et normalisation indépendante avant tout nouveau code ou migration SQLite. L'atelier visuel local ComfyUI reste une proposition séparée, non autorisée à l'implémentation.
 
 ## Documentation d'autorité
 

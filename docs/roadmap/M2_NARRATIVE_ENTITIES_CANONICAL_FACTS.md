@@ -2,7 +2,7 @@
 
 ## Authority and prerequisites
 
-**PLAN ACCEPTED — M2.1–M2.4 NORMALIZED; M2.5 IMPLEMENTATION MERGED, POST-MERGE NORMALIZATION PENDING. M2 closure CONDITIONAL.**
+**PLAN ACCEPTED — M2.1–M2.5 COMPLETE + MERGED + NORMALIZED.** Protected post-M2.5 normalization PR #30 merged on `main=f13b4f8c249866ff60a19d7895b6cfaede56398a` after exact-head CI #38041908126 SUCCESS. M3 implementation remains unauthorized.
 
 Planning PR #17 merged as `4a9115ec362a0efae696ebc94b5101fa46d7a03a` after exact-head `Fabulaxiom CI` run `37722657799` completed/success.
 
@@ -172,7 +172,7 @@ Acceptance:
 
 ### M2.5 — Usable sourced-facts and human review UI
 
-**IMPLEMENTED + PROTECTED MERGED via PR #29 (merge `f1e7ea99d26ad3390c7c47bfb339f26d730a44f1`); independent normalization PR pending. M2 milestone may be declared COMPLETE + MERGED + NORMALIZED only once that PR's own exact-head CI passes and it is merged.**
+**COMPLETE + MERGED + NORMALIZED.** Implementation PR #29 protected-merged as `f1e7ea99d26ad3390c7c47bfb339f26d730a44f1`; independent normalization PR #30 protected-merged at `f13b4f8c249866ff60a19d7895b6cfaede56398a` after exact-head CI #38041908126 SUCCESS.
 
 Qualified implementation `7eaaf45ae164c9336df7e01c9da6787e4971d59e`; Windows tests and independent isolated SQLite v6 acceptance: two Universes, two Novels, three preserved scene text revisions, 3 new facts/2 same-revision UTF-8 citations/11 immutable review events, human-only canon approval and revocation, production/backup hashes unchanged. Evidence-head `6f55fc3fc7eab6f2288a54619c0bef70e521f47e`, `Fabulaxiom CI` #38040227617 terminal success with 32/32 frontend, 72/72 Rust, 13/13 Windows steps. Reviewer label is self-declared, not authenticated. See `docs/qualification/M2_5_SOURCED_FACTS_REVIEW_UI.md` and `docs/qualification/M2_5_POST_MERGE_NORMALIZATION.md`.
 
