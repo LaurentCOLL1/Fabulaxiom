@@ -5,6 +5,10 @@ import type {NarrativeEntity,EntitySnapshot} from "./entity";
 import {decodeEntitySnapshot,KIND_LABELS} from "./entity";
 import type {SceneRevisionHistory} from "./revisions";
 import {
+  WORKSPACE_HIERARCHY_CHANGED,WORKSPACE_ENTITY_CHANGED,WORKSPACE_REVISION_CHANGED,
+  preferredUniverseId,
+} from "./workspaceSync";
+import {
   FACT_STATUSES,STATUS_LABELS,decodeFactSnapshot,decodeReviewSnapshot,
   decodeReviewHistory,quoteFromSelection,verifySourceEvidence,reviewAction,
   newFactId,formatFactError,type FactSnapshot,type ReviewSnapshot,
@@ -21,6 +25,9 @@ const VALIDITY=[["","Aucune"],["exact","Exacte"],["approximate","Approximative"]
 
 export default function FactWorkspace() {
   const [hierarchy,setHierarchy]=useState<HierarchySnapshot>(EMPTY_HIERARCHY);
+  const [hierarchyEpoch,setHierarchyEpoch]=useState(0);
+  const [entityEpoch,setEntityEpoch]=useState(0);
+  const [revisionEpoch,setRevisionEpoch]=useState(0);
   const [universeId,setUniverseId]=useState("");
   const [entities,setEntities]=useState<NarrativeEntity[]>([]);
   const [facts,setFacts]=useState<FactSnapshot>(EMPTY_FACTS);
@@ -58,17 +65,32 @@ export default function FactWorkspace() {
   const selectedRevision=revisionHistory?.revisions.find(r=>r.id===revisionId)??null;
 
   useEffect(()=>{
+    const changedHierarchy=()=>setHierarchyEpoch(epoch=>epoch+1);
+    const changedEntities=()=>setEntityEpoch(epoch=>epoch+1);
+    const changedRevisions=()=>setRevisionEpoch(epoch=>epoch+1);
+    window.addEventListener(WORKSPACE_HIERARCHY_CHANGED,changedHierarchy);
+    window.addEventListener(WORKSPACE_ENTITY_CHANGED,changedEntities);
+    window.addEventListener(WORKSPACE_REVISION_CHANGED,changedRevisions);
+    return ()=>{
+      window.removeEventListener(WORKSPACE_HIERARCHY_CHANGED,changedHierarchy);
+      window.removeEventListener(WORKSPACE_ENTITY_CHANGED,changedEntities);
+      window.removeEventListener(WORKSPACE_REVISION_CHANGED,changedRevisions);
+    };
+  },[]);
+
+  useEffect(()=>{
     let active=true;
     void invoke<HierarchySnapshot>("hierarchy_snapshot").then(snapshot=>{
       if(!active)return;
-      if(!snapshot || !Array.isArray(snapshot.universes) || !Array.isArray(snapshot.scenes)
-        ||!Array.isArray(snapshot.novels)||!Array.isArray(snapshot.chapters))
+      if(!snapshot || !Array.isArray(snapshot.universes) || !Array.isArray(snapshot.series)
+        ||!Array.isArray(snapshot.scenes)||!Array.isArray(snapshot.novels)
+        ||!Array.isArray(snapshot.chapters))
         throw new Error("Hiérarchie IPC incomplète.");
       setHierarchy(snapshot);
-      setUniverseId(snapshot.universes[0]?.id??"");
+      setUniverseId(current=>preferredUniverseId(snapshot.universes,current));
     }).catch((e:unknown)=>{if(active)setError(formatFactError(e));});
     return ()=>{active=false;};
-  },[]);
+  },[hierarchyEpoch]);
 
   async function fetchSnapshots(id:string) {
     const [entitiesValue,factsValue,reviewValue]=await Promise.all([
@@ -102,7 +124,7 @@ export default function FactWorkspace() {
       setEntityId(data.entities[0]?.id??"");
     }).catch((e:unknown)=>{if(active)setError(formatFactError(e));});
     return ()=>{active=false;};
-  },[universeId]);
+  },[universeId,entityEpoch]);
 
   useEffect(()=>{
     let active=true;
@@ -117,7 +139,7 @@ export default function FactWorkspace() {
         setRevisionId(value.current_revision_id??value.revisions[value.revisions.length-1]?.id??"");
       }).catch((e:unknown)=>{if(active)setError(formatFactError(e));});
     return ()=>{active=false;};
-  },[sceneId,ownScenes]);
+  },[sceneId,ownScenes,revisionEpoch]);
 
   async function refresh(id:string) {
     const data=await fetchSnapshots(id);
@@ -218,9 +240,13 @@ export default function FactWorkspace() {
         <h2 id="fact-workspace-title">Faits narratifs et canon</h2>
         <p>Sources immuables, statuts explicites et décisions tracées. Un fait nouveau est toujours un brouillon.</p>
       </div>
-      <button type="button" className="secondary" disabled={busy||!universeId}
-        onClick={()=>void refresh(universeId).then(()=>setNotice("Données actualisées."))
-          .catch((e:unknown)=>setError(formatFactError(e)))}>Actualiser</button>
+      <button type="button" className="secondary" disabled={busy}
+        onClick={()=>{
+          setError(null);setNotice(null);
+          setHierarchyEpoch(epoch=>epoch+1);
+          setEntityEpoch(epoch=>epoch+1);
+          setRevisionEpoch(epoch=>epoch+1);
+        }}>Actualiser</button>
     </div>
     {error&&<div className="result failure workspace-error" role="alert">{error}</div>}
     {notice&&<div className="result success" role="status">{notice}</div>}

@@ -23,6 +23,8 @@ describe("M2.5 user-visible narrative fact governance",()=>{
     expect(html).toContain("Faits narratifs et canon");
     expect(html).toContain("Un fait nouveau est toujours un brouillon");
     expect(html).toContain("fact-universe");
+    expect(html).toContain(">Actualiser</button>");
+    expect(html).not.toContain('disabled=""\u003eActualiser</button>');
   });
   it("rejects absent, cross-universe and malformed fact snapshots",()=>{
     expect(decodeFactSnapshot(facts,"u1").records[0].source?.quoted_text).toBe("🐈 ");

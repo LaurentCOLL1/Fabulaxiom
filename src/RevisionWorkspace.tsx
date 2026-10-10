@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import { formatHierarchyError, newHierarchyId } from "./hierarchy";
+import {announceWorkspaceChange,WORKSPACE_REVISION_CHANGED} from "./workspaceSync";
 import {
   currentSceneRevision,
   revisionSummary,
@@ -74,6 +75,7 @@ export default function RevisionWorkspace({
           content: draft,
         },
       });
+      announceWorkspaceChange(WORKSPACE_REVISION_CHANGED);
       await loadHistory(scene.id);
     } catch (reason) {
       setError(formatHierarchyError(reason));
@@ -94,6 +96,7 @@ export default function RevisionWorkspace({
           revision_id: revision.id,
         },
       });
+      announceWorkspaceChange(WORKSPACE_REVISION_CHANGED);
       await loadHistory(scene.id);
     } catch (reason) {
       setError(formatHierarchyError(reason));
