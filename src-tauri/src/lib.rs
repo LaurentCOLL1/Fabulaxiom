@@ -12,6 +12,10 @@ mod hierarchy_commands;
 mod revision_commands;
 mod revisions;
 
+// Offline, in-memory-only M3.1 candidate: never run on operator database.
+#[cfg(test)]
+mod world_time_schema_tests;
+
 use std::time::Duration;
 
 use backup_commands::{backup_status, create_database_backup, restore_database_backup};
