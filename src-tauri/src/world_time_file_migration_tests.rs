@@ -629,3 +629,69 @@ fn idempotent_v7_retry_rejects_unapproved_legacy_index() {
     assert_eq!(legacy_ddl_inventory(&db).unwrap(), schema_before);
     assert_eq!(legacy_rows(&db), before_rows);
 }
+
+
+// M3.1 controlled-launch BOUNDARY ONLY: does not launch Tauri or activate v7.
+// The two files below belong exclusively to this temporary test root. This
+// test deliberately uses the normal application database opener as a negative
+// gate and records byte-for-byte preservation before/after refusal.
+#[test]
+fn controlled_readonly_launch_refuses_auto_v7_without_changing_disposable_files() {
+    let root = DisposableRoot::new("v7-normal-launch-refusal");
+    let source = root.file("closed-original-v6.sqlite3");
+    let third = root.file("isolated-copy-v7.sqlite3");
+    create_closed_populated_v6(&source);
+    let source_bytes = fs::read(&source).expect("closed v6 source bytes");
+    fs::copy(&source, &third).expect("copy ONLY closed disposable fixture");
+
+    let mut isolated = Connection::open(&third).expect("writable disposable target");
+    database::configure_connection(&isolated).expect("FK on");
+    let old_rows = legacy_rows(&isolated);
+    assert!(apply_candidate_explicitly_once(&mut isolated).expect("stage copy v7"));
+    assert_eq!(database::current_schema_version(&isolated).unwrap(), 7);
+    assert_eq!(legacy_rows(&isolated), old_rows);
+    drop(isolated);
+
+    let third_bytes_before = fs::read(&third).expect("closed v7 before runtime opener");
+    let result = database::open_database(&third);
+    assert!(matches!(
+        result,
+        Err(database::DatabaseError::ExplicitMigrationRequired(7))
+    ), "normal v6 application open must refuse v7");
+    assert_eq!(
+        fs::read(&third).expect("v7 bytes after refusal"),
+        third_bytes_before,
+        "normal app startup must not mutate unsupported v7"
+    );
+    assert_eq!(fs::read(&source).unwrap(), source_bytes, "original v6 unchanged");
+
+    // The separate explicit READ_ONLY connection is inspect-only and cannot
+    // be mistaken for the shipped application's writable open_database().
+    let inspector = Connection::open_with_flags(&third, OpenFlags::SQLITE_OPEN_READ_ONLY)
+        .expect("explicit v7 inspector");
+    database::configure_connection(&inspector).expect("FK checks");
+    inspector.pragma_update(None, "query_only", true).expect("query only");
+    assert_eq!(database::current_schema_version(&inspector).unwrap(), 7);
+    assert_eq!(legacy_rows(&inspector), old_rows, "all M2 history intact");
+    assert_eq!(inspector.query_row(
+        "SELECT COUNT(*) FROM world_time_anchors",
+        [], |row| row.get::<_, i64>(0)
+    ).unwrap(), 0);
+    assert_eq!(
+        inspector.query_row("PRAGMA integrity_check", [], |row| row.get::<_, String>(0))
+            .unwrap(), "ok"
+    );
+    assert_eq!(
+        inspector.query_row(
+            "SELECT COUNT(*) FROM pragma_foreign_key_check",
+            [], |row| row.get::<_, i64>(0)
+        ).unwrap(), 0
+    );
+    assert!(inspector.execute(
+        "INSERT INTO world_time_anchors(id,universe_id,time_kind)
+         VALUES ('unapproved-write','u1','unknown')", []
+    ).is_err(), "read-only v7 inspector must refuse direct writes");
+    drop(inspector);
+    assert_eq!(fs::read(&third).unwrap(), third_bytes_before);
+    assert_eq!(fs::read(&source).unwrap(), source_bytes);
+}
