@@ -6,6 +6,7 @@ import EntityErrorBoundary from "./EntityErrorBoundary";
 import FactWorkspace from "./FactWorkspace";
 import FactErrorBoundary from "./FactErrorBoundary";
 import BackupWorkspace from "./BackupWorkspace";
+import { selectM31PreviewRoute } from "./m31PreviewRoute";
 import {
   formatDatabaseSummary,
   type DatabaseStatus,
@@ -264,19 +265,43 @@ type M31IsolatedPreview = {
  */
 function AppGate() {
   const [preview, setPreview] = useState<M31IsolatedPreview | null | undefined>(undefined);
+  const [previewError, setPreviewError] = useState<string | null>(null);
+  const previewExpected = import.meta.env.VITE_M31_ISOLATED_PREVIEW === "1";
 
   useEffect(() => {
     let current = true;
     invoke<M31IsolatedPreview>("m31_readonly_preview_status")
       .then((report) => { if (current) setPreview(report); })
-      .catch(() => { if (current) setPreview(null); });
+      .catch((reason) => {
+        if (current) {
+          setPreviewError(String(reason));
+          setPreview(null);
+        }
+      });
     return () => { current = false; };
   }, []);
 
-  if (preview === undefined) {
+  const route = selectM31PreviewRoute(
+    preview === undefined ? "pending" : preview === null ? "unavailable" : "available",
+    previewExpected,
+  );
+
+  if (route === "waiting") {
     return <main className="app-shell"><p>Vérification de l’identité applicative…</p></main>;
   }
-  if (preview !== null) {
+  if (route === "blocked") {
+    return (
+      <main className="app-shell">
+        <section className="hero">
+          <p className="eyebrow">M3.1 · Prévisualisation isolée · Lecture seule</p>
+          <h1>Prévisualisation bloquée</h1>
+          <p role="alert">Le diagnostic IPC isolé est indisponible. Aucun module M2 ni contrôle d’édition n’est monté.</p>
+          <p>Erreur IPC : {previewError ?? "diagnostic sans réponse"}</p>
+        </section>
+      </main>
+    );
+  }
+  if (route === "preview" && preview !== null && preview !== undefined) {
     return (
       <main className="app-shell">
         <section className="hero">
