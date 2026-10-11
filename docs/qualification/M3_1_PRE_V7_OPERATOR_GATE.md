@@ -51,6 +51,12 @@ The source-only `world_time_file_migration_tests.rs` now prototypes a **non-runt
 
 Regression tests retain a human-authored time anchor, the existing 14 legacy tables and the original v6 file across a repeated request. This is *not* a production migration entry point and does not change the automatic migration ceiling of v6 or authorize operator action.
 
+## Idempotence schema-identity veto
+
+The test-only explicit-candidate retry gate now compares the **full SQLite DDL inventory** of the three governed time tables, their triggers, indexes and autoindexes against a freshly constructed isolated reference database at the exact candidate source SQL. This is stricter than accepting a v7 registry row plus three STRICT table names. New adversarial fixtures simulate deleting the chronology cycle-protection trigger or inserting an unreviewed index: both must refuse the second operation, without silently repairing history, changing original M2 data or mutating the closed v6 source file.
+
+These checks are not cryptographic backup validation, nor do they authorize a Windows production migration. They protect the **test-only** candidate's structural idempotence until the production opt-in design and operator backup qualification can be independently accepted.
+
 ## Target-Windows operator prerequisites (not yet authorized to execute)
 
 1. Announce all interactive actions in advance, including any required terminal confirmation, `q` exit, privilege prompt or app close. Confirm Fabulaxiom, Tauri and Ollama are stopped when required. No scripted `reset --hard`, mass cleanup or blind deletion.

@@ -327,6 +327,32 @@ fn wal_live_fixture_vacuum_into_produces_consistent_v6_backup_without_raw_file_c
 // No runtime automatic migration or production path invokes this function.
 // Retrying a completed upgrade must be a validated no-op; forged registry rows
 // and partially installed schemas must NOT be mistaken for completed migrations.
+// Complete expected SQLite DDL inventory for the three candidate tables,
+// including every index, trigger and internally generated UNIQUE autoindex.
+// A v7 marker and three superficially STRICT tables alone are not trustworthy.
+fn candidate_ddl_inventory(db: &Connection) -> Result<Vec<(String,String,String,String)>, String> {
+    let mut statement = db.prepare(
+        "SELECT type, name, tbl_name, COALESCE(sql,'')
+         FROM sqlite_schema
+         WHERE tbl_name IN (
+           'fictional_calendars','world_time_anchors','world_time_precedences'
+         ) ORDER BY type,name"
+    ).map_err(|e| e.to_string())?;
+    statement.query_map([], |row| {
+        Ok((row.get(0)?,row.get(1)?,row.get(2)?,row.get(3)?))
+    }).map_err(|e| e.to_string())?
+        .collect::<rusqlite::Result<Vec<_>>>()
+        .map_err(|e| e.to_string())
+}
+
+fn expected_candidate_ddl_inventory() -> Result<Vec<(String,String,String,String)>, String> {
+    let mut reference = Connection::open_in_memory().map_err(|e| e.to_string())?;
+    database::configure_connection(&reference).map_err(|e| e.to_string())?;
+    database::run_migrations(&mut reference).map_err(|e| e.to_string())?;
+    reference.execute_batch(CANDIDATE_SQL).map_err(|e| e.to_string())?;
+    candidate_ddl_inventory(&reference)
+}
+
 fn apply_candidate_explicitly_once(db: &mut Connection) -> Result<bool, String> {
     let foreign_keys: i64 = db.query_row(
         "PRAGMA foreign_keys", [], |row| row.get(0)
@@ -380,6 +406,9 @@ fn apply_candidate_explicitly_once(db: &mut Connection) -> Result<bool, String> 
             ).map_err(|e| e.to_string())?;
             if count != 3 {
                 return Err("candidate v7 tables missing or non-STRICT".to_string());
+            }
+            if candidate_ddl_inventory(db)? != expected_candidate_ddl_inventory()? {
+                return Err("candidate v7 schema DDL drift (table/index/trigger)".to_string());
             }
             let integrity: String = db.query_row(
                 "PRAGMA integrity_check", [], |row| row.get(0)
@@ -475,4 +504,52 @@ fn explicit_candidate_rejects_forged_v7_and_unknown_versions() {
             assert_eq!(after_forgery.get(name), Some(&rows));
         }
     }
+}
+
+
+#[test]
+fn explicit_candidate_second_call_rejects_missing_trigger_without_repair() {
+    let root = DisposableRoot::new("missing-trigger");
+    let source = root.file("closed-v6.sqlite3");
+    create_closed_populated_v6(&source);
+    let old_source_bytes = fs::read(&source).expect("source baseline");
+    let copy = root.file("candidate-copy.sqlite3");
+    fs::copy(&source, &copy).expect("closed fixture source copied only");
+    let mut db = Connection::open(&copy).expect("owned disposable copy");
+    database::configure_connection(&db).expect("FK enabled");
+    assert!(apply_candidate_explicitly_once(&mut db).expect("first explicit copy migration"));
+    let rows = legacy_rows(&db);
+    db.execute_batch("DROP TRIGGER world_time_precedences_guard;")
+        .expect("simulate damaged constraint in disposable copy");
+    let objects_before = candidate_ddl_inventory(&db).expect("inventory before retry");
+    let reason = apply_candidate_explicitly_once(&mut db)
+        .expect_err("missing cycle trigger must stop idempotent retry");
+    assert!(reason.contains("DDL drift"), "unexpected failure: {reason}");
+    assert_eq!(candidate_ddl_inventory(&db).unwrap(), objects_before,
+        "failed retry must not secretly repair schema");
+    assert_eq!(legacy_rows(&db), rows, "all old v6 history remains untouched");
+    assert_eq!(database::current_schema_version(&db).unwrap(), 7);
+    drop(db);
+    assert_eq!(fs::read(&source).unwrap(), old_source_bytes,
+        "source v6 file must be byte-identical");
+}
+
+#[test]
+fn explicit_candidate_second_call_rejects_extra_unreviewed_index() {
+    let root = DisposableRoot::new("extra-index");
+    let copy = root.file("owned-v6.sqlite3");
+    create_closed_populated_v6(&copy);
+    let mut db = Connection::open(&copy).expect("isolated fixture");
+    database::configure_connection(&db).expect("FK enabled");
+    assert!(apply_candidate_explicitly_once(&mut db).expect("first upgrade"));
+    let legacy_before = legacy_rows(&db);
+    db.execute_batch(
+        "CREATE INDEX unreviewed_extra_time_index
+         ON world_time_anchors(time_kind);"
+    ).expect("simulate unapproved v7 index");
+    let ddl_before = candidate_ddl_inventory(&db).unwrap();
+    assert!(apply_candidate_explicitly_once(&mut db).is_err(),
+        "extra DDL object must not be silently accepted on rerun");
+    assert_eq!(candidate_ddl_inventory(&db).unwrap(), ddl_before);
+    assert_eq!(legacy_rows(&db), legacy_before);
 }
