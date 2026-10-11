@@ -95,6 +95,14 @@ The Windows-only regression of the WAL refusal fixture demonstrated that the `sq
 
 SQLite sources: [Python sqlite3 Connection.backup](https://docs.python.org/3.12/library/sqlite3.html#sqlite3.Connection.backup), [SQLite Online Backup API](https://www.sqlite.org/backup.html), [SQLite integrity & FK checks](https://www.sqlite.org/pragma.html).
 
+## Operator copy-only v7 rehearsal (source gate, NOT executed)
+
+Following the successful real Windows operator v6 backup and independent restore rehearsal of 2026-10-11 (original production unchanged), `tools/m3_1_v7_copy_rehearsal.py` introduces a separately authorized **third database** rehearsal. Its input is the qualified `fabulaxiom-pre-m3-1-v6.sqlite3` safety backup, not the active production SQLite, not the preserved restore rehearsal and not an old historic backup. It refuses to run unless the active M1.5 v6 source filename, original file SHA-256 and v1 logical digest match; the backup, preserved restore and custody manifest SHA-256 are each independently verified; the candidate `.sql` file must match its expected SHA-256. Normal app startup remains capped at v6.
+
+The distinct `--dry-run` mode writes nothing. After a separate reviewed operator step, `--create` makes a *new* UUID-scoped sibling directory under existing `operator-qualification/m3_1/`, uses SQLite Online Backup API to produce a third derivative, verifies the copied source v6, and applies the exact candidate v7 DDL + version-7 migration ledger row in **one explicit transaction**. On error the transaction rolls back; the new derivative remains for investigation and is never activated. The rehearsed v7 is validated against an independent in-memory expected schema inventory; the old 14-table row digests (except the one intentional additional version-7 ledger row) and existing owner, FK integrity, physical integrity, three STRICT new tables and their initial empty state are verified. A second read-only validation confirms stable idempotent observations. Only the new derivative and its own evidence manifest are written; the operator's safety backup, rehearsal v6 restore, historical backups, active pointer, and production v6 are rechecked as unchanged.
+
+Tests are disposable synthetic fixtures on Windows CI, not operator Windows acceptance. **No `--create` command is approved to run on a real operator machine merely because source CI passes**; complete a read-only rehearsal dry-run first, and independently qualify all SHA and evidence gates. The existing tool deliberately has no Tauri invocation or automatic v7 registration.
+
 ## Target-Windows operator prerequisites (not yet authorized to execute)
 
 1. Announce all interactive actions in advance, including any required terminal confirmation, `q` exit, privilege prompt or app close. Confirm Fabulaxiom, Tauri and Ollama are stopped when required. No scripted `reset --hard`, mass cleanup or blind deletion.

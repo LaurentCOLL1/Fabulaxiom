@@ -47,6 +47,9 @@ jobs:
       - name: Isolated pre-v7 backup and restore fixture tests
         run: python -m unittest discover -s tools -p "test_m3_1_v6_backup.py" -v
 
+      - name: Copy-only candidate-v7 rehearsal synthetic fixtures
+        run: python -m unittest discover -s tools -p "test_m3_1_v7_copy_rehearsal.py" -v
+
       - name: Rust tests from lockfile
         run: cargo test --manifest-path src-tauri/Cargo.toml --all-targets --locked
 
