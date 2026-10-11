@@ -113,6 +113,14 @@ The **six deterministic synthetic Windows CI cases** cover dry-run, successful d
 
 This confirms SQLite's explicit transaction semantics, not an app startup v7 migration: https://www.sqlite.org/lang_transaction.html ; Python `sqlite3.executescript` requires transaction control in the script itself: https://docs.python.org/3.12/library/sqlite3.html#sqlite3.Connection.executescript .
 
+## Independent third-copy read-only and RAM-only temporal audit (new source)
+
+`tools/m3_1_v7_final_readonly.py` is an operator-invoked read-only procedure, **not** a migration. It verifies exact M1.5 production v6 active filename, original SHA/logical digest, v6 safety backup+restore SHA, both pre-v7/third-v7 custody manifests, exact reviewed candidate SQL and **third v7 candidate SHA**, before reading v7 through `mode=ro` with `PRAGMA query_only=ON`. The candidate's full DDL inventory is checked against an independently reconstructed **RAM candidate** derived from the verified v6 backup; all fourteen legacy table digests are checked (with exactly one allowed new migration ledger row), SQLite integrity/FKs and three new empty STRICT tables.
+
+For semantic constraints, the tool uses SQLite Online Backup API **read-only third copy → fresh `:memory:` connection**, then performs positive and negative DML probes *only inside RAM savepoints that are rolled back*. Tests cover raw fictional exact/approximate/unknown representations without Gregorian parsing, required precision/calendar, same-Universe event and immutable revision scope, cross-Universe calendar/event/revision rejection, partial precedence ordering, cycle/self/cross-Universe rejection and immutability UPDATE/DELETE rejection. These probes never write to the protected third v7 file. The final output includes scenario count, SHA-256 and booleans; no fiction text or absolute operator paths. Source SHA and all protected input hashes are rechecked after the read-only audit.
+
+Synthetic Windows CI **uses the real governed v7 SQL file** (not a simplified stand-in) on wholly disposable SQLite fixtures. Exact-head CI must PASS before any actual operator execution. Production v7 startup, migration 007 registration, PR merge and M3.2 remain separately gated.
+
 ## Target-Windows acceptance requirements (copy and rollback qualified; final gate pending)
 
 1. Announce all interactive actions in advance, including any required terminal confirmation, `q` exit, privilege prompt or app close. Confirm Fabulaxiom, Tauri and Ollama are stopped when required. No scripted `reset --hard`, mass cleanup or blind deletion.
