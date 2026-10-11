@@ -353,6 +353,32 @@ fn expected_candidate_ddl_inventory() -> Result<Vec<(String,String,String,String
     candidate_ddl_inventory(&reference)
 }
 
+// Retrying v7 must not silently accept a changed old v6 schema.
+// Compare every legacy table, index, UNIQUE autoindex and trigger against
+// fresh in-memory migrations 1..6, excluding only internal ANALYZE stats.
+fn legacy_ddl_inventory(db: &Connection) -> Result<Vec<(String,String,String,String)>, String> {
+    let mut statement = db.prepare(
+        "SELECT type,name,tbl_name,COALESCE(sql,'')
+         FROM sqlite_schema
+         WHERE tbl_name NOT IN (
+           'fictional_calendars','world_time_anchors','world_time_precedences'
+         ) AND name NOT LIKE 'sqlite_stat%'
+         ORDER BY type,name"
+    ).map_err(|e| e.to_string())?;
+    statement.query_map([], |row| {
+        Ok((row.get(0)?,row.get(1)?,row.get(2)?,row.get(3)?))
+    }).map_err(|e| e.to_string())?
+        .collect::<rusqlite::Result<Vec<_>>>()
+        .map_err(|e| e.to_string())
+}
+
+fn expected_legacy_ddl_inventory() -> Result<Vec<(String,String,String,String)>, String> {
+    let mut reference = Connection::open_in_memory().map_err(|e| e.to_string())?;
+    database::configure_connection(&reference).map_err(|e| e.to_string())?;
+    database::run_migrations(&mut reference).map_err(|e| e.to_string())?;
+    legacy_ddl_inventory(&reference)
+}
+
 fn apply_candidate_explicitly_once(db: &mut Connection) -> Result<bool, String> {
     let foreign_keys: i64 = db.query_row(
         "PRAGMA foreign_keys", [], |row| row.get(0)
@@ -409,6 +435,9 @@ fn apply_candidate_explicitly_once(db: &mut Connection) -> Result<bool, String> 
             }
             if candidate_ddl_inventory(db)? != expected_candidate_ddl_inventory()? {
                 return Err("candidate v7 schema DDL drift (table/index/trigger)".to_string());
+            }
+            if legacy_ddl_inventory(db)? != expected_legacy_ddl_inventory()? {
+                return Err("legacy v6 schema DDL drift (table/index/trigger)".to_string());
             }
             let integrity: String = db.query_row(
                 "PRAGMA integrity_check", [], |row| row.get(0)
@@ -552,4 +581,51 @@ fn explicit_candidate_second_call_rejects_extra_unreviewed_index() {
         "extra DDL object must not be silently accepted on rerun");
     assert_eq!(candidate_ddl_inventory(&db).unwrap(), ddl_before);
     assert_eq!(legacy_rows(&db), legacy_before);
+}
+
+
+#[test]
+fn idempotent_v7_retry_rejects_missing_legacy_v6_revision_trigger() {
+    let root = DisposableRoot::new("missing-v6-trigger");
+    let source = root.file("closed-original-v6.sqlite3");
+    create_closed_populated_v6(&source);
+    let unchanged_original = fs::read(&source).expect("source bytes");
+    let copy = root.file("isolated-v7.sqlite3");
+    fs::copy(&source, &copy).expect("closed fixture copy only");
+
+    let mut db = Connection::open(&copy).expect("disposable copy");
+    database::configure_connection(&db).expect("FK enabled");
+    assert!(apply_candidate_explicitly_once(&mut db).expect("first migration"));
+    let before_rows = legacy_rows(&db);
+    db.execute_batch("DROP TRIGGER scene_text_revisions_no_delete;")
+        .expect("simulate removed historic append-only guard");
+    let observed_schema = legacy_ddl_inventory(&db).expect("snapshot altered DDL");
+    let reason = apply_candidate_explicitly_once(&mut db)
+        .expect_err("missing old revision trigger must fail closed");
+    assert!(reason.contains("legacy v6 schema DDL drift"), "{reason}");
+    assert_eq!(legacy_ddl_inventory(&db).unwrap(), observed_schema,
+        "failed check must not silently repair historical schema");
+    assert_eq!(legacy_rows(&db), before_rows,
+        "all original v6 rows must be preserved");
+    drop(db);
+    assert_eq!(fs::read(&source).unwrap(), unchanged_original);
+}
+
+#[test]
+fn idempotent_v7_retry_rejects_unapproved_legacy_index() {
+    let root = DisposableRoot::new("rogue-v6-index");
+    let copy = root.file("disposable.sqlite3");
+    create_closed_populated_v6(&copy);
+    let mut db = Connection::open(&copy).expect("isolated fixture");
+    database::configure_connection(&db).expect("FK enabled");
+    assert!(apply_candidate_explicitly_once(&mut db).expect("first migration"));
+    let before_rows = legacy_rows(&db);
+    db.execute_batch("CREATE INDEX unapproved_universe_index ON universes(name);")
+        .expect("simulate unapproved legacy DDL");
+    let schema_before = legacy_ddl_inventory(&db).unwrap();
+    let reason = apply_candidate_explicitly_once(&mut db)
+        .expect_err("unapproved old-table index must block retry");
+    assert!(reason.contains("legacy v6 schema DDL drift"), "{reason}");
+    assert_eq!(legacy_ddl_inventory(&db).unwrap(), schema_before);
+    assert_eq!(legacy_rows(&db), before_rows);
 }

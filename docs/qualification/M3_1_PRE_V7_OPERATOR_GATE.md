@@ -57,6 +57,12 @@ The test-only explicit-candidate retry gate now compares the **full SQLite DDL i
 
 These checks are not cryptographic backup validation, nor do they authorize a Windows production migration. They protect the **test-only** candidate's structural idempotence until the production opt-in design and operator backup qualification can be independently accepted.
 
+## Legacy v6 schema DDL identity on candidate retry
+
+The explicit *test-only* v7 retry gate now compares **both** the three governed M3.1 tables and the complete pre-existing v6 `sqlite_schema` definitions for legacy tables, indexes, autoindexes and triggers, against pristine migrations 1–6 recreated in a disposable in-memory reference. A version-7 ledger with intact new M3 tables is insufficient if an old scene-revision append-only trigger has been dropped or an unreviewed index has appeared on a legacy table. Two targeted adversarial fixtures require refusal without schema auto-repair, data rewriting or modification to the original closed v6 source file.
+
+This is a strict test prototype; SQLite `sqlite_stat%` statistics structures are excluded from the legacy DDL comparison because they are optimization metadata. It does not authorize production migration, create an operator backup or supersede data-content logical digests.
+
 ## Target-Windows operator prerequisites (not yet authorized to execute)
 
 1. Announce all interactive actions in advance, including any required terminal confirmation, `q` exit, privilege prompt or app close. Confirm Fabulaxiom, Tauri and Ollama are stopped when required. No scripted `reset --hard`, mass cleanup or blind deletion.
