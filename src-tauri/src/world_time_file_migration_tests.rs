@@ -3,8 +3,9 @@
 //! No production runtime entry point or v7 registry change is exposed here.
 use crate::database;
 use crate::world_time_preflight::{inspect_v6, PreflightFailure};
-use rusqlite::{Connection, OpenFlags};
+use rusqlite::{params, types::ValueRef, Connection, OpenFlags};
 use std::{
+    collections::BTreeMap,
     fs,
     path::{Path, PathBuf},
     process,
@@ -83,6 +84,51 @@ fn checked_m2_snapshot(db: &Connection) -> (String, String, String, i64) {
     ).expect("M2 source, current revision and human canon history")
 }
 
+// Complete, type-tagged, order-independent snapshots of all *existing* v6 data.
+// The extra v7 migration ledger row is deliberately excluded, never old ones.
+fn legacy_rows(db: &Connection) -> BTreeMap<&'static str, Vec<Vec<String>>> {
+    const TABLES: [&str; 14] = [
+        "app_metadata", "schema_migrations", "universes", "series",
+        "novels", "chapters", "scenes", "scene_text_revisions",
+        "scene_revision_heads", "narrative_entities", "entity_aliases",
+        "narrative_facts", "fact_sources", "fact_review_events",
+    ];
+    fn hex(bytes: &[u8]) -> String {
+        bytes.iter().map(|byte| format!("{byte:02x}")).collect()
+    }
+    let mut output = BTreeMap::new();
+    for table in TABLES {
+        // Identifier is from the compile-time constant array above; no SQL injection.
+        let clause = if table == "schema_migrations" {
+            " WHERE version <= 6"
+        } else {
+            ""
+        };
+        let sql = format!("SELECT * FROM \"{table}\"{clause}");
+        let mut stmt = db.prepare(&sql).expect("read legacy table");
+        let width = stmt.column_count();
+        let mut rows = stmt.query_map([], |row| {
+            let mut cells = Vec::with_capacity(width);
+            for index in 0..width {
+                let cell = match row.get_ref(index)? {
+                    ValueRef::Null => "N".to_string(),
+                    ValueRef::Integer(value) => format!("I:{value}"),
+                    ValueRef::Real(value) => format!("F:{:016x}", value.to_bits()),
+                    ValueRef::Text(value) => format!("T:{}", hex(value)),
+                    ValueRef::Blob(value) => format!("B:{}", hex(value)),
+                };
+                cells.push(cell);
+            }
+            Ok(cells)
+        }).expect("query legacy rows")
+        .collect::<rusqlite::Result<Vec<_>>>()
+        .expect("collect legacy rows");
+        rows.sort_unstable(); // Row order is not semantic in a relational table.
+        output.insert(table, rows);
+    }
+    output
+}
+
 fn integrity(db: &Connection) {
     let result: String = db.query_row(
         "PRAGMA integrity_check", [], |row| row.get(0)
@@ -109,6 +155,7 @@ fn offline_copy_rehearsal_retains_original_v6_and_human_review() {
 
     let original_db = opened_read_only_v6(&active_simulation);
     let original_snapshot = checked_m2_snapshot(&original_db);
+    let all_original_rows = legacy_rows(&original_db);
     drop(original_db);
 
     let mut candidate = Connection::open(&copy).expect("new copy only");
@@ -124,6 +171,8 @@ fn offline_copy_rehearsal_retains_original_v6_and_human_review() {
     }
     assert_eq!(database::current_schema_version(&candidate).unwrap(), 7);
     assert_eq!(checked_m2_snapshot(&candidate), original_snapshot);
+    assert_eq!(legacy_rows(&candidate), all_original_rows,
+        "every original v6 row and typed value must be preserved");
     integrity(&candidate);
     let strict_count: i64 = candidate.query_row(
         "SELECT COUNT(*) FROM pragma_table_list
@@ -138,6 +187,7 @@ fn offline_copy_rehearsal_retains_original_v6_and_human_review() {
 
     let untouched = opened_read_only_v6(&active_simulation);
     assert_eq!(checked_m2_snapshot(&untouched), original_snapshot);
+    assert_eq!(legacy_rows(&untouched), all_original_rows);
     drop(untouched);
     assert_eq!(fs::read(&active_simulation).unwrap(), before_bytes);
     assert_eq!(fs::read(&sealed_simulation).unwrap(), before_bytes);
@@ -155,6 +205,7 @@ fn failed_copy_migration_rollback_keeps_v6_and_original_unchanged() {
     let mut candidate = Connection::open(&candidate_path).expect("copy");
     database::configure_connection(&candidate).expect("FKs");
     let old = checked_m2_snapshot(&candidate);
+    let before_rows = legacy_rows(&candidate);
     {
         let tx = candidate.transaction().expect("atomic migration");
         tx.execute_batch(CANDIDATE_SQL).expect("create new tables transactionally");
@@ -170,6 +221,7 @@ fn failed_copy_migration_rollback_keeps_v6_and_original_unchanged() {
     assert_eq!(database::current_schema_version(&candidate).unwrap(), 6);
     inspect_v6(&candidate).expect("failed migration left v6 untouched");
     assert_eq!(checked_m2_snapshot(&candidate), old);
+    assert_eq!(legacy_rows(&candidate), before_rows);
     integrity(&candidate);
     drop(candidate);
 
@@ -202,4 +254,50 @@ fn empty_v6_copy_upgrades_to_three_strict_candidate_tables() {
     drop(db);
     let original = opened_read_only_v6(&source);
     assert_eq!(database::current_schema_version(&original).unwrap(), 6);
+}
+
+
+#[test]
+fn wal_live_fixture_vacuum_into_produces_consistent_v6_backup_without_raw_file_copy() {
+    let root = DisposableRoot::new("wal-online-backup");
+    let live = root.file("wal-live-source-v6.sqlite3");
+    let consistent = root.file("wal-vacuum-into-backup.sqlite3");
+
+    let db = database::open_database(&live).expect("owned disposable v6 DB");
+    let journal_mode: String = db.query_row(
+        "PRAGMA journal_mode=WAL", [], |row| row.get(0)
+    ).expect("enable WAL only on owned fixture");
+    assert_eq!(journal_mode.to_ascii_lowercase(), "wal");
+
+    db.execute(
+        "INSERT INTO universes(id,name) VALUES ('wal-u1','WAL 🌙 timeline')",
+        [],
+    ).expect("committed WAL universe");
+    db.execute(
+        "INSERT INTO narrative_entities(id,universe_id,kind,name)
+         VALUES ('wal-event','wal-u1','event','Éclipse 🌙')",
+        [],
+    ).expect("committed WAL event");
+    inspect_v6(&db).expect("v6 is valid while WAL source is open");
+    let rows_before = legacy_rows(&db);
+
+    // sqlite.org/lang_vacuum.html: VACUUM INTO creates a consistent snapshot
+    // even when the source database is live and using WAL.
+    assert!(!consistent.exists(), "new uniquely owned destination only");
+    db.execute(
+        "VACUUM INTO ?1",
+        params![consistent.to_string_lossy().to_string()],
+    ).expect("SQLite-consistent copy; NO fs::copy of open/live SQLite");
+
+    // Inspect the backup while the source WAL connection is STILL open.
+    let backup = opened_read_only_v6(&consistent);
+    assert_eq!(legacy_rows(&backup), rows_before);
+    integrity(&backup);
+    drop(backup);
+
+    let source_after = legacy_rows(&db);
+    assert_eq!(source_after, rows_before, "snapshot creation must not mutate source");
+    drop(db);
+    let original = opened_read_only_v6(&live);
+    assert_eq!(legacy_rows(&original), rows_before);
 }
