@@ -75,6 +75,19 @@ def _validate_copy(path: Path, original: dict) -> dict:
             "SELECT value FROM app_metadata WHERE key='schema_owner'"
         ).fetchone() != ("fabulaxiom",):
             raise BackupStop("copy_owner_mismatch")
+        for table in audit.LEGACY_TABLES:
+            definition = db.execute(
+                "SELECT type,strict FROM pragma_table_list "
+                "WHERE schema='main' AND name=?", (table,)
+            ).fetchall()
+            if definition != [("table", 1)]:
+                raise BackupStop("copy_legacy_strict_table_missing_" + table)
+        for table in audit.CANDIDATE_TABLES:
+            if db.execute(
+                "SELECT 1 FROM sqlite_master WHERE type='table' AND name=?",
+                (table,),
+            ).fetchone() is not None:
+                raise BackupStop("premature_v7_candidate_detected")
         combined = audit.hashlib.sha256(b"fabulaxiom-v6-typed-row-sha256-v1\0")
         tables = {}
         for table in audit.LEGACY_TABLES:

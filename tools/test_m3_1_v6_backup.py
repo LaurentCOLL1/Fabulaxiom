@@ -1,5 +1,6 @@
 """Synthetic, disposable tests for the M3.1 opt-in v6 backup procedure."""
 from pathlib import Path
+from contextlib import closing
 import shutil
 import sqlite3
 import tempfile
@@ -88,11 +89,24 @@ class BackupTests(unittest.TestCase):
         self.assertFalse((self.root / "operator-qualification" / "m3_1").exists())
 
     def test_wal_header_stops_before_creating_destination(self):
-        with sqlite3.connect(self.file) as db:
+        # sqlite3.Connection's context manager does NOT close the file.
+        # On Windows explicit closing avoids WinError 32 on fixture cleanup.
+        with closing(sqlite3.connect(self.file)) as db:
             self.assertEqual(db.execute("PRAGMA journal_mode=WAL").fetchone()[0], "wal")
         with self.assertRaises(audit.AuditError):
             self.run_stage(create=True)
         self.assertFalse((self.root / "operator-qualification" / "m3_1").exists())
+
+    def test_copy_validation_rejects_unapproved_v7_table(self):
+        copy = self.root / "operator-qualification" / "synthetic-unapproved.sqlite3"
+        with closing(sqlite3.connect(self.file.as_uri() + "?mode=ro", uri=True)) as source:
+            with closing(sqlite3.connect(copy)) as target:
+                source.backup(target)
+        with closing(sqlite3.connect(copy)) as db:
+            db.execute("CREATE TABLE fictional_calendars(id TEXT PRIMARY KEY) STRICT")
+            db.commit()
+        with self.assertRaisesRegex(backup.BackupStop, "premature_v7_candidate_detected"):
+            backup._validate_copy(copy, self.report)
 
     def test_existing_stage_does_not_get_erased(self):
         stage = self.root / "operator-qualification" / "m3_1"

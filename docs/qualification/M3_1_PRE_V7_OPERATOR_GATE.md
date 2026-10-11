@@ -91,6 +91,8 @@ The `--create` procedure creates a **new UUID-suffixed directory** under existin
 
 **Failure semantics:** original source and historical backups must remain intact. If an exception occurs after creating the new custody directory, retain it for operator investigation (no automatic deletion or overwrite); no production restoration or v7 migration is performed. These outputs are not release artifacts. CI tests operate **exclusively on synthetic disposable SQLite databases**; an exact-head CI PASS is necessary before proposing operator invocation, but operator Windows evidence and independent backup/restore review are also required.
 
+The Windows-only regression of the WAL refusal fixture demonstrated that the `sqlite3.Connection` context manager **does not close a connection**. The test now uses explicit `contextlib.closing` to release the temporary database handle before fixture cleanup. Destination validation also refuses any unexpected v7 candidate table and requires all 14 legacy tables to remain STRICT. A new synthetic adversarial case covers premature v7 table creation.
+
 SQLite sources: [Python sqlite3 Connection.backup](https://docs.python.org/3.12/library/sqlite3.html#sqlite3.Connection.backup), [SQLite Online Backup API](https://www.sqlite.org/backup.html), [SQLite integrity & FK checks](https://www.sqlite.org/pragma.html).
 
 ## Target-Windows operator prerequisites (not yet authorized to execute)
