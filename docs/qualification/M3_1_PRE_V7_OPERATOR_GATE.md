@@ -151,3 +151,11 @@ Separately, the test opens that already-created disposable v7 file with SQLite `
 
 Official SQLite docs: [transactions](https://www.sqlite.org/lang_transaction.html), [read-only connection flags](https://www.sqlite.org/c3ref/open.html).
 
+
+## Pre-launch isolation preparation — source candidate only
+
+`tools/m3_1_v7_isolated_launch_prepare.py` is a **separately invoked operator tool** for the pending controlled Windows Tauri-launch boundary. It is not app startup and does not alter the production runtime. Before any new-file creation it reruns the exact-source **third-v7 read-only + ten RAM constraint scenarios** and all M1.5 restored-active v6, backup, restore, candidate SQL, third-copy, manifest and SHA custody gates. `--dry-run` has no disk writes. An independently approved later `--prepare` creates only a **brand-new UUID-based identity** under the same `LOCALAPPDATA` *parent* (e.g. `com.fabulaxiom.m31launch<uuid>`, never `com.fabulaxiom.desktop` nor the M2.5 isolated identity). It places a SHA-identical v7 copy at `database/fabulaxiom.sqlite3`, a unique Tauri `--config` identity/title override and a preparation manifest there; it never runs Tauri, modifies the M1.5 activation marker, edits the original successful third-v7 candidate or changes historical backups. Original and copied SHA checked before and after. Any failed staging keeps the new UUID directory for investigation.
+
+The config overlay uses the official [Tauri v2 isolated app identity / --config](https://v2.tauri.app/develop/configuration-files/) capability. **Do not launch** merely because staging PASSES. The current production v6 Rust opener correctly returns `ExplicitMigrationRequired(7)` on a v7-backed isolated identity: this staging alone cannot satisfy the roadmap's positive *controlled v7-enabled Tauri launch and post-v7 audit*. An explicit dedicated read-only Tauri preview or independently approved activation plan, process boundary, expected UI behavior and safe post-launch audit are still required.
+
+Before issuing any operator command, require the new source's own exact-head Windows CI `completed/success`, review `--dry-run` result first, then separately authorize `--prepare`. No automatic production v7, no PR merge/normalization, no M3.2+.

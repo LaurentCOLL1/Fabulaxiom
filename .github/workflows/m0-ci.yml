@@ -56,6 +56,9 @@ jobs:
       - name: Real candidate-v7 read-only and RAM constraint fixtures
         run: python -m unittest discover -s tools -p "test_m3_1_v7_final_readonly.py" -v
 
+      - name: M3.1 isolated Tauri identity and v7 copy preparation fixtures
+        run: python -m unittest discover -s tools -p "test_m3_1_v7_isolated_launch_prepare.py" -v
+
       - name: Rust tests from lockfile
         run: cargo test --manifest-path src-tauri/Cargo.toml --all-targets --locked
 
