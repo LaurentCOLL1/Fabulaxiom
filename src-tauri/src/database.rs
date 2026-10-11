@@ -11,6 +11,9 @@ use tauri::Manager;
 
 pub const DATABASE_FILENAME: &str = "fabulaxiom.sqlite3";
 pub const CURRENT_SCHEMA_VERSION: i64 = 6;
+/// Fail-closed runtime boundary: normal app startup may never apply v7+.
+/// A separately authorized operator procedure must handle all newer schemas.
+pub const MAX_AUTOMATIC_MIGRATION_VERSION: i64 = 6;
 
 const MIGRATION_TABLE_SQL: &str = r#"
 CREATE TABLE IF NOT EXISTS schema_migrations (
@@ -456,6 +459,7 @@ pub enum DatabaseError {
     Sqlite(rusqlite::Error),
     Path(String),
     UnsupportedSchemaVersion(i64),
+    ExplicitMigrationRequired(i64),
 }
 
 impl fmt::Display for DatabaseError {
@@ -467,6 +471,10 @@ impl fmt::Display for DatabaseError {
             Self::UnsupportedSchemaVersion(version) => write!(
                 formatter,
                 "version de schéma SQLite non prise en charge : {version}"
+            ),
+            Self::ExplicitMigrationRequired(version) => write!(
+                formatter,
+                "migration SQLite {version} bloquée : validation et sauvegarde explicites requises"
             ),
         }
     }
@@ -546,6 +554,9 @@ pub fn run_migrations(connection: &mut Connection) -> Result<i64, DatabaseError>
     let applied_versions = load_applied_versions(connection)?;
 
     for version in &applied_versions {
+        if *version > MAX_AUTOMATIC_MIGRATION_VERSION {
+            return Err(DatabaseError::ExplicitMigrationRequired(*version));
+        }
         if !MIGRATIONS
             .iter()
             .any(|migration| migration.version == *version)
@@ -556,7 +567,7 @@ pub fn run_migrations(connection: &mut Connection) -> Result<i64, DatabaseError>
 
     for migration in MIGRATIONS {
         if !applied_versions.contains(&migration.version) {
-            apply_migration(connection, *migration)?;
+            apply_automatic_migration(connection, *migration)?;
         }
     }
 
@@ -577,6 +588,16 @@ fn load_applied_versions(connection: &Connection) -> Result<BTreeSet<i64>, Datab
         .collect::<Result<BTreeSet<_>, _>>()?;
 
     Ok(versions)
+}
+
+fn apply_automatic_migration(
+    connection: &mut Connection,
+    migration: Migration,
+) -> Result<(), DatabaseError> {
+    if migration.version > MAX_AUTOMATIC_MIGRATION_VERSION {
+        return Err(DatabaseError::ExplicitMigrationRequired(migration.version));
+    }
+    apply_migration(connection, migration)
 }
 
 fn apply_migration(
@@ -695,6 +716,51 @@ mod tests {
                 params![id, chapter_id, format!("Scene {id}"), order],
             )
             .expect("insert scene");
+    }
+
+    #[test]
+    fn automatic_startup_refuses_future_v7_migration_before_any_write() {
+        let mut db = migrated_memory_connection();
+        assert_eq!(current_schema_version(&db).unwrap(), 6);
+        let version_7 = Migration {
+            version: 7,
+            name: "007_simulated_unauthorized_world_time",
+            sql: "CREATE TABLE unapproved_v7_write(id INTEGER PRIMARY KEY) STRICT;",
+        };
+        assert!(matches!(
+            apply_automatic_migration(&mut db, version_7),
+            Err(DatabaseError::ExplicitMigrationRequired(7))
+        ));
+        assert_eq!(current_schema_version(&db).unwrap(), 6);
+        let created: i64 = db.query_row(
+            "SELECT COUNT(*) FROM sqlite_master
+             WHERE type='table' AND name='unapproved_v7_write'",
+            [],
+            |row| row.get(0),
+        ).expect("read schema");
+        assert_eq!(created, 0, "must refuse v7 before executing its SQL");
+        let old_count: i64 = db.query_row(
+            "SELECT COUNT(*) FROM schema_migrations",
+            [],
+            |row| row.get(0),
+        ).expect("read accepted migration ledger");
+        assert_eq!(old_count, 6);
+    }
+
+    #[test]
+    fn startup_rejects_existing_v7_registry_even_before_v7_is_registered() {
+        let mut db = migrated_memory_connection();
+        db.execute(
+            "INSERT INTO schema_migrations(version,name)
+             VALUES (7,'007_simulated_external_upgrade')",
+            [],
+        ).expect("external test fixture v7 marker");
+        assert!(matches!(
+            run_migrations(&mut db),
+            Err(DatabaseError::ExplicitMigrationRequired(7))
+        ));
+        // Fail closed, without attempting to revert someone else's schema.
+        assert_eq!(current_schema_version(&db).unwrap(), 7);
     }
 
     #[test]

@@ -9,6 +9,11 @@ edition = "2024"
 name = "fabulaxiom_lib"
 crate-type = ["staticlib", "cdylib", "rlib"]
 
+# Never enabled in production/default builds. Requires a unique operator identity.
+[features]
+default = []
+m31-isolated-preview = []
+
 [build-dependencies]
 tauri-build = { version = "2", features = [] }
 

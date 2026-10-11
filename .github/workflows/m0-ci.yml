@@ -36,11 +36,42 @@ jobs:
       - name: Frontend production build
         run: npm run build
 
+      - name: Setup Python for isolated audit fixtures
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Read-only pre-v7 audit fixture tests
+        run: python -m unittest discover -s tools -p "test_m3_1_v6_audit.py" -v
+
+      - name: Isolated pre-v7 backup and restore fixture tests
+        run: python -m unittest discover -s tools -p "test_m3_1_v6_backup.py" -v
+
+      - name: Copy-only candidate-v7 rehearsal synthetic fixtures
+        run: python -m unittest discover -s tools -p "test_m3_1_v7_copy_rehearsal.py" -v
+
+      - name: Fourth-copy forced rollback synthetic fixtures
+        run: python -m unittest discover -s tools -p "test_m3_1_v7_rollback_rehearsal.py" -v
+
+      - name: Real candidate-v7 read-only and RAM constraint fixtures
+        run: python -m unittest discover -s tools -p "test_m3_1_v7_final_readonly.py" -v
+
+      - name: M3.1 isolated Tauri identity and v7 copy preparation fixtures
+        run: python -m unittest discover -s tools -p "test_m3_1_v7_isolated_launch_prepare.py" -v
+
+      - name: M3.1 actual Windows token API smoke check (no staging)
+        run: |
+          python -c "import sys; sys.path.insert(0, 'tools'); import m3_1_v7_isolated_launch_prepare as m; value = m._windows_admin_token_enabled(); assert isinstance(value, bool); print('WINDOWS_TOKEN_API: PASS; elevated=' + str(value))"
+
       - name: Rust tests from lockfile
         run: cargo test --manifest-path src-tauri/Cargo.toml --all-targets --locked
 
       - name: Rust check from lockfile
         run: cargo check --manifest-path src-tauri/Cargo.toml --locked
+
+      - name: M3.1 isolated read-only Tauri preview Rust unit tests
+        working-directory: src-tauri
+        run: cargo test --locked --features m31-isolated-preview --lib m31_readonly_preview
 
       - name: Verify dependency locks are unchanged
         shell: pwsh
