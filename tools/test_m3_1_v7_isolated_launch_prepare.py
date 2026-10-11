@@ -5,6 +5,7 @@ from pathlib import Path
 import re
 import sqlite3
 import unittest
+from unittest import mock
 
 import m3_1_v6_audit as audit
 import m3_1_v7_isolated_launch_prepare as launch
@@ -19,7 +20,7 @@ class IsolatedLaunchPreparationTests(unittest.TestCase):
         self.fixture.setUp()
         self.addCleanup(self.fixture.doCleanups)
 
-    def stage(self, prepare=False, **updates):
+    def stage(self, prepare=False, elevated=False, **updates):
         f = self.fixture
         args = dict(
             root=f.root,
@@ -37,7 +38,10 @@ class IsolatedLaunchPreparationTests(unittest.TestCase):
             prepare=prepare,
         )
         args.update(updates)
-        return launch.perform(**args)
+        # GitHub Windows CI may have an elevated token; synthetic fixture
+        # staging always models an explicit standard operator unless overridden.
+        with mock.patch.object(launch, "_windows_admin_token_enabled", return_value=elevated):
+            return launch.perform(**args)
 
     def test_dry_run_has_no_new_identity_or_write(self):
         names = set(self.fixture.root.parent.iterdir())
@@ -96,6 +100,56 @@ class IsolatedLaunchPreparationTests(unittest.TestCase):
         with self.assertRaises(Exception):
             self.stage(prepare=True, root=self.fixture.root.parent/"wrong-name")
         self.assertEqual(set(self.fixture.root.parent.iterdir()), old)
+
+
+    def test_elevated_prepare_denied_before_audit_or_new_files(self):
+        old = set(self.fixture.root.parent.iterdir())
+        sha = audit._file_sha256(self.fixture.file)
+        with mock.patch.object(
+            launch.final, "perform",
+            side_effect=AssertionError("must not inspect protected files"),
+        ):
+            with self.assertRaisesRegex(
+                launch.IsolatedLaunchStop, "windows_elevated_preparation_forbidden"
+            ):
+                self.stage(prepare=True, elevated=True)
+        self.assertEqual(set(self.fixture.root.parent.iterdir()), old)
+        self.assertEqual(audit._file_sha256(self.fixture.file), sha)
+
+    def test_elevated_dry_run_has_no_new_identity(self):
+        old = set(self.fixture.root.parent.iterdir())
+        response = self.stage(prepare=False, elevated=True)
+        self.assertEqual(response["status"], "READY")
+        self.assertEqual(set(self.fixture.root.parent.iterdir()), old)
+
+    def test_token_verification_error_blocks_prepare_before_audit(self):
+        f = self.fixture
+        old = set(f.root.parent.iterdir())
+        args = dict(
+            root=f.root, custody=f.safety["relative_custody_dir"],
+            third=f.copy["relative_rehearsal_dir"], active=f.name,
+            source_sha=f.sha, logical_sha=f.logical,
+            backup_sha=f.safety["backup_sha256"],
+            custody_manifest_sha=f.safety["manifest_sha256"],
+            third_sha=f.copy["candidate_sha256"],
+            third_manifest_sha=f.copy["manifest_sha256"],
+            sql_file=real.CANDIDATE_SQL, sql_sha=f.sql_sha, prepare=True,
+        )
+        with mock.patch.object(
+            launch, "_windows_admin_token_enabled",
+            side_effect=launch.IsolatedLaunchStop(
+                "windows_operator_token_verification_unavailable"
+            ),
+        ), mock.patch.object(
+            launch.final, "perform",
+            side_effect=AssertionError("must not inspect protected files"),
+        ):
+            with self.assertRaisesRegex(
+                launch.IsolatedLaunchStop,
+                "windows_operator_token_verification_unavailable",
+            ):
+                launch.perform(**args)
+        self.assertEqual(set(f.root.parent.iterdir()), old)
 
 
 if __name__ == "__main__":

@@ -31,6 +31,44 @@ class IsolatedLaunchStop(Exception):
     pass
 
 
+
+def _windows_admin_token_enabled() -> bool:
+    """Check the effective Windows token, not the administrator account name.
+
+    A medium-integrity split token has the Administrators SID disabled and
+    CheckTokenMembership returns false. Any inability to inspect a Windows
+    token must STOP preparation rather than guessing a safe ACL.
+    """
+    if sys.platform != "win32":
+        return False
+    try:
+        import ctypes
+        from ctypes import wintypes
+
+        advapi = ctypes.WinDLL("advapi32", use_last_error=True)
+        sid = ctypes.create_string_buffer(68)  # SECURITY_MAX_SID_SIZE
+        size = wintypes.DWORD(ctypes.sizeof(sid))
+        create = advapi.CreateWellKnownSid
+        create.argtypes = (
+            wintypes.DWORD, wintypes.LPVOID, wintypes.LPVOID,
+            ctypes.POINTER(wintypes.DWORD),
+        )
+        create.restype = wintypes.BOOL
+        if not create(26, None, sid, ctypes.byref(size)):  # WinBuiltinAdministratorsSid
+            raise OSError(ctypes.get_last_error(), "CreateWellKnownSid")
+        member = wintypes.BOOL(0)
+        check = advapi.CheckTokenMembership
+        check.argtypes = (
+            wintypes.HANDLE, wintypes.LPVOID, ctypes.POINTER(wintypes.BOOL),
+        )
+        check.restype = wintypes.BOOL
+        if not check(None, sid, ctypes.byref(member)):
+            raise OSError(ctypes.get_last_error(), "CheckTokenMembership")
+        return bool(member.value)
+    except (OSError, AttributeError, TypeError, ValueError) as exc:
+        raise IsolatedLaunchStop("windows_operator_token_verification_unavailable") from exc
+
+
 def _check_isolated_copy(path: Path, expected_sha: str) -> None:
     audit._regular_file(path)
     audit._reject_sidecars(path)
@@ -68,6 +106,13 @@ def perform(
     third_sha: str, third_manifest_sha: str, sql_file: Path,
     sql_sha: str, prepare: bool,
 ) -> dict:
+    # An elevated Windows --prepare can create Administrators-owned ACLs
+    # through Python 3.12.4+ mkdir(mode=0o700), denying standard Tauri/WebView2.
+    # The gate is before *any* protected-data inspection or directory creation.
+    # Dry-run remains read-only and allowed with either token.
+    if prepare and _windows_admin_token_enabled():
+        raise IsolatedLaunchStop("windows_elevated_preparation_forbidden")
+
     # No path may be created before the operator's exact-source and all
     # protected production/backup/third-v7 SHA, M1.5 and RAM gates pass.
     qualified = final.perform(
