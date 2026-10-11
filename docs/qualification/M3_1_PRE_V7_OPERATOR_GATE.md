@@ -1,6 +1,6 @@
-# M3.1 — Operator pre-v7 fail-closed gate (design, NOT executed)
+# M3.1 — Operator pre-v7 fail-closed gate (partial Windows qualification)
 
-**PROTOCOL ONLY — no Windows app/database/backup action has been performed, no release or migration v7 activated.**
+**Windows operator evidence exists for the v6 backup/restore and isolated third-copy candidate-v7 migration. Production remains at v6, no application startup migration or activation was authorized. The PR remains a draft.**
 
 ## Purpose and current source authority
 
@@ -103,7 +103,7 @@ The distinct `--dry-run` mode writes nothing. After a separate reviewed operator
 
 Tests are disposable synthetic fixtures on Windows CI, not operator Windows acceptance. **No `--create` command is approved to run on a real operator machine merely because source CI passes**; complete a read-only rehearsal dry-run first, and independently qualify all SHA and evidence gates. The existing tool deliberately has no Tauri invocation or automatic v7 registration.
 
-## Target-Windows operator prerequisites (not yet authorized to execute)
+## Target-Windows acceptance requirements (partly fulfilled; rollback pending)
 
 1. Announce all interactive actions in advance, including any required terminal confirmation, `q` exit, privilege prompt or app close. Confirm Fabulaxiom, Tauri and Ollama are stopped when required. No scripted `reset --hard`, mass cleanup or blind deletion.
 2. Fresh exact GitHub `main`, candidate PR, workflow HEAD, own isolated Windows worktree. Keep source separate from app data; never assume `fabulaxiom.sqlite3` is active.
@@ -121,4 +121,4 @@ Tests are disposable synthetic fixtures on Windows CI, not operator Windows acce
 
 These checks intentionally **do not** replace source SHA custody, active pointer resolution, a consistent backup, verified SHA-256 manifest, full logical digests, operator/app shutdown evidence or a separately approved migration ceremony.
 
-**Status: DESIGN / ISOLATED TEST CANDIDATE ONLY. No user-facing PowerShell commands or production SQLite changes are authorized by this document.**
+**Current status: SOURCE CI and operator third-copy candidate PASS on their specified SHA. Production v7 launch remains prohibited. Operator failed-migration rollback rehearsal, final independent evidence-head CI and controlled PR merge/normalization are still outstanding.**
