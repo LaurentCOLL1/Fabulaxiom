@@ -33,6 +33,12 @@ The official references are [SQLite Backup API](https://www.sqlite.org/backup.ht
 
 **Gate status:** all newly changed test code needs fresh terminal exact-head Windows PR CI. A previous green run remains evidence for its own commit only.
 
+## Fail-closed automatic migration ceiling (source guard)
+
+Normal runtime startup now has a dedicated constant `MAX_AUTOMATIC_MIGRATION_VERSION=6`, independently of `CURRENT_SCHEMA_VERSION=6`. The runtime guard refuses any future migration whose version exceeds 6 **before running that migration's SQL**, and also refuses a database already declaring an unsupported v7+ schema when entered through the ordinary `run_migrations` path. A new explicit `ExplicitMigrationRequired` diagnostic identifies the separate-authorization requirement; it does not opt in, convert, delete, downgrade or repair anything.
+
+Two Rust in-memory tests verify both barriers using synthetic version-7 fixtures: no SQL or ledger insertion for an unapproved pending v7, and no automatic reopening/migration of a v7-marked database through the ordinary v6 runner. This is a **defense-in-depth source guard, not authorization to deploy a v7 migration**. Any future explicit migration ceremony must use a separately reviewed operator-controlled entry point, after successful backup custody and the Windows qualification gate.
+
 ## Target-Windows operator prerequisites (not yet authorized to execute)
 
 1. Announce all interactive actions in advance, including any required terminal confirmation, `q` exit, privilege prompt or app close. Confirm Fabulaxiom, Tauri and Ollama are stopped when required. No scripted `reset --hard`, mass cleanup or blind deletion.
