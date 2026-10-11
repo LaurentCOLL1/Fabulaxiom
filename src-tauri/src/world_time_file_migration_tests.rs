@@ -321,3 +321,158 @@ fn wal_live_fixture_vacuum_into_produces_consistent_v6_backup_without_raw_file_c
     let original = opened_read_only_v6(&live);
     assert_eq!(legacy_rows(&original), changed_source_rows);
 }
+
+
+// TEST-ONLY proof of semantics for a future explicitly authorized v7 entry point.
+// No runtime automatic migration or production path invokes this function.
+// Retrying a completed upgrade must be a validated no-op; forged registry rows
+// and partially installed schemas must NOT be mistaken for completed migrations.
+fn apply_candidate_explicitly_once(db: &mut Connection) -> Result<bool, String> {
+    let foreign_keys: i64 = db.query_row(
+        "PRAGMA foreign_keys", [], |row| row.get(0)
+    ).map_err(|e| e.to_string())?;
+    if foreign_keys != 1 {
+        return Err("foreign keys not enforced".to_string());
+    }
+    let version = database::current_schema_version(db).map_err(|e| e.to_string())?;
+    match version {
+        6 => {
+            inspect_v6(db).map_err(|e| format!("v6 preflight blocked: {e:?}"))?;
+            let tx = db.transaction().map_err(|e| e.to_string())?;
+            tx.execute_batch(CANDIDATE_SQL).map_err(|e| e.to_string())?;
+            tx.execute(
+                "INSERT INTO schema_migrations(version,name)
+                 VALUES (7,'007_create_world_time_foundation')", []
+            ).map_err(|e| e.to_string())?;
+            tx.commit().map_err(|e| e.to_string())?;
+            Ok(true)
+        }
+        7 => {
+            let entries: Vec<(i64, String)> = db.prepare(
+                "SELECT version,name FROM schema_migrations ORDER BY version"
+            ).map_err(|e| e.to_string())?
+                .query_map([], |row| Ok((row.get(0)?,row.get(1)?)))
+                .map_err(|e| e.to_string())?
+                .collect::<rusqlite::Result<Vec<_>>>()
+                .map_err(|e| e.to_string())?;
+            const NAMES: [&str; 7] = [
+                "001_create_app_metadata",
+                "002_create_project_hierarchy",
+                "003_create_scene_text_revisions",
+                "004_create_narrative_entity_registry",
+                "005_create_narrative_fact_provenance",
+                "006_create_human_fact_review_log",
+                "007_create_world_time_foundation",
+            ];
+            if entries.len() != NAMES.len()
+                || entries.iter().enumerate().any(|(i, (version, name))| {
+                    *version != i as i64 + 1 || name != NAMES[i]
+                })
+            {
+                return Err("migration ledger mismatch".to_string());
+            }
+            let count: i64 = db.query_row(
+                "SELECT COUNT(*) FROM pragma_table_list
+                 WHERE name IN ('fictional_calendars',
+                                'world_time_anchors',
+                                'world_time_precedences') AND strict=1",
+                [], |row| row.get(0)
+            ).map_err(|e| e.to_string())?;
+            if count != 3 {
+                return Err("candidate v7 tables missing or non-STRICT".to_string());
+            }
+            let integrity: String = db.query_row(
+                "PRAGMA integrity_check", [], |row| row.get(0)
+            ).map_err(|e| e.to_string())?;
+            let fk_broken: i64 = db.query_row(
+                "SELECT COUNT(*) FROM pragma_foreign_key_check",
+                [], |row| row.get(0)
+            ).map_err(|e| e.to_string())?;
+            if integrity != "ok" || fk_broken != 0 {
+                return Err("candidate database integrity failed".to_string());
+            }
+            Ok(false)
+        }
+        _ => Err(format!("explicit candidate cannot handle schema {version}")),
+    }
+}
+
+#[test]
+fn explicit_candidate_is_idempotent_on_populated_disposable_copy() {
+    let root = DisposableRoot::new("idempotence");
+    let source = root.file("closed-original-v6.sqlite3");
+    let copy = root.file("isolated-candidate.sqlite3");
+    create_closed_populated_v6(&source);
+    let original_bytes = fs::read(&source).expect("sealed original");
+    fs::copy(&source, &copy).expect("closed fixture copy");
+
+    let mut db = Connection::open(&copy).expect("disposable copy");
+    database::configure_connection(&db).expect("FKs");
+    let all_original = legacy_rows(&db);
+    assert!(apply_candidate_explicitly_once(&mut db).expect("explicit first upgrade"));
+    assert_eq!(database::current_schema_version(&db).unwrap(), 7);
+    db.execute(
+        "INSERT INTO world_time_anchors(id,universe_id,time_kind)
+         VALUES ('fixture-anchor','u1','unknown')", []
+    ).expect("new authored world-time assertion");
+
+    let anchor_count: i64 = db.query_row(
+        "SELECT COUNT(*) FROM world_time_anchors", [], |row| row.get(0)
+    ).expect("anchor count");
+    let before_changes: i64 = db.query_row(
+        "SELECT total_changes()", [], |row| row.get(0)
+    ).expect("change count");
+    assert!(!apply_candidate_explicitly_once(&mut db).expect("validated second no-op"));
+    let after_changes: i64 = db.query_row(
+        "SELECT total_changes()", [], |row| row.get(0)
+    ).expect("change count");
+    assert_eq!(before_changes, after_changes);
+    assert_eq!(db.query_row(
+        "SELECT COUNT(*) FROM world_time_anchors", [], |row| row.get::<_, i64>(0)
+    ).unwrap(), anchor_count);
+    assert_eq!(db.query_row(
+        "SELECT COUNT(*) FROM schema_migrations", [], |row| row.get::<_, i64>(0)
+    ).unwrap(), 7);
+    assert_eq!(legacy_rows(&db), all_original);
+    integrity(&db);
+    drop(db);
+
+    assert_eq!(fs::read(&source).unwrap(), original_bytes);
+    opened_read_only_v6(&source);
+}
+
+#[test]
+fn explicit_candidate_rejects_forged_v7_and_unknown_versions() {
+    let root = DisposableRoot::new("forged-ledger");
+    let source = root.file("synthetic-v6.sqlite3");
+    create_closed_populated_v6(&source);
+    let mut db = Connection::open(&source).expect("disposable fixture");
+    database::configure_connection(&db).expect("FKs");
+    let before = legacy_rows(&db);
+    db.execute(
+        "INSERT INTO schema_migrations(version,name)
+         VALUES (7,'007_create_world_time_foundation')", []
+    ).expect("fake v7 marker with NO v7 SQL installed");
+    let after_forgery = legacy_rows(&db);
+    assert!(apply_candidate_explicitly_once(&mut db).is_err(),
+        "v7 marker without 3 installed STRICT tables must fail closed");
+    assert_eq!(legacy_rows(&db), after_forgery);
+    assert_eq!(db.query_row(
+        "SELECT COUNT(*) FROM world_time_anchors", [], |row| row.get::<_, i64>(0)
+    ).is_err(), true, "no v7 table created by retry");
+    db.execute(
+        "INSERT INTO schema_migrations(version,name)
+         VALUES (8,'008_unapproved')", []
+    ).expect("synthetic future version");
+    assert!(apply_candidate_explicitly_once(&mut db).is_err());
+    assert_eq!(db.query_row(
+        "SELECT COUNT(*) FROM schema_migrations", [], |row| row.get::<_, i64>(0)
+    ).unwrap(), 8);
+    // The forged fixture modified its migration ledger only; original business
+    // tables remain identical.
+    for (name, rows) in before {
+        if name != "schema_migrations" {
+            assert_eq!(after_forgery.get(name), Some(&rows));
+        }
+    }
+}

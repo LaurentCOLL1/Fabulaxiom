@@ -45,6 +45,12 @@ The disposable populated v6 migration rehearsal now deliberately creates at leas
 
 The WAL backup test also commits a **new source record after** completing `VACUUM INTO`, then verifies that the read-only backup remains an unchanged point-in-time snapshot while the source sees the new row. All sources are disposable fixtures; the production app and its active marker are untouched.
 
+## Explicit candidate migration idempotence (tests only)
+
+The source-only `world_time_file_migration_tests.rs` now prototypes a **non-runtime**, explicit migration sequence that first checks the current v6 preflight, creates candidate v7 tables in a single transaction and adds the exact version-7 ledger row. A repeat invocation on an already-upgraded disposable copy validates the full seven-entry lineage, three STRICT tables and SQLite integrity before returning a **no-op**. It refuses forged version-7 ledgers lacking tables and unsupported version 8; it never attempts to repair or downgrade another schema.
+
+Regression tests retain a human-authored time anchor, the existing 14 legacy tables and the original v6 file across a repeated request. This is *not* a production migration entry point and does not change the automatic migration ceiling of v6 or authorize operator action.
+
 ## Target-Windows operator prerequisites (not yet authorized to execute)
 
 1. Announce all interactive actions in advance, including any required terminal confirmation, `q` exit, privilege prompt or app close. Confirm Fabulaxiom, Tauri and Ollama are stopped when required. No scripted `reset --hard`, mass cleanup or blind deletion.
