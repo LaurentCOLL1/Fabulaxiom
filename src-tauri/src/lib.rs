@@ -1,6 +1,10 @@
 mod backup;
 mod backup_commands;
 mod database;
+#[cfg(feature = "m31-isolated-preview")]
+mod m31_readonly_preview;
+#[cfg(all(feature = "m31-isolated-preview", not(debug_assertions)))]
+compile_error!("M3.1 read-only isolated preview is debug-only; do not ship this build flavor");
 mod entity;
 mod entity_commands;
 mod facts;
@@ -225,6 +229,7 @@ fn database_status(app: tauri::AppHandle) -> DatabaseStatus {
     }
 }
 
+#[cfg(not(feature = "m31-isolated-preview"))]
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
@@ -275,6 +280,25 @@ pub fn run() {
         ])
         .run(tauri::generate_context!())
         .expect("error while running Fabulaxiom");
+}
+
+/// Only one read-only command is registered. All M2 mutation IPC is absent.
+#[cfg(feature = "m31-isolated-preview")]
+#[cfg_attr(mobile, tauri::mobile_entry_point)]
+pub fn run() {
+    let context = tauri::generate_context!();
+    let actual_id = context.config().identifier.as_str();
+    let expected_id = std::env::var("FABULAXIOM_M31_PREVIEW_ID")
+        .expect("M3.1 isolated preview requires explicit operator identity acknowledgement");
+    m31_readonly_preview::validate_launch(actual_id, &expected_id)
+        .expect("M3.1 preview refuses a production/non-isolated Tauri identity");
+
+    tauri::Builder::default()
+        .invoke_handler(tauri::generate_handler![
+            m31_readonly_preview::m31_readonly_preview_status
+        ])
+        .run(context)
+        .expect("M3.1 isolated read-only preview failed");
 }
 
 #[cfg(test)]

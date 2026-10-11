@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import HierarchyWorkspace from "./HierarchyWorkspace";
 import EntityWorkspace from "./EntityWorkspace";
@@ -245,4 +245,63 @@ function App() {
   );
 }
 
-export default App;
+
+type M31IsolatedPreview = {
+  status: "PASS" | "FAIL";
+  identity: string;
+  schema_version: number | null;
+  integrity_ok: boolean;
+  foreign_keys_ok: boolean;
+  strict_empty_time_tables: number;
+  write_ipc_registered: false;
+  production_migrated: false;
+  error: string | null;
+};
+
+/**
+ * No regular M2 components are mounted until we know the backend build flavor.
+ * A preview-only backend does not register ANY historical write command.
+ */
+function AppGate() {
+  const [preview, setPreview] = useState<M31IsolatedPreview | null | undefined>(undefined);
+
+  useEffect(() => {
+    let current = true;
+    invoke<M31IsolatedPreview>("m31_readonly_preview_status")
+      .then((report) => { if (current) setPreview(report); })
+      .catch(() => { if (current) setPreview(null); });
+    return () => { current = false; };
+  }, []);
+
+  if (preview === undefined) {
+    return <main className="app-shell"><p>Vérification de l’identité applicative…</p></main>;
+  }
+  if (preview !== null) {
+    return (
+      <main className="app-shell">
+        <section className="hero">
+          <p className="eyebrow">M3.1 · Prévisualisation isolée · Lecture seule</p>
+          <h1>Fabulaxiom — v7 isolée</h1>
+          <p className="tagline">
+            Diagnostic du schéma de chronologie, sans création, édition, suppression
+            ou migration de données.
+          </p>
+        </section>
+        <section className="card" aria-label="Diagnostic v7 isolé">
+          <h2>{preview.status === "PASS" ? "Schéma v7 vérifié" : "Prévisualisation refusée"}</h2>
+          <p>Identité : <code>{preview.identity}</code></p>
+          <p>Version SQLite : {preview.schema_version ?? "non qualifiée"}</p>
+          <p>Intégrité : {preview.integrity_ok ? "PASS" : "NON VALIDÉE"}</p>
+          <p>Clés étrangères : {preview.foreign_keys_ok ? "PASS" : "NON VALIDÉES"}</p>
+          <p>Tables temporelles STRICT et vides : {preview.strict_empty_time_tables}/3</p>
+          <p>Commandes de modification enregistrées : aucune</p>
+          <p>Migration en production : non</p>
+          {preview.error && <p role="alert">Blocage : {preview.error}</p>}
+        </section>
+      </main>
+    );
+  }
+  return <App />;
+}
+
+export default AppGate;
