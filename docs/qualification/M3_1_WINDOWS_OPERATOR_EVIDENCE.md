@@ -32,9 +32,22 @@
 
 ## Remaining governed gates — NOT YET PASS
 
-1. **Operator failed-migration rollback on another disposable copy** with proof of atomic refusal/no partial v7 schema, while production, backup, restore and source pointer remain unchanged. Source fixture failures alone are not substitute operator evidence.
+1. **Operator fourth-copy rollback: PASS**, as independently verified and recorded above.
 2. Independent audit of historical content and critical triggers/source links against the *actual* v7 rehearsal as needed, including the absence of unforeseen chronology mutation; retain all evidence.
 3. Evidence commit's **own exact-head terminal `pull_request` CI PASS** (prior #38122561283 qualifies original code HEAD only); fresh GitHub comparison and applicable review/merge authorization.
 4. Only then evaluate the separately governed PR merge and post-merge normalization. **Do not automatically register 007 in normal startup, do not upgrade production from v6, and do not authorize M3.2+.**
 
 The real Windows third-copy PASS is **not** a production migration acceptance. SQLite reference: https://www.sqlite.org/backup.html ; https://www.sqlite.org/pragma.html .
+
+## Fourth-copy forced-error rollback — Windows operator PASS
+
+**Date:** 2026-10-11; exact source HEAD `4e01be2e9abb41e2dd9544996d8c59a262454b07`; `pull_request` Windows CI #38133034733, `completed/success`, 19/19 steps. Operator extracted all five Git-verified source files and completed both `--dry-run` (READY, no writes) and separately invoked `--create` on a **new fourth isolated derivative**, not on production or the preserved third v7 copy.
+
+- Fourth directory: `operator-qualification/m3_1/v7_rollback_rehearsal_20261011T111844Z-8e53aaaabae847f2b982b089fc7b7a57`.
+- Deliberate error: `SQLITE_CONSTRAINT_PRIMARYKEY` while the candidate SQL was staged inside an open transaction; explicit rollback PASS.
+- Rolled-back fourth database SHA-256: `b2059574929e06d9966cce96df97b4f3337d0f7b56afa5734a862110af00d495`, exactly equal to the v6 safety backup.
+- New rollback manifest SHA-256: `353170fa726b743bd810867e612acf4ecc0530ceca2268a7a53fda92145a6b0f`.
+- Independent read-only SQLite verifier: six historic migration rows, all 14 table digests, entire historical DDL inventory, physical integrity and foreign keys PASS; no candidate v7 tables remain.
+- Original active v6 database, protected v6 safety backup, v6 restore, manifest, successful third v7 copy and third-copy manifest SHA-256 all MATCH before and after; active M1.5 pointer unchanged.
+
+**Disposition:** operator rollback gate is PASS for the fourth disposable copy. This does not constitute a production upgrade, live app-startup v7 test or permission to register migration 007.
