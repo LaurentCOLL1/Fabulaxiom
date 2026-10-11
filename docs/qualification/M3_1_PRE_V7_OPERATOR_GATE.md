@@ -113,7 +113,7 @@ The **six deterministic synthetic Windows CI cases** cover dry-run, successful d
 
 This confirms SQLite's explicit transaction semantics, not an app startup v7 migration: https://www.sqlite.org/lang_transaction.html ; Python `sqlite3.executescript` requires transaction control in the script itself: https://docs.python.org/3.12/library/sqlite3.html#sqlite3.Connection.executescript .
 
-## Target-Windows acceptance requirements (partly fulfilled; rollback pending)
+## Target-Windows acceptance requirements (copy and rollback qualified; final gate pending)
 
 1. Announce all interactive actions in advance, including any required terminal confirmation, `q` exit, privilege prompt or app close. Confirm Fabulaxiom, Tauri and Ollama are stopped when required. No scripted `reset --hard`, mass cleanup or blind deletion.
 2. Fresh exact GitHub `main`, candidate PR, workflow HEAD, own isolated Windows worktree. Keep source separate from app data; never assume `fabulaxiom.sqlite3` is active.
@@ -131,4 +131,4 @@ This confirms SQLite's explicit transaction semantics, not an app startup v7 mig
 
 These checks intentionally **do not** replace source SHA custody, active pointer resolution, a consistent backup, verified SHA-256 manifest, full logical digests, operator/app shutdown evidence or a separately approved migration ceremony.
 
-**Current status: SOURCE CI and operator third-copy candidate PASS on their specified SHA. Production v7 launch remains prohibited. Operator failed-migration rollback rehearsal, final independent evidence-head CI and controlled PR merge/normalization are still outstanding.**
+**Current status (2026-10-11):** Operator third-copy v7 migration PASS and independent fourth-copy forced-error rollback PASS (`SQLITE_CONSTRAINT_PRIMARYKEY`, no partial v7 schema, exact v6 file SHA and all 14 tables preserved). Details and SHA-256 custody: `docs/qualification/M3_1_WINDOWS_OPERATOR_EVIDENCE.md`. Remaining: independent final v7 chronology/legacy constraints audit, this new evidence HEAD's terminal CI, and governed merge/normalization. Production stays v6; automatic migration 007 is NOT authorized.
