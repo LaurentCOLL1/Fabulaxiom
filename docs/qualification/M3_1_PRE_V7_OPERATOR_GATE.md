@@ -77,6 +77,12 @@ The preflight explicitly reads and validates the SQLite header's journal format 
 
 This behavior follows the SQLite WAL documentation: <https://www.sqlite.org/wal.html> and file format <https://www.sqlite.org/fileformat2.html>. The synthetic Python test checks WAL mode persistence after a clean close. This is intentionally conservative and may refuse a healthy database; **never treat refusal as corruption or delete files to make the audit pass**.
 
+## Source and activation-marker stability before reporting PASS
+
+The standalone audit now brackets its read-only SQLite inspection with **full-file SHA-256 and filesystem identity checks**. It re-resolves the M1.5 active pointer after closing the connection, rejects a changed selected database or new SQLite sidecars, and refuses `PASS` when the active file or pointer changes during inspection. Two synthetic Python tests simulate a changed source digest and activation-marker switch; both must fail without repair.
+
+These are additional race-detection controls, **not proof that the application was stopped** or that a complete operator backup exists. A successful audit remains advisory, cannot substitute for historical backup custody, and does not authorize v7.
+
 ## Target-Windows operator prerequisites (not yet authorized to execute)
 
 1. Announce all interactive actions in advance, including any required terminal confirmation, `q` exit, privilege prompt or app close. Confirm Fabulaxiom, Tauri and Ollama are stopped when required. No scripted `reset --hard`, mass cleanup or blind deletion.

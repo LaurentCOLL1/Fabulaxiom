@@ -7,6 +7,7 @@ import shutil
 import sqlite3
 import tempfile
 import unittest
+from unittest import mock
 
 import m3_1_v6_audit as audit
 
@@ -158,6 +159,52 @@ class ReadOnlyAuditTests(unittest.TestCase):
         self.assertEqual(code, 2)
         self.assertEqual(result["reason"], "file_missing_or_unreadable")
         self.assertFalse(self.default.exists())
+
+    def test_changing_source_digest_during_scan_fails_closed(self):
+        real_hash = audit._file_sha256(self.default)
+        before = self.default.read_bytes()
+        with mock.patch.object(
+            audit, "_file_sha256", side_effect=(real_hash, "0" * 64)
+        ):
+            code, result = self.invoke()
+        self.assertEqual(code, 2)
+        self.assertEqual(result["reason"], "source_file_changed_during_audit")
+        self.assertEqual(self.default.read_bytes(), before)
+
+    def test_changed_m15_active_marker_is_rejected_after_scan(self):
+        activation = self.root / "database" / "activations"
+        activation.mkdir()
+        first_name = (
+            "fabulaxiom-restored-" + ("1" * 32)
+            + "-0000000001-0000000001.sqlite3"
+        )
+        second_name = (
+            "fabulaxiom-restored-" + ("2" * 32)
+            + "-0000000001-0000000001.sqlite3"
+        )
+        shutil.copyfile(self.default, self.root / "database" / first_name)
+        shutil.copyfile(self.default, self.root / "database" / second_name)
+        marker = activation / (
+            "activation-" + ("9" * 32)
+            + "-0000000001-0000000001.active"
+        )
+        marker.write_text(first_name, encoding="utf-8")
+        original_logical = audit._logical_table
+        switched = False
+
+        def change_pointer(conn, table):
+            nonlocal switched
+            if not switched:
+                marker.write_text(second_name, encoding="utf-8")
+                switched = True
+            return original_logical(conn, table)
+
+        with mock.patch.object(audit, "_logical_table", side_effect=change_pointer):
+            code, result = self.invoke()
+        self.assertEqual(code, 2)
+        self.assertEqual(
+            result["reason"], "active_database_pointer_changed_during_audit"
+        )
 
     def test_requires_operator_acknowledgement(self):
         output = io.StringIO()

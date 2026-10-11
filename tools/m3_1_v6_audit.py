@@ -10,7 +10,6 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
-import os
 from pathlib import Path
 import re
 import sqlite3
@@ -132,14 +131,27 @@ def _file_sha256(path: Path) -> str:
     return digest.hexdigest()
 
 
+def _identity(path: Path) -> tuple[int, int, int, int, int, int]:
+    _regular_file(path)
+    meta = path.stat()
+    return (
+        meta.st_dev, meta.st_ino, meta.st_mode,
+        meta.st_size, meta.st_mtime_ns, meta.st_ctime_ns,
+    )
+
+
+def _reject_sidecars(file: Path) -> None:
+    if any(Path(str(file) + suffix).exists()
+           for suffix in ("-wal", "-shm", "-journal")):
+        raise AuditError("sqlite_sidecars_present_stop_without_deleting_them")
+
+
 def audit(root: Path) -> dict:
     file, filename = resolve_active(root)
 
     # Operator must stop the application. Refuse any journal sidecars rather
     # than risk reading an uncheckpointed WAL or triggering SQLite side effects.
-    if any(Path(str(file) + suffix).exists()
-           for suffix in ("-wal", "-shm", "-journal")):
-        raise AuditError("sqlite_sidecars_present_stop_without_deleting_them")
+    _reject_sidecars(file)
 
     # Even after a clean shutdown SQLite remembers WAL journal mode in its
     # database header. Opening it could create -wal/-shm auxiliaries. Refuse
@@ -150,6 +162,10 @@ def audit(root: Path) -> dict:
         raise AuditError("sqlite_header_invalid")
     if header[18:20] != b"\x01\x01":
         raise AuditError("wal_or_unknown_journal_header_requires_isolated_backup")
+
+    # Bracket the SELECT-only scan with a closed-file SHA-256 and file identity.
+    before_identity = _identity(file)
+    before_sha256 = _file_sha256(file)
 
     try:
         # as_uri handles Windows drive paths and escaping. mode=ro NEVER creates
@@ -198,7 +214,7 @@ def audit(root: Path) -> dict:
                 count, digest = _logical_table(conn, table)
                 tables[table] = {"rows": count, "logical_sha256": digest}
                 overall.update(table.encode("ascii") + b"\0" + bytes.fromhex(digest))
-            return {
+            report = {
                 "status": "PASS",
                 "scope": "read_only_v6_preflight_not_migration_authority",
                 "schema_version": 6,
@@ -206,12 +222,27 @@ def audit(root: Path) -> dict:
                 "legacy_tables": tables,
                 "logical_digest_algorithm": "fabulaxiom-v6-typed-row-sha256-v1",
                 "combined_logical_sha256": overall.hexdigest(),
-                "closed_file_sha256": _file_sha256(file),
+                "closed_file_sha256": before_sha256,
             }
         finally:
             conn.close()
     except sqlite3.Error as exc:
         raise AuditError("sqlite_read_or_validation_failed") from exc
+
+    # A PASS cannot attest to a different file or a different M1.5 pointer.
+    # This is advisory race detection; not an automatic app-shutdown check.
+    try:
+        after_file, after_name = resolve_active(root)
+        if after_file != file or after_name != filename:
+            raise AuditError("active_database_pointer_changed_during_audit")
+        _reject_sidecars(file)
+        if _identity(file) != before_identity:
+            raise AuditError("source_file_changed_during_audit")
+        if _file_sha256(file) != before_sha256:
+            raise AuditError("source_file_changed_during_audit")
+    except OSError as exc:
+        raise AuditError("source_custody_recheck_failed") from exc
+    return report
 
 
 def main(argv: list[str] | None = None) -> int:
