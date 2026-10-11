@@ -103,6 +103,16 @@ The distinct `--dry-run` mode writes nothing. After a separate reviewed operator
 
 Tests are disposable synthetic fixtures on Windows CI, not operator Windows acceptance. **No `--create` command is approved to run on a real operator machine merely because source CI passes**; complete a read-only rehearsal dry-run first, and independently qualify all SHA and evidence gates. The existing tool deliberately has no Tauri invocation or automatic v7 registration.
 
+## Fourth-copy forced rollback acceptance gate (source-only)
+
+`tools/m3_1_v7_rollback_rehearsal.py` adds a **distinct** operator process for a *fourth* disposable derivative of the already SHA-qualified M3.1 v6 safety backup. It imports and reruns the existing M1.5 active-source audit and v6 backup/restore/manifest/candidate-SQL SHA checks before any new files can be created. Its `--dry-run` is genuinely no-write; `--create` makes a never-before-existing UUID-scoped directory, derives a fourth v6 file using SQLite's Online Backup API, and snapshots its exact physical SHA, legacy 14-table logical values and complete schema DDL inventory.
+
+On the new fourth file only, it explicitly starts `BEGIN IMMEDIATE`, stages the **complete exact candidate 007 SQL** without committing, checks all three STRICT tables and the cycle trigger inside the open transaction, then deliberately attempts to insert the **already existing migration version 6**, requiring a SQLite `SQLITE_CONSTRAINT` error and rolling back that open transaction. It must reopen the fourth file in read-only mode and prove **v6 lineage, every legacy table/digest, both SQLite integrity checks, full DDL identity and exact pre-failure file SHA-256**. A separate manifest captures the observed deliberate constraint error and before/after custody fingerprints. Unexpected commit/no error/partial schema/bytes changed always FAIL; never auto-repair or delete failed rehearsal files.
+
+The **six deterministic synthetic Windows CI cases** cover dry-run, successful deliberate failure and rollback, source/SQL tampering, invalid candidate SQL and unexpected active-file selection. Source CI success on the **new HEAD** is required before any operator Windows step. A real `--create` is not pre-authorized by adding source, and must follow a separately verified operator `--dry-run`. No active production DB, its M1.5 activation marker, old backups, prior v6 restore or successful third-copy v7 file may be migrated or modified.
+
+This confirms SQLite's explicit transaction semantics, not an app startup v7 migration: https://www.sqlite.org/lang_transaction.html ; Python `sqlite3.executescript` requires transaction control in the script itself: https://docs.python.org/3.12/library/sqlite3.html#sqlite3.Connection.executescript .
+
 ## Target-Windows acceptance requirements (partly fulfilled; rollback pending)
 
 1. Announce all interactive actions in advance, including any required terminal confirmation, `q` exit, privilege prompt or app close. Confirm Fabulaxiom, Tauri and Ollama are stopped when required. No scripted `reset --hard`, mass cleanup or blind deletion.
