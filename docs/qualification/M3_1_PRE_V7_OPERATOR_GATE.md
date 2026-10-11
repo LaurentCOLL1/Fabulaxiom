@@ -83,6 +83,16 @@ The standalone audit now brackets its read-only SQLite inspection with **full-fi
 
 These are additional race-detection controls, **not proof that the application was stopped** or that a complete operator backup exists. A successful audit remains advisory, cannot substitute for historical backup custody, and does not authorize v7.
 
+## Independently testable operator v6 backup and restore gate (new source)
+
+`tools/m3_1_v6_backup.py` uses the already qualified read-only M1.5 v6 inspector as a fail-closed gate. Its required command-line arguments are explicit app-data root, exact restored-active filename, **previously observed original source file SHA-256**, **previously observed v1 logical digest**, and application-stopped acknowledgement. The required `--dry-run` mode creates **no files**. The required, distinct `--create` mode is the *only* action that creates custody files.
+
+The `--create` procedure creates a **new UUID-suffixed directory** under existing operator custody `operator-qualification/m3_1/`, never overwrites any historical file or existing source. It uses Python `sqlite3.Connection.backup` (official SQLite Online Backup API) to create a new SQLite-consistent v6 backup; reopens that backup read-only and compares **all 14 v6 tables (typed SHA-256 row hashes)**, six migration names, owner, physical integrity and foreign-key integrity against the exact preflight baseline. It then runs a **second** Online Backup API operation *from the validated backup to a separate new database* and checks all counts and digests again. The M1.5 source pointer and source SHA-256 are rechecked afterward; only then does it create a unique manifest with source/backup/restore file hashes and the standardized logical digest. The manifest and output intentionally omit absolute Windows paths and user narrative text.
+
+**Failure semantics:** original source and historical backups must remain intact. If an exception occurs after creating the new custody directory, retain it for operator investigation (no automatic deletion or overwrite); no production restoration or v7 migration is performed. These outputs are not release artifacts. CI tests operate **exclusively on synthetic disposable SQLite databases**; an exact-head CI PASS is necessary before proposing operator invocation, but operator Windows evidence and independent backup/restore review are also required.
+
+SQLite sources: [Python sqlite3 Connection.backup](https://docs.python.org/3.12/library/sqlite3.html#sqlite3.Connection.backup), [SQLite Online Backup API](https://www.sqlite.org/backup.html), [SQLite integrity & FK checks](https://www.sqlite.org/pragma.html).
+
 ## Target-Windows operator prerequisites (not yet authorized to execute)
 
 1. Announce all interactive actions in advance, including any required terminal confirmation, `q` exit, privilege prompt or app close. Confirm Fabulaxiom, Tauri and Ollama are stopped when required. No scripted `reset --hard`, mass cleanup or blind deletion.
