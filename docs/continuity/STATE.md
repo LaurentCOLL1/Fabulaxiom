@@ -1,5 +1,15 @@
 # Fabulaxiom — Current State
 
+## Current authority — M3.1 implementation merged; independent normalization pending (2026-10-11)
+
+- **Repository visibility: PUBLIC**, `main` genuinely branch-protected by active repository ruleset [Protect main](https://github.com/LaurentCOLL1/Fabulaxiom/rules/24895490). Rules include deletion/force-push denial, pull request and strict exact-app GitHub Actions check `Windows frontend and Rust checks` (app 15368), with no bypass actors or mandatory external approval (solo developer).
+- Implementation PR [#33](https://github.com/LaurentCOLL1/Fabulaxiom/pull/33) **MERGED**, final head `796a4b65e596b9bc05bd00b523b3209f9736524d`, strict required-check [CI #38176139985 attempt 3](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/38176139985) **completed/success** (23 Windows job steps SUCCESS). Guarded implementation merge: `922d155d4f4321ed8b90955d4ea96388751f0daf`; fresh `main` re-fetch confirmed.
+- Actual Windows isolated v7 GUI and read-only IPC **PASS** on operator-qualified source `4d520e1825ecd08d20484b0e72d60ffe6ea09e4c`; after controlled exit, **11/11** original and isolated SHA-256 preserved, M1.5 restored-active production v6 marker unchanged, no SQLite sidecars. Second launch worked in medium-integrity standard Windows token after approved, individually backed-up user-SID-only ACL adjustment to existing isolated Tauri identity. No live executable path/PID snapshot was obtained; avoid asserting it.
+- PR #33 adds prevention for future elevated Windows `--prepare`, tested with synthetic fail-closed fixtures and a real no-staging Win32 token API smoke check. Normal runtime SQLite remains **v6**, `007` is not in automatic migrations. **A successful isolated preview is not a production v7 migration**.
+- **This separate normalization PR is documentary only**, must obtain its OWN terminal exact-head `pull_request` CI and protected SHA-guarded merge. Until then M3.1 is **IMPLEMENTATION MERGED / NORMALIZATION PENDING** and M3.2 remains unauthorized. Detailed gate: `docs/qualification/M3_1_POST_MERGE_NORMALIZATION.md`.
+
+Historical checkpoints below are preserved for audit and must not override this authority.
+
 ## Current M3.1 candidate checkpoint (PR #33; not merged)
 
 On Windows (2026-10-11), actual isolated debug-only v7 Tauri GUI and read-only diagnostic IPC **PASS**, then 11/11 protected bytes and restored-active v6 M1.5 pointer **PASS after closure** at qualified operator head `4d520e1825ecd08d20484b0e72d60ffe6ea09e4c`, CI #38160997846 success. The initial WebView2 failure was due to restrictive NTFS access to an elevated-operator-prepared identity; the old ACL was backed up and only the isolated root was granted current-user Modify, with medium-integrity requalification. Detailed evidence: `docs/qualification/M3_1_WINDOWS_OPERATOR_EVIDENCE.md`.
@@ -9,7 +19,7 @@ The current PR adds a fail-closed Windows elevated-token guard before any NEW is
 ## Repository
 
 - Repository: `LaurentCOLL1/Fabulaxiom`
-- Visibility: private
+- Visibility: **public**
 - Default branch: `main`
 
 ## Milestone state

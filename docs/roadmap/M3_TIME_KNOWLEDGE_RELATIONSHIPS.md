@@ -1,5 +1,7 @@
 # M3 — Time, Knowledge and Relationships (Accepted Governed Roadmap)
 
+**2026-10-11 current post-M3.1 implementation authority:** PR #33 merged at `main=922d155d4f4321ed8b90955d4ea96388751f0daf`, exact-head CI #38176139985 (attempt 3) SUCCESS. Operator isolated read-only v7 Windows UI, IPC, SQLite audit and post-close 11/11 custody PASS. Normal production remains schema v6 with no automatic 007. A separate M3.1 documentary normalization PR with own CI and protected merge is required before M3.2 authorization. Historical planning checkpoints and stale private-repo branch-protection notes below are preserved but superseded by active public-repo ruleset Protect main. 
+
 **PLANNING ACCEPTED VIA PR #31; EFFECTIVE AUTHORIZATION FOR M3.1 ONLY AFTER THE INDEPENDENT PLANNING-NORMALIZATION PR PASSES ITS OWN EXACT-HEAD CI, MERGES WITH `expected_head_sha`, AND THE NEW `main` IS RE-FETCHED.** No M3 runtime code or SQLite v7 was introduced by planning.
 
 Origin authority: Fabulaxiom V1 roadmap, M3 deliverables after fully normalized M2. Normalized main checkpoint: `f13b4f8c249866ff60a19d7895b6cfaede56398a` (protected merge of M2.5 normalization PR #30). Existing SQLite schema is **v6**, with immutable scene-revision anchors, stable Universe-scoped entities, optional fact validity, human-governed fact statuses and append-only review events.
