@@ -38,6 +38,10 @@ All three tables are **SQLite STRICT** and preserve legacy M2 tables, immutable 
 - After that success, additional isolated M2 nonregression tests were added: full Unicode UTF-8 source citation, original immutable revision pointer, existing human review/canon event history and same-Universe validation for chronology precedence sources. **The new HEAD requires its own terminal exact-head CI; #38073397298 is no longer sufficient for the current PR.**
 - The qualification test source is `src-tauri/src/world_time_schema_tests.rs`; the schema candidate is `src-tauri/sql/m3_1_world_time_v7_candidate.sql`. No runtime registration, no SQLite v7 activation, no operator database access.
 
+## Automatic-upgrade hard stop
+
+The existing v6 runtime now explicitly caps all automatic SQLite migration execution at v6 with `MAX_AUTOMATIC_MIGRATION_VERSION=6` and `ExplicitMigrationRequired` for v7+. It rejects hypothetical unapproved v7 SQL and unexpected already-v7 schema on app startup. **This does not register or apply the candidate v7 SQL and does not change `CURRENT_SCHEMA_VERSION=6`.** The cap cannot substitute for a separately implemented opt-in v7 migration procedure or for operator backup/restore evidence. A new exact-head CI is required after the code and documentation updates.
+
 ## Hard gate before registering or running v7
 
 1. Accept and qualify this isolated schema candidate on current exact PR HEAD with all Windows `Fabulaxiom CI` steps and Rust tests. Do not treat a CI PASS as Windows data migration acceptance.
