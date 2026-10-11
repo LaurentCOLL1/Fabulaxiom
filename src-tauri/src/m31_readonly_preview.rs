@@ -180,14 +180,18 @@ pub(crate) fn m31_readonly_preview_status(app: tauri::AppHandle) -> PreviewStatu
 mod tests {
     use super::*;
     use crate::database;
-    use std::{path::PathBuf, process, time::{SystemTime, UNIX_EPOCH}};
+    use std::{path::PathBuf, process, sync::atomic::{AtomicU64, Ordering}, time::{SystemTime, UNIX_EPOCH}};
 
+    // System clock nanoseconds can repeat across parallel Windows test threads.
+    // A process-wide atomic suffix preserves unique disposable fixture paths.
+    static NEXT_FIXTURE_ID: AtomicU64 = AtomicU64::new(0);
     struct TempDir(PathBuf);
     impl TempDir {
         fn new() -> Self {
             let ns = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_nanos();
+            let sequence = NEXT_FIXTURE_ID.fetch_add(1, Ordering::Relaxed);
             let parent = std::env::temp_dir().join(format!(
-                "fabulaxiom-m31-v7-preview-{}-{ns}", process::id()
+                "fabulaxiom-m31-v7-preview-{}-{ns}-{sequence}", process::id()
             ));
             fs::create_dir(&parent).unwrap();
             Self(parent)
@@ -195,6 +199,18 @@ mod tests {
     }
     impl Drop for TempDir {
         fn drop(&mut self) { fs::remove_dir_all(&self.0).unwrap(); }
+    }
+
+    #[test]
+    fn disposable_temp_paths_are_unique_across_parallel_threads() {
+        let fixtures: Vec<TempDir> = (0..20)
+            .map(|_| std::thread::spawn(TempDir::new))
+            .map(|thread| thread.join().expect("fixture thread"))
+            .collect();
+        let paths: std::collections::HashSet<_> =
+            fixtures.iter().map(|entry| entry.0.clone()).collect();
+        assert_eq!(paths.len(), fixtures.len());
+        assert!(paths.iter().all(|path| path.is_dir()));
     }
 
     fn id() -> &'static str { "com.fabulaxiom.m31launchdb8d3278504c448084478a70ccb71cbd" }
