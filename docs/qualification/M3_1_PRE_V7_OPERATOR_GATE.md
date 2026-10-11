@@ -23,6 +23,16 @@ The acceptance assertions are deliberate: the new copy reaches v7 with three STR
 
 **These `fs::copy` calls are suitable only for *closed disposable test databases*. Never copy a live SQLite main file this way in the operator protocol.** Actual live/restored production pre-v7 custody requires an independently qualified SQLite-consistent backup, verified non-overwriting manifest, active pointer protection, and deliberate opt-in. These tests do not generate a production-safe backup or an operator authorization.
 
+## Strengthened closed-file and WAL test coverage
+
+The file-backed fixture tests now take deterministic, type-tagged, row-order-independent snapshots of **every column and row of all 14 legacy v6 tables**. For the new v7 copy, the only intentional difference in the old migration registry is a new version-7 row; the original six rows must remain byte/value-identical. Both the successful upgrade and failed upgrade rollback assert the entire legacy snapshot, not merely counts or selected canonical facts. These snapshots are **test-only data comparisons, not yet production SHA-256 manifests**.
+
+A separate test uses an actual open, disposable SQLite **WAL** source and `VACUUM INTO` to create a SQLite-consistent non-overwriting copy. The copied database is reopened in read-only mode and inspected while the source connection is still open, followed by a source comparison. This explicitly checks that a proper SQLite backup works for WAL fixtures; it does not use `fs::copy` for a live source.
+
+The official references are [SQLite Backup API](https://www.sqlite.org/backup.html), [VACUUM INTO](https://www.sqlite.org/lang_vacuum.html#vacuuminto) and [SQLite PRAGMAs](https://www.sqlite.org/pragma.html#pragma_integrity_check). `integrity_check` cannot replace `foreign_key_check`.
+
+**Gate status:** all newly changed test code needs fresh terminal exact-head Windows PR CI. A previous green run remains evidence for its own commit only.
+
 ## Target-Windows operator prerequisites (not yet authorized to execute)
 
 1. Announce all interactive actions in advance, including any required terminal confirmation, `q` exit, privilege prompt or app close. Confirm Fabulaxiom, Tauri and Ollama are stopped when required. No scripted `reset --hard`, mass cleanup or blind deletion.
