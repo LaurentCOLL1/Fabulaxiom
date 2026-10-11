@@ -63,6 +63,14 @@ The explicit *test-only* v7 retry gate now compares **both** the three governed 
 
 This is a strict test prototype; SQLite `sqlite_stat%` statistics structures are excluded from the legacy DDL comparison because they are optimization metadata. It does not authorize production migration, create an operator backup or supersede data-content logical digests.
 
+## Offline read-only operator audit candidate (source available, not executed)
+
+The new standalone Python 3.12 standard-library tool `tools/m3_1_v6_audit.py` is deliberately **not** a migration command and cannot create a backup. It requires an **explicit absolute app-data root** and an explicit `--ack-app-stopped` operator assertion (not a process detector). It follows the M1.5 `database/activations/activation-*.active` pointer naming/sorting algorithm before falling back to the default database. It refuses missing or symlinked files, wrong six-version lineage, incorrect owner, unexpected v7 tables, non-STRICT legacy tables, sidecar `-wal/-shm/-journal` files, failed SQLite physical/FK integrity or any other validation error.
+
+It opens the selected file only with SQLite URI `mode=ro` and `query_only=ON`; it never calls the app's `open_database` automatic migration runner. Its JSON output on stdout contains the **active filename only** (no absolute path or row contents), original closed-file SHA-256, per-table type-aware logical SHA-256 and row counts for all 14 legacy tables. The `fabulaxiom-v6-typed-row-sha256-v1` algorithm is a **new audit algorithm** and its digest must not be compared as if identical to older operator logical-digest algorithms. A passing dry-run does **not** verify app shutdown, historical backup custody or approval for v7.
+
+`tools/test_m3_1_v6_audit.py` exercises eight disposable synthetic v6 fixtures, including M1.5 restored-pointer selection, invalid marker, erroneous migration registry, broken foreign key, WAL sidecar rejection, missing database refusal and non-mutating successful audit. GitHub Windows CI invokes the Python tests using a pinned 3.12 interpreter. **Do not execute the tool against the operator's actual data until an explicit preflight sequence is agreed.** No Python standard-library dependencies or lockfile changes are introduced.
+
 ## Target-Windows operator prerequisites (not yet authorized to execute)
 
 1. Announce all interactive actions in advance, including any required terminal confirmation, `q` exit, privilege prompt or app close. Confirm Fabulaxiom, Tauri and Ollama are stopped when required. No scripted `reset --hard`, mass cleanup or blind deletion.
