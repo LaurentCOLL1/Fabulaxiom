@@ -71,6 +71,12 @@ It opens the selected file only with SQLite URI `mode=ro` and `query_only=ON`; i
 
 `tools/test_m3_1_v6_audit.py` exercises eight disposable synthetic v6 fixtures, including M1.5 restored-pointer selection, invalid marker, erroneous migration registry, broken foreign key, WAL sidecar rejection, missing database refusal and non-mutating successful audit. GitHub Windows CI invokes the Python tests using a pinned 3.12 interpreter. **Do not execute the tool against the operator's actual data until an explicit preflight sequence is agreed.** No Python standard-library dependencies or lockfile changes are introduced.
 
+## Strict WAL-header hard stop (read-only audit)
+
+The preflight explicitly reads and validates the SQLite header's journal format bytes **before opening the database**. It accepts only the ordinary rollback-journal header bytes `01 01` and refuses `02 02` (WAL mode) even if no `-wal`/`-shm` sidecar currently exists. Existing auxiliary files also cause a hard failure; neither is removed or checkpointed. Operators must preserve any WAL content and use a separately approved, SQLite-consistent backup procedure instead of trying to fix sidecars or force-open WAL from this audit.
+
+This behavior follows the SQLite WAL documentation: <https://www.sqlite.org/wal.html> and file format <https://www.sqlite.org/fileformat2.html>. The synthetic Python test checks WAL mode persistence after a clean close. This is intentionally conservative and may refuse a healthy database; **never treat refusal as corruption or delete files to make the audit pass**.
+
 ## Target-Windows operator prerequisites (not yet authorized to execute)
 
 1. Announce all interactive actions in advance, including any required terminal confirmation, `q` exit, privilege prompt or app close. Confirm Fabulaxiom, Tauri and Ollama are stopped when required. No scripted `reset --hard`, mass cleanup or blind deletion.

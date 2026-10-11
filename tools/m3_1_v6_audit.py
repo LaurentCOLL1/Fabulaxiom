@@ -141,6 +141,16 @@ def audit(root: Path) -> dict:
            for suffix in ("-wal", "-shm", "-journal")):
         raise AuditError("sqlite_sidecars_present_stop_without_deleting_them")
 
+    # Even after a clean shutdown SQLite remembers WAL journal mode in its
+    # database header. Opening it could create -wal/-shm auxiliaries. Refuse
+    # this mode *before* any sqlite3 connection, with no checkpoint/delete.
+    with file.open("rb") as header_source:
+        header = header_source.read(20)
+    if len(header) < 20 or header[:16] != b"SQLite format 3\x00":
+        raise AuditError("sqlite_header_invalid")
+    if header[18:20] != b"\x01\x01":
+        raise AuditError("wal_or_unknown_journal_header_requires_isolated_backup")
+
     try:
         # as_uri handles Windows drive paths and escaping. mode=ro NEVER creates
         # a missing database file; query_only protects against accidental writes.

@@ -131,6 +131,27 @@ class ReadOnlyAuditTests(unittest.TestCase):
         self.assertIn("sidecars_present", result["reason"])
         self.assertEqual(sidecar.read_bytes(), b"synthetic leftover")
 
+    def test_wal_mode_header_without_sidecars_refused_before_sqlite_open(self):
+        conn = sqlite3.connect(self.default)
+        self.assertEqual(
+            conn.execute("PRAGMA journal_mode=WAL").fetchone()[0].lower(),
+            "wal",
+        )
+        conn.close()
+        # SQLite may or may not have removed auxiliaries on clean shutdown.
+        # The header itself must still indicate WAL (bytes 18,19 are 2).
+        with self.default.open("rb") as source:
+            header = source.read(20)
+        self.assertEqual(header[18:20], b"\x02\x02")
+        before = self.default.read_bytes()
+        code, result = self.invoke()
+        self.assertEqual(code, 2)
+        self.assertIn(result["reason"], (
+            "sqlite_sidecars_present_stop_without_deleting_them",
+            "wal_or_unknown_journal_header_requires_isolated_backup",
+        ))
+        self.assertEqual(self.default.read_bytes(), before)
+
     def test_absent_active_file_is_not_created(self):
         self.default.unlink()
         code, result = self.invoke()
