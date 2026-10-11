@@ -1,5 +1,11 @@
 # Fabulaxiom — Next Authorized Work
 
+## Current exact-head gate — M3.1 PR #33
+
+Bounded Windows debug-only isolated Tauri v7 read-only GUI, IPC, and post-close 11/11 custody **PASS** on operator-qualified source `4d520e1825ecd08d20484b0e72d60ffe6ea09e4c`. Next: obtain terminal SUCCESS for the **new security/preparation guard + documentary evidence HEAD** on PR #33; re-fetch actual `main`, PR/branch, all exact-head checks and scope; explicitly assess isolated controlled-launch satisfaction versus still-unapproved production v7 activation; then only when all gates pass, SHA-guarded implementation merge, re-fetch main, **independent** documentary normalization PR/CI/merge. Do not unlock M3.2 until normalized. No auto-007, production v7, M4+, ComfyUI or release.
+
+Older next-work and planning records below are retained for historical continuity, not current authorization.
+
 ## Completed milestone
 
 **M1 — Persistence and project foundation: COMPLETE + MERGED + NORMALIZED**

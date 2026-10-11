@@ -1,5 +1,11 @@
 # Fabulaxiom — Current State
 
+## Current M3.1 candidate checkpoint (PR #33; not merged)
+
+On Windows (2026-10-11), actual isolated debug-only v7 Tauri GUI and read-only diagnostic IPC **PASS**, then 11/11 protected bytes and restored-active v6 M1.5 pointer **PASS after closure** at qualified operator head `4d520e1825ecd08d20484b0e72d60ffe6ea09e4c`, CI #38160997846 success. The initial WebView2 failure was due to restrictive NTFS access to an elevated-operator-prepared identity; the old ACL was backed up and only the isolated root was granted current-user Modify, with medium-integrity requalification. Detailed evidence: `docs/qualification/M3_1_WINDOWS_OPERATOR_EVIDENCE.md`.
+
+The current PR adds a fail-closed Windows elevated-token guard before any NEW isolated `--prepare`, while leaving the existing qualified identity untouched. Its newer HEAD and CI must be verified **separately**. Earlier milestone notes below are historical main checkpoints, not assertions that M3.1 is merged. **No production v7 migration or 007 automatic migration; M3.1 not yet COMPLETE + MERGED + NORMALIZED; M3.2 unauthorized.**
+
 ## Repository
 
 - Repository: `LaurentCOLL1/Fabulaxiom`
