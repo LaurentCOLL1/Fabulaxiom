@@ -38,8 +38,10 @@ fn create_closed_populated_v6(path: &Path) {
     let db = database::open_database(path).expect("create isolated v6 test fixture");
     db.execute_batch(r#"
         INSERT INTO universes(id,name) VALUES ('u1','Aurora');
-        INSERT INTO novels(id,universe_id,title,sort_order)
-            VALUES ('n1','u1','Ancient Tales',0);
+        INSERT INTO series(id,universe_id,name,sort_order)
+            VALUES ('series1','u1','Eclipse arc',0);
+        INSERT INTO novels(id,universe_id,series_id,title,sort_order)
+            VALUES ('n1','u1','series1','Ancient Tales',0);
         INSERT INTO chapters(id,novel_id,title,sort_order)
             VALUES ('c1','n1','Dawn',0);
         INSERT INTO scenes(id,chapter_id,title,sort_order)
@@ -50,8 +52,12 @@ fn create_closed_populated_v6(path: &Path) {
             VALUES ('s1','r1');
         INSERT INTO narrative_entities(id,universe_id,kind,name)
             VALUES ('e1','u1','event','Éclipse');
+        INSERT INTO entity_aliases(id,entity_id,universe_id,alias)
+            VALUES ('a1','e1','u1','The lunar eclipse');
         INSERT INTO narrative_facts(id,entity_id,universe_id,fact_key,fact_value,provenance_kind)
-            VALUES ('f1','e1','u1','state','confirmed','unsourced');
+            VALUES ('f1','e1','u1','state','confirmed','sourced');
+        INSERT INTO fact_sources(id,fact_id,universe_id,revision_id,start_byte,end_byte,quoted_text)
+            VALUES ('src1','f1','u1','r1',0,8,'Éclipse');
         INSERT INTO fact_review_events
             (id,fact_id,universe_id,revision_number,previous_status,next_status,
              action_kind,actor_kind,reviewer_label,human_confirmation,reason)
@@ -156,6 +162,9 @@ fn offline_copy_rehearsal_retains_original_v6_and_human_review() {
     let original_db = opened_read_only_v6(&active_simulation);
     let original_snapshot = checked_m2_snapshot(&original_db);
     let all_original_rows = legacy_rows(&original_db);
+    assert_eq!(all_original_rows.len(), 14);
+    assert!(all_original_rows.values().all(|rows| !rows.is_empty()),
+        "populated fixture must exercise all 14 legacy v6 tables");
     drop(original_db);
 
     let mut candidate = Connection::open(&copy).expect("new copy only");
@@ -297,7 +306,18 @@ fn wal_live_fixture_vacuum_into_produces_consistent_v6_backup_without_raw_file_c
 
     let source_after = legacy_rows(&db);
     assert_eq!(source_after, rows_before, "snapshot creation must not mutate source");
+    db.execute(
+        "INSERT INTO narrative_entities(id,universe_id,kind,name)
+         VALUES ('wal-later-event','wal-u1','event','Added after snapshot')",
+        [],
+    ).expect("commit another independent WAL record after backup");
+    let changed_source_rows = legacy_rows(&db);
+    assert_ne!(changed_source_rows, rows_before, "post-backup change must be observable");
+    let stable_backup = opened_read_only_v6(&consistent);
+    assert_eq!(legacy_rows(&stable_backup), rows_before,
+        "sealed WAL backup must NOT include post-snapshot writes");
+    drop(stable_backup);
     drop(db);
     let original = opened_read_only_v6(&live);
-    assert_eq!(legacy_rows(&original), rows_before);
+    assert_eq!(legacy_rows(&original), changed_source_rows);
 }

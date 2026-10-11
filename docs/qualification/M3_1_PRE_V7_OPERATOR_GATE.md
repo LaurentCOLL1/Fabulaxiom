@@ -39,6 +39,12 @@ Normal runtime startup now has a dedicated constant `MAX_AUTOMATIC_MIGRATION_VER
 
 Two Rust in-memory tests verify both barriers using synthetic version-7 fixtures: no SQL or ledger insertion for an unapproved pending v7, and no automatic reopening/migration of a v7-marked database through the ordinary v6 runner. This is a **defense-in-depth source guard, not authorization to deploy a v7 migration**. Any future explicit migration ceremony must use a separately reviewed operator-controlled entry point, after successful backup custody and the Windows qualification gate.
 
+## Populated legacy provenance and WAL snapshot boundary
+
+The disposable populated v6 migration rehearsal now deliberately creates at least one row in **every one of the 14 legacy v6 tables**, including a series, entity alias, exact UTF-8 `fact_sources` quote, immutable scene revision and two human review events culminating in canon approval. The before/after comparison checks all original rows and typed column values, not merely row counts. The M2.3 citation uses the exact byte span `Éclipse` (8 UTF-8 bytes), and the source revision belongs to the same Universe.
+
+The WAL backup test also commits a **new source record after** completing `VACUUM INTO`, then verifies that the read-only backup remains an unchanged point-in-time snapshot while the source sees the new row. All sources are disposable fixtures; the production app and its active marker are untouched.
+
 ## Target-Windows operator prerequisites (not yet authorized to execute)
 
 1. Announce all interactive actions in advance, including any required terminal confirmation, `q` exit, privilege prompt or app close. Confirm Fabulaxiom, Tauri and Ollama are stopped when required. No scripted `reset --hard`, mass cleanup or blind deletion.
