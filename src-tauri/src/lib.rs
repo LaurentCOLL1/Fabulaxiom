@@ -29,6 +29,10 @@ mod world_time_file_migration_tests;
 // No IPC or automatic database migration is introduced.
 #[cfg(test)]
 mod m32_manual_chronology;
+// Stage-9 adversarial tests use two PRIVATE-cache connections to a unique
+// scratch SQLite file; never a user database, backup or Tauri IPC.
+#[cfg(test)]
+mod m32_sqlite_concurrency_tests;
 
 use std::time::Duration;
 

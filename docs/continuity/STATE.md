@@ -1,5 +1,9 @@
 # Fabulaxiom — Current State
 
+## 2026-10-12 — M3.2 stage 9 independent SQLite connections, pending exact-head CI
+
+Stage-8 `eb9f6486567fdcb65ba5556b2861593c7b18bca0` has **terminal required Windows CI #38263839166 23/23 PASS**. New stage-9 test-only scratch SQLite file (NOT operator data) verifies two separate WAL connections, committed-only read visibility, serialized writers, atomic correction withdrawal/replacement rollback and commit, UNIQUE fork veto, raw-v7 cycle-bypass veto and read-only `query_only` refusal. Exact-head CI is not yet accepted. Normal runtime remains v6, M1.5 restored-active activation untouched, no new Tauri IPC. PR #35 OPEN/DRAFT, M3.3 unauthorized.
+
 ## 2026-10-12 — M3.2 stage 8 generic immutable correction chain, new CI pending
 
 Stage-7 exact source `31e2078cfeedf5f0d755fc0fc0c940685d3cb4f0` obtained terminal required Windows CI #38262070398 23/23 PASS. New stage-8 candidate adds test-only unlimited-depth linear correction-chain lineage (STRICT immutable nodes and withdrawals), current active-graph projection and cycle guards; no production IPC, data access or migrations. Exact-head CI still required. PR #35 remains OPEN/DRAFT/UNMERGED, M3.3 unauthorized. M1.5 restored production v6 and backup custody untouched. Detailed gate: `docs/qualification/M3_2_MANUAL_CHRONOLOGY_STAGE1.md`.
