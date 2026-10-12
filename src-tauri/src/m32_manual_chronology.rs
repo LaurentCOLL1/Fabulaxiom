@@ -422,6 +422,83 @@ pub fn list_successor_history(
     })?.collect()
 }
 
+
+#[derive(Debug, PartialEq, Eq)]
+pub struct ChainHistory {
+    pub id: String,
+    pub prior_successor_id: Option<String>,
+    pub prior_chain_id: Option<String>,
+    pub before_anchor_id: String,
+    pub after_anchor_id: String,
+    pub reason: String,
+    pub revocation_id: Option<String>,
+    pub revocation_reason: Option<String>,
+}
+
+// A chain child must name one already-withdrawn predecessor. Branches, gaps
+// and same-Universe mismatches fail at SQL INSERT; no prior record is changed.
+pub fn append_chain_correction(
+    db: &Connection,
+    id: &str,
+    universe_id: &str,
+    prior_successor_id: Option<&str>,
+    prior_chain_id: Option<&str>,
+    before_anchor_id: &str,
+    after_anchor_id: &str,
+    reason: &str,
+    source_revision_id: Option<&str>,
+) -> Result<()> {
+    db.execute(
+        "INSERT INTO world_time_chain_links
+         (id,universe_id,prior_successor_id,prior_chain_id,before_anchor_id,
+          after_anchor_id,reason,source_revision_id)
+         VALUES (?1,?2,?3,?4,?5,?6,?7,?8)",
+        params![id, universe_id, prior_successor_id, prior_chain_id,
+                before_anchor_id, after_anchor_id, reason, source_revision_id],
+    )?;
+    Ok(())
+}
+
+pub fn revoke_chain_correction(
+    db: &Connection,
+    id: &str,
+    universe_id: &str,
+    chain_id: &str,
+    reason: &str,
+    source_revision_id: Option<&str>,
+) -> Result<()> {
+    db.execute(
+        "INSERT INTO world_time_chain_revocations
+         (id,universe_id,chain_id,reason,source_revision_id)
+         VALUES (?1,?2,?3,?4,?5)",
+        params![id, universe_id, chain_id, reason, source_revision_id],
+    )?;
+    Ok(())
+}
+
+pub fn list_chain_history(db: &Connection, universe_id: &str) -> Result<Vec<ChainHistory>> {
+    let mut stmt = db.prepare(
+        "SELECT c.id,c.prior_successor_id,c.prior_chain_id,c.before_anchor_id,
+                c.after_anchor_id,c.reason,r.id,r.reason
+         FROM world_time_chain_links c
+         LEFT JOIN world_time_chain_revocations r ON r.chain_id=c.id
+              AND r.universe_id=c.universe_id
+         WHERE c.universe_id=?1 ORDER BY c.id",
+    )?;
+    stmt.query_map([universe_id], |row| {
+        Ok(ChainHistory {
+            id: row.get(0)?,
+            prior_successor_id: row.get(1)?,
+            prior_chain_id: row.get(2)?,
+            before_anchor_id: row.get(3)?,
+            after_anchor_id: row.get(4)?,
+            reason: row.get(5)?,
+            revocation_id: row.get(6)?,
+            revocation_reason: row.get(7)?,
+        })
+    })?.collect()
+}
+
 // Reflects active partial-order assertions, not a chronological total order.
 // The original legacy and corrected assertions remain separately inspectable.
 pub fn list_active_precedence_graph(
@@ -454,6 +531,7 @@ mod tests {
     const RESTATEMENT_REVOCATION_SQL: &str = include_str!("../sql/m3_2_restatement_revocations_candidate.sql");
     const SUCCESSOR_SQL: &str = include_str!("../sql/m3_2_restatement_successors_candidate.sql");
     const SUCCESSOR_REVOCATION_SQL: &str = include_str!("../sql/m3_2_successor_revocations_candidate.sql");
+    const CHAIN_SQL: &str = include_str!("../sql/m3_2_recursive_chain_candidate.sql");
 
     fn isolated_v7() -> Connection {
         let mut db = Connection::open_in_memory().expect("in-memory only");
@@ -467,6 +545,7 @@ mod tests {
         tx.execute_batch(RESTATEMENT_REVOCATION_SQL).expect("isolated correction retirement");
         tx.execute_batch(SUCCESSOR_SQL).expect("isolated one-generation successor");
         tx.execute_batch(SUCCESSOR_REVOCATION_SQL).expect("isolated successor withdrawal");
+        tx.execute_batch(CHAIN_SQL).expect("isolated recursive correction chain");
         tx.execute(
             "INSERT INTO schema_migrations(version,name)
              VALUES (7,'007_create_world_time_foundation')", [],
@@ -1053,5 +1132,147 @@ mod tests {
         assert!(list_active_precedence_graph(&db,"u1").unwrap().is_empty());
     }
 
+
+
+    fn seed_chain(db: &Connection) {
+        universe(db,"u1");
+        for id in ["a","b","c","d","e","f","g","h"] {
+            create_anchor(db,unknown(id,"u1")).unwrap();
+        }
+        create_precedence(db,"ab","u1","a","b","original",None).unwrap();
+        decide_precedence(db,"d0","u1","ab","revoke",None,"replaced",None).unwrap();
+        restate_revoked_precedence(db,"ba","u1","ab","b","a","first correction",None).unwrap();
+        revoke_restatement(db,"d1","u1","ba","withdraw first",None).unwrap();
+        succeed_withdrawn_restatement(
+            db,"ac","u1","ba","a","c","second correction",None
+        ).unwrap();
+    }
+
+    #[test]
+    fn recursive_chain_multiple_generations_are_immutable_and_linear() {
+        let db=isolated_v7();
+        seed_chain(&db);
+        universe(&db,"u2");
+        assert!(append_chain_correction(
+            &db,"too-early","u1",Some("ac"),None,"c","d","not revoked yet",None
+        ).is_err());
+        revoke_successor(&db,"d2","u1","ac","withdraw second",None).unwrap();
+        append_chain_correction(
+            &db,"cd","u1",Some("ac"),None,"c","d","third correction",None
+        ).unwrap();
+        assert_eq!(list_active_precedence_graph(&db,"u1").unwrap(),
+            vec![ActivePrecedence{id:"cd".into(),before_anchor_id:"c".into(),
+                                  after_anchor_id:"d".into(),origin:"chain".into()}]);
+        assert!(append_chain_correction(
+            &db,"fork","u1",Some("ac"),None,"e","f","forbidden fork",None
+        ).is_err());
+        assert!(append_chain_correction(
+            &db,"wrong-world","u2",Some("ac"),None,"e","f","foreign parent",None
+        ).is_err());
+        assert!(append_chain_correction(
+            &db,"unwithdrawn","u1",None,Some("cd"),"d","e","not retired",None
+        ).is_err());
+        for (i,(prior,before,after)) in [
+            ("cd","d","e"),("de","e","f"),("ef","f","g"),("fg","g","h")
+        ].iter().enumerate() {
+            revoke_chain_correction(
+                &db,&format!("withdraw-{i}"),"u1",prior,"author withdrew",None
+            ).unwrap();
+            let new_id=format!("{before}{after}");
+            append_chain_correction(
+                &db,&new_id,"u1",None,Some(prior),before,after,"explicit next edit",None
+            ).unwrap();
+        }
+        let current=list_active_precedence_graph(&db,"u1").unwrap();
+        assert_eq!(current.len(),1);
+        assert_eq!(current[0].id,"gh");
+        assert_eq!(list_chain_history(&db,"u1").unwrap().len(),5);
+        assert_eq!(list_precedences(&db,"u1").unwrap().len(),1);
+        assert_eq!(list_restatement_history(&db,"u1").unwrap().len(),1);
+        assert_eq!(list_successor_history(&db,"u1").unwrap().len(),1);
+        assert!(db.execute(
+            "UPDATE world_time_chain_links SET reason='rewrite' WHERE id='cd'",[]
+        ).is_err());
+        assert!(db.execute(
+            "DELETE FROM world_time_chain_revocations WHERE id='withdraw-0'",[]
+        ).is_err());
+        assert_eq!(db.query_row("PRAGMA integrity_check",[],|r|r.get::<_,String>(0)).unwrap(),"ok");
+        assert_eq!(db.query_row(
+            "SELECT COUNT(*) FROM pragma_foreign_key_check",[],|r|r.get::<_,i64>(0)
+        ).unwrap(),0);
+        assert_eq!(database::MAX_AUTOMATIC_MIGRATION_VERSION,6);
+    }
+
+    #[test]
+    fn recursive_chain_cycles_duplicates_self_and_legacy_backdoors_fail() {
+        let db=isolated_v7();
+        seed_chain(&db);
+        revoke_successor(&db,"d2","u1","ac","withdraw",None).unwrap();
+        create_precedence(&db,"de","u1","d","e","known relationship",None).unwrap();
+        append_chain_correction(&db,"cd","u1",Some("ac"),None,"c","d","third",None).unwrap();
+        assert!(append_chain_correction(
+            &db,"bad","u1",None,Some("cd"),"e","c","parent still active",None
+        ).is_err());
+        revoke_chain_correction(&db,"d3","u1","cd","withdraw third",None).unwrap();
+        assert!(append_chain_correction(
+            &db,"cycle","u1",None,Some("cd"),"e","d","active d-e cycle",None
+        ).is_err());
+        assert!(append_chain_correction(
+            &db,"self","u1",None,Some("cd"),"d","d","self",None
+        ).is_err());
+        append_chain_correction(
+            &db,"ec","u1",None,Some("cd"),"e","c","allowed partial graph",None
+        ).unwrap();
+        assert!(create_precedence(
+            &db,"raw-ce","u1","c","e","would close current cycle",None
+        ).is_err());
+        assert!(append_chain_correction(
+            &db,"both-parents","u1",Some("ac"),Some("cd"),"c","f",
+            "ambiguous lineage",None
+        ).is_err());
+        assert!(append_chain_correction(
+            &db,"no-parent","u1",None,None,"c","f","missing lineage",None
+        ).is_err());
+        assert_eq!(list_active_precedence_graph(&db,"u1").unwrap().len(),2);
+    }
+
+    #[test]
+    fn recursive_chain_revocation_scoped_and_source_revision_verified() {
+        let db=isolated_v7();
+        seed_chain(&db);
+        universe(&db,"u2");
+        db.execute_batch(
+            "INSERT INTO novels(id,universe_id,title,sort_order) VALUES
+                ('n1','u1','First',0),('n2','u2','Second',0);
+             INSERT INTO chapters(id,novel_id,title,sort_order) VALUES
+                ('c1','n1','First',0),('c2','n2','Second',0);
+             INSERT INTO scenes(id,chapter_id,title,sort_order) VALUES
+                ('s1','c1','One',0),('s2','c2','Two',0);
+             INSERT INTO scene_text_revisions(id,scene_id,revision_number,content) VALUES
+                ('r1','s1',1,'Local'),('r2','s2',1,'Foreign')"
+        ).unwrap();
+        revoke_successor(&db,"d2","u1","ac","withdraw",None).unwrap();
+        assert!(append_chain_correction(
+            &db,"wrong-revision","u1",Some("ac"),None,"c","d","reason",Some("r2")
+        ).is_err());
+        append_chain_correction(
+            &db,"cd","u1",Some("ac"),None,"c","d","reason",Some("r1")
+        ).unwrap();
+        assert!(revoke_chain_correction(
+            &db,"wrong-world","u2","cd","reason",None
+        ).is_err());
+        assert!(revoke_chain_correction(
+            &db,"wrong-source","u1","cd","reason",Some("r2")
+        ).is_err());
+        revoke_chain_correction(
+            &db,"d3","u1","cd","author withdrew",Some("r1")
+        ).unwrap();
+        assert!(revoke_chain_correction(
+            &db,"d4","u1","cd","duplicate",None
+        ).is_err());
+        assert!(list_active_precedence_graph(&db,"u1").unwrap().is_empty());
+        assert_eq!(list_chain_history(&db,"u1").unwrap()[0].revocation_reason.as_deref(),
+                   Some("author withdrew"));
+    }
 
 }

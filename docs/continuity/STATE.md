@@ -1,5 +1,9 @@
 # Fabulaxiom — Current State
 
+## 2026-10-12 — M3.2 stage 8 generic immutable correction chain, new CI pending
+
+Stage-7 exact source `31e2078cfeedf5f0d755fc0fc0c940685d3cb4f0` obtained terminal required Windows CI #38262070398 23/23 PASS. New stage-8 candidate adds test-only unlimited-depth linear correction-chain lineage (STRICT immutable nodes and withdrawals), current active-graph projection and cycle guards; no production IPC, data access or migrations. Exact-head CI still required. PR #35 remains OPEN/DRAFT/UNMERGED, M3.3 unauthorized. M1.5 restored production v6 and backup custody untouched. Detailed gate: `docs/qualification/M3_2_MANUAL_CHRONOLOGY_STAGE1.md`.
+
 ## 2026-10-12 — M3.2 stage 7: successor withdrawal candidate, exact-head CI pending
 
 Stage-6 `4119fc5b5a49a84fc05a3770cc57216e7638c603` is qualified by Windows #38259258644, 23/23 SUCCESS. New test-only STRICT append-only successor-withdrawal decision, refreshed active-graph view, Rust auditable listing and same-Universe/custody tests are proposed at current PR #35 HEAD; qualify with its own CI. No arbitrary edit chain, operator writable app or migration 007. M3.2 remains OPEN/DRAFT; normal application remains restored-active v6 and M1.5 unchanged. See stage 7 in `docs/qualification/M3_2_MANUAL_CHRONOLOGY_STAGE1.md`.

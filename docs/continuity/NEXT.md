@@ -1,5 +1,9 @@
 # Fabulaxiom — Next Authorized Work
 
+## 2026-10-12 — M3.2 stage 8 acceptance and runtime design gate
+
+The stage-7 exact-head CI #38262070398 succeeded. Verify the **new stage-8** Windows CI on its own exact source HEAD before accepting recursive append-only correction chains. Next: adversarial same- and cross-connection transaction/concurrency, immutable-source/active-graph consistency and rollback tests; then a **new** isolated writable M3.2 Tauri identity and explicit scope-limited IPC/UI with Windows custody gate. Do not reuse M3.1 read-only preview, migrate production v6 or register 007 automatically; M3.3 remains blocked.
+
 ## 2026-10-12 — M3.2 stage-7 next
 
 Stage-6 passed exact-head CI #38259258644. First qualify the **new** stage-7 successor retirement candidate on its own Windows CI. Then design bounded/generic author correction-chain semantics and the fail-closed isolated writable Tauri M3.2 preview with independent operator identity, backup and exit custody. Existing M3.1 read-only preview remains read-only, normal SQLite remains v6 with M1.5 marker untouched; no M3.3+.
