@@ -1,5 +1,15 @@
 # Fabulaxiom — Next Authorized Work
 
+## Current authorization — normalize M3.1 before M3.2 (2026-10-11)
+
+M3.1 implementation PR #33 is **MERGED** at `main=922d155d4f4321ed8b90955d4ea96388751f0daf`, from qualified final head `796a4b65e596b9bc05bd00b523b3209f9736524d`; required `pull_request` CI #38176139985, attempt 3, terminal SUCCESS. Main is really protected by active no-bypass ruleset. Operator target Windows v7 read-only *isolated* GUI/IPC PASS + post-exit 11/11 SHA and M1.5 active v6 custody PASS. Elevated preparation is now fail-closed in source.
+
+**Only authorized next work:** qualify this independent documentary-only M3.1 normalization PR (new exact HEAD + GitHub Actions status, review documents/changed paths, protected SHA-guarded merge, re-fetch `main`). **Until this succeeds, M3.2 is not authorized.**
+
+After terminal normalized merge, M3.1 may be declared **COMPLETE + MERGED + NORMALIZED** for its bounded, explicit *isolated candidate schema + read-only controlled-start* scope. Then and only then authorize **M3.2 manual chronology and ordering UX** in a fresh, separately governed branch/PR. Normal end-user executable is still schema **v6**; any production v6→v7 migration needs an entirely separate operator-authorized backup, verified activation pointer and safe release gate; it is **not** implicit in M3.1 normalization, M3.2 authorization or GUI preview. No M4+, ComfyUI or release.
+
+Old NEXT records below are historical.
+
 ## Current exact-head gate — M3.1 PR #33
 
 Bounded Windows debug-only isolated Tauri v7 read-only GUI, IPC, and post-close 11/11 custody **PASS** on operator-qualified source `4d520e1825ecd08d20484b0e72d60ffe6ea09e4c`. Next: obtain terminal SUCCESS for the **new security/preparation guard + documentary evidence HEAD** on PR #33; re-fetch actual `main`, PR/branch, all exact-head checks and scope; explicitly assess isolated controlled-launch satisfaction versus still-unapproved production v7 activation; then only when all gates pass, SHA-guarded implementation merge, re-fetch main, **independent** documentary normalization PR/CI/merge. Do not unlock M3.2 until normalized. No auto-007, production v7, M4+, ComfyUI or release.
