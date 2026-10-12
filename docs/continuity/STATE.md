@@ -1,5 +1,9 @@
 # Fabulaxiom — Current State
 
+## 2026-10-13 M3.2 stage 12 — multi-root read-only custody SOURCE CANDIDATE
+
+Stage 11 exact SHA 2ed947f2d2c13c74e150054a7dfbeb5153186134 Windows CI #38294992362 completed/success 25/25. Operator subsequently confirmed 11/11 M3.1 file SHA, named M2.4 duplicate-content backups, M2.5 and app snapshots, and current isolated M3.1 root+descendant ACLs. Archived ACL digests and early M2.4 manifest are recent-observation-only. Stage 12 adds separate four-root fail-closed read-only custody source and synthetic Windows tests; NO operator call, staging, SQLite, IPC or production mutation. New exact-HEAD CI required. PR #35 DRAFT, M3.3 blocked. See docs/qualification/M3_2_MULTIROOT_READONLY_GATE.md.
+
 ## 2026-10-12 M3.2 stage 11 — Windows post-restart read-only custody gate (candidate)
 
 Stage-10 exact HEAD `4d3f571443ed31105b351ee0e0427efc20bf569e` passed Windows required CI #38293132998, 24/24 SUCCESS. New stage-11 `tools/m3_2_operator_readonly_gate.py` supports **--dry-run ONLY** with standard/medium Windows token, exact Git head/origin-main, clean worktree, protected pre-recorded SHA manifest, safe paths/no junctions, and unused M3.2 identity; creates zero files and never opens SQLite. Synthetic Windows fixture tests + CI step added. New exact-head CI must pass. PR #35 remains DRAFT/unmerged, M1.5 production v6 and backups untouched; no M3.2 write IPC or M3.3. See `docs/qualification/M3_2_POST_RESTART_GATE.md`.

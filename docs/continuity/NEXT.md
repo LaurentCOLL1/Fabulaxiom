@@ -1,5 +1,9 @@
 # Fabulaxiom — Next Authorized Work
 
+## 2026-10-13 M3.2 stage 12 next authorization
+
+Re-fetch PR #35 and require a new exact-head terminal Windows pull_request CI for source-only four-root inspector. No new operator command authorized until source and custody review. M1.5 active v6 and 11/11 M3.1 preserved; two distinct named M2.4 v5 backups have equal content SHA without corruption. The original archived ACL evidence has observed digests ONLY and no independently authenticated source hash. External custody/manifest authority, complete semantic backup manifests and read-only SQLite integrity remain separate gates. VERIFIED_SCOPE_ONLY is not staging approval. Do not register migration 007, prepare writable M3.2 identity, alter protected production or reuse isolated M3.1 root. PR #35 remains DRAFT, M3.3+ blocked.
+
 ## 2026-10-12 M3.2 stage 11 next
 
 Stage-10 exact-head CI #38293132998 PASS (24/24). Qualify new stage-11 read-only post-restart Windows gate on **its own exact-head CI**. Before any operator action: start medium-integrity PowerShell via Win+R cmd /d without elevation, verify actual source head/main and pre-recorded hashes, processes stopped, M1.5 v6 marker and protected backups. Stage 11 performs NO prepare or writes. Only after evidence approval may an independently designed new-identity copy/rollback preparer be attempted. M3.1 readonly preserved; M3.2 PR #35 DRAFT; M3.3 unauthorized.
