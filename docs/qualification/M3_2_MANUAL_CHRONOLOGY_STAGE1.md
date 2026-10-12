@@ -69,3 +69,14 @@ SQLite INSERT triggers reject self-links, non-revoked/missing originals, cross-U
 Four isolated in-memory Rust fixture scenarios qualify reversed edges after revocation, preserved legacy history, duplicate/same-Universe/retired-endpoint checks, current-graph cycles, later raw-insert backdoor, and database-level immutability. No normal Tauri IPC, new app runtime, automatic migration or target-PC operation exists in this stage.
 
 **Remaining limitation:** The new restatement table has no governed append-only revocation/supersession of restatements yet; full recursively correctable chronology CRUD still requires an additional policy and test matrix. It is not authorized to expose this interface to production or operator databases. M3.2 remains OPEN/DRAFT pending fresh CI and later isolated Windows acceptance.
+
+
+## Stage 5 — Withdraw a previous restatement, without rewriting history (2026-10-12)
+
+Stage-4 exact-head `dc2fa5b2cbcb4d91b8c3d3e26a30e27093534cdd` passed [CI #38199955357](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/38199955357) **23/23 Windows steps SUCCESS**. This stage-5 candidate requires a new exact-head CI.
+
+New **test-only** `src-tauri/sql/m3_2_restatement_revocations_candidate.sql`, applied exclusively after M3.1 v7 and M3.2 decisions/restatements in a **new in-memory** database, creates `world_time_restatement_revocations` STRICT. Each row permanently records one identified restatement's withdrawal, its source Universe, mandatory author reason, optional same-Universe immutable scene revision, UTC creation timestamp. Foreign Universes, duplicates, nonexistent IDs, blank reasons and changes to past decisions fail closed. The original historical v7 edge and the earlier restatement are **never edited or deleted**.
+
+`revoke_restatement`, `list_restatement_history` and the amended `list_active_precedence_graph` distinguish auditable history from current valid assertions: revoked restatements disappear from the active display but remain linked to their withdrawal and reason. Rust tests validate double-revocation veto, source-revision ownership, absence of archive mutations, foreign-key and SQLite integrity, and normal runtime's schema ceiling 6.
+
+**Important limitation, deliberately not hidden:** stage-4 SQLite insertion guards still consider withdrawn restatement rows and can conservatively reject subsequent edges that would be valid in the reduced active graph. The unique `revoked_precedence_id` link also prohibits a second restatement of the same original, even after withdrawal. That is a **fail-closed reauthoring gap**, not a claim of complete correction-chain CRUD. A future separately tested version-chain and active-graph trigger redesign must resolve it before writable M3.2 Tauri UI/IPC. No operator Windows data, real activation marker, production SQLite, auto-v7 migrations, Rust runtime, `App.tsx` or M3.1 read-only preview modified by this stage.

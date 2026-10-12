@@ -283,6 +283,62 @@ pub fn restate_revoked_precedence(
     Ok(())
 }
 
+
+#[derive(Debug, PartialEq, Eq)]
+pub struct RestatementHistory {
+    pub id: String,
+    pub revoked_precedence_id: String,
+    pub before_anchor_id: String,
+    pub after_anchor_id: String,
+    pub reason: String,
+    pub revocation_id: Option<String>,
+    pub revocation_reason: Option<String>,
+}
+
+// A correction is never silently deleted; one append-only decision retires it.
+pub fn revoke_restatement(
+    db: &Connection,
+    id: &str,
+    universe_id: &str,
+    restatement_id: &str,
+    reason: &str,
+    source_revision_id: Option<&str>,
+) -> Result<()> {
+    db.execute(
+        "INSERT INTO world_time_restatement_revocations
+         (id,universe_id,restatement_id,reason,source_revision_id)
+         VALUES (?1,?2,?3,?4,?5)",
+        params![id, universe_id, restatement_id, reason, source_revision_id],
+    )?;
+    Ok(())
+}
+
+// Full audit log includes retired restatements. It is NOT sorted by time.
+pub fn list_restatement_history(
+    db: &Connection,
+    universe_id: &str,
+) -> Result<Vec<RestatementHistory>> {
+    let mut stmt = db.prepare(
+        "SELECT t.id,t.revoked_precedence_id,t.before_anchor_id,t.after_anchor_id,
+                t.reason,d.id,d.reason
+         FROM world_time_precedence_restatements t
+         LEFT JOIN world_time_restatement_revocations d
+                ON d.restatement_id=t.id AND d.universe_id=t.universe_id
+         WHERE t.universe_id=?1 ORDER BY t.id",
+    )?;
+    stmt.query_map([universe_id], |row| {
+        Ok(RestatementHistory {
+            id: row.get(0)?,
+            revoked_precedence_id: row.get(1)?,
+            before_anchor_id: row.get(2)?,
+            after_anchor_id: row.get(3)?,
+            reason: row.get(4)?,
+            revocation_id: row.get(5)?,
+            revocation_reason: row.get(6)?,
+        })
+    })?.collect()
+}
+
 // Reflects active partial-order assertions, not a chronological total order.
 // The original legacy and corrected assertions remain separately inspectable.
 pub fn list_active_precedence_graph(
@@ -306,6 +362,10 @@ pub fn list_active_precedence_graph(
          SELECT t.id,t.before_anchor_id,t.after_anchor_id,'restatement'
          FROM world_time_precedence_restatements t
          WHERE t.universe_id=?1
+           AND NOT EXISTS (
+               SELECT 1 FROM world_time_restatement_revocations d
+               WHERE d.restatement_id=t.id AND d.universe_id=t.universe_id
+           )
            AND NOT EXISTS (
                SELECT 1 FROM world_time_anchor_decisions d
                WHERE d.universe_id=t.universe_id AND
@@ -331,6 +391,7 @@ mod tests {
     const V7_SQL: &str = include_str!("../sql/m3_1_world_time_v7_candidate.sql");
     const DECISION_SQL: &str = include_str!("../sql/m3_2_chronology_decisions_candidate.sql");
     const RESTATEMENT_SQL: &str = include_str!("../sql/m3_2_active_precedence_candidate.sql");
+    const RESTATEMENT_REVOCATION_SQL: &str = include_str!("../sql/m3_2_restatement_revocations_candidate.sql");
 
     fn isolated_v7() -> Connection {
         let mut db = Connection::open_in_memory().expect("in-memory only");
@@ -341,6 +402,7 @@ mod tests {
         tx.execute_batch(V7_SQL).expect("candidate");
         tx.execute_batch(DECISION_SQL).expect("isolated M3.2 decision candidate");
         tx.execute_batch(RESTATEMENT_SQL).expect("isolated active-edge candidate");
+        tx.execute_batch(RESTATEMENT_REVOCATION_SQL).expect("isolated correction retirement");
         tx.execute(
             "INSERT INTO schema_migrations(version,name)
              VALUES (7,'007_create_world_time_foundation')", [],
@@ -662,5 +724,95 @@ mod tests {
         ).is_err());
         assert!(list_active_precedence_graph(&db,"u1").unwrap().is_empty());
     }
+
+
+    #[test]
+    fn second_order_restatement_revocation_is_append_only_and_hidden_from_current_graph() {
+        let db = isolated_v7();
+        universe(&db, "u1");
+        universe(&db, "u2");
+        for id in ["a", "b"] { create_anchor(&db, unknown(id, "u1")).unwrap(); }
+        create_precedence(&db, "original", "u1", "a", "b", "Initial before", None).unwrap();
+        decide_precedence(
+            &db, "d0", "u1", "original", "revoke", None, "Author disagrees", None,
+        ).unwrap();
+        restate_revoked_precedence(
+            &db, "correction", "u1", "original", "b", "a", "Reverse order", None,
+        ).unwrap();
+        assert_eq!(list_active_precedence_graph(&db, "u1").unwrap().len(), 1);
+        assert_eq!(list_restatement_history(&db, "u1").unwrap().len(), 1);
+
+        revoke_restatement(
+            &db, "d1", "u1", "correction", "Author withdraws correction", None,
+        ).unwrap();
+        assert!(list_active_precedence_graph(&db, "u1").unwrap().is_empty());
+        assert_eq!(list_precedences(&db, "u1").unwrap().len(), 1);
+        let history = list_restatement_history(&db, "u1").unwrap();
+        assert_eq!(history.len(), 1);
+        assert_eq!(history[0].id, "correction");
+        assert_eq!(history[0].revoked_precedence_id, "original");
+        assert_eq!(history[0].revocation_id.as_deref(), Some("d1"));
+        assert_eq!(
+            history[0].revocation_reason.as_deref(),
+            Some("Author withdraws correction"),
+        );
+        assert!(list_restatement_history(&db, "u2").unwrap().is_empty());
+        assert!(revoke_restatement(&db, "d2", "u1", "correction", "Repeated", None).is_err());
+        assert!(revoke_restatement(&db, "d3", "u2", "correction", "Wrong world", None).is_err());
+        assert!(revoke_restatement(&db, "d4", "u1", "absent", "Missing", None).is_err());
+        assert!(revoke_restatement(&db, "d5", "u1", "correction", "  ", None).is_err());
+        assert!(db.execute(
+            "UPDATE world_time_restatement_revocations SET reason='edited' WHERE id='d1'", [],
+        ).is_err());
+        assert!(db.execute(
+            "DELETE FROM world_time_restatement_revocations WHERE id='d1'", [],
+        ).is_err());
+        // Unique original->restatement lineage still forbids silently
+        // authoring another revision through the stage-4 table.
+        assert!(restate_revoked_precedence(
+            &db, "unsanctioned", "u1", "original", "a", "b",
+            "No new lineage contract", None,
+        ).is_err());
+        assert_eq!(
+            db.query_row("PRAGMA integrity_check", [], |row| row.get::<_, String>(0)).unwrap(),
+            "ok",
+        );
+        let foreign_key_errors: i64 = db.query_row(
+            "SELECT COUNT(*) FROM pragma_foreign_key_check", [], |row| row.get(0),
+        ).unwrap();
+        assert_eq!(foreign_key_errors, 0);
+        assert_eq!(database::MAX_AUTOMATIC_MIGRATION_VERSION, 6);
+    }
+
+    #[test]
+    fn second_order_decision_revision_must_be_same_universe_and_immutable() {
+        let db = isolated_v7();
+        universe(&db, "u1");
+        universe(&db, "u2");
+        db.execute_batch(
+            "INSERT INTO novels(id,universe_id,title,sort_order) VALUES
+                ('novel1','u1','One',0),('novel2','u2','Two',0);
+             INSERT INTO chapters(id,novel_id,title,sort_order) VALUES
+                ('chap1','novel1','First',0),('chap2','novel2','Second',0);
+             INSERT INTO scenes(id,chapter_id,title,sort_order) VALUES
+                ('scene1','chap1','First',0),('scene2','chap2','Second',0);
+             INSERT INTO scene_text_revisions(id,scene_id,revision_number,content) VALUES
+                ('local','scene1',1,'Original'),('foreign','scene2',1,'Foreign')",
+        ).unwrap();
+        create_anchor(&db, unknown("a", "u1")).unwrap();
+        create_anchor(&db, unknown("b", "u1")).unwrap();
+        create_precedence(&db, "ab", "u1", "a", "b", "Before", None).unwrap();
+        decide_precedence(&db, "d0", "u1", "ab", "revoke", None, "Correction", None).unwrap();
+        restate_revoked_precedence(&db, "ba", "u1", "ab", "b", "a", "Reversed", None).unwrap();
+        assert!(revoke_restatement(
+            &db, "foreign-decision", "u1", "ba", "Illegal source", Some("foreign"),
+        ).is_err());
+        assert!(list_restatement_history(&db, "u1").unwrap()[0].revocation_id.is_none());
+        revoke_restatement(
+            &db, "local-decision", "u1", "ba", "Same-Universe reason", Some("local"),
+        ).unwrap();
+        assert!(list_active_precedence_graph(&db, "u1").unwrap().is_empty());
+    }
+
 
 }

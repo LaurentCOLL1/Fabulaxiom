@@ -1,5 +1,9 @@
 # Fabulaxiom — Next Authorized Work
 
+## 2026-10-12 — M3.2 stage-5 next gate
+
+New test-only second-order restatement withdrawal candidate must pass **its own exact-head Windows CI**. Then design a persistent version-chain for restatements and a corrected active-graph SQL guard, including concurrency/failure/rollback and historically faithful projections, **before** an independent writable M3.2 Tauri identity, IPC and UX may be operator-tested. Existing production v6 / M1.5 markers and the debug-only read-only M3.1 variant remain strictly out of scope; no automatic 007. PR #35 OPEN/DRAFT and M3.3 blocked.
+
 ## 2026-10-12 M3.2 stage 4: exact-head CI and restatement lineage
 
 Stage-3 HEAD `ecdf04627bdb40fc948b1b7c7f2d3abec57952b0` CI #38199285576 SUCCESS. Newly proposed in-memory restatement model allows a safe reverse-edge correction after original revocation, independently from immutable v7 history. **Qualify this source with its own Windows CI** before proceeding. Then complete governed correction of already restated edges and write-isolated Tauri command/UI architecture on a new identity, backed by operator safety custody. No IPC in the M3.1 preview, no automated migration above v6, no change to M1.5 activation marker or protected backups; no M3.3.

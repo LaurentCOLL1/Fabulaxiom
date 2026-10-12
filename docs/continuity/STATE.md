@@ -1,5 +1,9 @@
 # Fabulaxiom — Current State
 
+## 2026-10-12 M3.2 stage 5: second-order restatement withdrawal, candidate
+
+Stage-4 guarded active graph at HEAD `dc2fa5b2cbcb4d91b8c3d3e26a30e27093534cdd` passed exact-head PR CI #38199955357 **completed/success** (23 Windows steps). New stage-5 `#[cfg(test)]` SQLite/Rust-only restatement revocation design retains legacy and corrected assertions but removes a withdrawn correction from the active projection; immutable per-Universe provenance, duplicate veto and audit history included. The new HEAD requires its own CI and remains DRAFT. Re-authoring after restatement withdrawal is intentionally unavailable until a governed version-chain/active-graph redesign; **do not claim complete M3.2 CRUD**. Normal Windows application remains v6 and M1.5 unchanged, with no new Tauri IPC or operator data writes. M3.3 unauthorized.
+
 ## 2026-10-12 — M3.2 stage 4 active precedence restatements (candidate)
 
 Stage-3 preview HEAD `ecdf04627bdb40fc948b1b7c7f2d3abec57952b0` obtained exact-head CI #38199285576 SUCCESS. New stage-4 source models **test-only** current partial-order corrections in a separate append-only restatement table after explicit human revocation of original legacy edge, while preserving the original v7 immutable historical row. SQL cycle/backdoor/Universe guards act on combined active graph. Rust tests in memory; no new normal/M3.1 IPC, production v7 migration, or local operator mutation. This head is **not** qualified until fresh CI success. Full restatement lifecycle, isolated writable M3.2 Tauri UX and Windows operator gate remain pending. See `docs/qualification/M3_2_MANUAL_CHRONOLOGY_STAGE1.md`. M3.2 PR #35 remains DRAFT; M3.3 unauthorized.
