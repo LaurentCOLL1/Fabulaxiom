@@ -1,5 +1,9 @@
 # Fabulaxiom — Current State
 
+## 2026-10-12 — M3.2 stage 7: successor withdrawal candidate, exact-head CI pending
+
+Stage-6 `4119fc5b5a49a84fc05a3770cc57216e7638c603` is qualified by Windows #38259258644, 23/23 SUCCESS. New test-only STRICT append-only successor-withdrawal decision, refreshed active-graph view, Rust auditable listing and same-Universe/custody tests are proposed at current PR #35 HEAD; qualify with its own CI. No arbitrary edit chain, operator writable app or migration 007. M3.2 remains OPEN/DRAFT; normal application remains restored-active v6 and M1.5 unchanged. See stage 7 in `docs/qualification/M3_2_MANUAL_CHRONOLOGY_STAGE1.md`.
+
 ## 2026-10-12 M3.2 stage 6 — one-generation correction successor, pending CI
 
 Previous M3.2 stage-5 exact HEAD `7cd198493b32645025d7a34ca30735d2ef99579e` passed Windows PR CI #38200842678 23/23 SUCCESS. New test-only SQLite candidate and Rust service add one immutable successor after explicitly withdrawn initial restatement, plus shared active-graph view and incoming raw/initial-restatement graph guards. One successor per withdrawn first correction, **no recursive authoring**, production IPC or schema activation. New HEAD CI is required. M3.2 PR #35 DRAFT; M3.3 blocked. Production M1.5 restored-active v6 unchanged.

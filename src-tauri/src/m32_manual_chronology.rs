@@ -366,6 +366,62 @@ pub fn succeed_withdrawn_restatement(
     Ok(())
 }
 
+
+#[derive(Debug, PartialEq, Eq)]
+pub struct SuccessorHistory {
+    pub id: String,
+    pub prior_restatement_id: String,
+    pub before_anchor_id: String,
+    pub after_anchor_id: String,
+    pub reason: String,
+    pub revocation_id: Option<String>,
+    pub revocation_reason: Option<String>,
+}
+
+// Stage-7 terminal, immutable withdrawal of the one supported successor.
+// This does not grant an additional correction-chain generation.
+pub fn revoke_successor(
+    db: &Connection,
+    id: &str,
+    universe_id: &str,
+    successor_id: &str,
+    reason: &str,
+    source_revision_id: Option<&str>,
+) -> Result<()> {
+    db.execute(
+        "INSERT INTO world_time_successor_revocations
+          (id,universe_id,successor_id,reason,source_revision_id)
+         VALUES (?1,?2,?3,?4,?5)",
+        params![id, universe_id, successor_id, reason, source_revision_id],
+    )?;
+    Ok(())
+}
+
+pub fn list_successor_history(
+    db: &Connection,
+    universe_id: &str,
+) -> Result<Vec<SuccessorHistory>> {
+    let mut stmt = db.prepare(
+        "SELECT s.id,s.prior_restatement_id,s.before_anchor_id,s.after_anchor_id,
+                s.reason,r.id,r.reason
+         FROM world_time_restatement_successors s
+         LEFT JOIN world_time_successor_revocations r
+              ON r.successor_id=s.id AND r.universe_id=s.universe_id
+         WHERE s.universe_id=?1 ORDER BY s.id",
+    )?;
+    stmt.query_map([universe_id], |row| {
+        Ok(SuccessorHistory {
+            id: row.get(0)?,
+            prior_restatement_id: row.get(1)?,
+            before_anchor_id: row.get(2)?,
+            after_anchor_id: row.get(3)?,
+            reason: row.get(4)?,
+            revocation_id: row.get(5)?,
+            revocation_reason: row.get(6)?,
+        })
+    })?.collect()
+}
+
 // Reflects active partial-order assertions, not a chronological total order.
 // The original legacy and corrected assertions remain separately inspectable.
 pub fn list_active_precedence_graph(
@@ -397,6 +453,7 @@ mod tests {
     const RESTATEMENT_SQL: &str = include_str!("../sql/m3_2_active_precedence_candidate.sql");
     const RESTATEMENT_REVOCATION_SQL: &str = include_str!("../sql/m3_2_restatement_revocations_candidate.sql");
     const SUCCESSOR_SQL: &str = include_str!("../sql/m3_2_restatement_successors_candidate.sql");
+    const SUCCESSOR_REVOCATION_SQL: &str = include_str!("../sql/m3_2_successor_revocations_candidate.sql");
 
     fn isolated_v7() -> Connection {
         let mut db = Connection::open_in_memory().expect("in-memory only");
@@ -409,6 +466,7 @@ mod tests {
         tx.execute_batch(RESTATEMENT_SQL).expect("isolated active-edge candidate");
         tx.execute_batch(RESTATEMENT_REVOCATION_SQL).expect("isolated correction retirement");
         tx.execute_batch(SUCCESSOR_SQL).expect("isolated one-generation successor");
+        tx.execute_batch(SUCCESSOR_REVOCATION_SQL).expect("isolated successor withdrawal");
         tx.execute(
             "INSERT INTO schema_migrations(version,name)
              VALUES (7,'007_create_world_time_foundation')", [],
@@ -913,6 +971,85 @@ mod tests {
         assert!(succeed_withdrawn_restatement(
             &db,"retired","u1","ba","a","c","invalid anchor",None
         ).is_err());
+        assert!(list_active_precedence_graph(&db,"u1").unwrap().is_empty());
+    }
+
+
+
+    #[test]
+    fn successor_withdrawal_preserves_all_three_generations_and_current_view() {
+        let db = isolated_v7();
+        universe(&db,"u1");
+        universe(&db,"u2");
+        for id in ["a","b","c","d"] { create_anchor(&db,unknown(id,"u1")).unwrap(); }
+        create_precedence(&db,"original","u1","a","b","before",None).unwrap();
+        decide_precedence(&db,"d0","u1","original","revoke",None,"author correction",None).unwrap();
+        restate_revoked_precedence(&db,"first","u1","original","b","a","new before",None).unwrap();
+        revoke_restatement(&db,"d1","u1","first","withdrawn",None).unwrap();
+        succeed_withdrawn_restatement(&db,"second","u1","first","a","c","second edit",None).unwrap();
+        assert_eq!(list_active_precedence_graph(&db,"u1").unwrap().len(),1);
+        assert_eq!(list_successor_history(&db,"u1").unwrap()[0].revocation_id,None);
+        assert!(revoke_successor(&db,"bad","u2","second","wrong world",None).is_err());
+        assert!(revoke_successor(&db,"bad2","u1","missing","missing",None).is_err());
+        assert!(revoke_successor(&db,"bad3","u1","second","   ",None).is_err());
+        revoke_successor(&db,"d2","u1","second","author withdrew successor",None).unwrap();
+        assert!(list_active_precedence_graph(&db,"u1").unwrap().is_empty());
+        assert_eq!(list_precedences(&db,"u1").unwrap().len(),1);
+        assert_eq!(list_restatement_history(&db,"u1").unwrap().len(),1);
+        let history=list_successor_history(&db,"u1").unwrap();
+        assert_eq!(history.len(),1);
+        assert_eq!(history[0].id,"second");
+        assert_eq!(history[0].prior_restatement_id,"first");
+        assert_eq!(history[0].revocation_id.as_deref(),Some("d2"));
+        assert_eq!(history[0].revocation_reason.as_deref(),Some("author withdrew successor"));
+        assert!(list_successor_history(&db,"u2").unwrap().is_empty());
+        assert!(revoke_successor(&db,"d3","u1","second","duplicate",None).is_err());
+        assert!(db.execute(
+            "DELETE FROM world_time_successor_revocations WHERE id='d2'",[],
+        ).is_err());
+        assert!(db.execute(
+            "UPDATE world_time_successor_revocations SET reason='rewritten' WHERE id='d2'",[],
+        ).is_err());
+        assert!(succeed_withdrawn_restatement(
+            &db,"unpermitted-third","u1","first","c","d","attempted fork",None
+        ).is_err());
+        // The active graph is genuinely empty; a separate new edge is safe.
+        create_precedence(&db,"dc","u1","d","c","unrelated current edge",None).unwrap();
+        assert_eq!(list_active_precedence_graph(&db,"u1").unwrap().len(),1);
+        assert_eq!(db.query_row(
+            "PRAGMA integrity_check",[],|row| row.get::<_,String>(0),
+        ).unwrap(),"ok");
+        assert_eq!(db.query_row(
+            "SELECT COUNT(*) FROM pragma_foreign_key_check",[],|row| row.get::<_,i64>(0),
+        ).unwrap(),0);
+        assert_eq!(database::MAX_AUTOMATIC_MIGRATION_VERSION,6);
+    }
+
+    #[test]
+    fn successor_withdrawal_revision_must_have_same_universe_provenance() {
+        let db = isolated_v7();
+        universe(&db,"u1"); universe(&db,"u2");
+        db.execute_batch(
+            "INSERT INTO novels(id,universe_id,title,sort_order) VALUES
+                 ('novel1','u1','First',0),('novel2','u2','Second',0);
+             INSERT INTO chapters(id,novel_id,title,sort_order) VALUES
+                 ('chapter1','novel1','One',0),('chapter2','novel2','Two',0);
+             INSERT INTO scenes(id,chapter_id,title,sort_order) VALUES
+                 ('scene1','chapter1','A',0),('scene2','chapter2','B',0);
+             INSERT INTO scene_text_revisions(id,scene_id,revision_number,content) VALUES
+                 ('local','scene1',1,'Local'),('foreign','scene2',1,'Foreign')",
+        ).unwrap();
+        for id in ["a","b","c"] { create_anchor(&db,unknown(id,"u1")).unwrap(); }
+        create_precedence(&db,"ab","u1","a","b","first",None).unwrap();
+        decide_precedence(&db,"d0","u1","ab","revoke",None,"change",None).unwrap();
+        restate_revoked_precedence(&db,"ba","u1","ab","b","a","correction",None).unwrap();
+        revoke_restatement(&db,"d1","u1","ba","again",None).unwrap();
+        succeed_withdrawn_restatement(&db,"ac","u1","ba","a","c","successor",None).unwrap();
+        assert!(revoke_successor(
+            &db,"bad","u1","ac","cross-Universe revision",Some("foreign")
+        ).is_err());
+        assert!(list_successor_history(&db,"u1").unwrap()[0].revocation_id.is_none());
+        revoke_successor(&db,"good","u1","ac","author reason",Some("local")).unwrap();
         assert!(list_active_precedence_graph(&db,"u1").unwrap().is_empty());
     }
 
