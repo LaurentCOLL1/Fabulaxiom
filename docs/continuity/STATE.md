@@ -1,5 +1,9 @@
 # Fabulaxiom — Current State
 
+## 2026-10-12 M3.2 stage 11 — Windows post-restart read-only custody gate (candidate)
+
+Stage-10 exact HEAD `4d3f571443ed31105b351ee0e0427efc20bf569e` passed Windows required CI #38293132998, 24/24 SUCCESS. New stage-11 `tools/m3_2_operator_readonly_gate.py` supports **--dry-run ONLY** with standard/medium Windows token, exact Git head/origin-main, clean worktree, protected pre-recorded SHA manifest, safe paths/no junctions, and unused M3.2 identity; creates zero files and never opens SQLite. Synthetic Windows fixture tests + CI step added. New exact-head CI must pass. PR #35 remains DRAFT/unmerged, M1.5 production v6 and backups untouched; no M3.2 write IPC or M3.3. See `docs/qualification/M3_2_POST_RESTART_GATE.md`.
+
 ## 2026-10-12 — M3.2 stage 10 debug-only isolated preflight; NEW CI pending
 
 Stage 9 exact head `d1a14aeb0703a9eb0c225ecd89be2a56d4b8b7c8` passed [Windows CI #38269738499](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/38269738499) **completed/success, 23/23 steps**. M3.2 stage 10 proposes a **separate, opt-in, debug-only** preflight-only Tauri feature, unique M3.2 identity with explicit ACK, and exactly one status IPC registered via both invoke_handler and feature-specific build-time AppManifest. It performs **ZERO writes, ZERO SQLite/production reads** and is not mounted or operator launched. No existing normal or M3.1 preview IPC changes. Exact-head CI required. PR #35 still OPEN/DRAFT; M1.5 production v6 and protected backups untouched. M3.3 unauthorized. See `docs/qualification/M3_2_ISOLATED_IPC_PREFLIGHT.md`.

@@ -1,5 +1,9 @@
 # Fabulaxiom — Next Authorized Work
 
+## 2026-10-12 M3.2 stage 11 next
+
+Stage-10 exact-head CI #38293132998 PASS (24/24). Qualify new stage-11 read-only post-restart Windows gate on **its own exact-head CI**. Before any operator action: start medium-integrity PowerShell via Win+R cmd /d without elevation, verify actual source head/main and pre-recorded hashes, processes stopped, M1.5 v6 marker and protected backups. Stage 11 performs NO prepare or writes. Only after evidence approval may an independently designed new-identity copy/rollback preparer be attempted. M3.1 readonly preserved; M3.2 PR #35 DRAFT; M3.3 unauthorized.
+
 ## 2026-10-12 — M3.2 stage 10 next
 
 Verify **new exact-head Windows CI** including Tauri feature compilation/tests for `m32-isolated-preflight`, and reject any cross-feature/release build or accidental registered write IPC. After qualification, prepare a separate **dry-run first** operator staging and source manifest with M3.2 identity and medium-integrity token checks, new isolated v7 copied database and full backup/rollback custody. **Only then** propose writable M3.2 IPC + interactive frontend and real Windows acceptance. Never reuse M3.1 readonly identity, change production M1.5 v6/automatic 007, or authorize M3.3.

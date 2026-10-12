@@ -63,6 +63,9 @@ jobs:
         run: |
           python -c "import sys; sys.path.insert(0, 'tools'); import m3_1_v7_isolated_launch_prepare as m; value = m._windows_admin_token_enabled(); assert isinstance(value, bool); print('WINDOWS_TOKEN_API: PASS; elevated=' + str(value))"
 
+      - name: M3.2 post-restart read-only gate synthetic Windows tests
+        run: python -m unittest discover -s tools -p "test_m3_2_operator_readonly_gate.py" -v
+
       - name: Rust tests from lockfile
         run: cargo test --manifest-path src-tauri/Cargo.toml --all-targets --locked
 
