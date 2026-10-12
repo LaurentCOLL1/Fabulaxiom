@@ -1,5 +1,9 @@
 # Fabulaxiom — Next Authorized Work
 
+## 2026-10-12 M3.2 stage-3 next gate
+
+Stage-2 exact-head CI #38198727275 PASS (23/23). The new **unmounted** read-only React chronology/narration/reveal projection must pass **its own exact-head CI** before extending M3.2. Next resolve superseded-edge active-graph conflict, design isolated **writable** Tauri identity (not M3.1 read-only ID), fail-closed IPC/write transaction permissions and Windows operator rehearsal with backups/custody. No production v7 activation or current-pointer changes. M3.2 not complete, no M3.3.
+
 ## 2026-10-12 M3.2 stage-2 next: CI, then active partial-order policy
 
 M3.2 stage-1 exact-head CI #38190352570 SUCCESS. Current work is a strict in-memory append-only anchor/precedence decision candidate with guarded source lineage and transactional replacement. **First verify its new exact-head Windows CI**. Then solve historical-vs-current precedence cycles without modifying original v7 assertions, implement distinct narration/read-only reveal coordinate projections, isolate new M3.2 write-capable runtime behind its own independently prepared ID, and conduct Windows operator acceptance. No silent production migration, 007 registration, or use of old M3.1 read-only IPC for writes. M3.2 **not complete**, PR #35 DRAFT.

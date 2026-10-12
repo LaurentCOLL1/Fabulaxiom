@@ -45,3 +45,14 @@ Rust stage-2 service includes parameterized anchor/precedence decision commands,
 **Known limitation, fail-closed:** the original M3.1 SQL cycle guard scans all historical precedences; revoking an edge does not allow insertion of a contradictory reverse edge using the old `world_time_precedences` table. This stage deliberately tests that rejection and does NOT silently drop or weaken the historical SQL trigger. A separately reviewed replacement *active-graph* representation and conflict rule, with provable rollback and legacy lineage preservation, is required before implementing complete chronology edge correction UI. A GUI CRUD claim would be premature.
 
 Next: exact-head CI; then define active-graph disagreement handling and independent narration/reveal read-only views; only afterward a dedicated writable isolated M3.2 Tauri identity, IPC and target Windows custody. Normal application remains restored-active v6 with no registered 007 or mandatory Ollama.
+
+
+## Stage 3 — Unmounted read-only React coordinate projection (2026-10-12)
+
+Stage-2 exact head `27b4c60b8c304dd29bdf7c1f03efa2cd3c6b7551` obtained [CI #38198727275](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/38198727275) **completed/success, 23/23 Windows steps**. This is an isolated SQLite/Rust decision-contract PASS, not an IPC/UI acceptance.
+
+New `src/M32ChronologyPreview.tsx` is a **non-mounted** read-only React component accepting an explicit `M32ChronologyProjection`. It displays **three clearly separate sections**: (1) raw fictional world-time anchors and explicitly authored precedence statements, including revoked/superseded history; (2) original **manuscript order** within each novel by chapter/scene positions, explicitly no invented cross-novel order; (3) reader-reveal state **unavailable/not authored**, never inferred from a source scene or world timestamp. Its input decoder refuses missing/mixed Universe, duplicate anchor/edge/scene IDs, invalid time/status values or broken precedence endpoints; invalid projections fail closed, not partial/mixed rendering.
+
+`src/m32ChronologyPreview.test.tsx` uses React static rendering to verify coordinate separation, manuscript positions, revocation labels, absence of buttons/IPC and automatic reveal inference, cross-Universe rejection and HTML escaping. **No `App.tsx` import, no visible production feature or write controls, no automatic v7 migration and no new Tauri IPC**. This is presentation-contract groundwork; the real offline user-facing GUI and a separate isolated write-capable M3.2 identity remain pending explicit operator qualification.
+
+Current HEAD after this change needs its OWN new CI; prior stage-2 success cannot accept it.

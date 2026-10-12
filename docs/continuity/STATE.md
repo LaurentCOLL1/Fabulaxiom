@@ -1,5 +1,9 @@
 # Fabulaxiom — Current State
 
+## 2026-10-12 M3.2 stage 3: separate coordinate UI prototype, no runtime mount
+
+Stage-2 isolated append-only decision schema/Rust contract HEAD `27b4c60b8c304dd29bdf7c1f03efa2cd3c6b7551` was **CI #38198727275 completed/success, 23/23 Windows steps**. New stage-3 React read-only projection is **not mounted** in the application; three separate panels represent fictional world-time assertion, narration order by manuscript, and reader reveal explicitly unavailable. Fail-closed source-scope validation and React static tests added; new HEAD CI pending. No M1.5, production v6, normal/M3.1 preview IPC, release, or local operator artifact changed. M3.2 remains DRAFT.
+
 ## 2026-10-12 M3.2 stage 2: append-only correction candidate; CI pending
 
 M3.1 remains **COMPLETE + MERGED + NORMALIZED**. M3.2 stage-1 head `690656bcd9c148ac7737749cfb6d2a7350df1c7a` completed successful exact-head PR CI #38190352570. New stage-2 candidate adds **test-only**, in-memory decision tables for authored revocation/supersession with immutable history and atomic replacement, not production migrations or GUI/IPC. Old M3.1 precedence cycle guard still blocks historical reverse-edge conflicts even after an edge is revoked; do not claim this candidate offers complete editable chronology. Await new exact-head CI and active-graph policy. Production restored-active v6, M1.5 marker, backups and existing Tauri M3.1 preview unchanged. PR #35 still DRAFT; M3.3+ unauthorized.
