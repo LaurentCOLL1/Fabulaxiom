@@ -492,9 +492,9 @@ mod tests {
         ).unwrap();
         create_anchor(&db,unknown("a","u1")).unwrap();
         create_anchor(&db,unknown("b","u1")).unwrap();
+        create_precedence(&db,"ab","u1","a","b","old",None).unwrap();
         assert!(decide_anchor(&db,"wrong","u1","a","revoke",None,"reason",Some("u2r")).is_err());
         decide_anchor(&db,"good","u1","a","revoke",None,"reason",Some("u1r")).unwrap();
-        create_precedence(&db,"ab","u1","a","b","old",None).unwrap();
         assert!(decide_precedence(&db,"foreign","u1","ab","revoke",None,"reason",Some("u2r")).is_err());
         decide_precedence(&db,"local","u1","ab","revoke",None,"reason",Some("u1r")).unwrap();
     }
