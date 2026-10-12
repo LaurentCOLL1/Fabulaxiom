@@ -1,5 +1,11 @@
 # Fabulaxiom — Next Authorized Work
 
+## Current next gate — M3.2 isolated manual chronology stage 1 (2026-10-12)
+
+M3.1 **COMPLETE + MERGED + NORMALIZED** at `main=f7eabfea74480d307b52d4b053730021efc95352` after independent PR #34 CI #38178342603 SUCCESS and SHA-guarded merge. **M3.2 only** is now authorized. First stage: test-only insert/read model for v7 fictional calendar/time anchors and human partial-order precedences, using fresh in-memory two-Universe fixtures. Await new exact-head CI; do not merge/normalize this M3.2 PR until full authored chronology UX, isolated write-capable application gate and target Windows acceptance. No normal production v7 migration, no changes to existing M3.1 read-only preview, no M3.3+.
+
+Previous M3.1 next-work notes are retained as history, not live authorization.
+
 ## Current authorization — normalize M3.1 before M3.2 (2026-10-11)
 
 M3.1 implementation PR #33 is **MERGED** at `main=922d155d4f4321ed8b90955d4ea96388751f0daf`, from qualified final head `796a4b65e596b9bc05bd00b523b3209f9736524d`; required `pull_request` CI #38176139985, attempt 3, terminal SUCCESS. Main is really protected by active no-bypass ruleset. Operator target Windows v7 read-only *isolated* GUI/IPC PASS + post-exit 11/11 SHA and M1.5 active v6 custody PASS. Elevated preparation is now fail-closed in source.

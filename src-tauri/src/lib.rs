@@ -25,6 +25,10 @@ mod world_time_preflight;
 // Only disposable closed-file v6->v7 candidate copy rehearsals.
 #[cfg(test)]
 mod world_time_file_migration_tests;
+// M3.2 stage 1: test-only manual service on in-memory v7 fixtures.
+// No IPC or automatic database migration is introduced.
+#[cfg(test)]
+mod m32_manual_chronology;
 
 use std::time::Duration;
 

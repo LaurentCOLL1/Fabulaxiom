@@ -1,5 +1,13 @@
 # Fabulaxiom — Current State
 
+## 2026-10-12 — M3.1 COMPLETE + MERGED + NORMALIZED; M3.2 first-stage work authorized
+
+Independent PR #34 had exact-head `pull_request` CI #38178342603 `completed/success` on `34b85316b6520d24e0361a86b49b27f25c6f76e2`, then SHA-guarded merge `f7eabfea74480d307b52d4b053730021efc95352`. Live re-fetch verified `main`, merged PR and strict `Protect main` ruleset. Therefore **M3.1 COMPLETE + MERGED + NORMALIZED** for its bounded candidate schema and controlled isolated v7 read-only launch, not for production v7 activation.
+
+**Current authorized stage: M3.2** — only isolated test-first manual chronology foundation under dedicated branch and draft PR. `src-tauri/src/m32_manual_chronology.rs` remains `#[cfg(test)]` (zero new production IPC and no normal migration). UI/persistent isolated runtime, supersession and Windows operator qualification still pending. Production M1.5 restored-active SQLite v6, backups and activation marker are untouched. See `docs/qualification/M3_2_MANUAL_CHRONOLOGY_STAGE1.md`.
+
+The older M3.1 normalization-pending paragraphs below are historical and superseded.
+
 ## Current authority — M3.1 implementation merged; independent normalization pending (2026-10-11)
 
 - **Repository visibility: PUBLIC**, `main` genuinely branch-protected by active repository ruleset [Protect main](https://github.com/LaurentCOLL1/Fabulaxiom/rules/24895490). Rules include deletion/force-push denial, pull request and strict exact-app GitHub Actions check `Windows frontend and Rust checks` (app 15368), with no bypass actors or mandatory external approval (solo developer).
