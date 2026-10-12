@@ -235,9 +235,16 @@ fn two_connection_readonly_and_cycle_guards_reject_cross_handle_bypass() {
     ).is_err());
     assert_eq!(active_count(&writer),1);
     reader.pragma_update(None,"query_only",true).unwrap();
-    assert!(chronology::append_chain_correction(
-        &reader,"forbidden","u1",None,Some("cd"),"d","f","read-only refused",None,
-    ).is_err());
+    assert_eq!(reader.pragma_query_value(
+        None,"query_only",|row|row.get::<_,i64>(0),
+    ).unwrap(),1);
+    // A calendar would otherwise be a valid insert; it is denied *because*
+    // this connection is query-only, not by a chain-parent/UNIQUE constraint.
+    let readonly_error = chronology::create_calendar(
+        &reader,"read-only-probe","u1","Test calendar","Fictional only",
+    ).expect_err("query_only must refuse otherwise valid insert");
+    assert!(matches!(readonly_error, rusqlite::Error::SqliteFailure(ref e, _)
+        if e.code == ErrorCode::ReadOnly));
     assert_eq!(count(&writer,"chain"),1);
     assert_eq!(count(&writer,"withdrawal"),0);
     assert_integrity(&writer);
