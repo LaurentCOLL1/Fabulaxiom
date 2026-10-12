@@ -135,12 +135,128 @@ pub fn list_precedences(db: &Connection, universe_id: &str) -> Result<Vec<Manual
     })?.collect()
 }
 
+
+#[derive(Debug, PartialEq, Eq)]
+pub struct ChronologyDecision {
+    pub id: String,
+    pub prior_id: String,
+    pub action: String,
+    pub replacement_id: Option<String>,
+    pub reason: String,
+    pub source_revision_id: Option<String>,
+}
+
+// Permanent append-only record, never an UPDATE or DELETE of source history.
+pub fn decide_anchor(
+    db: &Connection,
+    id: &str,
+    universe_id: &str,
+    prior_anchor_id: &str,
+    action: &str,
+    replacement_anchor_id: Option<&str>,
+    reason: &str,
+    source_revision_id: Option<&str>,
+) -> Result<()> {
+    db.execute(
+        "INSERT INTO world_time_anchor_decisions
+          (id,universe_id,prior_anchor_id,action,replacement_anchor_id,reason,source_revision_id)
+         VALUES (?1,?2,?3,?4,?5,?6,?7)",
+        params![
+            id, universe_id, prior_anchor_id, action, replacement_anchor_id, reason,
+            source_revision_id
+        ],
+    )?;
+    Ok(())
+}
+
+pub fn decide_precedence(
+    db: &Connection,
+    id: &str,
+    universe_id: &str,
+    prior_precedence_id: &str,
+    action: &str,
+    replacement_precedence_id: Option<&str>,
+    reason: &str,
+    source_revision_id: Option<&str>,
+) -> Result<()> {
+    db.execute(
+        "INSERT INTO world_time_precedence_decisions
+          (id,universe_id,prior_precedence_id,action,replacement_precedence_id,reason,source_revision_id)
+         VALUES (?1,?2,?3,?4,?5,?6,?7)",
+        params![
+            id, universe_id, prior_precedence_id, action, replacement_precedence_id,
+            reason, source_revision_id
+        ],
+    )?;
+    Ok(())
+}
+
+// New anchor insertion and the superseding decision must commit together.
+// The existing original anchor is never modified, even on failure.
+pub fn supersede_anchor_atomically(
+    db: &mut Connection,
+    new_anchor: AnchorDraft<'_>,
+    decision_id: &str,
+    prior_anchor_id: &str,
+    reason: &str,
+    source_revision_id: Option<&str>,
+) -> Result<()> {
+    let tx = db.transaction()?;
+    create_anchor(&tx, new_anchor)?;
+    decide_anchor(
+        &tx, decision_id, new_anchor.universe_id, prior_anchor_id,
+        "supersede", Some(new_anchor.id), reason, source_revision_id,
+    )?;
+    tx.commit()
+}
+
+// Stable identifier ordering is display order only; never fictional time.
+pub fn list_current_anchor_ids(db: &Connection, universe_id: &str) -> Result<Vec<String>> {
+    let mut stmt = db.prepare(
+        "SELECT a.id FROM world_time_anchors a
+         WHERE a.universe_id=?1 AND NOT EXISTS(
+             SELECT 1 FROM world_time_anchor_decisions d
+             WHERE d.prior_anchor_id=a.id AND d.universe_id=a.universe_id
+         ) ORDER BY a.id",
+    )?;
+    stmt.query_map([universe_id], |row| row.get(0))?.collect()
+}
+
+pub fn list_current_precedence_ids(db: &Connection, universe_id: &str) -> Result<Vec<String>> {
+    let mut stmt = db.prepare(
+        "SELECT p.id FROM world_time_precedences p
+         WHERE p.universe_id=?1 AND NOT EXISTS(
+             SELECT 1 FROM world_time_precedence_decisions d
+             WHERE d.prior_precedence_id=p.id AND d.universe_id=p.universe_id
+         ) ORDER BY p.id",
+    )?;
+    stmt.query_map([universe_id], |row| row.get(0))?.collect()
+}
+
+pub fn list_anchor_decisions(db: &Connection, universe_id: &str) -> Result<Vec<ChronologyDecision>> {
+    let mut stmt = db.prepare(
+        "SELECT id,prior_anchor_id,action,replacement_anchor_id,reason,source_revision_id
+         FROM world_time_anchor_decisions WHERE universe_id=?1 ORDER BY id",
+    )?;
+    stmt.query_map([universe_id], |row| {
+        Ok(ChronologyDecision {
+            id: row.get(0)?,
+            prior_id: row.get(1)?,
+            action: row.get(2)?,
+            replacement_id: row.get(3)?,
+            reason: row.get(4)?,
+            source_revision_id: row.get(5)?,
+        })
+    })?.collect()
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
     use crate::database;
 
     const V7_SQL: &str = include_str!("../sql/m3_1_world_time_v7_candidate.sql");
+    const DECISION_SQL: &str = include_str!("../sql/m3_2_chronology_decisions_candidate.sql");
 
     fn isolated_v7() -> Connection {
         let mut db = Connection::open_in_memory().expect("in-memory only");
@@ -149,6 +265,7 @@ mod tests {
         // Deliberately stage the candidate only inside a new in-memory fixture.
         let tx = db.transaction().expect("isolated transaction");
         tx.execute_batch(V7_SQL).expect("candidate");
+        tx.execute_batch(DECISION_SQL).expect("isolated M3.2 decision candidate");
         tx.execute(
             "INSERT INTO schema_migrations(version,name)
              VALUES (7,'007_create_world_time_foundation')", [],
@@ -298,4 +415,88 @@ mod tests {
         assert_eq!(database::CURRENT_SCHEMA_VERSION,6);
         assert_eq!(database::MAX_AUTOMATIC_MIGRATION_VERSION,6);
     }
+
+    #[test]
+    fn revocation_is_append_only_and_historical_rows_remain() {
+        let db=isolated_v7(); universe(&db,"u1"); universe(&db,"u2");
+        create_anchor(&db,unknown("a","u1")).unwrap();
+        create_anchor(&db,unknown("b","u1")).unwrap();
+        create_precedence(&db,"ab","u1","a","b","old assertion",None).unwrap();
+        decide_anchor(&db,"d1","u1","a","revoke",None,"Human correction",None).unwrap();
+        assert_eq!(list_anchors(&db,"u1").unwrap().len(),2);
+        assert_eq!(list_current_anchor_ids(&db,"u1").unwrap(),vec!["b"]);
+        assert_eq!(list_precedences(&db,"u1").unwrap().len(),1);
+        assert_eq!(list_anchor_decisions(&db,"u1").unwrap()[0].action,"revoke");
+        assert!(decide_anchor(&db,"d2","u1","a","revoke",None,"duplicate",None).is_err());
+        assert!(decide_anchor(&db,"d3","u2","b","revoke",None,"wrong world",None).is_err());
+        assert!(create_precedence(&db,"bad","u1","a","b","retired anchor",None).is_err());
+        assert!(db.execute("UPDATE world_time_anchor_decisions SET reason='rewritten' WHERE id='d1'",[]).is_err());
+        assert!(db.execute("DELETE FROM world_time_anchor_decisions WHERE id='d1'",[]).is_err());
+        assert_eq!(list_current_anchor_ids(&db,"u2").unwrap(),Vec::<String>::new());
+    }
+
+    #[test]
+    fn supersession_replaces_identity_without_changing_old_history() {
+        let mut db=isolated_v7(); universe(&db,"u1"); universe(&db,"u2");
+        create_anchor(&db,unknown("old","u1")).unwrap();
+        supersede_anchor_atomically(
+            &mut db,unknown("fresh","u1"),"decision1","old","Explicit replacement",None,
+        ).unwrap();
+        assert_eq!(list_current_anchor_ids(&db,"u1").unwrap(),vec!["fresh"]);
+        assert_eq!(list_anchors(&db,"u1").unwrap().len(),2);
+        assert_eq!(list_anchor_decisions(&db,"u1").unwrap()[0].replacement_id.as_deref(),Some("fresh"));
+        assert!(decide_anchor(&db,"wrong","u2","old","revoke",None,"wrong world",None).is_err());
+        // Atomic rollback: the replacement anchor must not linger after an
+        // invalid second decision on an already retired anchor.
+        let before=list_anchors(&db,"u1").unwrap().len();
+        assert!(supersede_anchor_atomically(
+            &mut db,unknown("uncommitted","u1"),"decision2","old","duplicate",None,
+        ).is_err());
+        assert_eq!(list_anchors(&db,"u1").unwrap().len(),before);
+        assert!(decide_anchor(&db,"cycle","u1","fresh","supersede",Some("old"),"cycle",None).is_err());
+        assert_eq!(list_current_anchor_ids(&db,"u1").unwrap(),vec!["fresh"]);
+    }
+
+    #[test]
+    fn precedence_decisions_preserve_retracted_edges_without_cascade() {
+        let db=isolated_v7(); universe(&db,"u1"); universe(&db,"u2");
+        for id in ["a","b","c"] { create_anchor(&db,unknown(id,"u1")).unwrap(); }
+        create_anchor(&db,unknown("foreign","u2")).unwrap();
+        create_precedence(&db,"ab","u1","a","b","old",None).unwrap();
+        create_precedence(&db,"bc","u1","b","c","new",None).unwrap();
+        decide_precedence(&db,"r1","u1","ab","revoke",None,"Incorrect order",None).unwrap();
+        assert_eq!(list_precedences(&db,"u1").unwrap().len(),2);
+        assert_eq!(list_current_precedence_ids(&db,"u1").unwrap(),vec!["bc"]);
+        assert!(decide_precedence(&db,"foreign","u2","bc","revoke",None,"wrong universe",None).is_err());
+        assert!(decide_precedence(&db,"repeat","u1","ab","revoke",None,"duplicate",None).is_err());
+        assert!(db.execute("DELETE FROM world_time_precedence_decisions WHERE id='r1'",[]).is_err());
+        assert!(db.execute("DELETE FROM world_time_precedences WHERE id='ab'",[]).is_err());
+        assert_eq!(list_precedences(&db,"u1").unwrap().len(),2);
+        // Limitation of v7: raw cycle guard still includes retired edges.
+        // A reverse edge may not be inserted, even after a decision.
+        assert!(create_precedence(&db,"ba","u1","b","a","historical veto",None).is_err());
+    }
+
+    #[test]
+    fn correction_revision_must_belong_to_original_universe() {
+        let db=isolated_v7(); universe(&db,"u1"); universe(&db,"u2");
+        db.execute_batch(
+            "INSERT INTO novels(id,universe_id,title,sort_order) VALUES
+                ('novel1','u1','First novel',0),('novel2','u2','Other novel',0);
+             INSERT INTO chapters(id,novel_id,title,sort_order) VALUES
+                ('chap1','novel1','Chapter',0),('chap2','novel2','Chapter',0);
+             INSERT INTO scenes(id,chapter_id,title,sort_order) VALUES
+                ('scene1','chap1','Scene',0),('scene2','chap2','Scene',0);
+             INSERT INTO scene_text_revisions(id,scene_id,revision_number,content) VALUES
+                ('u1r','scene1',1,'Original'),('u2r','scene2',1,'Other')"
+        ).unwrap();
+        create_anchor(&db,unknown("a","u1")).unwrap();
+        create_anchor(&db,unknown("b","u1")).unwrap();
+        assert!(decide_anchor(&db,"wrong","u1","a","revoke",None,"reason",Some("u2r")).is_err());
+        decide_anchor(&db,"good","u1","a","revoke",None,"reason",Some("u1r")).unwrap();
+        create_precedence(&db,"ab","u1","a","b","old",None).unwrap();
+        assert!(decide_precedence(&db,"foreign","u1","ab","revoke",None,"reason",Some("u2r")).is_err());
+        decide_precedence(&db,"local","u1","ab","revoke",None,"reason",Some("u1r")).unwrap();
+    }
+
 }

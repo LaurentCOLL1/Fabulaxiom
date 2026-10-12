@@ -1,5 +1,9 @@
 # Fabulaxiom — Next Authorized Work
 
+## 2026-10-12 M3.2 stage-2 next: CI, then active partial-order policy
+
+M3.2 stage-1 exact-head CI #38190352570 SUCCESS. Current work is a strict in-memory append-only anchor/precedence decision candidate with guarded source lineage and transactional replacement. **First verify its new exact-head Windows CI**. Then solve historical-vs-current precedence cycles without modifying original v7 assertions, implement distinct narration/read-only reveal coordinate projections, isolate new M3.2 write-capable runtime behind its own independently prepared ID, and conduct Windows operator acceptance. No silent production migration, 007 registration, or use of old M3.1 read-only IPC for writes. M3.2 **not complete**, PR #35 DRAFT.
+
 ## Current next gate — M3.2 isolated manual chronology stage 1 (2026-10-12)
 
 M3.1 **COMPLETE + MERGED + NORMALIZED** at `main=f7eabfea74480d307b52d4b053730021efc95352` after independent PR #34 CI #38178342603 SUCCESS and SHA-guarded merge. **M3.2 only** is now authorized. First stage: test-only insert/read model for v7 fictional calendar/time anchors and human partial-order precedences, using fresh in-memory two-Universe fixtures. Await new exact-head CI; do not merge/normalize this M3.2 PR until full authored chronology UX, isolated write-capable application gate and target Windows acceptance. No normal production v7 migration, no changes to existing M3.1 read-only preview, no M3.3+.

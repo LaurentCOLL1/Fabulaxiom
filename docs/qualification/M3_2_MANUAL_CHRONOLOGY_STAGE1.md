@@ -32,3 +32,16 @@ Tests cover four time states, explicit calendars, two Universes, multiple Novels
 5. Complete acceptance, evidence-commit exact-head CI, protected merge, then **separate normalization PR and CI** before M3.3.
 
 **This document and source are a first milestone of implementation, not M3.2 COMPLETE.**
+
+
+## Stage 2 — Append-only decisions candidate (2026-10-12)
+
+Stage 1 exact source `690656bcd9c148ac7737749cfb6d2a7350df1c7a`, `pull_request` CI #38190352570 **completed/success**. This qualifies only the stage-1 test model; the current stage-2 change needs fresh exact-head CI.
+
+New file: `src-tauri/sql/m3_2_chronology_decisions_candidate.sql`, **applied only in the same fresh in-memory Rust test fixture AFTER the M3.1 v7 SQL**. It creates STRICT append-only `world_time_anchor_decisions` and `world_time_precedence_decisions`, each with immutable decision identity, original author assertion, universe, `revoke` or `supersede`, optional replacement, mandatory human reason, optional immutable same-Universe text revision, and creation timestamp. All decisions are INSERT-only; no UPDATE, DELETE, cascades or automatic schema registration. An original assertion can have one terminal decision; the replacement must not already have a terminal decision, preventing replacement loops/forks. Foreign-Universe originals, replacements and source revisions are rejected. New precedence insertion referring to an already superseded/revoked anchor is refused.
+
+Rust stage-2 service includes parameterized anchor/precedence decision commands, a transactional create-and-supersede anchor operation (rollback on decision failure), immutable historical lists, separate *current* lists with no false chronology sorting, and explicit decision history. It has no Tauri IPC or GUI registration: it remains compiled exclusively under `#[cfg(test)]`. Tests exercise real revocation, replacement, transaction rollback, immutable history, same-Universe source lineage, and cycle/duplicate veto.
+
+**Known limitation, fail-closed:** the original M3.1 SQL cycle guard scans all historical precedences; revoking an edge does not allow insertion of a contradictory reverse edge using the old `world_time_precedences` table. This stage deliberately tests that rejection and does NOT silently drop or weaken the historical SQL trigger. A separately reviewed replacement *active-graph* representation and conflict rule, with provable rollback and legacy lineage preservation, is required before implementing complete chronology edge correction UI. A GUI CRUD claim would be premature.
+
+Next: exact-head CI; then define active-graph disagreement handling and independent narration/reveal read-only views; only afterward a dedicated writable isolated M3.2 Tauri identity, IPC and target Windows custody. Normal application remains restored-active v6 with no registered 007 or mandatory Ollama.

@@ -1,5 +1,9 @@
 # Fabulaxiom — Current State
 
+## 2026-10-12 M3.2 stage 2: append-only correction candidate; CI pending
+
+M3.1 remains **COMPLETE + MERGED + NORMALIZED**. M3.2 stage-1 head `690656bcd9c148ac7737749cfb6d2a7350df1c7a` completed successful exact-head PR CI #38190352570. New stage-2 candidate adds **test-only**, in-memory decision tables for authored revocation/supersession with immutable history and atomic replacement, not production migrations or GUI/IPC. Old M3.1 precedence cycle guard still blocks historical reverse-edge conflicts even after an edge is revoked; do not claim this candidate offers complete editable chronology. Await new exact-head CI and active-graph policy. Production restored-active v6, M1.5 marker, backups and existing Tauri M3.1 preview unchanged. PR #35 still DRAFT; M3.3+ unauthorized.
+
 ## 2026-10-12 — M3.1 COMPLETE + MERGED + NORMALIZED; M3.2 first-stage work authorized
 
 Independent PR #34 had exact-head `pull_request` CI #38178342603 `completed/success` on `34b85316b6520d24e0361a86b49b27f25c6f76e2`, then SHA-guarded merge `f7eabfea74480d307b52d4b053730021efc95352`. Live re-fetch verified `main`, merged PR and strict `Protect main` ruleset. Therefore **M3.1 COMPLETE + MERGED + NORMALIZED** for its bounded candidate schema and controlled isolated v7 read-only launch, not for production v7 activation.
