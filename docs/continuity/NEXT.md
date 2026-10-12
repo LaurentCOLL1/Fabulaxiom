@@ -1,5 +1,9 @@
 # Fabulaxiom — Next Authorized Work
 
+## 2026-10-12 M3.2 stage 4: exact-head CI and restatement lineage
+
+Stage-3 HEAD `ecdf04627bdb40fc948b1b7c7f2d3abec57952b0` CI #38199285576 SUCCESS. Newly proposed in-memory restatement model allows a safe reverse-edge correction after original revocation, independently from immutable v7 history. **Qualify this source with its own Windows CI** before proceeding. Then complete governed correction of already restated edges and write-isolated Tauri command/UI architecture on a new identity, backed by operator safety custody. No IPC in the M3.1 preview, no automated migration above v6, no change to M1.5 activation marker or protected backups; no M3.3.
+
 ## 2026-10-12 M3.2 stage-3 next gate
 
 Stage-2 exact-head CI #38198727275 PASS (23/23). The new **unmounted** read-only React chronology/narration/reveal projection must pass **its own exact-head CI** before extending M3.2. Next resolve superseded-edge active-graph conflict, design isolated **writable** Tauri identity (not M3.1 read-only ID), fail-closed IPC/write transaction permissions and Windows operator rehearsal with backups/custody. No production v7 activation or current-pointer changes. M3.2 not complete, no M3.3.

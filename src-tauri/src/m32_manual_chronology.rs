@@ -250,6 +250,79 @@ pub fn list_anchor_decisions(db: &Connection, universe_id: &str) -> Result<Vec<C
     })?.collect()
 }
 
+
+#[derive(Debug, PartialEq, Eq)]
+pub struct ActivePrecedence {
+    pub id: String,
+    pub before_anchor_id: String,
+    pub after_anchor_id: String,
+    pub origin: String,
+}
+
+// Authored replacement must reference an explicitly revoked old assertion;
+// new factual graph edges are persisted in a separate immutable table.
+pub fn restate_revoked_precedence(
+    db: &Connection,
+    id: &str,
+    universe_id: &str,
+    revoked_precedence_id: &str,
+    before_anchor_id: &str,
+    after_anchor_id: &str,
+    reason: &str,
+    source_revision_id: Option<&str>,
+) -> Result<()> {
+    db.execute(
+        "INSERT INTO world_time_precedence_restatements
+         (id,universe_id,revoked_precedence_id,before_anchor_id,after_anchor_id,reason,source_revision_id)
+         VALUES (?1,?2,?3,?4,?5,?6,?7)",
+        params![
+            id, universe_id, revoked_precedence_id, before_anchor_id,
+            after_anchor_id, reason, source_revision_id
+        ],
+    )?;
+    Ok(())
+}
+
+// Reflects active partial-order assertions, not a chronological total order.
+// The original legacy and corrected assertions remain separately inspectable.
+pub fn list_active_precedence_graph(
+    db: &Connection,
+    universe_id: &str,
+) -> Result<Vec<ActivePrecedence>> {
+    let mut stmt = db.prepare(
+        "SELECT p.id,p.before_anchor_id,p.after_anchor_id,'legacy'
+         FROM world_time_precedences p
+         WHERE p.universe_id=?1
+           AND NOT EXISTS (
+               SELECT 1 FROM world_time_precedence_decisions d
+               WHERE d.prior_precedence_id=p.id
+           )
+           AND NOT EXISTS (
+               SELECT 1 FROM world_time_anchor_decisions d
+               WHERE d.universe_id=p.universe_id AND
+                     d.prior_anchor_id IN (p.before_anchor_id,p.after_anchor_id)
+           )
+         UNION ALL
+         SELECT t.id,t.before_anchor_id,t.after_anchor_id,'restatement'
+         FROM world_time_precedence_restatements t
+         WHERE t.universe_id=?1
+           AND NOT EXISTS (
+               SELECT 1 FROM world_time_anchor_decisions d
+               WHERE d.universe_id=t.universe_id AND
+                     d.prior_anchor_id IN (t.before_anchor_id,t.after_anchor_id)
+           )
+         ORDER BY 1",
+    )?;
+    stmt.query_map([universe_id], |row| {
+        Ok(ActivePrecedence {
+            id: row.get(0)?,
+            before_anchor_id: row.get(1)?,
+            after_anchor_id: row.get(2)?,
+            origin: row.get(3)?,
+        })
+    })?.collect()
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -257,6 +330,7 @@ mod tests {
 
     const V7_SQL: &str = include_str!("../sql/m3_1_world_time_v7_candidate.sql");
     const DECISION_SQL: &str = include_str!("../sql/m3_2_chronology_decisions_candidate.sql");
+    const RESTATEMENT_SQL: &str = include_str!("../sql/m3_2_active_precedence_candidate.sql");
 
     fn isolated_v7() -> Connection {
         let mut db = Connection::open_in_memory().expect("in-memory only");
@@ -266,6 +340,7 @@ mod tests {
         let tx = db.transaction().expect("isolated transaction");
         tx.execute_batch(V7_SQL).expect("candidate");
         tx.execute_batch(DECISION_SQL).expect("isolated M3.2 decision candidate");
+        tx.execute_batch(RESTATEMENT_SQL).expect("isolated active-edge candidate");
         tx.execute(
             "INSERT INTO schema_migrations(version,name)
              VALUES (7,'007_create_world_time_foundation')", [],
@@ -497,6 +572,91 @@ mod tests {
         decide_anchor(&db,"good","u1","a","revoke",None,"reason",Some("u1r")).unwrap();
         assert!(decide_precedence(&db,"foreign","u1","ab","revoke",None,"reason",Some("u2r")).is_err());
         decide_precedence(&db,"local","u1","ab","revoke",None,"reason",Some("u1r")).unwrap();
+    }
+
+
+    #[test]
+    fn reversed_edge_after_revocation_is_current_without_erasing_history() {
+        let db=isolated_v7(); universe(&db,"u1"); universe(&db,"u2");
+        for id in ["a","b","c"] { create_anchor(&db,unknown(id,"u1")).unwrap(); }
+        create_anchor(&db,unknown("foreign","u2")).unwrap();
+        create_precedence(&db,"ab","u1","a","b","original",None).unwrap();
+        decide_precedence(&db,"revoke-ab","u1","ab","revoke",None,"human correction",None).unwrap();
+        // The M3.1 table still rejects reverse history; the corrected graph
+        // keeps the legacy row immutable and permits a separate new assertion.
+        assert!(create_precedence(&db,"ba-legacy","u1","b","a","v7 veto",None).is_err());
+        restate_revoked_precedence(
+            &db,"ba-new","u1","ab","b","a","Explicit reverse",None,
+        ).unwrap();
+        assert_eq!(list_precedences(&db,"u1").unwrap().len(),1);
+        assert!(list_current_precedence_ids(&db,"u1").unwrap().is_empty());
+        let live=list_active_precedence_graph(&db,"u1").unwrap();
+        assert_eq!(live,vec![ActivePrecedence{
+            id:"ba-new".into(),before_anchor_id:"b".into(),
+            after_anchor_id:"a".into(),origin:"restatement".into(),
+        }]);
+        assert!(list_active_precedence_graph(&db,"u2").unwrap().is_empty());
+        assert!(db.execute("DELETE FROM world_time_precedence_restatements WHERE id='ba-new'",[]).is_err());
+        assert!(db.execute("UPDATE world_time_precedence_restatements SET reason='change' WHERE id='ba-new'",[]).is_err());
+    }
+
+    #[test]
+    fn restatement_is_scoped_and_must_reference_revoked_original() {
+        let db=isolated_v7(); universe(&db,"u1"); universe(&db,"u2");
+        for id in ["a","b","c"] { create_anchor(&db,unknown(id,"u1")).unwrap(); }
+        create_anchor(&db,unknown("foreign","u2")).unwrap();
+        create_precedence(&db,"ab","u1","a","b","original",None).unwrap();
+        assert!(restate_revoked_precedence(
+            &db,"r0","u1","ab","b","a","not yet revoked",None,
+        ).is_err());
+        decide_precedence(&db,"d","u1","ab","revoke",None,"correction",None).unwrap();
+        assert!(restate_revoked_precedence(
+            &db,"r1","u2","ab","foreign","foreign","wrong world",None,
+        ).is_err());
+        assert!(restate_revoked_precedence(
+            &db,"r2","u1","ab","b","foreign","cross-world",None,
+        ).is_err());
+        assert!(restate_revoked_precedence(
+            &db,"r3","u1","ab","b","b","self cycle",None,
+        ).is_err());
+        restate_revoked_precedence(&db,"r4","u1","ab","b","a","valid",None).unwrap();
+        assert!(restate_revoked_precedence(
+            &db,"r5","u1","ab","a","c","second correction",None,
+        ).is_err());
+        assert_eq!(list_active_precedence_graph(&db,"u1").unwrap().len(),1);
+    }
+
+    #[test]
+    fn active_graph_cycle_rejects_restatement_and_legacy_backdoor() {
+        let db=isolated_v7(); universe(&db,"u1");
+        for id in ["a","b","c"] { create_anchor(&db,unknown(id,"u1")).unwrap(); }
+        create_precedence(&db,"ab","u1","a","b","old",None).unwrap();
+        create_precedence(&db,"ac","u1","a","c","another relation",None).unwrap();
+        create_precedence(&db,"cb","u1","c","b","another relation",None).unwrap();
+        decide_precedence(&db,"d","u1","ab","revoke",None,"wrong edge",None).unwrap();
+        assert!(restate_revoked_precedence(
+            &db,"bad-cycle","u1","ab","b","a","would create b-a-c-b",None,
+        ).is_err());
+        assert_eq!(list_active_precedence_graph(&db,"u1").unwrap().len(),2);
+        // Newly authored raw v7 edges must also be checked against already
+        // committed corrected-graph assertions.
+        decide_precedence(&db,"ac-d","u1","ac","revoke",None,"remove path",None).unwrap();
+        restate_revoked_precedence(&db,"ba","u1","ab","b","a","reverse is now safe",None).unwrap();
+        assert!(create_precedence(&db,"raw-ca","u1","c","a","would cycle a-c-a",None).is_err());
+        assert_eq!(list_active_precedence_graph(&db,"u1").unwrap().len(),2);
+    }
+
+    #[test]
+    fn retired_anchor_excludes_corrected_edge_from_active_projection() {
+        let db=isolated_v7(); universe(&db,"u1");
+        for id in ["a","b"] { create_anchor(&db,unknown(id,"u1")).unwrap(); }
+        create_precedence(&db,"ab","u1","a","b","first",None).unwrap();
+        decide_precedence(&db,"d","u1","ab","revoke",None,"reversed",None).unwrap();
+        decide_anchor(&db,"anchor-retired","u1","b","revoke",None,"removed",None).unwrap();
+        assert!(restate_revoked_precedence(
+            &db,"no","u1","ab","b","a","retired endpoint",None,
+        ).is_err());
+        assert!(list_active_precedence_graph(&db,"u1").unwrap().is_empty());
     }
 
 }

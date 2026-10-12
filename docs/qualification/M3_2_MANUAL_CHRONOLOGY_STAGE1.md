@@ -56,3 +56,16 @@ New `src/M32ChronologyPreview.tsx` is a **non-mounted** read-only React componen
 `src/m32ChronologyPreview.test.tsx` uses React static rendering to verify coordinate separation, manuscript positions, revocation labels, absence of buttons/IPC and automatic reveal inference, cross-Universe rejection and HTML escaping. **No `App.tsx` import, no visible production feature or write controls, no automatic v7 migration and no new Tauri IPC**. This is presentation-contract groundwork; the real offline user-facing GUI and a separate isolated write-capable M3.2 identity remain pending explicit operator qualification.
 
 Current HEAD after this change needs its OWN new CI; prior stage-2 success cannot accept it.
+
+
+## Stage 4 — Active-graph restatements candidate (2026-10-12)
+
+Stage-3 HEAD `ecdf04627bdb40fc948b1b7c7f2d3abec57952b0` earned [Windows CI #38199285576](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/38199285576) `completed/success`. The subsequent stage-4 HEAD must have its own CI.
+
+New **test-only** SQL `src-tauri/sql/m3_2_active_precedence_candidate.sql` adds an immutable STRICT table `world_time_precedence_restatements`. A replacement edge must explicitly cite a revoked M3.1 original precedence from the **same Universe**, provide a human-authored reason, and only connect current same-Universe anchors. It is not written into the immutable legacy v7 table, so a safe reversal can be represented without removing history or relaxing the old cycle trigger. A given original may have **at most one restatement** in this initial bounded protocol. The restatement source revision is optionally linked to the exact historical text revision and its Universe is checked.
+
+SQLite INSERT triggers reject self-links, non-revoked/missing originals, cross-Universe links, mismatched source revisions, duplicate active edges and directed cycles in the **combined active partial graph** (non-revoked legacy edges plus restatements). A second trigger prevents later raw v7 INSERTs from bypassing the new active-graph cycle check. The old M3.1 raw-history cycle constraint remains intact and can veto an otherwise active-safe legacy insertion; authoring a correction therefore uses the explicit restatement route. Current projection lists retain stable ID display ordering, not inferred chronological ranking or automatic Gregorian conversion.
+
+Four isolated in-memory Rust fixture scenarios qualify reversed edges after revocation, preserved legacy history, duplicate/same-Universe/retired-endpoint checks, current-graph cycles, later raw-insert backdoor, and database-level immutability. No normal Tauri IPC, new app runtime, automatic migration or target-PC operation exists in this stage.
+
+**Remaining limitation:** The new restatement table has no governed append-only revocation/supersession of restatements yet; full recursively correctable chronology CRUD still requires an additional policy and test matrix. It is not authorized to expose this interface to production or operator databases. M3.2 remains OPEN/DRAFT pending fresh CI and later isolated Windows acceptance.
