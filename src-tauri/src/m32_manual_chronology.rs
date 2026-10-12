@@ -629,7 +629,7 @@ mod tests {
     #[test]
     fn active_graph_cycle_rejects_restatement_and_legacy_backdoor() {
         let db=isolated_v7(); universe(&db,"u1");
-        for id in ["a","b","c"] { create_anchor(&db,unknown(id,"u1")).unwrap(); }
+        for id in ["a","b","c","d"] { create_anchor(&db,unknown(id,"u1")).unwrap(); }
         create_precedence(&db,"ab","u1","a","b","old",None).unwrap();
         create_precedence(&db,"ac","u1","a","c","another relation",None).unwrap();
         create_precedence(&db,"cb","u1","c","b","another relation",None).unwrap();
@@ -642,8 +642,12 @@ mod tests {
         // committed corrected-graph assertions.
         decide_precedence(&db,"ac-d","u1","ac","revoke",None,"remove path",None).unwrap();
         restate_revoked_precedence(&db,"ba","u1","ab","b","a","reverse is now safe",None).unwrap();
-        assert!(create_precedence(&db,"raw-ca","u1","c","a","would cycle a-c-a",None).is_err());
-        assert_eq!(list_active_precedence_graph(&db,"u1").unwrap().len(),2);
+        // The old M3.1 guard ALLOWS this pair: its historical graph
+        // has no path c -> d. The active graph DOES have c -> b -> a -> d,
+        // so the new M3.2 trigger must veto d -> c to avoid a cycle.
+        create_precedence(&db,"ad","u1","a","d","safe extension",None).unwrap();
+        assert!(create_precedence(&db,"dc","u1","d","c","active-only cycle",None).is_err());
+        assert_eq!(list_active_precedence_graph(&db,"u1").unwrap().len(),3);
     }
 
     #[test]
