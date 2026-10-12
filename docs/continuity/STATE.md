@@ -1,5 +1,9 @@
 # Fabulaxiom — Current State
 
+## 2026-10-12 — M3.2 stage 10 debug-only isolated preflight; NEW CI pending
+
+Stage 9 exact head `d1a14aeb0703a9eb0c225ecd89be2a56d4b8b7c8` passed [Windows CI #38269738499](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/38269738499) **completed/success, 23/23 steps**. M3.2 stage 10 proposes a **separate, opt-in, debug-only** preflight-only Tauri feature, unique M3.2 identity with explicit ACK, and exactly one status IPC registered via both invoke_handler and feature-specific build-time AppManifest. It performs **ZERO writes, ZERO SQLite/production reads** and is not mounted or operator launched. No existing normal or M3.1 preview IPC changes. Exact-head CI required. PR #35 still OPEN/DRAFT; M1.5 production v6 and protected backups untouched. M3.3 unauthorized. See `docs/qualification/M3_2_ISOLATED_IPC_PREFLIGHT.md`.
+
 ## 2026-10-12 — M3.2 stage 9 independent SQLite connections, pending exact-head CI
 
 Stage-8 `eb9f6486567fdcb65ba5556b2861593c7b18bca0` has **terminal required Windows CI #38263839166 23/23 PASS**. New stage-9 test-only scratch SQLite file (NOT operator data) verifies two separate WAL connections, committed-only read visibility, serialized writers, atomic correction withdrawal/replacement rollback and commit, UNIQUE fork veto, raw-v7 cycle-bypass veto and read-only `query_only` refusal. Exact-head CI is not yet accepted. Normal runtime remains v6, M1.5 restored-active activation untouched, no new Tauri IPC. PR #35 OPEN/DRAFT, M3.3 unauthorized.

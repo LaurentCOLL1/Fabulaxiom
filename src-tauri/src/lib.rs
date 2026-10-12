@@ -3,8 +3,14 @@ mod backup_commands;
 mod database;
 #[cfg(feature = "m31-isolated-preview")]
 mod m31_readonly_preview;
+#[cfg(feature = "m32-isolated-preflight")]
+mod m32_isolated_preflight;
 #[cfg(all(feature = "m31-isolated-preview", not(debug_assertions)))]
 compile_error!("M3.1 read-only isolated preview is debug-only; do not ship this build flavor");
+#[cfg(all(feature = "m32-isolated-preflight", not(debug_assertions)))]
+compile_error!("M3.2 isolated preflight is debug-only and has NO write authorization");
+#[cfg(all(feature = "m31-isolated-preview", feature = "m32-isolated-preflight"))]
+compile_error!("M3.1 preview and M3.2 preflight identities must never share one build");
 mod entity;
 mod entity_commands;
 mod facts;
@@ -237,7 +243,7 @@ fn database_status(app: tauri::AppHandle) -> DatabaseStatus {
     }
 }
 
-#[cfg(not(feature = "m31-isolated-preview"))]
+#[cfg(not(any(feature = "m31-isolated-preview", feature = "m32-isolated-preflight")))]
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
@@ -291,7 +297,7 @@ pub fn run() {
 }
 
 /// Only one read-only command is registered. All M2 mutation IPC is absent.
-#[cfg(feature = "m31-isolated-preview")]
+#[cfg(all(feature = "m31-isolated-preview", not(feature = "m32-isolated-preflight")))]
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     let context = tauri::generate_context!();
@@ -307,6 +313,31 @@ pub fn run() {
         ])
         .run(context)
         .expect("M3.1 isolated read-only preview failed");
+}
+
+
+/// A distinct debug-only build flavor with a ONE-command IPC allowlist.
+/// It opens no SQLite file and cannot migrate or modify operator data.
+/// No regular M2 or M3.1 commands exist in this handler.
+#[cfg(all(feature = "m32-isolated-preflight", not(feature = "m31-isolated-preview")))]
+#[cfg_attr(mobile, tauri::mobile_entry_point)]
+pub fn run() {
+    let context = tauri::generate_context!();
+    let actual_id = context.config().identifier.as_str();
+    let approved_id = std::env::var("FABULAXIOM_M32_PREFLIGHT_ID")
+        .expect("M3.2 preflight requires an explicit isolated identity");
+    let acknowledgement = std::env::var("FABULAXIOM_M32_PREFLIGHT_ACK")
+        .expect("M3.2 preflight requires an explicit read-only acknowledgement");
+    m32_isolated_preflight::validate_launch(
+        actual_id, &approved_id, &acknowledgement,
+    ).expect("M3.2 preflight refuses a production or unapproved identity");
+
+    tauri::Builder::default()
+        .invoke_handler(tauri::generate_handler![
+            m32_isolated_preflight::m32_isolated_preflight_status
+        ])
+        .run(context)
+        .expect("M3.2 isolated preflight failed");
 }
 
 #[cfg(test)]

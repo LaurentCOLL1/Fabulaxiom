@@ -13,6 +13,8 @@ crate-type = ["staticlib", "cdylib", "rlib"]
 [features]
 default = []
 m31-isolated-preview = []
+# Debug-only preflight: ZERO write IPC; a future writer needs new authorization.
+m32-isolated-preflight = []
 
 [build-dependencies]
 tauri-build = { version = "2", features = [] }

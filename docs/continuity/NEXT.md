@@ -1,5 +1,9 @@
 # Fabulaxiom — Next Authorized Work
 
+## 2026-10-12 — M3.2 stage 10 next
+
+Verify **new exact-head Windows CI** including Tauri feature compilation/tests for `m32-isolated-preflight`, and reject any cross-feature/release build or accidental registered write IPC. After qualification, prepare a separate **dry-run first** operator staging and source manifest with M3.2 identity and medium-integrity token checks, new isolated v7 copied database and full backup/rollback custody. **Only then** propose writable M3.2 IPC + interactive frontend and real Windows acceptance. Never reuse M3.1 readonly identity, change production M1.5 v6/automatic 007, or authorize M3.3.
+
 ## 2026-10-12 — M3.2 stage 9 next gate
 
 Stage-8 exact-head Windows CI #38263839166 PASS. Qualify stage-9 **new exact HEAD**, including two-connection, WAL/rollback tests on disposable scratch SQLite only, with 23/23 required Windows checks. Then prepare separately gated M3.2 isolated writable Tauri flavor/identity, explicit per-command IPC permissions, genuine manual frontend/editor and operator Windows backup/rollback/custody. Never reuse M3.1 read-only IPC or alter active restored M1.5 v6/automatic schema ceiling. No M3.3.
