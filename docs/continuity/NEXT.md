@@ -1,5 +1,9 @@
 # Fabulaxiom — Next Authorized Work
 
+## 2026-10-12 M3.2 stage-6 next
+
+Require new exact-head Windows PR CI PASS for guarded one-generation successor. After qualification, review recursive revocation/supersession semantics, active-graph consistency under all three authoring routes, and isolated writable M3.2 Tauri security model, with fresh protected v7 copy/identity and Windows operator acceptance. Existing M3.1 read-only preview and normal SQLite v6 stay unchanged; no automatic 007 or M3.3.
+
 ## 2026-10-12 — M3.2 stage-5 next gate
 
 New test-only second-order restatement withdrawal candidate must pass **its own exact-head Windows CI**. Then design a persistent version-chain for restatements and a corrected active-graph SQL guard, including concurrency/failure/rollback and historically faithful projections, **before** an independent writable M3.2 Tauri identity, IPC and UX may be operator-tested. Existing production v6 / M1.5 markers and the debug-only read-only M3.1 variant remain strictly out of scope; no automatic 007. PR #35 OPEN/DRAFT and M3.3 blocked.

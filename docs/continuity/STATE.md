@@ -1,5 +1,9 @@
 # Fabulaxiom — Current State
 
+## 2026-10-12 M3.2 stage 6 — one-generation correction successor, pending CI
+
+Previous M3.2 stage-5 exact HEAD `7cd198493b32645025d7a34ca30735d2ef99579e` passed Windows PR CI #38200842678 23/23 SUCCESS. New test-only SQLite candidate and Rust service add one immutable successor after explicitly withdrawn initial restatement, plus shared active-graph view and incoming raw/initial-restatement graph guards. One successor per withdrawn first correction, **no recursive authoring**, production IPC or schema activation. New HEAD CI is required. M3.2 PR #35 DRAFT; M3.3 blocked. Production M1.5 restored-active v6 unchanged.
+
 ## 2026-10-12 M3.2 stage 5: second-order restatement withdrawal, candidate
 
 Stage-4 guarded active graph at HEAD `dc2fa5b2cbcb4d91b8c3d3e26a30e27093534cdd` passed exact-head PR CI #38199955357 **completed/success** (23 Windows steps). New stage-5 `#[cfg(test)]` SQLite/Rust-only restatement revocation design retains legacy and corrected assertions but removes a withdrawn correction from the active projection; immutable per-Universe provenance, duplicate veto and audit history included. The new HEAD requires its own CI and remains DRAFT. Re-authoring after restatement withdrawal is intentionally unavailable until a governed version-chain/active-graph redesign; **do not claim complete M3.2 CRUD**. Normal Windows application remains v6 and M1.5 unchanged, with no new Tauri IPC or operator data writes. M3.3 unauthorized.

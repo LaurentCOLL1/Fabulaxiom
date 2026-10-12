@@ -339,6 +339,33 @@ pub fn list_restatement_history(
     })?.collect()
 }
 
+
+// Governed SINGLE successor generation after an initial restatement withdrawal.
+// The database validates same-Universe ownership and current graph acyclicity.
+// No automatic chain recursion, writes to source history, or production IPC.
+pub fn succeed_withdrawn_restatement(
+    db: &Connection,
+    id: &str,
+    universe_id: &str,
+    prior_restatement_id: &str,
+    before_anchor_id: &str,
+    after_anchor_id: &str,
+    reason: &str,
+    source_revision_id: Option<&str>,
+) -> Result<()> {
+    db.execute(
+        "INSERT INTO world_time_restatement_successors
+         (id,universe_id,prior_restatement_id,before_anchor_id,after_anchor_id,
+          reason,source_revision_id)
+         VALUES (?1,?2,?3,?4,?5,?6,?7)",
+        params![
+            id, universe_id, prior_restatement_id, before_anchor_id,
+            after_anchor_id, reason, source_revision_id
+        ],
+    )?;
+    Ok(())
+}
+
 // Reflects active partial-order assertions, not a chronological total order.
 // The original legacy and corrected assertions remain separately inspectable.
 pub fn list_active_precedence_graph(
@@ -346,32 +373,9 @@ pub fn list_active_precedence_graph(
     universe_id: &str,
 ) -> Result<Vec<ActivePrecedence>> {
     let mut stmt = db.prepare(
-        "SELECT p.id,p.before_anchor_id,p.after_anchor_id,'legacy'
-         FROM world_time_precedences p
-         WHERE p.universe_id=?1
-           AND NOT EXISTS (
-               SELECT 1 FROM world_time_precedence_decisions d
-               WHERE d.prior_precedence_id=p.id
-           )
-           AND NOT EXISTS (
-               SELECT 1 FROM world_time_anchor_decisions d
-               WHERE d.universe_id=p.universe_id AND
-                     d.prior_anchor_id IN (p.before_anchor_id,p.after_anchor_id)
-           )
-         UNION ALL
-         SELECT t.id,t.before_anchor_id,t.after_anchor_id,'restatement'
-         FROM world_time_precedence_restatements t
-         WHERE t.universe_id=?1
-           AND NOT EXISTS (
-               SELECT 1 FROM world_time_restatement_revocations d
-               WHERE d.restatement_id=t.id AND d.universe_id=t.universe_id
-           )
-           AND NOT EXISTS (
-               SELECT 1 FROM world_time_anchor_decisions d
-               WHERE d.universe_id=t.universe_id AND
-                     d.prior_anchor_id IN (t.before_anchor_id,t.after_anchor_id)
-           )
-         ORDER BY 1",
+        "SELECT id,before_anchor_id,after_anchor_id,origin
+         FROM m32_active_precedence_projection
+         WHERE universe_id=?1 ORDER BY id,origin",
     )?;
     stmt.query_map([universe_id], |row| {
         Ok(ActivePrecedence {
@@ -392,6 +396,7 @@ mod tests {
     const DECISION_SQL: &str = include_str!("../sql/m3_2_chronology_decisions_candidate.sql");
     const RESTATEMENT_SQL: &str = include_str!("../sql/m3_2_active_precedence_candidate.sql");
     const RESTATEMENT_REVOCATION_SQL: &str = include_str!("../sql/m3_2_restatement_revocations_candidate.sql");
+    const SUCCESSOR_SQL: &str = include_str!("../sql/m3_2_restatement_successors_candidate.sql");
 
     fn isolated_v7() -> Connection {
         let mut db = Connection::open_in_memory().expect("in-memory only");
@@ -403,6 +408,7 @@ mod tests {
         tx.execute_batch(DECISION_SQL).expect("isolated M3.2 decision candidate");
         tx.execute_batch(RESTATEMENT_SQL).expect("isolated active-edge candidate");
         tx.execute_batch(RESTATEMENT_REVOCATION_SQL).expect("isolated correction retirement");
+        tx.execute_batch(SUCCESSOR_SQL).expect("isolated one-generation successor");
         tx.execute(
             "INSERT INTO schema_migrations(version,name)
              VALUES (7,'007_create_world_time_foundation')", [],
@@ -812,6 +818,102 @@ mod tests {
             &db, "local-decision", "u1", "ba", "Same-Universe reason", Some("local"),
         ).unwrap();
         assert!(list_active_precedence_graph(&db, "u1").unwrap().is_empty());
+    }
+
+
+
+    #[test]
+    fn withdrawn_restatement_may_have_one_new_authored_successor_without_erasing_history() {
+        let db = isolated_v7();
+        universe(&db,"u1");
+        universe(&db,"u2");
+        for id in ["a","b","c"] { create_anchor(&db,unknown(id,"u1")).unwrap(); }
+        create_precedence(&db,"ab","u1","a","b","old",None).unwrap();
+        decide_precedence(&db,"ab-revoke","u1","ab","revoke",None,"correct",None).unwrap();
+        restate_revoked_precedence(&db,"ba","u1","ab","b","a","reversed",None).unwrap();
+        assert!(succeed_withdrawn_restatement(
+            &db,"early","u1","ba","a","c","not yet withdrawn",None
+        ).is_err());
+        revoke_restatement(&db,"ba-revoke","u1","ba","withdrawn",None).unwrap();
+        succeed_withdrawn_restatement(
+            &db,"ac","u1","ba","a","c","new human correction",None
+        ).unwrap();
+        assert_eq!(list_precedences(&db,"u1").unwrap().len(),1);
+        assert_eq!(list_restatement_history(&db,"u1").unwrap().len(),1);
+        let active=list_active_precedence_graph(&db,"u1").unwrap();
+        assert_eq!(active,vec![ActivePrecedence{
+            id:"ac".into(),before_anchor_id:"a".into(),
+            after_anchor_id:"c".into(),origin:"successor".into(),
+        }]);
+        assert!(list_active_precedence_graph(&db,"u2").unwrap().is_empty());
+        assert!(succeed_withdrawn_restatement(
+            &db,"second","u1","ba","b","a","fork",None
+        ).is_err());
+        assert!(succeed_withdrawn_restatement(
+            &db,"wrong-world","u2","ba","a","c","cross-world",None
+        ).is_err());
+        assert!(db.execute(
+            "UPDATE world_time_restatement_successors SET reason='rewritten' WHERE id='ac'",[],
+        ).is_err());
+        assert!(db.execute(
+            "DELETE FROM world_time_restatement_successors WHERE id='ac'",[],
+        ).is_err());
+        assert_eq!(db.query_row(
+            "PRAGMA integrity_check",[],|row| row.get::<_,String>(0),
+        ).unwrap(),"ok");
+        assert_eq!(db.query_row(
+            "SELECT COUNT(*) FROM pragma_foreign_key_check",[],|row| row.get::<_,i64>(0),
+        ).unwrap(),0);
+    }
+
+    #[test]
+    fn successor_rejects_cycles_and_both_legacy_authoring_backdoors() {
+        let db=isolated_v7();
+        universe(&db,"u1");
+        for id in ["a","b","c","d","e"] { create_anchor(&db,unknown(id,"u1")).unwrap(); }
+        create_precedence(&db,"ab","u1","a","b","initial",None).unwrap();
+        create_precedence(&db,"de","u1","d","e","separate",None).unwrap();
+        decide_precedence(&db,"d-ab","u1","ab","revoke",None,"replace",None).unwrap();
+        restate_revoked_precedence(&db,"ba","u1","ab","b","a","first",None).unwrap();
+        revoke_restatement(&db,"d-ba","u1","ba","second correction",None).unwrap();
+        // Current d->e: proposed e->d would be a real active cycle.
+        assert!(succeed_withdrawn_restatement(
+            &db,"cycle","u1","ba","e","d","unsafe",None
+        ).is_err());
+        succeed_withdrawn_restatement(
+            &db,"ca","u1","ba","c","a","safe corrected edge",None
+        ).unwrap();
+        // The stage-4 v7 and initial-restatement guards alone know no c->a.
+        assert!(create_precedence(
+            &db,"raw-ac","u1","a","c","attempt raw cycle",None
+        ).is_err());
+        // Another original edge is withdrawn to allow its own restatement;
+        // c->a makes a->c an active-only cycle.
+        create_precedence(&db,"cd","u1","c","d","another original",None).unwrap();
+        decide_precedence(&db,"d-cd","u1","cd","revoke",None,"wrong",None).unwrap();
+        assert!(restate_revoked_precedence(
+            &db,"ac","u1","cd","a","c","attempt second route",None
+        ).is_err());
+        assert_eq!(list_active_precedence_graph(&db,"u1").unwrap().len(),2);
+    }
+
+    #[test]
+    fn successor_rejects_retired_endpoint_and_blank_reason() {
+        let db=isolated_v7();
+        universe(&db,"u1");
+        for id in ["a","b","c"] { create_anchor(&db,unknown(id,"u1")).unwrap(); }
+        create_precedence(&db,"ab","u1","a","b","initial",None).unwrap();
+        decide_precedence(&db,"d-ab","u1","ab","revoke",None,"withdraw",None).unwrap();
+        restate_revoked_precedence(&db,"ba","u1","ab","b","a","old",None).unwrap();
+        revoke_restatement(&db,"d-ba","u1","ba","retire",None).unwrap();
+        assert!(succeed_withdrawn_restatement(
+            &db,"blank","u1","ba","a","c","  ",None
+        ).is_err());
+        decide_anchor(&db,"d-c","u1","c","revoke",None,"no longer current",None).unwrap();
+        assert!(succeed_withdrawn_restatement(
+            &db,"retired","u1","ba","a","c","invalid anchor",None
+        ).is_err());
+        assert!(list_active_precedence_graph(&db,"u1").unwrap().is_empty());
     }
 
 
