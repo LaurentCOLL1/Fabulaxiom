@@ -21,7 +21,8 @@ class M31SemanticArchiveTests(unittest.TestCase):
         backup_item = lambda filename: {
             "file": filename, "sha256": semantic.V6,
             "combined_logical_sha256": l,
-            "legacy_table_counts": {"table_" + str(i): i for i in range(14)},
+            "legacy_table_counts": {name: i for i, name in enumerate(semantic.LEGACY_TABLES)},
+            "bytes": 237568,
             "integrity": "ok", "foreign_key_check": "ok",
         }
         return {
@@ -68,7 +69,7 @@ class M31SemanticArchiveTests(unittest.TestCase):
                 "forced_sqlite_error": "SQLITE_CONSTRAINT_PRIMARYKEY",
                 "rolled_back_file": "failed-v7-rolled-back-v6.sqlite3",
                 "rolled_back_file_sha256": semantic.V6,
-                "rolled_back_file_bytes": 200000,
+                "rolled_back_file_bytes": 237568,
                 "rolled_back_schema_version": 6,
                 "legacy_logical_sha256": l,
                 "all_14_legacy_tables_preserved": True,
@@ -135,11 +136,36 @@ class M31SemanticArchiveTests(unittest.TestCase):
         self.check_rejected("invalid_combined_logical_sha256")
 
     def test_backup_fourteen_tables_typed_nonnegative(self):
-        self.docs["backup"]["backup"]["legacy_table_counts"]["table_0"] = -1
+        self.docs["backup"]["backup"]["legacy_table_counts"]["app_metadata"] = -1
         self.check_rejected("backup_table_values")
-        self.docs["backup"]["backup"]["legacy_table_counts"]["table_0"] = 0
-        self.docs["backup"]["backup"]["legacy_table_counts"].pop("table_13")
+        self.docs["backup"]["backup"]["legacy_table_counts"]["app_metadata"] = 0
+        self.docs["backup"]["backup"]["legacy_table_counts"].pop("fact_review_events")
         self.check_rejected("backup_table_count")
+
+    def test_v6_table_names_cannot_be_replaced_with_arbitrary_fourteen(self):
+        counts = self.docs["backup"]["backup"]["legacy_table_counts"]
+        counts["forged_table"] = counts.pop("app_metadata")
+        self.check_rejected("backup_table_names")
+
+    def test_backup_restore_counts_must_match_per_real_table(self):
+        counts = self.docs["backup"]["restore_rehearsal"]["legacy_table_counts"]
+        counts["narrative_entities"] += 1
+        self.check_rejected("backup_restore_table_inventory_mismatch")
+
+    def test_backup_restore_byte_sizes_must_match(self):
+        self.docs["backup"]["restore_rehearsal"]["bytes"] += 4096
+        self.check_rejected("backup_restore_byte_count_mismatch")
+
+    def test_rollback_file_size_must_match_qualified_backup(self):
+        self.docs["rollback"]["rolled_back_file_bytes"] += 4096
+        self.check_rejected("rollback_backup_byte_count_mismatch")
+
+    def test_boolean_fake_count_or_file_bytes_rejected(self):
+        self.docs["backup"]["backup"]["legacy_table_counts"]["app_metadata"] = True
+        self.check_rejected("backup_table_values")
+        self.docs["backup"]["backup"]["legacy_table_counts"]["app_metadata"] = 0
+        self.docs["backup"]["backup"]["bytes"] = True
+        self.check_rejected("backup_file_bytes")
 
     def test_v6_flags_must_be_boolean_false_not_zero_or_true(self):
         self.docs["backup"]["migration_v7_executed"] = 0

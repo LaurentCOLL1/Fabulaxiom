@@ -1,5 +1,9 @@
 # Fabulaxiom — Current State
 
+## 2026-10-13 M3.2 Stage 15 — exact legacy-table and backup/restore cross-links (CI PENDING)
+
+Stage 14 exact HEAD `612f0e40df4fcb2d4ea697205da82a0c0c39dbc0` passed required Windows `pull_request` CI #38340992280, 28/28 SUCCESS. Stage 15 source candidate tightens SHA-pinned M3.1 archival JSON claims: exact 14 v6 legacy table names from the existing audit authority, per-table backup/restore count equality, positive exact-integer byte-size equality for backup/restore/forced rollback, and boolean-as-integer veto. 21 synthetic tests in the existing CI step. No operator invocation, SQLite connection, runtime migration or staging. New exact-HEAD CI required. PR #35 OPEN/DRAFT, M3.3 blocked. See `docs/qualification/M3_2_M31_SEMANTIC_HARDENING.md`.
+
 ## 2026-10-13 M3.2 Stage 14 — archival M3.1 manifest semantics SOURCE CANDIDATE
 
 Stage 13 HEAD 5e5d76141cbf7fbb69954beefe0acbfb822da6d0 passed required Windows pull_request CI #38339487476 completed/success 27/27. Stage 14 source adds SHA-pinned *semantic* checks of M3.1 v6 backup/restore, third v7, fourth rollback, isolated preparation and Tauri overlay, with 16 synthetic adversarial cases. This verifies JSON assertions and cross-hash lineage, **not fresh SQLite integrity or authoritative external ACL history**. New own-HEAD CI required. No operator command or write, status remains PENDING_EXTERNAL_ATTESTATION, PR #35 DRAFT and M3.3 blocked. See docs/qualification/M3_2_M31_SEMANTIC_READONLY_GATE.md.

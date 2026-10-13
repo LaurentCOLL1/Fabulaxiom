@@ -11,6 +11,7 @@ from pathlib import Path
 import sys
 
 import m3_2_independent_authority_gate as pinned
+from m3_1_v6_audit import LEGACY_TABLES
 from m3_2_operator_readonly_gate import GateStop, digest_file, regular_safe
 
 SOURCE = pinned.PINNED_SHA256[("production", "active_v6")]
@@ -78,9 +79,19 @@ def validate_documents(docs: dict[str, dict], identity: str) -> dict:
         expect(item, "integrity", "ok")
         expect(item, "foreign_key_check", "ok")
         counts = item.get("legacy_table_counts")
-        require(isinstance(counts, dict) and len(counts) == 14, key + "_table_count")
-        require(all(isinstance(k, str) and type(n) is int and n >= 0
-                    for k, n in counts.items()), key + "_table_values")
+        require(isinstance(counts, dict) and len(counts) == len(LEGACY_TABLES),
+                key + "_table_count")
+        require(set(counts) == set(LEGACY_TABLES), key + "_table_names")
+        require(all(type(n) is int and n >= 0 for n in counts.values()),
+                key + "_table_values")
+        require(type(item.get("bytes")) is int and item["bytes"] > 0,
+                key + "_file_bytes")
+    saved = child(backup, "backup")
+    restored = child(backup, "restore_rehearsal")
+    require(saved["legacy_table_counts"] == restored["legacy_table_counts"],
+            "backup_restore_table_inventory_mismatch")
+    require(saved["bytes"] == restored["bytes"],
+            "backup_restore_byte_count_mismatch")
     expect(backup, "active_pointer_modified", False)
     expect(backup, "migration_v7_executed", False)
 
@@ -125,6 +136,8 @@ def validate_documents(docs: dict[str, dict], identity: str) -> dict:
     expect(rollback, "active_pointer_modified", False)
     require(type(rollback.get("rolled_back_file_bytes")) is int and
             rollback["rolled_back_file_bytes"] > 0, "rollback_bytes")
+    require(rollback["rolled_back_file_bytes"] == saved["bytes"],
+            "rollback_backup_byte_count_mismatch")
 
     expect(preparation, "protocol", "m3_1_isolated_v7_launch_preparation_v1")
     expect(preparation, "identity", identity)

@@ -1,5 +1,9 @@
 # Fabulaxiom — Next Authorized Work
 
+## 2026-10-13 M3.2 Stage 15 next
+
+Re-fetch `main`, PR #35 head and required Windows check runs. Qualify Stage 15's full expanded **21-test** M3.1 semantic suite against the NEW exact source HEAD, not Stage 14's successful #38340992280. Verify all job steps are terminal SUCCESS. The validator checks exact real v6 table names and recorded snapshot/restore/rollback byte- and row-count cross-links in **synthetic historical JSON only**; this does not qualify current production SQLite integrity, restore fitness, ACL archive history or the pending external attestations. No real operator command, SQL open, new M3.2 identity, schema 007, write IPC, PR merge or M3.3. Preserve M1.5 v6 and all old M2/M3 custodies.
+
 ## 2026-10-13 M3.2 Stage 14 next acceptance
 
 Re-fetch exact PR #35 stage-14 candidate HEAD, `main` and its new pull_request workflow; qualify all Windows steps on **new SHA**, never reuse stage-13 #38339487476 27/27 result. Semantically verify archived M3.1 backup/third/rollback/preparation manifest assertions and isolated overlay on only synthetic fixture data. Operator's real M1.5 v6, named M2.4 duplicate-content backups, M2.5 isolation, M3.1 preview and ACL archives are protected and must not be opened writable or altered. Independent historical authority for observed ACL files/early M2.4 manifest remains unresolved; Stage-14 pending status is never write permission. No copy/rollback preparation, no migration 007, no new Tauri identity or M3.3. PR #35 stays DRAFT/unmerged.
