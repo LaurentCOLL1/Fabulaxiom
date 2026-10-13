@@ -1,5 +1,10 @@
 # Fabulaxiom — Current State
 
+## 2026-10-13 M3.2 Stage 18 — isolated M3.1 v7 physical read-only SOURCE CANDIDATE (new CI PENDING)
+
+Stage 17 exact HEAD `281d6667b5d08ca0ab3217d24e650574bc70f2ca` passed required Windows CI #38421108816 29/29. Operator subsequently ran genuine source-anchored four-root custody: 26/26 roles, 21/21 historic pinned and 3/3 recent observed SHAs MATCH, 2 unanchored, Git source clean. Status remained PENDING_EXTERNAL_ATTESTATION, CLI exit 2. Stage 18 adds a **new source-only / synthetic CI** verifier for physical integrity of the **existing isolated M3.1 v7** SQLite copy: require previous 26-role live-custody gate before read-only mode=ro connection; SQLite header and no WAL/sidecar, separate integrity/FK, seven exact migration rows, 17 STRICT tables, v7 tables empty, old typed legacy logical SHA and file SHA/id before-after. Never opens production v6. New head CI mandatory; no operator command authorized. PR #35 DRAFT, M3.3 blocked. See `docs/qualification/M3_2_ISOLATED_V7_PHYSICAL_READONLY.md`.
+
+
 ## 2026-10-13 M3.2 Stage 17 — M1.5 activation inventory hardening (CI PENDING)
 
 Stage 16 exact HEAD `fc1a25e411a0a22a337a5a2eb995f58a70ffff52` passed required Windows `pull_request` CI #38411230384, 29/29 SUCCESS. Stage 17 source candidate closes a gap where a second/newer M1.5 activation marker could change runtime selection while the old marker still passes SHA custody. It requires the exact sole expected activation marker both before and after the four-root scan. Synthetic tests expand 18 → 24, including actual SHA hashing of disposable fixture bytes. No change to production, Tauri, migrations or historical files. New exact-head CI required; real operator invocation remains unauthorized, output remains PENDING_EXTERNAL_ATTESTATION, PR #35 DRAFT and M3.3 blocked. See docs/qualification/M3_2_ACTIVATION_MARKER_INVENTORY.md.

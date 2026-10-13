@@ -1,5 +1,10 @@
 # Fabulaxiom — Next Authorized Work
 
+## 2026-10-13 M3.2 Stage 18 — next qualification
+
+Re-fetch live protected main, PR #35 stage-18 source commit and exact-head pull_request CI; require ALL Windows steps completed/success including 16 new disposable SQLite physical-test scenarios. Prior Stage 17 #38421108816 29/29 cannot qualify this new SHA. Do not execute new Stage-18 physical auditor on operator's preserved isolated v7 until a separately approved Windows medium-token preflight; physical test fixtures use disposable temporary synthetic databases only. Even if isolated v7 physical/FK/typed digest pass, independent ACL archival provenance and 2 unanchored files remain PENDING, no writer identity, no migration 007 into normal startup, no M3.2 edit IPC/UI, no production v7, no PR merge or M3.3.
+
+
 ## 2026-10-13 M3.2 Stage 17 next
 
 Re-fetch exact GitHub PR #35 head and protected main. Qualify Stage 17 24-case synthetic Windows tests and every required workflow step against the NEW SHA, not the accepted Stage 16 #38411230384 29/29. Reject any extra/newer M1.5 activation entry and preserve all original source roots and ACL evidence; source code rechecks the original marker inventory after hashing. Only afterward review independent non-admin Windows read-only operator preflight, and do not turn observed-only ACL or unanchored hashes into historical proof. No M3.2 writer/identity, migration 007, SQLite production connection, automatic merge, M3.3 or operator run without separate approval.
