@@ -174,6 +174,7 @@ def inspect(
         "mode": "m32_existing_isolated_v7_physical_readonly_candidate",
         "m32_staging_authorized": False,
         "operator_live_qualified": False,
+        "sqlite_opened": True,
         "production_sqlite_opened": False,
         "production_migrated": False,
         "writes_performed": False,

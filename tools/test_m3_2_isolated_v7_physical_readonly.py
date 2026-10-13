@@ -206,6 +206,7 @@ class V7ReadonlySyntheticTests(unittest.TestCase):
                     result = self.inspect_integration(m31=m31)
         self.assertEqual(result["status"], "PENDING_EXTERNAL_ATTESTATION")
         self.assertTrue(result["sqlite_opened_readonly"])
+        self.assertTrue(result["sqlite_opened"])
         self.assertFalse(result["production_sqlite_opened"])
         self.assertFalse(result["m32_staging_authorized"])
         self.assertFalse(result["operator_live_qualified"])
