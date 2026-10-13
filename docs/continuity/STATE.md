@@ -1,5 +1,9 @@
 # Fabulaxiom — Current State
 
+## 2026-10-13 — M3.2 Stage 13 source-anchored custody policy (NEW CI PENDING)
+
+Stage 12 at HEAD f839987c5b2a9c9581fd65aa4eb11bc575abc720 received required exact-head Windows pull_request CI #38318391796 completed/success, 26/26 steps. Stage 13 source candidate independently pins 21 historical reference SHA values, keeps 3 recent observations and 2 unanchored roles as OBSERVED, and refuses relabeling or path substitution. Output is strictly PENDING_EXTERNAL_ATTESTATION and never write authorization; no operator Windows command proposed. New SHA's CI must be accepted separately. Production M1.5 v6, M3.1 read-only, PR #35 DRAFT, M3.3 blocked. See docs/qualification/M3_2_INDEPENDENT_AUTHORITY_GATE.md.
+
 ## 2026-10-13 M3.2 stage 12 — multi-root read-only custody SOURCE CANDIDATE
 
 Stage 11 exact SHA 2ed947f2d2c13c74e150054a7dfbeb5153186134 Windows CI #38294992362 completed/success 25/25. Operator subsequently confirmed 11/11 M3.1 file SHA, named M2.4 duplicate-content backups, M2.5 and app snapshots, and current isolated M3.1 root+descendant ACLs. Archived ACL digests and early M2.4 manifest are recent-observation-only. Stage 12 adds separate four-root fail-closed read-only custody source and synthetic Windows tests; NO operator call, staging, SQLite, IPC or production mutation. New exact-HEAD CI required. PR #35 DRAFT, M3.3 blocked. See docs/qualification/M3_2_MULTIROOT_READONLY_GATE.md.

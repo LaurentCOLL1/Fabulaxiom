@@ -1,5 +1,9 @@
 # Fabulaxiom — Next Authorized Work
 
+## 2026-10-13 M3.2 Stage 13 next
+
+First qualify source-anchored custody/authority gate with its own exact-head required Windows pull_request CI; check all steps and source SHA. Stage-12 multi-root CI 26/26 PASS is historical and cannot qualify Stage 13. Do not run Stage-13 on operator files until independently reviewed Windows instructions and actual archival provenance are available. The ACL archive and early v5 manifest are recent observations only, and original marker/M2.5 isolated v6 bytes have not been independently source-pinned. No automatic historical promotion, 'READY', profile creation, copy, rollback, SQLite writes, Tauri editing, migration 007, PR merge or M3.3. Keep production M1.5 v6 and original M3.1/M2.5 isolated identities unchanged.
+
 ## 2026-10-13 M3.2 stage 12 next authorization
 
 Re-fetch PR #35 and require a new exact-head terminal Windows pull_request CI for source-only four-root inspector. No new operator command authorized until source and custody review. M1.5 active v6 and 11/11 M3.1 preserved; two distinct named M2.4 v5 backups have equal content SHA without corruption. The original archived ACL evidence has observed digests ONLY and no independently authenticated source hash. External custody/manifest authority, complete semantic backup manifests and read-only SQLite integrity remain separate gates. VERIFIED_SCOPE_ONLY is not staging approval. Do not register migration 007, prepare writable M3.2 identity, alter protected production or reuse isolated M3.1 root. PR #35 remains DRAFT, M3.3+ blocked.
