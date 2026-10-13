@@ -1,5 +1,9 @@
 # Fabulaxiom — Next Authorized Work
 
+## 2026-10-13 M3.2 Stage 17 next
+
+Re-fetch exact GitHub PR #35 head and protected main. Qualify Stage 17 24-case synthetic Windows tests and every required workflow step against the NEW SHA, not the accepted Stage 16 #38411230384 29/29. Reject any extra/newer M1.5 activation entry and preserve all original source roots and ACL evidence; source code rechecks the original marker inventory after hashing. Only afterward review independent non-admin Windows read-only operator preflight, and do not turn observed-only ACL or unanchored hashes into historical proof. No M3.2 writer/identity, migration 007, SQLite production connection, automatic merge, M3.3 or operator run without separate approval.
+
 ## 2026-10-13 Stage 16 next
 
 First re-fetch `main` and PR #35 head and qualify new exact-head required Windows `pull_request` CI including manifest-free, 26-role source-pinned four-root audit on synthetic files. Do not reuse the earlier Stage 15 CI #38408731334. Only after complete terminal SUCCESS, review standalone non-admin Windows PowerShell 5.1 preflight and the operator's independently preserved original source SHA records before ANY real audit. Original ACL archive SHA and early v5 manifest are merely recent observations; active M1.5 marker and isolated M2.5 v6 bytes have no source historical baseline. No manifest made from current files becomes historical truth. Even full SHA matching is not approval for a new M3.2 identity, v7 copy, writer IPC, ACL change, automatic schema migration 007 or M3.3. Production remains restored-active v6 and PR #35 stays DRAFT.

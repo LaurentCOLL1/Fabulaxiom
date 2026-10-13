@@ -134,6 +134,43 @@ class DirectSourceCustodyTests(unittest.TestCase):
         with self.assertRaisesRegex(direct.GateStop, "active_selection"):
             self.check()
 
+    def test_newer_activation_marker_causes_fail_closed(self):
+        marker = self.paths[("production", "activation_marker")]
+        newer = marker.with_name(
+            "activation-" + "9"*32 + "-" + "9"*10 + "-" + "9"*10 + ".active"
+        )
+        newer.write_text("fabulaxiom.sqlite3", encoding="utf-8")
+        before = self.snapshot()
+        with self.assertRaisesRegex(direct.GateStop, "unexpected_activation_marker_inventory"):
+            self.check()
+        self.assertEqual(self.snapshot(), before)
+
+    def test_unexpected_active_suffix_and_extra_marker_refused(self):
+        marker = self.paths[("production", "activation_marker")]
+        extra = marker.with_name("manual-override.active")
+        extra.write_text("synthetic attempted override", encoding="utf-8")
+        with self.assertRaisesRegex(direct.GateStop, "unexpected_activation_marker_inventory"):
+            self.check()
+
+    def test_marker_inventory_cannot_change_after_initial_scan(self):
+        original = direct.enforce_activation_inventory
+        counter = [0]
+        def late_marker(paths):
+            counter[0] += 1
+            if counter[0] == 2:
+                marker = paths[("production", "activation_marker")]
+                marker.with_name("activation-" + "8"*32 + "-" + "8"*10 + "-" + "8"*10 + ".active").write_text(
+                    "synthetic new activation", encoding="utf-8"
+                )
+            return original(paths)
+        with mock.patch.object(direct, "enforce_activation_inventory",
+                               side_effect=late_marker):
+            with self.assertRaisesRegex(direct.GateStop, "unexpected_activation_marker_inventory"):
+                self.check()
+
+    def test_exact_single_activation_marker_remains_accepted(self):
+        self.assertEqual(self.check()["status"], "PENDING_EXTERNAL_ATTESTATION")
+
     def test_unknown_historical_digest_fails_even_with_no_operator_manifest(self):
         original = self.fake_hash
         bad = self.paths[("production", "m31_v6_backup")]
@@ -238,6 +275,42 @@ class DirectSourceCustodyTests(unittest.TestCase):
         with mock.patch.object(direct.common, "regular_safe", side_effect=guard):
             with self.assertRaisesRegex(direct.GateStop, "reparse_point"):
                 self.check()
+
+    def run_with_real_file_hashes_and_disposable_pins(self):
+        """Exercise actual hash reader, never spoof on-disk bytes in this test."""
+        pinned = {
+            key: hashlib.sha256(self.paths[key].read_bytes()).hexdigest()
+            for key in direct.authority.PINNED_SHA256
+        }
+        observed = {
+            key: hashlib.sha256(self.paths[key].read_bytes()).hexdigest()
+            for key in direct.authority.OBSERVED_SHA256
+        }
+        with mock.patch.dict(direct.authority.PINNED_SHA256, pinned, clear=True):
+            with mock.patch.dict(direct.authority.OBSERVED_SHA256, observed, clear=True):
+                with mock.patch.object(direct.common, "git_value", side_effect=self.git):
+                    return direct.inspect(
+                        self.repo, HEAD, MAIN,
+                        self.roots["production"], self.roots["m25"],
+                        self.roots["m31"], self.roots["acl"],
+                        IDENTITY, True, token_checker=lambda: True,
+                    )
+
+    def test_real_digest_full_scope_on_disposable_files(self):
+        before = self.snapshot()
+        result = self.run_with_real_file_hashes_and_disposable_pins()
+        self.assertEqual(result["roles_checked"], 26)
+        self.assertEqual(result["status"], "PENDING_EXTERNAL_ATTESTATION")
+        self.assertFalse(result["m32_staging_authorized"])
+        self.assertEqual(self.snapshot(), before)
+
+    def test_real_digest_refuses_extra_marker(self):
+        marker = self.paths[("production", "activation_marker")]
+        marker.with_name("activation-" + "7"*32 + "-" + "7"*10 + "-" + "7"*10 + ".active").write_bytes(
+            b"new synthetic marker"
+        )
+        with self.assertRaisesRegex(direct.GateStop, "unexpected_activation_marker_inventory"):
+            self.run_with_real_file_hashes_and_disposable_pins()
 
     def test_real_sha256_helper_on_disposable_bytes(self):
         file = self.paths[("production", "active_v6")]

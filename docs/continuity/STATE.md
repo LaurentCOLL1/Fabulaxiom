@@ -1,5 +1,9 @@
 # Fabulaxiom — Current State
 
+## 2026-10-13 M3.2 Stage 17 — M1.5 activation inventory hardening (CI PENDING)
+
+Stage 16 exact HEAD `fc1a25e411a0a22a337a5a2eb995f58a70ffff52` passed required Windows `pull_request` CI #38411230384, 29/29 SUCCESS. Stage 17 source candidate closes a gap where a second/newer M1.5 activation marker could change runtime selection while the old marker still passes SHA custody. It requires the exact sole expected activation marker both before and after the four-root scan. Synthetic tests expand 18 → 24, including actual SHA hashing of disposable fixture bytes. No change to production, Tauri, migrations or historical files. New exact-head CI required; real operator invocation remains unauthorized, output remains PENDING_EXTERNAL_ATTESTATION, PR #35 DRAFT and M3.3 blocked. See docs/qualification/M3_2_ACTIVATION_MARKER_INVENTORY.md.
+
 ## 2026-10-13 Stage 16 — manifest-free source-anchored four-root auditor (NEW CI PENDING)
 
 Stage 15 exact HEAD `11fa03d6c58dd5d7fb42a2f4c12b40850503dca8` obtained required Windows `pull_request` CI #38408731334 completed/success, 28/28. Stage 16 source candidate adds a distinct read-only, manifest-free 26-role custody auditor with 18 disposable synthetic Windows tests. It uses 21 source-pinned historical digests, three recent-observation digests, two unanchored roles, and exact original M1.5/M2.5/M3.1/external ACL root identities; it never treats a newly generated operator SHA manifest as independent authority. Result can only be PENDING_EXTERNAL_ATTESTATION or FAIL, never READY/staging. New exact-head Windows CI required, and **no operator command yet authorized**. Production v6/ACL/backups unmodified; PR #35 DRAFT; M3.3 prohibited. See `docs/qualification/M3_2_DIRECT_READONLY_CUSTODY.md`.

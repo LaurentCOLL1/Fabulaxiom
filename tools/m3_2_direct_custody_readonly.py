@@ -80,6 +80,26 @@ def source_paths(roots: dict[str, Path]) -> dict[tuple[str, str], Path]:
     return paths
 
 
+def enforce_activation_inventory(paths: dict[tuple[str, str], Path]) -> None:
+    """Reject any activation pointer not accounted for by M1.5 historic custody.
+
+    Runtime M1.5 chooses a marker from its activation directory, so checking
+    only the SHA of one old marker is not sufficient if a newer one exists.
+    This function reads names and file metadata only; never opens SQLite.
+    """
+    marker = paths[("production", "activation_marker")]
+    folder = marker.parent
+    common.regular_safe(folder, True)
+    candidates = [
+        path for path in folder.iterdir()
+        if path.name.lower().startswith("activation-")
+        or path.name.lower().endswith(".active")
+    ]
+    if len(candidates) != 1 or candidates[0].name != marker.name:
+        raise GateStop("direct_unexpected_activation_marker_inventory")
+    common.regular_safe(marker, False)
+
+
 def inspect(
     source_repo: Path, expected_head: str, expected_main: str,
     production_root: Path, m25_root: Path, m31_root: Path, acl_root: Path,
@@ -105,6 +125,7 @@ def inspect(
         production_root, m25_root, m31_root, acl_root, proposed_identity
     )
     paths = source_paths(roots)
+    enforce_activation_inventory(paths)
 
     seen_counts = {"historical_pinned": 0, "recent_observation": 0, "unanchored_observation": 0}
     initial_digests: dict[tuple[str, str], str] = {}
@@ -163,6 +184,9 @@ def inspect(
     ):
         raise GateStop("direct_acl_archive_metadata_mismatch")
 
+    # Recheck enumeration after hashing and marker/ACL metadata reads, so a
+    # new activation entry introduced during the audit cannot be ignored.
+    enforce_activation_inventory(paths)
     return {
         "status": "PENDING_EXTERNAL_ATTESTATION",
         "mode": "m32_manifest_free_source_pins_readonly",
