@@ -1,5 +1,9 @@
 # Fabulaxiom — Current State
 
+## 2026-10-13 M3.2 Stage 14 — archival M3.1 manifest semantics SOURCE CANDIDATE
+
+Stage 13 HEAD 5e5d76141cbf7fbb69954beefe0acbfb822da6d0 passed required Windows pull_request CI #38339487476 completed/success 27/27. Stage 14 source adds SHA-pinned *semantic* checks of M3.1 v6 backup/restore, third v7, fourth rollback, isolated preparation and Tauri overlay, with 16 synthetic adversarial cases. This verifies JSON assertions and cross-hash lineage, **not fresh SQLite integrity or authoritative external ACL history**. New own-HEAD CI required. No operator command or write, status remains PENDING_EXTERNAL_ATTESTATION, PR #35 DRAFT and M3.3 blocked. See docs/qualification/M3_2_M31_SEMANTIC_READONLY_GATE.md.
+
 ## 2026-10-13 — M3.2 Stage 13 source-anchored custody policy (NEW CI PENDING)
 
 Stage 12 at HEAD f839987c5b2a9c9581fd65aa4eb11bc575abc720 received required exact-head Windows pull_request CI #38318391796 completed/success, 26/26 steps. Stage 13 source candidate independently pins 21 historical reference SHA values, keeps 3 recent observations and 2 unanchored roles as OBSERVED, and refuses relabeling or path substitution. Output is strictly PENDING_EXTERNAL_ATTESTATION and never write authorization; no operator Windows command proposed. New SHA's CI must be accepted separately. Production M1.5 v6, M3.1 read-only, PR #35 DRAFT, M3.3 blocked. See docs/qualification/M3_2_INDEPENDENT_AUTHORITY_GATE.md.

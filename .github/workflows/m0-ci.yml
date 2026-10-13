@@ -72,6 +72,9 @@ jobs:
       - name: M3.2 pinned historical authority negative Windows tests
         run: python -m unittest discover -s tools -p "test_m3_2_independent_authority_gate.py" -v
 
+      - name: M3.2 M3.1 archived manifests semantic Windows fixtures
+        run: python -m unittest discover -s tools -p "test_m3_2_m31_semantic_readonly.py" -v
+
       - name: Rust tests from lockfile
         run: cargo test --manifest-path src-tauri/Cargo.toml --all-targets --locked
 

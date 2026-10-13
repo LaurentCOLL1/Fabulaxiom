@@ -1,5 +1,9 @@
 # Fabulaxiom — Next Authorized Work
 
+## 2026-10-13 M3.2 Stage 14 next acceptance
+
+Re-fetch exact PR #35 stage-14 candidate HEAD, `main` and its new pull_request workflow; qualify all Windows steps on **new SHA**, never reuse stage-13 #38339487476 27/27 result. Semantically verify archived M3.1 backup/third/rollback/preparation manifest assertions and isolated overlay on only synthetic fixture data. Operator's real M1.5 v6, named M2.4 duplicate-content backups, M2.5 isolation, M3.1 preview and ACL archives are protected and must not be opened writable or altered. Independent historical authority for observed ACL files/early M2.4 manifest remains unresolved; Stage-14 pending status is never write permission. No copy/rollback preparation, no migration 007, no new Tauri identity or M3.3. PR #35 stays DRAFT/unmerged.
+
 ## 2026-10-13 M3.2 Stage 13 next
 
 First qualify source-anchored custody/authority gate with its own exact-head required Windows pull_request CI; check all steps and source SHA. Stage-12 multi-root CI 26/26 PASS is historical and cannot qualify Stage 13. Do not run Stage-13 on operator files until independently reviewed Windows instructions and actual archival provenance are available. The ACL archive and early v5 manifest are recent observations only, and original marker/M2.5 isolated v6 bytes have not been independently source-pinned. No automatic historical promotion, 'READY', profile creation, copy, rollback, SQLite writes, Tauri editing, migration 007, PR merge or M3.3. Keep production M1.5 v6 and original M3.1/M2.5 isolated identities unchanged.
