@@ -1,5 +1,9 @@
 # Fabulaxiom — Current State
 
+## 2026-10-13 Stage 16 — manifest-free source-anchored four-root auditor (NEW CI PENDING)
+
+Stage 15 exact HEAD `11fa03d6c58dd5d7fb42a2f4c12b40850503dca8` obtained required Windows `pull_request` CI #38408731334 completed/success, 28/28. Stage 16 source candidate adds a distinct read-only, manifest-free 26-role custody auditor with 18 disposable synthetic Windows tests. It uses 21 source-pinned historical digests, three recent-observation digests, two unanchored roles, and exact original M1.5/M2.5/M3.1/external ACL root identities; it never treats a newly generated operator SHA manifest as independent authority. Result can only be PENDING_EXTERNAL_ATTESTATION or FAIL, never READY/staging. New exact-head Windows CI required, and **no operator command yet authorized**. Production v6/ACL/backups unmodified; PR #35 DRAFT; M3.3 prohibited. See `docs/qualification/M3_2_DIRECT_READONLY_CUSTODY.md`.
+
 ## 2026-10-13 M3.2 Stage 15 — exact legacy-table and backup/restore cross-links (CI PENDING)
 
 Stage 14 exact HEAD `612f0e40df4fcb2d4ea697205da82a0c0c39dbc0` passed required Windows `pull_request` CI #38340992280, 28/28 SUCCESS. Stage 15 source candidate tightens SHA-pinned M3.1 archival JSON claims: exact 14 v6 legacy table names from the existing audit authority, per-table backup/restore count equality, positive exact-integer byte-size equality for backup/restore/forced rollback, and boolean-as-integer veto. 21 synthetic tests in the existing CI step. No operator invocation, SQLite connection, runtime migration or staging. New exact-HEAD CI required. PR #35 OPEN/DRAFT, M3.3 blocked. See `docs/qualification/M3_2_M31_SEMANTIC_HARDENING.md`.

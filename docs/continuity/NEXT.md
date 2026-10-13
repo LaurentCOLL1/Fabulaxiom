@@ -1,5 +1,9 @@
 # Fabulaxiom — Next Authorized Work
 
+## 2026-10-13 Stage 16 next
+
+First re-fetch `main` and PR #35 head and qualify new exact-head required Windows `pull_request` CI including manifest-free, 26-role source-pinned four-root audit on synthetic files. Do not reuse the earlier Stage 15 CI #38408731334. Only after complete terminal SUCCESS, review standalone non-admin Windows PowerShell 5.1 preflight and the operator's independently preserved original source SHA records before ANY real audit. Original ACL archive SHA and early v5 manifest are merely recent observations; active M1.5 marker and isolated M2.5 v6 bytes have no source historical baseline. No manifest made from current files becomes historical truth. Even full SHA matching is not approval for a new M3.2 identity, v7 copy, writer IPC, ACL change, automatic schema migration 007 or M3.3. Production remains restored-active v6 and PR #35 stays DRAFT.
+
 ## 2026-10-13 M3.2 Stage 15 next
 
 Re-fetch `main`, PR #35 head and required Windows check runs. Qualify Stage 15's full expanded **21-test** M3.1 semantic suite against the NEW exact source HEAD, not Stage 14's successful #38340992280. Verify all job steps are terminal SUCCESS. The validator checks exact real v6 table names and recorded snapshot/restore/rollback byte- and row-count cross-links in **synthetic historical JSON only**; this does not qualify current production SQLite integrity, restore fitness, ACL archive history or the pending external attestations. No real operator command, SQL open, new M3.2 identity, schema 007, write IPC, PR merge or M3.3. Preserve M1.5 v6 and all old M2/M3 custodies.
