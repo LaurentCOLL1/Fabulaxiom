@@ -1,5 +1,9 @@
 # Fabulaxiom — Next Authorized Work
 
+## 2026-10-14 Stage 24.2 next — requalify canonical Unicode search on NEW exact HEAD
+
+Re-fetch GitHub `main`, PR #35 and its head after the new synthetic-only commit; require fresh `pull_request` Windows CI `completed/success` **36/36**, including **50 navigation tests**, 28 pagination, 25 each presentation/projection/supersession and 33 provenance. Stage24.1 `00ee38b1f8b6b60ac8fa23076d90b6015eeb321a` was qualified by #38620332433 36/36 but its CI **cannot qualify new bytes**. Unicode canonical-equivalence search preserves original source spelling; strict raw-filter cursor binding, one-Universe, source-insertion display-only and no editing. Preserve seven Windows worktrees, M1.5 restored v6 production, isolated M3.1 v7, all ACL/backups, and `PENDING_EXTERNAL_ATTESTATION` 21/3/2. No operator PowerShell, SQLite read/write, migration 007, writer IPC, PR merge or M3.3.
+
 ## 2026-10-14 Stage 24.1 next — qualify width-bound navigation cursor with fresh CI
 
 Re-fetch GitHub main, PR #35 HEAD and new exact SHA Windows pull_request run; require terminal all-steps SUCCESS (36/36) including **42 Stage24 navigation cases**. Parent #38607217180 36/36 applies ONLY to Stage24 SHA `9160f74b89a8e852b1bdcfe5e9409e270ca3b3e5`. New Stage24.1 cursors bind snapshot, filters and page_size and reject mid-page forged offsets. No new worker, SQLite read, local PowerShell, eighth worktree, Tauri IPC, writer identity, migration 007 or production changes. Preserve seven existing worktrees, v6 active, isolated v7, ACL archives and PENDING_EXTERNAL_ATTESTATION 21/3/2; PR #35 remains DRAFT, no M3.3.

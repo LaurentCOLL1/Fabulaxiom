@@ -10,6 +10,7 @@ from __future__ import annotations
 from dataclasses import asdict, dataclass
 import hashlib
 import json
+import unicodedata
 
 from m3_2_chronology_pagination_reference import (
     MAX_PAGE_SIZE, _decode_cursor, _encode_cursor, _fingerprint,
@@ -83,6 +84,11 @@ def _filter_fingerprint(snapshot: SyntheticSnapshot,
     return hashlib.sha256(representation.encode("utf-8")).hexdigest()
 
 
+def _search_key(value: str) -> str:
+    """Match canonical Unicode equivalents without changing stored source text."""
+    return unicodedata.normalize("NFC", value.casefold())
+
+
 def _matches(anchor, status: str, filters: NavigationFilters) -> bool:
     if filters.statuses and status not in filters.statuses:
         return False
@@ -94,10 +100,10 @@ def _matches(anchor, status: str, filters: NavigationFilters) -> bool:
             and anchor.source_revision_id != filters.source_revision_id):
         return False
     if filters.text_contains is not None:
-        term = filters.text_contains.strip().casefold()
+        term = _search_key(filters.text_contains.strip())
         fields = (anchor.exact_label, anchor.window_start_text,
                   anchor.window_end_text, anchor.precision_text)
-        if not any(isinstance(value, str) and term in value.casefold()
+        if not any(isinstance(value, str) and term in _search_key(value)
                    for value in fields):
             return False
     return True
