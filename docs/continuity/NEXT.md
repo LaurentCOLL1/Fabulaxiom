@@ -1,5 +1,9 @@
 # Fabulaxiom — Next Authorized Work
 
+## 2026-10-14 Stage 21 next — qualify read-only chronology projection on new SHA
+
+Fresh re-fetch main and PR #35, then require NEW Windows pull_request CI terminal completed/success on exact new HEAD, including 25 new projection tests plus 25 Stage20a supersession fixtures, 33 provenance tests, Rust/Tauri and React. Prior #38579592096 32/32 qualifies Stage20a ONLY. Preserve three independent time coordinates, require active same-Universe IDs for comparability, display incomparable for unlinked anchors, retain immutable revision IDs and old assertions. Do not run against operator SQLite or create an eighth local worktree. Overall PENDING_EXTERNAL_ATTESTATION (21/3/2), no M3.2 write IPC, normal migration 007, PR merge or M3.3.
+
 ## 2026-10-14 Stage 20a next — requalify corrected Python synthetic imports
 
 Re-fetch live main, PR #35 head and the NEW Windows pull_request CI. The Stage 20 run #38578661460 is FAILED (unclosed parenthesis at test line 178); its predecessor 31/31 success is on an older source. Require all new Windows steps terminal success including exactly 25 supersession reference synthetic tests and 33 provenance triage fixtures. No local operator commands, no SQLite/ACL access, no seventh worktree mutation and no M3.2 implementation. Preserve immutable original v7 triggers; a historical precedence-linked anchor remains non-correctable in the conservative proposal. Continue to classify historical roles as 21 source-pinned, 3 recent observed and 2 unanchored, overall PENDING_EXTERNAL_ATTESTATION.
