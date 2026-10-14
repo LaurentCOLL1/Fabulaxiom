@@ -192,6 +192,20 @@ class SyntheticProvenanceTests(unittest.TestCase):
         with self.assertRaisesRegex(GateStop, "absolute_path_required"):
             triage.read_claims_readonly(Path("unsafe_relative.json"))
 
+    def test_temporary_provenance_prefix_is_not_worktree(self):
+        # Fixture prefix itself historically collided with a blanket
+        # 'fabulaxiom-m32-*' rule on the GitHub Windows runner.
+        path = self.write_claims()
+        self.assertEqual(triage.read_claims_readonly(path), self.claims)
+
+    def test_worktree_sha_pattern_is_protected_but_fixture_prefix_is_not(self):
+        self.assertIsNotNone(triage.PROTECTED_SOURCE_NAME.fullmatch(
+            "fabulaxiom-m32-v7readonly-f89d31fb"
+        ))
+        self.assertIsNone(triage.PROTECTED_SOURCE_NAME.fullmatch(
+            "fabulaxiom-m32-provenance-synthetic-a83ed1"
+        ))
+
     def test_generic_fabulaxiom_component_not_a_protected_root(self):
         # GitHub Actions Windows checkout uses D:\\a\\Fabulaxiom\\Fabulaxiom.
         # A generic parent directory name is not itself a custody root.

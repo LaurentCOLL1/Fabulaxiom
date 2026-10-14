@@ -1,5 +1,10 @@
 # Fabulaxiom — Current State
 
+## 2026-10-14 Stage 19.1b — narrowed worktree name guard (new CI PENDING)
+
+Previous Stage 19.1a SHA `4ca1458c4b25473dc2e338656cdbabf3faf1db03` failed Windows CI #38506420793 because protected source prefix `fabulaxiom-m32-` also matched CI synthetic folder `fabulaxiom-m32-provenance-synthetic-*`. Stage 19.1b narrows veto to known worktree roles plus hex SHA, retaining app/ACL root and exact operator main protections, with 33 synthetic provenance tests. New exact-head CI mandatory. Seven local worktrees, SQLite and archived ACL evidence untouched; PR #35 remains DRAFT. No write authority.
+
+
 ## 2026-10-14 Stage 19.1a — correct Windows CI checkout basename false positive (NEW CI PENDING)
 
 Stage-19.1 first candidate b72e2ebf78db80aaabaf921dd5b79455c53bfa46 FAILED Windows PR CI #38506053405 in provenance fixtures. Its blanket Fabulaxiom ancestor-name veto matched GitHub runner D:\\a\\Fabulaxiom\\Fabulaxiom, aborting synthetic file claims before parsing. Stage 19.1a limits the base-repo veto to exact operator M:\\Fabulaxiom, preserving named production/isolated/ACL roots and special M25/M31/M32 source prefixes. Synthetic suite expands 29→31 tests, including explicit GitHub checkout-name and operator main-root regression cases. No source-file authority promotion, no local operator execution, no v6/v7/ACL mutation. New exact-head CI required; PR #35 DRAFT and M3.3 blocked.

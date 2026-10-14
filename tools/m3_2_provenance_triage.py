@@ -11,6 +11,7 @@ import argparse
 from datetime import datetime
 import json
 import os
+import re
 from pathlib import Path
 import stat
 import sys
@@ -137,8 +138,12 @@ PROTECTED_COMPONENTS = frozenset((
     "com.fabulaxiom.m31launchdb8d3278504c448084478a70ccb71cbd",
     "fabulaxiom-m31-acl-evidence-4d520e18",
 ))
-PROTECTED_SOURCE_PREFIXES = (
-    "fabulaxiom-m25-", "fabulaxiom-m31-", "fabulaxiom-m32-",
+# Do not prohibit every 'fabulaxiom-m32-*' prefix: our independent Windows
+# synthetic fixtures themselves use 'fabulaxiom-m32-provenance-synthetic-*'.
+# Match only known source worktree role patterns with a Git SHA suffix.
+PROTECTED_SOURCE_NAME = re.compile(
+    r"fabulaxiom-m(?:25-(?:qual|sync)|31-preview|32-(?:audit|v7readonly))"
+    r"-[0-9a-f]{7,40}\Z"
 )
 MAX_CLAIMS_BYTES = 16_384
 
@@ -196,8 +201,8 @@ def read_claims_readonly(path: Path) -> object:
         raise GateStop("provenance_claims_absolute_path_required")
     for part in path.parts:
         component = part.casefold()
-        if component in PROTECTED_COMPONENTS or any(
-            component.startswith(prefix) for prefix in PROTECTED_SOURCE_PREFIXES
+        if component in PROTECTED_COMPONENTS or PROTECTED_SOURCE_NAME.fullmatch(
+            component
         ):
             raise GateStop("provenance_claims_protected_location")
     # The historic production repository is anchored at M:\\Fabulaxiom on

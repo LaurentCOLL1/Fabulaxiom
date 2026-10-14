@@ -1,5 +1,10 @@
 # Fabulaxiom — Next Authorized Work
 
+## 2026-10-14 Stage 19.1b next
+
+Re-fetch live main/PR #35 and require 33 provenance tests and all Windows steps completed/success on the new SHA. Prior runs #38506053405 and #38506420793 are failures and never qualify the new source. No local operator invocation or legacy authority promotion; keep all SQLite v6/v7, ACL and seven worktrees preserved, no production migration, merge or M3.3.
+
+
 ## 2026-10-14 Stage 19.1a next
 
 Re-fetch main and PR #35 exact SHA. Qualify a NEW Windows pull_request workflow with all steps completed/success, and 31 synthetic provenance intake cases including GitHub runner checkout path. Old Stage-19.1 #38506053405 is a terminal failure and cannot authorize operator use. Distinguish benign D:\\a\\Fabulaxiom\\Fabulaxiom from protected M:\\Fabulaxiom and named app/ACL roots. No local seventh worktree changes, no SQLite open, production migration, promotion of ACL claims, draft merge or M3.3.
