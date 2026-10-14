@@ -1,0 +1,27 @@
+# M3.2 Stage 19 — External provenance claim triage (read-only source candidate)
+
+**Source candidate: NOT an independent historical attestation, NOT permission to write.**
+
+## Verified predecessor and real operator acceptance
+
+Stage 18.1 exact GitHub source `f89d31fb69ba37378fb2b8eaeab806ca2d55029c` qualified by [Windows `pull_request` CI #38498919187](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/38498919187), `completed/success` **30/30**. In a separately reported real Windows PowerShell 5.1 operator check, source was the seventh clean detached worktree, the isolated preserved M3.1 v7 SQLite file matched its historical SHA-256 before and after, there were no sidecars, and the source/production HEADs remained exact and clean. Four custody roots and 26 roles passed (21 historically pinned SHA, 3 recent-observation SHA, 2 not historically pinned). Its physical SQLite `integrity_check` and separate `foreign_key_check` passed, schema was seven migrations, 14 inherited strict tables and 3 empty v7 strict tables; the corrected typed logical v6 checksum matched. The physical auditor returned `PENDING_EXTERNAL_ATTESTATION` / exit 2, explicitly opened **only the isolated M3.1 v7 SQLite in read-only mode**, and never opened the restored-active production v6, mutated ACLs or authorized staging. Operator report is recorded in PR #35.
+
+## Why the missing witness cannot be invented
+
+The three recently observed objects are `(production, pre_m24_early_manifest)`, `(acl, original_acls)`, `(acl, pre_repair_json)` with recorded SHA in the checked-in Stage 13 policy. The two other roles are `(production, activation_marker)` and `(m25, isolated_v6)` with no independently source-pinned historical SHA; present-day observed bytes cannot become a prior-source historical reference by renaming a column or creating a self-hashed manifest.
+
+NIST IR 8387 recommends keeping hashes independently of evidence, securely, and recording provenance/transfers. A bare timestamp or document URL supplied today is a **claim**, not verification of the independent custodian, timestamp validity, object digest, signature or archival continuity. Sources: https://nvlpubs.nist.gov/nistpubs/ir/2022/NIST.IR.8387.pdf and https://csrc.nist.gov/glossary/term/chain_of_custody . Windows SDDL content or current `Get-Acl` output does not prove historical creation or chain of custody: https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.security/get-acl .
+
+## New source and schema
+
+`tools/m3_2_provenance_triage.py` accepts only `--claims-json <path> --dry-run` and is **not part of application startup**. Its JSON input must be an array containing exactly five objects with these keys: `root`, `role`, `observed_sha256`, `evidence_kind`, `evidence_uri`, `recorded_at`, `custodian`, `record_id`. Observed digests must equal the three checked-in *recent* digests; unanchored roles must use `null`, never a freshly generated SHA. Evidence kind is `none`, `recent_observation`, or `prior_external_claim`. The prior claim type requires a proper HTTPS URL without credentials, ISO-8601 offset-aware claimed date/time, nonempty custodian and record identifier, but neither the URL nor contents nor signature is fetched or trusted by the checker.
+
+The validator **never promotes** any of the five roles to historically attested, even if all five claim prior external records. It returns a pending-only JSON summary with `independently_verified_historical_claims=0`, `historical_promotions=0`, `m32_staging_authorized=false`, `operator_live_qualified=false`, and flags that it did not open SQLite/protected files, write, fetch URLs or verify signatures. Malformed/unmatched/duplicate metadata returns FAIL. Both outcomes have CLI exit **2**; a successful triage is NOT an approval. The program doesn't output original URLs, custodians, or evidence metadata, avoiding disclosure through CI logs.
+
+## CI acceptance
+
+`tools/test_m3_2_provenance_triage.py` introduces **16 disposable synthetic Python/Windows tests**: exactly five roles, immutability of 21/3/2 classifications, forged hash veto, forged current hash as historical reference veto, self-declared historic record remaining unverified, duplicate/unknown roles, unapproved authority-override field, embedded URL credentials/HTTP/file/fragment veto, missing timezone/custodian, evidence smuggling, bounded input, CLI exit 2 both pending and FAIL, and byte-for-byte preservation of input fixtures. All tests run from the new Windows workflow step. Existing 30-step CI of the Stage 18.1 SHA does **not** qualify the new source; require a fresh exact-head completed/success run including the Stage 19 step and all Rust/React/Tauri checks.
+
+## Operator, archive and production boundaries
+
+No local user command for this new source is authorized until the new CI passes and the claim schema is explicitly reviewed. **No historical witness evidence has been verified** by Stage 19. If an alleged prior third-party witness is located, the operator must have its actual historic artifact, verify provenance independently (repository/log signed history, custodian, timing and hash lineage), and record the basis and limitations. The claim form cannot substitute for that verification and the source never authorizes a writer. Normal production remains M1.5 restored-active SQLite v6, all seven local Git worktrees and original archives remain untouched. No migration 007 normal startup, new M3.2 identity/rollback, Tauri writer IPC, merge of draft PR #35, or M3.3.

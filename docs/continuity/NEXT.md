@@ -1,5 +1,10 @@
 # Fabulaxiom — Next Authorized Work
 
+## 2026-10-14 Stage 19 next — qualify provenance metadata triage source
+
+Re-fetch exact remote main and PR #35 head, verify NEW required Windows pull_request run with all steps terminal SUCCESS including 16 synthetic Stage-19 provenance tests. Do not reuse Stage-18.1 #38498919187 (30/30, older SHA). Keep 21 historical pinned / 3 observed-only / 2 unanchored classifications unchanged. A user-entered record ID, URL, timezone date or claimed independent custodian never proves historical evidence. If a genuinely independent prior witness is located, verify it separately before updating any historical policy and require a distinct reviewed source change + exact-head CI; otherwise retain PENDING. Stage 18.1 real physical isolated-v7 audit already passed, but M3.2 overall readiness is not established. Do not touch existing 7 local worktrees/ACL archives/SQLite, run Stage-19 on user data, activate production migration 007, create M3.2 writer, merge PR #35 or proceed M3.3.
+
+
 ## 2026-10-14 Stage 18.1 — next after real logical digest mismatch
 
 First qualify corrected source `_typed_v6_logical` with NEW exact-HEAD Windows pull_request CI, all steps terminal SUCCESS including the independent in-memory V6 baseline and intentional tampering veto tests. Previous Stage-18 #38464091595 30/30 does NOT qualify the repaired source. Original six worktrees stay preserved; sixth source checkout remains detached to the failing historical SHA de42f847003509ce19edee8ae68b0a77420b7be1. No operator execution or Python scan until exact new SHA is qualified and a NEW independently pinned detached source checkout and safe non-admin Windows preflight are approved. Original isolated M3.1 v7 SHA remains historically pinned and unmodified; original production v6/ACL/backups are untouchable. Any future Stage-18 positive result remains PENDING_EXTERNAL_ATTESTATION (never ready/writable); no production migration 007 or M3.3.

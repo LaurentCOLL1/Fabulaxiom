@@ -1,0 +1,155 @@
+"""M3.2 Stage 19: external provenance CLAIM triage — never attestation.
+
+This script reads only an explicitly supplied JSON claim form. It never
+reads protected databases/ACL archives, makes network calls, verifies
+signatures, changes files, or authorizes any M3.2 write. The evidence
+record's timestamp, URI, custodian and digest are untrusted ASSERTIONS.
+"""
+from __future__ import annotations
+
+import argparse
+from datetime import datetime
+import json
+from pathlib import Path
+import sys
+from urllib.parse import urlparse
+
+import m3_2_independent_authority_gate as source
+from m3_2_operator_readonly_gate import GateStop
+
+REMAINING = frozenset(source.OBSERVED_SHA256) | source.UNANCHORED_OBSERVED
+assert len(REMAINING) == 5
+KINDS = frozenset(("none", "recent_observation", "prior_external_claim"))
+ALLOWED = frozenset((
+    "root", "role", "observed_sha256", "evidence_kind", "evidence_uri",
+    "recorded_at", "custodian", "record_id",
+))
+
+
+def _nonempty(value: object) -> bool:
+    return isinstance(value, str) and bool(value.strip()) and len(value) <= 256
+
+
+def _timestamp(value: object) -> bool:
+    if not isinstance(value, str) or len(value) > 48:
+        return False
+    try:
+        dt = datetime.fromisoformat(value.replace("Z", "+00:00"))
+    except ValueError:
+        return False
+    return dt.tzinfo is not None and dt.utcoffset() is not None
+
+
+def _remote_reference(value: object) -> bool:
+    if not isinstance(value, str) or len(value) > 2048:
+        return False
+    parts = urlparse(value)
+    # A URL is only a lead for manual review, not a trust anchor.
+    return (
+        parts.scheme == "https"
+        and bool(parts.hostname)
+        and not parts.username
+        and not parts.password
+        and not parts.fragment
+    )
+
+
+def triage_claims(records: object) -> dict:
+    """Classify exactly five missing-legal-authority roles, never promote."""
+    if not isinstance(records, list) or len(records) != len(REMAINING):
+        raise GateStop("provenance_exact_five_roles_required")
+
+    found: set[tuple[str, str]] = set()
+    counts = {"no_claim": 0, "recent_observation": 0,
+              "unverified_prior_external_claim": 0}
+    for item in records:
+        if not isinstance(item, dict) or set(item) != ALLOWED:
+            raise GateStop("provenance_record_shape_invalid")
+        root, role = item["root"], item["role"]
+        if not isinstance(root, str) or not isinstance(role, str):
+            raise GateStop("provenance_role_invalid")
+        key = (root, role)
+        if key not in REMAINING or key in found:
+            raise GateStop("provenance_role_unknown_or_duplicate")
+        found.add(key)
+
+        digest = item["observed_sha256"]
+        if key in source.OBSERVED_SHA256:
+            if digest != source.OBSERVED_SHA256[key]:
+                raise GateStop("provenance_observed_sha_mismatch")
+        elif digest is not None:
+            # An external claim is never a source-verified SHA pin.
+            raise GateStop("provenance_unanchored_must_not_self_pin")
+
+        kind = item["evidence_kind"]
+        if not isinstance(kind, str) or kind not in KINDS:
+            raise GateStop("provenance_evidence_kind_invalid")
+        fields = ("evidence_uri", "recorded_at", "custodian", "record_id")
+        populated = [item[f] is not None for f in fields]
+        if kind == "none":
+            if any(populated):
+                raise GateStop("provenance_none_must_have_no_evidence")
+            counts["no_claim"] += 1
+        elif kind == "recent_observation":
+            if any(populated):
+                raise GateStop("provenance_observation_must_not_claim_witness")
+            counts["recent_observation"] += 1
+        else:
+            if not all(populated):
+                raise GateStop("provenance_external_record_incomplete")
+            if not (_remote_reference(item["evidence_uri"])
+                    and _timestamp(item["recorded_at"])
+                    and _nonempty(item["custodian"])
+                    and _nonempty(item["record_id"])):
+                raise GateStop("provenance_external_record_metadata_invalid")
+            # Metadata may be forgeries; do not fetch URLs or mark verified.
+            counts["unverified_prior_external_claim"] += 1
+    if found != REMAINING:
+        raise GateStop("provenance_scope_mismatch")
+
+    return {
+        "status": "PENDING_EXTERNAL_ATTESTATION",
+        "mode": "m32_external_provenance_claim_triage_only",
+        "roles_checked": len(found),
+        "historically_pinned_roles_unchanged": len(source.PINNED_SHA256),
+        "observed_sha_roles_unchanged": len(source.OBSERVED_SHA256),
+        "unanchored_roles_unchanged": len(source.UNANCHORED_OBSERVED),
+        "claims": counts,
+        "independently_verified_historical_claims": 0,
+        "historical_promotions": 0,
+        "external_urls_fetched": False,
+        "signatures_verified": False,
+        "sqlite_opened": False,
+        "protected_files_opened": False,
+        "writes_performed": False,
+        "m32_staging_authorized": False,
+        "operator_live_qualified": False,
+    }
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--claims-json", type=Path, required=True)
+    parser.add_argument("--dry-run", action="store_true", required=True)
+    args = parser.parse_args(argv)
+    try:
+        # Strictly bounded untrusted metadata; do not read protected bytes.
+        if not args.claims_json.is_file() or args.claims_json.stat().st_size > 16_384:
+            raise GateStop("provenance_claims_input_invalid")
+        records = json.loads(args.claims_json.read_text(encoding="utf-8"))
+        result = triage_claims(records)
+    except (GateStop, OSError, UnicodeError, ValueError, TypeError) as exc:
+        result = {
+            "status": "FAIL",
+            "reason": str(exc) if isinstance(exc, GateStop)
+                      else "provenance_claims_parse_failed",
+            "writes_performed": False,
+            "m32_staging_authorized": False,
+        }
+    print(json.dumps(result, ensure_ascii=True, sort_keys=True))
+    # Both triage-pending and fail are non-authorizing.
+    return 2
+
+
+if __name__ == "__main__":
+    sys.exit(main())
