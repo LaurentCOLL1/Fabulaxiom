@@ -1,5 +1,9 @@
 # Fabulaxiom — Next Authorized Work
 
+## 2026-10-14 Stage 22 next — qualify bounded read-only presentation DTO on new exact SHA
+
+Re-fetch live main, PR #35 exact new HEAD and all Windows pull_request workflows; require all terminal completed/success including 25 Stage22 presentation fixtures, 25 Stage21 projection, 25 Stage20a supersession, 33 provenance, Rust/frontend. Prior #38595478362 (33/33) qualifies Stage21 only. Stage22 is pure Python in-memory and does not authorize an application read IPC or React UI, nor change historical authority. Keep no-world-order-by-list, no inferred fictional date comparison, no cross-Universe disclosure, no write controls. Preserve original seven worktrees, SQLite v6/v7, ACL/backups, and PENDING_EXTERNAL_ATTESTATION 21/3/2; no operator PowerShell, production 007, PR merge or M3.3.
+
 ## 2026-10-14 Stage 21 next — qualify read-only chronology projection on new SHA
 
 Fresh re-fetch main and PR #35, then require NEW Windows pull_request CI terminal completed/success on exact new HEAD, including 25 new projection tests plus 25 Stage20a supersession fixtures, 33 provenance tests, Rust/Tauri and React. Prior #38579592096 32/32 qualifies Stage20a ONLY. Preserve three independent time coordinates, require active same-Universe IDs for comparability, display incomparable for unlinked anchors, retain immutable revision IDs and old assertions. Do not run against operator SQLite or create an eighth local worktree. Overall PENDING_EXTERNAL_ATTESTATION (21/3/2), no M3.2 write IPC, normal migration 007, PR merge or M3.3.
