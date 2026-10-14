@@ -1,5 +1,10 @@
 # Fabulaxiom — Next Authorized Work
 
+## 2026-10-14 Stage 18.1 — next after real logical digest mismatch
+
+First qualify corrected source `_typed_v6_logical` with NEW exact-HEAD Windows pull_request CI, all steps terminal SUCCESS including the independent in-memory V6 baseline and intentional tampering veto tests. Previous Stage-18 #38464091595 30/30 does NOT qualify the repaired source. Original six worktrees stay preserved; sixth source checkout remains detached to the failing historical SHA de42f847003509ce19edee8ae68b0a77420b7be1. No operator execution or Python scan until exact new SHA is qualified and a NEW independently pinned detached source checkout and safe non-admin Windows preflight are approved. Original isolated M3.1 v7 SHA remains historically pinned and unmodified; original production v6/ACL/backups are untouchable. Any future Stage-18 positive result remains PENDING_EXTERNAL_ATTESTATION (never ready/writable); no production migration 007 or M3.3.
+
+
 ## 2026-10-13 M3.2 Stage 18 — next qualification
 
 Re-fetch live protected main, PR #35 stage-18 source commit and exact-head pull_request CI; require ALL Windows steps completed/success including 16 new disposable SQLite physical-test scenarios. Prior Stage 17 #38421108816 29/29 cannot qualify this new SHA. Do not execute new Stage-18 physical auditor on operator's preserved isolated v7 until a separately approved Windows medium-token preflight; physical test fixtures use disposable temporary synthetic databases only. Even if isolated v7 physical/FK/typed digest pass, independent ACL archival provenance and 2 unanchored files remain PENDING, no writer identity, no migration 007 into normal startup, no M3.2 edit IPC/UI, no production v7, no PR merge or M3.3.

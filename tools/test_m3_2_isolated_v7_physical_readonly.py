@@ -19,8 +19,21 @@ class V7ReadonlySyntheticTests(unittest.TestCase):
         self.file = self.root / "fabulaxiom.sqlite3"
         self.make_fixture()
         self.digest = gate._sha256(self.file)
-        with self.write_db() as conn:
-            self.logical = gate._typed_v6_logical(conn)
+        # Independent V6 baseline: copy only the disposable fixture into
+        # memory, delete its seventh registry entry there, and use the ORIGINAL
+        # source-controlled M3.1 V6 row-digest algorithm for all fourteen tables.
+        # Computing the expected value with the new V7 checker itself would
+        # reproduce the exact bug we are protecting against.
+        with closing(sqlite3.connect(":memory:")) as baseline:
+            with closing(sqlite3.connect(self.file)) as source:
+                source.backup(baseline)
+            baseline.execute("DELETE FROM schema_migrations WHERE version=7")
+            baseline.commit()
+            overall = hashlib.sha256(b"fabulaxiom-v6-typed-row-sha256-v1\0")
+            for table in gate.v6.LEGACY_TABLES:
+                _count, digest = gate.v6._logical_table(baseline, table)
+                overall.update(table.encode("ascii") + b"\0" + bytes.fromhex(digest))
+            self.logical = overall.hexdigest()
 
     @contextmanager
     def write_db(self):
@@ -82,6 +95,35 @@ class V7ReadonlySyntheticTests(unittest.TestCase):
         self.assertTrue(result["typed_v6_logical_sha256_match"])
         self.assertFalse(result["sqlite_written"])
         self.assertEqual(self.snapshot(), before)
+
+    def test_v7_seventh_ledger_row_does_not_change_legacy_v6_digest(self):
+        with closing(sqlite3.connect(self.file)) as v7_conn:
+            complete = v7_conn.execute(
+                "SELECT version,name FROM schema_migrations ORDER BY version"
+            ).fetchall()
+            self.assertEqual(complete, gate.EXPECTED_LEDGER)
+            self.assertEqual(gate._typed_v6_logical(v7_conn), self.logical)
+            # The prior Stage 18 algorithm incorrectly hashed all seven
+            # rows of schema_migrations as legacy data.
+            all_rows = hashlib.sha256(b"fabulaxiom-v6-typed-row-sha256-v1\0")
+            for table in gate.v6.LEGACY_TABLES:
+                _, digest = gate.v6._logical_table(v7_conn, table)
+                all_rows.update(table.encode("ascii") + b"\0" + bytes.fromhex(digest))
+            self.assertNotEqual(all_rows.hexdigest(), self.logical)
+
+    def test_changed_original_v6_row_still_vetoes_v7(self):
+        with self.write_db() as db:
+            db.execute(
+                "UPDATE universes SET id='tampered_synthetic' "
+                "WHERE id='synthetic_universe'"
+            )
+            db.execute(
+                "UPDATE narrative_facts SET universe_id='tampered_synthetic' "
+                "WHERE universe_id='synthetic_universe'"
+            )
+        self.digest = gate._sha256(self.file)
+        with self.assertRaisesRegex(GateStop, "legacy_logical_digest_mismatch"):
+            self.verify()
 
     def test_bad_pinned_file_sha_rejected_before_sqlite_open(self):
         with mock.patch.object(gate.sqlite3, "connect",

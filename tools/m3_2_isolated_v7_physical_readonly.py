@@ -53,11 +53,42 @@ def _sha256(path: Path) -> str:
     return h.hexdigest()
 
 
+def _v6_migration_table_digest(conn: sqlite3.Connection) -> str:
+    """Legacy logical digest over the six original migration rows only.
+
+    The exact seven-row V7 ledger is checked separately before this helper
+    is called. The added V7 ledger row is NOT a mutation of legacy user data.
+    Match m3_1_v6_audit._logical_table's typed-cell, unordered-row v1 format.
+    """
+    rows = conn.execute(
+        'SELECT * FROM "schema_migrations" WHERE version BETWEEN 1 AND 6'
+    ).fetchall()
+    if len(rows) != len(v6.MIGRATION_NAMES):
+        raise GateStop("isolated_v7_legacy_migration_rows_invalid")
+    row_hashes = [
+        hashlib.sha256(json.dumps(
+            [v6._snapshot_cell(cell) for cell in row],
+            separators=(",", ":"), ensure_ascii=True,
+        ).encode("ascii")).digest()
+        for row in rows
+    ]
+    digest = hashlib.sha256()
+    for row_hash in sorted(row_hashes):
+        digest.update(row_hash)
+    return digest.hexdigest()
+
+
 def _typed_v6_logical(conn: sqlite3.Connection) -> str:
-    # Reuse the exact source-controlled M3.1 typed-row v1 algorithm.
+    """Reproduce original full V6 digest from V7 without counting row 007.
+
+    Every other V6 table uses the original source-controlled typed-row
+    digest without changing the expected historical SHA or SQLite bytes.
+    """
     h = hashlib.sha256(b"fabulaxiom-v6-typed-row-sha256-v1\0")
     for table in v6.LEGACY_TABLES:
-        _count, value = v6._logical_table(conn, table)
+        value = (_v6_migration_table_digest(conn)
+                 if table == "schema_migrations"
+                 else v6._logical_table(conn, table)[1])
         h.update(table.encode("ascii") + b"\0" + bytes.fromhex(value))
     return h.hexdigest()
 

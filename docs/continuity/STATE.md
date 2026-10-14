@@ -1,5 +1,10 @@
 # Fabulaxiom — Current State
 
+## 2026-10-14 Stage 18.1 — real isolated-v7 digest mismatch: source algorithm FIX CANDIDATE (new CI pending)
+
+Operator actual stage-18 gate on HEAD de42f847003509ce19edee8ae68b0a77420b7be1 returned FAIL `isolated_v7_legacy_logical_digest_mismatch` / exit 2 **after** original v7 physical integrity/FK/strict-table checks, with original isolated file SHA same before/after, no SQLite sidecars, clean Git. Exact source defect: Stage-18 includes v7 ledger row 007 when rehashing historic v6 `schema_migrations` 6-row reference. Original M3.1 copier verifies first six rows separately and allows seventh. Stage 18.1 source correction hashes only first six migration rows by historical typed-v1 algorithm while keeping 7-row lineage; retains historic source SHA pins and all vetoes, +2 independent-oracle synthetic tests (18 total). New exact-head CI mandatory, no operator command yet, no local data repair, PR #35 DRAFT and M3.3 blocked. See docs/qualification/M3_2_ISOLATED_V7_PHYSICAL_READONLY.md.
+
+
 ## 2026-10-13 M3.2 Stage 18 — isolated M3.1 v7 physical read-only SOURCE CANDIDATE (new CI PENDING)
 
 Stage 17 exact HEAD `281d6667b5d08ca0ab3217d24e650574bc70f2ca` passed required Windows CI #38421108816 29/29. Operator subsequently ran genuine source-anchored four-root custody: 26/26 roles, 21/21 historic pinned and 3/3 recent observed SHAs MATCH, 2 unanchored, Git source clean. Status remained PENDING_EXTERNAL_ATTESTATION, CLI exit 2. Stage 18 adds a **new source-only / synthetic CI** verifier for physical integrity of the **existing isolated M3.1 v7** SQLite copy: require previous 26-role live-custody gate before read-only mode=ro connection; SQLite header and no WAL/sidecar, separate integrity/FK, seven exact migration rows, 17 STRICT tables, v7 tables empty, old typed legacy logical SHA and file SHA/id before-after. Never opens production v6. New head CI mandatory; no operator command authorized. PR #35 DRAFT, M3.3 blocked. See `docs/qualification/M3_2_ISOLATED_V7_PHYSICAL_READONLY.md`.
