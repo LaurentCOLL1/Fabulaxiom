@@ -1,5 +1,9 @@
 # Fabulaxiom — Next Authorized Work
 
+## 2026-10-14 Stage 28 next — qualify paginated witness consultation exact HEAD
+
+Re-fetch `main`, PR #35 exact head and all associated Windows `pull_request` workflows. Stage27 `d4fcf5cd2bf051d8dc04655d09d250d551398fa0` was previously qualified by #38633571290 terminal 39/39; those bytes cannot qualify Stage28. Require NEW head terminal Windows **40/40 SUCCESS**, including 30 added consultation tests and all previous synthetic provenance and frontend/Rust/Tauri/lockfile checks. Review consistency-only cursor checks (snapshot, raw filters, selection order, page_size), linked ID-only data and the no-fabricated-time invariant; do not treat cursor as auth. Maintain `PENDING_EXTERNAL_ATTESTATION` 21/3/2, seven original worktrees, active restored v6 SQLite, isolated v7, ACLs/backups and original manifests. No operator scripts, production 007, writer IPC, PR merge or M3.3.
+
 ## 2026-10-14 Stage 27 next — qualify ID-only authored witness presentation on new exact SHA
 
 Re-fetch live protected `main`, PR #35 head and its NEW pull_request Windows workflow. Stage26 predecessor `a960520d8022544259bd3c4bfb6f26ca53bf21b5` was terminal accepted on run #38630895947 **38/38**; inherited CI does not qualify Stage27. Require **39/39 terminal SUCCESS** including 30 new pure-Python witness presentation tests, 32 Stage26 witness tests, 26 Stage25 comparison tests, 50 Stage24.2 navigation tests, earlier synthetic projection/pagination/supersession/provenance and frontend/Rust/Tauri/lockfile. Stage27 remains a frozen ID-only synthetic DTO; never an actual React/Tauri window, SQLite audit or write interface. Preserve all 7 original Windows worktrees, M1.5 restored SQLite v6, M3.1 v7 isolated, backup/manifest/ACL custody. `PENDING_EXTERNAL_ATTESTATION` 21/3/2; no PowerShell operator actions, production 007, writer IPC, PR merge or M3.3.
