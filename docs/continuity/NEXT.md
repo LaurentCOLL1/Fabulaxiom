@@ -1,5 +1,9 @@
 # Fabulaxiom — Next Authorized Work
 
+## 2026-10-14 Stage 20 next — qualify synthetic append-only anchor correction contract
+
+Re-fetch live main and PR #35 exact new head, and require all steps of NEW Windows pull_request CI completed/success, including 25 synthetic pure-Python correction scenarios and prior 33 provenance input fixtures. Old #38570448347 31/31 qualifies ONLY the predecessor. Stage 20 has no SQLite connections and no runtime authorizations; it does not prove actual relational constraints or active-graph correction. Historic precedence references block anchor corrections until a separately approved projection design. Keep pending 21/3/2 history classification, original seven worktrees, restored production v6, M3.1 isolated v7 and original ACL/backups unchanged. No operator commands, production migration, M3.2 writer, PR merge or M3.3.
+
 ## 2026-10-14 Next — M3.2 documentary UX planning candidate; provenance remains PENDING
 
 Re-fetch protected main, PR #35 head and its NEW exact-head Windows pull_request CI after documentary contract commit. Require terminal completed/success for all steps; predecessor #38506803238 (31/31) does not qualify a modified HEAD. The contract does not authorize a GUI/IPC implementation, corrections to immutable SQLite v7 rows, creating an M3.2 write identity or activating migration 007. Maintain 21/3/2 historical classification until independent prior witness proof is verified externally. Review the twelve future synthetic chronology scenarios and append-only supersession design separately under explicit approval. Preserve all seven worktrees and original data; no operator command, rollback, production migration, PR merge or M3.3.

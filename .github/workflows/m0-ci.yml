@@ -84,6 +84,9 @@ jobs:
       - name: M3.2 external provenance claims triage synthetic Windows fixtures
         run: python -m unittest discover -s tools -p "test_m3_2_provenance_triage.py" -v
 
+      - name: M3.2 append-only supersession reference synthetic Windows tests
+        run: python -m unittest discover -s tools -p "test_m3_2_supersession_reference.py" -v
+
       - name: Rust tests from lockfile
         run: cargo test --manifest-path src-tauri/Cargo.toml --all-targets --locked
 
