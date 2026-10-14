@@ -1,5 +1,9 @@
 # Fabulaxiom — Next Authorized Work
 
+## 2026-10-14 Stage 30 next — qualify explicit 16-pair synthetic read-only batch
+
+Re-fetch protected `main`, PR #35 exact head, complete Windows pull_request run. Require **42/42 terminal SUCCESS** on Stage30 SHA including 41 new batch tests, 34 Stage29, 30 Stage28, 30 Stage27, 32 Stage26, 26 Stage25, 50 Stage24 and all prior provenance/frontend/Rust/Tauri/dependency-lock gates. Predecessor `09e7f6a535e20b402e32c099be245a4b91651cf8` passed #38640818567 41/41, but cannot qualify changed source. Preserve exact user-request pair order, allow repeats/reversals without total fictional sort, abort entire batch on invalid historical/cross-Universe/filtered endpoint, page each witness independently and reject unauthorized operations. `PENDING_EXTERNAL_ATTESTATION` 21/3/2 unchanged. Seven Windows worktrees, restored M1.5 SQLite v6, M3.1 isolated v7 and original ACLs/backups protected; no PowerShell operator commands, normal 007 migration, writer IPC, merge or M3.3.
+
 ## 2026-10-14 Stage 29 next — exact-head qualification of paired navigation and witness context
 
 Re-fetch `main`, PR #35 DRAFT branch HEAD and NEW Windows `pull_request` workflow. Require **41/41** terminal SUCCESS on Stage29 SHA including **34 selection-review fixtures** and all 40 predecessor Windows steps. Check filtered-source ordinals are NOT world chronology, exact Stage24 cursor jump opens intended selected ID on every page, and Stage28 witness cursor respects its separate page width/filters/selection. Do not reuse Stage28a head `bbdf37046b2d1266aab19cfb05de08d123fa6e05` run #38635782899 except as predecessor evidence. Preserve `PENDING_EXTERNAL_ATTESTATION` 21/3/2, all 7 worktrees, M1.5 restored production v6, isolated M3.1 v7, ACL/backup/manifests; no PowerShell operator, SQLite runtime writer, migration 007, PR merge or M3.3.
