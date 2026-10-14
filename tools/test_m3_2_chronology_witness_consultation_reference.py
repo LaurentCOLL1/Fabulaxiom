@@ -237,7 +237,9 @@ class WitnessConsultationFixtures(unittest.TestCase):
                    ',"fp":' + json.dumps(data["fp"]) +
                    ',"offset":1,"offset":1}')
         forged = base64.urlsafe_b64encode(payload.encode("ascii")).decode("ascii")
-        self.veto("pagination_cursor_duplicate_key",
+        # Stage23's strict parser rejects duplicates but catches its
+        # ProposalRejected(ValueError) as a generic invalid-encoding veto.
+        self.veto("pagination_cursor_invalid_encoding",
                   lambda: self.page(page_size=1, cursor=forged))
 
     def test_boolean_and_out_of_bounds_width_refused(self):
