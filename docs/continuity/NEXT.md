@@ -1,5 +1,9 @@
 # Fabulaxiom — Next Authorized Work
 
+## 2026-10-15 Stage 31 next — requalify source-specific batch coherence on fresh CI
+
+After publishing the Stage31 source commit, re-fetch protected `main`, PR #35 branch HEAD, associated `pull_request` Windows run and all its jobs on the **new SHA exact**. Require terminal **43/43 SUCCESS**, including **37** new Stage31 pair-coherence tests, all Stage30 41 and previous Stage29–20 synthetic/provenance suites, frontend, Rust/Tauri and dependency locks. Previous Stage30 SHA `ebd022872a9f0e4a54e2f73407fb9e142139756a` CI #38642688135 was terminal 42/42, but qualifies ONLY its own bytes. Stage31 grouping must never infer total chronology, treat order of requests or group numbers as time, or convert fictional dates. Keep independent `PENDING_EXTERNAL_ATTESTATION` 21/3/2, seven Windows worktrees, restored production SQLite v6, v7 isolated, ACL/backup/manifests unchanged; no PowerShell operator command, writer IPC, production migration 007, merge or M3.3.
+
 ## 2026-10-14 Stage 30 next — qualify explicit 16-pair synthetic read-only batch
 
 Re-fetch protected `main`, PR #35 exact head, complete Windows pull_request run. Require **42/42 terminal SUCCESS** on Stage30 SHA including 41 new batch tests, 34 Stage29, 30 Stage28, 30 Stage27, 32 Stage26, 26 Stage25, 50 Stage24 and all prior provenance/frontend/Rust/Tauri/dependency-lock gates. Predecessor `09e7f6a535e20b402e32c099be245a4b91651cf8` passed #38640818567 41/41, but cannot qualify changed source. Preserve exact user-request pair order, allow repeats/reversals without total fictional sort, abort entire batch on invalid historical/cross-Universe/filtered endpoint, page each witness independently and reject unauthorized operations. `PENDING_EXTERNAL_ATTESTATION` 21/3/2 unchanged. Seven Windows worktrees, restored M1.5 SQLite v6, M3.1 isolated v7 and original ACLs/backups protected; no PowerShell operator commands, normal 007 migration, writer IPC, merge or M3.3.
