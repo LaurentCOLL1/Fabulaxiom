@@ -1,5 +1,9 @@
 # Fabulaxiom — Next Authorized Work
 
+## 2026-10-14 Stage 25 next — qualify explicit filtered chronology comparison on NEW exact SHA
+
+Re-fetch GitHub `main`, PR #35 branch head and exact `pull_request` Windows run. Stage24.2 `bbc506a83e194b57aadb36546ecfedd7828670d3` CI #38623834483 terminal 36/36 qualifies the **predecessor only**. Stage25 adds 26 synthetic comparison tests and a 37th Windows job step, requiring new terminal **37/37 SUCCESS** on its own SHA; otherwise diagnose failures without marking acceptance. Both explicitly chosen anchors must be active, remain in the selected Universe and match the current filters; relation only from explicit human precedence. No cursor as authorization, inferred calendar comparison, fictional total sort, Rust/React IPC or real SQLite. Maintain seven Windows worktrees, restored M1.5 v6, isolated M3.1 v7, archives and ACL; global `PENDING_EXTERNAL_ATTESTATION` 21/3/2, PR DRAFT, no migration 007, writer, PR merge or M3.3.
+
 ## 2026-10-14 Stage 24.2 next — requalify canonical Unicode search on NEW exact HEAD
 
 Re-fetch GitHub `main`, PR #35 and its head after the new synthetic-only commit; require fresh `pull_request` Windows CI `completed/success` **36/36**, including **50 navigation tests**, 28 pagination, 25 each presentation/projection/supersession and 33 provenance. Stage24.1 `00ee38b1f8b6b60ac8fa23076d90b6015eeb321a` was qualified by #38620332433 36/36 but its CI **cannot qualify new bytes**. Unicode canonical-equivalence search preserves original source spelling; strict raw-filter cursor binding, one-Universe, source-insertion display-only and no editing. Preserve seven Windows worktrees, M1.5 restored v6 production, isolated M3.1 v7, all ACL/backups, and `PENDING_EXTERNAL_ATTESTATION` 21/3/2. No operator PowerShell, SQLite read/write, migration 007, writer IPC, PR merge or M3.3.
