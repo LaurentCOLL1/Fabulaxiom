@@ -111,6 +111,9 @@ jobs:
       - name: M3.2 paginated witness consultation synthetic Windows tests
         run: python -m unittest discover -s tools -p "test_m3_2_chronology_witness_consultation_reference.py" -v
 
+      - name: M3.2 synthetic selection location and witness consistency Windows tests
+        run: python -m unittest discover -s tools -p "test_m3_2_chronology_selection_review_reference.py" -v
+
       - name: Rust tests from lockfile
         run: cargo test --manifest-path src-tauri/Cargo.toml --all-targets --locked
 
