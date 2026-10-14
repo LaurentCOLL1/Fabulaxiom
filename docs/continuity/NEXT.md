@@ -1,5 +1,9 @@
 # Fabulaxiom — Next Authorized Work
 
+## 2026-10-14 Stage 19.1 next — exact-head CI before any operator qualification
+
+Re-fetch live protected `main`, PR #35 new head, all required Windows `pull_request` workflows on exact new SHA. Require every step terminal completed/success and **29** provenance triage fixture tests passed, including forced reparse-point veto even if native symlink creation is unavailable. Prior Stage-19 CI #38503049446 31/31 is accepted ONLY as predecessor, never transferred to Stage 19.1. New source must not be executed on user files until separately approved. Metadata/HTTPS timestamp/record ID remain **claims**; no new independent archive witness has been authenticated. Keep seven detached worktrees, active production v6, isolated v7, all original backups and ACL unchanged; prohibit migrations, writer IPC, PR merge, and M3.3.
+
 ## 2026-10-14 Stage 19 next — qualify provenance metadata triage source
 
 Re-fetch exact remote main and PR #35 head, verify NEW required Windows pull_request run with all steps terminal SUCCESS including 16 synthetic Stage-19 provenance tests. Do not reuse Stage-18.1 #38498919187 (30/30, older SHA). Keep 21 historical pinned / 3 observed-only / 2 unanchored classifications unchanged. A user-entered record ID, URL, timezone date or claimed independent custodian never proves historical evidence. If a genuinely independent prior witness is located, verify it separately before updating any historical policy and require a distinct reviewed source change + exact-head CI; otherwise retain PENDING. Stage 18.1 real physical isolated-v7 audit already passed, but M3.2 overall readiness is not established. Do not touch existing 7 local worktrees/ACL archives/SQLite, run Stage-19 on user data, activate production migration 007, create M3.2 writer, merge PR #35 or proceed M3.3.

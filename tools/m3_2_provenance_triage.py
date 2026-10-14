@@ -10,12 +10,14 @@ from __future__ import annotations
 import argparse
 from datetime import datetime
 import json
+import os
 from pathlib import Path
+import stat
 import sys
 from urllib.parse import urlparse
 
 import m3_2_independent_authority_gate as source
-from m3_2_operator_readonly_gate import GateStop
+from m3_2_operator_readonly_gate import GateStop, regular_safe
 
 REMAINING = frozenset(source.OBSERVED_SHA256) | source.UNANCHORED_OBSERVED
 assert len(REMAINING) == 5
@@ -127,16 +129,107 @@ def triage_claims(records: object) -> dict:
     }
 
 
+# These are intentionally conservative path components; a provenance claim
+# cannot be read out of production, historic custody or any source worktree.
+PROTECTED_COMPONENTS = frozenset((
+    "com.fabulaxiom.desktop",
+    "com.fabulaxiom.m25qual35fb842c",
+    "com.fabulaxiom.m31launchdb8d3278504c448084478a70ccb71cbd",
+    "fabulaxiom-m31-acl-evidence-4d520e18",
+    "fabulaxiom",
+))
+PROTECTED_SOURCE_PREFIXES = (
+    "fabulaxiom-m25-", "fabulaxiom-m31-", "fabulaxiom-m32-",
+)
+MAX_CLAIMS_BYTES = 16_384
+
+
+def _no_duplicate_keys(pairs: list[tuple[str, object]]) -> dict:
+    result: dict = {}
+    for key, value in pairs:
+        if key in result:
+            raise GateStop("provenance_json_duplicate_key")
+        result[key] = value
+    return result
+
+
+def _reject_non_json_constant(_value: str) -> None:
+    raise GateStop("provenance_json_nonfinite_number")
+
+
+def _stat_identity(path: Path) -> tuple:
+    status = path.stat(follow_symlinks=False)
+    if not stat.S_ISREG(status.st_mode):
+        raise GateStop("provenance_claims_not_regular")
+    if not 0 < status.st_size <= MAX_CLAIMS_BYTES:
+        raise GateStop("provenance_claims_input_invalid")
+    return (
+        status.st_dev, status.st_ino, status.st_mode,
+        status.st_size, status.st_mtime_ns, status.st_ctime_ns,
+    )
+
+
+def _read_once(path: Path) -> bytes:
+    flags = os.O_RDONLY | getattr(os, "O_BINARY", 0)
+    # Stronger no-follow on platforms providing it. On Windows the pre/post
+    # reparse checks are defense-in-depth, not an atomic filesystem snapshot.
+    flags |= getattr(os, "O_NOFOLLOW", 0)
+    fd = os.open(path, flags)
+    with os.fdopen(fd, "rb") as stream:
+        opened = os.fstat(stream.fileno())
+        if not stat.S_ISREG(opened.st_mode):
+            raise GateStop("provenance_opened_not_regular")
+        if opened.st_size > MAX_CLAIMS_BYTES:
+            raise GateStop("provenance_claims_input_invalid")
+        data = stream.read(MAX_CLAIMS_BYTES + 1)
+        if len(data) > MAX_CLAIMS_BYTES or not data:
+            raise GateStop("provenance_claims_input_invalid")
+        return data
+
+
+def read_claims_readonly(path: Path) -> object:
+    """Bounded double-read; reject redirected ancestors and protected roots.
+
+    Checks detect ordinary between-read changes, but don't assert an OS-level
+    atomic snapshot or certify external historical witnesses.
+    """
+    if not path.is_absolute():
+        raise GateStop("provenance_claims_absolute_path_required")
+    for part in path.parts:
+        component = part.casefold()
+        if component in PROTECTED_COMPONENTS or any(
+            component.startswith(prefix) for prefix in PROTECTED_SOURCE_PREFIXES
+        ):
+            raise GateStop("provenance_claims_protected_location")
+    regular_safe(path, False)
+    before = _stat_identity(path)
+    first = _read_once(path)
+    if _stat_identity(path) != before:
+        raise GateStop("provenance_claims_changed_during_read")
+    regular_safe(path, False)
+    second = _read_once(path)
+    if second != first or _stat_identity(path) != before:
+        raise GateStop("provenance_claims_changed_during_read")
+    regular_safe(path, False)
+    try:
+        return json.loads(
+            first.decode("utf-8"),
+            object_pairs_hook=_no_duplicate_keys,
+            parse_constant=_reject_non_json_constant,
+        )
+    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise GateStop("provenance_claims_invalid_utf8_json") from exc
+
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--claims-json", type=Path, required=True)
     parser.add_argument("--dry-run", action="store_true", required=True)
     args = parser.parse_args(argv)
     try:
-        # Strictly bounded untrusted metadata; do not read protected bytes.
-        if not args.claims_json.is_file() or args.claims_json.stat().st_size > 16_384:
-            raise GateStop("provenance_claims_input_invalid")
-        records = json.loads(args.claims_json.read_text(encoding="utf-8"))
+        # All checks happen before the metadata is interpreted.
+        records = read_claims_readonly(args.claims_json)
         result = triage_claims(records)
     except (GateStop, OSError, UnicodeError, ValueError, TypeError) as exc:
         result = {

@@ -3,9 +3,11 @@ from contextlib import redirect_stdout
 from copy import deepcopy
 import io
 import json
+import os
 from pathlib import Path
 from tempfile import TemporaryDirectory
 import unittest
+from unittest import mock
 
 import m3_2_provenance_triage as triage
 from m3_2_operator_readonly_gate import GateStop
@@ -140,6 +142,130 @@ class SyntheticProvenanceTests(unittest.TestCase):
         self.entry("m25", "isolated_v6")["record_id"] = "fake"
         with self.assertRaisesRegex(GateStop, "none_must_have_no_evidence"):
             triage.triage_claims(self.claims)
+
+    def write_claims(self, data=None):
+        path = self.folder / "synthetic_claims.json"
+        path.write_text(json.dumps(
+            self.claims if data is None else data
+        ), encoding="utf-8")
+        return path
+
+    def test_loader_readonly_returns_exact_synthetic_records(self):
+        path = self.write_claims()
+        before = path.read_bytes()
+        records = triage.read_claims_readonly(path)
+        self.assertEqual(records, self.claims)
+        self.assertEqual(path.read_bytes(), before)
+
+    def test_duplicate_json_keys_rejected_even_if_second_overrides_first(self):
+        path = self.folder / "duplicates.json"
+        # A plain json.loads silently accepts the last duplicate.
+        path.write_text(
+            '[{"root":"acl","root":"production","role":"original_acls"}]',
+            encoding="utf-8",
+        )
+        with self.assertRaisesRegex(GateStop, "json_duplicate_key"):
+            triage.read_claims_readonly(path)
+
+    def test_duplicate_nested_json_keys_rejected(self):
+        path = self.folder / "duplicates.json"
+        path.write_text(
+            '{"outer":{"record_id":"one","record_id":"two"}}',
+            encoding="utf-8",
+        )
+        with self.assertRaisesRegex(GateStop, "json_duplicate_key"):
+            triage.read_claims_readonly(path)
+
+    def test_nonfinite_json_number_rejected(self):
+        path = self.folder / "nonfinite.json"
+        path.write_text('{"unsafe":NaN}', encoding="utf-8")
+        with self.assertRaisesRegex(GateStop, "json_nonfinite_number"):
+            triage.read_claims_readonly(path)
+
+    def test_invalid_utf8_refused(self):
+        path = self.folder / "invalid-utf8.json"
+        path.write_bytes(b'\xff\xfe{"x":2}')
+        with self.assertRaisesRegex(GateStop, "invalid_utf8_json"):
+            triage.read_claims_readonly(path)
+
+    def test_relative_path_rejected(self):
+        with self.assertRaisesRegex(GateStop, "absolute_path_required"):
+            triage.read_claims_readonly(Path("unsafe_relative.json"))
+
+    def test_protected_original_custody_directory_refused(self):
+        root = self.folder / "com.fabulaxiom.desktop"
+        root.mkdir()
+        path = root / "operator-provided-claims.json"
+        path.write_text(json.dumps(self.claims), encoding="utf-8")
+        with self.assertRaisesRegex(GateStop, "protected_location"):
+            triage.read_claims_readonly(path)
+
+    def test_protected_acl_custody_directory_refused(self):
+        root = self.folder / "Fabulaxiom-M31-ACL-Evidence-4d520e18"
+        root.mkdir()
+        path = root / "claims.json"
+        path.write_text(json.dumps(self.claims), encoding="utf-8")
+        with self.assertRaisesRegex(GateStop, "protected_location"):
+            triage.read_claims_readonly(path)
+
+    def test_protected_worktree_directory_refused(self):
+        root = self.folder / "Fabulaxiom-M32-v7readonly-f89d31fb"
+        root.mkdir()
+        path = root / "claims.json"
+        path.write_text(json.dumps(self.claims), encoding="utf-8")
+        with self.assertRaisesRegex(GateStop, "protected_location"):
+            triage.read_claims_readonly(path)
+
+    def test_second_read_change_is_a_veto(self):
+        path = self.write_claims()
+        before = path.read_bytes()
+        calls = [0]
+        original = triage._read_once
+        def unstable(selected):
+            calls[0] += 1
+            if calls[0] == 2:
+                return b'[{"tampered": true}]'
+            return original(selected)
+        with mock.patch.object(triage, "_read_once", side_effect=unstable):
+            with self.assertRaisesRegex(GateStop, "changed_during_read"):
+                triage.read_claims_readonly(path)
+        self.assertEqual(path.read_bytes(), before)
+
+    def test_metadata_identity_change_is_a_veto(self):
+        path = self.write_claims()
+        original = triage._stat_identity
+        calls = [0]
+        def unstable(selected):
+            calls[0] += 1
+            stamp = original(selected)
+            if calls[0] == 2:
+                return (*stamp[:-1], stamp[-1] + 1)
+            return stamp
+        with mock.patch.object(triage, "_stat_identity", side_effect=unstable):
+            with self.assertRaisesRegex(GateStop, "changed_during_read"):
+                triage.read_claims_readonly(path)
+
+    def test_symlink_input_refused_when_platform_permits_creation(self):
+        original = self.write_claims()
+        link = self.folder / "untrusted-link.json"
+        try:
+            link.symlink_to(original)
+        except (OSError, NotImplementedError):
+            self.skipTest("symlink creation unavailable in this test environment")
+        with self.assertRaisesRegex(GateStop, "reparse_point"):
+            triage.read_claims_readonly(link)
+        self.assertEqual(original.read_bytes(), json.dumps(self.claims).encode())
+
+    def test_reparse_guard_fail_closed_without_touching_claims(self):
+        path = self.write_claims()
+        before = path.read_bytes()
+        with mock.patch.object(triage, "regular_safe",
+                               side_effect=GateStop("synthetic_reparse_point")):
+            with mock.patch.object(triage, "_read_once",
+                                   side_effect=AssertionError("must not open")):
+                with self.assertRaisesRegex(GateStop, "synthetic_reparse_point"):
+                    triage.read_claims_readonly(path)
+        self.assertEqual(path.read_bytes(), before)
 
     def test_valid_cli_returns_pending_and_exit_two_without_writes(self):
         path = self.folder / "synthetic_claims.json"
