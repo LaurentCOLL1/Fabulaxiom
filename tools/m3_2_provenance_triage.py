@@ -136,7 +136,6 @@ PROTECTED_COMPONENTS = frozenset((
     "com.fabulaxiom.m25qual35fb842c",
     "com.fabulaxiom.m31launchdb8d3278504c448084478a70ccb71cbd",
     "fabulaxiom-m31-acl-evidence-4d520e18",
-    "fabulaxiom",
 ))
 PROTECTED_SOURCE_PREFIXES = (
     "fabulaxiom-m25-", "fabulaxiom-m31-", "fabulaxiom-m32-",
@@ -200,6 +199,14 @@ def read_claims_readonly(path: Path) -> object:
         if component in PROTECTED_COMPONENTS or any(
             component.startswith(prefix) for prefix in PROTECTED_SOURCE_PREFIXES
         ):
+            raise GateStop("provenance_claims_protected_location")
+    # The historic production repository is anchored at M:\\Fabulaxiom on
+    # the operator's machine. Do NOT reject every path component named
+    # "Fabulaxiom": GitHub Windows runners also use that directory name.
+    if os.name == "nt":
+        normalized = os.path.normcase(os.path.normpath(str(path)))
+        local_main = os.path.normcase(os.path.normpath(r"M:\Fabulaxiom"))
+        if normalized == local_main or normalized.startswith(local_main + os.sep):
             raise GateStop("provenance_claims_protected_location")
     regular_safe(path, False)
     before = _stat_identity(path)

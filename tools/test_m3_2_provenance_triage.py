@@ -192,6 +192,27 @@ class SyntheticProvenanceTests(unittest.TestCase):
         with self.assertRaisesRegex(GateStop, "absolute_path_required"):
             triage.read_claims_readonly(Path("unsafe_relative.json"))
 
+    def test_generic_fabulaxiom_component_not_a_protected_root(self):
+        # GitHub Actions Windows checkout uses D:\\a\\Fabulaxiom\\Fabulaxiom.
+        # A generic parent directory name is not itself a custody root.
+        safe = self.folder / "Fabulaxiom"
+        safe.mkdir()
+        path = safe / "claims.json"
+        path.write_text(json.dumps(self.claims), encoding="utf-8")
+        self.assertEqual(triage.read_claims_readonly(path), self.claims)
+
+    def test_main_operator_repo_refused_on_windows(self):
+        if os.name != "nt":
+            self.skipTest("operator Windows drive name semantics only")
+        # A pure M:\\Fabulaxiom path is operator custody, not an arbitrary
+        # D:\\a\\Fabulaxiom CI test directory.
+        from unittest import mock as local_mock
+        path = Path(r"M:\Fabulaxiom\claims.json")
+        with local_mock.patch.object(triage, "regular_safe",
+                                     side_effect=AssertionError("not reached")):
+            with self.assertRaisesRegex(GateStop, "protected_location"):
+                triage.read_claims_readonly(path)
+
     def test_protected_original_custody_directory_refused(self):
         root = self.folder / "com.fabulaxiom.desktop"
         root.mkdir()

@@ -1,5 +1,9 @@
 # Fabulaxiom — Current State
 
+## 2026-10-14 Stage 19.1a — correct Windows CI checkout basename false positive (NEW CI PENDING)
+
+Stage-19.1 first candidate b72e2ebf78db80aaabaf921dd5b79455c53bfa46 FAILED Windows PR CI #38506053405 in provenance fixtures. Its blanket Fabulaxiom ancestor-name veto matched GitHub runner D:\\a\\Fabulaxiom\\Fabulaxiom, aborting synthetic file claims before parsing. Stage 19.1a limits the base-repo veto to exact operator M:\\Fabulaxiom, preserving named production/isolated/ACL roots and special M25/M31/M32 source prefixes. Synthetic suite expands 29→31 tests, including explicit GitHub checkout-name and operator main-root regression cases. No source-file authority promotion, no local operator execution, no v6/v7/ACL mutation. New exact-head CI required; PR #35 DRAFT and M3.3 blocked.
+
 ## 2026-10-14 Stage 19.1 — provenance JSON read-only intake hardening SOURCE CANDIDATE (CI PENDING)
 
 Stage 19 exact GitHub source `3c237179396bafafd5c4733a5f6f3ae7a7355ac7` passed Windows CI #38503049446 **31/31**. Stage 18.1 real isolated-v7 physical audit already PASS in byte, integrity/FK, 7-ledger and corrected inherited v6 logical scope; overall still PENDING_EXTERNAL_ATTESTATION. Stage 19.1 protects external JSON claim intake by rejecting symlink/junction/reparse ancestors and known protected roots, using bounded double-read+file-metadata checks, strict duplicate-key/UTF-8/nonfinite JSON vetoes. Expands synthetic Windows claim tests **16→29**; no promotion of 3 recent or 2 unanchored roles and no signature/timestamp checks. NEW exact-head CI required. Seven local worktrees and all SQLite/ACL archives preserved. PR #35 DRAFT; production remains restored-active v6; no M3.2 writer or M3.3.
