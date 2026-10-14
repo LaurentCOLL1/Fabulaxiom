@@ -1,5 +1,10 @@
 # Fabulaxiom — Next Authorized Work
 
+## 2026-10-14 Next — M3.2 documentary UX planning candidate; provenance remains PENDING
+
+Re-fetch protected main, PR #35 head and its NEW exact-head Windows pull_request CI after documentary contract commit. Require terminal completed/success for all steps; predecessor #38506803238 (31/31) does not qualify a modified HEAD. The contract does not authorize a GUI/IPC implementation, corrections to immutable SQLite v7 rows, creating an M3.2 write identity or activating migration 007. Maintain 21/3/2 historical classification until independent prior witness proof is verified externally. Review the twelve future synthetic chronology scenarios and append-only supersession design separately under explicit approval. Preserve all seven worktrees and original data; no operator command, rollback, production migration, PR merge or M3.3.
+
+
 ## 2026-10-14 Stage 19.1b next
 
 Re-fetch live main/PR #35 and require 33 provenance tests and all Windows steps completed/success on the new SHA. Prior runs #38506053405 and #38506420793 are failures and never qualify the new source. No local operator invocation or legacy authority promotion; keep all SQLite v6/v7, ACL and seven worktrees preserved, no production migration, merge or M3.3.

@@ -1,5 +1,10 @@
 # Fabulaxiom — Current State
 
+## 2026-10-14 Stage 19.1b ACCEPTED; M3.2 manual chronology UX planning contract SOURCE CANDIDATE
+
+Protected main remains f7eabfea74480d307b52d4b053730021efc95352. PR #35 Stage 19.1b exact SHA 5839d3d23d04ee8bab8a7af1a7f50bb45582cf1a obtained terminal Windows pull_request CI #38506803238 completed/success 31/31 including 33 synthetic provenance input tests. The two earlier Stage 19.1 CI attempts remain FAILED. The operator previously passed the real isolated M3.1 v7 read-only physical audit (26/26 custody; 21 historic, 3 recent observed, 2 unanchored; integrity/FK/typed-v6 checksum and before/after v7 SHA). Overall M3.2 remains PENDING_EXTERNAL_ATTESTATION. A predecessor M3.1 PR #33 comment from October 11 documents that ACL archives were saved before scoped repair but DOES NOT independently pin their file SHA; no retrospective promotion is allowed. This candidate adds only docs/qualification/M3_2_MANUAL_CHRONOLOGY_UX_CONTRACT.md: prospective manual chronology world/narration/reveal separation, immutable v7 schema and correction limitations, 12 synthetic acceptance scenarios. No React/Rust/SQLite changes; new exact-head CI mandatory for documentary source. Existing seven operator worktrees, production v6, isolated v7 and ACL backups untouched. PR #35 remains DRAFT, no writer/migration/merge/M3.3.
+
+
 ## 2026-10-14 Stage 19.1b — narrowed worktree name guard (new CI PENDING)
 
 Previous Stage 19.1a SHA `4ca1458c4b25473dc2e338656cdbabf3faf1db03` failed Windows CI #38506420793 because protected source prefix `fabulaxiom-m32-` also matched CI synthetic folder `fabulaxiom-m32-provenance-synthetic-*`. Stage 19.1b narrows veto to known worktree roles plus hex SHA, retaining app/ACL root and exact operator main protections, with 33 synthetic provenance tests. New exact-head CI mandatory. Seven local worktrees, SQLite and archived ACL evidence untouched; PR #35 remains DRAFT. No write authority.
