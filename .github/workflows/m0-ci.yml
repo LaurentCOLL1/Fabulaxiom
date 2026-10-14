@@ -105,6 +105,9 @@ jobs:
       - name: M3.2 explicit world chronology witness synthetic Windows tests
         run: python -m unittest discover -s tools -p "test_m3_2_chronology_witness_reference.py" -v
 
+      - name: M3.2 synthetic witness presentation Windows tests
+        run: python -m unittest discover -s tools -p "test_m3_2_chronology_witness_presentation_reference.py" -v
+
       - name: Rust tests from lockfile
         run: cargo test --manifest-path src-tauri/Cargo.toml --all-targets --locked
 
