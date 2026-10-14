@@ -1,5 +1,9 @@
 # Fabulaxiom — Next Authorized Work
 
+## 2026-10-14 Stage 26 next — qualify authored precedence witness on exact new source SHA
+
+Re-fetch protected `main`, PR #35 DRAFT branch HEAD and its fresh `pull_request` Windows CI. Accepted predecessor Stage25 `857b3025d477c20083bfa2825576174f71c92666` had terminal **37/37** #38628094367. Stage26 adds **32 in-memory witness cases** and a Windows 38th step, requiring terminal **38/38 SUCCESS** on new HEAD, including older Stage25 26 tests, Stage24.2 50, Stage23 28, Stage22/21/20a 25 each, provenance 33 and full frontend/Rust/Tauri checks. Do not promote an inherited CI or ongoing run. No fictional date inference or total temporal order; evidence is one shortest human precedence chain in the SAME Universe, not an attestation or permission. Keep `PENDING_EXTERNAL_ATTESTATION` 21/3/2, the seven operator worktrees, production restored v6, v7 isolated, ACLs/backups/manifestes unchanged. No real data access, PowerShell, migration 007, writer IPC, PR merge or M3.3.
+
 ## 2026-10-14 Stage 25 next — qualify explicit filtered chronology comparison on NEW exact SHA
 
 Re-fetch GitHub `main`, PR #35 branch head and exact `pull_request` Windows run. Stage24.2 `bbc506a83e194b57aadb36546ecfedd7828670d3` CI #38623834483 terminal 36/36 qualifies the **predecessor only**. Stage25 adds 26 synthetic comparison tests and a 37th Windows job step, requiring new terminal **37/37 SUCCESS** on its own SHA; otherwise diagnose failures without marking acceptance. Both explicitly chosen anchors must be active, remain in the selected Universe and match the current filters; relation only from explicit human precedence. No cursor as authorization, inferred calendar comparison, fictional total sort, Rust/React IPC or real SQLite. Maintain seven Windows worktrees, restored M1.5 v6, isolated M3.1 v7, archives and ACL; global `PENDING_EXTERNAL_ATTESTATION` 21/3/2, PR DRAFT, no migration 007, writer, PR merge or M3.3.
