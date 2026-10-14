@@ -358,27 +358,27 @@ class SyntheticNavigationTests(unittest.TestCase):
     # Stage 24.2: canonical Unicode equivalence for literal search, never
     # changing source labels, calendar identity or the cursor's raw filter.
     def test_nfc_query_finds_decomposed_source_label(self):
-        sample = SyntheticSnapshot((exact("a", "e\\u0301clipse"),), ())
+        sample = SyntheticSnapshot((exact("a", "e\u0301clipse"),), ())
         page = navigate_chronology(
             sample, "u1", filters=NavigationFilters(text_contains="éCLIPSE"))
         self.assertEqual([x.anchor_id for x in page.anchor_cards], ["a"])
-        self.assertEqual(page.anchor_cards[0].exact_label, "e\\u0301clipse")
+        self.assertEqual(page.anchor_cards[0].exact_label, "e\u0301clipse")
 
     def test_decomposed_query_finds_nfc_source_label(self):
         sample = SyntheticSnapshot((exact("a", "Éclipse"),), ())
         page = navigate_chronology(
-            sample, "u1", filters=NavigationFilters(text_contains="e\\u0301CLIPSE"))
+            sample, "u1", filters=NavigationFilters(text_contains="e\u0301CLIPSE"))
         self.assertEqual([x.anchor_id for x in page.anchor_cards], ["a"])
 
     def test_unicode_canonical_search_is_case_insensitive(self):
-        sample = SyntheticSnapshot((exact("a", "E\\u0301TOILE"),), ())
+        sample = SyntheticSnapshot((exact("a", "E\u0301TOILE"),), ())
         page = navigate_chronology(
             sample, "u1", filters=NavigationFilters(text_contains="étoile"))
         self.assertEqual(page.total_matches, 1)
 
     def test_canonical_search_in_approximate_window_start(self):
         anchor = Anchor("a", "u1", "approximate", calendar_id="Cal",
-                        window_start_text="de\\u0301but", precision_text="season")
+                        window_start_text="de\u0301but", precision_text="season")
         page = navigate_chronology(
             SyntheticSnapshot((anchor,), ()), "u1",
             filters=NavigationFilters(text_contains="DÉBUT"))
@@ -386,8 +386,8 @@ class SyntheticNavigationTests(unittest.TestCase):
 
     def test_canonical_search_in_window_end_and_precision(self):
         anchor = Anchor("a", "u1", "approximate", calendar_id="Cal",
-                        window_start_text="early", window_end_text="e\\u0301te\\u0301",
-                        precision_text="tre\\u0300s vague")
+                        window_start_text="early", window_end_text="e\u0301te\u0301",
+                        precision_text="tre\u0300s vague")
         sample = SyntheticSnapshot((anchor,), ())
         for term in ("ÉTÉ", "TRÈS"):
             with self.subTest(term=term):
@@ -404,7 +404,7 @@ class SyntheticNavigationTests(unittest.TestCase):
     def test_canonical_search_preserves_universe_and_revision(self):
         sample = SyntheticSnapshot((
             Anchor("original", "u1", "exact", calendar_id="Cal",
-                   exact_label="e\\u0301poque", source_revision_id="rev-historical"),
+                   exact_label="e\u0301poque", source_revision_id="rev-historical"),
             exact("foreign", "Époque", universe="u2"),
         ), ())
         original = repr(sample)
@@ -412,15 +412,15 @@ class SyntheticNavigationTests(unittest.TestCase):
             sample, "u1", filters=NavigationFilters(text_contains="ÉPOQUE"))
         self.assertEqual([x.anchor_id for x in page.anchor_cards], ["original"])
         self.assertEqual(page.anchor_cards[0].source_revision_id, "rev-historical")
-        self.assertEqual(page.anchor_cards[0].exact_label, "e\\u0301poque")
+        self.assertEqual(page.anchor_cards[0].exact_label, "e\u0301poque")
         self.assertEqual(repr(sample), original)
 
     def test_equivalent_unicode_queries_still_have_distinct_cursors(self):
         sample = SyntheticSnapshot((
-            exact("a", "étoile"), exact("b", "e\\u0301cho"),
+            exact("a", "étoile"), exact("b", "e\u0301cho"),
         ), ())
         nfc = NavigationFilters(text_contains="é")
-        nfd = NavigationFilters(text_contains="e\\u0301")
+        nfd = NavigationFilters(text_contains="e\u0301")
         first = navigate_chronology(sample, "u1", filters=nfc, page_size=1)
         self.assertEqual(first.total_matches, 2)
         self.assertIsNotNone(first.next_cursor)
