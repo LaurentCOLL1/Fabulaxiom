@@ -1,5 +1,10 @@
 # Fabulaxiom — Next Authorized Work
 
+## 2026-10-14 Stage 20a next — requalify corrected Python synthetic imports
+
+Re-fetch live main, PR #35 head and the NEW Windows pull_request CI. The Stage 20 run #38578661460 is FAILED (unclosed parenthesis at test line 178); its predecessor 31/31 success is on an older source. Require all new Windows steps terminal success including exactly 25 supersession reference synthetic tests and 33 provenance triage fixtures. No local operator commands, no SQLite/ACL access, no seventh worktree mutation and no M3.2 implementation. Preserve immutable original v7 triggers; a historical precedence-linked anchor remains non-correctable in the conservative proposal. Continue to classify historical roles as 21 source-pinned, 3 recent observed and 2 unanchored, overall PENDING_EXTERNAL_ATTESTATION.
+
+
 ## 2026-10-14 Stage 20 next — qualify synthetic append-only anchor correction contract
 
 Re-fetch live main and PR #35 exact new head, and require all steps of NEW Windows pull_request CI completed/success, including 25 synthetic pure-Python correction scenarios and prior 33 provenance input fixtures. Old #38570448347 31/31 qualifies ONLY the predecessor. Stage 20 has no SQLite connections and no runtime authorizations; it does not prove actual relational constraints or active-graph correction. Historic precedence references block anchor corrections until a separately approved projection design. Keep pending 21/3/2 history classification, original seven worktrees, restored production v6, M3.1 isolated v7 and original ACL/backups unchanged. No operator commands, production migration, M3.2 writer, PR merge or M3.3.

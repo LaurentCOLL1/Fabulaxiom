@@ -176,7 +176,7 @@ class SyntheticSupersessionAcceptance(unittest.TestCase):
 
     def test_duplicate_historical_anchor_id_rejected(self):
         self.assertVeto("duplicate_anchor_id", lambda:
-                        SyntheticSnapshot((unknown("a"), unknown("a")))
+                        SyntheticSnapshot((unknown("a"), unknown("a"))))
 
     def test_same_display_event_names_never_join_by_names(self):
         base = SyntheticSnapshot((unknown("entity-id-1"), unknown("entity-id-2")))
