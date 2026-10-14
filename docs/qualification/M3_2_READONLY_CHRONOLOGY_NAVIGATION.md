@@ -45,3 +45,15 @@ La réussite du SHA Stage23 n'est pas transférable. La réussite de Stage24 con
 Préserver les **sept** worktrees historiques, la production restaurée M1.5 SQLite v6, la copie M3.1 v7 isolée, les manifestes et sauvegardes ainsi que les deux fichiers d'ACL. Aucun 8e worktree, aucune activation automatique de la migration `007`, aucune nouvelle identité d'écriture M3.2, aucune interface React/Tauri de mutation, aucune fusion de PR #35 et aucun M3.3 tant que les attestations externes demeurent non établies.
 
 Références : https://docs.python.org/3.12/library/dataclasses.html ; https://docs.python.org/3.12/library/json.html .
+
+## 2026-10-14 — Stage 24.1, cohérence de largeur de page (correction candidate)
+
+**Incident potentiel identifié par revue du code, sans mutation de données :** Stage 24 associait un curseur au snapshot et aux filtres, mais non à la **taille de page**. Un curseur produit avec `page_size=2` pouvait donc être réutilisé avec `page_size=1` ou 3, décalant la navigation « précédente », qui calcule son point de retour à partir de la taille demandée. Les contenus sources et les bases SQLite ne sont pas concernés.
+
+**Correctif proposé (source Python synthétique exclusivement) :** la représentation soumise à l'empreinte du curseur inclut maintenant `page_size`, en plus du snapshot et des filtres. Toute reprise avec une taille différente renvoie `navigation_cursor_stale_snapshot_or_filters`. Le décodeur conserve son schéma strict précédent ; les offsets qui ne sont pas des multiples de la taille de page sont refusés via `navigation_cursor_offset_invalid`. Aucun changement des primitives de pagination Stage 23, ni des versions anciennes de schémas SQLite.
+
+**Régression ajoutée :** 7 tests adversariaux supplémentaires dans la suite Stage24, qui passe de **35 à 42** cas : changements de largeur plus petite/plus grande, reprise normale inchangée, offset fabriqué non aligné, offset booléen, offset hors intervalle, parcours aller-retour de plusieurs pages sans saut ni doublon. La CI Windows du nouveau SHA doit rester terminale **36/36 SUCCESS** (même nombre d'étapes, suite Stage24 élargie). Aucun ancien résultat CI ne qualifie les nouveaux octets.
+
+**Limite inchangée :** ce digest synthétique est un détecteur de décalage logique, **pas** un jeton signé, un contrôle d'accès, une preuve de conservation historique ou une promesse de performance en production. Les curseurs existants sur l'ancien SHA sont volontairement incompatibles avec les nouveaux curseurs Stage24.1 ; aucun curseur ne doit servir à autoriser un writer.
+
+Le statut opérateur reste `PENDING_EXTERNAL_ATTESTATION` (21 SHA historiquement ancrés, 3 observations récentes, 2 éléments non ancrés). Aucun accès aux sept worktrees, archives ACL, production SQLite v6 ou copie M3.1 v7 isolée ; aucune migration, IPC, action Tauri, fusion PR ou M3.3.

@@ -73,9 +73,10 @@ def _validated_filters(filters: NavigationFilters) -> NavigationFilters:
 
 
 def _filter_fingerprint(snapshot: SyntheticSnapshot,
-                        filters: NavigationFilters) -> str:
+                        filters: NavigationFilters, page_size: int) -> str:
     representation = json.dumps(
-        {"snapshot": _fingerprint(snapshot), "filters": asdict(filters)},
+        {"snapshot": _fingerprint(snapshot), "filters": asdict(filters),
+         "page_size": page_size},
         ensure_ascii=True, sort_keys=True, separators=(",", ":"),
         allow_nan=False,
     )
@@ -116,7 +117,9 @@ def navigate_chronology(
     if type(page_size) is not int or not 1 <= page_size <= MAX_PAGE_SIZE:
         raise ProposalRejected("navigation_page_size_invalid")
     filters = _validated_filters(filters)
-    fp = _filter_fingerprint(snapshot, filters)
+    # Page width is part of the cursor contract: changing it could otherwise
+    # make the "previous" page overlap or omit previously displayed anchors.
+    fp = _filter_fingerprint(snapshot, filters, page_size)
 
     matching = []
     for anchor in snapshot.anchors:
@@ -135,7 +138,7 @@ def navigate_chronology(
         if decoded["fp"] != fp:
             raise ProposalRejected("navigation_cursor_stale_snapshot_or_filters")
         offset = decoded["offset"]
-        if offset < 0 or offset >= total:
+        if offset < 0 or offset >= total or offset % page_size != 0:
             raise ProposalRejected("navigation_cursor_offset_invalid")
 
     cards = []

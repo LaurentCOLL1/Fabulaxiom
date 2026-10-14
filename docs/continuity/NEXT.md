@@ -1,5 +1,9 @@
 # Fabulaxiom — Next Authorized Work
 
+## 2026-10-14 Stage 24.1 next — qualify width-bound navigation cursor with fresh CI
+
+Re-fetch GitHub main, PR #35 HEAD and new exact SHA Windows pull_request run; require terminal all-steps SUCCESS (36/36) including **42 Stage24 navigation cases**. Parent #38607217180 36/36 applies ONLY to Stage24 SHA `9160f74b89a8e852b1bdcfe5e9409e270ca3b3e5`. New Stage24.1 cursors bind snapshot, filters and page_size and reject mid-page forged offsets. No new worker, SQLite read, local PowerShell, eighth worktree, Tauri IPC, writer identity, migration 007 or production changes. Preserve seven existing worktrees, v6 active, isolated v7, ACL archives and PENDING_EXTERNAL_ATTESTATION 21/3/2; PR #35 remains DRAFT, no M3.3.
+
 ## 2026-10-14 Stage 24 next — qualify synthetic filter/navigation on NEW exact SHA
 
 Re-fetch live main and PR #35 exact HEAD, require new Windows pull_request CI all **36/36 terminal completed/success**, including 35 Stage24 navigation fixtures, 28 Stage23 pagination, 25 each Stage22 presentation/21 projection/20a supersession, 33 provenance plus React/Rust. Prior #38605084315 (35/35) qualifies Stage23 ONLY. Query filters and cursor must remain one-Universe, source-insertion-display-only, immutable, no hidden calendar/date inference or edit authority. Do not run on real operator SQLite or create 8th worktree; preserve restored production v6, isolated v7, ACL/backups and 21/3/2 pending historical evidence. No migration 007 startup, M3.2 writer IPC, PR merge or M3.3.

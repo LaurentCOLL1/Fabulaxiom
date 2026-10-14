@@ -186,6 +186,81 @@ class SyntheticNavigationTests(unittest.TestCase):
         self.assertEqual(len(ids), len(set(ids)))
         self.assertIsNone(cursor)
 
+    def test_changed_page_width_one_refused(self):
+        first = navigate_chronology(self.snapshot, "u1", page_size=2)
+        self.veto("navigation_cursor_stale_snapshot_or_filters", lambda:
+                  navigate_chronology(self.snapshot, "u1", page_size=1,
+                                     cursor=first.next_cursor))
+
+    def test_changed_page_width_larger_refused(self):
+        first = navigate_chronology(self.snapshot, "u1", page_size=2)
+        self.veto("navigation_cursor_stale_snapshot_or_filters", lambda:
+                  navigate_chronology(self.snapshot, "u1", page_size=3,
+                                     cursor=first.next_cursor))
+
+    def test_resuming_same_size_remains_supported(self):
+        first = navigate_chronology(self.snapshot, "u1", page_size=2)
+        next_page = navigate_chronology(
+            self.snapshot, "u1", page_size=2, cursor=first.next_cursor)
+        self.assertEqual([c.anchor_id for c in next_page.anchor_cards],
+                         ["a", "other-calendar"])
+
+    def test_misaligned_forged_cursor_offset_refused(self):
+        first = navigate_chronology(self.snapshot, "u1", page_size=2)
+        raw = json.loads(base64.urlsafe_b64decode(first.next_cursor))
+        raw["offset"] = 3  # not on a page boundary of 2
+        forged = base64.urlsafe_b64encode(
+            json.dumps(raw, separators=(",", ":")).encode("ascii")
+        ).decode("ascii")
+        self.veto("navigation_cursor_offset_invalid", lambda:
+                  navigate_chronology(self.snapshot, "u1", page_size=2,
+                                     cursor=forged))
+
+    def test_boolean_offset_refused(self):
+        first = navigate_chronology(self.snapshot, "u1", page_size=2)
+        raw = json.loads(base64.urlsafe_b64decode(first.next_cursor))
+        raw["offset"] = True
+        forged = base64.urlsafe_b64encode(
+            json.dumps(raw, separators=(",", ":")).encode("ascii")
+        ).decode("ascii")
+        self.veto("pagination_cursor_offset_invalid", lambda:
+                  navigate_chronology(self.snapshot, "u1", page_size=2,
+                                     cursor=forged))
+
+    def test_out_of_range_offset_refused(self):
+        first = navigate_chronology(self.snapshot, "u1", page_size=2)
+        raw = json.loads(base64.urlsafe_b64decode(first.next_cursor))
+        raw["offset"] = 100
+        forged = base64.urlsafe_b64encode(
+            json.dumps(raw, separators=(",", ":")).encode("ascii")
+        ).decode("ascii")
+        self.veto("navigation_cursor_offset_invalid", lambda:
+                  navigate_chronology(self.snapshot, "u1", page_size=2,
+                                     cursor=forged))
+
+    def test_multiple_backward_pages_no_skips_or_overlap(self):
+        first = navigate_chronology(self.snapshot, "u1", page_size=2)
+        second = navigate_chronology(self.snapshot, "u1", page_size=2,
+                                    cursor=first.next_cursor)
+        third = navigate_chronology(self.snapshot, "u1", page_size=2,
+                                   cursor=second.next_cursor)
+        fourth = navigate_chronology(self.snapshot, "u1", page_size=2,
+                                    cursor=third.next_cursor)
+        self.assertIsNone(fourth.next_cursor)
+        self.assertEqual([a.anchor_id for p in (first, second, third, fourth)
+                          for a in p.anchor_cards],
+                         ["e", "old", "a", "other-calendar", "withdraw", "b", "new"])
+        back_third = navigate_chronology(self.snapshot, "u1", page_size=2,
+                                        cursor=fourth.previous_cursor)
+        back_second = navigate_chronology(self.snapshot, "u1", page_size=2,
+                                         cursor=back_third.previous_cursor)
+        back_first = navigate_chronology(self.snapshot, "u1", page_size=2,
+                                        cursor=back_second.previous_cursor)
+        self.assertEqual(back_third.anchor_cards, third.anchor_cards)
+        self.assertEqual(back_second.anchor_cards, second.anchor_cards)
+        self.assertEqual(back_first.anchor_cards, first.anchor_cards)
+        self.assertIsNone(back_first.previous_cursor)
+
     def test_cursor_refuses_filter_change(self):
         initial = navigate_chronology(
             self.snapshot, "u1", page_size=1,
