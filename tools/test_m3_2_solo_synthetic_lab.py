@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import hashlib
+from contextlib import closing
 from pathlib import Path
 import sqlite3
 import tempfile
@@ -80,21 +81,21 @@ class SoloLabTests(unittest.TestCase):
 
     def test_missing_revision_rejected(self):
         path, manifest = self.fresh()
-        with sqlite3.connect(path) as conn:
+        with closing(sqlite3.connect(path)) as conn, conn:
             conn.execute("DELETE FROM scene_text_revisions WHERE revision_id='r-2'")
         with self.assertRaises(GateBlocked):
             validate_new_copy(path, schema=6, expected_digest=manifest["digest"])
 
     def test_changed_revision_lineage_rejected(self):
         path, manifest = self.fresh()
-        with sqlite3.connect(path) as conn:
+        with closing(sqlite3.connect(path)) as conn, conn:
             conn.execute("UPDATE scene_text_revisions SET previous_revision_id=NULL WHERE revision_id='r-2'")
         with self.assertRaises(GateBlocked):
             validate_new_copy(path, schema=6)
 
     def test_foreign_key_orphan_rejected(self):
         path, manifest = self.fresh()
-        with sqlite3.connect(path) as conn:
+        with closing(sqlite3.connect(path)) as conn, conn:
             conn.execute("PRAGMA foreign_keys=OFF")
             conn.execute("UPDATE narrative_facts SET universe_id='missing' WHERE fact_id='f-1'")
         with self.assertRaisesRegex(GateBlocked, "foreign key"):
@@ -112,7 +113,7 @@ class SoloLabTests(unittest.TestCase):
 
     def test_unexpected_table_rejected(self):
         path, manifest = self.fresh()
-        with sqlite3.connect(path) as conn:
+        with closing(sqlite3.connect(path)) as conn, conn:
             conn.execute("CREATE TABLE surprise (x INTEGER)")
         with self.assertRaisesRegex(GateBlocked, "unexpected table"):
             validate_new_copy(path, schema=6)

@@ -9,6 +9,7 @@ This tool has no generic --source / --destination arguments. Import in tests onl
 from __future__ import annotations
 
 import argparse
+from contextlib import closing
 import hashlib
 import json
 import os
@@ -59,7 +60,7 @@ def new_synthetic_source(folder: Path, *, version: int = 6) -> Path:
     source = folder / "synthetic_source.sqlite"
     if source.exists() or source.is_symlink():
         raise GateBlocked("fixture source exists")
-    with sqlite3.connect(source) as conn:
+    with closing(sqlite3.connect(source)) as conn, conn:
         conn.execute("PRAGMA foreign_keys=ON")
         conn.executescript("""
             CREATE TABLE universes (
@@ -152,7 +153,7 @@ def validate_new_copy(path: Path, *, schema: int, expected_digest: str | None = 
         # This read-only connection is ONLY to a disposable synthetic copy.
         # mode=ro is not guaranteed no-sidecar for protected originals.
         uri = path.resolve().as_uri() + "?mode=ro"
-        with sqlite3.connect(uri, uri=True) as conn:
+        with closing(sqlite3.connect(uri, uri=True)) as conn:
             check = conn.execute("PRAGMA integrity_check").fetchall()
             if check != [("ok",)]:
                 raise GateBlocked("integrity_check failed")
@@ -191,9 +192,10 @@ def backup_synthetic(source: Path, output_directory: Path) -> tuple[Path, dict]:
     """Only for test-created DB and a fresh owned temporary output directory."""
     output = new_reserved_file(output_directory, "snapshot.sqlite")
     try:
-        with sqlite3.connect(source) as src, sqlite3.connect(output) as target:
+        with closing(sqlite3.connect(source)) as src, closing(sqlite3.connect(output)) as target:
             src.backup(target, pages=8, sleep=0.01)
-        schema = sqlite3.connect(source).execute("PRAGMA user_version").fetchone()[0]
+        with closing(sqlite3.connect(source)) as source_check:
+            schema = source_check.execute("PRAGMA user_version").fetchone()[0]
         return output, validate_new_copy(output, schema=schema)
     except Exception:
         # We intentionally leave a newly-created failed output to inspect.
@@ -206,7 +208,7 @@ def restore_synthetic(snapshot: Path, output_directory: Path, manifest: dict) ->
                       expected_sha256=manifest["sha256"],
                       expected_digest=manifest["digest"], expected_counts=manifest["counts"])
     output = new_reserved_file(output_directory, "restore.sqlite")
-    with sqlite3.connect(snapshot) as src, sqlite3.connect(output) as dst:
+    with closing(sqlite3.connect(snapshot)) as src, closing(sqlite3.connect(output)) as dst:
         src.backup(dst, pages=8, sleep=0.01)
     result = validate_new_copy(output, schema=manifest["schema"],
                                expected_digest=manifest["digest"],
