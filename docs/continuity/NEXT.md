@@ -1,5 +1,10 @@
 # Fabulaxiom — Next Authorized Work
 
+## 2026-10-15 — Qualifier la PR documentaire d'exception SOLO avant toute décision d'autorité
+
+Re-fetch `main`, les PR #35/#37 et la nouvelle PR distincte ; vérifier le diff documentaire et le **workflow pull_request sur son HEAD exact**. Soumettre au propriétaire **la décision explicite d'adopter ou rejeter seulement la politique**, puis préparer **séparément** une réconciliation de la PR #37, de sa fiche de revue indépendante et des issues #36/#38. **Aucune exception en vigueur tant que ces étapes ne sont pas approuvées et appliquées.** Les phases Windows observation, acquisition, restauration, risque et tests applicatifs demandent chacune une autorisation future séparée. Historique 21/3/2 non attesté, baseline prospective `NOT_STARTED`, M3.2 réel `NOT_AUTHORIZED`. Aucun PowerShell de fichiers protégés, migration 007, writer, merge #35 ni M3.3.
+
+
 ## Current authorization — normalize M3.1 before M3.2 (2026-10-11)
 
 M3.1 implementation PR #33 is **MERGED** at `main=922d155d4f4321ed8b90955d4ea96388751f0daf`, from qualified final head `796a4b65e596b9bc05bd00b523b3209f9736524d`; required `pull_request` CI #38176139985, attempt 3, terminal SUCCESS. Main is really protected by active no-bypass ruleset. Operator target Windows v7 read-only *isolated* GUI/IPC PASS + post-exit 11/11 SHA and M1.5 active v6 custody PASS. Elevated preparation is now fail-closed in source.
