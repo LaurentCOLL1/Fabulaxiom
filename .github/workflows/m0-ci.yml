@@ -73,6 +73,9 @@ jobs:
         working-directory: src-tauri
         run: cargo test --locked --features m31-isolated-preview --lib m31_readonly_preview
 
+      - name: M3.2 solo baseline synthetic-only adversarial qualification
+        run: python -m unittest discover -s tools -p "test_m3_2_solo_synthetic_lab.py" -v
+
       - name: Verify dependency locks are unchanged
         shell: pwsh
         run: |
