@@ -1,6 +1,8 @@
 # M3.2 — Baseline prospective : protocole réconcilié pour opérateur unique
 
-**Statut : PROTOCOLE EN RÉCONCILIATION, non opérationnel jusqu'à la CI du HEAD exact et la fusion protégée de cette PR.** La politique `SOLO_OPERATOR_COMPENSATING_CONTROLS` de la [PR #39](https://github.com/LaurentCOLL1/Fabulaxiom/pull/39) a été fusionnée dans `main=86d1773ff32e710b719ed0ec35fb7a734de3cd75` avec 23/23 étapes Windows PASS sur son SHA. L'utilisateur a explicitement autorisé le principe d'exécuter les quatre phases de déblocage, mais **n'a pas approuvé les paramètres inconnus d'une commande Windows précise**, et il ne dispose pas de relecteur humain indépendant.
+**Statut actualisé le 2026-10-16 : protocole documentaire prospectif réconcilié et fusionné via PR #37, mais G2–G6 réels non exécutés/non autorisés ; la baseline est toujours `NOT_STARTED`.** Le [plan G2 détaillé](M3_2_G2_WINDOWS_SOURCE_IDENTITY_PREFLIGHT_PLAN.md) prépare la prochaine observation sans exécuter de commande locale.
+
+**Statut antérieur au moment de rédaction de PR #37 : PROTOCOLE EN RÉCONCILIATION, non opérationnel jusqu'à la CI du HEAD exact et la fusion protégée de cette PR.** La politique `SOLO_OPERATOR_COMPENSATING_CONTROLS` de la [PR #39](https://github.com/LaurentCOLL1/Fabulaxiom/pull/39) a été fusionnée dans `main=86d1773ff32e710b719ed0ec35fb7a734de3cd75` avec 23/23 étapes Windows PASS sur son SHA. L'utilisateur a explicitement autorisé le principe d'exécuter les quatre phases de déblocage, mais **n'a pas approuvé les paramètres inconnus d'une commande Windows précise**, et il ne dispose pas de relecteur humain indépendant.
 
 ## Portée de la nouvelle autorité prospective
 

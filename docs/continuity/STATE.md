@@ -1,5 +1,10 @@
 # Fabulaxiom — Current State
 
+## 2026-10-16 — G2 préflight Windows : plan préparé, aucun original touché
+
+Après re-fetch de protected `main=b6b4d6d9f6a52638a1ccd004e8a3ed5cc10026f6`, #39/#37/#40 sont fusionnées après leurs CI exactes ; #35 est OPEN/DRAFT. La nouvelle note `docs/qualification/M3_2_G2_WINDOWS_SOURCE_IDENTITY_PREFLIGHT_PLAN.md` fixe la séparation G2-A (processus/jeton/Git sans fichier protégé), G2-B (métadonnées des chemins privés), G2-C (hash sources), G2-D (évaluation d'une éventuelle ouverture SQLite), chacune avec son accord opérateur exact. Des chemins historiquement fournis existent dans des échanges privés mais leur état **courant** doit être vérifié exclusivement sur l'hôte Windows ; **aucun chemin privé n'est publié ici**. `prospective=NOT_STARTED`, `M3.2_runtime=NOT_AUTHORIZED`, historique 21/3/2 `PENDING_EXTERNAL_ATTESTATION`. Aucun PowerShell local exécuté, aucun G2 déclaré PASS, aucun writer/007/activation/merge #35.
+
+
 ## 2026-10-15 — PR #39 gouvernance SOLO fusionnée ; PR #37 en réconciliation, pas d'exécution
 
 La proposition documentaire SOLO de PR #39 a été protégée-fusionnée sur `main=86d1773ff32e710b719ed0ec35fb7a734de3cd75` après CI pull_request #38799012304 23/23 SUCCESS. L'opérateur a autorisé la démarche en quatre étapes dans ChatGPT ; ce n'est ni une signature indépendante ni le consentement à un bloc Windows précis. PR #37 propose **séparément** de remplacer le reviewer obligatoire **pour la seule baseline prospective**, tout en laissant la fiche de revue humaine `AWAITING_INDEPENDENT_REVIEW` et les cinq rôles historiques `PENDING_EXTERNAL_ATTESTATION` 21/3/2. L'adoption de ce protocole après CI/fusion ne crée pas de backup : prospective `NOT_STARTED`, M3.2 réel `NOT_AUTHORIZED` ; aucun G2–G6 effectivement qualifié, pas de production 007, writer, merge #35 ou M3.3.

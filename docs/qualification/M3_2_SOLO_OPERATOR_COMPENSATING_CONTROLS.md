@@ -1,6 +1,8 @@
 # M3.2 — SOLO_OPERATOR_COMPENSATING_CONTROLS (proposition de gouvernance)
 
-**État : PROPOSED_NOT_EFFECTIVE. AUCUNE autorisation nouvelle.** 15 octobre 2026. Ce libellé est une proposition propre à Fabulaxiom, ni norme officielle, ni certification, ni revue humaine indépendante.
+**Situation actuelle (2026-10-16) : politique prospectivement acceptée par l'opérateur via PR #39 fusionnée, puis réconciliée et fusionnée par PR #37 ; aucune opération Windows autorisée par cette adoption.** Les paragraphes ci-dessous sont le texte historique de la proposition, à lire avec ce préambule et le [plan G2](M3_2_G2_WINDOWS_SOURCE_IDENTITY_PREFLIGHT_PLAN.md).
+
+**État lors de la proposition initiale : PROPOSED_NOT_EFFECTIVE. AUCUNE autorisation nouvelle.** 15 octobre 2026. Ce libellé est une proposition propre à Fabulaxiom, ni norme officielle, ni certification, ni revue humaine indépendante.
 
 ## 1. Situation et autorités non contournables
 
