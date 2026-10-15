@@ -1,76 +1,43 @@
-# M3.2 — Windows prospective baseline operator runbook (DRAFT ONLY)
+# M3.2 — Runbook Windows prospectif SOLO (NON EXÉCUTABLE)
 
-**Status: NOT EXECUTABLE / NO LOCAL OPERATIONS AUTHORIZED.** Version: proposal 2026-10-15. Parent authority: [prospective baseline governance decision](M3_2_PROSPECTIVE_TRUST_BASELINE_DECISION.md); historical blocker [issue #36](https://github.com/LaurentCOLL1/Fabulaxiom/issues/36). Never paste this file as an automated PowerShell script.
+**DRAFT D'EXÉCUTION / AUCUNE COMMANDE WINDOWS AUTORISÉE.** Ce texte est un cahier des charges, non un script PowerShell. Politique adoptée dans [PR #39](https://github.com/LaurentCOLL1/Fabulaxiom/pull/39), réconciliation documentaire portée par PR #37 ; seul le périmètre prospectif peut relever de l'assurance `SOLO_OPERATOR_COMPENSATING_CONTROLS`. Aucune revue humaine indépendante n'a eu lieu. Les preuves historiques demeurent `PENDING_EXTERNAL_ATTESTATION` 21/3/2, la référence nouvelle `NOT_STARTED`.
 
-## Purpose and boundary
+## Avant G2 : cadrage et refus
 
-This is the **review checklist for a future ceremony**, not a command list to run now. It describes which checks an authorized operator and an independent reviewer must perform **after** a separate, exact-head, non-destructive execution plan is approved. The current active M1.5 restored SQLite schema is **v6**; M3.1 v7 exists in an **isolated** copy. The original seven worktrees, databases, manifests, backup chains and ACL files are protected.
+L'opérateur doit confirmer **dans un registre privé, jamais dans GitHub** les chemins réels de la SQLite **production restaurée M1.5 v6**, de la **copie isolée M3.1 v7**, des sept worktrees et de tous les backups/manifests/ACL/marqueurs à préserver. Ne jamais deviner les chemins. Exiger identité logique/ACL/token standard, absence de writer, état des sidecars et place disponible. Les chemins exacts et les répertoires nouveaux seront approuvés avec un bloc de commande **spécifique**, après avertissement sur les touches interactives, les demandes d'élévation, les arrêts éventuels de processus, les effets lecture/écriture et tous les veto. Pas de privilège administrateur non autorisé.
 
-No historical role is promoted by this runbook. `PENDING_EXTERNAL_ATTESTATION` remains 21 pinned / 3 observed-only / 2 unanchored. The prospective reference is **NOT_STARTED** and real M3.2 runtime integration remains **NOT_AUTHORIZED**.
+**Ne jamais appeler sur les sources protégées :** `src-tauri/src/database.rs::open_database` (peut créer répertoires/migrations), `src-tauri/src/backup.rs::create_backup` (utilise cet ouvreur), `src-tauri/src/backup.rs::restore_backup` (peut changer le pointeur M1.5), ni `tools/m3_1_v6_backup.py` sans correction TOCTOU. `tools/m3_1_v6_audit.py` et `src-tauri/src/world_time_preflight.rs` sont des références **à adapter d'abord sur copies isolées**.
 
-## Ceremony preparation (reviewer-approved before starting)
+## G2 — Observation exclusivement si individuellement autorisée
 
-| Check | Required planned evidence | STOP condition |
-| --- | --- | --- |
-| Exact Git identity | Fresh `main`, PR #35 and proposed operator-plan head SHA, PR/CI status | Changed head, dirty protected source, unqualified plan |
-| Windows security | Standard medium-integrity token, approved user SID/ACL scope; no elevation unless separately permitted | Elevated application, ACL drift, unknown permission |
-| Process safety | Tauri/Fabulaxiom closed; Ollama state recorded without unapproved process changes; DB read-only feasibility assessed | Writers/processes cannot be excluded safely |
-| Custody roots | Seven original worktrees counted and left in place, original manifests, ACL exports, restored v6 and isolated v7 correctly distinguished | Ambiguous path, missing source, role swap |
-| Backup integrity | Prior backup SHA/length/roles retained as observational evidence; existing backups never overwritten | Hash conflict, collision, missing original |
-| Destination | Distinct previously unused approved private location, permissions, disk space, encryption/retention policy | Destination collision, insufficient capacity |
-| Reviewer | Independent named human reviewer or explicitly approved alternative (not self-certified) | Reviewer independence undefined |
-| Privacy | Sanitized publication plan; no secrets, private absolute paths or SQLite content in public repo | Public data exposure |
+1. Re-fetch GitHub : `main`, PR #35, PR #37, PR de l'outil et CI **sur SHA exact** ; source opérateur propre, aucun worktree modifié. Fixer la liste locale des rôles et le contrôle pré/post.
+2. Préflight OS : jeton Windows d'intégrité moyenne, app Tauri/Fabulaxiom arrêtée si nécessaire et **séparément autorisé**, état des processus et du stockage, réparse/symlink/junction/ACL. Toute ambiguïté = STOP.
+3. Qualifier le mécanisme de lecture SQLite **sans écrire sur l'original**. Une connexion `mode=ro` n'est pas suffisante pour promettre l'absence de création ou modification `-wal/-shm`. **STOP** si le mécanisme n'est pas démontré non mutant sur cet état. Pas de checkpoint, migration, journal rewrite, copie brute, suppression sidecars, ni `immutable=1` inventé.
+4. Noter seulement les observations effectivement permises : hash/longueur/identité/roles et présence des sidecars, plus un état source pré/post. Aucune lecture persistante de roman/secret dans un rapport public.
 
-## Proposed sequence, no runnable instructions here
+## G3 — Capture nouvelle, si individuellement autorisée
 
-**A. Pre-capture custody observation.** Record original role IDs and file existence, SHA-256/length only where authorization permits, schema and active pointer. Handle WAL/SHM with SQLite's documented mechanisms; do **not** assume a plain copy of an active database file is a valid snapshot. Never run automatic migration 007 or change any original file permissions.
+1. Destination **privée entièrement nouvelle** en dehors des sources, aucun déplacement, aucun réemploi, ACL et espace disque validés. Refuser symlink/reparse point et collision concurrente.
+2. Protection de non-écrasement de **bout en bout** : mécanisme démontré de réservation exclusive du nom/de l'identité du nouveau fichier et du répertoire ; vérifier les effets de SQLite Online Backup API (elle pourrait remplacer une cible) ; `exists()`/`Test-Path` seuls sont insuffisants. Un échec n'autorise pas une reprise qui remplacerait un original.
+3. Ouvrir source via la méthode G2 préalablement autorisée ; backup cohérent transactionnel par base ; ne pas supposer un snapshot global atomique entre deux SQLite différentes. Abort sur `SQLITE_BUSY`, `SQLITE_LOCKED`, source mutable de façon non contrôlée, échec de fermeture ou disk-full.
+4. Manifeste nouveau prospectif (date de génération, version source/code/SQLite/OS, rôle, schéma, nom logique, taille, SHA-256, méthode/état, empreinte de manifest) en stockage **privé séparé**. Une auto-signature n'est pas un témoin indépendant.
 
-**B. SQLite-consistent prospective snapshots.** Use the [SQLite Online Backup API](https://www.sqlite.org/backup.html) on an approved source for a fresh independent destination. Pin source-role mapping, exact backup-tool version/configuration, time, successful completion and one-to-one output identity. Do not rewrite production SQLite or point the application to the new copy. If a different tool or `VACUUM INTO` is proposed, document semantic differences and approve separately: `VACUUM INTO` creates a logically equivalent compact copy, not necessarily a byte-identical file and may remove deleted traces.
+## G4 — Copies seules : contrôle et restauration
 
-**C. Standalone copy verification.** On the new snapshots only: `integrity_check=ok`, no foreign-key violations, schema `user_version` matching the intended copy's schema, counts and canonical logical digests for protected tables and text-revision ancestry; compare backup metadata to the preflight role inventory. On Windows, after backup, no unexpected sidecar, protected pointer or ACL mutation may be attributed to the ceremony.
+- Deux procédures d'audit technique différentes autant que possible, sur copies sorties du nouvel emplacement et sur destination de restauration **entièrement neuve**.
+- Vérifier `PRAGMA integrity_check` exactement `ok`, `PRAGMA foreign_key_check` zéro violation, `user_version`, schéma, noms/tables/comptages, lignage de révisions de texte/heads, faits, sources, événements de revue, digests logiques déterministes versionnés.
+- Tests adversariaux prévus sur **fixtures synthétiques** : mauvais rôle, hash falsifié, collision, FK orpheline, révision mutilée, base v6/v7 substituée, WAL incohérent, entrée malformée, nouveau chemin manquant.
+- Refaire les checks sur une restauration **isolée non activée**, comparer aux preuves de G3 ; gel, puis **réexamen différé** sur sorties propres. Contrôler à nouveau que sources originales, sidecars, ACL, pointeur, sept worktrees et backups sont inchangés.
+- Un `FAIL` ou `NOT_ASSESSED` sur contrôle obligatoire interdit l'acceptation. Aucune suppression ou réparation automatique des originaux ; mise en quarantaine uniquement de nouveaux fichiers et sous règle explicitement autorisée.
 
-**D. New manifest and prospective chain-of-custody.** Produce a freshly versioned, collision-resistant output name, content digests, relative role identifiers, tool/runtime versions, new creation timestamp (never backdated), archive format version, evidence author, reviewer ID and storage location, policy ID and explicit `PROSPECTIVE_FROM` boundary. Cryptographically authenticate the manifest with independently governed keys or custody system; SHA-256 by itself cannot prove authorship. Store protected originals and validated new copies in separately secured locations. Minimize and redact logged content.
+## G5 — Décision personnelle / G6 — logiciel
 
-**E. Non-destructive restore rehearsal.** Restore only to a separately named isolated empty destination. Verify integrity and foreign keys again, schema/version, row counts, logical digests, declared source provenance, access permissions and application-free read-only audit, with original worktrees and pointers unchanged. Don't trigger migrations, GUI editors or scheduled background processes.
+À G5, l'opérateur peut signer en son seul nom une fiche [risque SOLO](M3_2_SOLO_OPERATOR_RISK_DECISION_TEMPLATE.md) liant nouveau manifest, preuves, SHA, risques non éliminés, durée et périmètre ; jamais `INDEPENDENTLY_REVIEWED`. Statut potentiel `ACCEPTED_SOLO_FOR_LIMITED_FUTURE_REFERENCE` seulement si les contrôles du protocole et la restauration réelle ont réussi.
 
-**F. Independent assessment and signed decision.** Reviewer validates original vs new role identity, manifest authenticity, retention, snapshot usefulness, documented gaps and fail-closed results. Mark **new** reference either `ACCEPTED_FOR_FUTURE_REFERENCE` or `REJECTED/INCONCLUSIVE`; never convert the five older roles from `OBSERVED`/`UNANCHORED` to historical pinned. If no independent reviewer, keep a `REVIEW_PENDING` state rather than inventing approval.
+G6 nécessite **encore une décision différente** pour tester React/Tauri/SQLite M3.2 v7 en **lecture seule** sur copie isolée, avec cycle/contradiction/identités historiques/GUI et post-exit custody. Aucun test ne modifie la base de production ; pas de writer, migration de production `007`, fusion de #35, M3.3 ni release par le seul succès de G5.
 
-**G. Product handoff only after separate permission.** Publish sanitized decision record and future requirements. A new PR must explicitly authorize an isolated read-only Tauri/React candidate and its operator Windows acceptance; never silently use this document to merge PR #35, activate v7 in production or author time events.
+## États
 
-## Mandatory safe-open and destination protocol review (still NOT EXECUTABLE)
+`NOT_STARTED` : pas de preuve prospective ; `PREPARED` : plan accepté seulement ; `COLLECTED_UNDER_AUTHORIZATION` : nouvelle copie produite mais non qualifiée ; `SOLO_CONTROLS_VERIFIED` : contrôles G4 réellement réussis ; `OWNER_RISK_ACCEPTED_FOR_SCOPE` : acceptation G5 signée par l'opérateur ; `ACCEPTED_SOLO_FOR_LIMITED_FUTURE_REFERENCE` : permet seulement de **demander** G6 ; `REJECTED/INCONCLUSIVE` : arrêt.
 
-Before a future operator even **opens** either protected source database, the exact approved plan must state all of the following and obtain separate permission:
-
-1. **Mode verification without touching originals:** identify if the source is in rollback-journal or WAL mode only by a method explicitly shown to cause no protected-file mutation. SQLite may require `-wal`/`-shm` or may create them for a read-only opener. Never assume a readonly connection cannot produce filesystem side effects. Abort if the proposed connection, existing sidecars, locking or access rights are not validated.
-2. **Do not force `immutable=1`:** this skips locking/change detection; prohibit it on an active source without independently established actual immutability. Never issue `wal_checkpoint`, set `journal_mode` or delete `-wal`/`-shm` on any original as a preliminary safety shortcut.
-3. **Create-new destination guarantee:** reject an existing path, reparse point/junction/symlink, unsafe parent directory, duplicate output name and races. Because the SQLite Backup API **can overwrite the destination**, the implementation needs an independently reviewed exclusive create-new/identity mechanism. Refuse on any uncertainty or reuse; `Test-Path` alone is not sufficient to defeat races.
-4. **Separate physical vs logical evidence:** hash every original byte stream that is safely observable, but do **not** assert the source `.sqlite3` digest is equal to a consistent destination snapshot that incorporates WAL changes. Capture the new snapshot digest and separately compare its logical content and schema under a versioned canonicalization; verify the new copy and its independent restoration.
-5. **Failure is non-authorizing:** source lock, insufficient permissions, WAL/SHM uncertainty, `SQLITE_BUSY`/`SQLITE_LOCKED`, incomplete backup/close, unexpected file creation, or ambiguous source/destination identity -> STOP. Document only a sanitized failure; do not run automatic repair/checkpoint, reopen with elevated rights or fall back to raw copy.
-6. **No cross-database atomicity assumption:** a series of individually consistent SQLite snapshots does not automatically freeze two distinct sources at one instant; record separately validated source/identity/time and require an explicit consistency model before making any cross-copy provenance claim.
-
-Review references: [SQLite WAL](https://www.sqlite.org/wal.html), [SQLite immutable URI](https://www.sqlite.org/uri.html), [SQLite Backup API](https://www.sqlite.org/backup.html), [SQLite PRAGMA](https://www.sqlite.org/pragma.html).
-
-## Proof bundle (private: never upload to public GitHub)
-
-- Source role inventory with digests or scoped absence and exact date, pointer verification, seven-worktree custody, process/token/ACL notes.
-- Consistent backup completion and immutable manifest, independent authenticity material, destination digest and byte lengths, scheme for relinking sources without private-path disclosure.
-- SQLite integrity and foreign-key outputs, schema/version, canonical table/revision logical digests and backup-and-restoration equivalence.
-- Original unchanged postflight checks, independent reviewer findings, explicit authority scope and prospective date.
-- Separate historical issue #36: every old role marked still `HISTORICAL_UNVERIFIED` or verified only by genuinely older third-party evidence.
-
-## Separate independent review
-
-Before any operator command is drafted for execution, a reviewer separate from the author must complete the **non-signed / no-approval-yet** [M3.2 independent review decision record](M3_2_INDEPENDENT_REVIEW_DECISION_RECORD.md) on the current exact PR SHA, identifying evidence, vetoes and whether the protocol itself is approved. Such approval would **still not authorize** any specific local operation.
-
-## Acceptance matrix
-
-| Exit state | Meaning | May enable new M3.2 read-only operator testing? |
-| --- | --- | --- |
-| `NOT_STARTED` | Proposal reviewed or PR CI green, no local work | **No** |
-| `PREPARED` | Future authorized plan reviewed, files still untouched | **No** |
-| `COLLECTED_UNDER_AUTHORIZATION` | New private backup and manifest captured | **No** |
-| `REVIEW_PENDING` | Restoration pending or no independent reviewer | **No** |
-| `ACCEPTED_FOR_FUTURE_REFERENCE` | Prospective snapshot authenticated, restore tested and reviewer accepted | **Still no: requires separately authorized read-only M3.2 integration plan** |
-| `REJECTED/INCONCLUSIVE` | Safety or verification blocker | **No; repair plan reviewed separately** |
-
-**Unchanged prohibitions:** no protected worktree mutation, no old-file overwrite/delete, no production v6→v7 007, no ACL change without independent permission, no writing IPC, no secret/material publication, no PR #35 merge, no M3.3. A current successful CI is a code qualification, never historical custody proof.
+Sources techniques : https://www.sqlite.org/backup.html ; https://www.sqlite.org/wal.html ; https://www.sqlite.org/uri.html ; https://www.sqlite.org/pragma.html ; https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-createfilew .

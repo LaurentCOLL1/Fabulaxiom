@@ -1,5 +1,7 @@
 # M3.2 — Fiche de décision de revue indépendante (NON SIGNÉE)
 
+**Rectification de gouvernance du 2026-10-15 (après PR #39) :** cette fiche reste une **preuve documentaire de l'absence** de revue humaine indépendante (`AWAITING_INDEPENDENT_REVIEW`). Elle est conservée non signée et NE DOIT PAS être convertie en PASS. Pour la **nouvelle référence prospective exclusivement**, une voie différente est décrite par `M3_2_SOLO_OPERATOR_COMPENSATING_CONTROLS.md` et `M3_2_PROSPECTIVE_TRUST_BASELINE_DECISION.md`, après fusion de la réconciliation de PR #37. La réconciliation ne modifie pas les cinq preuves historiques. Les sections ci-dessous sont la fiche **ancienne voie indépendante**, applicable si un véritable relecteur compétent est un jour disponible ; leur état en attente ne bloque plus nécessairement la nouvelle voie SOLO **uniquement après** entrée en vigueur formelle de sa politique, et n'autorise aucune action Windows par lui-même.
+
 **Statut réel : `AWAITING_INDEPENDENT_REVIEW`.** Émise pour examiner une procédure de gouvernance prospective, **pas** pour autoriser son exécution. Aucune identité de relecteur, approbation ou preuve de fichiers Windows n'a été fournie ou vérifiée dans cette fiche.
 
 ## 1. Périmètre figé de la revue

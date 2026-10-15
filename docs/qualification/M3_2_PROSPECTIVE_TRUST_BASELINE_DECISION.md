@@ -1,78 +1,47 @@
-# M3.2 — Decision proposal: prospective trust baseline (governance only)
+# M3.2 — Baseline prospective : protocole réconcilié pour opérateur unique
 
-**Status: PROPOSED / REVIEW REQUIRED / NOT OPERATOR-AUTHORIZED.** Date: 2026-10-15. This document selects a *path to propose*; neither merging the document nor accepting its CI creates evidence or grants permission to execute Windows operations.
+**Statut : PROTOCOLE EN RÉCONCILIATION, non opérationnel jusqu'à la CI du HEAD exact et la fusion protégée de cette PR.** La politique `SOLO_OPERATOR_COMPENSATING_CONTROLS` de la [PR #39](https://github.com/LaurentCOLL1/Fabulaxiom/pull/39) a été fusionnée dans `main=86d1773ff32e710b719ed0ec35fb7a734de3cd75` avec 23/23 étapes Windows PASS sur son SHA. L'utilisateur a explicitement autorisé le principe d'exécuter les quatre phases de déblocage, mais **n'a pas approuvé les paramètres inconnus d'une commande Windows précise**, et il ne dispose pas de relecteur humain indépendant.
 
-## Verified starting authorities and separation of concerns
+## Portée de la nouvelle autorité prospective
 
-- `LaurentCOLL1/Fabulaxiom` protected `main=f7eabfea74480d307b52d4b053730021efc95352` (PR #34 M3.1 normalization merged). PR #33 M3.1 implementation merged; its read-only v7 preview was tested only in an isolated Windows environment. Production/restored-active SQLite still uses schema **v6**, with no automatic migration 007.
-- Implementation PR [#35](https://github.com/LaurentCOLL1/Fabulaxiom/pull/35) is OPEN/DRAFT/unmerged at `41ce7b915e76d22785d53d7fffe288d113dd0bf5`. Its Stage33 documentation-only Windows `pull_request` run [#38672905255](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/38672905255) completed/success **44/44**; those results qualify that *source*, not custody or real M3.2 integration.
-- Historical custody [issue #36](https://github.com/LaurentCOLL1/Fabulaxiom/issues/36) is OPEN and continues to track five independent-witness gaps. Strict operator decision criteria live in [the Stage33 matrix](https://github.com/LaurentCOLL1/Fabulaxiom/blob/41ce7b915e76d22785d53d7fffe288d113dd0bf5/docs/qualification/M3_2_EXTERNAL_ATTESTATION_RESOLUTION_MATRIX.md).
-- Current historical status **`PENDING_EXTERNAL_ATTESTATION`**: 21 historical SHA pins, 3 observed-only SHA and 2 roles without an independent historical SHA anchor. A future baseline cannot rewrite these historical classifications.
+Le protocole antérieur imposait systématiquement un relecteur humain indépendant. Pour la **seule construction d'une référence nouvelle**, cette exigence est désormais **proposée comme remplacée**, après fusion de cette PR de réconciliation, par les vérifications contradictoires, tests adversariaux, restauration isolée, gel des preuves et acceptation **personnelle** du risque définis dans [la politique opérateur unique](M3_2_SOLO_OPERATOR_COMPENSATING_CONTROLS.md). Ce mode n'est ni une revue humaine indépendante ni une attestation indépendante. Tout veto objectif reste impératif.
 
-## Chosen route and limit of authorization
+Les conditions d'attestation indépendante *historique* restent inchangées. [Issue #36](https://github.com/LaurentCOLL1/Fabulaxiom/issues/36) : `PENDING_EXTERNAL_ATTESTATION` 21 rôles épinglés historiquement / 3 empreintes seulement observées / 2 non ancrées. Les cinq rôles `production/pre_m24_early_manifest`, `acl/original_acls`, `acl/pre_repair_json`, `production/activation_marker`, `m25/isolated_v6` ne sont **pas** réparés, promus, re-signés ni déclarés intacts historiquement par une signature actuelle. L'ancienne fiche de revue indépendante reste **AWAITING_INDEPENDENT_REVIEW** en tant que dossier non exécuté : elle ne devient pas PASS.
 
-**Adopt route B as the preferred *prospective recovery governance design*, alongside one bounded final search for original independent custody witnesses.** The user chose this approach to avoid indefinitely stalling M3.2; this is NOT approval to run a script, copy protected databases, move files, alter ACL, start the application, or migrate SQLite. The baseline only authenticates and controls a **new point in time**, if a separately authorized operator ceremony later succeeds. Never label it a historical M1.5/M2.5/M3.1 restoration, nor mark any of the five prior missing independent witnesses as found.
+## Statuts séparés et sans promotion automatique
 
-### Historical roles remain blocked (NO auto-promotion)
+- `historical=PENDING_EXTERNAL_ATTESTATION(21/3/2)` — inchangé, même si la future prospective est acceptée.
+- `prospective=NOT_STARTED` — aucun backup/manifest de référence prospective créé.
+- `solo_protocol=APPROVED_POLICY_ONLY` **uniquement après** qualification et fusion de cette réconciliation documentaire ; cela ne signifie pas que les tests sur les données réelles sont réussis.
+- `owner_windows_execution=NOT_AUTHORIZED`, `real_M3_2=NOT_AUTHORIZED`, `production_007=NOT_AUTHORIZED`, `writer_IPC=NOT_AUTHORIZED`.
 
-| Root | Role | What would independently prove former history |
+Les autorités techniques restent protégées : 7 worktrees Windows, schéma actif M1.5 restauré v6, M3.1 v7 seulement en copie isolée, sauvegardes/ACL/manifests/marqueur et journaux historiques. Aucun secret, récit ou chemin privé ne doit entrer dans GitHub.
+
+## Barrières d'autorisation à franchir dans l'ordre
+
+| Gate | Action bornée | Décision minimale et état actuel |
 | --- | --- | --- |
-| `production` | `pre_m24_early_manifest` | Earlier independent authentic custody of original early-manifest bytes/role and digest |
-| `acl` | `original_acls` | Contemporaneous independent ACL-export content/digest and recorded chain of custody |
-| `acl` | `pre_repair_json` | Contemporaneous independent pre-repair JSON content/digest and role |
-| `production` | `activation_marker` | Historically anchored **bytes**, not just an old report naming the marker |
-| `m25` | `isolated_v6` | Historical independent digest of the actual M2.5 isolated-v6 copy, not some other v6 backup |
+| G0 | Adoption de politique SOLO sans opération locale | PR #39 fusionnée ; modification d'autorité de PR #37 à qualifier sur son SHA avant entrée en vigueur |
+| G1 | Acceptation des règles réconciliées et des risques connus | Accord de principe de l'opérateur ; aucun risque sur fichier réel accepté sans preuve |
+| G2 | Lecture de préflight uniquement | **Non autorisée** sans bloc exact, rôles/chemins privés confirmés, vérification de l'absence de sidecars et accord spécifique |
+| G3 | Nouvelle capture SQLite cohérente | **Non autorisée** sans destination neuve, garantie d'exclusion de collision, méthode de source-open revue, capacité/ACL et approbation spécifique |
+| G4 | Vérifications contradictoires et restauration isolée | **Non autorisée** sans G3 valable, nouvelles copies séparées et nouveaux dossiers de preuve |
+| G5 | Acceptation formalisée du risque prospectif | **Non signée** ; jamais « revue indépendante » |
+| G6 | Test applicatif M3.2 en lecture seule sur copie isolée | **Non autorisé** avant acceptation G5 et sa propre décision de périmètre/test |
+| G7 | Interface d'écriture/production ou PR #35 merge | **HORS PÉRIMÈTRE**, doit faire l'objet d'une nouvelle décision explicite et de tests réels |
 
-The three observed hashes and original path hints remain in issue #36 and the Stage33 resolution matrix; never reinterpret current observation as creation-time proof. All five roles remain unverified until separately evidenced and reviewed.
+Une phase non commencée n'est **pas** en échec technique ; elle est simplement **non autorisée / non qualifiée**. Chaque étape possède son propre accord et une procédure d'abandon qui ne supprime jamais un original.
 
-## Trust states: must not be conflated
+## Invariants SQLite vérifiables
 
-1. **Historical custody state:** `PENDING_EXTERNAL_ATTESTATION (21/3/2)` until each old role is independently examined; may remain pending permanently even if a prospective baseline is sound.
-2. **Prospective baseline state:** `NOT_STARTED` → `PREPARED` → `COLLECTED_UNDER_AUTHORIZATION` → `INDEPENDENTLY_REVIEWED` → `ACCEPTED_FOR_FUTURE_REFERENCE`. Initial status **NOT_STARTED**. Never set to accepted on a documentation or unit-test success alone.
-3. **Real M3.2 product qualification:** `NOT_AUTHORIZED` pending a distinct decision that explicitly states which operations may rely on the new prospective baseline despite unresolved old provenance, plus operator Windows offline qualification. This is an explicit governance-policy change, **not** a silent substitution for original historical attestation.
+Une connexion déclarée read-only ne garantit pas à elle seule zéro modification annexe ; les sidecars `-wal`/`-shm` doivent être analysés **sans** les supprimer, reconstituer ni checkpoint. Pas de `immutable=1` sur une source potentiellement modifiable. L'Online Backup API fournit un snapshot cohérent mais **peut remplacer sa destination** : réservation exclusive, identité de fichier et absence de course doivent être démontrées au niveau Windows, pas seulement via `exists()` ou `Test-Path`. Jamais de copie brute d'un SQLite actif WAL, ni de présomption d'atomicité multi-base.
 
-## Separate decision gates (all fail closed)
+Sur les **nouvelles copies uniquement**, vérifier : `PRAGMA integrity_check` = exactement `ok`, `PRAGMA foreign_key_check` = zéro ligne, version/schema/tables/compteurs, lineage des scènes/revisions/sources, digests logiques canoniques et SHA256 des nouveaux fichiers, test de restauration séparé. Deux contrôles techniques diversifiés autant que réalisable, jeux négatifs artificiels et second examen temporel distinct ; tous les critères obligatoires `PASS`. Tests de faux hash, mauvaise source, collision, FK, corruption, WAL incertain, processus écrivain, missing/changed SHA : **fail closed**.
 
-**Gate 0 — documentary review (this PR):** Review source/existing operator evidence, exact main and PR #35 head, and protected SHA-attached CI. Approve or reject the **protocol only**. A merge of the protocol, if later authorized, still means **no local execution authority**.
+Une signature du propriétaire et un horodatage prospectif aident à suivre une décision et la chaîne de conservation **à partir de la nouvelle date**, pas avant. Aucun SHA actuel ne répare le passé.
 
-**Gate 1 — bounded historical search:** Inventory independent contemporaneous witnesses in existing third-party archives and logs *without modifying originals*. Decide for each role: independently proven with source, or `HISTORICAL_UNVERIFIED`; do not silently drop outstanding items. Stop after defined scope and record negative limits, not a fictitious proof of nonexistence.
+## Prochain livrable technique permis par la seule gouvernance
 
-**Gate 2 — separate operator authorization:** Publish an explicit, SHA-pinned ceremony plan naming exact **local source roles**, read-only checks, designated *new* output directory, required free space, rights, reviewer/custodian roles, no-overwrite rules, app shutdown, rollback and abort triggers. Operator must approve the plan *before* any filesystem interaction. Consent to route B is not consent to run Gate 2.
+Concevoir **sans lire des fichiers opérateur** un outil/test de laboratoire limité aux SQLite synthétiques, avec code exact et CI ; puis préparer un runbook Windows exact à faire approuver séparément avant toute lecture locale. Le [runbook réconcilié](M3_2_PROSPECTIVE_BASELINE_WINDOWS_RUNBOOK_DRAFT.md) est délibérément **non exécutable**. Le [modèle de décision propriétaire](M3_2_SOLO_OPERATOR_RISK_DECISION_TEMPLATE.md) est encore vierge.
 
-**Gate 3 — protected, consistent prospective capture:** Operator verifies 7 worktrees (without cleaning/moving), stopped Tauri/Ollama only if the protocol requires it, medium-integrity Windows token, active M1.5 restored v6 pointer and separate M3.1 v7 identity, presence and ACLs of all originals. Take a new independent consistent SQLite snapshot using the SQLite Online Backup API (or a separately reviewed equivalent) into a **new, non-colliding destination**, not by raw copying a live WAL-mode `.sqlite3` file. Record source identity, schema `user_version`, journal mode, source association, snapshot creation time, byte lengths, SHA-256, WAL/SHM conditions and versioned manifest; only query source with an approved safe read-only connection. No output to GitHub, no secrets in public logs.
-
-**Gate 4 — verification and preservation:** On the **new copy** run `PRAGMA integrity_check` (expect exactly `ok`) and `PRAGMA foreign_key_check` (expect zero rows); independently verify SQLite schema identity, required row counts, immutable scene revision/head and provenance checks and per-table logical digests under a frozen explicit canonicalization. A hash alone does not establish a consistent snapshot; SQLite foreign-key checks are separate from integrity checks. Protect original v6 and isolated v7 artifacts; record new output hashes and compare them after copying to independent storage. An immutable/written-once manifest with authenticated provenance is required; a self-authored SHA in the same mutable folder is not independent custody. Cryptographic signing keys and their protections must be authorized separately.
-
-**Gate 5 — independent review + restore rehearsal:** A second reviewer/custodian distinct from the person preparing the capture confirms scope, backup usability, permissions, digest recomputation, identity of historical roles and the **limits** of the prospective baseline. Restore **only into an isolated fresh destination** and repeat integrity, foreign-key, row-level and application-free audit checks. Preserve the source and activation marker unchanged. If genuinely independent review is unavailable, do not relabel the ceremony independent: hold for an explicitly reviewed alternative assurance model.
-
-**Gate 6 — new, explicit product permission (later PR):** Only after Gates 0–5, prepare a separate, narrowly scoped plan to test **read-only** React/Tauri/SQLite v7 in an operator-approved isolated copy. Distinguish valid historical uncertainty from future baseline acceptance. The timeline GUI, cycle/revision tests and operator UI acceptance from M3.2 remain required. An editor, normal production migration 007, IPC writer, activation swap, merging PR #35 or starting M3.3 **each requires a distinct authorization and exact-source qualification**.
-
-### SQLite source-preservation security review (2026-10-15; protocol refinement only)
-
-The SQLite documentation identifies additional, **source-side effects that must be evaluated before any operator command is written**:
-
-- **WAL is part of the persistent database state.** Never move/delete/checkpoint/rebuild `-wal` or `-shm` in a preflight or separate the protected database from its WAL to produce a copy. A read-only SQLite connection may still require pre-existing `-wal`/`-shm` or permission to create them. Therefore **read-only SQL intent does not automatically prove zero filesystem mutation**; any source-opening method must first be explicitly reviewed for the exact source and WAL state. If zero source-side writes cannot be established, **STOP** and return for an alternate plan, without experimenting on the originals.
-- **Do not add `immutable=1` as an automatic shortcut for a live/mutable source.** SQLite documents that immutable mode skips locking and change detection, and an incorrect immutability claim may yield wrong results or corruption reports. Verify immutability independently or do not use this mode. Nor may `PRAGMA journal_mode=...`, `wal_checkpoint`, or cleanup of WAL/SHM be run against the protected originals as part of the ceremony.
-- The SQLite **Online Backup API writes its destination**, and an existing target can be replaced. Before any authorized capture, the implementation must use a reviewer-approved **create-new destination protocol that fails closed on collision, junction/symlink/reparse-point ambiguity and time-of-check/time-of-use races**. Confirm destination handle and file identity; never silently overwrite an existing backup. A nominal unique filename or preliminary `Test-Path` check **alone is insufficient**.
-- An existing on-disk source `.sqlite3` SHA-256 (especially with WAL) **need not equal** the SHA-256 of the new consistent snapshot. Preserve the observed source-file digest as an observation and verify new backup bytes independently against their own digest and **logical state**; never fail or invent equivalence based solely on file-byte equality across modes. A backup's `SQLITE_BUSY`, `SQLITE_LOCKED`, incomplete outcome, disk-full condition or non-terminal close must abort the prospective capture and leave source custody unchanged.
-- `PRAGMA integrity_check` validates database integrity, but **does not validate foreign-key constraints**. The isolated copy must pass the *separate* `PRAGMA foreign_key_check`, and schema, counts, revision genealogy and source roles must also be verified. Any unexpected `ATTACH` or multi-database inconsistency must be investigated rather than assuming one SQLite snapshot provides atomicity across multiple source databases.
-
-These are **design constraints**, not evidence that any original Fabulaxiom file is currently WAL-mode, mutable or inconsistent. Source facts require separately approved non-destructive operator observation. External technical references: [SQLite WAL](https://www.sqlite.org/wal.html), [SQLite URI immutable behavior](https://www.sqlite.org/uri.html), [SQLite Backup API](https://www.sqlite.org/backup.html), [SQLite PRAGMA integrity/foreign-key checks](https://www.sqlite.org/pragma.html).
-
-### Abort / rollback semantics
-
-Any mismatched SHA/identity, changed Git refs, non-clean protected sources, missing/unclear file, ACL surprise, running process, SQLite corruption, nonzero `foreign_key_check`, unreadable backup, collision, missing disk space, misleading credential/log exposure, mismatch of historical identity, or failure of independent review → **STOP**. Leave every protected source in place. Quarantine only newly created and clearly identified ceremony outputs; never delete or revert original operator history as a side effect.
-
-### Security/privacy and scope
-
-This repository is PUBLIC. Never commit/upload local SQLite bytes, manifests containing private absolute paths, secret keys/passwords, confidential ACL listings, novels or private archive content. Public PR stores only **sanitized role names, check results and policy**, not operational evidence with secrets. The custody ledger and signed prospective snapshot manifests belong in protected operator-approved storage. Nothing in this document permits taking custody of user data.
-
-## Independent review decision record (unsubmitted)
-
-The source-grounded independent-review questionnaire is now in [`docs/qualification/M3_2_INDEPENDENT_REVIEW_DECISION_RECORD.md`](M3_2_INDEPENDENT_REVIEW_DECISION_RECORD.md). **AWAITING_INDEPENDENT_REVIEW**: the reviewer name, independent sign-off, authorization, actual Windows source state, destination policy and ceremony plan are all **unverified/unapproved**. Its findings only summarize code already in protected main and require independent confirmation on the exact current PR SHA. This document does not create a new baseline or grant any local file access.
-
-## Acceptance of this document is not acceptance of M3.2
-
-A distinct DRAFT governance PR may be considered documentation-ready only after new SHA-exact Windows CI passes, independent review of wording and a negative audit that no workflow/runtime/migration/editor code changed. The historical 21/3/2 status, PR #35 DRAFT and issue #36 OPEN must remain unchanged. **Do not mark M3.2 COMPLETE, clear `PENDING_EXTERNAL_ATTESTATION`, authorize 007 or merge PR #35 from this action.**
-
-Technical reference (not evidence of the user's files): [SQLite Online Backup API](https://www.sqlite.org/backup.html), [SQLite PRAGMA integrity/foreign_key checks](https://www.sqlite.org/pragma.html), [GitHub required exact-head CI](https://docs.github.com/en/pull-requests/how-tos/merge-and-close-pull-requests/troubleshooting-required-status-checks), [NIST backup and recovery controls](https://csrc.nist.gov/pubs/sp/800/53/r5/upd1/final).
+**Non autorisé :** migration `007` de production, copie/move/reset/cleanup des anciens fichiers, modification du marqueur, writer IPC, fusion #35, passage M3.3, divulgation des données privées ou utilisation de l'application sur ses données actives pendant cette cérémonie.
