@@ -1,5 +1,10 @@
 # Fabulaxiom — Current State
 
+## 2026-10-15 — Proposition opérateur unique, PAS d'exception appliquée
+
+Une PR documentaire **distincte** propose `docs/qualification/M3_2_SOLO_OPERATOR_COMPENSATING_CONTROLS.md` et une fiche de décision. Elle envisage des vérifications techniques diversifiées, contradictoires, répétées et une **acceptation explicite du risque par le propriétaire** ; ce ne sont **pas** des revues humaines indépendantes. Elle ne modifie PAS la PR #37 ni sa condition `AWAITING_INDEPENDENT_REVIEW`, qui demeure bloquante jusqu'à une **future adoption explicite et réconciliation** des documents d'autorité. Historique `PENDING_EXTERNAL_ATTESTATION` 21/3/2, prospective `NOT_STARTED`, M3.2 réel `NOT_AUTHORIZED`. Aucune opération sur les données Windows, aucune migration 007, aucun writer, aucune fusion de PR #35, aucun M3.3.
+
+
 ## Current authority — M3.1 implementation merged; independent normalization pending (2026-10-11)
 
 - **Repository visibility: PUBLIC**, `main` genuinely branch-protected by active repository ruleset [Protect main](https://github.com/LaurentCOLL1/Fabulaxiom/rules/24895490). Rules include deletion/force-push denial, pull request and strict exact-app GitHub Actions check `Windows frontend and Rust checks` (app 15368), with no bypass actors or mandatory external approval (solo developer).
