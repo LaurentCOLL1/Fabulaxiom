@@ -1,5 +1,10 @@
 # Fabulaxiom — Next Authorized Work
 
+## 2026-10-15 — réconciliation solo puis laboratoire synthétique (pas Windows protégé)
+
+Qualifier PR #37 **après** réconciliation avec la politique SOLO fusionnée par #39, sur le nouveau HEAD et ses étapes CI ; vérifier le diff documentaire, contrôler la protection de main et fusionner seulement si toutes les barrières sont satisfaites. Ensuite créer une PR distincte **strictement laboratoire synthétique** pour preuves de création exclusive / backup / restauration / checks contradictoires et tests adversariaux. Les données Windows réelles exigent le préflight G2 exact et un plan G3 distinct validant chemins, ACL, source WAL/SHM et destination neuve ; ne pas proposer de script opérateur exécutable avant cela. Historique 21/3/2 `PENDING_EXTERNAL_ATTESTATION`, prospective `NOT_STARTED`, M3.2 applicative non autorisée ; aucun 007 prod, writer ou PR #35 merge.
+
+
 ## 2026-10-15 — Qualifier la PR documentaire d'exception SOLO avant toute décision d'autorité
 
 Re-fetch `main`, les PR #35/#37 et la nouvelle PR distincte ; vérifier le diff documentaire et le **workflow pull_request sur son HEAD exact**. Soumettre au propriétaire **la décision explicite d'adopter ou rejeter seulement la politique**, puis préparer **séparément** une réconciliation de la PR #37, de sa fiche de revue indépendante et des issues #36/#38. **Aucune exception en vigueur tant que ces étapes ne sont pas approuvées et appliquées.** Les phases Windows observation, acquisition, restauration, risque et tests applicatifs demandent chacune une autorisation future séparée. Historique 21/3/2 non attesté, baseline prospective `NOT_STARTED`, M3.2 réel `NOT_AUTHORIZED`. Aucun PowerShell de fichiers protégés, migration 007, writer, merge #35 ni M3.3.
