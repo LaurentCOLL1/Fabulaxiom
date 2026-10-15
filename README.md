@@ -106,13 +106,16 @@ Une proposition distincte d'atelier visuel local ComfyUI pour les personnages, s
 - **Actualiser les modules** : les nouveaux univers et entités, ainsi que les révisions de scènes, deviennent disponibles dans l'espace des faits sans forcer la fermeture ou le rechargement complet.
 - **Utiliser l'application sans Ollama** : les fonctions manuelles M2 ne requièrent ni modèle actif ni service distant. L'identité du réviseur est une étiquette déclarée, pas une authentification.
 
-**Non encore livrés :** la chronologie et les connaissances des personnages (M3), les recherches FTS5/sémantiques (M4), la génération/extraction IA (M5), le moteur automatique de cohérence (M6) et l'atelier d'images ComfyUI. Ce dernier reste une proposition distincte (issue #19), même si ComfyUI fonctionne déjà localement.
+**Non encore livrés dans l'application de production :** la chronologie manuelle M3.2, la connaissance des personnages et autres fonctionnalités M3, la recherche FTS5/sémantique (M4), l'extraction/génération IA (M5), le moteur de cohérence (M6) et l'atelier d'images ComfyUI. Cet atelier reste une proposition distincte (issue #19).
 
-## Prochaine étape : normalisation M3 puis M3.1 uniquement
+## M3 — Étape qualifiée et limites de l'interface actuelle (15 octobre 2026)
 
-La planification M3 a été fusionnée par la PR #31 à `68db746754e01b441870e0653f17f10ebfc7be2f`, après sa CI exacte #38050865413 (13/13 étapes Windows). Elle organise six phases distinctes : temps fictif et schéma, chronologie manuelle, relations historiques directionnelles, croyances/connaissances, révélations narrateur/lecteur et états narratifs évolutifs. Voir `docs/roadmap/M3_TIME_KNOWLEDGE_RELATIONSHIPS.md`.
+- **M3.1 : implémentation isolée fusionnée** via PR #33 le 11 octobre 2026 ; normalisation documentaire indépendante PR #34 fusionnée le 12 octobre 2026. Une prévisualisation de chronologie en lecture seule sur une **copie v7 isolée** a été qualifiée sur Windows. Cela **ne migre pas** la SQLite de production : la base active restaurée reste en **schéma v6**, sans migration automatique 007.
+- **M3.2 : chantier en PR #35, toujours DRAFT et non fusionné.** Le Stage 32 est accepté sur le SHA exact `ac40fb29944f2f2293003bca4eb932eded496c37`, CI Windows #38671745786 **44/44 SUCCESS**. Les contrats de comparaison et présentation des Stages 20–32 sont principalement des **références synthétiques Python en mémoire** ; ils n'ajoutent **ni écran React/Tauri utilisable, ni API d'édition, ni accès SQLite réel**.
+- **Blocage de conservation : `PENDING_EXTERNAL_ATTESTATION`.** Parmi les éléments suivis, 21 empreintes bénéficient d'ancrages historiques, trois sont de simples observations récentes et deux n'ont aucun ancrage indépendant. Le document [matrice de résolution des attestations](docs/qualification/M3_2_EXTERNAL_ATTESTATION_RESOLUTION_MATRIX.md) détaille les cinq éléments manquants, le type de preuve extérieure admissible et les étapes de décision.
+- **Étape suivante :** obtenir et faire évaluer des preuves historiques réellement indépendantes, puis procéder à une qualification opérateur Windows séparée si les autorités l'autorisent. Une réussite GitHub Actions ou un nouvel auto-hachage ne vaut jamais attestation historique. Tant que ce verrou n'est pas levé, pas de migration 007 de production, pas d'éditeur chronologique, pas de fusion de PR #35 ni de lancement de M3.3.
 
-**Aucune fonctionnalité M3 n'est encore livrée.** Après la qualification et la fusion d'une normalisation documentaire indépendante, **seule M3.1** peut être développée dans une nouvelle PR. Toute migration SQLite v6→v7 sur la machine de production exige une sauvegarde cohérente préalable et une qualification Windows distincte. M3.2–M3.6, M4+ et ComfyUI ne sont pas autorisés par cette planification. L'atelier visuel ComfyUI reste une proposition future (issue #19).
+Voir aussi `docs/roadmap/M3_TIME_KNOWLEDGE_RELATIONSHIPS.md`, `docs/continuity/STATE.md` et `docs/continuity/NEXT.md`. La planification M3 reste consultable dans les historiques du dépôt ; le paragraphe ci-dessus supplante les anciens jalons préparatoires.
 
 ## Documentation d'autorité
 
