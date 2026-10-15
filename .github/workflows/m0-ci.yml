@@ -63,6 +63,66 @@ jobs:
         run: |
           python -c "import sys; sys.path.insert(0, 'tools'); import m3_1_v7_isolated_launch_prepare as m; value = m._windows_admin_token_enabled(); assert isinstance(value, bool); print('WINDOWS_TOKEN_API: PASS; elevated=' + str(value))"
 
+      - name: M3.2 post-restart read-only gate synthetic Windows tests
+        run: python -m unittest discover -s tools -p "test_m3_2_operator_readonly_gate.py" -v
+
+      - name: M3.2 multi-root custody read-only synthetic Windows tests
+        run: python -m unittest discover -s tools -p "test_m3_2_multiroot_readonly.py" -v
+
+      - name: M3.2 pinned historical authority negative Windows tests
+        run: python -m unittest discover -s tools -p "test_m3_2_independent_authority_gate.py" -v
+
+      - name: M3.2 M3.1 archived manifests semantic Windows fixtures
+        run: python -m unittest discover -s tools -p "test_m3_2_m31_semantic_readonly.py" -v
+
+      - name: M3.2 manifest-free source-pinned read-only custody Windows tests
+        run: python -m unittest discover -s tools -p "test_m3_2_direct_custody_readonly.py" -v
+
+      - name: M3.2 isolated V7 physical read-only synthetic Windows fixtures
+        run: python -m unittest discover -s tools -p "test_m3_2_isolated_v7_physical_readonly.py" -v
+
+      - name: M3.2 external provenance claims triage synthetic Windows fixtures
+        run: python -m unittest discover -s tools -p "test_m3_2_provenance_triage.py" -v
+
+      - name: M3.2 append-only supersession reference synthetic Windows tests
+        run: python -m unittest discover -s tools -p "test_m3_2_supersession_reference.py" -v
+
+      - name: M3.2 readonly world chronology projection synthetic Windows tests
+        run: python -m unittest discover -s tools -p "test_m3_2_chronology_projection_reference.py" -v
+
+      - name: M3.2 readonly chronology presentation synthetic Windows tests
+        run: python -m unittest discover -s tools -p "test_m3_2_chronology_presentation_reference.py" -v
+
+      - name: M3.2 readonly chronology pagination synthetic Windows tests
+        run: python -m unittest discover -s tools -p "test_m3_2_chronology_pagination_reference.py" -v
+
+      - name: M3.2 readonly chronology navigation filters synthetic Windows tests
+        run: python -m unittest discover -s tools -p "test_m3_2_chronology_navigation_reference.py" -v
+
+      - name: M3.2 explicit filtered chronology comparison synthetic Windows tests
+        run: python -m unittest discover -s tools -p "test_m3_2_chronology_comparison_reference.py" -v
+
+      - name: M3.2 explicit world chronology witness synthetic Windows tests
+        run: python -m unittest discover -s tools -p "test_m3_2_chronology_witness_reference.py" -v
+
+      - name: M3.2 synthetic witness presentation Windows tests
+        run: python -m unittest discover -s tools -p "test_m3_2_chronology_witness_presentation_reference.py" -v
+
+      - name: M3.2 paginated witness consultation synthetic Windows tests
+        run: python -m unittest discover -s tools -p "test_m3_2_chronology_witness_consultation_reference.py" -v
+
+      - name: M3.2 synthetic selection location and witness consistency Windows tests
+        run: python -m unittest discover -s tools -p "test_m3_2_chronology_selection_review_reference.py" -v
+
+      - name: M3.2 bounded synthetic comparison batch Windows tests
+        run: python -m unittest discover -s tools -p "test_m3_2_chronology_comparison_batch_reference.py" -v
+
+      - name: M3.2 synthetic grouped-pair consistency Windows tests
+        run: python -m unittest discover -s tools -p "test_m3_2_chronology_batch_coherence_reference.py" -v
+
+      - name: M3.2 synthetic read-only UI handoff contract Windows tests
+        run: python -m unittest discover -s tools -p "test_m3_2_chronology_readonly_handoff_reference.py" -v
+
       - name: Rust tests from lockfile
         run: cargo test --manifest-path src-tauri/Cargo.toml --all-targets --locked
 
@@ -72,6 +132,10 @@ jobs:
       - name: M3.1 isolated read-only Tauri preview Rust unit tests
         working-directory: src-tauri
         run: cargo test --locked --features m31-isolated-preview --lib m31_readonly_preview
+
+      - name: M3.2 isolated preflight-only Tauri feature and identity tests
+        working-directory: src-tauri
+        run: cargo test --locked --features m32-isolated-preflight --lib m32_isolated_preflight
 
       - name: Verify dependency locks are unchanged
         shell: pwsh
