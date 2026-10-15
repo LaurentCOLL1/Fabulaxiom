@@ -1,5 +1,9 @@
 # Fabulaxiom — Next Authorized Work
 
+## 2026-10-15 Stage 32 next — qualify synthetic read-only UI handoff on fresh exact-head CI
+
+Re-fetch protected main, PR #35 branch HEAD and all new head-associated Windows `pull_request` runs. Require fresh **44/44 completed/success** on Stage32 SHA, including **34** new UI-handoff DTO tests, Stage31 37, Stage30 41, and every older Python/provenance/frontend/Rust/Tauri/lockfile check. Old Stage31 `306860ac777f49f0ee3e4602b18d9f8d54bdff76` #38647066177 **43/43** only qualifies predecessor bytes. The DTO must explicitly retain no runtime integration, no external attestation, no operator qualification, no database access and no editing controls. Do not turn fixture data into real JSON IPC or claim production use. `PENDING_EXTERNAL_ATTESTATION` 21/3/2 and seven protected operator worktrees, restored production v6, isolated v7, ACL/backups/manifests unchanged. No operator PowerShell, normal 007 migration, writer, PR merge or M3.3.
+
 ## 2026-10-15 Stage 31 next — requalify source-specific batch coherence on fresh CI
 
 After publishing the Stage31 source commit, re-fetch protected `main`, PR #35 branch HEAD, associated `pull_request` Windows run and all its jobs on the **new SHA exact**. Require terminal **43/43 SUCCESS**, including **37** new Stage31 pair-coherence tests, all Stage30 41 and previous Stage29–20 synthetic/provenance suites, frontend, Rust/Tauri and dependency locks. Previous Stage30 SHA `ebd022872a9f0e4a54e2f73407fb9e142139756a` CI #38642688135 was terminal 42/42, but qualifies ONLY its own bytes. Stage31 grouping must never infer total chronology, treat order of requests or group numbers as time, or convert fictional dates. Keep independent `PENDING_EXTERNAL_ATTESTATION` 21/3/2, seven Windows worktrees, restored production SQLite v6, v7 isolated, ACL/backup/manifests unchanged; no PowerShell operator command, writer IPC, production migration 007, merge or M3.3.
