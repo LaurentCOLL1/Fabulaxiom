@@ -1,5 +1,10 @@
 # Fabulaxiom — Next Authorized Work
 
+## 2026-10-16 — G2-A : proposer un bloc Windows limité, attendre la preuve opérateur
+
+Re-fetch `main` et les PR, qualifier le diff documentaire G2 sur le HEAD exact. Présenter à l'opérateur **un bloc PowerShell `& { ... }` détaillé, sans ouverture SQLite ni accès aux fichiers protégés**, limité à jeton/processus/références. Expliquer préalablement interactions éventuelles, privilèges, processus, lectures/écritures, conditions STOP. Puis seulement après résultat et nouvel accord explicite, étudier G2-B avec les chemins locaux confirmés et leur politique de non-mutation. Ne pas lancer directement `open_database`, `create_backup`, `restore_backup` ou `m3_1_v6_backup.py`. Pas de cérémonie G3 réelle, restauration G4, signature G5, GUI G6, production 007, writer, fusion PR #35 ou M3.3. Baseline prospective `NOT_STARTED`.
+
+
 ## 2026-10-15 — réconciliation solo puis laboratoire synthétique (pas Windows protégé)
 
 Qualifier PR #37 **après** réconciliation avec la politique SOLO fusionnée par #39, sur le nouveau HEAD et ses étapes CI ; vérifier le diff documentaire, contrôler la protection de main et fusionner seulement si toutes les barrières sont satisfaites. Ensuite créer une PR distincte **strictement laboratoire synthétique** pour preuves de création exclusive / backup / restauration / checks contradictoires et tests adversariaux. Les données Windows réelles exigent le préflight G2 exact et un plan G3 distinct validant chemins, ACL, source WAL/SHM et destination neuve ; ne pas proposer de script opérateur exécutable avant cela. Historique 21/3/2 `PENDING_EXTERNAL_ATTESTATION`, prospective `NOT_STARTED`, M3.2 applicative non autorisée ; aucun 007 prod, writer ou PR #35 merge.
