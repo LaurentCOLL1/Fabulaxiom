@@ -1,5 +1,10 @@
 # Fabulaxiom — Current State
 
+## 2026-10-15 — PR #39 gouvernance SOLO fusionnée ; PR #37 en réconciliation, pas d'exécution
+
+La proposition documentaire SOLO de PR #39 a été protégée-fusionnée sur `main=86d1773ff32e710b719ed0ec35fb7a734de3cd75` après CI pull_request #38799012304 23/23 SUCCESS. L'opérateur a autorisé la démarche en quatre étapes dans ChatGPT ; ce n'est ni une signature indépendante ni le consentement à un bloc Windows précis. PR #37 propose **séparément** de remplacer le reviewer obligatoire **pour la seule baseline prospective**, tout en laissant la fiche de revue humaine `AWAITING_INDEPENDENT_REVIEW` et les cinq rôles historiques `PENDING_EXTERNAL_ATTESTATION` 21/3/2. L'adoption de ce protocole après CI/fusion ne crée pas de backup : prospective `NOT_STARTED`, M3.2 réel `NOT_AUTHORIZED` ; aucun G2–G6 effectivement qualifié, pas de production 007, writer, merge #35 ou M3.3.
+
+
 ## 2026-10-15 — Proposition opérateur unique, PAS d'exception appliquée
 
 Une PR documentaire **distincte** propose `docs/qualification/M3_2_SOLO_OPERATOR_COMPENSATING_CONTROLS.md` et une fiche de décision. Elle envisage des vérifications techniques diversifiées, contradictoires, répétées et une **acceptation explicite du risque par le propriétaire** ; ce ne sont **pas** des revues humaines indépendantes. Elle ne modifie PAS la PR #37 ni sa condition `AWAITING_INDEPENDENT_REVIEW`, qui demeure bloquante jusqu'à une **future adoption explicite et réconciliation** des documents d'autorité. Historique `PENDING_EXTERNAL_ATTESTATION` 21/3/2, prospective `NOT_STARTED`, M3.2 réel `NOT_AUTHORIZED`. Aucune opération sur les données Windows, aucune migration 007, aucun writer, aucune fusion de PR #35, aucun M3.3.
