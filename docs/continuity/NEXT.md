@@ -1,5 +1,9 @@
 # Fabulaxiom — Next Authorized Work
 
+## 2026-10-15 — next governed decision: review a prospective baseline protocol (NOT execution)
+
+Verify the separate governance PR's exact branch HEAD against protected `main=f7eabfea74480d307b52d4b053730021efc95352`; inspect that its diff contains **only** the two prospective-baseline docs and documentary STATE/NEXT additions, with no source code, CI/workflow, database, ACL, backup or runtime modifications. Require its own terminal Windows `pull_request` CI on the exact SHA before any documentary acceptance/merge. Opening a DRAFT governance PR is not authorizing local activity. After protocol review, arrange one bounded final search for independent historical witnesses per [issue #36](https://github.com/LaurentCOLL1/Fabulaxiom/issues/36); if unavailable, record each `HISTORICAL_UNVERIFIED`. Later obtain a **separate, exact-source, operator-approved non-destructive execution plan** and an independent human reviewer BEFORE any prospective snapshot/manifest. New baseline `NOT_STARTED`, M3.2 runtime `NOT_AUTHORIZED`, historical state `PENDING_EXTERNAL_ATTESTATION` 21/3/2. Seven original Windows worktrees, restored production v6, isolated v7, ACL/backups/manifests all protected. No PowerShell execution, no 007, no writer IPC, no merge PR #35 and no M3.3.
+
 ## Current authorization — normalize M3.1 before M3.2 (2026-10-11)
 
 M3.1 implementation PR #33 is **MERGED** at `main=922d155d4f4321ed8b90955d4ea96388751f0daf`, from qualified final head `796a4b65e596b9bc05bd00b523b3209f9736524d`; required `pull_request` CI #38176139985, attempt 3, terminal SUCCESS. Main is really protected by active no-bypass ruleset. Operator target Windows v7 read-only *isolated* GUI/IPC PASS + post-exit 11/11 SHA and M1.5 active v6 custody PASS. Elevated preparation is now fail-closed in source.

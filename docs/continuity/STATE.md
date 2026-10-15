@@ -1,5 +1,9 @@
 # Fabulaxiom — Current State
 
+## 2026-10-15 — proposed prospective-baseline governance, NON-AUTHORIZING PR candidate
+
+The project owner selected **route B (future baseline)** as the preferred direction after the five historical custody witnesses remained unavailable. A **separate DRAFT governance PR** proposes `docs/qualification/M3_2_PROSPECTIVE_TRUST_BASELINE_DECISION.md` and `docs/qualification/M3_2_PROSPECTIVE_BASELINE_WINDOWS_RUNBOOK_DRAFT.md` on a new branch from protected main. This expresses **documentary intent only**: new baseline `NOT_STARTED`, real M3.2 product integration `NOT_AUTHORIZED`, historical custody `PENDING_EXTERNAL_ATTESTATION` (21 pinned / 3 observed-only / 2 unanchored). No Windows ceremony, snapshot, ACL edit, file access, production 007, IPC writer or migration may occur from accepting this proposal. Current implementation PR #35 remains DRAFT at `41ce7b915e76d22785d53d7fffe288d113dd0bf5` with Stage33 exact-head Windows #38672905255 44/44 SUCCESS. Issue #36 continues to track historical proofs separately. A fresh **main-derived** governance PR needs its own exact-head Windows `pull_request` CI; neither existing M3.2 CI nor the governance CI can attest operator files. Protected normal production SQLite remains v6; isolated M3.1 v7 is not production.
+
 ## Current authority — M3.1 implementation merged; independent normalization pending (2026-10-11)
 
 - **Repository visibility: PUBLIC**, `main` genuinely branch-protected by active repository ruleset [Protect main](https://github.com/LaurentCOLL1/Fabulaxiom/rules/24895490). Rules include deletion/force-push denial, pull request and strict exact-app GitHub Actions check `Windows frontend and Rust checks` (app 15368), with no bypass actors or mandatory external approval (solo developer).
