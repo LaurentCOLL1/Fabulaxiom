@@ -67,6 +67,10 @@ Any mismatched SHA/identity, changed Git refs, non-clean protected sources, miss
 
 This repository is PUBLIC. Never commit/upload local SQLite bytes, manifests containing private absolute paths, secret keys/passwords, confidential ACL listings, novels or private archive content. Public PR stores only **sanitized role names, check results and policy**, not operational evidence with secrets. The custody ledger and signed prospective snapshot manifests belong in protected operator-approved storage. Nothing in this document permits taking custody of user data.
 
+## Independent review decision record (unsubmitted)
+
+The source-grounded independent-review questionnaire is now in [`docs/qualification/M3_2_INDEPENDENT_REVIEW_DECISION_RECORD.md`](M3_2_INDEPENDENT_REVIEW_DECISION_RECORD.md). **AWAITING_INDEPENDENT_REVIEW**: the reviewer name, independent sign-off, authorization, actual Windows source state, destination policy and ceremony plan are all **unverified/unapproved**. Its findings only summarize code already in protected main and require independent confirmation on the exact current PR SHA. This document does not create a new baseline or grant any local file access.
+
 ## Acceptance of this document is not acceptance of M3.2
 
 A distinct DRAFT governance PR may be considered documentation-ready only after new SHA-exact Windows CI passes, independent review of wording and a negative audit that no workflow/runtime/migration/editor code changed. The historical 21/3/2 status, PR #35 DRAFT and issue #36 OPEN must remain unchanged. **Do not mark M3.2 COMPLETE, clear `PENDING_EXTERNAL_ATTESTATION`, authorize 007 or merge PR #35 from this action.**

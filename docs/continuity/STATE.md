@@ -1,5 +1,9 @@
 # Fabulaxiom — Current State
 
+## 2026-10-15 — prospective-baseline independent review packet, NO REVIEW / NO LOCAL AUTHORIZATION
+
+On the separate governance PR #37 (prior head `87c6d8332fa59c52b763e51932f114dda799c2ca`, qualified Windows pull_request #38753395591 23/23 only for that prior SHA), a **documentary reviewer decision record** `docs/qualification/M3_2_INDEPENDENT_REVIEW_DECISION_RECORD.md` is proposed, sourced from six inspected main-branch components and official SQLite safety guidance. Its verdict is deliberately `AWAITING_INDEPENDENT_REVIEW`; no human reviewer, independent approval or operator ceremony exists. Changed source needs new exact-HEAD CI and a real independent review, neither implied by document publication. All five historical roles unresolved: `PENDING_EXTERNAL_ATTESTATION` 21/3/2. New prospective baseline `NOT_STARTED`, real M3.2 integration `NOT_AUTHORIZED`; issue #38 controls future operator permissions. No operator PowerShell, files, backup, migration 007, writer or merge.
+
 ## 2026-10-15 — prospective governance PR #37, SQLite WAL/destination hardening candidate
 
 Exact original PR #37 head `82acfb5ad4609906874d8f17639c4638ff560f03` passed Windows pull_request #38748488356 terminal **23/23 SUCCESS** (documentation only). A subsequent **document-only** security review hardens safe-read WAL/SHM behavior, prohibits unverified `immutable=1`, requires create-new destination guarantees because Online Backup can overwrite targets, and separates physical source hashes from logical snapshot equivalence. Issue #38 is the distinct Windows operator authorization gate. Any new commit to PR #37 MUST receive its own terminal exact-head Windows CI; predecessor CI cannot be carried forward. No historical witness has been independently accepted, `PENDING_EXTERNAL_ATTESTATION` 21/3/2 remains, prospective baseline `NOT_STARTED`, product M3.2 `NOT_AUTHORIZED`. No Windows access/execution, migration 007, writer, PR #35 merge or M3.3.

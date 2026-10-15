@@ -58,6 +58,10 @@ Review references: [SQLite WAL](https://www.sqlite.org/wal.html), [SQLite immuta
 - Original unchanged postflight checks, independent reviewer findings, explicit authority scope and prospective date.
 - Separate historical issue #36: every old role marked still `HISTORICAL_UNVERIFIED` or verified only by genuinely older third-party evidence.
 
+## Separate independent review
+
+Before any operator command is drafted for execution, a reviewer separate from the author must complete the **non-signed / no-approval-yet** [M3.2 independent review decision record](M3_2_INDEPENDENT_REVIEW_DECISION_RECORD.md) on the current exact PR SHA, identifying evidence, vetoes and whether the protocol itself is approved. Such approval would **still not authorize** any specific local operation.
+
 ## Acceptance matrix
 
 | Exit state | Meaning | May enable new M3.2 read-only operator testing? |
