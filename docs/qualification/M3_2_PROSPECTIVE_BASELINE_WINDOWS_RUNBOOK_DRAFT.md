@@ -37,6 +37,19 @@ No historical role is promoted by this runbook. `PENDING_EXTERNAL_ATTESTATION` r
 
 **G. Product handoff only after separate permission.** Publish sanitized decision record and future requirements. A new PR must explicitly authorize an isolated read-only Tauri/React candidate and its operator Windows acceptance; never silently use this document to merge PR #35, activate v7 in production or author time events.
 
+## Mandatory safe-open and destination protocol review (still NOT EXECUTABLE)
+
+Before a future operator even **opens** either protected source database, the exact approved plan must state all of the following and obtain separate permission:
+
+1. **Mode verification without touching originals:** identify if the source is in rollback-journal or WAL mode only by a method explicitly shown to cause no protected-file mutation. SQLite may require `-wal`/`-shm` or may create them for a read-only opener. Never assume a readonly connection cannot produce filesystem side effects. Abort if the proposed connection, existing sidecars, locking or access rights are not validated.
+2. **Do not force `immutable=1`:** this skips locking/change detection; prohibit it on an active source without independently established actual immutability. Never issue `wal_checkpoint`, set `journal_mode` or delete `-wal`/`-shm` on any original as a preliminary safety shortcut.
+3. **Create-new destination guarantee:** reject an existing path, reparse point/junction/symlink, unsafe parent directory, duplicate output name and races. Because the SQLite Backup API **can overwrite the destination**, the implementation needs an independently reviewed exclusive create-new/identity mechanism. Refuse on any uncertainty or reuse; `Test-Path` alone is not sufficient to defeat races.
+4. **Separate physical vs logical evidence:** hash every original byte stream that is safely observable, but do **not** assert the source `.sqlite3` digest is equal to a consistent destination snapshot that incorporates WAL changes. Capture the new snapshot digest and separately compare its logical content and schema under a versioned canonicalization; verify the new copy and its independent restoration.
+5. **Failure is non-authorizing:** source lock, insufficient permissions, WAL/SHM uncertainty, `SQLITE_BUSY`/`SQLITE_LOCKED`, incomplete backup/close, unexpected file creation, or ambiguous source/destination identity -> STOP. Document only a sanitized failure; do not run automatic repair/checkpoint, reopen with elevated rights or fall back to raw copy.
+6. **No cross-database atomicity assumption:** a series of individually consistent SQLite snapshots does not automatically freeze two distinct sources at one instant; record separately validated source/identity/time and require an explicit consistency model before making any cross-copy provenance claim.
+
+Review references: [SQLite WAL](https://www.sqlite.org/wal.html), [SQLite immutable URI](https://www.sqlite.org/uri.html), [SQLite Backup API](https://www.sqlite.org/backup.html), [SQLite PRAGMA](https://www.sqlite.org/pragma.html).
+
 ## Proof bundle (private: never upload to public GitHub)
 
 - Source role inventory with digests or scoped absence and exact date, pointer verification, seven-worktree custody, process/token/ACL notes.
