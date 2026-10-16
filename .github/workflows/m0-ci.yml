@@ -88,6 +88,9 @@ jobs:
       - name: M3.2 G3 Windows pinned toy directory identity and rename guards
         run: python -m unittest discover -s tools -p "test_m3_2_g3_win_pinned_toy_directory.py" -v
 
+      - name: M3.2 G3 G4 full synthetic exclusive snapshot and isolated restore
+        run: python -m unittest discover -s tools -p "test_m3_2_g3_win_full_toy_cycle.py" -v
+
       - name: Verify dependency locks are unchanged
         shell: pwsh
         run: |
