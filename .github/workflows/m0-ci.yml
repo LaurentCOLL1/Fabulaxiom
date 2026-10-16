@@ -97,6 +97,9 @@ jobs:
       - name: M3.2 G3 source strategy refusal-only policy tests
         run: python -m unittest discover -s tools -p "test_m3_2_g3_source_strategy_policy.py" -v
 
+      - name: M3.2 G3 existing-owner transactional SQLite RAM toy snapshot and restore
+        run: python -m unittest discover -s tools -p "test_m3_2_g3_owned_online_backup_toy.py" -v
+
       - name: Verify dependency locks are unchanged
         shell: pwsh
         run: |
