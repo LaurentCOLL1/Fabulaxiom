@@ -82,7 +82,7 @@ def _toy_directory_path_identity(root: Path):
         return identity
 
 
-def inspect_under_pinned_toy_root(root: Path, source: Path, *, version: int, test_hook=None):
+def inspect_under_pinned_toy_root(root: Path, source: Path, *, version: int, test_hook=None, return_image=False):
     """Verify single source HANDLE while pinned toy root is held; RAM SQLite only."""
     _toy_root(root, source)
     _no_sidecars(source)
@@ -104,9 +104,12 @@ def inspect_under_pinned_toy_root(root: Path, source: Path, *, version: int, tes
             if _toy_directory_path_identity(root) != root_identity:
                 raise ToyGateError("toy directory pathname mismatch after read")
             _toy_root(root, source)
-    return {"status": "TOY_ONLY_PASS", "directory_identity": True,
-            "source_identity": True, "source_digest": evidence["sha256"],
-            "version": version}
+    result = {"status": "TOY_ONLY_PASS", "directory_identity": True,
+              "source_identity": True, "source_digest": evidence["sha256"],
+              "version": version}
+    if return_image:
+        result["image"] = image  # Disposable fixture bytes ONLY, never real files.
+    return result
 
 
 def self_test() -> None:
