@@ -1,5 +1,10 @@
 # Fabulaxiom — Next Authorized Work
 
+## 2026-10-16 — Expérimentation ABA fictive : éviter toute promotion abusive de G3
+
+À partir de `main=106c48fe3b2fd8b16bd038d29c15c99ef9e5f5db`, après qualification G3/G4 synthétique de PR #47, tester **uniquement en CI Windows** les substitutions transitoires de répertoires/sidecars dans une fixture. Même avec un résultat de test vert, conserver la décision `real_G3=NOT_AUTHORIZED` tant que les chemins d'origine, l'identité des ancêtres, l'exclusion des writers et la cohérence SQLite n'ont pas une preuve indépendante, non ponctuelle. La méthode de sauvegarde physique par un seul handle reste expérimentale ; l'Online Backup API est recommandée pour une base réellement active. Documenter les hypothèses qu'un contrôle avant/après ne peut pas prouver, y compris un A→B→A invisible. Ne pas poursuivre les originales et ne pas fusionner PR #35, ni migrer 007.
+
+
 ## 2026-10-16 — G3 : qualifier un flux via un SEUL handle source Win32 avant toute cérémonie Windows
 
 À partir du `main=b2d8249002cbea8b11edcaedaa9602bd946a62c7` et des PR #42/#43 qualifiées (CI exact-head 25/25, 26/26), prochaine action autorisée **uniquement sur fixtures entièrement synthétiques** : prototyper une capture physique de base en mode ROLLBACK depuis un **handle source Win32 unique** (pas de seconde ouverture SQLite par chemin), sous partage lecture seulement, avec identification Windows volume + file index depuis le handle, comparaisons avant/après, détection de WAL/journaux et refus de courses. Valider le résultat en mémoire par `sqlite3.Connection.deserialize` + contrôles logiques de tables/migrations fictives, puis seulement un write de destination `O_EXCL` en un handle (PR #42). Suivre le [dossier d'architecture proposé](../qualification/M3_2_G3_STABLE_HANDLE_CANDIDATE_DESIGN.md) : **le document n'autorise pas cette approche sur les bases opérateur.**

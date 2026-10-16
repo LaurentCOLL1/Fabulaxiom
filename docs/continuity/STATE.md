@@ -1,5 +1,12 @@
 # Fabulaxiom — Current State
 
+## 2026-10-16 — PR #47 G3/G4 fictif fusionnée ; anti-ABA reste non démontré
+
+L'autorité GitHub pour cette nouvelle qualification part du `main=106c48fe3b2fd8b16bd038d29c15c99ef9e5f5db` exact : PR #47 fusionnée après CI Windows #38947114710 **29/29 SUCCESS**, dont **16/16 tests** synthétiques G3→G4. Les copies ont été créées exclusivement sous répertoires temporaires fictifs, sans fichier ou chemin opérateur. L'ancien échec Win32 de PR #46 (#38943063529, renommage autorisé malgré absence de FILE_SHARE_DELETE) reste une découverte de sécurité significative. Le présent travail autorise uniquement une **expérience de contre-exemple ABA** : un renommage/restauration entre deux observations peut être invisible, même lorsque les empreintes de fin semblent valides. Les préflights G2-A/B/C/D et G3 destination sont des observations ponctuelles, pas une capture transactionnelle.
+
+**Vérité inchangée :** `historical=PENDING_EXTERNAL_ATTESTATION(21/3/2)` ; `prospective=NOT_STARTED` ; `G3/G4 réels=NOT_AUTHORIZED` ; PR #35 OPEN/DRAFT ; aucun fichier SQLite, marqueur, sauvegarde ou worktree opérateur touché par GitHub.
+
+
 ## 2026-10-16 — G2 opérateur contrôlé, G3 laboratoire Win32 terminé, capture réelle NON commencée
 
 État exact GitHub vérifié à la création de cette note : `main=b2d8249002cbea8b11edcaedaa9602bd946a62c7`. PR #42 (sauvegarde exclusive image mémoire) fusionnée après CI Windows #38914716036 **25/25 PASS**, incluant 14 tests fictifs. PR #43 (verrou de lecture Win32 et refus de journaux dangereux sur bases fictives) fusionnée après CI Windows #38917979449 **26/26 PASS**, incluant 12 tests fictifs. PR #35 chronologie M3.2 reste OPEN/DRAFT et non fusionnée.
