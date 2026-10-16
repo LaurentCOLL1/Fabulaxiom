@@ -1,5 +1,10 @@
 # Fabulaxiom — Next Authorized Work
 
+## 2026-10-17 — Qualification Rust source préexistante → RAM, sans runtime
+
+Faire passer la qualification **sur CI Windows liée au SHA exact** de la PR Rust expérimentale, puis seulement si elle réussit établir une étude de cycle de vie/provenance d'une connexion non migrante *sans la créer sur les originaux*. La suite de 13 tests ne prouvera pas l'identité réelle d'une source, la sécurité des chemins Windows ou un mécanisme de restauration. Ne pas activer `m32-g3-owned-ram-toy` dans les builds normaux. Tout projet de commande Tauri G3 requiert une autorisation nouvelle et séparée ; pour l'instant G3 réel STOP, PR #35 draft, 007/marker/writer/M3.3 interdits.
+
+
 ## 2026-10-17 — Après la qualification du laboratoire SQLite Owner→RAM
 
 Exécuter les tests du nouveau prototype uniquement sur bases fictives avec CI Windows `pull_request` **liée au SHA exact**. En cas de succès, analyser **sans exécuter les commandes Tauri/SQLite sur la machine opérateur** si le Rust actuel conserve une connexion source préexistante, sûre et non migrante (sur la base de l'architecture/code et de tests synthétiques). Aucune preuve réelle de source owner n'existe aujourd'hui. La voie G3 réelle doit rester STOP et toute future lecture doit être soumise à un accord détaillé, indépendant des résultats CI. Conserver les découvertes #46/48 sur les changements temporaires de chemin et l'historique 21/3/2. Aucune fusion PR #35, migration 007, activation, writer IPC, M3.3.
