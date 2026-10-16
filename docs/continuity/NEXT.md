@@ -1,5 +1,12 @@
 # Fabulaxiom — Next Authorized Work
 
+## 2026-10-16 — G3 : qualifier un flux via un SEUL handle source Win32 avant toute cérémonie Windows
+
+À partir du `main=b2d8249002cbea8b11edcaedaa9602bd946a62c7` et des PR #42/#43 qualifiées (CI exact-head 25/25, 26/26), prochaine action autorisée **uniquement sur fixtures entièrement synthétiques** : prototyper une capture physique de base en mode ROLLBACK depuis un **handle source Win32 unique** (pas de seconde ouverture SQLite par chemin), sous partage lecture seulement, avec identification Windows volume + file index depuis le handle, comparaisons avant/après, détection de WAL/journaux et refus de courses. Valider le résultat en mémoire par `sqlite3.Connection.deserialize` + contrôles logiques de tables/migrations fictives, puis seulement un write de destination `O_EXCL` en un handle (PR #42). Suivre le [dossier d'architecture proposé](../qualification/M3_2_G3_STABLE_HANDLE_CANDIDATE_DESIGN.md) : **le document n'autorise pas cette approche sur les bases opérateur.**
+
+Ensuite seulement : nouveau contrôle spécifique de source-safe-open pour Windows réel, protection des répertoires/ACL/chemins contre substitution, budget mémoire, comparaison réelle de `schema_migrations`, cohérence logique et destination privative nouvellement réservée. Nécessite un bloc opérateur exact, une explication complète des effets et une autorisation séparée pour chaque opération. Ne pas exécuter `open_database`, `restore_backup`, `create_backup` ni le laboratoire synthétique sur un original. Pas de G3 réel, G4 restauration, G5 signature, G6 GUI tant que les verrous restent. Historique 21/3/2 non promu.
+
+
 ## 2026-10-16 — G2-A : proposer un bloc Windows limité, attendre la preuve opérateur
 
 Re-fetch `main` et les PR, qualifier le diff documentaire G2 sur le HEAD exact. Présenter à l'opérateur **un bloc PowerShell `& { ... }` détaillé, sans ouverture SQLite ni accès aux fichiers protégés**, limité à jeton/processus/références. Expliquer préalablement interactions éventuelles, privilèges, processus, lectures/écritures, conditions STOP. Puis seulement après résultat et nouvel accord explicite, étudier G2-B avec les chemins locaux confirmés et leur politique de non-mutation. Ne pas lancer directement `open_database`, `create_backup`, `restore_backup` ou `m3_1_v6_backup.py`. Pas de cérémonie G3 réelle, restauration G4, signature G5, GUI G6, production 007, writer, fusion PR #35 ou M3.3. Baseline prospective `NOT_STARTED`.

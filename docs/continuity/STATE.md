@@ -1,5 +1,14 @@
 # Fabulaxiom — Current State
 
+## 2026-10-16 — G2 opérateur contrôlé, G3 laboratoire Win32 terminé, capture réelle NON commencée
+
+État exact GitHub vérifié à la création de cette note : `main=b2d8249002cbea8b11edcaedaa9602bd946a62c7`. PR #42 (sauvegarde exclusive image mémoire) fusionnée après CI Windows #38914716036 **25/25 PASS**, incluant 14 tests fictifs. PR #43 (verrou de lecture Win32 et refus de journaux dangereux sur bases fictives) fusionnée après CI Windows #38917979449 **26/26 PASS**, incluant 12 tests fictifs. PR #35 chronologie M3.2 reste OPEN/DRAFT et non fusionnée.
+
+Les observations de l'opérateur du 16 octobre : G2-A jeton moyen non administrateur, processus WebView2 reliés à Windows Search sans prouver la quiescence globale ; G2-B quatre rôles privés identifiés, 7/7 worktrees protégés reconnus, marqueur pointant vers la v6 restaurée ; G2-C doubles SHA-256 physiques stables pour les quatre fichiers, les deux v7 identiques octet-à-octet ; G2-D corrigé, en-têtes des trois SQLite `ROLLBACK`, pages 4096, `user_version=0` (le schéma Fabulaxiom s'obtient de `schema_migrations`). G3 préflight destination opérateur : volume NTFS fixe, jeton standard, parents sans reparse observés, ACL lisible, **191,13 Gio libres**, dossier futur absent. **Aucun répertoire G3 créé, aucune source SQLite ouverte en SQL, aucune capture ni restauration réelle.** Les preuves locales restent privées ; ne pas publier les chemins, octets, SHA de fichiers privés ou ACL sur GitHub.
+
+Les essais CI prouvent seulement les propriétés de **fixtures synthétiques** ; aucun contrôle n'établit encore la correspondance atomique stable entre le chemin d'une source réelle et un handle Windows, l'absence de writers/concurrences, la sûreté des ancêtres contre substitution, l'identité de la destination, ni la cohérence logique réelle. Historique `PENDING_EXTERNAL_ATTESTATION(21/3/2)`, prospective `NOT_STARTED`, G3–G6 réels `NOT_AUTHORIZED`. Jamais de migration 007 en production, d'IPC writer, de bascule M1.5, de fusion PR #35 ou M3.3.
+
+
 ## 2026-10-16 — G2 préflight Windows : plan préparé, aucun original touché
 
 Après re-fetch de protected `main=b6b4d6d9f6a52638a1ccd004e8a3ed5cc10026f6`, #39/#37/#40 sont fusionnées après leurs CI exactes ; #35 est OPEN/DRAFT. La nouvelle note `docs/qualification/M3_2_G2_WINDOWS_SOURCE_IDENTITY_PREFLIGHT_PLAN.md` fixe la séparation G2-A (processus/jeton/Git sans fichier protégé), G2-B (métadonnées des chemins privés), G2-C (hash sources), G2-D (évaluation d'une éventuelle ouverture SQLite), chacune avec son accord opérateur exact. Des chemins historiquement fournis existent dans des échanges privés mais leur état **courant** doit être vérifié exclusivement sur l'hôte Windows ; **aucun chemin privé n'est publié ici**. `prospective=NOT_STARTED`, `M3.2_runtime=NOT_AUTHORIZED`, historique 21/3/2 `PENDING_EXTERNAL_ATTESTATION`. Aucun PowerShell local exécuté, aucun G2 déclaré PASS, aucun writer/007/activation/merge #35.
