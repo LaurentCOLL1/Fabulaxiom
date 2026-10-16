@@ -1,7 +1,8 @@
 """Win32 retained toy-directory handle identity experiment. NO operator paths.
 
 All files are invented under TemporaryDirectory. Holding a directory
-handle without FILE_SHARE_DELETE inhibits *some* namespace substitutions.
+handle without FILE_SHARE_DELETE does not guarantee directory rename denial.
+This tests observable mismatches, not every intermediate namespace swap.
 It is not a general anti-race guarantee for parent ancestors or real custody.
 """
 from __future__ import annotations

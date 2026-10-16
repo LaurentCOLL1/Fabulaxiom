@@ -33,11 +33,22 @@ class PinnedToyDirectoryTests(unittest.TestCase):
         self.assertTrue(result["source_identity"])
         self.assertEqual(before, self.source.read_bytes())
 
-    def test_directory_handle_refuses_rename(self):
+    def test_directory_rename_refused_or_detected(self):
         renamed = self.root.with_name(self.root.name + "-moved")
-        with pinned_toy_directory(self.root):
-            with self.assertRaises(OSError):
-                os.rename(self.root, renamed)
+        moved = False
+        try:
+            with pinned_toy_directory(self.root):
+                try:
+                    os.rename(self.root, renamed)
+                except OSError:
+                    pass
+                else:
+                    moved = True
+                    with self.assertRaisesRegex(ToyGateError, "directory missing"):
+                        module._toy_directory_path_identity(self.root)
+        finally:
+            if moved and renamed.exists():
+                os.rename(renamed, self.root)
         self.assertTrue(self.root.is_dir())
         self.assertFalse(renamed.exists())
 
@@ -50,12 +61,33 @@ class PinnedToyDirectoryTests(unittest.TestCase):
         self.assertTrue(self.source.exists())
         self.assertFalse(moved.exists())
 
-    def test_directory_rename_race_injected_is_blocked(self):
+    def test_injected_directory_rename_refused_or_detected(self):
+        renamed = self.root.with_name(self.root.name + "-hijacked")
+        moved = False
         def attempt(root, _):
-            with self.assertRaises(OSError):
-                os.rename(root, root.with_name(root.name + "-hijacked"))
-        result = inspect_under_pinned_toy_root(self.root, self.source, version=6, test_hook=attempt)
-        self.assertEqual(result["status"], "TOY_ONLY_PASS")
+            nonlocal moved
+            try:
+                os.rename(root, renamed)
+            except OSError:
+                return
+            moved = True
+        result = None
+        error = None
+        try:
+            try:
+                result = inspect_under_pinned_toy_root(
+                    self.root, self.source, version=6, test_hook=attempt
+                )
+            except ToyGateError as exc:
+                error = exc
+        finally:
+            if moved and renamed.exists():
+                os.rename(renamed, self.root)
+        if moved:
+            self.assertIsNotNone(error, "rename was not detected")
+        else:
+            self.assertIsNone(error)
+            self.assertEqual(result["status"], "TOY_ONLY_PASS")
 
     def test_directory_identity_mismatch_fails_closed(self):
         real = module._toy_directory_path_identity
