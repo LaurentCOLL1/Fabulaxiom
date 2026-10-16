@@ -26,6 +26,12 @@ mod world_time_preflight;
 #[cfg(test)]
 mod world_time_file_migration_tests;
 
+// Never compile this feature into a Tauri runtime, even debug builds.
+#[cfg(all(feature = "m32-g3-owned-ram-toy", not(test)))]
+compile_error!("M3.2 owner-to-RAM backup fixture must be compiled ONLY as Rust unit tests");
+#[cfg(all(test, feature = "m32-g3-owned-ram-toy"))]
+mod m32_owned_backup_toy;
+
 use std::time::Duration;
 
 use backup_commands::{backup_status, create_database_backup, restore_database_backup};

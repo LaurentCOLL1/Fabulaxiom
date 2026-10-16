@@ -1,5 +1,12 @@
 # Fabulaxiom — Current State
 
+## 2026-10-17 — Prototype rusqlite Online Backup strictement tests Rust en RAM
+
+Après PR #50 fusionnée depuis `main=e1039395fb720b0e7624b066191db7a34984d063`, l'expérience suivante est `m32-g3-owned-ram-toy` : activer `rusqlite/backup` uniquement via un **feature flag hors configuration par défaut**, ajouter une erreur de compilation hors `cfg(test)`, puis vérifier sur un schéma fictif créé exclusivement par `Connection::open_in_memory()` la copie transactionnelle de la connexion source déjà ouverte vers une seconde connexion RAM. Aucune création de fichier ni chemin de base n'est possible par ces fonctions de test. Les commandes actuelles `open_database`, `database_status`, `create_backup` restent migrantes ou à effets et **interdites** sur les originaux M3.2. Laboratoire Rust distinct du laboratoire Python #50.
+
+**Vérité réelle inchangée :** `G3/G4/G5/G6=NOT_AUTHORIZED`, `prospective=NOT_STARTED`, `historical=PENDING_EXTERNAL_ATTESTATION(21/3/2)`, PR #35 OPEN/DRAFT, pas de 007, activation, IPC writer ou M3.3.
+
+
 ## 2026-10-17 — G3 : prototype transactionnel Python fictif depuis connexion déjà ouverte
 
 Après PR #49 fusionnée sur `main=aaa8550dacfc88ac3f335598f66dd2928709e35e`, la voie choisie reste une **connexion applicative déjà ouverte et identifiée** suivie de SQLite Online Backup vers RAM. Le travail autorisé suivant n'est qu'un laboratoire : génération interne de schémas inventés v6/v7, connexion fictive créée avant capture, snapshot transactionnel RAM, contrôle `schema_migrations`/intégrité/FK, publication exclusive dans un dossier temporaire neuf et restauration isolée. La source réelle ne possède **aucune** connexion de provenance attestée ; le module Rust courant `open_database` migre et reste interdit pour G3. Les essais WAL peuvent nécessiter une normalisation `VACUUM` **en RAM uniquement** : aucune fidélité binaire aux fichiers historiques n'est revendiquée.

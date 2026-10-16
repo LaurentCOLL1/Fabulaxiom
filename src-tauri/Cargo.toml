@@ -13,6 +13,8 @@ crate-type = ["staticlib", "cdylib", "rlib"]
 [features]
 default = []
 m31-isolated-preview = []
+# M3.2 G3: test-only; default remains empty. Do NOT ship binaries with this.
+m32-g3-owned-ram-toy = ["rusqlite/backup"]
 
 [build-dependencies]
 tauri-build = { version = "2", features = [] }
