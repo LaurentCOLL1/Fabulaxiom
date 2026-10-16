@@ -2,6 +2,17 @@
 
 **Decision status: SELECTED STRATEGY, NOT EXECUTION AUTHORIZATION.** Protected base `74933c49229ab9efeae5e7c017a61b28525d3fd3`, PR #48 merged after Windows exact-head CI #38962554003 30/30 (11/11 ABA fixture tests). `main` and PR #35 must be re-fetched again before any later mutation. The real active v6 and isolated v7 stay fully outside this development step.
 
+## Source-code audit — current commands are explicitly unsafe as G3 ceremonies
+
+Fresh source review on the exact base showed:
+- `src-tauri/src/database.rs::open_database` (around lines 509–520) calls `Connection::open` and then **`run_migrations`**. Its versioning derives from the `schema_migrations` table.
+- `src-tauri/src/lib.rs::database_status` (around lines 163–193) invokes `database::open_database`, so even a seemingly observational status command is **not** an acceptable non-migrating entry point for a protected v6.
+- `src-tauri/src/backup.rs::create_backup` (around lines 455–463) invokes `database::open_database`, then `vacuum_copy`. This is **not** an already-open owner connection; it opens a new SQLite connection to the active original.
+- `vacuum_copy` (around lines 387–396) uses **`VACUUM INTO`**, not the proposed backup-to-RAM transaction flow. `reserve_unique_file` (around lines 399–410) closes the exclusive reservation handle before SQLite reopens the target and uses a separate writable flush open. This creates a close/reopen interval unsuitable as proof against destination substitution.
+- `restore_backup` can prepare/migrate a restored copy and finally change the activation marker. It is **not** a G3 read-only audit.
+
+**Decision consequence:** DO NOT invoke `database_status`, `create_database_backup`, `restore_database_backup`, `open_database` or `create_backup` on the protected source for G3. Future work must qualify a **dedicated non-migrating, source-bound owner connection and no-overwrite output mechanism** separately on synthetic data before a new operator-specific approval. The classifier includes a required `dedicated_non_migrating_backup_path` field, which defaults to FALSE; a caller cannot promote a general app backup command into a historical preservation authority.
+
 ## Decision: prefer SQLite-owned Online Backup from an EXISTING, trusted connection
 
 An *existing, authenticated and already-open application-owned SQLite source connection* offers the most direct way to avoid a separate path-based source open for G3 while exploiting SQLite's transactional snapshot semantics. It is the **preferred architecture to investigate**, not yet a facility shown to be present or safe in Fabulaxiom. The source connection must be bound to the intended exact original identity through application/runtime provenance, must not require auto-starting the application, reopening the original by a path, invoking a migration, recovering a hot journal, or changing the production activation marker solely to do a backup. If no such source connection currently exists, **the preferred route is UNAVAILABLE**. Application-level source writes caused by ongoing legitimate activity must be examined separately; the user's non-mutation policy remains controlling.

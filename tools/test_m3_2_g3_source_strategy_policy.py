@@ -31,6 +31,19 @@ class G3PolicyTests(unittest.TestCase):
         self.assertIn("no_automatic_migration",
                       classify(Strategy.APP_OWNED_BACKUP, changed).unmet_conditions)
 
+    def test_current_app_backup_command_is_not_a_preservation_route(self):
+        all_true = Evidence(**{f.name: True for f in fields(Evidence)})
+        # The existing Rust backup command calls database::open_database(),
+        # which runs migrations. A separate verified non-migrating command is
+        # needed before this route could even be considered for review.
+        result = classify(
+            Strategy.APP_OWNED_BACKUP,
+            replace(all_true, dedicated_non_migrating_backup_path=False)
+        )
+        self.assertFalse(result.design_review_candidate)
+        self.assertFalse(result.real_g3_authorized)
+        self.assertIn("dedicated_non_migrating_backup_path", result.unmet_conditions)
+
     def test_unresolved_journal_is_veto(self):
         all_true = Evidence(**{f.name: True for f in fields(Evidence)})
         for mode in (Strategy.APP_OWNED_BACKUP, Strategy.VERIFIED_COLD_SNAPSHOT):

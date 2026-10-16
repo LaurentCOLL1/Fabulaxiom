@@ -1,5 +1,9 @@
 # Fabulaxiom — Next Authorized Work
 
+## 2026-10-16 — Veto sur les commandes de sauvegarde applicatives actuelles
+
+L'audit du code Rust sur `main=74933c49229ab9efeae5e7c017a61b28525d3fd3` montre que `database::open_database` appelle `run_migrations`, que `database_status` et `backup::create_backup` utilisent cette ouverture, et que `backup::vacuum_copy` utilise `VACUUM INTO` après libération du fichier réservé. **Ne pas invoquer ces fonctions sur les originaux pour G3.** Une future route doit être dédiée, non migrante et sans réouverture de cible existante, qualifiée seulement sur données fictives. Pas de création d'un nouveau handle sur les originaux via une commande de statut.
+
 ## 2026-10-16 — G3 : qualifier le choix transactionnel sans ouvrir d'original
 
 Après la PR documentaire/politique sur la stratégie G3, ne poursuivre que sur des **fixtures entièrement fictives** avec Windows CI exact-head : démontrer SQLite Online Backup API depuis une connexion **préexistante** authentifiée dans le laboratoire, vers SQLite RAM, puis sérialisation et création exclusive de la destination fictive ; tests de conflits, snapshot cohérent, mémoire, collisions, et restauration. En parallèle, évaluer techniquement si Fabulaxiom pourrait disposer d'une telle connexion sûre **sans** démarrer ou migrer l'original ; si non, conserver `NO_ELIGIBLE_STRATEGY_STOP` et documenter la limite. Ne pas remplacer ce veto par `sqlite3.connect(original, mode=ro)`, `immutable=1`, une copie brute sous writers, ni une opération opérateur. G3 réel exige un accord séparé et une procédure validée. PR #35, 007, activation, writer et M3.3 interdits jusqu'aux autorités requises.

@@ -24,6 +24,7 @@ class Evidence:
     source_binding_attested: bool = False
     no_new_source_open: bool = False
     no_automatic_migration: bool = False
+    dedicated_non_migrating_backup_path: bool = False
     source_quiescence_attested: bool = False
     ancestors_identity_attested: bool = False
     source_handle_identity_attested: bool = False
@@ -60,6 +61,7 @@ _OWNED = (
     "existing_trusted_owner_connection",
     "no_new_source_open",
     "no_automatic_migration",
+    "dedicated_non_migrating_backup_path",
 )
 
 _COLD = (
