@@ -68,12 +68,19 @@ class Win32ToyABAObservations(unittest.TestCase):
         self.assertTrue(result["kernel_denied"] or result["renamed"])
         if result["renamed"]:
             self.assertTrue(result["restored"])
+        print("TOY_RENAME_OUTCOME:", "RENAMED_RESTORED" if result["renamed"] else "KERNEL_REFUSED")
 
     def test_transient_journal_is_not_observed_at_boundary(self):
         original = self.source.read_bytes()
         result = toy_transient_sidecar(self.root, self.source)
         self.assertTrue(result["journal_transient"])
-        self.assertEqual(result["checkpoint_audit"], "TOY_ONLY_PASS")
+        self.assertIn(
+            result["checkpoint_audit"],
+            ("VETO_DIRECTORY_METADATA_CHANGED", "TOY_ONLY_PASS")
+        )
+        # A VETO is a positive, protective result. A PASS is *not* a proof of
+        # continuous absence of a journal. Neither authorizes real G3.
+        print("TOY_TRANSIENT_JOURNAL:", result["checkpoint_audit"])
         self.assertFalse(result["real_g3_authorized"])
         self.assertFalse(Path(str(self.source) + "-journal").exists())
         self.assertEqual(self.source.read_bytes(), original)

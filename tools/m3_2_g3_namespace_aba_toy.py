@@ -114,9 +114,22 @@ def toy_transient_sidecar(root: Path, source: Path) -> dict[str, object]:
         injected = True
         journal.unlink()
 
-    audit = inspect_under_pinned_toy_root(
-        root, source, version=6, test_hook=injection
-    )
+    try:
+        audit = inspect_under_pinned_toy_root(
+            root, source, version=6, test_hook=injection
+        )
+    except ToyGateError as exc:
+        # The first Windows CI observed a directory last-write-time change
+        # caused by the create/delete of the fictional journal. This is a
+        # correct fail-closed veto, NOT a test to disable or work around.
+        if str(exc) != "toy directory handle changed":
+            raise
+        return {
+            "journal_transient": injected,
+            "checkpoint_audit": "VETO_DIRECTORY_METADATA_CHANGED",
+            "real_g3_authorized": False,
+            "time_of_check_use_race": "UNPROVEN",
+        }
     return {
         "journal_transient": injected,
         "checkpoint_audit": audit["status"],
