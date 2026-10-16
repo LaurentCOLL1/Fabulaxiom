@@ -1,5 +1,12 @@
 # Fabulaxiom — Current State
 
+## 2026-10-16 — G3 : stratégie transactionnelle choisie, origine réelle toujours NON accessible
+
+Le checkpoint d'autorité est `main=74933c49229ab9efeae5e7c017a61b28525d3fd3`, après la fusion de PR #48 (30/30 CI Windows, 11/11 tests ABA fictifs). Préférence d'architecture : SQLite Online Backup API à partir d'une **connexion applicative déjà ouverte, détenue et authentifiée** ; ne jamais démarrer l'application ni ouvrir une base originale uniquement pour produire cette connexion sans une nouvelle autorisation. Alternative conditionnelle : acquisition froide uniquement après preuve de quiescence de tous les writers, identité du source et des ancêtres, et journaux entièrement résolus. Les deux routes sont actuellement indisponibles sur les originaux. La politique pure `tools/m3_2_g3_source_strategy_policy.py` refuse toute autorisation réelle, même avec tous les indicateurs synthétiques vrais. Dossier : `docs/qualification/M3_2_G3_SOURCE_ACQUISITION_DECISION.md`.
+
+**Statuts immuables :** `G3/G4 réels=NOT_AUTHORIZED`, `prospective=NOT_STARTED`, `historical=PENDING_EXTERNAL_ATTESTATION(21/3/2)`, PR #35 OPEN/DRAFT ; pas de migration 007, bascule d'activation, IPC writer ou M3.3.
+
+
 ## 2026-10-16 — PR #47 G3/G4 fictif fusionnée ; anti-ABA reste non démontré
 
 L'autorité GitHub pour cette nouvelle qualification part du `main=106c48fe3b2fd8b16bd038d29c15c99ef9e5f5db` exact : PR #47 fusionnée après CI Windows #38947114710 **29/29 SUCCESS**, dont **16/16 tests** synthétiques G3→G4. Les copies ont été créées exclusivement sous répertoires temporaires fictifs, sans fichier ou chemin opérateur. L'ancien échec Win32 de PR #46 (#38943063529, renommage autorisé malgré absence de FILE_SHARE_DELETE) reste une découverte de sécurité significative. Le présent travail autorise uniquement une **expérience de contre-exemple ABA** : un renommage/restauration entre deux observations peut être invisible, même lorsque les empreintes de fin semblent valides. Les préflights G2-A/B/C/D et G3 destination sont des observations ponctuelles, pas une capture transactionnelle.
