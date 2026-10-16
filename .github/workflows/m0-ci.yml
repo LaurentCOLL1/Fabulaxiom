@@ -82,6 +82,9 @@ jobs:
       - name: M3.2 Win32 read-only source lease toy adversarial qualification
         run: python -m unittest discover -s tools -p "test_m3_2_g3_win_read_lease_toy.py" -v
 
+      - name: M3.2 G3 Windows single source handle toy and RAM deserialize tests
+        run: python -m unittest discover -s tools -p "test_m3_2_g3_win_single_handle_toy.py" -v
+
       - name: Verify dependency locks are unchanged
         shell: pwsh
         run: |
