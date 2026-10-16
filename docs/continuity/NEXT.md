@@ -1,5 +1,10 @@
 # Fabulaxiom — Next Authorized Work
 
+## 2026-10-17 — Après la qualification du laboratoire SQLite Owner→RAM
+
+Exécuter les tests du nouveau prototype uniquement sur bases fictives avec CI Windows `pull_request` **liée au SHA exact**. En cas de succès, analyser **sans exécuter les commandes Tauri/SQLite sur la machine opérateur** si le Rust actuel conserve une connexion source préexistante, sûre et non migrante (sur la base de l'architecture/code et de tests synthétiques). Aucune preuve réelle de source owner n'existe aujourd'hui. La voie G3 réelle doit rester STOP et toute future lecture doit être soumise à un accord détaillé, indépendant des résultats CI. Conserver les découvertes #46/48 sur les changements temporaires de chemin et l'historique 21/3/2. Aucune fusion PR #35, migration 007, activation, writer IPC, M3.3.
+
+
 ## 2026-10-16 — Veto sur les commandes de sauvegarde applicatives actuelles
 
 L'audit du code Rust sur `main=74933c49229ab9efeae5e7c017a61b28525d3fd3` montre que `database::open_database` appelle `run_migrations`, que `database_status` et `backup::create_backup` utilisent cette ouverture, et que `backup::vacuum_copy` utilise `VACUUM INTO` après libération du fichier réservé. **Ne pas invoquer ces fonctions sur les originaux pour G3.** Une future route doit être dédiée, non migrante et sans réouverture de cible existante, qualifiée seulement sur données fictives. Pas de création d'un nouveau handle sur les originaux via une commande de statut.

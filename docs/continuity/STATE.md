@@ -1,5 +1,12 @@
 # Fabulaxiom — Current State
 
+## 2026-10-17 — G3 : prototype transactionnel Python fictif depuis connexion déjà ouverte
+
+Après PR #49 fusionnée sur `main=aaa8550dacfc88ac3f335598f66dd2928709e35e`, la voie choisie reste une **connexion applicative déjà ouverte et identifiée** suivie de SQLite Online Backup vers RAM. Le travail autorisé suivant n'est qu'un laboratoire : génération interne de schémas inventés v6/v7, connexion fictive créée avant capture, snapshot transactionnel RAM, contrôle `schema_migrations`/intégrité/FK, publication exclusive dans un dossier temporaire neuf et restauration isolée. La source réelle ne possède **aucune** connexion de provenance attestée ; le module Rust courant `open_database` migre et reste interdit pour G3. Les essais WAL peuvent nécessiter une normalisation `VACUUM` **en RAM uniquement** : aucune fidélité binaire aux fichiers historiques n'est revendiquée.
+
+**Réel :** `G3/G4/G5/G6=NOT_AUTHORIZED`, `prospective=NOT_STARTED`, `historical=PENDING_EXTERNAL_ATTESTATION(21/3/2)`, PR #35 DRAFT, pas de migration 007, writer IPC, bascule d'activation ni M3.3.
+
+
 ## 2026-10-16 — G3 : stratégie transactionnelle choisie, origine réelle toujours NON accessible
 
 Le checkpoint d'autorité est `main=74933c49229ab9efeae5e7c017a61b28525d3fd3`, après la fusion de PR #48 (30/30 CI Windows, 11/11 tests ABA fictifs). Préférence d'architecture : SQLite Online Backup API à partir d'une **connexion applicative déjà ouverte, détenue et authentifiée** ; ne jamais démarrer l'application ni ouvrir une base originale uniquement pour produire cette connexion sans une nouvelle autorisation. Alternative conditionnelle : acquisition froide uniquement après preuve de quiescence de tous les writers, identité du source et des ancêtres, et journaux entièrement résolus. Les deux routes sont actuellement indisponibles sur les originaux. La politique pure `tools/m3_2_g3_source_strategy_policy.py` refuse toute autorisation réelle, même avec tous les indicateurs synthétiques vrais. Dossier : `docs/qualification/M3_2_G3_SOURCE_ACQUISITION_DECISION.md`.
