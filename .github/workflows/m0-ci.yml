@@ -76,6 +76,9 @@ jobs:
       - name: M3.2 solo baseline synthetic-only adversarial qualification
         run: python -m unittest discover -s tools -p "test_m3_2_solo_synthetic_lab.py" -v
 
+      - name: M3.2 G3 sealed synthetic memory and exclusive file-stream qualification
+        run: python -m unittest discover -s tools -p "test_m3_2_g3_sealed_synthetic.py" -v
+
       - name: Verify dependency locks are unchanged
         shell: pwsh
         run: |
