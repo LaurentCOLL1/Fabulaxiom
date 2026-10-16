@@ -8,7 +8,7 @@ import unittest
 
 from m3_2_g3_win_single_handle_toy import (
     TOY_PREFIX, TOY_MAX_BYTES, ToyGateError, _locked_read_handle, _read_full_image,
-    _toy_path, _no_sidecars, acquire_toy, create_fictional_toy,
+    _toy_path, _no_sidecars, _get_file_info, _identity, acquire_toy, create_fictional_toy,
     inspect_memory_image, self_test
 )
 
@@ -114,9 +114,11 @@ class SingleHandleWindowsTests(unittest.TestCase):
 
     def test_file_id_stable_within_same_handle(self):
         with _locked_read_handle(self.source) as (kernel, handle):
-            image, before = _read_full_image(kernel, handle, max_bytes=TOY_MAX_BYTES)
-            _, after = _read_full_image(kernel, handle, max_bytes=TOY_MAX_BYTES)
-            self.assertEqual(before, after)
+            before = _identity(_get_file_info(kernel, handle))
+            image, observed = _read_full_image(kernel, handle, max_bytes=TOY_MAX_BYTES)
+            after = _identity(_get_file_info(kernel, handle))
+            self.assertEqual(before, observed)
+            self.assertEqual(observed, after)
             self.assertEqual(image[:16], b"SQLite format 3\x00")
 
 
