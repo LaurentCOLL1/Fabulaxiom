@@ -153,4 +153,38 @@ describe("M3.2 bounded fictional event explorer, isolated read-only", () => {
     expect(derive("", "all", 0, empty, null).count).toBe(0);
     expect(html(null)).toContain("aucune donnée fournie");
   });
+
+  it("marks the search landmark with a meaningful accessible name", () => {
+    const markup = html();
+    expect(markup).toContain('role="search"');
+    expect(markup).toContain('aria-label="Recherche dans la chronologie fictive"');
+  });
+  it("identifies the live-filter result as an atomic status", () => {
+    const markup = html();
+    expect(markup).toContain('aria-label="Résultat du filtrage"');
+    expect(markup).toContain('aria-atomic="true"');
+  });
+  it("announces the two chosen events explicitly when absent", () => {
+    const markup = html();
+    expect(markup).toContain('aria-label="Événements choisis"');
+    expect(markup).toContain("Premier :");
+    expect(markup).toContain("non sélectionné");
+  });
+  it("exposes both choose buttons' pressed state rather than relying on color", () => {
+    const markup = html();
+    expect(markup).toContain('aria-label="Choisir N01 comme premier événement" aria-pressed="false"');
+    expect(markup).toContain('aria-label="Choisir N01 comme deuxième événement" aria-pressed="false"');
+  });
+  it("keeps structural list and proof landmarks with stable accessible names", () => {
+    const markup = html();
+    expect(markup).toContain('class="m32-event-list"');
+    expect(markup).toContain('aria-label="Événements filtrés"');
+    expect(markup).toContain('aria-label="Pagination des événements fictifs"');
+  });
+  it("never uses a hidden source identity as an accessible selection", () => {
+    const markup = html();
+    expect(markup).not.toContain('aria-label="Choisir old comme premier événement"');
+    expect(markup).not.toContain('aria-label="Choisir old comme deuxième événement"');
+    expect(markup).not.toContain('aria-label="Choisir N01 comme premier événement" aria-pressed="true"');
+  });
 });
