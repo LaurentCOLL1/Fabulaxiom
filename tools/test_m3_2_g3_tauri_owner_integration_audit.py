@@ -25,10 +25,19 @@ def rust_function(contents: str, signature: str) -> str:
 
 
 class TauriOwnerIntegrationBoundaryTests(unittest.TestCase):
-    def test_both_tauri_runners_have_no_managed_owner(self):
+    def test_all_tauri_runners_have_no_managed_owner(self):
         lib = source(str(RUST / "lib.rs"))
-        self.assertEqual(lib.count("tauri::Builder::default()"), 2)
+        # Normal+M3.1 expose their previous handlers; the new fictional
+        # third builder deliberately has ZERO invoke_handler registrations.
+        self.assertEqual(lib.count("tauri::Builder::default()"), 3)
         self.assertEqual(lib.count(".invoke_handler("), 2)
+        self.assertIn('#[cfg(all(feature = "m32-synthetic-preview", not(feature = "m31-isolated-preview")))]', lib)
+        synthetic = lib.split("/** Distinct DEVELOPMENT-ONLY fictional UI shell.", 1)[1]
+        synthetic = synthetic.split("\n#[cfg(test)]\nmod tests {", 1)[0]
+        self.assertIn("tauri::Builder::default().run(context)", synthetic)
+        self.assertNotIn(".invoke_handler(", synthetic)
+        self.assertNotIn(".manage(", synthetic)
+        self.assertNotIn("database::open_database(", synthetic)
         self.assertNotIn(".manage(", lib)
         self.assertNotIn(".setup(", lib)
         self.assertNotIn("tauri::State<", lib)
@@ -36,7 +45,7 @@ class TauriOwnerIntegrationBoundaryTests(unittest.TestCase):
 
     def test_no_owner_service_registered_as_normal_ipc(self):
         lib = source(str(RUST / "lib.rs"))
-        normal = lib.split('#[cfg(not(feature = "m31-isolated-preview"))]', 1)[1]
+        normal = lib.split('#[cfg(not(any(feature = "m31-isolated-preview", feature = "m32-synthetic-preview")))]', 1)[1]
         normal = normal.split('/// Only one read-only command is registered.', 1)[0]
         self.assertIn("database_status,", normal)
         self.assertIn("create_database_backup,", normal)
