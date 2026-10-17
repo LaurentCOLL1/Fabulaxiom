@@ -103,6 +103,9 @@ jobs:
       - name: M3.2 fictional Tauri preview source-only policy (no launch)
         run: python -m unittest discover -s tools -p "test_m3_2_synthetic_tauri_preview.py" -v
 
+      - name: M3.2 fictional Tauri explicit capability and merged-config source audit (no launch)
+        run: python -m unittest discover -s tools -p "test_m3_2_tauri_capability_boundary.py" -v
+
       - name: M3.2 fictional Tauri preview pure Rust identity tests (no launch)
         working-directory: src-tauri
         run: cargo test --locked --features m32-synthetic-preview --lib m32_synthetic_preview
