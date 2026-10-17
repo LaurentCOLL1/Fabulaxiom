@@ -1,5 +1,10 @@
 # Fabulaxiom — Next Authorized Work
 
+## 2026-10-17 — Qualifier l'interaction réelle du laboratoire navigateur M3.2
+
+Vérifier la PR Chromium synthétique au HEAD exact : 14 cas `M32_BROWSER_REAL_CHROMIUM_PASS`, accès HTTP strictement boucle locale, reset d'Univers, clavier, sélecteurs, preuves, refus de cycles ; conserver `npm ci`, tests React/Vitest, build Vite et contrôles Rust/Python. Vérifier aucune importation dans `App.tsx`, aucune dépendance lock ou données opérateur. Nouveau navigateur uniquement sur runner Windows jetable. Fusion protégée seulement après CI `pull_request` terminée SUCCESS, diff, règles de branche et SHA anti-course. **Ne pas confondre ces tests avec l'acceptation du bureau Tauri sur une vraie v7** ; G3 `STOP_UNAVAILABLE`, historique en attente (21/3/2), prospective `NOT_STARTED`, PR #35 DRAFT et aucun G3 réel, 007, marqueur, writer ou release.
+
+
 ## 2026-10-17 — Qualification du parcours React M3.2 fictif
 
 Qualifier sur le HEAD exact le nouveau flux `M32ChronologyConsultation` : `24` tests ciblés (deux sélections HTML natives, cohérence d'Univers, transition sans défaut implicite, preuves de précédence, refus global des cycles), `npm run test:ci`, `npm run build`, anciennes suites Rust/Python et garde G3, diff, protections de `main`. La sélection reste **uniquement en mémoire fictive**, non montée dans `App.tsx` et sans données utilisateur. Ne pas fusionner PR #35 ni autoriser G3, une migration 007 ou une nouvelle connexion opérateur. Après validation, envisager une qualification de rendu plus proche d'une interaction navigateur sur des fixtures fictives, mais sans l'assimiler à une réception Windows réelle.
