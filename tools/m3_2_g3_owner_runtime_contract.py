@@ -48,9 +48,7 @@ class DesignVerdict:
 
 
 _COMMON = (
-    "owner_is_bound_to_original",
     "source_binding_independent_of_pathname",
-    "no_new_original_open",
     "no_migrations_or_recovery_on_original",
     "consistent_sqlite_snapshot_method",
     "source_size_budget_verified",
@@ -59,6 +57,8 @@ _COMMON = (
     "operator_specific_consent",
 )
 _OWNER = (
+    "owner_is_bound_to_original",
+    "no_new_original_open",
     "owner_connection_already_exists",
     "owner_session_lifetime_continuous",
     "owner_access_serialized",
@@ -88,7 +88,7 @@ def review(route: Route, claims: HypotheticalEvidence) -> DesignVerdict:
         required = _COMMON + _OWNER
     elif route is Route.VERIFIED_COLD_CUSTODY:
         # Cold preservation must never be mislabeled a pre-existing owner.
-        required = tuple(x for x in _COMMON if x != "owner_is_bound_to_original") + _COLD
+        required = _COMMON + _COLD
     else:
         raise TypeError("unknown route")
     missing = tuple(item for item in required if getattr(claims, item) is not True)

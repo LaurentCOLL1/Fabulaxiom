@@ -75,6 +75,17 @@ class OwnerRuntimePolicyTests(unittest.TestCase):
                                 replace(self.all_true, **{name: False}))
                 self.assertIn(name, report.missing)
 
+    def test_cold_route_does_not_claim_a_preopened_owner(self):
+        claims = replace(
+            self.all_true,
+            owner_connection_already_exists=False,
+            owner_is_bound_to_original=False,
+            no_new_original_open=False,
+        )
+        report = review(Route.VERIFIED_COLD_CUSTODY, claims)
+        self.assertEqual(report.status, "HYPOTHETICAL_REVIEW_ONLY")
+        self.assertFalse(report.real_g3_authorized)
+
     def test_cold_copy_requires_all_writers_quiescent(self):
         report = review(Route.VERIFIED_COLD_CUSTODY,
                         replace(self.all_true, all_writers_quiescent=False))
@@ -113,8 +124,12 @@ class OwnerRuntimePolicyTests(unittest.TestCase):
 
     def test_no_path_or_credentials_inputs_in_policy(self):
         names = tuple(x.name for x in fields(HypotheticalEvidence))
-        self.assertFalse(any(word in x for x in names
-                             for word in ("path", "password", "token", "secret")))
+        # A *description* of pathname trust is not an input filesystem path.
+        self.assertFalse(any(
+            name in ("path", "password", "token", "secret")
+            or name.endswith(("_path", "_password", "_token", "_secret"))
+            for name in names
+        ))
 
 
 class ExistingRustSourceCodeAudit(unittest.TestCase):
