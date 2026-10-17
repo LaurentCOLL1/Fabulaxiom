@@ -62,6 +62,30 @@ mod tests {
             assert!(validate_launch(LAB_ID, LAB_ID, Some(LAB_URL), windows).is_err());
         }
     }
+    /// Compiles the real Tauri context but never calls Builder::run/build.
+    /// Intentionally ignored during normal Rust suites: the dedicated Windows
+    /// CI command provides TAURI_CONFIG and an explicit fictional identity.
+    /// This tests codegen against its *provided* merged config, not CLI merging
+    /// and not Windows WebView2 runtime permission enforcement.
+    #[test]
+    #[ignore = "run only in isolated CI with explicit fictional TAURI_CONFIG"]
+    fn compiled_fictional_context_no_runtime() {
+        let context = tauri::generate_context!(test = true);
+        let config = context.config();
+        let windows: Vec<&str> = config.app.windows.iter().map(|w| w.label.as_str()).collect();
+        let actual_url = config.build.dev_url.as_ref().map(|u| u.as_str());
+        let opt_in = std::env::var("FABULAXIOM_M32_PREVIEW_ID")
+            .expect("CI must set only fictional preview identity");
+        assert_eq!(validate_launch(&config.identifier, &opt_in, actual_url, &windows), Ok(()));
+        assert_eq!(config.app.windows.len(), 1);
+        assert!(!config.bundle.active);
+        let caps = serde_json::to_value(&config.app.security.capabilities)
+            .expect("serialize the compile-time capability references");
+        assert_eq!(caps, serde_json::json!(["default"]));
+        // A capability reference alone is not a native ACL grant. The separate
+        // source-only audit checks default.json targets only window "main".
+    }
+
     #[test]
     fn lab_constants_explicitly_refuse_real_source_assumptions() {
         assert_ne!(LAB_ID, "com.fabulaxiom.desktop");
