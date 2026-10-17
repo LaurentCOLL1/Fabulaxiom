@@ -1,5 +1,10 @@
 # Fabulaxiom — Next Authorized Work
 
+## 2026-10-17 — Qualification source et compilation d'un Tauri fictif sans données réelles
+
+Qualifier la PR `m32-synthetic-preview` au HEAD exact : 12 tests Python source-only, 5 Rust pour identifiant exact, URL de fixture et fenêtre unique, `cargo check --locked --features m32-synthetic-preview` Windows/debug, tout `npm`/Chromium/Rust/G3 préexistant. Vérifier que le chemin normal est non compilé avec cette feature, zéro commande applicative enregistrée, feature exclue de release, overlay distinct et sans capability, `App.tsx` intact, locks immuables. Re-vérifier main/PR/CI avant fusion. La CI ne lance **pas** Tauri/WebView2 : pas de prétention d'acceptation Windows, de provenance G3 ni de permission d'opérer. Toute procédure interactive future nécessite préflight et autorisation explicite. PR #35 reste DRAFT, source réelle G3 `STOP_UNAVAILABLE`, 21/3/2 en attente ; aucune migration, marker, backup ou release.
+
+
 ## 2026-10-17 — Qualifier la lisibilité/accessibilité de l'explorateur fictif
 
 Vérifier la nouvelle PR au HEAD exact : suite Vitest ciblée **28/28**, Chromium réel **29/29** avec rôles de recherche/statuts, aria-pressed, focus visible, cible >=44 px et largeur de 375 px ; suite frontend complète, build TypeScript, Rust et tous garde-fous G3, diff, locks inchangés, règles de branche et SHA anti-course. La CSS n'est importée que depuis `src/m32BrowserLab.tsx` et **pas** depuis `App.tsx`. Ces tests ne valent pas réception Windows/Tauri ou audit WCAG exhaustif. Si l'une des assertions échoue, corriger sur branche, changer le HEAD et requalifier entièrement. PR #35 demeure brouillon, G3 `STOP_UNAVAILABLE`, historique 21/3/2 externe non résolu, pas d'original ouvert, 007, writer, M3.3 ou release.

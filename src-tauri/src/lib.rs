@@ -1,6 +1,12 @@
 mod backup;
 mod backup_commands;
 mod database;
+#[cfg(feature = "m32-synthetic-preview")]
+mod m32_synthetic_preview;
+#[cfg(all(feature = "m31-isolated-preview", feature = "m32-synthetic-preview"))]
+compile_error!("M3.1 read-only v7 preview and M3.2 fictional preview cannot coexist");
+#[cfg(all(feature = "m32-synthetic-preview", not(debug_assertions)))]
+compile_error!("M3.2 fictional Tauri preview is DEBUG-ONLY; release builds forbidden");
 #[cfg(feature = "m31-isolated-preview")]
 mod m31_readonly_preview;
 #[cfg(all(feature = "m31-isolated-preview", not(debug_assertions)))]
@@ -240,7 +246,7 @@ fn database_status(app: tauri::AppHandle) -> DatabaseStatus {
     }
 }
 
-#[cfg(not(feature = "m31-isolated-preview"))]
+#[cfg(not(any(feature = "m31-isolated-preview", feature = "m32-synthetic-preview")))]
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
@@ -294,7 +300,7 @@ pub fn run() {
 }
 
 /// Only one read-only command is registered. All M2 mutation IPC is absent.
-#[cfg(feature = "m31-isolated-preview")]
+#[cfg(all(feature = "m31-isolated-preview", not(feature = "m32-synthetic-preview")))]
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     let context = tauri::generate_context!();
@@ -310,6 +316,28 @@ pub fn run() {
         ])
         .run(context)
         .expect("M3.1 isolated read-only preview failed");
+}
+
+/** Distinct DEVELOPMENT-ONLY fictional UI shell.
+ * NO invoke_handler, plugins, registered SQLite commands, or fallback to the
+ * normal application. The hardcoded lab has NO operator files or paths.
+ */
+#[cfg(all(feature = "m32-synthetic-preview", not(feature = "m31-isolated-preview")))]
+#[cfg_attr(mobile, tauri::mobile_entry_point)]
+pub fn run() {
+    let context = tauri::generate_context!();
+    let actual_id = context.config().identifier.as_str();
+    let actual_url = context.config().build.dev_url.as_ref().map(|url| url.as_str());
+    let windows: Vec<&str> = context.config().app.windows
+        .iter().map(|window| window.label.as_str()).collect();
+    let explicit_id = std::env::var("FABULAXIOM_M32_PREVIEW_ID")
+        .expect("M3.2 fictional preview requires an explicit exact identity opt-in");
+    m32_synthetic_preview::validate_launch(actual_id, &explicit_id, actual_url, &windows)
+        .expect("M3.2 fictional preview refuses wrong identity, homepage or window");
+    // A different startup path from the normal and M3.1 variants. By design
+    // this builder has zero app invoke commands, state, or plugins.
+    tauri::Builder::default().run(context)
+        .expect("M3.2 fictional-only preview shell failed");
 }
 
 #[cfg(test)]

@@ -100,6 +100,17 @@ jobs:
         working-directory: src-tauri
         run: cargo test --locked --features m31-isolated-preview --lib m31_readonly_preview
 
+      - name: M3.2 fictional Tauri preview source-only policy (no launch)
+        run: python -m unittest discover -s tools -p "test_m3_2_synthetic_tauri_preview.py" -v
+
+      - name: M3.2 fictional Tauri preview pure Rust identity tests (no launch)
+        working-directory: src-tauri
+        run: cargo test --locked --features m32-synthetic-preview --lib m32_synthetic_preview
+
+      - name: M3.2 fictional Tauri debug compile (no launch)
+        working-directory: src-tauri
+        run: cargo check --locked --features m32-synthetic-preview
+
       - name: M3.2 solo baseline synthetic-only adversarial qualification
         run: python -m unittest discover -s tools -p "test_m3_2_solo_synthetic_lab.py" -v
 
