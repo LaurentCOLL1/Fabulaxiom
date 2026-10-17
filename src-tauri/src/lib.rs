@@ -31,6 +31,8 @@ mod world_time_file_migration_tests;
 compile_error!("M3.2 owner-to-RAM backup fixture must be compiled ONLY as Rust unit tests");
 #[cfg(all(test, feature = "m32-g3-owned-ram-toy"))]
 mod m32_owned_backup_toy;
+#[cfg(all(test, feature = "m32-g3-owned-ram-toy"))]
+mod m32_owner_lifecycle_toy;
 
 use std::time::Duration;
 

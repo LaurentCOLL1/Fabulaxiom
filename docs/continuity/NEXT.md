@@ -1,5 +1,10 @@
 # Fabulaxiom — Next Authorized Work
 
+## 2026-10-17 — Étape autorisée : cycle de vie Rust RAM avant toute connexion Tauri réelle
+
+Qualifier `m32_owner_lifecycle_toy` sur le HEAD exact de sa PR Windows. Le prototype utilise exclusivement `Connection::open_in_memory`; il doit refuser une session périmée, un propriétaire révoqué ou empoisonné, un budget insuffisant, des migrations/FK défectueuses et les accès non synchronisés. Si la CI réussit, rédiger une étude d'architecture **sans aucune ouverture de source réelle**, afin de définir comment une future connexion persistante pourrait être créée et prouvée non migrante, avec source/provenance et approbation spécifique. Ne pas ajouter de commande Tauri G3 et ne pas libérer les verrous réels sur la base de tests synthétiques.
+
+
 ## 2026-10-17 — Qualification Rust source préexistante → RAM, sans runtime
 
 Faire passer la qualification **sur CI Windows liée au SHA exact** de la PR Rust expérimentale, puis seulement si elle réussit établir une étude de cycle de vie/provenance d'une connexion non migrante *sans la créer sur les originaux*. La suite de 13 tests ne prouvera pas l'identité réelle d'une source, la sécurité des chemins Windows ou un mécanisme de restauration. Ne pas activer `m32-g3-owned-ram-toy` dans les builds normaux. Tout projet de commande Tauri G3 requiert une autorisation nouvelle et séparée ; pour l'instant G3 réel STOP, PR #35 draft, 007/marker/writer/M3.3 interdits.
