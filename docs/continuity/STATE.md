@@ -1,5 +1,12 @@
 # Fabulaxiom — Current State
 
+## 2026-10-17 — M3.2 : comparaison React autonome d'ordres humains fictifs
+
+`main=20e3176896da325cbbd8683bb7692161cd7ad6f0` vérifié après PR #57 fusionnée et CI #39033928000 39/39 PASS (18/18 nouveaux tests React). Nouvelle proposition : composant **non monté** `M32WorldOrderComparison.tsx`, sur projections fictives seulement, produisant `before/after/same/incomparable` avec chaîne d'arêtes explicitement déclarées ; veto des cycles, références historiques actives et paires répétées. Aucun ordre calendaire ou narratif induit. Qualification Windows sur le HEAD exact **à effectuer** ; pas d'IPC, base, import App ni bouton d'édition. Rapport : `docs/qualification/M3_2_SYNTHETIC_REACT_ORDER_COMPARISON.md`.
+
+**G3 réel reste `STOP_UNAVAILABLE`**, historique `PENDING_EXTERNAL_ATTESTATION(21/3/2)`, prospective `NOT_STARTED`, G3-G6 `NOT_AUTHORIZED`, PR #35 `OPEN/DRAFT`. Pas de migration 007, original, activation, writer, M3.3 ni release.
+
+
 ## 2026-10-17 — M3.2 : extraction ciblée de la projection React fictive
 
 Autorité initiale `main=f4011f03842af249cf4df5114b0a62b01eafef98` (PR #56 fusionnée, CI Windows #39030884718 38/38 PASS). La PR #35 demeure OPEN/DRAFT, 84 fichiers non fusionnés. Un composant React **strictement non monté** (`src/M32ChronologyPreview.tsx`) est repris indépendamment comme laboratoire de chronologie mondiale, ordre narratif et révélation lecteur non renseignée, avec contrôle d'Univers, identités, dates fictives et refus des projections invalides. **18 tests Vitest synthétiques** sont proposés. La qualification Windows exacte de cette nouvelle PR reste exigée : aucun PASS anticipé, aucun IPC Tauri ni original ouvert. Rapport : `docs/qualification/M3_2_SYNTHETIC_REACT_CHRONOLOGY_VIEW.md`.
