@@ -1,5 +1,12 @@
 # Fabulaxiom — Current State
 
+## 2026-10-17 — M3.2 : parcours React fictif de consultation avec sélection explicite
+
+Après PR #58 protégée fusionnée (`main=125579506e7b7485e9ffab3163fe62193fee321d`, CI #39035926354 40/40, 24/24 nouveaux tests React), une PR indépendante propose une **composition non montée** de `M32ChronologyPreview` et `M32WorldOrderComparison`, avec deux choix explicites d'identifiants actifs, rendu des preuves humaines et veto de graphe même avant sélection. `24` nouveaux tests Vitest synthétiques sont proposés, avec CI exacte à qualifier. Aucun composant injecté dans `App.tsx`, aucune source opérateur, aucune IPC ni écriture. Rapport : `docs/qualification/M3_2_SYNTHETIC_REACT_CONSULTATION_FLOW.md`.
+
+**G3 réel `STOP_UNAVAILABLE`, historique `PENDING_EXTERNAL_ATTESTATION(21/3/2)`, prospective `NOT_STARTED`, G3-G6 `NOT_AUTHORIZED`, PR #35 `OPEN/DRAFT`.** Pas d'original, migration 007, activation, writer, M3.3 ni release.
+
+
 ## 2026-10-17 — M3.2 : comparaison React autonome d'ordres humains fictifs
 
 `main=20e3176896da325cbbd8683bb7692161cd7ad6f0` vérifié après PR #57 fusionnée et CI #39033928000 39/39 PASS (18/18 nouveaux tests React). Nouvelle proposition : composant **non monté** `M32WorldOrderComparison.tsx`, sur projections fictives seulement, produisant `before/after/same/incomparable` avec chaîne d'arêtes explicitement déclarées ; veto des cycles, références historiques actives et paires répétées. Aucun ordre calendaire ou narratif induit. Qualification Windows sur le HEAD exact **à effectuer** ; pas d'IPC, base, import App ni bouton d'édition. Rapport : `docs/qualification/M3_2_SYNTHETIC_REACT_ORDER_COMPARISON.md`.
