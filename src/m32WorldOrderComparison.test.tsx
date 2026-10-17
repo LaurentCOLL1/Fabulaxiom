@@ -9,15 +9,16 @@ import type { M32ChronologyProjection } from "./M32ChronologyPreview";
 const original: M32ChronologyProjection = {
   universe_id: "world-a",
   reader_reveal_status: "not_authored",
-  anchors: ["A", "B", "C", "D", "E"].map(id => ({
-    id, universe_id: "world-a", time_kind: "unknown" as const,
-    status: "current" as const, calendar_name: null,
-    fictional_label: null, precision_text: null, source_revision_id: null,
-  })).concat([
+  anchors: [
+    ...["A", "B", "C", "D", "E"].map(id => ({
+      id, universe_id: "world-a", time_kind: "unknown" as const,
+      status: "current" as const, calendar_name: null,
+      fictional_label: null, precision_text: null, source_revision_id: null,
+    })),
     { id: "past", universe_id: "world-a", time_kind: "unknown" as const,
       status: "revoked" as const, calendar_name: null,
       fictional_label: null, precision_text: null, source_revision_id: null },
-  ]),
+  ],
   precedences: [
     { id: "human-1", universe_id: "world-a", before_anchor_id: "A",
       after_anchor_id: "B", status: "current", reason: "Raison 1" },
