@@ -178,8 +178,95 @@ async function run() {
       assert.equal(await page.locator("script:has-text('not executable()')").count(), 0);
       assert.equal(await page.getByText("<script>not executable()</script>", { exact: false }).count(), 1);
     });
-    assert.equal(cases.length, 14);
-    console.log("M32_BROWSER_REAL_CHROMIUM_PASS 14/14");
+
+    async function explore() {
+      await page.getByRole("button", { name: "Afficher l'explorateur fictif" }).click();
+      assert.equal(await page.getByRole("region", { name: "Explorateur M3.2 fictif filtrable" }).count(), 1);
+    }
+    const searchField = () => page.getByRole("searchbox", { name: "Filtrer les événements" });
+    const statuses = () => page.getByRole("combobox", { name: "Filtre de statut" });
+    const filteredList = () => page.getByRole("list", { name: "Événements filtrés" });
+    await caseRun("15-explorer-first-page-eight-visible-ids", async () => {
+      await explore();
+      assert.equal(await filteredList().getByRole("listitem").count(), 8);
+      assert.equal(await page.getByText("25 assertions correspondantes", { exact: false }).count(), 1);
+      assert.equal(await page.getByText("Page 1 sur 4", { exact: false }).count(), 1);
+      assert.equal(await first().inputValue(), "");
+    });
+    await caseRun("16-search-id-select-second-only", async () => {
+      await explore();
+      await searchField().fill(" n17 ");
+      assert.equal(await filteredList().getByRole("listitem").count(), 1);
+      await page.getByRole("button", { name: "Choisir N17 comme deuxième événement" }).click();
+      assert.equal(await second().inputValue(), "N17");
+      assert.equal(await first().inputValue(), "");
+      assert.equal(await page.getByRole("region", { name: "Résumé de justification de comparaison" }).count(), 0);
+    });
+    await caseRun("17-page-navigation-and-query-reset", async () => {
+      await explore();
+      await page.getByRole("button", { name: "Page suivante" }).click();
+      assert.equal(await page.getByText("Page 2 sur 4", { exact: false }).count(), 1);
+      await searchField().fill("N19");
+      assert.equal(await page.getByText("Page 1 sur 1", { exact: false }).count(), 1);
+      assert.equal(await filteredList().getByRole("listitem").count(), 1);
+      assert.equal(await page.getByRole("button", { name: "Page précédente" }).isDisabled(), true);
+    });
+    await caseRun("18-historical-filter-retains-display-denies-selection", async () => {
+      await explore();
+      await statuses().selectOption("historical");
+      assert.equal(await filteredList().getByRole("listitem").count(), 2);
+      assert.equal(await filteredList().getByRole("button").count(), 0);
+      assert.equal(await filteredList().getByText("retired", { exact: false }).count() > 0, true);
+    });
+    await caseRun("19-fictional-title-query-does-not-confuse-id", async () => {
+      await explore();
+      await searchField().fill("Troisième");
+      assert.equal(await filteredList().getByRole("listitem").count(), 1);
+      assert.equal(await page.getByRole("button", { name: "Choisir A comme premier événement" }).count(), 1);
+      assert.equal(await page.getByRole("button", { name: "Choisir B comme premier événement" }).count(), 0);
+    });
+    await caseRun("20-select-across-filters-and-retain-edge-witness", async () => {
+      await explore();
+      await searchField().fill("Troisième");
+      await page.getByRole("button", { name: "Choisir A comme premier événement" }).click();
+      await searchField().fill("C");
+      await page.getByRole("button", { name: "Choisir C comme deuxième événement" }).click();
+      const proof = page.getByRole("region", { name: "Résumé de justification de comparaison" });
+      assert.equal(await proof.getByRole("list", { name: "Chaîne de précédence sélectionnée" }).getByRole("listitem").count(), 2);
+      assert.equal(await proof.getByText("Le messager arrive", { exact: false }).count(), 1);
+      assert.equal(await proof.getByText("La porte s'ouvre", { exact: false }).count(), 1);
+      await searchField().fill("N19");
+      assert.equal(await first().inputValue(), "A");
+      assert.equal(await second().inputValue(), "C");
+      assert.equal(await proof.getByText("La porte s'ouvre", { exact: false }).count(), 1);
+    });
+    await caseRun("21-clear-selection-removes-proof-but-not-filter", async () => {
+      await explore();
+      await page.getByRole("button", { name: "Choisir A comme premier événement" }).click();
+      await page.getByRole("button", { name: "Choisir C comme deuxième événement" }).click();
+      await second().selectOption("");
+      assert.equal(await page.getByRole("region", { name: "Résumé de justification de comparaison" }).count(), 0);
+      assert.equal(await first().inputValue(), "A");
+    });
+    await caseRun("22-fictional-universe-switch-resets-all-filters-and-pair", async () => {
+      await explore();
+      await searchField().fill("Troisième");
+      await page.getByRole("button", { name: "Choisir A comme premier événement" }).click();
+      await page.getByRole("button", { name: "Charger un autre univers fictif" }).click();
+      assert.equal(await searchField().inputValue(), "");
+      assert.equal(await first().inputValue(), "");
+      assert.equal(await second().inputValue(), "");
+      assert.equal(await filteredList().getByRole("listitem").count(), 2);
+    });
+    await caseRun("23-cycle-veto-before-list-or-selections", async () => {
+      await explore();
+      await page.getByRole("button", { name: "Charger un cycle fictif invalide" }).click();
+      assert.equal(await page.getByRole("alert", { name: "Explorateur M3.2 refusé" }).count(), 1);
+      assert.equal(await filteredList().count(), 0);
+      assert.equal(await page.getByRole("combobox", { name: "Premier événement" }).count(), 0);
+    });
+    assert.equal(cases.length, 23);
+    console.log("M32_BROWSER_REAL_CHROMIUM_PASS 23/23");
   } finally {
     if (browser) await browser.close();
     server.kill();
