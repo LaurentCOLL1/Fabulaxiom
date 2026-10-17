@@ -1,5 +1,10 @@
 # Fabulaxiom — Next Authorized Work
 
+## 2026-10-17 — Qualification du parcours React M3.2 fictif
+
+Qualifier sur le HEAD exact le nouveau flux `M32ChronologyConsultation` : `24` tests ciblés (deux sélections HTML natives, cohérence d'Univers, transition sans défaut implicite, preuves de précédence, refus global des cycles), `npm run test:ci`, `npm run build`, anciennes suites Rust/Python et garde G3, diff, protections de `main`. La sélection reste **uniquement en mémoire fictive**, non montée dans `App.tsx` et sans données utilisateur. Ne pas fusionner PR #35 ni autoriser G3, une migration 007 ou une nouvelle connexion opérateur. Après validation, envisager une qualification de rendu plus proche d'une interaction navigateur sur des fixtures fictives, mais sans l'assimiler à une réception Windows réelle.
+
+
 ## 2026-10-17 — Qualification de comparaison chronologique React fictive
 
 Qualifier le HEAD exact de la nouvelle PR `M32WorldOrderComparison.tsx` : tests dédiés de précédence, témoins d'ordre humain, cycle et non-comparabilité, `npm run test:ci`, `npm run build`, Rust et contrôles G3 conservés, diff et règle de protection. Vérifier le composant **non importé par `App.tsx`** et strictement sans IPC ni données opérateur. Après fusion éventuelle, choisir une autre tranche UI/test sans monter de source réelle non attestée, sans fusionner PR #35. G3 `STOP_UNAVAILABLE`, 21/3/2 externe toujours en attente, prospective `NOT_STARTED`, pas de production v7, writer, activation, M3.3 ou release.
