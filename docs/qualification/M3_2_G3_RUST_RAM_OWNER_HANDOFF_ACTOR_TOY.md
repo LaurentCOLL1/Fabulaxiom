@@ -24,7 +24,7 @@ A real future handoff would need, **before creating this actor in production**: 
 
 ### CI acceptance
 
-The isolated Windows `pull_request` job must run `cargo test --locked --features m32-g3-owned-ram-toy --lib m32_owner_handoff_actor_toy -- --nocapture` on the **exact PR HEAD**, report all ten new tests green and preserve normal Rust and existing G3 tests. Any HEAD change invalidates prior checks. Review the five-file diff and branch protections before fusion.
+The isolated Windows `pull_request` job must run `cargo test --locked --features m32-g3-owned-ram-toy --lib m32_owner_handoff_actor_toy -- --nocapture` on the **exact PR HEAD**, report all ten new tests green and preserve normal Rust and existing G3 tests. Any HEAD change invalidates prior checks. Review the six-file diff and branch protections before fusion.
 
 **Governance unchanged:** historical `PENDING_EXTERNAL_ATTESTATION(21/3/2)`; prospective `NOT_STARTED`; real G3/G4/G5/G6 `NOT_AUTHORIZED`; PR #35 `OPEN/DRAFT`; no 007 production, activation, writer IPC, M3.3 or release. No independent human signoff claimed.
 
