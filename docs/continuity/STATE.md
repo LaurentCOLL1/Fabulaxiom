@@ -1,5 +1,12 @@
 # Fabulaxiom — Current State
 
+## 2026-10-17 — M3.2 : chemin Tauri fictif distinct de tout runtime SQLite
+
+`main=1607f5705f0ec4a18a37542cf3e04d1df89ec2d6` protégé après PR #62 fusionnée (CI #39054598253, 43/43 étapes, Chromium 29/29, frontend 129/129, Rust 100/100). Branche nouvelle : feature Rust `m32-synthetic-preview` **opt-in/debug uniquement**, startup Tauri séparé **sans enregistrement d'IPC applicatif** ; overlay à identité `com.fabulaxiom.m32synthetic.preview`, une fenêtre fictive, URL boucle locale du laboratoire, capacités vides, protection `compile_error` release, exclusion mutuelle avec M3.1. **Pas de lancement autorisé** ; seuls tests de validation pure et compilation Windows seront qualifiés avant fusion. Rapport `docs/qualification/M3_2_SYNTHETIC_TAURI_WINDOWS_PREVIEW.md`.
+
+**Autorités identiques** : historique `PENDING_EXTERNAL_ATTESTATION(21/3/2)`, prospective `NOT_STARTED`, original G3 `STOP_UNAVAILABLE`, G3/G4/G5/G6 `NOT_AUTHORIZED`, PR #35 `OPEN/DRAFT`. Aucun original, marqueur, backup, migration 007, writer, M3.3 ni release.
+
+
 ## 2026-10-17 — M3.2 : amélioration de lisibilité/accessibilité du seul laboratoire fictif
 
 Base protégée après PR #61 fusionnée : `main=f4da538a5e17ead5cf4ea3b06f2ec6aaf18a1e4a`, CI #39052427503 (43/43 étapes, Chromium 23/23, frontend 123/123, Rust 100/100). Nouvelle PR distincte : région de recherche nommée, annonces atomiques du filtre et des deux identifiants sélectionnés, états `aria-pressed` sur les boutons, CSS **uniquement page Vite fictive** (focus visible, boutons 44 px, cartes repliables). Six nouveaux tests Vitest (total ciblé **28**) et six tests navigateur Chromium (total **29**) proposés ; **pas de PASS avant la CI exacte de cette PR**. Document : `docs/qualification/M3_2_SYNTHETIC_EXPLORER_ACCESSIBILITY.md`. Aucun import `App.tsx`, ni dépendance, ni donnée opérateur.
