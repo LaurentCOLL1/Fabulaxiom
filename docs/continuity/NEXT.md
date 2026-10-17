@@ -1,5 +1,10 @@
 # Fabulaxiom — Next Authorized Work
 
+## 2026-10-17 — Qualifier l'explorateur fictif M3.2 filtrable
+
+Contrôler le HEAD exact de la PR indépendante d'exploration : 22 tests `m32SyntheticEventExplorer`, 23 vrais scénarios Chromium `M32_BROWSER_REAL_CHROMIUM_PASS`, TypeScript/Vite, toutes les suites Rust/Python antérieures, diff et strict statut GitHub avant fusion. Le filtrage ne masque jamais un graphe invalide, les historiques ne deviennent pas sélectionnables, la pagination n'invente aucun événement ni ordre. Les composants restent absents de `App.tsx` ; la base opérateur et le runtime Tauri sont exclus. PR #35 brouillon, source G3 `STOP_UNAVAILABLE`, 21/3/2 externes en attente, pas de G3 réel, migration 007, activation, writer, M3.3 ni release.
+
+
 ## 2026-10-17 — Qualifier l'interaction réelle du laboratoire navigateur M3.2
 
 Vérifier la PR Chromium synthétique au HEAD exact : 14 cas `M32_BROWSER_REAL_CHROMIUM_PASS`, accès HTTP strictement boucle locale, reset d'Univers, clavier, sélecteurs, preuves, refus de cycles ; conserver `npm ci`, tests React/Vitest, build Vite et contrôles Rust/Python. Vérifier aucune importation dans `App.tsx`, aucune dépendance lock ou données opérateur. Nouveau navigateur uniquement sur runner Windows jetable. Fusion protégée seulement après CI `pull_request` terminée SUCCESS, diff, règles de branche et SHA anti-course. **Ne pas confondre ces tests avec l'acceptation du bureau Tauri sur une vraie v7** ; G3 `STOP_UNAVAILABLE`, historique en attente (21/3/2), prospective `NOT_STARTED`, PR #35 DRAFT et aucun G3 réel, 007, marqueur, writer ou release.

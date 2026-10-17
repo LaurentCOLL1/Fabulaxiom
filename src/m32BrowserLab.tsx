@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { createRoot } from "react-dom/client";
 import { M32SyntheticConsultationLab } from "./M32ChronologyConsultation";
+import M32SyntheticEventExplorer from "./M32SyntheticEventExplorer";
 import type { M32ChronologyProjection } from "./M32ChronologyPreview";
 
 /** DISPOSABLE FICTITIOUS BROWSER TEST PAGE. NOT an App.tsx import or Tauri route.
@@ -14,7 +15,7 @@ const first: M32ChronologyProjection = {
       status: "current", calendar_name: "Calendrier des marées",
       fictional_label: "Troisième cloche", precision_text: null,
       source_revision_id: "invented-rev-A" },
-    ...["B", "C", "D"].map(id => ({
+    ...["B", "C", "D", ...Array.from({ length: 19 }, (_, i) => "N" + String(i + 1).padStart(2, "0"))].map(id => ({
       id, universe_id: "fiction-world-one", time_kind: "unknown" as const,
       status: "current" as const, calendar_name: null, fictional_label: null,
       precision_text: null, source_revision_id: null,
@@ -70,6 +71,7 @@ const cyclic: M32ChronologyProjection = {
 type Scenario = "one" | "two" | "cyclic";
 function BrowserFixture() {
   const [scenario, setScenario] = useState<Scenario>("one");
+  const [mode, setMode] = useState<"consultation" | "explorer">("consultation");
   const snapshot = scenario === "two" ? second : scenario === "cyclic" ? cyclic : first;
   return <main aria-label="Laboratoire navigateur M3.2 exclusivement fictif">
     <h1>Tests navigateur — données imaginaires exclusivement</h1>
@@ -84,11 +86,23 @@ function BrowserFixture() {
         Charger un cycle fictif invalide
       </button>
     </section>
-    <M32SyntheticConsultationLab
+    <section aria-label="Choix des interfaces fictives">
+      <button type="button" onClick={() => setMode("explorer")}>
+        Afficher l'explorateur fictif
+      </button>
+      <button type="button" onClick={() => setMode("consultation")}>
+        Afficher le parcours de consultation fictif
+      </button>
+    </section>
+    {mode === "consultation" ? <M32SyntheticConsultationLab
       scenarioKey={scenario}
       expectedUniverseId={snapshot.universe_id}
       snapshot={snapshot}
-    />
+    /> : <M32SyntheticEventExplorer
+      scenarioKey={scenario}
+      expectedUniverseId={snapshot.universe_id}
+      snapshot={snapshot}
+    />}
     <p>Aucun événement dans cette page ne provient d'une base opérateur.</p>
   </main>;
 }
