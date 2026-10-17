@@ -57,7 +57,7 @@ describe("M3.2 bounded fictional event explorer, isolated read-only", () => {
   });
   it("paginates deterministically over stable IDs", () => {
     expect(derive("", "all", 1).rows[0].id).toBe("N09");
-    expect(derive("", "all", 2).rows.at(-1)?.id).toBe("same-name");
+    expect(derive("", "all", 2).rows.slice(-1)[0]?.id).toBe("same-name");
   });
   it("clamps the presentation page without discarding selected sources", () => {
     const a = derive("N02", "all", 2, { leftAnchorId: "N01", rightAnchorId: "N03" });
