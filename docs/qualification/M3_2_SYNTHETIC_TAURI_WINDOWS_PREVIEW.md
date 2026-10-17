@@ -40,6 +40,20 @@ La documentation officielle Tauri v2 précise que `security.capabilities` **abse
 
 Documentation Tauri : https://v2.tauri.app/reference/config/ ; https://v2.tauri.app/security/capabilities/ ; https://v2.tauri.app/reference/cli/ .
 
+## Procédure Windows FUTURE — préparée mais interdite d'exécution actuellement
+
+**Aucun bloc exécutable ne doit démarrer Tauri, Vite ou WebView2 avant accord explicite et distinct de l'opérateur.** Cette liste ne prescrit aucun lancement immédiat et ne valide pas les préconditions par elle-même. Tous les états `PASS` ci-dessous sont *critères à obtenir*, non résultats déjà obtenus.
+
+1. **GATE 0 — consentement et arrêt possible.** Présenter le HEAD GitHub exact, le patch, les effets attendus du serveur Vite et du processus WebView2, toute touche interactive requise, ainsi qu'une procédure Ctrl+C / fermeture de la fenêtre ciblée. Exiger un « j'autorise le lancement de cette variante fictive » distinct ; à défaut : `STOP`.
+2. **GATE 1 — source et environnement.** Re-fetch `main` et HEAD exact de la PR fusionnée, vérifier dépôt/worktree propres, locks et versions Node/Rust/CLI, feature `m32-synthetic-preview` seule, mode debug et identité `FABULAXIOM_M32_PREVIEW_ID=com.fabulaxiom.m32synthetic.preview`. Tout désaccord/feature additionnelle : `STOP`.
+3. **GATE 2 — isolation du poste.** Identifier les processus Fabulaxiom/Tauri/WebView2 existants **sans les arrêter**, vérifier que le port local 1420 n'est pas utilisé par un autre service, et que `TAURI_DEV_HOST` est absent ou strictement `127.0.0.1`. Ne pas inspecter ni ouvrir les bases/sauvegardes/ACL protégées. Processus, port, espace de sortie ou contexte de sécurité ambigus : `STOP`. Aucune élévation implicite.
+4. **GATE 3 — contexte Tauri natif sans lancement.** Qualifier sur environnement jetable la CLI versionnée et sa fusion effective `tauri.conf.json` + overlay + éventuel `tauri.windows.conf.json`, puis attester fenêtre **unique** `m32-fiction`, URL précise `http://127.0.0.1:1420/m32-browser-lab.html`, allowlist `["default"]`, `default.json` réservé à `main`, `bundle.active=false`, CSP héritée et permissions réelles du noyau. La simulation Python ne suffit pas. Sans preuve inspectable : `STOP`.
+5. **GATE 4 — examen Rust et démarrage seulement sous autorisation.** Vérifier le binaire de debug issu de la configuration exacte : `run()` fictif, validation avant `Builder::run`, zéro `invoke_handler`/plugin/state; aucun appel à `database::open_database`, au backup, aux migrations ni à une identité normale/M3.1. **Ne fournir une commande de lancement que dans le tour où l'opérateur l'a explicitement autorisée.** Sinon : `TAURI_RUNTIME_NOT_TESTED`.
+6. **GATE 5 — réception interactive si et seulement si autorisée.** Observer identité de fenêtre et URL effectives, absence de fenêtre `main`, navigation interdite vers le produit normal et absence d'appel IPC natif accessible depuis la page fictive ; vérifier qu'aucun fichier opérateur ne fait partie des opérations, sans ouvrir ces fichiers pour le prouver. Un comportement inattendu déclenche fermeture contrôlée du **seul processus lancé dans cette session** ; pas de `taskkill` global, pas de nettoyage automatique, et statut `FAIL/STOP`.
+7. **GATE 6 — fin et preuve bornée.** Arrêt de la variante et de son seul serveur enfant, vérification d'absence de processus résiduels connus, publication limitée aux codes de sortie et résultats non privés. Le runtime fictif ne constitue jamais une acceptation G3, un audit SQLite réel ni une autorisation de migration ou de fusion #35.
+
+**Sémantique** : `PASS` uniquement pour un contrôle exécuté et prouvé sur le HEAD et le poste exacts ; `FAIL` pour assertion effectivement exécutée et contredite ; `STOP` pour identité, autorité, consentement ou preuve préalable absents. Toute modification de sources ou versions annule les preuves de qualification correspondantes.
+
 ### Sources officielles
 - [Tauri v2 — Configuration et devUrl](https://v2.tauri.app/reference/config/)
 - [Tauri v2 — Runtime Authority](https://v2.tauri.app/security/runtime-authority/)
