@@ -1,5 +1,12 @@
 # Fabulaxiom — Current State
 
+## 2026-10-17 — M3.2 : qualification navigateur réelle sur parcours React fictif
+
+Autorité initiale protégée `main=008761b0778b8ad3dd5e5dd711ef406394bf41d2`, après PR #59 fusionnée et CI #39044031084 41/41 (24/24 nouveaux tests React). Nouvelle qualification distincte : page Vite de laboratoire **non reliée à App.tsx**, scénarios fictifs littéraux, Playwright Chromium headless exécuté **uniquement** sur Windows CI avec package version fixe en `RUNNER_TEMP`; 14 cas de sélecteurs, clavier, remise à zéro, justification avant/après et refus de cycle. Pas de dépendances du projet changées, d'original ouvert, d'IPC, de production 007 ou de marqueur modifié. **CI exacte de cette PR à valider avant toute fusion.** Rapport : `docs/qualification/M3_2_SYNTHETIC_REAL_BROWSER_INTERACTION.md`.
+
+G3 source `STOP_UNAVAILABLE`, historique `PENDING_EXTERNAL_ATTESTATION(21/3/2)`, prospective `NOT_STARTED`, réel G3–G6 `NOT_AUTHORIZED`, PR #35 `OPEN/DRAFT`, pas de M3.3 ni release.
+
+
 ## 2026-10-17 — M3.2 : parcours React fictif de consultation avec sélection explicite
 
 Après PR #58 protégée fusionnée (`main=125579506e7b7485e9ffab3163fe62193fee321d`, CI #39035926354 40/40, 24/24 nouveaux tests React), une PR indépendante propose une **composition non montée** de `M32ChronologyPreview` et `M32WorldOrderComparison`, avec deux choix explicites d'identifiants actifs, rendu des preuves humaines et veto de graphe même avant sélection. `24` nouveaux tests Vitest synthétiques sont proposés, avec CI exacte à qualifier. Aucun composant injecté dans `App.tsx`, aucune source opérateur, aucune IPC ni écriture. Rapport : `docs/qualification/M3_2_SYNTHETIC_REACT_CONSULTATION_FLOW.md`.

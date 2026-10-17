@@ -42,6 +42,21 @@ jobs:
       - name: M3.2 synthetic React two-anchor consultation tests
         run: npm run test:ci -- src/m32ChronologyConsultation.test.tsx
 
+      - name: M3.2 real Chromium synthetic-only UI interaction (ephemeral pinned Playwright)
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $Sandbox = Join-Path $env:RUNNER_TEMP 'fabulaxiom-m32-chromium'
+          New-Item -ItemType Directory -Force -Path $Sandbox | Out-Null
+          npm install --prefix $Sandbox --no-save --package-lock=false --ignore-scripts --no-audit --no-fund playwright@1.64.1
+          if ($LASTEXITCODE -ne 0) { throw 'Playwright isolated installation failed' }
+          $Cli = Join-Path $Sandbox 'node_modules\playwright\cli.js'
+          node $Cli install chromium
+          if ($LASTEXITCODE -ne 0) { throw 'Chromium browser installation failed' }
+          $env:FABULAXIOM_M32_PLAYWRIGHT_MODULE = Join-Path $Sandbox 'node_modules\playwright'
+          node tools/m32_browser_interaction.cjs
+          if ($LASTEXITCODE -ne 0) { throw 'Synthetic Chromium interaction tests failed' }
+
       - name: Frontend production build
         run: npm run build
 
