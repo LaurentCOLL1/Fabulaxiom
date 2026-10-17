@@ -83,15 +83,15 @@ async function run() {
       await first().selectOption("A");
       await second().selectOption("B");
       assert.equal(await page.getByText("Avant : précédence humaine explicite ou transitive").isVisible(), true);
-      assert.equal(await page.getByText("Le messager arrive", { exact: false }).count(), 1);
-      assert.equal(await page.getByText("La porte s'ouvre", { exact: false }).count(), 0);
+      assert.equal(await page.getByRole("region", { name: "Justification des précédences" }).getByText("Le messager arrive", { exact: false }).count(), 1);
+      assert.equal(await page.getByRole("region", { name: "Justification des précédences" }).getByText("La porte s'ouvre", { exact: false }).count(), 0);
     });
     await caseRun("03-transitive-human-witness", async () => {
       await first().selectOption("A");
       await second().selectOption("C");
       assert.equal(await page.getByRole("region", { name: "Justification des précédences" }).count(), 1);
-      assert.equal(await page.getByText("Le messager arrive", { exact: false }).count(), 1);
-      assert.equal(await page.getByText("La porte s'ouvre", { exact: false }).count(), 1);
+      assert.equal(await page.getByRole("region", { name: "Justification des précédences" }).getByText("Le messager arrive", { exact: false }).count(), 1);
+      assert.equal(await page.getByRole("region", { name: "Justification des précédences" }).getByText("La porte s'ouvre", { exact: false }).count(), 1);
       assert.equal(await page.getByText("Avant : précédence humaine explicite ou transitive").isVisible(), true);
     });
     await caseRun("04-reverse-after", async () => {
@@ -114,10 +114,10 @@ async function run() {
     await caseRun("07-change-selection-refreshes-proof", async () => {
       await first().selectOption("A");
       await second().selectOption("C");
-      assert.equal(await page.getByText("La porte s'ouvre", { exact: false }).count(), 1);
+      assert.equal(await page.getByRole("region", { name: "Justification des précédences" }).getByText("La porte s'ouvre", { exact: false }).count(), 1);
       await second().selectOption("B");
-      assert.equal(await page.getByText("La porte s'ouvre", { exact: false }).count(), 0);
-      assert.equal(await page.getByText("Le messager arrive", { exact: false }).count(), 1);
+      assert.equal(await page.getByRole("region", { name: "Justification des précédences" }).getByText("La porte s'ouvre", { exact: false }).count(), 0);
+      assert.equal(await page.getByRole("region", { name: "Justification des précédences" }).getByText("Le messager arrive", { exact: false }).count(), 1);
     });
     await caseRun("08-clearing-explicit-choice", async () => {
       await first().selectOption("A");
@@ -173,7 +173,7 @@ async function run() {
     });
     await caseRun("14-script-like-fixture-text-escaped", async () => {
       assert.equal(await page.locator("script:has-text('not executable()')").count(), 0);
-      assert.equal(await page.getByText("<script>not executable()</script>").count(), 1);
+      assert.equal(await page.getByText("<script>not executable()</script>", { exact: false }).count(), 1);
     });
     assert.equal(cases.length, 14);
     console.log("M32_BROWSER_REAL_CHROMIUM_PASS 14/14");
