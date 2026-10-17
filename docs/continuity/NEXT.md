@@ -1,5 +1,10 @@
 # Fabulaxiom — Next Authorized Work
 
+## 2026-10-17 — Après transfert Rust RAM : statuer sur identité d'une source
+
+Qualifier sur le HEAD exact de la PR distincte la matrice de refus `m3_2_g3_source_identity_boundaries`, son audit des APIs Rust et les autres étapes Windows ; lire les journaux, diff, règles et fusionner seulement avec PASS terminal. Ensuite **ne pas ouvrir les originaux** : seule une nouvelle proposition de VFS dédié ou d'une connexion préouverte, authentifiée **de manière indépendante**, peut être étudiée sur données entièrement inventées puis soumise à autorisation opérateur. Si le lien sûr entre handle SQLite, fichier original, ancêtres, journaux et garantie de non-mutation demeure absent, conserver `STOP_UNAVAILABLE` et faire progresser M3.2 uniquement sur environnement isolé. Ne pas fusionner PR #35 ni déclencher G3/G4 réels, 007, activation, writer, M3.3 ou release.
+
+
 ## 2026-10-17 — Qualification acteur RAM à propriétaire unique, puis décision de provenance
 
 Vérifier que la PR expérimentale `m32_owner_handoff_actor_toy` conserve exclusivement `Connection::open_in_memory`, `cfg(test)` et la compilation interdite hors tests. Attendre sur **son SHA exact** le workflow Windows `pull_request` terminal et ses **11 nouveaux tests** d'admission, transfert, concurrence, revocation, poison et arrêt ; contrôler aussi les tests existants, le diff, le statut GitHub et la protection de `main`. Après une fusion qualifiée éventuelle, ne pas fabriquer une preuve d'original à partir de tickets RAM ; s'il n'existe aucune source réelle authentifiée et déjà ouverte, rester `STOP_UNAVAILABLE` pour G3. Étudier à part une procédure de provenance qui serait soumise à un accord opérateur spécifique avant toute ouverture réelle. Pas de PR #35 fusionnée, aucune production 007, activation ou writer.

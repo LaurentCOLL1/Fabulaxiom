@@ -118,6 +118,9 @@ jobs:
       - name: M3.2 G3 Tauri owner integration source-only drift audit
         run: python -m unittest discover -s tools -p "test_m3_2_g3_tauri_owner_integration_audit.py" -v
 
+      - name: M3.2 G3 source identity SQLite Win32 shortcut refusal and Rust source audit
+        run: python -m unittest discover -s tools -p "test_m3_2_g3_source_identity_boundaries.py" -v
+
       - name: Verify dependency locks are unchanged
         shell: pwsh
         run: |
