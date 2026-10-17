@@ -1,0 +1,90 @@
+/* TEST-ONLY: imported exclusively by m32BrowserLab.tsx, not by App.tsx. */
+:root {
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  color: #182e42;
+  background: #f5f8fc;
+  font-size: 16px;
+}
+*, *::before, *::after { box-sizing: border-box; }
+body { margin: 0; min-width: 0; }
+#m32-browser-lab-root { max-width: 76rem; margin: 0 auto; padding: 1rem; }
+#m32-browser-lab-root main > h1 { line-height: 1.35; font-size: clamp(1.45rem, 4vw, 2rem); }
+#m32-browser-lab-root section { min-width: 0; }
+#m32-browser-lab-root h2 { line-height: 1.4; font-size: clamp(1.2rem, 3vw, 1.5rem); }
+#m32-browser-lab-root :is(button, select, input) {
+  font: inherit;
+  min-height: 44px;
+  max-width: 100%;
+}
+#m32-browser-lab-root button {
+  cursor: pointer;
+  color: #fff;
+  background: #20486d;
+  border: 2px solid #20486d;
+  border-radius: .55rem;
+  padding: .5rem .85rem;
+  margin: .2rem;
+}
+#m32-browser-lab-root button:hover:not(:disabled) { background: #12304c; }
+#m32-browser-lab-root button:disabled {
+  cursor: not-allowed;
+  color: #3e556b;
+  border-color: #afbecf;
+  background: #e9eff5;
+}
+#m32-browser-lab-root button[aria-pressed="true"] {
+  color: #102943;
+  background: #fbd86e;
+  border-color: #102943;
+  font-weight: 700;
+}
+#m32-browser-lab-root :is(button, select, input):focus-visible {
+  outline: 3px solid #b34700;
+  outline-offset: 3px;
+}
+#m32-browser-lab-root input,
+#m32-browser-lab-root select {
+  border: 2px solid #586c80;
+  border-radius: .4rem;
+  background: #fff;
+  color: #172b40;
+  padding: .5rem;
+  width: 100%;
+}
+#m32-browser-lab-root label { display: block; font-weight: 600; margin-top: .6rem; }
+.m32-explorer {
+  padding: clamp(.7rem, 2vw, 1.2rem);
+  background: #fff;
+  border: 1px solid #acbdcd;
+  border-radius: .8rem;
+}
+.m32-search-controls { padding: .7rem; background: #edf4fc; border-radius: .6rem; }
+.m32-event-list, .m32-proof-steps { padding-left: 1.65rem; }
+.m32-event-row {
+  margin-block: .7rem;
+  padding: .8rem;
+  background: #f0f5fa;
+  border: 1px solid #c2cfdc;
+  border-radius: .55rem;
+  line-height: 1.65;
+  overflow-wrap: anywhere;
+}
+.m32-event-row:has(button[aria-pressed="true"]) {
+  border: 2px solid #244b71;
+  background: #e6f3ff;
+}
+.m32-pagination { display: flex; flex-wrap: wrap; gap: .35rem; margin-block: 1rem; }
+.m32-proof {
+  padding: 1rem;
+  border-left: 5px solid #244b71;
+  background: #edf4fc;
+  border-radius: .5rem;
+}
+.m32-proof-steps li { padding-block: .45rem; overflow-wrap: anywhere; }
+#m32-browser-lab-root code { overflow-wrap: anywhere; }
+@media (max-width: 420px) {
+  #m32-browser-lab-root { padding: .55rem; }
+  .m32-event-list { padding-left: 1.2rem; }
+  .m32-event-row { padding: .55rem; }
+  .m32-pagination button { flex: 1 1 8rem; }
+}

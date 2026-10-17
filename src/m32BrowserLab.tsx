@@ -1,4 +1,5 @@
 import { useState } from "react";
+import "./m32BrowserLab.css";
 import { createRoot } from "react-dom/client";
 import { M32SyntheticConsultationLab } from "./M32ChronologyConsultation";
 import M32SyntheticEventExplorer from "./M32SyntheticEventExplorer";

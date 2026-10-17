@@ -265,8 +265,87 @@ async function run() {
       assert.equal(await filteredList().count(), 0);
       assert.equal(await page.getByRole("combobox", { name: "Premier événement" }).count(), 0);
     });
-    assert.equal(cases.length, 23);
-    console.log("M32_BROWSER_REAL_CHROMIUM_PASS 23/23");
+
+    await caseRun("24-accessible-search-landmark-and-live-status", async () => {
+      await explore();
+      assert.equal(await page.getByRole("search", {
+        name: "Recherche dans la chronologie fictive",
+      }).count(), 1);
+      assert.equal(await page.getByRole("status", { name: "Résultat du filtrage" }).count(), 1);
+      assert.equal(await page.getByRole("status", { name: "Événements choisis" }).count(), 1);
+      assert.equal(await page.getByRole("status", { name: "Événements choisis" })
+        .getAttribute("aria-atomic"), "true");
+    });
+    await caseRun("25-pressed-state-reflects-two-explicit-choices", async () => {
+      await explore();
+      const a = page.getByRole("button", { name: "Choisir A comme premier événement" });
+      const b = page.getByRole("button", { name: "Choisir B comme deuxième événement" });
+      assert.equal(await a.getAttribute("aria-pressed"), "false");
+      assert.equal(await b.getAttribute("aria-pressed"), "false");
+      await a.click();
+      await b.click();
+      assert.equal(await a.getAttribute("aria-pressed"), "true");
+      assert.equal(await b.getAttribute("aria-pressed"), "true");
+      assert.equal(await page.getByRole("status", { name: "Événements choisis" })
+        .innerText().then(s => s.includes("Premier : A") && s.includes("deuxième : B")), true);
+    });
+    await caseRun("26-announces-changing-query-count-without-taking-focus", async () => {
+      await explore();
+      await searchField().focus();
+      await searchField().fill("N19");
+      const result = page.getByRole("status", { name: "Résultat du filtrage" });
+      assert.equal(await result.innerText().then(s => s.includes("1 assertions correspondantes")), true);
+      assert.equal(await searchField().evaluate(el => el === document.activeElement), true);
+      await searchField().fill("not-an-event");
+      assert.equal(await result.innerText().then(s => s.includes("0 assertions correspondantes")), true);
+      assert.equal(await searchField().evaluate(el => el === document.activeElement), true);
+    });
+    await caseRun("27-visible-keyboard-focus-and-44px-targets", async () => {
+      await explore();
+      await searchField().focus();
+      const focus = await searchField().evaluate(el => {
+        const styles = getComputedStyle(el);
+        return { kind: styles.outlineStyle, width: parseFloat(styles.outlineWidth) };
+      });
+      assert.equal(focus.kind, "solid");
+      assert.equal(focus.width >= 3, true);
+      const controls = [
+        searchField(),
+        statuses(),
+        page.getByRole("button", { name: "Choisir A comme premier événement" }),
+        page.getByRole("button", { name: "Page suivante" }),
+      ];
+      for (const control of controls) {
+        const height = await control.evaluate(el => el.getBoundingClientRect().height);
+        assert.equal(height >= 44, true);
+      }
+    });
+    await caseRun("28-mobile-375px-explorer-does-not-overflow-its-panel", async () => {
+      await page.setViewportSize({ width: 375, height: 800 });
+      await explore();
+      const panel = page.getByRole("region", { name: "Explorateur M3.2 fictif filtrable" });
+      const width = await panel.evaluate(el => ({
+        scroll: el.scrollWidth, client: el.clientWidth,
+      }));
+      assert.equal(width.scroll <= width.client + 2, true,
+        "Explorer panel overflow on narrow mobile viewport: " + JSON.stringify(width));
+      assert.equal(await searchField().isVisible(), true);
+      await page.setViewportSize({ width: 1280, height: 720 });
+    });
+    await caseRun("29-history-filter-preserves-current-pair-announcements", async () => {
+      await explore();
+      await page.getByRole("button", { name: "Choisir A comme premier événement" }).click();
+      await page.getByRole("button", { name: "Choisir C comme deuxième événement" }).click();
+      const status = page.getByRole("status", { name: "Événements choisis" });
+      await statuses().selectOption("historical");
+      assert.equal(await status.innerText().then(s => s.includes("Premier : A") && s.includes("deuxième : C")), true);
+      assert.equal(await filteredList().getByRole("button").count(), 0);
+      const witness = page.getByRole("region", { name: "Résumé de justification de comparaison" });
+      assert.equal(await witness.getByRole("list", { name: "Chaîne de précédence sélectionnée" })
+        .getByRole("listitem").count(), 2);
+    });
+    assert.equal(cases.length, 29);
+    console.log("M32_BROWSER_REAL_CHROMIUM_PASS 29/29");
   } finally {
     if (browser) await browser.close();
     server.kill();

@@ -107,10 +107,11 @@ function SyntheticExplorerScenario({
     setSelection(chooseM32ConsultationAnchor(
       snapshot, expectedUniverseId, selection, side, candidate));
   };
-  return <section aria-label="Explorateur M3.2 fictif filtrable">
+  return <section className="m32-explorer" aria-label="Explorateur M3.2 fictif filtrable">
     <h2>Explorer les assertions fictives</h2>
     <p>Filtrer cette liste ne modifie pas les relations ni les sélections courantes.</p>
-    <label htmlFor={id + "-query"}>Filtrer les événements</label>
+    <section role="search" aria-label="Recherche dans la chronologie fictive" className="m32-search-controls">
+      <label htmlFor={id + "-query"}>Filtrer les événements</label>
     <input id={id + "-query"} type="search" value={query} maxLength={160}
       onChange={event => { setQuery(event.currentTarget.value); setPage(0); }} />
     <label htmlFor={id + "-status"}>Filtre de statut</label>
@@ -127,37 +128,47 @@ function SyntheticExplorerScenario({
       <option value="current">En vigueur seulement</option>
       <option value="historical">Historique seulement</option>
     </select>
-    <p role="status">{model.count} assertions correspondantes — Page {model.page + 1} sur {model.pageCount}</p>
-    <ol aria-label="Événements filtrés">{model.rows.map(row => <li key={row.id}>
+    </section>
+    <p role="status" aria-label="Résultat du filtrage" aria-atomic="true">
+      {model.count} assertions correspondantes — Page {model.page + 1} sur {model.pageCount}
+    </p>
+    <p role="status" aria-label="Événements choisis" aria-atomic="true">
+      Premier : {selection.leftAnchorId ?? "non sélectionné"} ;
+      deuxième : {selection.rightAnchorId ?? "non sélectionné"}.
+    </p>
+    <ol className="m32-event-list" aria-label="Événements filtrés">{model.rows.map(row => <li
+      className="m32-event-row" key={row.id}>
       <code>{row.id}</code> — {row.label} — {row.status === "current"
         ? "En vigueur" : row.status === "revoked" ? "Révoquée (historique)"
           : "Remplacée (historique)"}
       {row.revision && <span> — révision : <code>{row.revision}</code></span>}
       {row.status === "current" && <>
         {" "}<button type="button" onClick={() => choose("left", row.id)}
-          aria-label={"Choisir " + row.id + " comme premier événement"}>
+          aria-label={"Choisir " + row.id + " comme premier événement"}
+          aria-pressed={selection.leftAnchorId === row.id}>
           Premier
         </button>
         {" "}<button type="button" onClick={() => choose("right", row.id)}
-          aria-label={"Choisir " + row.id + " comme deuxième événement"}>
+          aria-label={"Choisir " + row.id + " comme deuxième événement"}
+          aria-pressed={selection.rightAnchorId === row.id}>
           Deuxième
         </button>
       </>}
     </li>)}</ol>
     {model.count === 0 && <p>Aucun événement fictif ne correspond au filtre.</p>}
-    <nav aria-label="Pagination des événements fictifs">
+    <nav className="m32-pagination" aria-label="Pagination des événements fictifs">
       <button type="button" disabled={model.page === 0}
         onClick={() => setPage(model.page - 1)}>Page précédente</button>
       <button type="button" disabled={model.page + 1 >= model.pageCount}
         onClick={() => setPage(model.page + 1)}>Page suivante</button>
     </nav>
-    {model.comparison !== null && <section aria-label="Résumé de justification de comparaison">
+    {model.comparison !== null && <section className="m32-proof" aria-label="Résumé de justification de comparaison">
       <h3>Justification des événements sélectionnés</h3>
       <p>Relation : {model.comparison.relation === "before" ? "Avant"
         : model.comparison.relation === "after" ? "Après"
           : model.comparison.relation === "same" ? "Identique" : "Indéterminée"}</p>
       {model.comparison.witness.length > 0
-        ? <ol aria-label="Chaîne de précédence sélectionnée">
+        ? <ol className="m32-proof-steps" aria-label="Chaîne de précédence sélectionnée">
           {model.comparison.witness.map((w, idx) => <li key={w.precedence_id}>
             Étape {idx + 1} : <code>{w.before_anchor_id}</code> vers
             {" "}<code>{w.after_anchor_id}</code> —

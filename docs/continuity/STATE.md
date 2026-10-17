@@ -1,5 +1,12 @@
 # Fabulaxiom — Current State
 
+## 2026-10-17 — M3.2 : amélioration de lisibilité/accessibilité du seul laboratoire fictif
+
+Base protégée après PR #61 fusionnée : `main=f4da538a5e17ead5cf4ea3b06f2ec6aaf18a1e4a`, CI #39052427503 (43/43 étapes, Chromium 23/23, frontend 123/123, Rust 100/100). Nouvelle PR distincte : région de recherche nommée, annonces atomiques du filtre et des deux identifiants sélectionnés, états `aria-pressed` sur les boutons, CSS **uniquement page Vite fictive** (focus visible, boutons 44 px, cartes repliables). Six nouveaux tests Vitest (total ciblé **28**) et six tests navigateur Chromium (total **29**) proposés ; **pas de PASS avant la CI exacte de cette PR**. Document : `docs/qualification/M3_2_SYNTHETIC_EXPLORER_ACCESSIBILITY.md`. Aucun import `App.tsx`, ni dépendance, ni donnée opérateur.
+
+**Toujours** source réelle `STOP_UNAVAILABLE`, historique `PENDING_EXTERNAL_ATTESTATION(21/3/2)`, prospective `NOT_STARTED`, G3/G4/G5/G6 `NOT_AUTHORIZED`, PR #35 `OPEN/DRAFT`; pas de 007, activation, writer, M3.3 ni release.
+
+
 ## 2026-10-17 — M3.2 : filtrage et pagination dans l'explorateur fictif
 
 Après PR #60 fusionnée (`main=53c3de511dec6a16da1c5a36e9f5eafee11be900`, CI Windows #39046517029 42/42, Chromium 14/14, frontend 101/101), proposition distincte de consultation sur huit assertions par page, filtre identifiants/libellés fictifs et statut courant/historique, choix explicite de premier/deuxième, chaîne de preuve lisible. Le graphe complet est validé **avant** tout filtre : pas de camouflage de cycle, d'identité historique ni de réattribution silencieuse. Nouveaux tests Vitest 22 et extension Chromium à 23 cas ; propre CI exacte à qualifier avant fusion. Composant **non monté dans App.tsx**, aucun original, IPC ou dépendance modifiés. Rapport `docs/qualification/M3_2_SYNTHETIC_EVENT_EXPLORER.md`.
