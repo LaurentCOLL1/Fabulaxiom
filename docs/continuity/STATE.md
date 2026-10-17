@@ -1,5 +1,12 @@
 # Fabulaxiom — Current State
 
+## 2026-10-17 — M3.2 G3 : analyse de frontière Tauri, source uniquement (PR séparée en qualification)
+
+La revue du code Rust sur `main=3d6b69cb52e235af06cfea019cb0ec820a6ccaf0` constate l'absence de propriétaire SQLite persistant et authentifié dans les deux runners Tauri. Les commandes `database_status`, `hierarchy`, `entity` passent par des ouvertures migrantes, et la sauvegarde applicative ne conserve pas la réservation exclusive de sortie durant l'opération `VACUUM INTO`. Une qualification distincte examine cette topologie et ses dérives futures via des tests lisant le code public du dépôt, sans accès aux bases opérateur. Rapport : `docs/qualification/M3_2_G3_TAURI_OWNER_INTEGRATION_AUDIT.md`. **PR non encore qualifiée ; ne pas déclarer PASS avant sa propre CI exacte.** Aucun Tauri State, service runtime, source ouverte ni nouvelle commande n'est ajouté.
+
+**Réel : `STOP_UNAVAILABLE`.** Historique `PENDING_EXTERNAL_ATTESTATION(21/3/2)`, prospective `NOT_STARTED`, G3/G4/G5/G6 réels `NOT_AUTHORIZED`, PR #35 `OPEN/DRAFT` ; aucune migration 007, activation, writer ni M3.3.
+
+
 ## 2026-10-17 — M3.2 G3 : contrat de service propriétaire non migrant, code uniquement
 
 Autorité initiale `main=fd2149131c61ef94180de28c6144e18a5c76deb5` après PR #52 fusionnée : **18/18 tests Rust RAM** et CI Windows **34/34** (SHA corrigé `335ca8f...`). La suite autorisée est une spécification de service de connexion persistante **sans accès aux originaux** : source attestée indépendamment, connexion préexistante, absence de migrations, révocation, sérialisation, photographie SQLite transactionnelle, publication exclusive et restauration isolée. Le modèle `m3_2_g3_owner_runtime_contract.py` ne donne jamais d'autorisation G3 réelle. La CI lit uniquement le code Rust du dépôt pour confirmer que les chemins actuels `open_database`, `database_status`, `create_backup` restent à effets et interdits comme procédure G3. Aucun nouveau runtime, Tauri command ni chemin de base n'est créé.

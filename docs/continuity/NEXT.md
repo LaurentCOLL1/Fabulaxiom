@@ -1,5 +1,10 @@
 # Fabulaxiom — Next Authorized Work
 
+## 2026-10-17 — Après revue de faisabilité Tauri / provenance (aucune donnée opérateur)
+
+Vérifier la nouvelle PR d'audit d'intégration sur son HEAD exact (diff, source Rust, CI Windows `pull_request`, chaque étape). Cette qualification constate seulement la topologie courante ; elle ne résout pas la provenance d'une connexion propriétaire. Après fusion protégée éventuelle, rechercher une **méthode démontrable, explicitement autorisée et indépendante du chemin** pour transférer une source déjà ouverte sans rouvrir les originaux. À défaut, garder `STOP_UNAVAILABLE` et poursuivre les travaux de conception non migrants ou les sous-parties M3.2 hors données opérateur. Ne pas préparer ni exécuter de cérémonie G3 réelle sur la base d'une CI verte.
+
+
 ## 2026-10-17 — Après contrat G3 : étude d'intégration sans source opérateur
 
 Qualifier au HEAD exact les tests du contrat `M3_2_G3_OWNER_RUNTIME_CONTRACT.md`. Réétudier ensuite la faisabilité d'une vraie connexion source persistante **sans en ouvrir une sur les originaux** : cycle de vie, provenance indépendante, gestion des migrations, source snapshot, WAL/journaux et garde Win32. Si aucune telle connexion n'existe, conserver `STOP_UNAVAILABLE` ; ne pas utiliser les commandes migrantes existantes ni la fonctionnalité de tests Rust pour fabriquer cette preuve. Toute implémentation Tauri sur des fichiers réels nécessite une autorisation distincte, des opérations précises et des critères d'arrêt documentés.
