@@ -1,5 +1,11 @@
 # Fabulaxiom — Next Authorized Work
 
+## 2026-10-18 — prochaine tranche autorisable : preuve CLI sans lancement, puis décision opérateur distincte
+
+Après PR #65 protégée fusionnée au `main=1f61eaff968b33038a3513d8b5d5dbc82f3de8a1` (CI exacte #39074890614 48/48 SUCCESS), le test `generate_context!` avec `TAURI_CONFIG` *déjà fusionné par modèle Python* est qualifié, mais **le merge CLI réel `--config` reste NON testé**. La prochaine tranche GitHub doit cibler seulement une preuve native, non-lançante et jetable du traitement de la configuration par la version **verrouillée** `@tauri-apps/cli 2.12.1` / `tauri-utils 2.10.1`, ou documenter un `STOP` si aucune interface de résolution inspectable ne peut être appelée sans démarrer Tauri. Ne pas utiliser `tauri dev`, `cargo run`, installation ou un démarrage caché comme raccourci. Préserver une liste d'entrée exacte (base, overlay, configurations plateforme, capabilities), les variables d'environnement, le `frontendDist` et `beforeDevCommand` hérités, le CSP `null`, l'URL fictive loopback et les permissions du noyau; distinguer la configuration parsée de l'ACL réellement appliquée.
+
+Avant une première prévisualisation interactive Windows, obtenir **une autorisation explicite et distincte** de l'opérateur après présentation du préflight `PASS/FAIL/STOP` et de l'arrêt contrôlé. Aucune commande de lancement ne doit être fournie avant cette approbation. `TAURI_RUNTIME_NOT_TESTED`, `OPERATOR_ACCEPTANCE_NOT_PERFORMED`, original G3 `STOP_UNAVAILABLE`, historique 21/3/2 et prospective NOT_STARTED, G3–G6 réels `NOT_AUTHORIZED`, PR #35 DRAFT, issues #36/#38 OPEN. Aucun original/migration 007/ACL/backup/activation/writer, M3.3 ou release.
+
 ## 2026-10-18 — qualifier le contexte généré par Tauri sans runtime
 
 Sur la PR indépendante `m32_tauri_codegen_ci`, exiger CI Windows `pull_request` complète au HEAD exact avec nouveaux tests Rust `generate_context!(test=true)` ciblés sous `TAURI_CONFIG` *fictif seulement* ; le pilote refuse l'exécution hors Windows CI et ne fait que `cargo test --lib`. Vérifier que l'overlay explicite sélectionne `["default"]` et que `default.json` ne vise que `main`, sans `tauri dev/build`, `cargo run`, `Builder::run` ou fichier opérateur. Lire les logs de tests réels, diff, ruleset et reviews, rerécupérer main ; fusionner uniquement si exact HEAD et succès terminal.
