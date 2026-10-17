@@ -76,6 +76,8 @@ fn qualified_snapshot(conn: &Connection, version: i64) -> Result<()> {
         .collect::<Result<Vec<_>>>()?;
     let books: i64 = conn.query_row("SELECT count(*) FROM imaginary_books", [], |r| r.get(0))?;
     let facts: i64 = conn.query_row("SELECT count(*) FROM invented_facts", [], |r| r.get(0))?;
+    // Diagnostic evidence is exclusively from invented in-memory fixtures.
+    eprintln!("TOY_RAM_AUDIT version={version} integrity={result:?} fk={fk} lineage={lineage:?} books={books} facts={facts}");
     if result != "ok" || fk != 0 || lineage != (1..=version).collect::<Vec<_>>()
         || books != 1 || facts != 1
     {
@@ -97,6 +99,7 @@ impl OwnerSlot {
         }
         let source = Connection::open_in_memory()?;
         fictional_schema(&source, version)?;
+        eprintln!("TOY_OWNER_CONSTRUCTED version={version} pages={}", memory_budget(&source)?);
         Ok(Self {
             source: Some(source),
             session: NEXT_TOY_SESSION.fetch_add(1, Ordering::Relaxed),
@@ -140,6 +143,7 @@ impl OwnerSlot {
             if memory_budget(source)? > max_bytes {
                 return Err(Error::InvalidQuery);
             }
+            eprintln!("TOY_OWNER_BEFORE_BACKUP version={} source_bytes={}", self.version, memory_budget(source)?);
             let mut dest = Connection::open_in_memory()?;
             {
                 let backup = Backup::new(source, &mut dest)?;
@@ -157,6 +161,7 @@ impl OwnerSlot {
                 Ok(snapshot)
             }
             Err(error) => {
+                eprintln!("TOY_OWNER_CAPTURE_VETO version={} error={error:?}", self.version);
                 self.state = ToyState::Poisoned;
                 Err(error)
             }
