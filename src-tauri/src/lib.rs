@@ -33,6 +33,9 @@ compile_error!("M3.2 owner-to-RAM backup fixture must be compiled ONLY as Rust u
 mod m32_owned_backup_toy;
 #[cfg(all(test, feature = "m32-g3-owned-ram-toy"))]
 mod m32_owner_lifecycle_toy;
+// Pure-RAM thread handoff actor: ownership/teardown only, never source provenance.
+#[cfg(all(test, feature = "m32-g3-owned-ram-toy"))]
+mod m32_owner_handoff_actor_toy;
 
 use std::time::Duration;
 
