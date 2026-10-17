@@ -1,0 +1,26 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "Fabulaxiom M3.2 FICTIONAL LAB",
+  "identifier": "com.fabulaxiom.m32synthetic.preview",
+  "build": {
+    "devUrl": "http://127.0.0.1:1420/m32-browser-lab.html"
+  },
+  "app": {
+    "windows": [
+      {
+        "label": "m32-fiction",
+        "title": "Fabulaxiom — M3.2 FICTIONAL ONLY (no original data)",
+        "width": 1120,
+        "height": 760,
+        "minWidth": 520,
+        "minHeight": 460
+      }
+    ],
+    "security": {
+      "capabilities": []
+    }
+  },
+  "bundle": {
+    "active": false
+  }
+}

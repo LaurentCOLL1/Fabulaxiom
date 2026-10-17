@@ -13,6 +13,8 @@ crate-type = ["staticlib", "cdylib", "rlib"]
 [features]
 default = []
 m31-isolated-preview = []
+# Unmounted fictional-only Tauri WebView; non-default, debug-only, zero IPC.
+m32-synthetic-preview = []
 # M3.2 G3: test-only; default remains empty. Do NOT ship binaries with this.
 m32-g3-owned-ram-toy = ["rusqlite/backup"]
 
