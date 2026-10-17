@@ -12,7 +12,7 @@ A bounded synchronous channel carries requests; clients may clone the sender but
 
 ## New failure modes and tests versus PR #51/#52
 
-Earlier tests already proved backup, `Mutex` serialisation and toy session revocation. This actor adds **ten** narrow Rust tests for a different boundary: ownership moved into a separate worker, pre-admission transaction veto, foreign `ATTACH` veto, schema gap veto, invalid version, bad ticket without harming valid ticket, multiple independent producers/one SQLite owner, terminal revocation, terminal simulated poisoning, and shutdown with stale client senders. There is no claim that a session token is a cryptographic or Win32 identity.
+Earlier tests already proved backup, `Mutex` serialisation and toy session revocation. This actor adds **eleven** narrow Rust tests for a different boundary: ownership moved into a separate worker, pre-admission transaction veto, foreign `ATTACH` veto, foreign-key orphan veto, schema gap veto, invalid version, bad ticket without harming valid ticket, multiple independent producers/one SQLite owner, terminal revocation, terminal simulated poisoning, and shutdown with stale client senders. There is no claim that a session token is a cryptographic or Win32 identity.
 
 The worker drops the source on revoke, poison or stop, and does not include any reconnect/open branch. A poisoned actor refuses remaining snapshot attempts; even after a successful RAM snapshot, nothing about an original Windows database's provenance or exclusive writer control has been shown.
 
@@ -24,7 +24,7 @@ A real future handoff would need, **before creating this actor in production**: 
 
 ### CI acceptance
 
-The isolated Windows `pull_request` job must run `cargo test --locked --features m32-g3-owned-ram-toy --lib m32_owner_handoff_actor_toy -- --nocapture` on the **exact PR HEAD**, report all ten new tests green and preserve normal Rust and existing G3 tests. Any HEAD change invalidates prior checks. Review the six-file diff and branch protections before fusion.
+The isolated Windows `pull_request` job must run `cargo test --locked --features m32-g3-owned-ram-toy --lib m32_owner_handoff_actor_toy -- --nocapture` on the **exact PR HEAD**, report all eleven new tests green and preserve normal Rust and existing G3 tests. Any HEAD change invalidates prior checks. Review the six-file diff and branch protections before fusion.
 
 **Governance unchanged:** historical `PENDING_EXTERNAL_ATTESTATION(21/3/2)`; prospective `NOT_STARTED`; real G3/G4/G5/G6 `NOT_AUTHORIZED`; PR #35 `OPEN/DRAFT`; no 007 production, activation, writer IPC, M3.3 or release. No independent human signoff claimed.
 

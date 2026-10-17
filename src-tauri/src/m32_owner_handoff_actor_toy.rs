@@ -44,9 +44,12 @@ impl InventedSource {
         let conn = Connection::open_in_memory().map_err(|_| ToyError::Sqlite)?;
         conn.execute_batch(
             "PRAGMA foreign_keys=ON;
-             CREATE TABLE imaginary_items (id INTEGER PRIMARY KEY, detail TEXT NOT NULL);
+             CREATE TABLE imaginary_books (id INTEGER PRIMARY KEY);
+             CREATE TABLE imaginary_items (id INTEGER PRIMARY KEY,
+                book_id INTEGER NOT NULL REFERENCES imaginary_books(id), detail TEXT NOT NULL);
              CREATE TABLE schema_migrations (version INTEGER PRIMARY KEY);
-             INSERT INTO imaginary_items VALUES (1, 'Invented RAM-only content');",
+             INSERT INTO imaginary_books VALUES (1);
+             INSERT INTO imaginary_items VALUES (1, 1, 'Invented RAM-only content');",
         )
         .map_err(|_| ToyError::Sqlite)?;
         for step in 1..=version {
@@ -286,6 +289,16 @@ fn m32_owner_handoff_actor_toy_reject_attached_memory_database() -> Result<(), T
     let fixture = InventedSource::new(6)?;
     fixture.conn.execute_batch("ATTACH DATABASE ':memory:' AS unauthorized_extra")
         .map_err(|_| ToyError::Sqlite)?;
+    assert!(matches!(ToyActor::admit(fixture), Err(ToyError::InvalidFixture)));
+    Ok(())
+}
+
+#[test]
+fn m32_owner_handoff_actor_toy_reject_foreign_key_orphan() -> Result<(), ToyError> {
+    let fixture = InventedSource::new(6)?;
+    fixture.conn.execute_batch(
+        "PRAGMA foreign_keys=OFF; UPDATE imaginary_items SET book_id=42 WHERE id=1;",
+    ).map_err(|_| ToyError::Sqlite)?;
     assert!(matches!(ToyActor::admit(fixture), Err(ToyError::InvalidFixture)));
     Ok(())
 }
