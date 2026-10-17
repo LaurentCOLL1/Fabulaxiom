@@ -70,7 +70,7 @@ mod tests {
     #[test]
     #[ignore = "run only in isolated CI with explicit fictional TAURI_CONFIG"]
     fn compiled_fictional_context_no_runtime() {
-        let context = tauri::generate_context!(test = true);
+        let context: tauri::Context = tauri::generate_context!(test = true);
         let config = context.config();
         let windows: Vec<&str> = config.app.windows.iter().map(|w| w.label.as_str()).collect();
         let actual_url = config.build.dev_url.as_ref().map(|u| u.as_str());
