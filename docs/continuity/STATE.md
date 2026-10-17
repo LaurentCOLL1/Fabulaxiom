@@ -1,5 +1,11 @@
 # Fabulaxiom — Current State
 
+## 2026-10-17 — M3.2 : audit complémentaire de sélection des capabilities Tauri (PR distincte, validation en cours)
+
+Après PR #63 protégée fusionnée (`main=dc6d9559215e175bbf28187da6bc88fe0f1f75a5`; CI `pull_request` #39057235107 46/46 SUCCESS sur HEAD `1deb9ca0b02682a7954a92a8d8e2e6b10e733227`), la documentation Tauri v2 confirme qu'une liste `app.security.capabilities=[]` n'empêche PAS le chargement automatique des fichiers `capabilities/`. L'unique `default.json` présent cible `main` et non `m32-fiction`. Une PR de durcissement séparée propose `["default"]` non vide, des tests négatifs sur la sélection des capabilities, le modèle de fusion JSON, la présence de fichiers de plateforme et le maintien du chemin Rust fictif sans IPC. Résultats de cette nouvelle PR : **NON QUALIFIÉS tant que sa propre CI exacte n'est pas terminale**. La fusion native CLI, les droits effectifs Tauri et tout lancement Windows/WebView2 restent `NOT_TESTED` ; l'acceptation opérateur `NOT_PERFORMED`.
+
+Limites inchangées : historique `PENDING_EXTERNAL_ATTESTATION(21/3/2)`, prospective `NOT_STARTED`, original G3 `STOP_UNAVAILABLE`, G3/G4/G5/G6 réels `NOT_AUTHORIZED`, PR #35 `OPEN/DRAFT`. Aucun accès aux originaux v6/v7, sauvegardes/ACL/marqueurs ni migration 007, writer, M3.3 ou release. Voir `docs/qualification/M3_2_SYNTHETIC_TAURI_WINDOWS_PREVIEW.md`.
+
 ## 2026-10-17 — M3.2 : chemin Tauri fictif distinct de tout runtime SQLite
 
 `main=1607f5705f0ec4a18a37542cf3e04d1df89ec2d6` protégé après PR #62 fusionnée (CI #39054598253, 43/43 étapes, Chromium 29/29, frontend 129/129, Rust 100/100). Branche nouvelle : feature Rust `m32-synthetic-preview` **opt-in/debug uniquement**, startup Tauri séparé **sans enregistrement d'IPC applicatif** ; overlay à identité `com.fabulaxiom.m32synthetic.preview`, une fenêtre fictive, URL boucle locale du laboratoire, capacités vides, protection `compile_error` release, exclusion mutuelle avec M3.1. **Pas de lancement autorisé** ; seuls tests de validation pure et compilation Windows seront qualifiés avant fusion. Rapport `docs/qualification/M3_2_SYNTHETIC_TAURI_WINDOWS_PREVIEW.md`.
