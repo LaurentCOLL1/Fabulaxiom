@@ -1,5 +1,12 @@
 # Fabulaxiom — Current State
 
+## 2026-10-17 — M3.2 G3 : contrat de service propriétaire non migrant, code uniquement
+
+Autorité initiale `main=fd2149131c61ef94180de28c6144e18a5c76deb5` après PR #52 fusionnée : **18/18 tests Rust RAM** et CI Windows **34/34** (SHA corrigé `335ca8f...`). La suite autorisée est une spécification de service de connexion persistante **sans accès aux originaux** : source attestée indépendamment, connexion préexistante, absence de migrations, révocation, sérialisation, photographie SQLite transactionnelle, publication exclusive et restauration isolée. Le modèle `m3_2_g3_owner_runtime_contract.py` ne donne jamais d'autorisation G3 réelle. La CI lit uniquement le code Rust du dépôt pour confirmer que les chemins actuels `open_database`, `database_status`, `create_backup` restent à effets et interdits comme procédure G3. Aucun nouveau runtime, Tauri command ni chemin de base n'est créé.
+
+**Verrous inchangés :** `historical=PENDING_EXTERNAL_ATTESTATION(21/3/2)`, `prospective=NOT_STARTED`, `real_G3/G4/G5/G6=NOT_AUTHORIZED`, PR #35 OPEN/DRAFT, pas de migration 007, marqueur d'activation, IPC writer ni M3.3.
+
+
 ## 2026-10-17 — M3.2 Rust : propriétaire de connexion fictif et cycle de vie révoquable
 
 À partir du `main=d01c7a55b6b7abb7db6228d4d266da03610df9f7` (PR #51 fusionnée, 33/33 CI Windows et 13/13 tests Rust RAM), la nouvelle expérience `m32_owner_lifecycle_toy` ajoute un cycle de vie fictif de connexion SQLite déjà ouverte : `OwnerSlot` non clonable, jeton de session/révision expérimental, copie transactionnelle RAM, révocation définitive, verrou `Mutex` et refus des réutilisations périmées. Le module reste strictement derrière le `cfg(test)`/feature flag existant, sans commande Tauri, entrée fichier, ni nouvelles dépendances. Les jetons fictifs **ne constituent pas** une identité/provenance de fichier réel. Contrats et risques : `docs/qualification/M3_2_G3_RUST_OWNER_LIFECYCLE_TOY.md`.
