@@ -135,14 +135,17 @@ async function run() {
     await caseRun("10-keyboard-focus-and-native-arrow", async () => {
       await first().focus();
       assert.equal(await first().evaluate(el => el === document.activeElement), true);
-      await first().press("ArrowDown");
-      await first().press("Enter");
-      assert.equal(await first().inputValue(), "A");
-      await first().press("Tab");
+      // Test Tab navigation while the native select popup is CLOSED.
+      // Opening/committing a Windows native-select dropdown before pressing
+      // Tab may consume Tab to dismiss the popup rather than advance focus.
+      await page.keyboard.press("Tab");
       assert.equal(await second().evaluate(el => el === document.activeElement), true);
       await second().press("ArrowDown");
       await second().press("Enter");
       assert.equal(await second().inputValue(), "A");
+      await first().press("ArrowDown");
+      await first().press("Enter");
+      assert.equal(await first().inputValue(), "A");
       assert.equal(await page.getByText("Même assertion : identité exacte", { exact: false }).count(), 1);
     });
     await caseRun("11-fictional-scenario-switch-resets-state", async () => {
