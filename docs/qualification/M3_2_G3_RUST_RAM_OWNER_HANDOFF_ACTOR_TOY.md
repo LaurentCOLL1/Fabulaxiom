@@ -8,7 +8,7 @@ Starting protected base: `main=8cbb8671194afee48d96194aae7863ddd46e9b3d` after P
 
 `src-tauri/src/m32_owner_handoff_actor_toy.rs` is reachable **only** under `cfg(test)` plus the already-disabled-by-default `m32-g3-owned-ram-toy` Cargo feature. Normal binary compilation of this feature remains explicitly rejected by `compile_error!`. The fictional `InventedSource` constructor only calls `Connection::open_in_memory`. A single, uncloneable source connection is validated for purely invented migrations 1–6/7, integral RAM schema, limited pages, no transaction, no additional `ATTACH` and FK/integrity checks. It then **moves** to a dedicated `std::thread`.
 
-A bounded synchronous channel carries requests; clients may clone the sender but never the source. A single worker executes `Backup::new(&source, &mut destination)` with a **new RAM destination**, returns only an invented test value and never hands out the raw `Connection`. There are no `std::fs`, path parameters, `Connection::open(path)`, Tauri registration, network calls, operator documents, actual database bytes, activation marker or production migrations.
+A bounded synchronous channel carries requests; clients may clone the sender but never the source. A single worker executes `Backup::new(&source, &mut destination)` with a **new RAM destination**, returns only an invented test value and never hands out the raw `Connection`. There are no `std::fs`, path parameters, `Connection::open(path)`, Tauri registration, network calls, operator documents, actual database bytes, activation marker or production migrations. This is a *no deliberate file-I/O* fixture, **not** a filesystem tracing proof: SQLite may use transient scratch files in certain configurations. It makes no absolute claim of zero OS disk I/O.
 
 ## New failure modes and tests versus PR #51/#52
 
@@ -27,6 +27,8 @@ A real future handoff would need, **before creating this actor in production**: 
 The isolated Windows `pull_request` job must run `cargo test --locked --features m32-g3-owned-ram-toy --lib m32_owner_handoff_actor_toy -- --nocapture` on the **exact PR HEAD**, report all eleven new tests green and preserve normal Rust and existing G3 tests. Any HEAD change invalidates prior checks. Review the six-file diff and branch protections before fusion.
 
 **Governance unchanged:** historical `PENDING_EXTERNAL_ATTESTATION(21/3/2)`; prospective `NOT_STARTED`; real G3/G4/G5/G6 `NOT_AUTHORIZED`; PR #35 `OPEN/DRAFT`; no 007 production, activation, writer IPC, M3.3 or release. No independent human signoff claimed.
+
+SQLite temporary-file caution: https://www.sqlite.org/tempfiles.html ; https://www.sqlite.org/inmemorydb.html.
 
 ## Official references
 

@@ -1,7 +1,7 @@
 //! M3.2/G3: test-only Rust thread handoff of an ALREADY-OPEN INVENTED RAM source.
 //! This is a toy actor, NOT source authentication, production Tauri state or IPC.
 //! Only Connection::open_in_memory creates source/destination. Never operator I/O.
-//! No path, file, migration runner, production marker, SQLite sidecar or network.
+//! No deliberate file I/O or original-file sidecar; SQLite scratch I/O is not attested.
 
 use rusqlite::{backup::Backup, params, Connection};
 use std::{
