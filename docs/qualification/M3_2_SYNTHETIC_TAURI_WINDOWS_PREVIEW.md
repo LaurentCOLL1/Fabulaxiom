@@ -1,5 +1,7 @@
 # M3.2 — Prévisualisation Tauri Windows fictive : variante compilable, lancement interdit à cette étape
 
+**Checkpoint qualifié post-PR #65 (2026-10-18).** `main=1f61eaff968b33038a3513d8b5d5dbc82f3de8a1` re-fetch confirmé. PR #64 `["default"]` protégée fusionnée, puis PR #65 `generate_context!(test=true)` en `cargo test --lib` sur configuration fictive `TAURI_CONFIG` pré-fusionnée, protégée fusionnée au HEAD qualifié `960e3806de5ead8230c1f86f81b90b7d0096019e`. CI Windows `pull_request` #39074890614 terminal SUCCESS 48/48 ; tests Rust du contexte compilé exécutés et PASS. Le premier essai #39074006596 avait échoué à la compilation E0283 et est invalidé pour acceptation ; le commit correctif a déclenché une nouvelle CI. **Toujours aucun runtime Tauri/WebView2 lancé, ni preuve du merge natif `--config` via la CLI.** L'autorité effective ACL et les interfaces noyau Tauri restent `NOT_TESTED`. Un lancement exige préflight et autorisation distincte. Original G3 `STOP_UNAVAILABLE`, historical `PENDING_EXTERNAL_ATTESTATION(21/3/2)`, prospective `NOT_STARTED`, PR #35 OPEN/DRAFT ; aucune opération protégée.
+
 ## Étape suivante : contexte Tauri compilé, sans construction ni lancement du runtime
 
 Après la PR #64 protégée fusionnée (`main=67b223af041436b720e68ce1cf06fad0da9ca920` ; Windows `pull_request` #39072739826 47/47 SUCCESS au HEAD `4da1ee61b1d0978967fcfaac2a5e529321366f4f`), une PR distincte propose de tester le chemin natif `tauri::generate_context!(test = true)` en unit test Rust `#[ignore]` choisi explicitement dans CI Windows.
