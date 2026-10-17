@@ -1,5 +1,12 @@
 # Fabulaxiom — Current State
 
+## 2026-10-17 — M3.2 Rust : propriétaire de connexion fictif et cycle de vie révoquable
+
+À partir du `main=d01c7a55b6b7abb7db6228d4d266da03610df9f7` (PR #51 fusionnée, 33/33 CI Windows et 13/13 tests Rust RAM), la nouvelle expérience `m32_owner_lifecycle_toy` ajoute un cycle de vie fictif de connexion SQLite déjà ouverte : `OwnerSlot` non clonable, jeton de session/révision expérimental, copie transactionnelle RAM, révocation définitive, verrou `Mutex` et refus des réutilisations périmées. Le module reste strictement derrière le `cfg(test)`/feature flag existant, sans commande Tauri, entrée fichier, ni nouvelles dépendances. Les jetons fictifs **ne constituent pas** une identité/provenance de fichier réel. Contrats et risques : `docs/qualification/M3_2_G3_RUST_OWNER_LIFECYCLE_TOY.md`.
+
+**Interdictions inchangées :** `G3/G4/G5/G6 réels=NOT_AUTHORIZED`, `prospective=NOT_STARTED`, `historical=PENDING_EXTERNAL_ATTESTATION(21/3/2)`, PR #35 OPEN/DRAFT, pas de production 007, marker, IPC writer ou M3.3.
+
+
 ## 2026-10-17 — Prototype rusqlite Online Backup strictement tests Rust en RAM
 
 Après PR #50 fusionnée depuis `main=e1039395fb720b0e7624b066191db7a34984d063`, l'expérience suivante est `m32-g3-owned-ram-toy` : activer `rusqlite/backup` uniquement via un **feature flag hors configuration par défaut**, ajouter une erreur de compilation hors `cfg(test)`, puis vérifier sur un schéma fictif créé exclusivement par `Connection::open_in_memory()` la copie transactionnelle de la connexion source déjà ouverte vers une seconde connexion RAM. Aucune création de fichier ni chemin de base n'est possible par ces fonctions de test. Les commandes actuelles `open_database`, `database_status`, `create_backup` restent migrantes ou à effets et **interdites** sur les originaux M3.2. Laboratoire Rust distinct du laboratoire Python #50.
