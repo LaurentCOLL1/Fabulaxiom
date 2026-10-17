@@ -1,5 +1,12 @@
 # Fabulaxiom — Current State
 
+## 2026-10-17 — M3.2 : filtrage et pagination dans l'explorateur fictif
+
+Après PR #60 fusionnée (`main=53c3de511dec6a16da1c5a36e9f5eafee11be900`, CI Windows #39046517029 42/42, Chromium 14/14, frontend 101/101), proposition distincte de consultation sur huit assertions par page, filtre identifiants/libellés fictifs et statut courant/historique, choix explicite de premier/deuxième, chaîne de preuve lisible. Le graphe complet est validé **avant** tout filtre : pas de camouflage de cycle, d'identité historique ni de réattribution silencieuse. Nouveaux tests Vitest 22 et extension Chromium à 23 cas ; propre CI exacte à qualifier avant fusion. Composant **non monté dans App.tsx**, aucun original, IPC ou dépendance modifiés. Rapport `docs/qualification/M3_2_SYNTHETIC_EVENT_EXPLORER.md`.
+
+**G3 source `STOP_UNAVAILABLE` ; historique `PENDING_EXTERNAL_ATTESTATION(21/3/2)`, prospective `NOT_STARTED`, G3–G6 réels `NOT_AUTHORIZED`, PR #35 `OPEN/DRAFT`.** Pas de 007, marqueur, writer, M3.3 ou release.
+
+
 ## 2026-10-17 — M3.2 : qualification navigateur réelle sur parcours React fictif
 
 Autorité initiale protégée `main=008761b0778b8ad3dd5e5dd711ef406394bf41d2`, après PR #59 fusionnée et CI #39044031084 41/41 (24/24 nouveaux tests React). Nouvelle qualification distincte : page Vite de laboratoire **non reliée à App.tsx**, scénarios fictifs littéraux, Playwright Chromium headless exécuté **uniquement** sur Windows CI avec package version fixe en `RUNNER_TEMP`; 14 cas de sélecteurs, clavier, remise à zéro, justification avant/après et refus de cycle. Pas de dépendances du projet changées, d'original ouvert, d'IPC, de production 007 ou de marqueur modifié. **CI exacte de cette PR à valider avant toute fusion.** Rapport : `docs/qualification/M3_2_SYNTHETIC_REAL_BROWSER_INTERACTION.md`.

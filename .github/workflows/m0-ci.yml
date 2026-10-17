@@ -57,6 +57,9 @@ jobs:
           node tools/m32_browser_interaction.cjs
           if ($LASTEXITCODE -ne 0) { throw 'Synthetic Chromium interaction tests failed' }
 
+      - name: M3.2 synthetic event explorer filtering pagination and witness tests
+        run: npm run test:ci -- src/m32SyntheticEventExplorer.test.tsx
+
       - name: Frontend production build
         run: npm run build
 
