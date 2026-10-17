@@ -120,8 +120,10 @@ class FictionalTauriCapabilityBoundary(unittest.TestCase):
     def test_03_no_implicit_platform_override_hidden_from_source_model(self):
         files = {p.name for p in TAURI.iterdir() if p.is_file()}
         self.assertFalse(files & PLATFORM_FILES, files & PLATFORM_FILES)
+        # Include case/format variations such as Tauri.windows.toml, not
+        # just the JSON defaults. Every new override requires fresh review.
         self.assertEqual(
-            {p for p in files if p.startswith("tauri.") and ".conf." in p},
+            {p for p in files if p.lower().startswith("tauri.")},
             {"tauri.conf.json", "tauri.m32-synthetic-preview.conf.json"},
         )
 
