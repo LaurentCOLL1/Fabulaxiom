@@ -15,7 +15,7 @@ Overlay distinct `src-tauri/tauri.m32-synthetic-preview.conf.json` :
 - Identifiant `com.fabulaxiom.m32synthetic.preview`, différent de `com.fabulaxiom.desktop` et de toutes les identités M3.1.
 - Fenêtre unique `m32-fiction`, titre contenant `FICTIONAL`, `bundle.active=false`.
 - `build.devUrl=http://127.0.0.1:1420/m32-browser-lab.html`, page Vite de test contenant uniquement des scénarios littéralement inventés. Aucun montage `App.tsx`.
-- `app.security.capabilities=[]` : pas de capacité Tauri accordée à la fenêtre fictive. `capabilities/default.json` correspond toujours seulement à la fenêtre `main` de production, absente dans la variante fictive.
+- `app.security.capabilities=["default"]` : allowlist **explicite et non vide**. `capabilities/default.json` cible uniquement `windows=["main"]` et fournit `core:default` pour cette fenêtre normale. La variante fictive déclare seulement `m32-fiction` et ne correspond donc à aucune capability. Cette sélection empêche aussi le chargement automatique de futurs fichiers `capabilities/` que pourrait déclencher une liste vide.
 
 La validation Rust intervient **avant la construction du runtime** : environnement explicite `FABULAXIOM_M32_PREVIEW_ID` correspondant exactement à l'identifiant et à la configuration effective, URL exacte et **une seule fenêtre** attendue. La validation pure refuse les identités de production/M3.1, chemins d'accueil, URL externes, autre port, fenêtres en surplus, options et configurations non conformes.
 
@@ -26,6 +26,19 @@ Ce lot qualifie uniquement l'architecture **source + compilation debug**. Tests 
 **Aucun lancement utilisateur à cette étape.** Ne pas lancer `tauri dev`, `cargo run` ou installer un exécutable depuis cette PR. Une éventuelle procédure interactive devrait préalablement vérifier l'identité, l'absence de sessions Fabulaxiom de production, l'URL réellement chargée et les droits Windows, puis faire l'objet d'une autorisation distincte. **Ne jamais** utiliser l'environnement ou les fichiers v6/v7 pour ce laboratoire. La simple présence d'un prototype compilable n'autorise aucun changement de source ou migration.
 
 **Portée de la preuve** : le flavor Rust n'enregistre aucun IPC applicatif. L'absence de commandes ne remplace pas une preuve générale d'absence de toutes les API Tauri de base, de capacités chargées, de messages IPC internes ou d'effets secondaires du runtime OS ; ces éléments doivent rester sujets de qualification lors d'une vraie prévisualisation. Les identités distinctes n'attestent pas la provenance des originaux, qui ne sont jamais ouverts ici.
+
+
+## Audit complémentaire : la liste vide n'était PAS une isolation explicite
+
+La documentation officielle Tauri v2 précise que `security.capabilities` **absent ou vide** entraîne par défaut la sélection des fichiers sous `src-tauri/capabilities/`. La version de la PR #63 passait `[]`, ce qui ne constituait donc pas une liste d'interdiction. Dans les sources examinées, l'unique capability `default.json` ciblait `main` exclusivement : aucune attribution directe à `m32-fiction` n'a été trouvée, mais cet état était dépendant d'une découverte automatique non désirée.
+
+**Durcissement proposé dans une PR distincte** : remplacer `[]` par `["default"]` (sélection explicite du seul fichier existant, toujours réservé à `main`). Les tests `tools/test_m3_2_tauri_capability_boundary.py` modélisent l'override JSON `tauri.conf.json` + overlay, vérifient le seul fichier de capabilities et l'absence de `tauri.windows.conf.json`/overrides de plateforme dans la source actuelle. Ils rejettent les glob patterns, fenêtres supplémentaires, capabilities distantes, nouveaux fichiers et permissions inattendues. Ce modèle est **source-only**, pas la sortie réelle du parseur CLI Tauri, et n'exécute pas de WebView2.
+
+**Restent expressément non qualifiés** : résolution par la CLI et par `generate_context!` au binaire exact ; variables d'environnement de lancement (`TAURI_DEV_HOST`, `FABULAXIOM_M32_PREVIEW_ID`, `TAURI_CONFIG` le cas échéant), lancement du serveur Vite (hérité : `npm run dev`), contenu chargé puis navigation WebView, processus/ports déjà occupés, CSP héritée `null`, permissions et interfaces du noyau Tauri indépendantes des commandes applicatives, version des outils et binaires réellement utilisés. Les assertions Python ne sont pas une preuve indépendante de l'implémentation du merge Tauri. Toute première ouverture Windows nécessite une pré-vérification, un plan d'arrêt/quarantaine sans original et une **autorisation opérateur explicite** avant de fournir ou d'exécuter toute commande démarrant Tauri/WebView2.
+
+**Statuts obligatoires jusqu'à une qualification propre de la nouvelle PR** : SOURCE_ONLY `PENDING`, WINDOWS_CI `PENDING`, TAURI_RUNTIME `NOT_TESTED`, OPERATOR_ACCEPTANCE `NOT_PERFORMED`, G3 source `STOP_UNAVAILABLE`. Pas de promotion sur simple ajout de tests.
+
+Documentation Tauri : https://v2.tauri.app/reference/config/ ; https://v2.tauri.app/security/capabilities/ ; https://v2.tauri.app/reference/cli/ .
 
 ### Sources officielles
 - [Tauri v2 — Configuration et devUrl](https://v2.tauri.app/reference/config/)
