@@ -1,5 +1,10 @@
 # Fabulaxiom — Next Authorized Work
 
+## 2026-10-17 — Suite autorisée : qualification frontend M3.2 fictive, isolée
+
+Qualifier au HEAD exact la PR du composant `M32ChronologyPreview` hors runtime : **18 tests Vitest dédiés**, `npm run test:ci`, TypeScript/Vite build, tests Windows Rust/Python, diff de six fichiers, branche protégée et SHA anti-race. Vérifier que `App.tsx` n'importe pas le composant et qu'aucune opération SQLite/Tauri n'y est introduite. Après une fusion qualifiée éventuelle, poursuivre seulement les composantes M3.2 sur données inventées et réexaminer les comparaisons humaines explicites sans inventer de dates ni de révélation. PR #35 OPEN/DRAFT, G3 `STOP_UNAVAILABLE`, original intact, pas d'activation 007, writer IPC, M3.3 ou release.
+
+
 ## 2026-10-17 — Après transfert Rust RAM : statuer sur identité d'une source
 
 Qualifier sur le HEAD exact de la PR distincte la matrice de refus `m3_2_g3_source_identity_boundaries`, son audit des APIs Rust et les autres étapes Windows ; lire les journaux, diff, règles et fusionner seulement avec PASS terminal. Ensuite **ne pas ouvrir les originaux** : seule une nouvelle proposition de VFS dédié ou d'une connexion préouverte, authentifiée **de manière indépendante**, peut être étudiée sur données entièrement inventées puis soumise à autorisation opérateur. Si le lien sûr entre handle SQLite, fichier original, ancêtres, journaux et garantie de non-mutation demeure absent, conserver `STOP_UNAVAILABLE` et faire progresser M3.2 uniquement sur environnement isolé. Ne pas fusionner PR #35 ni déclencher G3/G4 réels, 007, activation, writer, M3.3 ou release.

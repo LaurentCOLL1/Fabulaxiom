@@ -1,5 +1,12 @@
 # Fabulaxiom — Current State
 
+## 2026-10-17 — M3.2 : extraction ciblée de la projection React fictive
+
+Autorité initiale `main=f4011f03842af249cf4df5114b0a62b01eafef98` (PR #56 fusionnée, CI Windows #39030884718 38/38 PASS). La PR #35 demeure OPEN/DRAFT, 84 fichiers non fusionnés. Un composant React **strictement non monté** (`src/M32ChronologyPreview.tsx`) est repris indépendamment comme laboratoire de chronologie mondiale, ordre narratif et révélation lecteur non renseignée, avec contrôle d'Univers, identités, dates fictives et refus des projections invalides. **18 tests Vitest synthétiques** sont proposés. La qualification Windows exacte de cette nouvelle PR reste exigée : aucun PASS anticipé, aucun IPC Tauri ni original ouvert. Rapport : `docs/qualification/M3_2_SYNTHETIC_REACT_CHRONOLOGY_VIEW.md`.
+
+**Gates inchangés :** G3 source `STOP_UNAVAILABLE`, historique `PENDING_EXTERNAL_ATTESTATION(21/3/2)`, prospective `NOT_STARTED`, G3/G4/G5/G6 réels `NOT_AUTHORIZED` ; pas de 007, marqueur, writer, M3.3, release ou fusion de PR #35.
+
+
 ## 2026-10-17 — M3.2 G3 : frontière de provenance SQLite/Win32 après PR #55
 
 L'autorité protégée initiale est `main=e159b994b2ae09f852416540d3243b3a0d35dec3` après PR #55 fusionnée (CI Windows #39029700107 : 37/37 étapes ; acteur Rust RAM 11/11 tests PASS). La qualification suivante recense les raccourcis invalides pour obtenir une provenance : chemin `sqlite3_db_filename`, objet `SQLITE_FCNTL_FILE_POINTER`, pointeur SQLite brut, handle Win32 **différent** de celui du propriétaire SQLite, URI `immutable=1` et réouverture migrante. Une matrice pure négative et un contrôle des sources Rust publiques interdisent toute promotion automatique G3. Rapport : `docs/qualification/M3_2_G3_SOURCE_IDENTITY_API_BOUNDARIES.md`. **Nouvelle PR non qualifiée tant que sa propre CI sur HEAD exact n'a pas réussi.** Pas d'original ouvert, de source publiée ni de Tauri runtime modifié.
