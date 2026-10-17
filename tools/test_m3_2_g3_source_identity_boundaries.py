@@ -2,7 +2,7 @@
 
 No operator files, SQLite opens, Windows filesystem access, or app execution.
 """
-from dataclasses import asdict, fields
+from dataclasses import FrozenInstanceError, asdict, fields
 from pathlib import Path
 import unittest
 
@@ -80,6 +80,16 @@ class SourceIdentityModelTests(unittest.TestCase):
         report = screen(SourceCandidate.AUTHENTICATED_PREOPENED_OWNER_PROPOSAL)
         self.assertEqual(report.disposition, Disposition.ARCHITECTURE_REVIEW_ONLY)
         self.assertFalse(report.real_g3_authorized)
+
+    def test_authorization_flag_cannot_be_requested_or_mutated(self):
+        result = screen(SourceCandidate.RAM_ONLY_OWNER_ACTOR)
+        with self.assertRaises(TypeError):
+            type(result)(
+                result.candidate, result.disposition, result.rationale,
+                result.missing_boundary, real_g3_authorized=True,
+            )
+        with self.assertRaises(FrozenInstanceError):
+            result.real_g3_authorized = True
 
     def test_untyped_candidates_fail_closed(self):
         for value in ("ram_only_owner_actor", None, 0, True):
