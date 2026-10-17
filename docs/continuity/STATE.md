@@ -1,5 +1,12 @@
 # Fabulaxiom — Current State
 
+## 2026-10-17 — M3.2 G3 : frontière de provenance SQLite/Win32 après PR #55
+
+L'autorité protégée initiale est `main=e159b994b2ae09f852416540d3243b3a0d35dec3` après PR #55 fusionnée (CI Windows #39029700107 : 37/37 étapes ; acteur Rust RAM 11/11 tests PASS). La qualification suivante recense les raccourcis invalides pour obtenir une provenance : chemin `sqlite3_db_filename`, objet `SQLITE_FCNTL_FILE_POINTER`, pointeur SQLite brut, handle Win32 **différent** de celui du propriétaire SQLite, URI `immutable=1` et réouverture migrante. Une matrice pure négative et un contrôle des sources Rust publiques interdisent toute promotion automatique G3. Rapport : `docs/qualification/M3_2_G3_SOURCE_IDENTITY_API_BOUNDARIES.md`. **Nouvelle PR non qualifiée tant que sa propre CI sur HEAD exact n'a pas réussi.** Pas d'original ouvert, de source publiée ni de Tauri runtime modifié.
+
+**Vérité inchangée** : source réelle authentifiée `STOP_UNAVAILABLE`, historique `PENDING_EXTERNAL_ATTESTATION(21/3/2)`, prospective `NOT_STARTED`, G3/G4/G5/G6 réels `NOT_AUTHORIZED`, PR #35 `OPEN/DRAFT`, pas de 007 production, bascule, writer, M3.3 ou release.
+
+
 ## 2026-10-17 — M3.2 G3 : transfert de propriétaire Rust RAM entre threads (qualification séparée)
 
 Après PR #54 fusionnée (`main=8cbb8671194afee48d96194aae7863ddd46e9b3d` ; Windows CI #39020636502 36/36, nouveaux audits 9/9), la prochaine expérience reproduit uniquement le transfert par valeur d'une connexion SQLite **inventée en RAM** vers un thread Rust dédié, avec canal borné, réponses sans handle, refus des clés étrangères orphelines et révocation/poison/arrêt définitifs. Tests sous `cfg(test)` et feature `m32-g3-owned-ram-toy` hors builds normaux ; aucune commande Tauri ni source opérateur. Qualification sur nouveau HEAD Windows `pull_request` exigée, **non encore acquise**. Rapport : `docs/qualification/M3_2_G3_RUST_RAM_OWNER_HANDOFF_ACTOR_TOY.md`.
