@@ -111,6 +111,9 @@ jobs:
       - name: M3.2 G3 owner-runtime code-only feasibility and refusal tests
         run: python -m unittest discover -s tools -p "test_m3_2_g3_owner_runtime_contract.py" -v
 
+      - name: M3.2 G3 Tauri owner integration source-only drift audit
+        run: python -m unittest discover -s tools -p "test_m3_2_g3_tauri_owner_integration_audit.py" -v
+
       - name: Verify dependency locks are unchanged
         shell: pwsh
         run: |
