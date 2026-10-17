@@ -3,7 +3,7 @@
 Every outcome is a design review disposition, never real source authorization.
 Do not add operator paths, SQLite openers, credentials or Win32 handles here.
 """
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from enum import Enum
 
 
@@ -33,7 +33,7 @@ class ScreenResult:
     disposition: Disposition
     rationale: str
     missing_boundary: tuple[str, ...]
-    real_g3_authorized: bool = False
+    real_g3_authorized: bool = field(init=False, default=False)
 
 
 # This is deliberately exhaustive: adding a candidate requires a code change,
