@@ -59,7 +59,22 @@ fn memory_only(conn: &Connection) -> Result<bool> {
     let list = stmt
         .query_map([], |row| Ok((row.get::<_, String>(1)?, row.get::<_, String>(2)?)))?
         .collect::<Result<Vec<_>>>()?;
-    Ok(list.len() == 1 && list[0].0 == "main" && list[0].1.is_empty())
+    // SQLite can lazily materialize its implicit "temp" schema after
+    // read-only PRAGMA validation. That is NOT an external ATTACH. We still
+    // reject every other schema name and any on-disk database path.
+    let mut main = 0;
+    let mut temp = 0;
+    for (name, path) in list {
+        if !path.is_empty() {
+            return Ok(false);
+        }
+        match name.as_str() {
+            "main" => main += 1,
+            "temp" => temp += 1,
+            _ => return Ok(false),
+        }
+    }
+    Ok(main == 1 && temp <= 1)
 }
 
 fn qualified_snapshot(conn: &Connection, version: i64) -> Result<()> {
@@ -76,8 +91,6 @@ fn qualified_snapshot(conn: &Connection, version: i64) -> Result<()> {
         .collect::<Result<Vec<_>>>()?;
     let books: i64 = conn.query_row("SELECT count(*) FROM imaginary_books", [], |r| r.get(0))?;
     let facts: i64 = conn.query_row("SELECT count(*) FROM invented_facts", [], |r| r.get(0))?;
-    // Diagnostic evidence is exclusively from invented in-memory fixtures.
-    eprintln!("TOY_RAM_AUDIT version={version} integrity={result:?} fk={fk} lineage={lineage:?} books={books} facts={facts}");
     if result != "ok" || fk != 0 || lineage != (1..=version).collect::<Vec<_>>()
         || books != 1 || facts != 1
     {
@@ -99,7 +112,6 @@ impl OwnerSlot {
         }
         let source = Connection::open_in_memory()?;
         fictional_schema(&source, version)?;
-        eprintln!("TOY_OWNER_CONSTRUCTED version={version} pages={}", memory_budget(&source)?);
         Ok(Self {
             source: Some(source),
             session: NEXT_TOY_SESSION.fetch_add(1, Ordering::Relaxed),
@@ -143,7 +155,6 @@ impl OwnerSlot {
             if memory_budget(source)? > max_bytes {
                 return Err(Error::InvalidQuery);
             }
-            eprintln!("TOY_OWNER_BEFORE_BACKUP version={} source_bytes={}", self.version, memory_budget(source)?);
             let mut dest = Connection::open_in_memory()?;
             {
                 let backup = Backup::new(source, &mut dest)?;
@@ -161,7 +172,6 @@ impl OwnerSlot {
                 Ok(snapshot)
             }
             Err(error) => {
-                eprintln!("TOY_OWNER_CAPTURE_VETO version={} error={error:?}", self.version);
                 self.state = ToyState::Poisoned;
                 Err(error)
             }
@@ -191,6 +201,25 @@ impl OwnerSlot {
 
 fn toy_detail(conn: &Connection) -> Result<String> {
     conn.query_row("SELECT detail FROM invented_facts WHERE id=1", [], |r| r.get(0))
+}
+
+#[test]
+fn m32_owner_lifecycle_implicit_temp_schema_remains_memory_only() -> Result<()> {
+    let conn = Connection::open_in_memory()?;
+    conn.execute_batch("CREATE TEMP TABLE harmless_fixture (n INTEGER);")?;
+    assert!(memory_only(&conn)?);
+    Ok(())
+}
+
+#[test]
+fn m32_owner_lifecycle_second_validation_is_idempotent() -> Result<()> {
+    let mut owner = OwnerSlot::new_invented(7)?;
+    let ticket = owner.lease()?;
+    let copy = owner.capture(ticket, MAX_TOY_BYTES)?;
+    qualified_snapshot(&copy, 7)?;
+    qualified_snapshot(&copy, 7)?;
+    assert!(memory_only(&copy)?);
+    Ok(())
 }
 
 #[test]
