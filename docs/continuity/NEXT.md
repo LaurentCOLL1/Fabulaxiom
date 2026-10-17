@@ -1,5 +1,10 @@
 # Fabulaxiom — Next Authorized Work
 
+## 2026-10-17 — Qualifier la lisibilité/accessibilité de l'explorateur fictif
+
+Vérifier la nouvelle PR au HEAD exact : suite Vitest ciblée **28/28**, Chromium réel **29/29** avec rôles de recherche/statuts, aria-pressed, focus visible, cible >=44 px et largeur de 375 px ; suite frontend complète, build TypeScript, Rust et tous garde-fous G3, diff, locks inchangés, règles de branche et SHA anti-course. La CSS n'est importée que depuis `src/m32BrowserLab.tsx` et **pas** depuis `App.tsx`. Ces tests ne valent pas réception Windows/Tauri ou audit WCAG exhaustif. Si l'une des assertions échoue, corriger sur branche, changer le HEAD et requalifier entièrement. PR #35 demeure brouillon, G3 `STOP_UNAVAILABLE`, historique 21/3/2 externe non résolu, pas d'original ouvert, 007, writer, M3.3 ou release.
+
+
 ## 2026-10-17 — Qualifier l'explorateur fictif M3.2 filtrable
 
 Contrôler le HEAD exact de la PR indépendante d'exploration : 22 tests `m32SyntheticEventExplorer`, 23 vrais scénarios Chromium `M32_BROWSER_REAL_CHROMIUM_PASS`, TypeScript/Vite, toutes les suites Rust/Python antérieures, diff et strict statut GitHub avant fusion. Le filtrage ne masque jamais un graphe invalide, les historiques ne deviennent pas sélectionnables, la pagination n'invente aucun événement ni ordre. Les composants restent absents de `App.tsx` ; la base opérateur et le runtime Tauri sont exclus. PR #35 brouillon, source G3 `STOP_UNAVAILABLE`, 21/3/2 externes en attente, pas de G3 réel, migration 007, activation, writer, M3.3 ni release.
