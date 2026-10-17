@@ -1,5 +1,11 @@
 # Fabulaxiom — Next Authorized Work
 
+## 2026-10-17 — prochaine qualification : frontière des capabilities de la prévisualisation fictive
+
+Sur la branche indépendante de la PR de durcissement, qualifier au **HEAD exact** : allowlist Tauri non vide `["default"]`, capability `default.json` exclusivement associée à `main`, unique fenêtre `m32-fiction`, absence de surcharge plateforme implicite et tests adversariaux `tools/test_m3_2_tauri_capability_boundary.py` sous Windows CI ; conserver les 12 tests précédents, Rust debug feature, frontend, Chromium et tous les contrôles G3. Lire le compte rendu, vérifier la règle protégée `Windows frontend and Rust checks` / GitHub Actions 15368, re-fetch main et relire diff/reviews avant une éventuelle fusion `expected_head_sha`. Toute mutation du HEAD impose une nouvelle CI.
+
+**Étape ultérieure distincte, non autorisée maintenant** : prévoir une résolution réelle de la configuration par la CLI, vérifier `TAURI_DEV_HOST`, URL, commandes noyau et navigation WebView2, puis présenter une procédure Windows `PASS/FAIL/STOP`, à approuver explicitement avant toute commande lançant Tauri. Ne pas conclure `TAURI_RUNTIME_PASS` à partir de `cargo check` ou d'un modèle Python de merge. L'acceptation opérateur et G3 réels restent bloqués, PR #35 DRAFT, historique 21/3/2 et prospective NOT_STARTED, aucun original/migration/écriture/release.
+
 ## 2026-10-17 — Qualification source et compilation d'un Tauri fictif sans données réelles
 
 Qualifier la PR `m32-synthetic-preview` au HEAD exact : 12 tests Python source-only, 5 Rust pour identifiant exact, URL de fixture et fenêtre unique, `cargo check --locked --features m32-synthetic-preview` Windows/debug, tout `npm`/Chromium/Rust/G3 préexistant. Vérifier que le chemin normal est non compilé avec cette feature, zéro commande applicative enregistrée, feature exclue de release, overlay distinct et sans capability, `App.tsx` intact, locks immuables. Re-vérifier main/PR/CI avant fusion. La CI ne lance **pas** Tauri/WebView2 : pas de prétention d'acceptation Windows, de provenance G3 ni de permission d'opérer. Toute procédure interactive future nécessite préflight et autorisation explicite. PR #35 reste DRAFT, source réelle G3 `STOP_UNAVAILABLE`, 21/3/2 en attente ; aucune migration, marker, backup ou release.
