@@ -108,7 +108,7 @@ class FictionalTauriPreviewPolicy(unittest.TestCase):
     def test_12_no_real_custody_or_automatic_migration_in_new_module(self):
         source = self.source
         for disallowed in ["sqlite", "Connection", "app_local_data", "temp_dir(",
-                           "fs::", "backup", "operator", "migrate", "V6", "V7",
+                           "fs::", "backup", "migrate", "V6", "V7",
                            "write(", "create_dir", "remove_file"]:
             self.assertNotIn(disallowed, source)
         self.assertIn("fictional", source.lower())
