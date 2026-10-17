@@ -1,5 +1,15 @@
 # M3.2 — Prévisualisation Tauri Windows fictive : variante compilable, lancement interdit à cette étape
 
+## Étape suivante : contexte Tauri compilé, sans construction ni lancement du runtime
+
+Après la PR #64 protégée fusionnée (`main=67b223af041436b720e68ce1cf06fad0da9ca920` ; Windows `pull_request` #39072739826 47/47 SUCCESS au HEAD `4da1ee61b1d0978967fcfaac2a5e529321366f4f`), une PR distincte propose de tester le chemin natif `tauri::generate_context!(test = true)` en unit test Rust `#[ignore]` choisi explicitement dans CI Windows.
+
+Le pilote `tools/m3_2_tauri_codegen_ci.py`, interdit hors runner Windows `CI=true`, compose **en mémoire** le modèle JSON source déjà contrôlé, place exclusivement cette représentation synthétique sous `TAURI_CONFIG`, et lance un seul `cargo test --locked --lib` filtré. Le test compile et inspecte l'identifiant, le `devUrl`, la fenêtre unique `m32-fiction`, `bundle.active=false` et la liste explicite `["default"]` au niveau du **contexte compilé par Tauri**. Aucune commande `tauri dev`, `tauri build`, `cargo run`, `Builder::build` ou `Builder::run` n'est appelée.
+
+**Limite de preuve** : le JSON fusionné reste issu du modèle source du dépôt et non du traitement `--config` par la CLI Tauri ; un test de `generate_context!` ne prouve ni l'ordre natif des overrides CLI, ni l'autorité ACL au runtime, ni les interfaces noyau, ni la navigation WebView2, ni l'isolation réelle des processus et ports. Cette tranche ne doit surtout pas être nommée `TAURI_RUNTIME_PASS`. Nouveau HEAD implique nouvelle CI complète, et aucun PASS de cette PR n'est admis avant son résultat terminal exact.
+
+Aucun original SQLite, sauvegarde, manifeste, ACL, marqueur, sidecar, migration 007, nouveau writer IPC, G3-G6 réel, M3.3 ou release. Les autorisations de lancement Windows restent séparées et **absentes**.
+
 **2026-10-17 — étude technique uniquement, sans démarrage d'une fenêtre sur les machines opérateur ni sur CI.**
 Autorité initiale : `main=1607f5705f0ec4a18a37542cf3e04d1df89ec2d6` après fusion protégée PR #62 et CI #39054598253 (43/43, Chromium 29/29, React 129/129, Rust 100/100). La PR #35 demeure OPEN/DRAFT ; G3 original `STOP_UNAVAILABLE`.
 

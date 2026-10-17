@@ -1,5 +1,11 @@
 # Fabulaxiom — Next Authorized Work
 
+## 2026-10-18 — qualifier le contexte généré par Tauri sans runtime
+
+Sur la PR indépendante `m32_tauri_codegen_ci`, exiger CI Windows `pull_request` complète au HEAD exact avec nouveaux tests Rust `generate_context!(test=true)` ciblés sous `TAURI_CONFIG` *fictif seulement* ; le pilote refuse l'exécution hors Windows CI et ne fait que `cargo test --lib`. Vérifier que l'overlay explicite sélectionne `["default"]` et que `default.json` ne vise que `main`, sans `tauri dev/build`, `cargo run`, `Builder::run` ou fichier opérateur. Lire les logs de tests réels, diff, ruleset et reviews, rerécupérer main ; fusionner uniquement si exact HEAD et succès terminal.
+
+Ne pas confondre ce contrôle du contexte généré avec la **fusion des configurations par la CLI** : celle-ci n'est pas prouvée par le modèle JSON Python. Préparer ultérieurement un audit CLI sans lancement avant toute autorisation de Tauri Windows. `TAURI_RUNTIME_NOT_TESTED` et acceptation opérateur non réalisée, historique 21/3/2, prospective NOT_STARTED, G3 STOP, PR #35 DRAFT, pas de migration 007, writer, M3.3, release.
+
 ## 2026-10-17 — prochaine qualification : frontière des capabilities de la prévisualisation fictive
 
 Sur la branche indépendante de la PR de durcissement, qualifier au **HEAD exact** : allowlist Tauri non vide `["default"]`, capability `default.json` exclusivement associée à `main`, unique fenêtre `m32-fiction`, absence de surcharge plateforme implicite et tests adversariaux `tools/test_m3_2_tauri_capability_boundary.py` sous Windows CI ; conserver les 12 tests précédents, Rust debug feature, frontend, Chromium et tous les contrôles G3. Lire le compte rendu, vérifier la règle protégée `Windows frontend and Rust checks` / GitHub Actions 15368, re-fetch main et relire diff/reviews avant une éventuelle fusion `expected_head_sha`. Toute mutation du HEAD impose une nouvelle CI.

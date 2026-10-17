@@ -1,5 +1,11 @@
 # Fabulaxiom — Current State
 
+## 2026-10-18 — M3.2 : proposition de qualification du contexte Tauri compilé sans démarrage
+
+La PR #64 (allowlist explicite `["default"]` réservée à `main` et garde-fous source-only) a été protégée fusionnée au nouveau `main=67b223af041436b720e68ce1cf06fad0da9ca920` ; CI Windows exacte #39072739826 terminale 47/47 SUCCESS, tests capability 10/10, frontend 129/129, Chromium 29/29, Rust 100/100. Ce résultat ne prouve pas la résolution native de la CLI ni le runtime. Une nouvelle PR distincte étudie la compilation effective `generate_context!` alimentée par un JSON fictif fusionné en mémoire et teste son contenu par Rust unit test **sans lancer Tauri** ; résultat de cette nouvelle PR EN ATTENTE de CI exacte.
+
+Gates inchangés : `TAURI_RUNTIME_NOT_TESTED`, `OPERATOR_ACCEPTANCE_NOT_PERFORMED`, original G3 `STOP_UNAVAILABLE`, historique `PENDING_EXTERNAL_ATTESTATION(21/3/2)`, prospective `NOT_STARTED`, réel G3-G6 `NOT_AUTHORIZED`, PR #35 `OPEN/DRAFT`. Aucune écriture réelle, base, migration 007, sauvegarde, activation, writer, M3.3 ou release.
+
 ## 2026-10-17 — M3.2 : audit complémentaire de sélection des capabilities Tauri (PR distincte, validation en cours)
 
 Après PR #63 protégée fusionnée (`main=dc6d9559215e175bbf28187da6bc88fe0f1f75a5`; CI `pull_request` #39057235107 46/46 SUCCESS sur HEAD `1deb9ca0b02682a7954a92a8d8e2e6b10e733227`), la documentation Tauri v2 confirme qu'une liste `app.security.capabilities=[]` n'empêche PAS le chargement automatique des fichiers `capabilities/`. L'unique `default.json` présent cible `main` et non `m32-fiction`. Une PR de durcissement séparée propose `["default"]` non vide, des tests négatifs sur la sélection des capabilities, le modèle de fusion JSON, la présence de fichiers de plateforme et le maintien du chemin Rust fictif sans IPC. Résultats de cette nouvelle PR : **NON QUALIFIÉS tant que sa propre CI exacte n'est pas terminale**. La fusion native CLI, les droits effectifs Tauri et tout lancement Windows/WebView2 restent `NOT_TESTED` ; l'acceptation opérateur `NOT_PERFORMED`.

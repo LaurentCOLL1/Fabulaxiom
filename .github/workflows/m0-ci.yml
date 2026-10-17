@@ -114,6 +114,9 @@ jobs:
         working-directory: src-tauri
         run: cargo check --locked --features m32-synthetic-preview
 
+      - name: M3.2 native Tauri compiled context audit (fictional only, no app launch)
+        run: python tools/m3_2_tauri_codegen_ci.py
+
       - name: M3.2 solo baseline synthetic-only adversarial qualification
         run: python -m unittest discover -s tools -p "test_m3_2_solo_synthetic_lab.py" -v
 
