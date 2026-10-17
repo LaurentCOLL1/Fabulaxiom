@@ -1,5 +1,10 @@
 # Fabulaxiom — Next Authorized Work
 
+## 2026-10-17 — Qualification de comparaison chronologique React fictive
+
+Qualifier le HEAD exact de la nouvelle PR `M32WorldOrderComparison.tsx` : tests dédiés de précédence, témoins d'ordre humain, cycle et non-comparabilité, `npm run test:ci`, `npm run build`, Rust et contrôles G3 conservés, diff et règle de protection. Vérifier le composant **non importé par `App.tsx`** et strictement sans IPC ni données opérateur. Après fusion éventuelle, choisir une autre tranche UI/test sans monter de source réelle non attestée, sans fusionner PR #35. G3 `STOP_UNAVAILABLE`, 21/3/2 externe toujours en attente, prospective `NOT_STARTED`, pas de production v7, writer, activation, M3.3 ou release.
+
+
 ## 2026-10-17 — Suite autorisée : qualification frontend M3.2 fictive, isolée
 
 Qualifier au HEAD exact la PR du composant `M32ChronologyPreview` hors runtime : **18 tests Vitest dédiés**, `npm run test:ci`, TypeScript/Vite build, tests Windows Rust/Python, diff de six fichiers, branche protégée et SHA anti-race. Vérifier que `App.tsx` n'importe pas le composant et qu'aucune opération SQLite/Tauri n'y est introduite. Après une fusion qualifiée éventuelle, poursuivre seulement les composantes M3.2 sur données inventées et réexaminer les comparaisons humaines explicites sans inventer de dates ni de révélation. PR #35 OPEN/DRAFT, G3 `STOP_UNAVAILABLE`, original intact, pas d'activation 007, writer IPC, M3.3 ou release.

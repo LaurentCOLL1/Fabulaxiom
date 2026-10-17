@@ -36,6 +36,9 @@ jobs:
       - name: M3.2 isolated synthetic chronology React preview tests
         run: npm run test:ci -- src/m32ChronologyPreview.test.tsx
 
+      - name: M3.2 synthetic React world-order comparison tests
+        run: npm run test:ci -- src/m32WorldOrderComparison.test.tsx
+
       - name: Frontend production build
         run: npm run build
 
