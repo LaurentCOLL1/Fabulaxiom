@@ -44,9 +44,9 @@ class FictionalTauriPreviewPolicy(unittest.TestCase):
         self.assertIn('src="/src/m32BrowserLab.tsx"', LAB_HTML.read_text(encoding="utf-8"))
         self.assertNotIn("App.tsx", LAB_HTML.read_text(encoding="utf-8"))
 
-    def test_03_zero_capabilities_and_distinct_window(self):
+    def test_03_explicit_main_only_capability_and_distinct_window(self):
         app = self.overlay["app"]
-        self.assertEqual(app["security"]["capabilities"], [])
+        self.assertEqual(app["security"]["capabilities"], ["default"])
         self.assertEqual(len(app["windows"]), 1)
         self.assertEqual(app["windows"][0]["label"], "m32-fiction")
         self.assertNotEqual(app["windows"][0]["label"], "main")
