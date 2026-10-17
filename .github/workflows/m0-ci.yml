@@ -108,6 +108,10 @@ jobs:
         working-directory: src-tauri
         run: cargo test --locked --features m32-g3-owned-ram-toy --lib m32_owner_lifecycle_toy -- --nocapture
 
+      - name: M3.2 G3 Rust test-only moved-RAM-owner actor and terminal revocation
+        working-directory: src-tauri
+        run: cargo test --locked --features m32-g3-owned-ram-toy --lib m32_owner_handoff_actor_toy -- --nocapture
+
       - name: M3.2 G3 owner-runtime code-only feasibility and refusal tests
         run: python -m unittest discover -s tools -p "test_m3_2_g3_owner_runtime_contract.py" -v
 

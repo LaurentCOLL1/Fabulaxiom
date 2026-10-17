@@ -1,5 +1,10 @@
 # Fabulaxiom — Next Authorized Work
 
+## 2026-10-17 — Qualification acteur RAM à propriétaire unique, puis décision de provenance
+
+Vérifier que la PR expérimentale `m32_owner_handoff_actor_toy` conserve exclusivement `Connection::open_in_memory`, `cfg(test)` et la compilation interdite hors tests. Attendre sur **son SHA exact** le workflow Windows `pull_request` terminal et ses **10 nouveaux tests** d'admission, transfert, concurrence, revocation, poison et arrêt ; contrôler aussi les tests existants, le diff, le statut GitHub et la protection de `main`. Après une fusion qualifiée éventuelle, ne pas fabriquer une preuve d'original à partir de tickets RAM ; s'il n'existe aucune source réelle authentifiée et déjà ouverte, rester `STOP_UNAVAILABLE` pour G3. Étudier à part une procédure de provenance qui serait soumise à un accord opérateur spécifique avant toute ouverture réelle. Pas de PR #35 fusionnée, aucune production 007, activation ou writer.
+
+
 ## 2026-10-17 — Après revue de faisabilité Tauri / provenance (aucune donnée opérateur)
 
 Vérifier la nouvelle PR d'audit d'intégration sur son HEAD exact (diff, source Rust, CI Windows `pull_request`, chaque étape). Cette qualification constate seulement la topologie courante ; elle ne résout pas la provenance d'une connexion propriétaire. Après fusion protégée éventuelle, rechercher une **méthode démontrable, explicitement autorisée et indépendante du chemin** pour transférer une source déjà ouverte sans rouvrir les originaux. À défaut, garder `STOP_UNAVAILABLE` et poursuivre les travaux de conception non migrants ou les sous-parties M3.2 hors données opérateur. Ne pas préparer ni exécuter de cérémonie G3 réelle sur la base d'une CI verte.

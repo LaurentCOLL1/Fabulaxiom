@@ -1,5 +1,12 @@
 # Fabulaxiom — Current State
 
+## 2026-10-17 — M3.2 G3 : transfert de propriétaire Rust RAM entre threads (qualification séparée)
+
+Après PR #54 fusionnée (`main=8cbb8671194afee48d96194aae7863ddd46e9b3d` ; Windows CI #39020636502 36/36, nouveaux audits 9/9), la prochaine expérience reproduit uniquement le transfert par valeur d'une connexion SQLite **inventée en RAM** vers un thread Rust dédié, avec canal borné, réponses sans handle, révocation/poison/arrêt définitifs. Tests sous `cfg(test)` et feature `m32-g3-owned-ram-toy` hors builds normaux ; aucune commande Tauri ni source opérateur. Qualification sur nouveau HEAD Windows `pull_request` exigée, **non encore acquise**. Rapport : `docs/qualification/M3_2_G3_RUST_RAM_OWNER_HANDOFF_ACTOR_TOY.md`.
+
+**Aucun propriétaire source réel authentifié démontré : `STOP_UNAVAILABLE`**, historique `PENDING_EXTERNAL_ATTESTATION(21/3/2)`, prospective `NOT_STARTED`, G3/G4/G5/G6 réels `NOT_AUTHORIZED`, PR #35 `OPEN/DRAFT`. Pas de source ouverte, 007, marqueur, writer, M3.3 ni release.
+
+
 ## 2026-10-17 — M3.2 G3 : analyse de frontière Tauri, source uniquement (PR séparée en qualification)
 
 La revue du code Rust sur `main=3d6b69cb52e235af06cfea019cb0ec820a6ccaf0` constate l'absence de propriétaire SQLite persistant et authentifié dans les deux runners Tauri. Les commandes `database_status`, `hierarchy`, `entity` passent par des ouvertures migrantes, et la sauvegarde applicative ne conserve pas la réservation exclusive de sortie durant l'opération `VACUUM INTO`. Une qualification distincte examine cette topologie et ses dérives futures via des tests lisant le code public du dépôt, sans accès aux bases opérateur. Rapport : `docs/qualification/M3_2_G3_TAURI_OWNER_INTEGRATION_AUDIT.md`. **PR non encore qualifiée ; ne pas déclarer PASS avant sa propre CI exacte.** Aucun Tauri State, service runtime, source ouverte ni nouvelle commande n'est ajouté.
