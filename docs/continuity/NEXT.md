@@ -1,5 +1,10 @@
 # Fabulaxiom — Next Authorized Work
 
+## 2026-10-17 — Après contrat G3 : étude d'intégration sans source opérateur
+
+Qualifier au HEAD exact les tests du contrat `M3_2_G3_OWNER_RUNTIME_CONTRACT.md`. Réétudier ensuite la faisabilité d'une vraie connexion source persistante **sans en ouvrir une sur les originaux** : cycle de vie, provenance indépendante, gestion des migrations, source snapshot, WAL/journaux et garde Win32. Si aucune telle connexion n'existe, conserver `STOP_UNAVAILABLE` ; ne pas utiliser les commandes migrantes existantes ni la fonctionnalité de tests Rust pour fabriquer cette preuve. Toute implémentation Tauri sur des fichiers réels nécessite une autorisation distincte, des opérations précises et des critères d'arrêt documentés.
+
+
 ## 2026-10-17 — Étape autorisée : cycle de vie Rust RAM avant toute connexion Tauri réelle
 
 Qualifier `m32_owner_lifecycle_toy` sur le HEAD exact de sa PR Windows. Le prototype utilise exclusivement `Connection::open_in_memory`; il doit refuser une session périmée, un propriétaire révoqué ou empoisonné, un budget insuffisant, des migrations/FK défectueuses et les accès non synchronisés. Si la CI réussit, rédiger une étude d'architecture **sans aucune ouverture de source réelle**, afin de définir comment une future connexion persistante pourrait être créée et prouvée non migrante, avec source/provenance et approbation spécifique. Ne pas ajouter de commande Tauri G3 et ne pas libérer les verrous réels sur la base de tests synthétiques.
