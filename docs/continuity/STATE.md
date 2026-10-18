@@ -1,5 +1,13 @@
 # Fabulaxiom — Current State
 
+## 2026-10-18 — M3.2 : CSP/connexion HMR du laboratoire fictif CI — PR à qualifier
+
+Autorité re-fetch avant branche : `main=0413fd838a27e0643e5621c3391b4ba708f7e62f`, PR #70 protégée fusionnée après CI exacte Windows #39106878684 (49/49 SUCCESS ; 7 fichiers fictifs, 6 routes normales refusées, 29/29 Chromium). Le laboratoire navigateur jetable dispose maintenant d'un Vite séparé, mais sa configuration Tauri fictive reste hors runtime et sans `devCsp` autorisée.
+
+La nouvelle tranche **test-only** configure une CSP HTTP sur le **Vite isolé de GitHub Actions uniquement** : `default-src 'none'`, ressources scripts/styles du même site, connexions à l'origine fictive et WebSocket exact `ws://127.0.0.1:14279`, refus d'object/frame/base/form/worker et en-têtes `nosniff`/`no-referrer`. Le rafraîchissement React injecte en développement du script inline : la politique expérimentale contient donc **`script-src 'unsafe-inline'`**, concession explicitement NON satisfaisante comme politique de production/XSS. Un nouveau test Chromium contrôle les en-têtes reçus puis prouve un refus `connect-src` d'une tentative vers `https://example.invalid` sans requête réseau distante effective. L'ancienne CI 29/29 doit rester réussie.
+
+Ceci n'établit PAS `devCsp` Tauri, ni la CSP réellement appliquée par WebView2, ni la résolution `--config` de la CLI Tauri. Les risques détectés sur `vite.config.ts` **normal** (racine partagée, `TAURI_DEV_HOST` wildcard) restent et `M32_SECURITY_PREFLIGHT_STOP` doit demeurer. Une CI nouvelle au HEAD exact est obligatoire ; aucun PASS anticipé. `TAURI_RUNTIME_NOT_TESTED`, `OPERATOR_ACCEPTANCE_NOT_PERFORMED`, réel G3 `STOP_UNAVAILABLE`, historique `PENDING_EXTERNAL_ATTESTATION(21/3/2)`, prospective `NOT_STARTED`, G3–G6 réels non autorisés, PR #35 OPEN/DRAFT, issues #36/#38 OPEN. Aucune donnée, base, sauvegarde, manifeste, ACL, marqueur, 007, writer, M3.3 ou release.
+
 ## 2026-10-18 — M3.2 : racine Vite fictive éphémère exclusivement sur Windows CI (PR à qualifier)
 
 Autorité GitHub relue : `main=4741c6b3a48185d14a4a988bfda2f25bef9266dd` après fusion protégée de PR #69. Le diagnostic de cette PR reste correct : le Vite *normal* partage `index.html` et `m32-browser-lab.html`, accepte une valeur `TAURI_DEV_HOST` dangereuse et la variante Tauri fictive conserve une CSP non configurée. Le statut **`M32_SECURITY_PREFLIGHT_STOP` ne peut donc être retiré.**
