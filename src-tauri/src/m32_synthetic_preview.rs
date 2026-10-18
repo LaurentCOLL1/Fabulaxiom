@@ -79,6 +79,9 @@ mod tests {
         assert_eq!(validate_launch(&config.identifier, &opt_in, actual_url, &windows), Ok(()));
         assert_eq!(config.app.windows.len(), 1);
         assert!(!config.bundle.active);
+        assert!(config.build.before_dev_command.is_none(), "no inherited npm run dev");
+        assert!(config.build.before_build_command.is_none(), "no inherited npm run build");
+        assert!(config.build.frontend_dist.is_none(), "no production dist asset fallback");
         let caps = serde_json::to_value(&config.app.security.capabilities)
             .expect("serialize the compile-time capability references");
         assert_eq!(caps, serde_json::json!(["default"]));
