@@ -3,7 +3,10 @@
   "productName": "Fabulaxiom M3.2 FICTIONAL LAB",
   "identifier": "com.fabulaxiom.m32synthetic.preview",
   "build": {
-    "devUrl": "http://127.0.0.1:1420/m32-browser-lab.html"
+    "devUrl": "http://127.0.0.1:1420/m32-browser-lab.html",
+    "beforeDevCommand": null,
+    "beforeBuildCommand": null,
+    "frontendDist": null
   },
   "app": {
     "windows": [
