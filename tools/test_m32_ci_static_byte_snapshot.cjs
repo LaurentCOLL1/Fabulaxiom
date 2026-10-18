@@ -46,12 +46,13 @@ test("03 previously pinned body unaffected by source overwrite and deletion", ()
   const root = fixture();
   const seal = pinStaticBytes(root);
   const first = seal.get("assets/main.abcdef.js");
+  const originalHtml = seal.get("m32-browser-lab.html").body;
   fs.writeFileSync(path.join(root, "assets", "main.abcdef.js"), "throw Error('tamper');");
   fs.unlinkSync(path.join(root, "m32-browser-lab.html"));
   const second = seal.get("assets/main.abcdef.js");
   assert.deepEqual(first.body, second.body);
   assert.equal(first.sha256, second.sha256);
-  assert.ok(seal.get("m32-browser-lab.html").body.toString("utf8").includes("m32-browser-lab") === false);
+  assert.deepEqual(seal.get("m32-browser-lab.html").body, originalHtml);
 });
 
 test("04 returned Buffer is a copy and cannot change sealed RAM", () => {
