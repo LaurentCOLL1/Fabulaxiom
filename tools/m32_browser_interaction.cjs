@@ -7,6 +7,7 @@
  */
 const assert = require("node:assert/strict");
 const path = require("node:path");
+const { createHash } = require("node:crypto");
 const { spawn, spawnSync } = require("node:child_process");
 const { setTimeout: sleep } = require("node:timers/promises");
 const { stageFictionOnly } = require("./m32_ci_fixture_stage.cjs");
@@ -45,6 +46,18 @@ const server = spawn(
   { cwd: root, stdio: "pipe", shell: false, windowsHide: true, env },
 );
 server.on("error", e => errors.push(String(e)));
+// The fixture-only child logs its RAM pinning marker. Pipe it through the
+// Chromium CI driver so acceptance never relies on hidden subprocess output.
+let staticPinMarkerSeen = false;
+let staticPinOutput = "";
+server.stdout.on("data", chunk => {
+  if (!staticMode) return;
+  staticPinOutput += chunk.toString("utf8");
+  if (staticPinOutput.includes("M32_CI_STATIC_BYTES_PINNED_PASS")) {
+    staticPinMarkerSeen = true;
+  }
+  if (staticPinOutput.length > 16000) staticPinOutput = staticPinOutput.slice(-8000);
+});
 
 async function awaitLocalServer() {
   for (let n = 0; n < 70; n += 1) {
@@ -99,7 +112,24 @@ async function assertNormalAppNotServed() {
   } else {
     console.log("M32_CI_CSP_HEADER_SOURCE_PASS: local-only script/connect; dev inline concession");
   }
-  const html = await allowed.text();
+  const htmlBytes = Buffer.from(await allowed.arrayBuffer());
+  const html = htmlBytes.toString("utf8");
+  if (staticMode) {
+    const actual = createHash("sha256").update(htmlBytes).digest("hex");
+    assert.equal(allowed.headers.get("x-m32-local-sha256"), actual,
+      "STOP: static HTML bytes do not match the pinned local digest");
+    const jsRef = html.match(/\/assets\/[A-Za-z0-9_.-]+\.js/);
+    assert.ok(jsRef, "STOP: no compiled JS source in fictional HTML");
+    const jsResponse = await fetch("http://127.0.0.1:" + port + jsRef[0], {
+      signal: AbortSignal.timeout(5000),
+    });
+    assert.equal(jsResponse.status, 200, "STOP: compiled script absent");
+    const scriptBody = Buffer.from(await jsResponse.arrayBuffer());
+    assert.equal(jsResponse.headers.get("x-m32-local-sha256"),
+      createHash("sha256").update(scriptBody).digest("hex"),
+      "STOP: served JS bytes and local digest mismatch");
+    console.log("M32_CI_STATIC_HTTP_DIGEST_PASS: pinned fictional HTML and JS consistent");
+  }
   assert.ok(staticMode ? /\/assets\/[^"']+\.js/.test(html)
     : html.includes("m32BrowserLab.tsx"), "STOP: unexpected HTML entry");
   assert.ok(!html.includes('src/main.tsx'), "STOP: production entry leaked");
@@ -110,6 +140,14 @@ async function run() {
   let browser;
   try {
     await awaitLocalServer();
+    if (staticMode) {
+      for (let i = 0; i < 25 && !staticPinMarkerSeen; i += 1) {
+        await sleep(50);
+      }
+      assert.ok(staticPinMarkerSeen,
+        "STOP: static server did not emit RAM pinning evidence");
+      console.log("M32_CI_STATIC_BYTES_PINNED_PASS: child startup evidence observed by Chromium driver");
+    }
     await assertNormalAppNotServed();
     browser = await chromium.launch({ headless: true });
     const page = await browser.newPage();
