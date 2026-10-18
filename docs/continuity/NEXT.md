@@ -1,5 +1,10 @@
 # Fabulaxiom — Next Authorized Work
 
+## 2026-10-19 — qualifier association IPC parent/enfant et port fictif occupé
+
+Exiger CI Windows `pull_request` terminale au HEAD final de la branche de contrôle : 7 tests source/port fictif (y compris EADDRINUSE), marqueur `M32_CI_OWNED_STATIC_CHILD_READY_PASS` émis seulement après IPC reçu du child qui a ouvert le serveur sur 127.0.0.1:14279. Garder les 10 tests bruts Host/Origin, 7 requêtes réelles négatives, les 29/29 ×2 scénarios Chromium, 129 tests frontend, 100 Rust, codegen Tauri fictif compile-only et les essais G3 synthétiques. Inspecter logs, checks GitHub Actions app 15368, revue/diff, ruleset, commentaires/threads et main anti-course avant une fusion protégée `expected_head_sha`. Aucune validation native Windows/Tauri, aucune permission d'ouvrir G3 réel ou une base. `M32_SECURITY_PREFLIGHT_STOP` demeure.
+
+
 ## 2026-10-18 — qualification à faire : en-têtes HTTP bruts/dupliqués fictifs
 
 Attendre le Windows `pull_request` au HEAD exact de la nouvelle tranche : 10 tests Node d'autorité, ancien marqueur quatre refus HTTP, nouveau `M32_CI_HTTP_RAW_DUPLICATE_DENIAL_PASS` pour trois requêtes TCP brutes réelles, deux laboratoires Chromium 29/29, ensemble des tests Git/RAM/Tauri/fixtures G3, `M32_SECURITY_PREFLIGHT_STOP` préservé. Lire les logs, vérifier ruleset, checks de l'intégration 15368, reviews/threads, diff et re-fetch anti-course de main avant fusion avec `expected_head_sha`. Aucun lancement Tauri/WebView2 ni opérations opérateur. Une fusion ne vaut pas permission de lancement ni G3 réel.

@@ -7,7 +7,8 @@
  */
 const assert = require("node:assert/strict");
 const path = require("node:path");
-const { createHash } = require("node:crypto");
+const { createHash, randomBytes } = require("node:crypto");
+const { createOwnedReadyGate } = require("./m32_ci_owned_child_ready.cjs");
 const { spawn, spawnSync } = require("node:child_process");
 const { setTimeout: sleep } = require("node:timers/promises");
 const { stageFictionOnly } = require("./m32_ci_fixture_stage.cjs");
@@ -26,6 +27,8 @@ const cases = [];
 const errors = [];
 const unsafeNetwork = [];
 const env = { ...process.env, M32_CI_FIXTURE_STAGE: stage };
+const staticNonce = staticMode ? randomBytes(16).toString("hex") : null;
+if (staticMode) env.M32_CI_READY_NONCE = staticNonce;
 if (staticMode) {
   const build = spawnSync(process.execPath, [
     path.join(root, "node_modules", "vite", "bin", "vite.js"),
@@ -43,9 +46,12 @@ const server = spawn(
     : [path.join(root, "node_modules", "vite", "bin", "vite.js"),
       "--config", path.join(root, "vite.m32-ci-isolated.config.mts"),
       "--port", port, "--strictPort"],
-  { cwd: root, stdio: "pipe", shell: false, windowsHide: true, env },
+  { cwd: root, stdio: staticMode ? ["ignore", "pipe", "pipe", "ipc"] : "pipe",
+    shell: false, windowsHide: true, env },
 );
 server.on("error", e => errors.push(String(e)));
+const ownedReady = staticMode ? createOwnedReadyGate(server.pid, staticNonce) : null;
+if (staticMode) server.on("message", msg => ownedReady.observe(msg));
 // The fixture-only child logs its RAM pinning marker. Pipe it through the
 // Chromium CI driver so acceptance never relies on hidden subprocess output.
 let staticPinMarkerSeen = false;
@@ -61,10 +67,22 @@ server.stdout.on("data", chunk => {
 
 async function awaitLocalServer() {
   for (let n = 0; n < 70; n += 1) {
-    if (server.exitCode !== null) throw new Error("Vite exited before browser test");
+    if (server.exitCode !== null || server.signalCode !== null || errors.length) {
+      throw new Error("STOP: own fixture child exited or failed before browser test");
+    }
+    if (staticMode) {
+      const witness = ownedReady.status();
+      if (witness.error) throw new Error("STOP: child IPC witness invalid: " + witness.error);
+      if (!witness.ready) { await sleep(350); continue; }
+    }
     try {
       const response = await fetch(url, { signal: AbortSignal.timeout(900) });
-      if (response.ok) return;
+      if (response.ok) {
+        if (staticMode && (!ownedReady.status().ready || server.exitCode !== null)) {
+          throw Error("STOP: own server no longer owns a live IPC witness");
+        }
+        return;
+      }
     } catch {
       // A short, bounded loopback-only probe during Vite startup.
     }
@@ -211,6 +229,9 @@ async function run() {
   try {
     await awaitLocalServer();
     if (staticMode) {
+      assert.deepEqual(ownedReady.status(), { ready: true, error: null },
+        "STOP: no confirmed direct child process listening");
+      console.log("M32_CI_OWNED_STATIC_CHILD_READY_PASS: direct child IPC after listen; CI-local only");
       for (let i = 0; i < 25 && !staticPinMarkerSeen; i += 1) {
         await sleep(50);
       }

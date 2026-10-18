@@ -1,5 +1,10 @@
 # M3.2 — Prévisualisation Tauri Windows fictive : variante compilable, lancement interdit à cette étape
 
+## Liaison au processus enfant lors du test statique CI (candidate du 19 octobre)
+
+La simple réponse HTTP 200 sur 127.0.0.1:14279 n'identifie pas le serveur de test lorsque le port est déjà occupé. Le pilote CI requiert donc un message `process.send` issu de **son propre child** ayant atteint l'événement `listen()`, contenant PID, hôte et port attendus et un nonce généré par le parent. Le pilote ne contacte pas l'URL statique avant ce signal direct. Les tests du garde-fou rejettent les messages inventés, incomplets, répétés et démontrent qu'un serveur factice ne peut pas obtenir un signal de `listen()` si un autre processus détient déjà un port éphémère de test. Le Vite dev d'origine conserve son test séparé, sans IPC attestée. Rien n'authentifie un processus externe, un utilisateur Windows ou une provenance indépendante ; le pilote Chromium lui-même fait partie du même domaine de confiance GitHub Actions. Source : https://nodejs.org/api/child_process.html ; https://nodejs.org/api/net.html .
+
+
 ## Cas Host/Origin dupliqués sur serveur fictif (candidate, CI seulement)
 
 Le test suivant inspecte les paires `IncomingMessage.rawHeaders` non normalisées au lieu de croire seulement `headers.host`. Refuser les doublons d'autorité, d'origine et de `Sec-Fetch-Site` ; tester avec trois requêtes TCP brutes vers le serveur CI éphémère, en acceptant exclusivement HTTP 400 (parseur) ou 403 (veto applicatif). Ces requêtes restent sur `127.0.0.1:14279` dans GitHub Actions ; aucune garantie de résistance générale aux malwares locaux, à la falsification de processus, à la provenance externe ou aux attaques de parsing HTTP non testées. Voir https://nodejs.org/api/http.html#messagerawheaders . Tauri/WebView2 et G3 réel restent interdits.

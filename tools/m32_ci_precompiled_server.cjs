@@ -12,6 +12,10 @@ const { allowed, pinStaticBytes } = require("./m32_ci_static_byte_snapshot.cjs")
 
 assert.equal(process.env.CI?.toLowerCase(), "true", "STOP: static fixture server CI only");
 assert.equal(process.env.RUNNER_OS, "Windows", "STOP: Windows runner only");
+assert.ok(typeof process.send === "function",
+  "STOP: static fixture requires private parent/child IPC");
+assert.ok(/^[a-f0-9]{32}$/.test(process.env.M32_CI_READY_NONCE || ""),
+  "STOP: static fixture requires parent-provided ephemeral nonce");
 assert.equal(process.env.TAURI_DEV_HOST, undefined, "STOP: unexpected inherited host");
 assert.equal(process.env.__VITE_ADDITIONAL_SERVER_ALLOWED_HOSTS, undefined,
   "STOP: unexpected additional Vite host allowance");
@@ -109,5 +113,9 @@ const server = http.createServer((req, res) => {
 });
 server.on("error", error => { console.error("M32_STATIC_SERVER_FAIL", error.code); process.exitCode = 1; });
 server.listen(14279, "127.0.0.1", () => {
+  process.send({
+    type: "M32_CI_STATIC_LISTENING", host: "127.0.0.1",
+    port: 14279, pid: process.pid, nonce: process.env.M32_CI_READY_NONCE,
+  });
   console.log("M32_STATIC_FICTIONAL_LOOPBACK_READY: 127.0.0.1:14279; strict CSP; no inline");
 });
