@@ -1,5 +1,15 @@
 # M3.2 — Prévisualisation Tauri Windows fictive : variante compilable, lancement interdit à cette étape
 
+## Politique HTTP expérimentale du serveur fictif CI — exclusivement synthétique
+
+Après le checkpoint protégé PR #70 `main=0413fd838a27e0643e5621c3391b4ba708f7e62f`, le Vite temporaire de Chromium peut être qualifié avec une CSP d'essai envoyée en réponse HTTP : `default-src 'none'`, `connect-src 'self' ws://127.0.0.1:14279`, restrictions des scripts/styles/images, objets, frames, formulaires et workers ; en-têtes `X-Content-Type-Options: nosniff`, `Referrer-Policy: no-referrer`. Le port HMR du test est fixé à l'origine fictive CI, qui diffère volontairement de l'URL Tauri `127.0.0.1:1420` jamais lancée. La politique laisse **`script-src 'unsafe-inline'`** pour le preamble Vite/React et `style-src 'unsafe-inline'` pour les styles de dev : ces exceptions constituent des risques résiduels XSS et ne doivent pas être transférées aveuglément à une future politique Tauri.
+
+Le runner contrôle la valeur HTTP de la CSP sur l'unique page fictive, la conservation des 29 interactions Chromium existantes, puis tente depuis la page un `fetch` vers un hôte distant invalide, qui doit être bloqué par le navigateur via `connect-src`, avec l'événement `securitypolicyviolation` observé et sans sortie réseau effective. C'est un contrôle d'application CSP sous Chromium dans GitHub Actions seulement, pas une preuve de CSP native WebView2 ou de droit noyau. Le dossier des sept fichiers reste éphémère ; aucune permission native Tauri ni code de l'application normale ne sont modifiés.
+
+Rappels : **`M32_SECURITY_PREFLIGHT_STOP` persiste** pour la future variante Tauri, dont `devCsp` est absent ; `vite.config.ts` normal est toujours distinct et potentiellement dangereux via wildcard ; `CLI_CONFIG_RESOLUTION_NOT_TESTED`, `TAURI_RUNTIME_NOT_TESTED`, `OPERATOR_ACCEPTANCE_NOT_PERFORMED`, G3 réel `STOP_UNAVAILABLE`, PR #35 DRAFT. Sans fenêtre Tauri/WebView2, migration 007, SQLite opérateur, writer, M3.3 ni release.
+
+Références officielles : https://v2.tauri.app/reference/config/ ; https://v2.tauri.app/security/csp/ ; https://v8.vite.dev/config/server-options .
+
 ## Expérience de confinement Vite éphémère sur runner Windows — PR distincte, sans lancement Tauri
 
 À partir du `main=4741c6b3a48185d14a4a988bfda2f25bef9266dd`, un staging **créé neuf sur le checkout CI** ne copie que `m32-browser-lab.html` et les six modules/styles fictifs `src/m32BrowserLab.tsx`, `src/m32BrowserLab.css`, `src/M32ChronologyConsultation.tsx`, `src/M32ChronologyPreview.tsx`, `src/M32WorldOrderComparison.tsx`, `src/M32SyntheticEventExplorer.tsx`. Un manifeste exact, le refus de toute importation externe non autorisée, la détection des liens symboliques et une vérification de l'inventaire après copie doivent échouer si la fiction dépend de modules non listés. Le répertoire ne contient pas `index.html`, `App.tsx` ni `main.tsx`.
