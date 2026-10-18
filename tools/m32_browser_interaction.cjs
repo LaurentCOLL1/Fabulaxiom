@@ -46,6 +46,18 @@ const server = spawn(
   { cwd: root, stdio: "pipe", shell: false, windowsHide: true, env },
 );
 server.on("error", e => errors.push(String(e)));
+// The fixture-only child logs its RAM pinning marker. Pipe it through the
+// Chromium CI driver so acceptance never relies on hidden subprocess output.
+let staticPinMarkerSeen = false;
+let staticPinOutput = "";
+server.stdout.on("data", chunk => {
+  if (!staticMode) return;
+  staticPinOutput += chunk.toString("utf8");
+  if (staticPinOutput.includes("M32_CI_STATIC_BYTES_PINNED_PASS")) {
+    staticPinMarkerSeen = true;
+  }
+  if (staticPinOutput.length > 16000) staticPinOutput = staticPinOutput.slice(-8000);
+});
 
 async function awaitLocalServer() {
   for (let n = 0; n < 70; n += 1) {
@@ -128,6 +140,14 @@ async function run() {
   let browser;
   try {
     await awaitLocalServer();
+    if (staticMode) {
+      for (let i = 0; i < 25 && !staticPinMarkerSeen; i += 1) {
+        await sleep(50);
+      }
+      assert.ok(staticPinMarkerSeen,
+        "STOP: static server did not emit RAM pinning evidence");
+      console.log("M32_CI_STATIC_BYTES_PINNED_PASS: child startup evidence observed by Chromium driver");
+    }
     await assertNormalAppNotServed();
     browser = await chromium.launch({ headless: true });
     const page = await browser.newPage();
