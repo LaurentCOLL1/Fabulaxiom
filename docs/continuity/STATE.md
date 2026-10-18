@@ -1,5 +1,11 @@
 # Fabulaxiom — Current State
 
+## 2026-10-18 — M3.2 : refus Host/Origin du serveur HTTP fictif CI (en attente de CI)
+
+Autorité re-fetch : `main=2fa18dc879305ec7be39691bdb34ac4275cc8f60` après fusion PR #75 (liaison aux blobs Git des sept fichiers fictifs). **Cette liaison au checkout ne constitue pas une attestation externe ou indépendante de provenance.** La tranche actuelle durcit seulement le serveur HTTP *fictif de GitHub Actions* : refus avant routage des requêtes dont le `Host` diffère de `127.0.0.1:14279`, `Origin` (s'il est présent) diffère de `http://127.0.0.1:14279`, en-têtes de forwarding/proxy, métadonnées `Sec-Fetch-Site` non locales ou cibles de requête absolues/scheme-relative. Six tests adversariaux Node et quatre requêtes HTTP négatives dans Chromium doivent confirmer ce refus. L'écoute reste uniquement sur 127.0.0.1, les ressources restent figées en RAM, la CSP stricte et 29/29 cas Chromium dans les deux modes restent requis.
+
+**Limite** : un contrôle Host/Origin ne prouve ni la provenance de l'application, ni la validité des signatures, ni la résistance à un logiciel local malveillant, ni la sécurité native Tauri. La CI au HEAD nouveau doit être terminale avant tout PASS ou fusion. `M32_SECURITY_PREFLIGHT_STOP`, `TAURI_RUNTIME_NOT_TESTED`, `OPERATOR_ACCEPTANCE_NOT_PERFORMED`, `REAL_G3_STOP_UNAVAILABLE`, historique `PENDING_EXTERNAL_ATTESTATION(21/3/2)`, prospective `NOT_STARTED`, G3–G6 réels `NOT_AUTHORIZED`, PR #35 OPEN/DRAFT, issues #36/#38 OPEN. Pas de bases SQLite protégées, backup, ACL, marqueurs, migration 007, IPC writer, M3.3 ou release.
+
 ## 2026-10-18 — M3.2 : liaison des sept sources fictives aux blobs du checkout Git (PR EN COURS)
 
 Autorité re-fetch avant la tranche : `main=415390a5e1c3ff29964234c2faf714c2b5c51331`, après PR #74 protégée et CI Windows terminale #39124457270 (51/51 étapes, 8/8 tests snapshot, 29/29 Chromium ×2, 129 tests frontend, 100 Rust). PR #35 OPEN/DRAFT et issues #36/#38 OPEN. Une comparaison des empreintes HTTP de la PR #74 prouve la cohérence des ressources dans le processus CI, **pas leur provenance authentifiée**.

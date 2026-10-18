@@ -86,6 +86,30 @@ async function assertNormalAppNotServed() {
     assert.notEqual(response.status, 200,
       "STOP: normal App content reachable through isolated Vite root at " + suffix);
   }
+  if (staticMode) {
+    for (const headers of [
+      { Host: "evil.invalid:14279" },
+      { Origin: "https://evil.invalid" },
+      { "X-Forwarded-Host": "evil.invalid" },
+      { "Sec-Fetch-Site": "cross-site" },
+    ]) {
+      // Use raw Node HTTP to send exact adversarial Host/Origin bytes.
+      // fetch() may normalize or silently replace restricted Host headers.
+      const forbidden = await new Promise((resolve, reject) => {
+        const http = require("node:http");
+        const request = http.request(url, { method: "GET", headers, timeout: 5000 }, response => {
+          response.resume();
+          response.on("end", () => resolve(response.statusCode));
+        });
+        request.on("error", reject);
+        request.on("timeout", () => request.destroy(new Error("HTTP veto timeout")));
+        request.end();
+      });
+      assert.equal(forbidden, 403,
+        "STOP: static server accepted hostile HTTP authority: " + JSON.stringify(headers));
+    }
+    console.log("M32_CI_HTTP_AUTHORITY_DENIAL_PASS: 4 real loopback HTTP vetoes");
+  }
   const allowed = await fetch(url, { signal: AbortSignal.timeout(5000) });
   assert.equal(allowed.status, 200, "STOP: fictional lab unavailable");
   const csp = allowed.headers.get("content-security-policy");

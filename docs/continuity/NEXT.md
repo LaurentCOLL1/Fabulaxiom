@@ -1,5 +1,9 @@
 # Fabulaxiom — Next Authorized Work
 
+## 2026-10-18 — qualifier les refus Host/Origin sur le laboratoire fictif CI
+
+Exiger nouvelle CI `pull_request` Windows terminale sur HEAD exact : six tests Node `test_m32_ci_http_authority.cjs`, marqueur `M32_CI_HTTP_AUTHORITY_DENIAL_PASS` issu de quatre requêtes réelles, 10 tests de liaison Git, 8 tests snapshot RAM, deux séries Chromium 29/29, 129 frontend, 100 Rust, deux contextes Tauri compile-only et tous les tests G3 fictifs. Vérifier dans les logs le maintien de `M32_SECURITY_PREFLIGHT_STOP`. Revalider la protection de `main`, les reviews et threads, la comparaison du diff et l'absence de nouvelle commit avant `expected_head_sha`. Ne jamais convertir le succès du test serveur CI en autorisation de lancement réel Windows. `TAURI_RUNTIME_NOT_TESTED`, `OPERATOR_ACCEPTANCE_NOT_PERFORMED`, G3 réel STOP, historique 21/3/2 non attesté, prospective NOT_STARTED, PR #35 DRAFT et issues #36/#38 OPEN ; aucun accès opérateur, migration 007, M3.3 ou release.
+
 ## 2026-10-18 — qualifier la liaison Git des sources imaginaires du runner
 
 Exiger une CI Windows `pull_request` terminale **sur le nouveau HEAD exact** avec 10 cas Node, dont la conversion LF→CRLF autorisée sur Windows et le refus des autres altérations sur des dépôts Git **fictifs** (HEAD attendu, altération du worktree, disparition, ajout/duplication au manifest, changement de commit, immuabilité des buffers). Le staging Chromium doit afficher `M32_CI_GIT_SOURCE_BINDING_PASS` deux fois (Vite dev et bundle statique), et continuer à réussir `M32_CI_FIXTURE_STAGE_EXACT_PASS`, 29/29 Chromium ×2, 129 frontend, 100 Rust, deux contextes natifs compilés, tests G3 fictifs, `M32_SECURITY_PREFLIGHT_STOP` inchangé. Examiner logs, risques de confidentialité, diff, SHA du contrôle GitHub Actions app 15368, ruleset, reviews et discussions ; vérifier `main` anti-course puis fusion protégée avec `expected_head_sha` uniquement si tout a réellement réussi.
