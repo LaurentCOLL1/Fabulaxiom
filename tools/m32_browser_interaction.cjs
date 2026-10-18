@@ -7,6 +7,7 @@
  */
 const assert = require("node:assert/strict");
 const path = require("node:path");
+const { createHash } = require("node:crypto");
 const { spawn, spawnSync } = require("node:child_process");
 const { setTimeout: sleep } = require("node:timers/promises");
 const { stageFictionOnly } = require("./m32_ci_fixture_stage.cjs");
@@ -99,7 +100,24 @@ async function assertNormalAppNotServed() {
   } else {
     console.log("M32_CI_CSP_HEADER_SOURCE_PASS: local-only script/connect; dev inline concession");
   }
-  const html = await allowed.text();
+  const htmlBytes = Buffer.from(await allowed.arrayBuffer());
+  const html = htmlBytes.toString("utf8");
+  if (staticMode) {
+    const actual = createHash("sha256").update(htmlBytes).digest("hex");
+    assert.equal(allowed.headers.get("x-m32-local-sha256"), actual,
+      "STOP: static HTML bytes do not match the pinned local digest");
+    const jsRef = html.match(/\/assets\/[A-Za-z0-9_.-]+\.js/);
+    assert.ok(jsRef, "STOP: no compiled JS source in fictional HTML");
+    const jsResponse = await fetch("http://127.0.0.1:" + port + jsRef[0], {
+      signal: AbortSignal.timeout(5000),
+    });
+    assert.equal(jsResponse.status, 200, "STOP: compiled script absent");
+    const scriptBody = Buffer.from(await jsResponse.arrayBuffer());
+    assert.equal(jsResponse.headers.get("x-m32-local-sha256"),
+      createHash("sha256").update(scriptBody).digest("hex"),
+      "STOP: served JS bytes and local digest mismatch");
+    console.log("M32_CI_STATIC_HTTP_DIGEST_PASS: pinned fictional HTML and JS consistent");
+  }
   assert.ok(staticMode ? /\/assets\/[^"']+\.js/.test(html)
     : html.includes("m32BrowserLab.tsx"), "STOP: unexpected HTML entry");
   assert.ok(!html.includes('src/main.tsx'), "STOP: production entry leaked");
