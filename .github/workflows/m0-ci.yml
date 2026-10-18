@@ -123,6 +123,9 @@ jobs:
       - name: M3.2 Vite resolved network and CSP/shared-root preflight (no server launch)
         run: node tools/m32_vite_csp_nonlaunch_audit.mjs --audit
 
+      - name: M3.2 inert static devCsp candidate adversarial source tests (no app launch)
+        run: python -m unittest discover -s tools -p "test_m3_2_static_tauri_candidate.py" -v
+
       - name: M3.2 native Tauri compiled context audit (fictional only, no app launch)
         run: python tools/m3_2_tauri_codegen_ci.py
 

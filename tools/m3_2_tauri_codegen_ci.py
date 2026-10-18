@@ -64,6 +64,33 @@ def main():
     if done.returncode:
         raise SystemExit(f"FAIL: Tauri compiled-context test exit {done.returncode}")
     print("M32_NATIVE_OVERLAY_CONTEXT_PASS: true (compile-only, not CLI --config or runtime)", flush=True)
+
+    # Additional independent, inert candidate. Never passed to the ordinary
+    # Tauri startup, which still rejects port 14279 at its Rust admission gate.
+    from test_m3_2_static_tauri_candidate import (  # noqa: E402
+        CANDIDATE, BASE, ACTIVE, load as load_candidate, reject_candidate,
+    )
+    static_candidate = load_candidate(CANDIDATE)
+    reject_candidate(static_candidate, load_candidate(BASE), load_candidate(ACTIVE))
+    candidate_env = env.copy()
+    candidate_env["TAURI_CONFIG"] = json.dumps(
+        static_candidate, ensure_ascii=True, separators=(",", ":")
+    )
+    candidate_command = [
+        "cargo", "test", "--locked", "--manifest-path",
+        str(ROOT / "src-tauri" / "Cargo.toml"),
+        "--features", "m32-synthetic-preview", "--lib",
+        "m32_synthetic_preview::tests::compiled_static_candidate_csp_no_runtime",
+        "--", "--ignored", "--exact", "--nocapture",
+    ]
+    print("M32_STATIC_CANDIDATE_CODEGEN: compiling inert strict devCsp; no Tauri launch", flush=True)
+    candidate_result = subprocess.run(
+        candidate_command, cwd=ROOT / "src-tauri", env=candidate_env,
+        check=False, timeout=1200
+    )
+    if candidate_result.returncode:
+        raise SystemExit(f"FAIL: inert Tauri static candidate codegen exit {candidate_result.returncode}")
+    print("M32_STATIC_CANDIDATE_CODEGEN_PASS: strict devCsp parsed; launch URL still rejected", flush=True)
     print("TAURI_RUNTIME_NOT_TESTED; OPERATOR_ACCEPTANCE_NOT_PERFORMED", flush=True)
 
 
