@@ -58,7 +58,7 @@ test("03 refuse edited worktree data even though committed blob is intact", () =
   const f = fixture();
   fs.writeFileSync(path.join(f.root, MANIFEST[1]), "tampered-non-fictional-code\n");
   assert.throws(() => bindSourcesToCheckout(f.root, f.head, MANIFEST),
-    /differs from exact Git commit blob/);
+    /differs from Git blob beyond permitted Windows CRLF checkout/);
 });
 
 test("04 refuse missing tracked source instead of inventing or re-fetching", () => {
@@ -100,6 +100,29 @@ test("08 returned buffer modifications cannot alter remembered Git bytes", () =>
   assert.notDeepEqual(first, again);
   assert.equal(createHash("sha256").update(again).digest("hex"),
     bound.inventory.find(x=>x.path===MANIFEST[0]).sha256);
+});
+
+test("09 permitted CRLF Windows checkout still stages the immutable LF Git blob", () => {
+  const f = fixture();
+  const rel = MANIFEST[0];
+  const original = fs.readFileSync(path.join(f.root, rel), "utf8");
+  assert.ok(original.includes("\n") && !original.includes("\r"));
+  fs.writeFileSync(path.join(f.root, rel), original.replace(/\n/g, "\r\n"));
+  const bound = bindSourcesToCheckout(f.root, f.head, MANIFEST);
+  assert.equal(bound.source(rel).toString("utf8"), original);
+});
+
+test("10 refuse arbitrary carriage returns or whitespace changes", () => {
+  const f = fixture();
+  fs.writeFileSync(path.join(f.root, MANIFEST[0]),
+    "invented-only-file:" + MANIFEST[0] + "\rMALICIOUS\n");
+  assert.throws(() => bindSourcesToCheckout(f.root, f.head, MANIFEST),
+    /differs from Git blob beyond permitted Windows CRLF checkout/);
+  const second = fixture();
+  fs.writeFileSync(path.join(second.root, MANIFEST[0]),
+    "invented-only-file:" + MANIFEST[0] + " \r\n");
+  assert.throws(() => bindSourcesToCheckout(second.root, second.head, MANIFEST),
+    /differs from Git blob beyond permitted Windows CRLF checkout/);
 });
 
 console.log("M32_CI_GIT_BLOB_TESTS_DEFINED: fabricated disposable Git repositories; NO operator source");
