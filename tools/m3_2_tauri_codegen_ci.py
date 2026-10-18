@@ -1,10 +1,11 @@
 """Compile-time M3.2 Tauri context audit on Windows CI only.
 
 This invokes one ignored *Rust unit test*, NEVER tauri dev/build/run or any
-WebView. It feeds an exactly validated fictional config to Tauri's native
-generate_context! path via TAURI_CONFIG. The merged JSON is produced by
-the repository's conservative source model, NOT by Tauri CLI, so a pass
-does NOT verify CLI --config ordering or runtime ACL grants.
+WebView. It feeds the *raw validated fictional JSON overlay*, with RFC 7396 null
+deletion markers, to generate_context! via TAURI_CONFIG so Tauri's
+native config reader must resolve it against the base file. Python
+also independently models the expected result. This is NOT a call to
+the Tauri CLI --config frontend and proves no WebView/runtime ACL.
 No operator Windows files, SQLite, backups or secrets are accessed.
 """
 from pathlib import Path
@@ -46,7 +47,7 @@ def main():
     if os.environ.get("FABULAXIOM_M32_PREVIEW_ID"):
         raise SystemExit("STOP: inherited preview identity forbidden")
     env = os.environ.copy()
-    env["TAURI_CONFIG"] = json.dumps(merged, ensure_ascii=True, separators=(",", ":"))
+    env["TAURI_CONFIG"] = json.dumps(overlay, ensure_ascii=True, separators=(",", ":"))
     env["FABULAXIOM_M32_PREVIEW_ID"] = IDENTITY
     # This is cargo test --lib ONLY. Exactly one ignored test is selected,
     # which calls generate_context! and reads its config, not Builder::run.
@@ -56,13 +57,13 @@ def main():
         "--features", "m32-synthetic-preview", "--lib", TEST,
         "--", "--ignored", "--exact", "--nocapture",
     ]
-    print("M32_CONTEXT_CODEGEN: starting isolated Rust test compilation; no Tauri launch", flush=True)
+    print("M32_CONTEXT_CODEGEN: compiling native RFC7396 overlay context; no Tauri launch", flush=True)
     done = subprocess.run(
         command, cwd=ROOT / "src-tauri", env=env, check=False, timeout=1200
     )
     if done.returncode:
         raise SystemExit(f"FAIL: Tauri compiled-context test exit {done.returncode}")
-    print("M32_COMPILED_CONTEXT_PASS: true (codegen only, no CLI --config or runtime)", flush=True)
+    print("M32_NATIVE_OVERLAY_CONTEXT_PASS: true (compile-only, not CLI --config or runtime)", flush=True)
     print("TAURI_RUNTIME_NOT_TESTED; OPERATOR_ACCEPTANCE_NOT_PERFORMED", flush=True)
 
 
