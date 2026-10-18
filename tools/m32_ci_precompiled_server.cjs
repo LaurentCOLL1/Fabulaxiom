@@ -1,0 +1,110 @@
+"use strict";
+
+/** Static, precompiled, fictional-only HTTP server for ephemeral Windows CI.
+ * Serves EXACTLY one invented HTML entry and compiled hashed JS/CSS assets.
+ * No Tauri, WebView2, normal App, DB, IPC or user Windows processes.
+ */
+const assert = require("node:assert/strict");
+const fs = require("node:fs");
+const path = require("node:path");
+const http = require("node:http");
+
+assert.equal(process.env.CI?.toLowerCase(), "true", "STOP: static fixture server CI only");
+assert.equal(process.env.RUNNER_OS, "Windows", "STOP: Windows runner only");
+assert.equal(process.env.TAURI_DEV_HOST, undefined, "STOP: unexpected inherited host");
+assert.equal(process.env.__VITE_ADDITIONAL_SERVER_ALLOWED_HOSTS, undefined,
+  "STOP: unexpected additional Vite host allowance");
+
+const root = path.resolve(__dirname, "..");
+const stage = process.env.M32_CI_FIXTURE_STAGE;
+if (!stage || !path.isAbsolute(stage)) throw Error("STOP: no staged fictional root");
+const canonicalStage = fs.realpathSync(stage);
+if (path.dirname(canonicalStage) !== root ||
+    !path.basename(canonicalStage).startsWith(".m32-fixture-only-") ||
+    fs.lstatSync(stage).isSymbolicLink()) {
+  throw Error("STOP: source stage outside ephemeral checkout");
+}
+const out = path.join(canonicalStage, "dist-static");
+if (!fs.existsSync(out) || !fs.statSync(out).isDirectory() || fs.lstatSync(out).isSymbolicLink()) {
+  throw Error("STOP: no genuine precompiled static output");
+}
+const csp = [
+  "default-src 'none'",
+  "script-src 'self'",
+  "style-src 'self'",
+  "connect-src 'none'",
+  "img-src 'self' data:",
+  "font-src 'self'",
+  "object-src 'none'",
+  "frame-src 'none'",
+  "frame-ancestors 'none'",
+  "base-uri 'none'",
+  "form-action 'none'",
+  "worker-src 'none'",
+  "manifest-src 'none'",
+].join("; ");
+
+function allowed(relative) {
+  if (relative === "m32-browser-lab.html") return true;
+  return /^assets\/[A-Za-z0-9_.-]+\.(?:js|css)$/.test(relative);
+}
+function walk(directory) {
+  for (const entry of fs.readdirSync(directory, { withFileTypes: true })) {
+    const localPath = path.join(directory, entry.name);
+    if (entry.isSymbolicLink()) throw Error("STOP: static bundle symlink");
+    if (entry.isDirectory()) walk(localPath);
+    else if (entry.isFile()) {
+      const relative = path.relative(out, localPath).replaceAll("\\", "/");
+      assert.ok(allowed(relative), "STOP: unexpected output file: " + relative);
+      assert.ok(fs.statSync(localPath).size > 0, "STOP: empty output " + relative);
+    } else throw Error("STOP: unusual bundle entry");
+  }
+}
+walk(out);
+const htmlFile = path.join(out, "m32-browser-lab.html");
+const html = fs.readFileSync(htmlFile, "utf8");
+assert.ok(/<script\s+[^>]*src=["']\/assets\/[^"']+\.js["']/i.test(html),
+  "STOP: fictional bundle JS not externalized");
+assert.ok(!/<script(?:\s[^>]*)?>[\s\S]*?<\/script>/i.test(
+  html.replace(/<script\s+[^>]*src=["'][^"']+["'][^>]*><\/script>/gi, "")),
+  "STOP: inline script in static HTML");
+assert.ok(!/<style\b/i.test(html) && !/\son[a-z]+\s*=/i.test(html),
+  "STOP: inline CSS or event handler in static HTML");
+assert.ok(!html.includes("/src/main.tsx") && !html.includes("/src/App.tsx"),
+  "STOP: normal App reference in built HTML");
+assert.ok(!csp.includes("unsafe-inline") && !csp.includes("unsafe-eval"),
+  "STOP: lax static CSP");
+
+const server = http.createServer((req, res) => {
+  const pathname = (req.url || "").split("?")[0];
+  // No URL decoding, aliases, directory indexes, SPA fallback, redirects,
+  // proxy, filesystem exploration or API endpoints.
+  const relative = pathname.startsWith("/") ? pathname.slice(1) : "";
+  if (req.method !== "GET" && req.method !== "HEAD") {
+    res.writeHead(405, { "Content-Type": "text/plain" }); res.end("Method Not Allowed"); return;
+  }
+  if (!allowed(relative)) {
+    res.writeHead(404, { "Content-Type": "text/plain" }); res.end("Not Found"); return;
+  }
+  const candidate = path.join(out, ...relative.split("/"));
+  try {
+    if (fs.lstatSync(candidate).isSymbolicLink() || !fs.statSync(candidate).isFile()) throw Error("not a file");
+    const type = relative.endsWith(".html") ? "text/html; charset=utf-8" :
+      relative.endsWith(".css") ? "text/css; charset=utf-8" : "text/javascript; charset=utf-8";
+    res.writeHead(200, {
+      "Content-Type": type,
+      "Content-Security-Policy": csp,
+      "X-Content-Type-Options": "nosniff",
+      "Referrer-Policy": "no-referrer",
+      "Cache-Control": "no-store",
+    });
+    if (req.method === "HEAD") res.end();
+    else fs.createReadStream(candidate).pipe(res);
+  } catch {
+    res.writeHead(404, { "Content-Type": "text/plain" }); res.end("Not Found");
+  }
+});
+server.on("error", error => { console.error("M32_STATIC_SERVER_FAIL", error.code); process.exitCode = 1; });
+server.listen(14279, "127.0.0.1", () => {
+  console.log("M32_STATIC_FICTIONAL_LOOPBACK_READY: 127.0.0.1:14279; strict CSP; no inline");
+});
