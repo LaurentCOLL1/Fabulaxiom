@@ -1,5 +1,13 @@
 # Fabulaxiom — Next Authorized Work
 
+## 2026-10-18 — qualification d'un candidat `devCsp` Tauri INACTIF
+
+Obtenir un `pull_request` Windows terminal `SUCCESS` sur le HEAD final de la branche candidate : suite adversariale `test_m3_2_static_tauri_candidate.py`, présence d'une CSP exactement égale aux directives du serveur statique déjà qualifié, refus `unsafe-inline`/`unsafe-eval`/IPC/origines distantes et des identités, ports, hooks, windows et capabilities non autorisés. Sur le même runner, faire passer les deux anciens laboratoires Chromium (29 + 29), les 129 tests frontend, 100 Rust, tous les garde-fous G3 fictifs et **deux tests Rust compile-only sous `TAURI_CONFIG`** : overlay M3.2 actif inchangé, puis candidat source-only strict, sans appeler `Builder::run`. Marqueurs visés : `M32_NATIVE_OVERLAY_CONTEXT_PASS` et `M32_STATIC_CANDIDATE_CODEGEN_PASS`, `M32_SECURITY_PREFLIGHT_STOP` maintenu.
+
+Examiner journaux, diff, secrets, ruleset, checks GitHub Actions intégration 15368, reviews/threads, provenance des fichiers et anti-course sur `main`; fusion protégée sous `expected_head_sha` uniquement en cas de réussite à ce HEAD. **Ne pas transférer le candidat dans `src-tauri/`, modifier l'URL autorisée dans Rust, ou lancer Tauri/WebView2.** La compilation de `devCsp` ne prouve pas l'exécution Windows, la navigation ou les ACL natives. Un futur passage du candidat à une variante exécutable requerra une nouvelle tranche source-only, un preflight opérateur `PASS/FAIL/STOP`, et **l'autorisation explicite préalable** pour tout lancement Windows.
+
+G3 réel STOP ; historique 21/3/2 `PENDING_EXTERNAL_ATTESTATION` ; prospective `NOT_STARTED`, G3–G6 réels `NOT_AUTHORIZED`, PR #35 OPEN/DRAFT, issues #36/#38 OPEN, aucune base/sauvegarde/migration/sidecar/ACL originale, aucun M3.3/release.
+
 ## 2026-10-18 — qualifier le bundle statique fictif sans `unsafe-inline` (GitHub CI uniquement)
 
 Au nouveau HEAD, exiger `pull_request` Windows terminal `SUCCESS` avec les deux modes de tests Chromium : ancien Vite/HMR inventé **29/29**, nouveau build Vite fiction-only **29/29** sur serveur de fichiers statiques à routes allowlist (sans les fichiers normaux). Inspecter `M32_CI_PRECOMPILED_FICTION_ONLY_BUILD_PASS`, `M32_CI_PRECOMPILED_NO_INLINE_CSP_HEADER_PASS`, `M32_CI_PRECOMPILED_INLINE_SCRIPT_DENIED_PASS`, `M32_CI_PRECOMPILED_STRICT_CSP_BROWSER_PASS: 29/29`, négatifs HTTP, en plus de 129 tests frontend, 100 Rust, Tauri compilé et garde-fous G3 fictifs. Lire les journaux et vérifier que le contrôle préexistant `M32_SECURITY_PREFLIGHT_STOP` demeure. Relire le diff, le ruleset et les reviews, re-fetch `main` avant fusion `expected_head_sha` seulement si toutes les preuves sont terminales au SHA exact.
