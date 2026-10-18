@@ -101,6 +101,46 @@ mod tests {
         // source-only audit checks default.json targets only window "main".
     }
 
+    /// Tests a TOOLS-ONLY static candidate, not the active launch overlay.
+    /// Generated context is compiled but NO Builder or native window is started.
+    #[test]
+    #[ignore = "CI-only candidate config; deliberately forbidden by current launcher"]
+    fn compiled_static_candidate_csp_no_runtime() {
+        let context: tauri::Context = tauri::generate_context!(test = true);
+        let config = context.config();
+        let candidate_url = "http://127.0.0.1:14279/m32-browser-lab.html";
+        let actual_url = config.build.dev_url.as_ref().map(|u| u.as_str());
+        assert_eq!(actual_url, Some(candidate_url));
+        assert_eq!(config.identifier, LAB_ID);
+        assert_eq!(config.app.windows.len(), 1);
+        assert_eq!(config.app.windows[0].label, LAB_WINDOW);
+        assert!(!config.bundle.active);
+        assert!(config.build.frontend_dist.is_none());
+        let supplied = std::env::var("TAURI_CONFIG")
+            .expect("CI must provide only raw inert candidate JSON");
+        let patch: serde_json::Value = serde_json::from_str(&supplied)
+            .expect("candidate must be valid JSON");
+        assert_eq!(patch["build"]["devUrl"], candidate_url);
+        for key in ["beforeDevCommand", "beforeBuildCommand", "frontendDist"] {
+            assert!(patch["build"][key].is_null());
+        }
+        let expected_csp = patch["app"]["security"]["devCsp"]
+            .as_str().expect("string CSP candidate required");
+        assert!(!expected_csp.contains("unsafe-inline"));
+        assert!(!expected_csp.contains("unsafe-eval"));
+        assert!(expected_csp.contains("connect-src 'none'"));
+        let parsed = serde_json::to_value(
+            config.app.security.dev_csp.as_ref().expect("native devCsp missing")
+        ).expect("serialize native devCsp for comparison");
+        assert_eq!(parsed, serde_json::json!(expected_csp));
+        assert_eq!(
+            serde_json::to_value(&config.app.security.capabilities).unwrap(),
+            serde_json::json!(["default"])
+        );
+        // The production runtime admission remains deliberately closed.
+        assert!(validate_launch(LAB_ID, LAB_ID, actual_url, &[LAB_WINDOW]).is_err());
+    }
+
     #[test]
     fn lab_constants_explicitly_refuse_real_source_assumptions() {
         assert_ne!(LAB_ID, "com.fabulaxiom.desktop");
