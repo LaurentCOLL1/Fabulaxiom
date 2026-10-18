@@ -51,6 +51,9 @@ jobs:
       - name: M3.2 fictional static server normalized and raw HTTP authority veto tests
         run: node --test tools/test_m32_ci_http_authority.cjs
 
+      - name: M3.2 static fictional server direct-child IPC and occupied-port toy tests
+        run: node --test tools/test_m32_ci_owned_child_ready.cjs
+
       - name: M3.2 real Chromium synthetic-only UI interaction (ephemeral pinned Playwright)
         shell: pwsh
         run: |
