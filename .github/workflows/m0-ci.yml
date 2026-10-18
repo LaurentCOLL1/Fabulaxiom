@@ -56,6 +56,12 @@ jobs:
           $env:FABULAXIOM_M32_PLAYWRIGHT_MODULE = Join-Path $Sandbox 'node_modules\playwright'
           node tools/m32_browser_interaction.cjs
           if ($LASTEXITCODE -ne 0) { throw 'Synthetic Chromium interaction tests failed' }
+          # A second test run compiles only invented staging files and serves
+          # them with a STRICT CSP: no HMR, unsafe-inline or normal UI routes.
+          # Uses the already pinned Chromium runner, not Tauri or WebView2.
+          $env:M32_CI_PRECOMPILED = '1'
+          node tools/m32_browser_interaction.cjs
+          if ($LASTEXITCODE -ne 0) { throw 'Strict CSP precompiled fictional Chromium tests failed' }
 
       - name: M3.2 synthetic event explorer filtering pagination and witness tests
         run: npm run test:ci -- src/m32SyntheticEventExplorer.test.tsx

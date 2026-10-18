@@ -1,5 +1,13 @@
 # Fabulaxiom — Current State
 
+## 2026-10-18 — M3.2 : bundle fictif précompilé et CSP sans inline (CI uniquement ; qualification en attente)
+
+Autorité re-fetch : `main=c8fe034040af157f2101c1dd88093267637f4d75`. La PR #71 a été protégée fusionnée après CI `pull_request` #39109033373 au HEAD exact `d6bb950b12c3a672e8a32e258ce347f388e72d3f` (49/49 Windows SUCCESS ; 129 frontend, 29 Chromium inventé, 100 Rust, CSP HTTP expérimentale et refus de connexion distante). Cette CSP Vite *dev* comportait encore `unsafe-inline` et **ne constitue pas un `devCsp` Tauri**.
+
+Une tranche indépendante ajoute **seulement sur GitHub Actions Windows** la compilation Vite des sept fichiers fictifs du staging jetable, sans `index.html` normal, et un serveur Node HTTP test-only écoutant exclusivement `127.0.0.1:14279`, sans exploration de fichiers ni fallback. Son allowlist refuse toutes les routes hormis `/m32-browser-lab.html` et les fichiers JS/CSS précompilés générés dans le répertoire neuf. La réponse HTML/JS/CSS emploie une CSP stricte **sans `unsafe-inline` ni `unsafe-eval`** (`script-src 'self'`, `style-src 'self'`, `connect-src 'none'`) ; le bundle doit ne contenir ni `<script>` inline ni référence à l'application normale. Les 29 scénarios Chromium fictifs sont rejoués à l'identique une seconde fois avec ce bundle statique ; des refus réseau externe et d'exécution inline sont exigés. Le premier scénario Vite/HMR CI de PR #71 est conservé : pas de régression cachée.
+
+Une nouvelle CI Windows au HEAD exact est obligatoire ; **aucun PASS anticipé**. Ce test peut démarrer les deux *serveurs de fixtures jetables* de GitHub Actions, sans lancer de Tauri/WebView2, ni utiliser une base, des sauvegardes ou chemins privés de l'opérateur. Il ne valide pas la `devCsp` native Tauri, le merge CLI `--config`, les IPC/capabilities runtime ou les ports/processus du PC opérateur. `M32_SECURITY_PREFLIGHT_STOP`, `CLI_CONFIG_RESOLUTION_NOT_TESTED`, `TAURI_RUNTIME_NOT_TESTED`, `OPERATOR_ACCEPTANCE_NOT_PERFORMED`, `REAL_G3_STOP_UNAVAILABLE`. Historique `PENDING_EXTERNAL_ATTESTATION(21/3/2)`, prospective `NOT_STARTED`, G3–G6 réels `NOT_AUTHORIZED`, PR #35 OPEN/DRAFT, issues #36/#38 OPEN, pas M3.3/release.
+
 ## 2026-10-18 — M3.2 : CSP/connexion HMR du laboratoire fictif CI — PR à qualifier
 
 Autorité re-fetch avant branche : `main=0413fd838a27e0643e5621c3391b4ba708f7e62f`, PR #70 protégée fusionnée après CI exacte Windows #39106878684 (49/49 SUCCESS ; 7 fichiers fictifs, 6 routes normales refusées, 29/29 Chromium). Le laboratoire navigateur jetable dispose maintenant d'un Vite séparé, mais sa configuration Tauri fictive reste hors runtime et sans `devCsp` autorisée.

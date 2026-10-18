@@ -7,7 +7,7 @@
  */
 const assert = require("node:assert/strict");
 const path = require("node:path");
-const { spawn } = require("node:child_process");
+const { spawn, spawnSync } = require("node:child_process");
 const { setTimeout: sleep } = require("node:timers/promises");
 const { stageFictionOnly } = require("./m32_ci_fixture_stage.cjs");
 
@@ -18,18 +18,31 @@ if (!playwrightPath || !path.isAbsolute(playwrightPath)) {
 }
 const { chromium } = require(playwrightPath);
 const stage = stageFictionOnly();
+const staticMode = process.env.M32_CI_PRECOMPILED === "1";
 const port = "14279";
 const url = "http://127.0.0.1:" + port + "/m32-browser-lab.html";
 const cases = [];
 const errors = [];
 const unsafeNetwork = [];
+const env = { ...process.env, M32_CI_FIXTURE_STAGE: stage };
+if (staticMode) {
+  const build = spawnSync(process.execPath, [
+    path.join(root, "node_modules", "vite", "bin", "vite.js"),
+    "build", "--config", path.join(root, "vite.m32-ci-isolated.config.mts"),
+  ], { cwd: root, env, shell: false, encoding: "utf8",
+    windowsHide: true, timeout: 120000, maxBuffer: 10 * 1024 * 1024 });
+  assert.equal(build.status, 0, "STOP: fictional-only Vite build failed: " +
+    (build.stderr || build.stdout || build.error || "unknown"));
+  console.log("M32_CI_PRECOMPILED_FICTION_ONLY_BUILD_PASS");
+}
 const server = spawn(
   process.execPath,
-  [path.join(root, "node_modules", "vite", "bin", "vite.js"),
-    "--config", path.join(root, "vite.m32-ci-isolated.config.mts"),
-    "--port", port, "--strictPort"],
-  { cwd: root, stdio: "pipe", shell: false, windowsHide: true,
-    env: { ...process.env, M32_CI_FIXTURE_STAGE: stage } },
+  staticMode
+    ? [path.join(root, "tools", "m32_ci_precompiled_server.cjs")]
+    : [path.join(root, "node_modules", "vite", "bin", "vite.js"),
+      "--config", path.join(root, "vite.m32-ci-isolated.config.mts"),
+      "--port", port, "--strictPort"],
+  { cwd: root, stdio: "pipe", shell: false, windowsHide: true, env },
 );
 server.on("error", e => errors.push(String(e)));
 
@@ -65,8 +78,10 @@ async function assertNormalAppNotServed() {
   const csp = allowed.headers.get("content-security-policy");
   assert.ok(csp, "STOP: fictional HTML served WITHOUT CSP");
   for (const directive of [
-    "default-src 'none'", "script-src 'self' 'unsafe-inline'",
-    "connect-src 'self' ws://127.0.0.1:14279",
+    "default-src 'none'",
+    staticMode ? "script-src 'self'" : "script-src 'self' 'unsafe-inline'",
+    staticMode ? "style-src 'self'" : "style-src 'self' 'unsafe-inline'",
+    staticMode ? "connect-src 'none'" : "connect-src 'self' ws://127.0.0.1:14279",
     "object-src 'none'", "frame-ancestors 'none'",
     "base-uri 'none'", "form-action 'none'",
   ]) {
@@ -77,9 +92,16 @@ async function assertNormalAppNotServed() {
     "STOP: non-loopback or broad origin in lab CSP");
   assert.equal(allowed.headers.get("x-content-type-options"), "nosniff");
   assert.equal(allowed.headers.get("referrer-policy"), "no-referrer");
-  console.log("M32_CI_CSP_HEADER_SOURCE_PASS: local-only script/connect; dev inline concession");
+  if (staticMode) {
+    assert.ok(!csp.includes("unsafe-inline") && !csp.includes("unsafe-eval"),
+      "STOP: static bundle CSP must forbid inline code and eval");
+    console.log("M32_CI_PRECOMPILED_NO_INLINE_CSP_HEADER_PASS");
+  } else {
+    console.log("M32_CI_CSP_HEADER_SOURCE_PASS: local-only script/connect; dev inline concession");
+  }
   const html = await allowed.text();
-  assert.ok(html.includes("m32BrowserLab.tsx"), "STOP: unexpected HTML entry");
+  assert.ok(staticMode ? /\/assets\/[^"']+\.js/.test(html)
+    : html.includes("m32BrowserLab.tsx"), "STOP: unexpected HTML entry");
   assert.ok(!html.includes('src/main.tsx'), "STOP: production entry leaked");
   console.log("M32_CI_VITE_NORMAL_ROUTES_DENIED_PASS: " + normal.length + " routes");
 }
@@ -409,6 +431,17 @@ async function run() {
       "STOP: missing actual browser CSP connect-src enforcement");
     assert.deepEqual(unsafeNetwork, [], "STOP: remote request escaped local CSP");
     console.log("M32_CI_CHROMIUM_CSP_CONNECT_BLOCK_PASS: external fetch denied by CSP");
+    if (staticMode) {
+      const scriptVeto = await page.evaluate(() => {
+        const trap = document.createElement("script");
+        trap.textContent = "window.__M32_INLINE_EXECUTED = true";
+        document.body.appendChild(trap);
+        return window.__M32_INLINE_EXECUTED === true;
+      });
+      assert.equal(scriptVeto, false, "STOP: inline JS executed under strict CSP");
+      console.log("M32_CI_PRECOMPILED_INLINE_SCRIPT_DENIED_PASS");
+      console.log("M32_CI_PRECOMPILED_STRICT_CSP_BROWSER_PASS: 29/29");
+    }
     console.log("M32_CI_FIXTURE_ONLY_BROWSER_PASS: 29/29; no normal source pages");
   } finally {
     if (browser) await browser.close();
