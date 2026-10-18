@@ -42,6 +42,9 @@ jobs:
       - name: M3.2 synthetic React two-anchor consultation tests
         run: npm run test:ci -- src/m32ChronologyConsultation.test.tsx
 
+      - name: M3.2 fictional exact-Git-blob staging adversarial tests (disposable CI repos)
+        run: node --test tools/test_m32_ci_git_source_binding.cjs
+
       - name: M3.2 precompiled fiction-only byte pinning adversarial tests (CI scratch only)
         run: node --test tools/test_m32_ci_static_byte_snapshot.cjs
 
