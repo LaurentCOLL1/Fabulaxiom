@@ -148,4 +148,71 @@ mod tests {
         assert!(LAB_URL.starts_with("http://127.0.0.1:1420/"));
         assert!(LAB_URL.ends_with("/m32-browser-lab.html"));
     }
+
+    // Test-only synthetic resolved command, NOT generated application ACL.
+    // Uses Tauri's own native RuntimeAuthority::resolve_access matcher with
+    // deliberately invented permissions, no Builder, WebView or operator files.
+    fn native_acl_fixture(windows: &[&str], webviews: &[&str]) -> tauri::ipc::RuntimeAuthority {
+        use tauri::utils::acl::{resolved::{Resolved, ResolvedCommand}, ExecutionContext};
+        let command = ResolvedCommand {
+            context: ExecutionContext::Local,
+            windows: windows.iter().map(|pattern| pattern.parse().expect("valid toy window glob")).collect(),
+            webviews: webviews.iter().map(|pattern| pattern.parse().expect("valid toy webview glob")).collect(),
+            ..Default::default()
+        };
+        let mut resolved = Resolved::default();
+        resolved.allowed_commands.insert("plugin:app|version".into(), vec![command]);
+        // A Rust unit-test constructor. NOT Tauri's generated or live authority.
+        tauri::ipc::RuntimeAuthority::new(Default::default(), resolved)
+    }
+
+    #[test]
+    fn native_acl_source_selected_main_does_not_match_fictional_window() {
+        use tauri::ipc::Origin;
+        // Exact public repository capability file. The command remains TOY.
+        let capability: serde_json::Value =
+            serde_json::from_str(include_str!("../capabilities/default.json"))
+                .expect("source capability JSON");
+        assert_eq!(capability["identifier"], "default");
+        assert_eq!(capability["permissions"], serde_json::json!(["core:default"]));
+        assert_eq!(capability["windows"], serde_json::json!(["main"]));
+        assert!(capability.get("webviews").is_none());
+        let only_window = capability["windows"][0].as_str().expect("main label");
+        let authority = native_acl_fixture(&[only_window], &[]);
+        assert!(authority.resolve_access("plugin:app|version", "main", "main", &Origin::Local).is_some());
+        assert!(authority.resolve_access("plugin:app|version", LAB_WINDOW, LAB_WINDOW, &Origin::Local).is_none());
+        assert!(authority.resolve_access("plugin:app|version", "other", "other", &Origin::Local).is_none());
+        println!("M32_NATIVE_ACL_TOY_MAIN_WINDOW_VETO_PASS: actual source selector + synthetic native matcher; no runtime");
+    }
+
+    #[test]
+    fn native_acl_glob_mutations_reveal_possible_fictional_window_access() {
+        use tauri::ipc::Origin;
+        for selector in ["m32-fiction", "m32-*", "*"] {
+            let authority = native_acl_fixture(&[selector], &[]);
+            assert!(authority.resolve_access("plugin:app|version", LAB_WINDOW, "arbitrary-webview", &Origin::Local).is_some(),
+                "native matcher must detect unsafe toy selector {selector}");
+        }
+        let exact = native_acl_fixture(&["main"], &[]);
+        assert!(exact.resolve_access("plugin:app|version", LAB_WINDOW, "main", &Origin::Local).is_none());
+    }
+
+    #[test]
+    fn native_acl_webview_match_can_grant_when_window_does_not_match() {
+        use tauri::ipc::Origin;
+        let authority = native_acl_fixture(&["main"], &[LAB_WINDOW]);
+        assert!(authority.resolve_access("plugin:app|version", "unrelated", LAB_WINDOW, &Origin::Local).is_some());
+        assert!(authority.resolve_access("plugin:app|version", "unrelated", "unrelated", &Origin::Local).is_none());
+        let empty = native_acl_fixture(&[], &[]);
+        assert!(empty.resolve_access("plugin:app|version", LAB_WINDOW, LAB_WINDOW, &Origin::Local).is_none());
+    }
+
+    #[test]
+    fn native_acl_unknown_command_is_not_granted_by_fictional_matcher() {
+        use tauri::ipc::Origin;
+        let authority = native_acl_fixture(&["*"], &[]);
+        assert!(authority.resolve_access("plugin:app|version", LAB_WINDOW, LAB_WINDOW, &Origin::Local).is_some());
+        assert!(authority.resolve_access("plugin:fs|read_file", LAB_WINDOW, LAB_WINDOW, &Origin::Local).is_none());
+    }
+
 }
