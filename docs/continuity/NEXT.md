@@ -1,5 +1,11 @@
 # Fabulaxiom — Next Authorized Work
 
+## 2026-10-18 — qualifier la détection non lançante des refus Vite/CSP
+
+Qualifier au HEAD exact la nouvelle PR source-only : Vite 8 `resolveConfig` sur config existante, sans `createServer`, sans `listen`, sans commande Tauri. Exiger preuve et log de trois cas : `TAURI_DEV_HOST` absent, IPv4 `127.0.0.1`, wildcard `0.0.0.0`. Refuser toute équivalence abusive entre `host=false` (résolution `localhost` potentiellement variable) et écoute assurée `127.0.0.1`. Les valeurs externes et HMR inadéquat doivent être veto en tests adversariaux. Confirmer CSP development réellement non configurée et cohabitation des entrées normales/fictives à la racine Vite : statut `M32_SECURITY_PREFLIGHT_STOP` attendu, même si l'audit source PASS. Vérifier toutes les CI Windows, GitHub ruleset, traces, diff, reviews/threads, HEAD exact et anti-course avant fusion éventuelle.
+
+Après preuve, tranche future séparée uniquement : concevoir un serveur de fixtures réellement isolé et un CSP/HMR adapté, sans navigation vers l'application normale, avec tests statiques et navigateur jetables. Ne pas activer par défaut ni lancer un Tauri/WebView2 opérateur sans autorisation explicite et un préflight `PASS/FAIL/STOP`. `CLI_CONFIG_RESOLUTION_NOT_TESTED`, `TAURI_RUNTIME_NOT_TESTED`, `OPERATOR_ACCEPTANCE_NOT_PERFORMED`, G3 source `STOP_UNAVAILABLE`, PR #35 DRAFT, historique 21/3/2 en attente, prospective NOT_STARTED, G3–G6 réels non autorisés. Aucune base, migration 007, writer, M3.3 ou release.
+
 ## 2026-10-18 — après PR #67 : CSP, URL et CLI ; aucun lancement autorisé
 
 État vérifié : `main=1735fc0edf0e457f7b41a06a99a6aa19fd22591f` après PR #67 protégée fusionnée ; CI Windows #39091761744 48/48 SUCCESS, `M32_NATIVE_OVERLAY_CONTEXT_PASS` compile-only. Les trois héritages frontend normaux `beforeDevCommand`, `beforeBuildCommand`, `frontendDist` sont écartés pour la variante fictive au moyen des marqueurs `null` RFC 7396. Deux CI échouées de mise au point #39091221081/#39091333950 sont inéligibles comme preuves. **Ne pas modifier ce checkpoint sans nouvelle CI au nouveau HEAD.**
