@@ -114,6 +114,9 @@ jobs:
         working-directory: src-tauri
         run: cargo check --locked --features m32-synthetic-preview
 
+      - name: M3.2 Vite resolved network and CSP/shared-root preflight (no server launch)
+        run: node tools/m32_vite_csp_nonlaunch_audit.mjs --audit
+
       - name: M3.2 native Tauri compiled context audit (fictional only, no app launch)
         run: python tools/m3_2_tauri_codegen_ci.py
 
