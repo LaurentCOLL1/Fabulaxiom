@@ -131,6 +131,10 @@ jobs:
         working-directory: src-tauri
         run: cargo test --locked --features m32-synthetic-preview --lib m32_synthetic_preview
 
+      - name: M3.2 native RuntimeAuthority fictional ACL matching Rust tests (no runtime)
+        working-directory: src-tauri
+        run: cargo test --locked --features m32-synthetic-preview --lib native_acl_ -- --nocapture
+
       - name: M3.2 fictional Tauri debug compile (no launch)
         working-directory: src-tauri
         run: cargo check --locked --features m32-synthetic-preview

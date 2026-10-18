@@ -1,5 +1,10 @@
 # M3.2 — Prévisualisation Tauri Windows fictive : variante compilable, lancement interdit à cette étape
 
+## Qualification proposée : moteur Rust natif d'appariement ACL sur fixture (19 octobre 2026)
+
+La documentation de `RuntimeAuthority::resolve_access` montre la règle d'autorisation : vérification de l'origine, puis correspondance **OU** des sélecteurs de fenêtre et de WebView pour la commande demandée (https://docs.rs/tauri/latest/tauri/ipc/struct.RuntimeAuthority.html). La PR ajoute quatre tests Rust dans `#[cfg(test)]` ; une ACL `Resolved` en mémoire avec une seule commande factice `plugin:app|version` permet de tester le vrai matcher sans fenêtre, Tauri CLI ou processus natif. Le sélecteur `main` est lu depuis le vrai `default.json` du dépôt, mais le *manifest* des permissions `core:default` et l'autorité effectivement chargée restent hors portée. Les tests explicitent le risque des globs et de `webviews` : les deux familles de cibles se combinent par OU, pas par intersection. Même PASS, `TAURI_RUNTIME_NOT_TESTED`, `CLI_CONFIG_RESOLUTION_NOT_TESTED` et `M32_SECURITY_PREFLIGHT_STOP` restent vrais.
+
+
 ## Inspection du périmètre Core Tauri et de sa portée fictive (source-only, 19 octobre 2026)
 
 Dans les sources actuelles, `src-tauri/capabilities/default.json` accorde `core:default` à la fenêtre `main` uniquement. D'après https://v2.tauri.app/reference/acl/core-permissions/ , `core:default` inclut neuf familles de permissions Core, donc il ne signifie absolument pas « zéro commande ». Les deux variants `m32-fiction` indiquent explicitement `["default"]` mais la cible de ce fichier est `main`, sans sélection par `windows` ou `webviews` pour la fenêtre fictive. Documentation : https://v2.tauri.app/security/capabilities/ . En outre les commandes Rust applicatives enregistrées par `Builder::invoke_handler` sont indépendantes des permissions Core, et le builder M3.2 actuel n'enregistre rien.

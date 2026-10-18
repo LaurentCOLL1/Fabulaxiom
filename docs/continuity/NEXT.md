@@ -1,5 +1,10 @@
 # Fabulaxiom — Next Authorized Work
 
+## 2026-10-19 — qualifier les tests Rust du matcher ACL natif fictif
+
+Au HEAD exact de la nouvelle PR, exiger la CI Windows obligatoire `Windows frontend and Rust checks` terminale SUCCESS : quatre tests `native_acl_` Rust sur une commande totalement inventée, marqueur `M32_NATIVE_ACL_TOY_MAIN_WINDOW_VETO_PASS`, source de `capabilities/default.json`, contre-exemples wildcard et webview, commande inconnue refusée. Conserver 12 tests source-only PR #79, 29/29 Chromium ×2, 129 frontend, 100 Rust généraux, les contextes `generate_context!` sans lancement, tests Node IPC/HTTP et G3 jouets. Contrôler logs, HEAD, reviews/threads, ruleset #24895490/app 15368, diff et anti-course sur main, puis fusion protégée `expected_head_sha` seulement si tout est vert. Le succès valide seulement un matcher Rust sur ACL inventée, **pas** l'ACL réelle du contexte Tauri et ne débloque pas G3 ni Windows opérateur.
+
+
 ## 2026-10-19 — qualifier matrice Tauri capabilities/Core source-only
 
 Exiger une nouvelle CI Windows `pull_request` terminale au HEAD exact : 12 tests Python adversariaux pour prouver *uniquement dans les sources* que `core:default` n'est sélectionné que pour `main` et ne correspond pas à `m32-fiction` dans les deux overlays. Refuser un wildcard, `webviews`, `remote`, nouvelle capability, permissions natives additionnelles, `AppManifest`, handler/plugin d'application. Maintenir les tests Chromium 29/29 ×2, 7/7 IPC enfant, 10 tests Host/Origin, 129 frontend, 100 Rust, codegen Tauri et toutes fixtures G3. Examiner logs, SHA exact, reviews, threads, ruleset #24895490 et re-fetch anti-course avant fusion `expected_head_sha`. **Ne pas convertir ce modèle en qualification du resolver Tauri réel.** Les STOP opérateur/G3 sont inchangés.
