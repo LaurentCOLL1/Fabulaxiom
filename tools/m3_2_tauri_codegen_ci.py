@@ -41,6 +41,8 @@ def main():
         raise SystemExit("STOP: unexpected window")
     if merged["app"]["security"]["capabilities"] != ["default"]:
         raise SystemExit("STOP: implicit capability discovery not accepted")
+    if any(key in merged["build"] for key in ("beforeDevCommand", "beforeBuildCommand", "frontendDist")):
+        raise SystemExit("STOP: inherited frontend command or production assets")
     if os.environ.get("FABULAXIOM_M32_PREVIEW_ID"):
         raise SystemExit("STOP: inherited preview identity forbidden")
     env = os.environ.copy()
