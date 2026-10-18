@@ -33,6 +33,18 @@ function git(root, args, options = {}) {
   return result.stdout;
 }
 
+// A Windows Git checkout may expand only LF line endings to CRLF.
+// Compare against the exact Git blob OR this single deterministic text EOL
+// transformation; never normalize arbitrary whitespace or source changes.
+// Staging ALWAYS uses the untouched bytes of the Git object, not the worktree.
+function checkoutMatchesCommittedText(worktreeBytes, blobBytes) {
+  if (worktreeBytes.equals(blobBytes)) return true;
+  const source = blobBytes.toString("utf8");
+  if (!Buffer.from(source, "utf8").equals(blobBytes) || blobBytes.includes(0)) return false;
+  const windowsCheckout = Buffer.from(source.replace(/\r?\n/g, "\r\n"), "utf8");
+  return worktreeBytes.equals(windowsCheckout);
+}
+
 function bindSourcesToCheckout(root, expectedCommit, allowlist) {
   assert.match(expectedCommit, /^[a-f0-9]{40}$/, "STOP: exact checkout SHA required");
   assert.ok(Array.isArray(allowlist) && allowlist.length > 0, "STOP: source allowlist required");
@@ -53,8 +65,8 @@ function bindSourcesToCheckout(root, expectedCommit, allowlist) {
     assert.ok(stat.size > 0 && stat.size <= MAX_FILE_BYTES, "STOP: source size unexpected");
     const committedBytes = git(root, ["cat-file", "blob", expectedCommit + ":" + relative]);
     const currentBytes = fs.readFileSync(source);
-    assert.ok(currentBytes.equals(committedBytes),
-      "STOP: staged fictional source differs from exact Git commit blob: " + relative);
+    assert.ok(checkoutMatchesCommittedText(currentBytes, committedBytes),
+      "STOP: staged fictional source differs from Git blob beyond permitted Windows CRLF checkout: " + relative);
     const after = fs.lstatSync(source);
     assert.ok(after.isFile() && !after.isSymbolicLink() &&
       after.size === stat.size && after.ino === stat.ino && after.dev === stat.dev,
