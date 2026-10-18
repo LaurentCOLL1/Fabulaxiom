@@ -79,6 +79,21 @@ mod tests {
         assert_eq!(validate_launch(&config.identifier, &opt_in, actual_url, &windows), Ok(()));
         assert_eq!(config.app.windows.len(), 1);
         assert!(!config.bundle.active);
+        // The actual TAURI_CONFIG contains a RAW RFC7396 override.
+        // Its nulls must survive until Tauri merges it against base config.
+        // Tauri codegen itself always writes None for hooks regardless of
+        // source; never claim that inspecting codegen hooks proves safety.
+        let supplied = std::env::var("TAURI_CONFIG")
+            .expect("only synthetic CI may provide the raw fictional overlay");
+        let patch: serde_json::Value = serde_json::from_str(&supplied)
+            .expect("valid RFC7396 overlay JSON");
+        for key in ["beforeDevCommand", "beforeBuildCommand", "frontendDist"] {
+            assert!(patch["build"][key].is_null(), "RFC7396 deletion marker missing for {key}");
+        }
+        assert_eq!(patch["identifier"], LAB_ID);
+        // frontend_dist survives codegen as Option, unlike command hooks.
+        // This tests the Tauri codegen merge, NOT the CLI --config command.
+        assert!(config.build.frontend_dist.is_none(), "production dist inherited by Tauri context");
         let caps = serde_json::to_value(&config.app.security.capabilities)
             .expect("serialize the compile-time capability references");
         assert_eq!(caps, serde_json::json!(["default"]));
