@@ -8,6 +8,7 @@
 const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const path = require("node:path");
+const { bindSourcesToCheckout } = require("./m32_ci_git_source_binding.cjs");
 
 const ROOT = path.resolve(__dirname, "..");
 const MANIFEST = Object.freeze([
@@ -29,6 +30,13 @@ function stageFictionOnly() {
   assert.equal(new Set(MANIFEST).size, MANIFEST.length);
   assert.ok(fs.statSync(path.join(ROOT, "node_modules", "vite")).isDirectory(),
     "STOP: locked Vite dependencies unavailable");
+  assert.equal(process.env.GITHUB_REPOSITORY, "LaurentCOLL1/Fabulaxiom",
+    "STOP: CI repository identity missing or unexpected");
+  assert.ok(["pull_request", "push"].includes(process.env.GITHUB_EVENT_NAME),
+    "STOP: unsupported GitHub checkout event");
+  const expectedSha = process.env.GITHUB_SHA;
+  assert.ok(expectedSha, "STOP: no GitHub event SHA");
+  const bound = bindSourcesToCheckout(ROOT, expectedSha, MANIFEST);
 
   // Refuse new imports outside the exact fiction-only transitive module graph.
   // Importing a normal app module must fail BEFORE staging or starting Vite.
@@ -61,7 +69,11 @@ function stageFictionOnly() {
     const target = path.resolve(stage, relative);
     assert.ok(target.startsWith(stage + path.sep));
     fs.mkdirSync(path.dirname(target), { recursive: true });
-    fs.copyFileSync(source, target, fs.constants.COPYFILE_EXCL);
+    // Write the exact bytes from the checked-out commit object, not a second
+    // unverified read of the mutable working-tree path.
+    fs.writeFileSync(target, bound.source(relative), { flag: "wx" });
+    assert.ok(fs.readFileSync(target).equals(bound.source(relative)),
+      "STOP: staged bytes do not match the exact Git object");
     made.push(relative);
   }
   const actual = [];
@@ -78,6 +90,8 @@ function stageFictionOnly() {
   assert.deepEqual(actual.sort(), [...MANIFEST].sort(), "STOP: stage contains unexpected files");
   assert.ok(!actual.includes("index.html") && !actual.includes("src/App.tsx")
     && !actual.includes("src/main.tsx"), "STOP: normal application staged");
+  console.log("M32_CI_GIT_SOURCE_BINDING_PASS: " + bound.inventory.length +
+    " exact fictional blobs at checkout HEAD; CI-local evidence only");
   console.log("M32_CI_FIXTURE_STAGE_EXACT_PASS: " + made.length + " fictional files; no normal App");
   return stage;
 }
