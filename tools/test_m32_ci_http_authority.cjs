@@ -1,7 +1,9 @@
 "use strict";
 const test = require("node:test");
 const assert = require("node:assert/strict");
-const { requestAuthorityAllowed: allow } = require("./m32_ci_http_authority.cjs");
+const { requestAuthorityAllowed } = require("./m32_ci_http_authority.cjs");
+const allow = (headers, target) => requestAuthorityAllowed(
+  headers, target, Object.entries(headers).flat());
 const local = { host: "127.0.0.1:14279" };
 
 test("01 same-origin GET and asset request targets only", () => {
@@ -47,4 +49,38 @@ test("06 reject cross-site fetch metadata", () => {
     assert.equal(allow({...local,"sec-fetch-site":site}, "/m32-browser-lab.html"), true);
   }
 });
-console.log("M32_HTTP_AUTHORITY_SOURCE_ONLY_TESTS: strict local fictional CI rules");
+test("07 raw Host duplicates denied even when normalized Host looks safe", () => {
+  const target = "/m32-browser-lab.html";
+  for (const raw of [
+    ["Host", local.host, "Host", "evil.invalid:14279"],
+    ["Host", "evil.invalid:14279", "Host", local.host],
+    ["Host", local.host, "hOsT", local.host],
+  ]) assert.equal(requestAuthorityAllowed(local, target, raw), false);
+});
+test("08 duplicate Origin and fetch metadata are denied", () => {
+  const target = "/m32-browser-lab.html";
+  for (const raw of [
+    ["Host", local.host, "Origin", "http://127.0.0.1:14279", "origin", "https://evil.invalid"],
+    ["Host", local.host, "Sec-Fetch-Site", "same-origin", "sec-fetch-site", "cross-site"],
+    ["Host", local.host, "ORIGIN", "http://127.0.0.1:14279", "Origin", "http://127.0.0.1:14279"],
+  ]) assert.equal(requestAuthorityAllowed(local, target, raw), false);
+});
+test("09 missing malformed or inconsistent raw evidence is denied", () => {
+  const target = "/m32-browser-lab.html";
+  for (const raw of [undefined, [], ["Host"], ["Host", local.host, "Origin"],
+    ["Host", "evil.invalid:14279"], ["Host", local.host, "Forwarded", "for=evil"]]) {
+    assert.equal(requestAuthorityAllowed(local, target, raw), false);
+  }
+  assert.equal(requestAuthorityAllowed({...local,origin:"http://127.0.0.1:14279"},
+    target, ["Host",local.host]), false);
+});
+test("10 valid mixed-case raw headers still allow same-origin fixture routes", () => {
+  const headers = {...local,origin:"http://127.0.0.1:14279","sec-fetch-site":"same-origin"};
+  assert.equal(requestAuthorityAllowed(headers, "/m32-browser-lab.html",
+    ["hOsT",local.host,"OrIgIn",headers.origin,"Sec-Fetch-Site","same-origin"]),true);
+  assert.equal(requestAuthorityAllowed(local, "/" + "x".repeat(4096),
+    ["Host",local.host]),false);
+  assert.equal(requestAuthorityAllowed(local,"/m32-browser-lab.html",
+    ["Host",local.host,"Proxy-Connection","keep-alive"]),false);
+});
+console.log("M32_HTTP_AUTHORITY_RAW_HEADERS_TESTS: normalized/raw mismatch and duplicate veto");

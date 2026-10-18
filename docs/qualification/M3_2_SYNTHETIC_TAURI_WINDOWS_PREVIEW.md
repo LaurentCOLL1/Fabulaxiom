@@ -1,5 +1,10 @@
 # M3.2 — Prévisualisation Tauri Windows fictive : variante compilable, lancement interdit à cette étape
 
+## Cas Host/Origin dupliqués sur serveur fictif (candidate, CI seulement)
+
+Le test suivant inspecte les paires `IncomingMessage.rawHeaders` non normalisées au lieu de croire seulement `headers.host`. Refuser les doublons d'autorité, d'origine et de `Sec-Fetch-Site` ; tester avec trois requêtes TCP brutes vers le serveur CI éphémère, en acceptant exclusivement HTTP 400 (parseur) ou 403 (veto applicatif). Ces requêtes restent sur `127.0.0.1:14279` dans GitHub Actions ; aucune garantie de résistance générale aux malwares locaux, à la falsification de processus, à la provenance externe ou aux attaques de parsing HTTP non testées. Voir https://nodejs.org/api/http.html#messagerawheaders . Tauri/WebView2 et G3 réel restent interdits.
+
+
 ## Contrôle de correspondance des sources Git — PR source-only, sans lancement
 
 Checkpoint de départ `main=415390a5e1c3ff29964234c2faf714c2b5c51331` : la PR #74 a prouvé uniquement une identité d'octets **locale au serveur statique en mémoire**. La nouvelle tranche lie la construction du staging CI aux sept objets Git référencés par le **HEAD extrait dans GitHub Actions** : contrôle `GITHUB_SHA == git rev-parse HEAD`, lecture sans shell via `git cat-file blob HEAD:<relative>`, comparaison avec les sept fichiers en autorisant seulement le réencodage de fins de ligne LF→CRLF propre au checkout Windows, puis staging directement depuis les octets inchangés des blobs Git. Les sources altérées, blobs manquants, SHA incorrects ou fichier hors manifest exact doivent provoquer un STOP. Le manifest de diagnostic agrège commit, chemin, taille et SHA256 des sept entrées, sans exposer de chemin privé de l'opérateur. Les tests négatifs fabriquent leurs propres dépôts Git jetables dans `RUNNER_TEMP` ; aucun programme ni base opérateur n'est ouvert.

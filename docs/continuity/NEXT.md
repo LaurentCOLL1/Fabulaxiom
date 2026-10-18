@@ -1,5 +1,10 @@
 # Fabulaxiom — Next Authorized Work
 
+## 2026-10-18 — qualification à faire : en-têtes HTTP bruts/dupliqués fictifs
+
+Attendre le Windows `pull_request` au HEAD exact de la nouvelle tranche : 10 tests Node d'autorité, ancien marqueur quatre refus HTTP, nouveau `M32_CI_HTTP_RAW_DUPLICATE_DENIAL_PASS` pour trois requêtes TCP brutes réelles, deux laboratoires Chromium 29/29, ensemble des tests Git/RAM/Tauri/fixtures G3, `M32_SECURITY_PREFLIGHT_STOP` préservé. Lire les logs, vérifier ruleset, checks de l'intégration 15368, reviews/threads, diff et re-fetch anti-course de main avant fusion avec `expected_head_sha`. Aucun lancement Tauri/WebView2 ni opérations opérateur. Une fusion ne vaut pas permission de lancement ni G3 réel.
+
+
 ## 2026-10-18 — qualifier les refus Host/Origin sur le laboratoire fictif CI
 
 Exiger nouvelle CI `pull_request` Windows terminale sur HEAD exact : six tests Node `test_m32_ci_http_authority.cjs`, marqueur `M32_CI_HTTP_AUTHORITY_DENIAL_PASS` issu de quatre requêtes réelles, 10 tests de liaison Git, 8 tests snapshot RAM, deux séries Chromium 29/29, 129 frontend, 100 Rust, deux contextes Tauri compile-only et tous les tests G3 fictifs. Vérifier dans les logs le maintien de `M32_SECURITY_PREFLIGHT_STOP`. Revalider la protection de `main`, les reviews et threads, la comparaison du diff et l'absence de nouvelle commit avant `expected_head_sha`. Ne jamais convertir le succès du test serveur CI en autorisation de lancement réel Windows. `TAURI_RUNTIME_NOT_TESTED`, `OPERATOR_ACCEPTANCE_NOT_PERFORMED`, G3 réel STOP, historique 21/3/2 non attesté, prospective NOT_STARTED, PR #35 DRAFT et issues #36/#38 OPEN ; aucun accès opérateur, migration 007, M3.3 ou release.

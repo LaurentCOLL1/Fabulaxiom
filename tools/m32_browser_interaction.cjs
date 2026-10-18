@@ -109,6 +109,52 @@ async function assertNormalAppNotServed() {
         "STOP: static server accepted hostile HTTP authority: " + JSON.stringify(headers));
     }
     console.log("M32_CI_HTTP_AUTHORITY_DENIAL_PASS: 4 real loopback HTTP vetoes");
+    // Raw TCP is essential: node:http clients may normalize security headers.
+    // Node's parser may reject a malformed duplicate first (400); the fixture
+    // policy must reject any duplicate that reaches request handling (403).
+    const net = require("node:net");
+    async function rawStatus(lines) {
+      return await new Promise((resolve, reject) => {
+        let settled = false;
+        const socket = net.createConnection({ host: "127.0.0.1", port: 14279 });
+        const done = (error, status) => {
+          if (settled) return;
+          settled = true;
+          socket.destroy();
+          if (error) reject(error); else resolve(status);
+        };
+        let buffer = "";
+        socket.setTimeout(5000, () => done(new Error("raw HTTP veto timeout")));
+        socket.on("connect", () => socket.write(
+          "GET /m32-browser-lab.html HTTP/1.1\r\n" +
+          lines.join("\r\n") + "\r\nConnection: close\r\n\r\n"));
+        socket.on("data", bytes => {
+          buffer += bytes.toString("latin1");
+          if (buffer.includes("\r\n")) {
+            const match = /^HTTP\/1\.[01] ([0-9]{3})/.exec(buffer);
+            done(match ? null : new Error("missing HTTP status"), match && Number(match[1]));
+          }
+        });
+        socket.on("error", error => done(error));
+        socket.on("close", () => {
+          if (!settled) done(new Error("server closed without status"));
+        });
+      });
+    }
+    const casesRaw = [
+      ["Host: 127.0.0.1:14279", "hOsT: evil.invalid:14279"],
+      ["Host: 127.0.0.1:14279", "Origin: http://127.0.0.1:14279",
+        "origin: https://evil.invalid"],
+      ["Host: 127.0.0.1:14279", "Sec-Fetch-Site: same-origin",
+        "sec-fetch-site: cross-site"],
+    ];
+    for (const headers of casesRaw) {
+      const status = await rawStatus(headers);
+      assert.ok(status === 400 || status === 403,
+        "STOP: ambiguous raw HTTP request accepted: " + status);
+    }
+    console.log("M32_CI_HTTP_RAW_DUPLICATE_DENIAL_PASS: 3 real loopback raw header vetoes");
+
   }
   const allowed = await fetch(url, { signal: AbortSignal.timeout(5000) });
   assert.equal(allowed.status, 200, "STOP: fictional lab unavailable");
