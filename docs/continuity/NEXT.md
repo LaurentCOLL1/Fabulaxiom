@@ -1,5 +1,11 @@
 # Fabulaxiom — Next Authorized Work
 
+## 2026-10-18 — CI browser CSP expérimentale (pas de promotion d'autorité)
+
+Qualifier la PR indépendante au HEAD exact avec un `pull_request` Windows terminal : serveur Vite jetable basé sur les sept fichiers fictifs, CSP HTTP présente et en-têtes vérifiés, HMR ciblant `127.0.0.1:14279`, Chromium montrant **29/29 cas normaux** et une connexion externe refusée par `securitypolicyviolation` effective. Tous les checks de l'historique Rust/frontend/G3 doivent réussir, avec le contrôle obligatoire de l'app GitHub Actions 15368. Revoir diff, règles de `main`, reviews, threads et anti-course ; fusionner uniquement sous `expected_head_sha`.
+
+Même avec un succès : **`M32_SECURITY_PREFLIGHT_STOP` inchangé.** La CSP isolée autorise `script-src 'unsafe-inline'` pour le preamble React/Vite en développement : elle ne constitue pas une politique satisfaisante pour Tauri/WebView2 ni une preuve XSS complète. Prochaine tranche séparée : préconiser puis qualifier un `devCsp` Tauri réellement applicable, une stratégie d'injection nonce/hash pour supprimer `unsafe-inline`, un lancement limité au bon serveur fictif avec isolation URL/ports, mais **aucune commande Tauri/Windows sans autorisation expresse**. Garder la CLI `--config`, les permissions noyau et la réception opérateur `NOT_TESTED`. G3 original STOP, historique 21/3/2, prospective NOT_STARTED, PR #35 DRAFT ; aucune migration 007 ni M3.3/release.
+
 ## 2026-10-18 — qualifier une racine de navigateur fictif CI réellement distincte
 
 Exiger `pull_request` Windows terminal sur HEAD exact de la PR de staging fictif : sept fichiers explicitement copiés, analyse et refus des imports supplémentaires, aucune entrée React normale, Vite propre `host=127.0.0.1`, port strict et `fs.allow` restreint, tests HTTP négatifs sur `/`, `index.html`, `App.tsx`, `main.tsx` et `/@fs/`, puis **29/29 vrais scénarios Chromium** toujours verts. Inspecter précisément les journaux `M32_CI_FIXTURE_STAGE_EXACT_PASS`, `M32_CI_VITE_NORMAL_ROUTES_DENIED_PASS` et `M32_CI_FIXTURE_ONLY_BROWSER_PASS`, suites frontend/Rust/G3, reviews, threads, ruleset, comparaison diff et HEAD anti-course avant fusion protégée. Aucun Tauri/WebView2 opérateur.
