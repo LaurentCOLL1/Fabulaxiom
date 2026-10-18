@@ -30,6 +30,26 @@ function stageFictionOnly() {
   assert.ok(fs.statSync(path.join(ROOT, "node_modules", "vite")).isDirectory(),
     "STOP: locked Vite dependencies unavailable");
 
+  // Refuse new imports outside the exact fiction-only transitive module graph.
+  // Importing a normal app module must fail BEFORE staging or starting Vite.
+  const allow = new Set(MANIFEST);
+  for (const relative of MANIFEST.filter(f => f.endsWith(".tsx"))) {
+    const content = fs.readFileSync(path.join(ROOT, relative), "utf8");
+    const imports = [...content.matchAll(/\b(?:from\s*|import\s*|import\s*\(\s*)["']([^"']+)["']/g)];
+    for (const match of imports) {
+      const specifier = match[1];
+      if (!specifier.startsWith(".")) {
+        assert.ok(["react", "react-dom/client"].includes(specifier),
+          "STOP: non-fictional package import " + specifier);
+        continue;
+      }
+      const normalized = path.posix.normalize(path.posix.join(path.posix.dirname(relative), specifier));
+      const candidates = [normalized, normalized + ".ts", normalized + ".tsx", normalized + ".css"];
+      assert.ok(candidates.some(candidate => allow.has(candidate)),
+        "STOP: import escaped fictional file manifest: " + relative + " -> " + specifier);
+    }
+  }
+
   // Deliberately create a brand-new uniquely named directory. No cleanup of
   // any previously existing directory; runner itself is ephemeral.
   const stage = fs.mkdtempSync(path.join(ROOT, ".m32-fixture-only-"));
