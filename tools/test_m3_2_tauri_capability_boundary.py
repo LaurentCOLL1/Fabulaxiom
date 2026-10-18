@@ -28,15 +28,17 @@ def load(relative: str) -> dict:
 
 
 def model_merge(base, extra):
-    """Object keys recursively override; arrays replace, never concatenate.
+    """RFC 7396 JSON Merge Patch: null deletes keys, arrays replace entirely.
 
-    This is a source-test model for known JSON files, NOT the native Tauri
-    parser, Rust generated context, or resolved Windows runtime authority.
+    Source-side reference model, NOT native Tauri CLI resolution or ACL.
     """
-    if isinstance(base, dict) and isinstance(extra, dict):
-        result = deepcopy(base)
+    if isinstance(extra, dict):
+        result = deepcopy(base) if isinstance(base, dict) else {}
         for key, value in extra.items():
-            result[key] = model_merge(result[key], value) if key in result else deepcopy(value)
+            if value is None:
+                result.pop(key, None)
+            else:
+                result[key] = model_merge(result.get(key), value)
         return result
     return deepcopy(extra)
 
@@ -51,8 +53,10 @@ def reject_unsafe(normal: dict, overlay: dict, capability: dict, capability_name
         raise ValueError("unexpected normal windows")
     if set(overlay) != {"$schema", "productName", "identifier", "build", "app", "bundle"}:
         raise ValueError("unexpected overlay keys")
-    if set(overlay["build"]) != {"devUrl"}:
+    if set(overlay["build"]) != {"devUrl", "beforeDevCommand", "beforeBuildCommand", "frontendDist"}:
         raise ValueError("unexpected build configuration")
+    if any(overlay["build"][k] is not None for k in ("beforeDevCommand", "beforeBuildCommand", "frontendDist")):
+        raise ValueError("fictional build hooks/dist must be deletion patches")
     if set(overlay["app"]) != {"windows", "security"}:
         raise ValueError("unexpected app configuration")
     if set(overlay["app"]["security"]) != {"capabilities"}:
@@ -80,6 +84,8 @@ def reject_unsafe(normal: dict, overlay: dict, capability: dict, capability_name
         raise ValueError("merged identity mismatch")
     if merged["build"]["devUrl"] != FIXTURE_URL:
         raise ValueError("merged URL mismatch")
+    if any(k in merged["build"] for k in ("beforeDevCommand", "beforeBuildCommand", "frontendDist")):
+        raise ValueError("inherited normal commands or frontend assets")
     if [w.get("label") for w in merged["app"]["windows"]] != [WINDOW]:
         raise ValueError("merged windows mismatch")
     if merged["app"]["security"]["capabilities"] != ["default"]:
@@ -132,9 +138,12 @@ class FictionalTauriCapabilityBoundary(unittest.TestCase):
         self.assertEqual(merged["identifier"], IDENTITY)
         self.assertEqual(merged["build"]["devUrl"], FIXTURE_URL)
         self.assertEqual([x["label"] for x in merged["app"]["windows"]], [WINDOW])
-        self.assertEqual(merged["build"]["beforeDevCommand"], "npm run dev")
-        # This inherited command and environmental TAURI_DEV_HOST need an
-        # explicit isolated Windows preflight, not a false launch PASS.
+        self.assertEqual(self.normal["build"]["beforeDevCommand"], "npm run dev")
+        self.assertEqual(self.normal["build"]["beforeBuildCommand"], "npm run build")
+        self.assertEqual(self.normal["build"]["frontendDist"], "../dist")
+        for key in ("beforeDevCommand", "beforeBuildCommand", "frontendDist"):
+            self.assertNotIn(key, merged["build"])
+        # No CLI source-merge or WebView2 runtime permission proof is implied.
         self.assertIsNone(merged["app"]["security"]["csp"])
 
     def test_05_empty_capability_list_is_an_unsafe_regression(self):
@@ -209,6 +218,27 @@ class FictionalTauriCapabilityBoundary(unittest.TestCase):
         self.assertIn('#[cfg(all(feature = "m32-synthetic-preview", not(debug_assertions)))]', lib)
         self.assertIn('feature = "m31-isolated-preview", feature = "m32-synthetic-preview"', lib)
         self.assertIn('not(any(feature = "m31-isolated-preview", feature = "m32-synthetic-preview"))', lib)
+
+
+    def test_11_rfc7396_deletion_nested_objects_and_array_replacement(self):
+        base = {"a": 1, "n": {"keep": 2, "remove": 3}, "windows": ["main"], "x": "old"}
+        patch = {"a": None, "n": {"remove": None, "add": 4}, "windows": ["m32-fiction"], "x": {"ok": True}}
+        result = model_merge(base, patch)
+        self.assertEqual(result, {"n": {"keep": 2, "add": 4}, "windows": ["m32-fiction"], "x": {"ok": True}})
+        self.assertEqual(base["a"], 1)  # never mutate input
+        self.assertEqual(model_merge(None, {"to_delete": None, "new": 7}), {"new": 7})
+
+    def test_12_inherited_commands_or_assets_cannot_reappear(self):
+        for key in ("beforeDevCommand", "beforeBuildCommand", "frontendDist"):
+            for value in ("npm run dev", "npm run build", "../dist", ""):
+                altered = deepcopy(self.overlay)
+                altered["build"][key] = value
+                with self.subTest(key=key, value=value), self.assertRaises(ValueError):
+                    self.safe(overlay=altered)
+            altered = deepcopy(self.overlay)
+            del altered["build"][key]
+            with self.subTest(key=key, value="missing"), self.assertRaises(ValueError):
+                self.safe(overlay=altered)
 
 
 if __name__ == "__main__":
