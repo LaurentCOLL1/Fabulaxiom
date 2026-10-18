@@ -1,5 +1,11 @@
 # M3.2 — Prévisualisation Tauri Windows fictive : variante compilable, lancement interdit à cette étape
 
+## État final post-PR #67 — frontière frontend fictive renforcée, runtime interdit
+
+`main=1735fc0edf0e457f7b41a06a99a6aa19fd22591f` vérifié après fusion protégée PR #67 depuis le HEAD final `b711212126e8e72034ed0d8c993480cbc527a969`. CI Windows `pull_request` #39091761744 48/48 SUCCESS ; 129 frontend, 29 Chromium fictif, 100 Rust général, tests de capacités et tous les contrôles source G3 PASS. `M32_NATIVE_OVERLAY_CONTEXT_PASS` a été enregistré : l'overlay M3.2 brut sous `TAURI_CONFIG`, sans lancement d'application, fait supprimer `frontendDist` dans le contexte généré. Les hooks de build ne doivent pas être « prouvés » par les champs `None` du contexte final puisque Tauri les supprime systématiquement au codegen. Leur absence repose sur les marqueurs de patch `null` et les assertions source/adversariales. Les CI #39091221081 et #39091333950 ont **échoué** car un pilote pré-fusionnait son JSON et perdait les marqueurs, puis ont été corrigées et remplacées par une CI exacte complète.
+
+Non qualifiés et sans autorisation implicite : fusion `--config` de la CLI, CSP héritée `null`, `TAURI_DEV_HOST`, capacités natives et navigation/ports WebView2, runtime Windows/acceptation opérateur, données originales et cérémonie G3. Aucun `tauri dev`, `cargo run`, `Builder::run`, serveur Vite ni connexion SQLite opérateur n'a été exécuté. Tout lancement exige un accord explicite préalable et un plan de repli contrôlé. Historique 21/3/2 en attente, prospective NOT_STARTED, G3 STOP, PR #35 DRAFT, issues #36/#38 OPEN, aucune migration 007 ni M3.3/release.
+
 ## Durcissement proposé post-PR #66 — suppression RFC 7396 des hooks et assets normaux
 
 Source initiale protégée `main=334482c912a0e70db4108e326616d66af96e885e`. Le fichier normal `tauri.conf.json` définit `beforeDevCommand="npm run dev"`, `beforeBuildCommand="npm run build"`, `frontendDist="../dist"`. Une simple surcharge de `devUrl` dans l'overlay fictif laissait ces trois propriétés **héritées**, ce qui est indésirable même avec `bundle.active=false` et compilation debug. L'overlay fictif ajoute donc les trois *patches de suppression* `null` (RFC 7396) et conserve `devUrl=http://127.0.0.1:1420/m32-browser-lab.html` et `capabilities=["default"]`. L'application normale et M3.1 ne changent pas.
