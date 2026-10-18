@@ -1,5 +1,12 @@
 # M3.2 — Prévisualisation Tauri Windows fictive : variante compilable, lancement interdit à cette étape
 
+## Inspection du périmètre Core Tauri et de sa portée fictive (source-only, 19 octobre 2026)
+
+Dans les sources actuelles, `src-tauri/capabilities/default.json` accorde `core:default` à la fenêtre `main` uniquement. D'après https://v2.tauri.app/reference/acl/core-permissions/ , `core:default` inclut neuf familles de permissions Core, donc il ne signifie absolument pas « zéro commande ». Les deux variants `m32-fiction` indiquent explicitement `["default"]` mais la cible de ce fichier est `main`, sans sélection par `windows` ou `webviews` pour la fenêtre fictive. Documentation : https://v2.tauri.app/security/capabilities/ . En outre les commandes Rust applicatives enregistrées par `Builder::invoke_handler` sont indépendantes des permissions Core, et le builder M3.2 actuel n'enregistre rien.
+
+Un audit Python source-only lit les **configurations et le builder publics**, vérifie les critères de non-correspondance et refuse des mutations adversariales (capabilities supplémentaires, patterns wildcard, override remote, nouvelle commande applicative). Ce garde-fou n'implémente **pas** le résolveur natif ni son modèle complet de glob; aucun accès Windows, CLI, IPC, WebView2, SQLite ou autorisation G3. `M32_SECURITY_PREFLIGHT_STOP` reste maintenu.
+
+
 ## Liaison au processus enfant lors du test statique CI (candidate du 19 octobre)
 
 La simple réponse HTTP 200 sur 127.0.0.1:14279 n'identifie pas le serveur de test lorsque le port est déjà occupé. Le pilote CI requiert donc un message `process.send` issu de **son propre child** ayant atteint l'événement `listen()`, contenant PID, hôte et port attendus et un nonce généré par le parent. Le pilote ne contacte pas l'URL statique avant ce signal direct. Les tests du garde-fou rejettent les messages inventés, incomplets, répétés et démontrent qu'un serveur factice ne peut pas obtenir un signal de `listen()` si un autre processus détient déjà un port éphémère de test. Le Vite dev d'origine conserve son test séparé, sans IPC attestée. Rien n'authentifie un processus externe, un utilisateur Windows ou une provenance indépendante ; le pilote Chromium lui-même fait partie du même domaine de confiance GitHub Actions. Source : https://nodejs.org/api/child_process.html ; https://nodejs.org/api/net.html .

@@ -1,5 +1,10 @@
 # Fabulaxiom — Next Authorized Work
 
+## 2026-10-19 — qualifier matrice Tauri capabilities/Core source-only
+
+Exiger une nouvelle CI Windows `pull_request` terminale au HEAD exact : 12 tests Python adversariaux pour prouver *uniquement dans les sources* que `core:default` n'est sélectionné que pour `main` et ne correspond pas à `m32-fiction` dans les deux overlays. Refuser un wildcard, `webviews`, `remote`, nouvelle capability, permissions natives additionnelles, `AppManifest`, handler/plugin d'application. Maintenir les tests Chromium 29/29 ×2, 7/7 IPC enfant, 10 tests Host/Origin, 129 frontend, 100 Rust, codegen Tauri et toutes fixtures G3. Examiner logs, SHA exact, reviews, threads, ruleset #24895490 et re-fetch anti-course avant fusion `expected_head_sha`. **Ne pas convertir ce modèle en qualification du resolver Tauri réel.** Les STOP opérateur/G3 sont inchangés.
+
+
 ## 2026-10-19 — qualifier association IPC parent/enfant et port fictif occupé
 
 Exiger CI Windows `pull_request` terminale au HEAD final de la branche de contrôle : 7 tests source/port fictif (y compris EADDRINUSE), marqueur `M32_CI_OWNED_STATIC_CHILD_READY_PASS` émis seulement après IPC reçu du child qui a ouvert le serveur sur 127.0.0.1:14279. Garder les 10 tests bruts Host/Origin, 7 requêtes réelles négatives, les 29/29 ×2 scénarios Chromium, 129 tests frontend, 100 Rust, codegen Tauri fictif compile-only et les essais G3 synthétiques. Inspecter logs, checks GitHub Actions app 15368, revue/diff, ruleset, commentaires/threads et main anti-course avant une fusion protégée `expected_head_sha`. Aucune validation native Windows/Tauri, aucune permission d'ouvrir G3 réel ou une base. `M32_SECURITY_PREFLIGHT_STOP` demeure.
