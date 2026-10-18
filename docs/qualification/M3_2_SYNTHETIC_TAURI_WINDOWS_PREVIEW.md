@@ -1,5 +1,12 @@
 # M3.2 — Prévisualisation Tauri Windows fictive : variante compilable, lancement interdit à cette étape
 
+## Résolution de manifeste et capability par la vraie API Tauri (19 octobre, CI seulement)
+
+La nouvelle tranche utilise `tauri::utils::acl::resolved::Resolved::resolve` sur une capability construite à partir du sélecteur de fenêtre réellement présent dans `default.json`, mais avec une permission et un manifeste **entièrement fictifs**. Il s'agit de la chaîne de traitement native *capability → permission/manifest → Resolved → RuntimeAuthority*, sans démarrage de fenêtre, Tauri CLI, IPC utilisateur ou lecture de base de données. Quatre tests opposent autorisation explicite et refus de `m32-fiction`, cumuls par globs et multiples capabilities, effet global d'un deny pour une origine donnée, et échecs lorsqu'un manifest ou une permission manque.
+
+`Context::runtime_authority` demeure privé : la compilation du vrai contexte ne permet pas via API publique de récupérer directement l'ACL effectivement générée et distribuée par Fabulaxiom. La source de référence `core:default` ne doit **pas** être confondue avec le manifest de test `m32fixture`. Références officielles : https://docs.rs/tauri-utils/latest/tauri_utils/acl/resolved/struct.Resolved.html ; https://docs.rs/tauri/latest/tauri/struct.Context.html ; https://v2.tauri.app/security/runtime-authority/ . `M32_SECURITY_PREFLIGHT_STOP` et tous les contrôles de données opérateur restent inchangés.
+
+
 ## Qualification proposée : moteur Rust natif d'appariement ACL sur fixture (19 octobre 2026)
 
 La documentation de `RuntimeAuthority::resolve_access` montre la règle d'autorisation : vérification de l'origine, puis correspondance **OU** des sélecteurs de fenêtre et de WebView pour la commande demandée (https://docs.rs/tauri/latest/tauri/ipc/struct.RuntimeAuthority.html). La PR ajoute quatre tests Rust dans `#[cfg(test)]` ; une ACL `Resolved` en mémoire avec une seule commande factice `plugin:app|version` permet de tester le vrai matcher sans fenêtre, Tauri CLI ou processus natif. Le sélecteur `main` est lu depuis le vrai `default.json` du dépôt, mais le *manifest* des permissions `core:default` et l'autorité effectivement chargée restent hors portée. Les tests explicitent le risque des globs et de `webviews` : les deux familles de cibles se combinent par OU, pas par intersection. Même PASS, `TAURI_RUNTIME_NOT_TESTED`, `CLI_CONFIG_RESOLUTION_NOT_TESTED` et `M32_SECURITY_PREFLIGHT_STOP` restent vrais.
