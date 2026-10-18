@@ -99,7 +99,9 @@ class FictionalTauriPreviewPolicy(unittest.TestCase):
 
     def test_11_no_unexpected_runtime_overlay_keys(self):
         self.assertEqual(set(self.overlay), {"$schema", "productName", "identifier", "build", "app", "bundle"})
-        self.assertEqual(set(self.overlay["build"]), {"devUrl"})
+        self.assertEqual(set(self.overlay["build"]), {"devUrl", "beforeDevCommand", "beforeBuildCommand", "frontendDist"})
+        for key in ("beforeDevCommand", "beforeBuildCommand", "frontendDist"):
+            self.assertIsNone(self.overlay["build"][key])
         self.assertEqual(set(self.overlay["bundle"]), {"active"})
         self.assertEqual(set(self.overlay["app"]), {"windows", "security"})
         self.assertEqual(set(self.overlay["app"]["security"]), {"capabilities"})
