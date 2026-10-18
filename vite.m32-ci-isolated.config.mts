@@ -39,6 +39,16 @@ export default defineConfig(() => {
     publicDir: false,
     appType: "mpa",
     plugins: [react()],
+    // CI-only static build: exact invented HTML entry, no normal index.html.
+    // The source stage is new and disposable. Never clean an existing folder.
+    build: {
+      outDir: path.join(stage, "dist-static"),
+      emptyOutDir: false,
+      sourcemap: false,
+      rolldownOptions: {
+        input: path.join(stage, "m32-browser-lab.html"),
+      },
+    },
     server: {
       host: "127.0.0.1",
       port: 14279,
