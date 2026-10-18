@@ -79,9 +79,19 @@ mod tests {
         assert_eq!(validate_launch(&config.identifier, &opt_in, actual_url, &windows), Ok(()));
         assert_eq!(config.app.windows.len(), 1);
         assert!(!config.bundle.active);
-        assert!(config.build.before_dev_command.is_none(), "no inherited npm run dev");
-        assert!(config.build.before_build_command.is_none(), "no inherited npm run build");
-        assert!(config.build.frontend_dist.is_none(), "no production dist asset fallback");
+        // Tauri codegen deliberately emits None for the hook fields even
+        // if its input had commands. Test the *provided JSON* through the
+        // Tauri config deserializer BEFORE relying on compiled context.
+        // This is still NOT independent CLI --config merging evidence.
+        let supplied = std::env::var("TAURI_CONFIG")
+            .expect("only the synthetic CI driver may provide TAURI_CONFIG");
+        let parsed: tauri::utils::config::Config = serde_json::from_str(&supplied)
+            .expect("Tauri native typed config parser rejects invalid fixture");
+        assert!(parsed.build.before_dev_command.is_none(), "no inherited npm run dev in supplied config");
+        assert!(parsed.build.before_build_command.is_none(), "no inherited npm run build in supplied config");
+        assert!(parsed.build.frontend_dist.is_none(), "no normal dist assets in supplied config");
+        // frontend_dist (unlike build hooks) survives codegen as an Option.
+        assert!(config.build.frontend_dist.is_none(), "no production dist asset fallback in compiled context");
         let caps = serde_json::to_value(&config.app.security.capabilities)
             .expect("serialize the compile-time capability references");
         assert_eq!(caps, serde_json::json!(["default"]));
