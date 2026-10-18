@@ -1,5 +1,13 @@
 # Fabulaxiom — Current State
 
+## 2026-10-18 — M3.2 : liaison des sept sources fictives aux blobs du checkout Git (PR EN COURS)
+
+Autorité re-fetch avant la tranche : `main=415390a5e1c3ff29964234c2faf714c2b5c51331`, après PR #74 protégée et CI Windows terminale #39124457270 (51/51 étapes, 8/8 tests snapshot, 29/29 Chromium ×2, 129 tests frontend, 100 Rust). PR #35 OPEN/DRAFT et issues #36/#38 OPEN. Une comparaison des empreintes HTTP de la PR #74 prouve la cohérence des ressources dans le processus CI, **pas leur provenance authentifiée**.
+
+Nouveau travail **strictement CI-only** : `tools/m32_ci_git_source_binding.cjs` vérifie que `git rev-parse HEAD` égale `GITHUB_SHA`, restreint exactement le jeu de **sept fichiers fictifs** autorisés, compare les octets locaux à ceux extraits par `git cat-file blob <HEAD>:<path>`, puis fige des copies de ces blobs pour le staging. Les fichiers de travail modifiés, SHA incohérents, entrées inattendues, imports normaux, symlinks, et changements d'identité pendant les lectures doivent échouer sans fallback. Un manifest SHA256 associe un nom de chemin, une taille, l'empreinte et le commit Git. **Il s'agit uniquement d'une correspondance avec les objets Git du runner, PAS d'une signature, d'une validation du serveur GitHub distant ou d'une attestation indépendante d'origine.** Un nouveau test Node exécute des cas adversariaux sur de minuscules dépôts fictifs sous `RUNNER_TEMP` ; la CI ne modifie pas le dépôt source ni les fichiers opérateur.
+
+Une nouvelle CI complète Windows `pull_request` au HEAD exact doit qualifier cette PR. Même en cas de succès, `M32_SECURITY_PREFLIGHT_STOP`, `CLI_CONFIG_RESOLUTION_NOT_TESTED`, `TAURI_RUNTIME_NOT_TESTED`, `OPERATOR_ACCEPTANCE_NOT_PERFORMED`, source réelle G3 `STOP_UNAVAILABLE`, G3-G6 réels `NOT_AUTHORIZED`, historique `PENDING_EXTERNAL_ATTESTATION(21/3/2)`, prospective `NOT_STARTED`. Aucun lancement Tauri/WebView2, aucune base v6/v7 ou backup opérateur, aucun sidecar/ACL/marqueur, migration 007, writer, M3.3 ou release.
+
 ## 2026-10-18 — M3.2 : instantané RAM des octets fictifs CI, source uniquement, qualification EN ATTENTE
 
 Autorité GitHub re-fetch initiale : `main=4a0ddd518af0459fa8f5e905eea6b09dd5e08d37` après PR #73 protégée fusionnée (CI Windows #39116241141 **50/50 SUCCESS**, 129 frontend, 100 Rust, 29 Chromium x2, 10 adversariaux candidat `devCsp`, deux contextes Tauri compilés sans lancement). Le candidat statique `tools/m32_static_tauri_candidate.json` reste **inactif** et refusé par le lanceur.
