@@ -1,5 +1,11 @@
 # Fabulaxiom — Next Authorized Work
 
+## 2026-10-18 — qualifier une racine de navigateur fictif CI réellement distincte
+
+Exiger `pull_request` Windows terminal sur HEAD exact de la PR de staging fictif : sept fichiers explicitement copiés, analyse et refus des imports supplémentaires, aucune entrée React normale, Vite propre `host=127.0.0.1`, port strict et `fs.allow` restreint, tests HTTP négatifs sur `/`, `index.html`, `App.tsx`, `main.tsx` et `/@fs/`, puis **29/29 vrais scénarios Chromium** toujours verts. Inspecter précisément les journaux `M32_CI_FIXTURE_STAGE_EXACT_PASS`, `M32_CI_VITE_NORMAL_ROUTES_DENIED_PASS` et `M32_CI_FIXTURE_ONLY_BROWSER_PASS`, suites frontend/Rust/G3, reviews, threads, ruleset, comparaison diff et HEAD anti-course avant fusion protégée. Aucun Tauri/WebView2 opérateur.
+
+Après qualification, mener **une PR distincte** pour CSP `devCsp`/en-têtes, l'URL exacte et HMR sans affaiblir `M32_SECURITY_PREFLIGHT_STOP`. La racine de CI n'est pas une configuration d'utilisation opérateur. `CLI_CONFIG_RESOLUTION_NOT_TESTED`, `TAURI_RUNTIME_NOT_TESTED`, `OPERATOR_ACCEPTANCE_NOT_PERFORMED`, G3 source `STOP_UNAVAILABLE`, PR #35 DRAFT, historique 21/3/2 en attente et prospective NOT_STARTED, G3–G6 réels non autorisés. Ne pas créer de migration 007, writer, M3.3 ou release.
+
 ## 2026-10-18 — qualifier la détection non lançante des refus Vite/CSP
 
 Qualifier au HEAD exact la nouvelle PR source-only : Vite 8 `resolveConfig` sur config existante, sans `createServer`, sans `listen`, sans commande Tauri. Exiger preuve et log de trois cas : `TAURI_DEV_HOST` absent, IPv4 `127.0.0.1`, wildcard `0.0.0.0`. Refuser toute équivalence abusive entre `host=false` (résolution `localhost` potentiellement variable) et écoute assurée `127.0.0.1`. Les valeurs externes et HMR inadéquat doivent être veto en tests adversariaux. Confirmer CSP development réellement non configurée et cohabitation des entrées normales/fictives à la racine Vite : statut `M32_SECURITY_PREFLIGHT_STOP` attendu, même si l'audit source PASS. Vérifier toutes les CI Windows, GitHub ruleset, traces, diff, reviews/threads, HEAD exact et anti-course avant fusion éventuelle.

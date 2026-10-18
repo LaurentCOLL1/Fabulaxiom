@@ -9,6 +9,7 @@ const assert = require("node:assert/strict");
 const path = require("node:path");
 const { spawn } = require("node:child_process");
 const { setTimeout: sleep } = require("node:timers/promises");
+const { stageFictionOnly } = require("./m32_ci_fixture_stage.cjs");
 
 const root = path.resolve(__dirname, "..");
 const playwrightPath = process.env.FABULAXIOM_M32_PLAYWRIGHT_MODULE;
@@ -16,6 +17,7 @@ if (!playwrightPath || !path.isAbsolute(playwrightPath)) {
   throw new Error("Expected explicit ephemeral absolute Playwright module directory");
 }
 const { chromium } = require(playwrightPath);
+const stage = stageFictionOnly();
 const port = "14279";
 const url = "http://127.0.0.1:" + port + "/m32-browser-lab.html";
 const cases = [];
@@ -24,8 +26,10 @@ const unsafeNetwork = [];
 const server = spawn(
   process.execPath,
   [path.join(root, "node_modules", "vite", "bin", "vite.js"),
-    "--host", "127.0.0.1", "--port", port, "--strictPort"],
-  { cwd: root, stdio: "pipe", shell: false, windowsHide: true },
+    "--config", path.join(root, "vite.m32-ci-isolated.config.mts"),
+    "--port", port, "--strictPort"],
+  { cwd: root, stdio: "pipe", shell: false, windowsHide: true,
+    env: { ...process.env, M32_CI_FIXTURE_STAGE: stage } },
 );
 server.on("error", e => errors.push(String(e)));
 
@@ -43,10 +47,32 @@ async function awaitLocalServer() {
   throw new Error("Synthetic Vite server did not start on loopback");
 }
 
+async function assertNormalAppNotServed() {
+  const normal = [
+    "/", "/index.html", "/src/main.tsx", "/src/App.tsx",
+    "/@fs/" + path.join(root, "index.html").replaceAll("\\", "/"),
+    "/@fs/" + path.join(root, "src", "App.tsx").replaceAll("\\", "/"),
+  ];
+  for (const suffix of normal) {
+    const response = await fetch("http://127.0.0.1:" + port + suffix, {
+      redirect: "manual", signal: AbortSignal.timeout(5000),
+    });
+    assert.notEqual(response.status, 200,
+      "STOP: normal App content reachable through isolated Vite root at " + suffix);
+  }
+  const allowed = await fetch(url, { signal: AbortSignal.timeout(5000) });
+  assert.equal(allowed.status, 200, "STOP: fictional lab unavailable");
+  const html = await allowed.text();
+  assert.ok(html.includes("m32BrowserLab.tsx"), "STOP: unexpected HTML entry");
+  assert.ok(!html.includes('src/main.tsx'), "STOP: production entry leaked");
+  console.log("M32_CI_VITE_NORMAL_ROUTES_DENIED_PASS: " + normal.length + " routes");
+}
+
 async function run() {
   let browser;
   try {
     await awaitLocalServer();
+    await assertNormalAppNotServed();
     browser = await chromium.launch({ headless: true });
     const page = await browser.newPage();
     page.on("pageerror", err => errors.push(err.message));
@@ -346,6 +372,7 @@ async function run() {
     });
     assert.equal(cases.length, 29);
     console.log("M32_BROWSER_REAL_CHROMIUM_PASS 29/29");
+    console.log("M32_CI_FIXTURE_ONLY_BROWSER_PASS: 29/29; no normal source pages");
   } finally {
     if (browser) await browser.close();
     server.kill();
