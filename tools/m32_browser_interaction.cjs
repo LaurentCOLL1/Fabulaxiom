@@ -62,6 +62,22 @@ async function assertNormalAppNotServed() {
   }
   const allowed = await fetch(url, { signal: AbortSignal.timeout(5000) });
   assert.equal(allowed.status, 200, "STOP: fictional lab unavailable");
+  const csp = allowed.headers.get("content-security-policy");
+  assert.ok(csp, "STOP: fictional HTML served WITHOUT CSP");
+  for (const directive of [
+    "default-src 'none'", "script-src 'self' 'unsafe-inline'",
+    "connect-src 'self' ws://127.0.0.1:14279",
+    "object-src 'none'", "frame-ancestors 'none'",
+    "base-uri 'none'", "form-action 'none'",
+  ]) {
+    assert.ok(csp.includes(directive), "STOP: CSP missing directive " + directive);
+  }
+  assert.ok(!csp.includes("https:") && !csp.includes("http:") &&
+    !csp.includes("wss:") && !csp.includes("0.0.0.0"),
+    "STOP: non-loopback or broad origin in lab CSP");
+  assert.equal(allowed.headers.get("x-content-type-options"), "nosniff");
+  assert.equal(allowed.headers.get("referrer-policy"), "no-referrer");
+  console.log("M32_CI_CSP_HEADER_SOURCE_PASS: local-only script/connect; dev inline concession");
   const html = await allowed.text();
   assert.ok(html.includes("m32BrowserLab.tsx"), "STOP: unexpected HTML entry");
   assert.ok(!html.includes('src/main.tsx'), "STOP: production entry leaked");
@@ -372,6 +388,27 @@ async function run() {
     });
     assert.equal(cases.length, 29);
     console.log("M32_BROWSER_REAL_CHROMIUM_PASS 29/29");
+    // Actual Chromium enforced-CSP veto, separate from the 29 pre-existing
+    // fictional interaction cases. Never make an off-loopback network call.
+    const cspVeto = await page.evaluate(async () => {
+      const notices = [];
+      const handler = event => notices.push({
+        directive: event.effectiveDirective, blocked: event.blockedURI,
+      });
+      document.addEventListener("securitypolicyviolation", handler);
+      let rejected = false;
+      try { await fetch("https://example.invalid/m32-csp-must-block", { mode: "cors" }); }
+      catch { rejected = true; }
+      await new Promise(resolve => setTimeout(resolve, 200));
+      document.removeEventListener("securitypolicyviolation", handler);
+      return { rejected, notices };
+    });
+    assert.equal(cspVeto.rejected, true, "STOP: Chromium permitted a remote fetch");
+    assert.ok(cspVeto.notices.some(x =>
+      x.directive === "connect-src" && x.blocked.includes("example.invalid")),
+      "STOP: missing actual browser CSP connect-src enforcement");
+    assert.deepEqual(unsafeNetwork, [], "STOP: remote request escaped local CSP");
+    console.log("M32_CI_CHROMIUM_CSP_CONNECT_BLOCK_PASS: external fetch denied by CSP");
     console.log("M32_CI_FIXTURE_ONLY_BROWSER_PASS: 29/29; no normal source pages");
   } finally {
     if (browser) await browser.close();

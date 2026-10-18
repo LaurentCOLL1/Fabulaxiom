@@ -41,11 +41,35 @@ export default defineConfig(() => {
     plugins: [react()],
     server: {
       host: "127.0.0.1",
-      port: 1420,
+      port: 14279,
       strictPort: true,
       allowedHosts: [],
       cors: false,
-      hmr: { protocol: "ws", host: "127.0.0.1" },
+      // Vite dev React refresh currently injects one inline module preamble.
+      // 'unsafe-inline' in script-src is a DEV-ONLY compromise: NOT a
+      // production or Tauri devCsp policy, and NOT an XSS-safe runtime claim.
+      headers: {
+        "Content-Security-Policy": [
+          "default-src 'none'",
+          "script-src 'self' 'unsafe-inline'",
+          "style-src 'self' 'unsafe-inline'",
+          "connect-src 'self' ws://127.0.0.1:14279",
+          "img-src 'self' data:",
+          "font-src 'self'",
+          "object-src 'none'",
+          "frame-src 'none'",
+          "frame-ancestors 'none'",
+          "base-uri 'none'",
+          "form-action 'none'",
+          "worker-src 'none'",
+          "manifest-src 'none'",
+        ].join("; "),
+        "X-Content-Type-Options": "nosniff",
+        "Referrer-Policy": "no-referrer",
+      },
+      hmr: {
+        protocol: "ws", host: "127.0.0.1", clientPort: 14279,
+      },
       fs: {
         strict: true,
         allow: [stage, path.join(import.meta.dirname, "node_modules")],
