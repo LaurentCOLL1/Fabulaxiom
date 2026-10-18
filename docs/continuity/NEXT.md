@@ -1,5 +1,13 @@
 # Fabulaxiom — Next Authorized Work
 
+## 2026-10-18 — après PR #67 : CSP, URL et CLI ; aucun lancement autorisé
+
+État vérifié : `main=1735fc0edf0e457f7b41a06a99a6aa19fd22591f` après PR #67 protégée fusionnée ; CI Windows #39091761744 48/48 SUCCESS, `M32_NATIVE_OVERLAY_CONTEXT_PASS` compile-only. Les trois héritages frontend normaux `beforeDevCommand`, `beforeBuildCommand`, `frontendDist` sont écartés pour la variante fictive au moyen des marqueurs `null` RFC 7396. Deux CI échouées de mise au point #39091221081/#39091333950 sont inéligibles comme preuves. **Ne pas modifier ce checkpoint sans nouvelle CI au nouveau HEAD.**
+
+Poursuite M3.2 autorisée **uniquement en conception/source/fixtures** : analyser CSP dev `null`, `TAURI_DEV_HOST`, URL/port/redirect et l'autorité native Tauri, tout en distinguant merge interne `generate_context!` du véritable traitement `--config` par la CLI 2.12.1. Aucune commande CLI inspect documentée ne fournit une exportation complète de ce merge sans effets de `dev`/`build`; conserver `CLI_CONFIG_RESOLUTION_NOT_TESTED` tant qu'une méthode sûre et testée n'existe pas. Une prévisualisation Windows demandera un préflight `PASS/FAIL/STOP` et **autorisation expresse, indépendante et préalable** avant de fournir un quelconque bloc démarrant serveur ou Tauri/WebView2.
+
+`TAURI_RUNTIME_NOT_TESTED`, `OPERATOR_ACCEPTANCE_NOT_PERFORMED`, G3 original `STOP_UNAVAILABLE`, historique 21/3/2, prospective NOT_STARTED, PR #35 DRAFT, issues #36/#38 OPEN, G3–G6 réels NOT_AUTHORIZED. Pas d'ouverture d'original, copie, ACL, marqueur, backup, 007, writer IPC, M3.3, M4 ou release.
+
 ## 2026-10-18 — qualifier l'overlay fictif sans commandes frontend héritées
 
 Sur la branche indépendante, obtenir le terminal `pull_request` Windows au HEAD exact : modèles RFC 7396 (`null` supprime les clés, tableaux remplacés, aucune mutation d'entrée), refus des trois valeurs normalement héritées `beforeDevCommand`, `beforeBuildCommand`, `frontendDist`, contrôle de l'overlay **brut** transmis via `TAURI_CONFIG` et de ses trois marqueurs `null`, puis `generate_context!(test=true)` confirmant `frontend_dist=None` après merge interne Tauri (ancien JSON déjà fusionné refusé) (les hooks y sont systématiquement effacés par Tauri), et maintien de la seule fenêtre `m32-fiction` sans capability appliquée. Vérifier CI Rust, Chromium fictif, frontend, scripts G3, revue diff, ruleset, reviews, threads, locks et anti-course main avant éventuelle fusion `expected_head_sha`. Un changement de HEAD annule toute CI précédente. Aucune action Windows opérateur.
