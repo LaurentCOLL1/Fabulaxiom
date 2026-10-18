@@ -79,19 +79,21 @@ mod tests {
         assert_eq!(validate_launch(&config.identifier, &opt_in, actual_url, &windows), Ok(()));
         assert_eq!(config.app.windows.len(), 1);
         assert!(!config.bundle.active);
-        // Tauri codegen deliberately emits None for the hook fields even
-        // if its input had commands. Test the *provided JSON* through the
-        // Tauri config deserializer BEFORE relying on compiled context.
-        // This is still NOT independent CLI --config merging evidence.
+        // The actual TAURI_CONFIG contains a RAW RFC7396 override.
+        // Its nulls must survive until Tauri merges it against base config.
+        // Tauri codegen itself always writes None for hooks regardless of
+        // source; never claim that inspecting codegen hooks proves safety.
         let supplied = std::env::var("TAURI_CONFIG")
-            .expect("only the synthetic CI driver may provide TAURI_CONFIG");
-        let parsed: tauri::utils::config::Config = serde_json::from_str(&supplied)
-            .expect("Tauri native typed config parser rejects invalid fixture");
-        assert!(parsed.build.before_dev_command.is_none(), "no inherited npm run dev in supplied config");
-        assert!(parsed.build.before_build_command.is_none(), "no inherited npm run build in supplied config");
-        assert!(parsed.build.frontend_dist.is_none(), "no normal dist assets in supplied config");
-        // frontend_dist (unlike build hooks) survives codegen as an Option.
-        assert!(config.build.frontend_dist.is_none(), "no production dist asset fallback in compiled context");
+            .expect("only synthetic CI may provide the raw fictional overlay");
+        let patch: serde_json::Value = serde_json::from_str(&supplied)
+            .expect("valid RFC7396 overlay JSON");
+        for key in ["beforeDevCommand", "beforeBuildCommand", "frontendDist"] {
+            assert!(patch["build"][key].is_null(), "RFC7396 deletion marker missing for {key}");
+        }
+        assert_eq!(patch["identifier"], LAB_ID);
+        // frontend_dist survives codegen as Option, unlike command hooks.
+        // This tests the Tauri codegen merge, NOT the CLI --config command.
+        assert!(config.build.frontend_dist.is_none(), "production dist inherited by Tauri context");
         let caps = serde_json::to_value(&config.app.security.capabilities)
             .expect("serialize the compile-time capability references");
         assert_eq!(caps, serde_json::json!(["default"]));
