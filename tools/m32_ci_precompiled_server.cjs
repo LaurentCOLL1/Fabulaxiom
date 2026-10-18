@@ -76,7 +76,7 @@ assert.ok(!csp.includes("unsafe-inline") && !csp.includes("unsafe-eval"),
 
 const { requestAuthorityAllowed } = require("./m32_ci_http_authority.cjs");
 const server = http.createServer((req, res) => {
-  if (!requestAuthorityAllowed(req.headers, req.url)) {
+  if (!requestAuthorityAllowed(req.headers, req.url, req.rawHeaders)) {
     res.writeHead(403, { "Content-Type": "text/plain", "Cache-Control": "no-store" });
     res.end("Forbidden"); return;
   }

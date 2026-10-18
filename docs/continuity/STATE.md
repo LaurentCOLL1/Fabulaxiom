@@ -1,5 +1,12 @@
 # Fabulaxiom — Current State
 
+## 2026-10-18 — M3.2: contrôles des en-têtes HTTP bruts du serveur fictif (PR À QUALIFIER)
+
+Après la PR #76 protégée, `main=a1ada14ccffd99fbe38494d90fe9a81a0e0d724c`. Tranche limitée au serveur précompilé de fixtures CI : inspection obligatoire de `req.rawHeaders`, refus des doublons Host/Origin/Sec-Fetch-Site même si `req.headers` conserve une valeur normale, des métadonnées proxy et de toute incohérence entre en-têtes bruts et normalisés. Quatre nouveaux tests adversariaux Node (10 au total) et trois requêtes HTTP brutes TCP sur loopback doivent être exécutés en plus des quatre refus déjà qualifiés, des deux séries 29/29 Chromium, 129 frontend, 100 Rust et des préflights historiques. Node peut éliminer des Host dupliqués lors de la normalisation ; les octets bruts permettent de vérifier ce cas particulier sans prétendre résoudre toutes les ambiguïtés HTTP.
+
+**AUCUNE preuve anticipée** : CI nouvelle au HEAD final impérative. Ceci ne crée aucun processus serveur opérateur, aucune authentification indépendante, aucun accès SQLite, aucun runtime Tauri/WebView2 et aucune promotion du candidat 14279. `M32_SECURITY_PREFLIGHT_STOP`, `CLI_CONFIG_RESOLUTION_NOT_TESTED`, `TAURI_RUNTIME_NOT_TESTED`, `OPERATOR_ACCEPTANCE_NOT_PERFORMED`, `REAL_G3_STOP_UNAVAILABLE`, historique `PENDING_EXTERNAL_ATTESTATION(21/3/2)`, prospective `NOT_STARTED`, G3–G6 réels `NOT_AUTHORIZED`, PR #35 DRAFT et issues #36/#38 OPEN restent inchangés.
+
+
 ## 2026-10-18 — M3.2 : refus Host/Origin du serveur HTTP fictif CI (en attente de CI)
 
 Autorité re-fetch : `main=2fa18dc879305ec7be39691bdb34ac4275cc8f60` après fusion PR #75 (liaison aux blobs Git des sept fichiers fictifs). **Cette liaison au checkout ne constitue pas une attestation externe ou indépendante de provenance.** La tranche actuelle durcit seulement le serveur HTTP *fictif de GitHub Actions* : refus avant routage des requêtes dont le `Host` diffère de `127.0.0.1:14279`, `Origin` (s'il est présent) diffère de `http://127.0.0.1:14279`, en-têtes de forwarding/proxy, métadonnées `Sec-Fetch-Site` non locales ou cibles de requête absolues/scheme-relative. Six tests adversariaux Node et quatre requêtes HTTP négatives dans Chromium doivent confirmer ce refus. L'écoute reste uniquement sur 127.0.0.1, les ressources restent figées en RAM, la CSP stricte et 29/29 cas Chromium dans les deux modes restent requis.
