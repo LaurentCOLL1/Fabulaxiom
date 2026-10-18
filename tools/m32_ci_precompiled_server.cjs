@@ -8,6 +8,7 @@ const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const path = require("node:path");
 const http = require("node:http");
+const { allowed, pinStaticBytes } = require("./m32_ci_static_byte_snapshot.cjs");
 
 assert.equal(process.env.CI?.toLowerCase(), "true", "STOP: static fixture server CI only");
 assert.equal(process.env.RUNNER_OS, "Windows", "STOP: Windows runner only");
@@ -44,10 +45,6 @@ const csp = [
   "manifest-src 'none'",
 ].join("; ");
 
-function allowed(relative) {
-  if (relative === "m32-browser-lab.html") return true;
-  return /^assets\/[A-Za-z0-9_.-]+\.(?:js|css)$/.test(relative);
-}
 function walk(directory) {
   for (const entry of fs.readdirSync(directory, { withFileTypes: true })) {
     const localPath = path.join(directory, entry.name);
@@ -61,8 +58,10 @@ function walk(directory) {
   }
 }
 walk(out);
-const htmlFile = path.join(out, "m32-browser-lab.html");
-const html = fs.readFileSync(htmlFile, "utf8");
+const pinned = pinStaticBytes(out);
+const html = pinned.get("m32-browser-lab.html").body.toString("utf8");
+console.log("M32_CI_STATIC_BYTES_PINNED_PASS: " + pinned.inventory.length +
+  " resources SHA256-pinned in RAM; no HTTP disk reopens");
 assert.ok(/<script\s+[^>]*src=["']\/assets\/[^"']+\.js["']/i.test(html),
   "STOP: fictional bundle JS not externalized");
 assert.ok(!/<script(?:\s[^>]*)?>[\s\S]*?<\/script>/i.test(
@@ -86,23 +85,22 @@ const server = http.createServer((req, res) => {
   if (!allowed(relative)) {
     res.writeHead(404, { "Content-Type": "text/plain" }); res.end("Not Found"); return;
   }
-  const candidate = path.join(out, ...relative.split("/"));
-  try {
-    if (fs.lstatSync(candidate).isSymbolicLink() || !fs.statSync(candidate).isFile()) throw Error("not a file");
-    const type = relative.endsWith(".html") ? "text/html; charset=utf-8" :
-      relative.endsWith(".css") ? "text/css; charset=utf-8" : "text/javascript; charset=utf-8";
-    res.writeHead(200, {
-      "Content-Type": type,
-      "Content-Security-Policy": csp,
-      "X-Content-Type-Options": "nosniff",
-      "Referrer-Policy": "no-referrer",
-      "Cache-Control": "no-store",
-    });
-    if (req.method === "HEAD") res.end();
-    else fs.createReadStream(candidate).pipe(res);
-  } catch {
-    res.writeHead(404, { "Content-Type": "text/plain" }); res.end("Not Found");
+  const resource = pinned.get(relative);
+  if (!resource) {
+    res.writeHead(404, { "Content-Type": "text/plain" }); res.end("Not Found"); return;
   }
+  const type = relative.endsWith(".html") ? "text/html; charset=utf-8" :
+    relative.endsWith(".css") ? "text/css; charset=utf-8" : "text/javascript; charset=utf-8";
+  res.writeHead(200, {
+    "Content-Type": type,
+    "Content-Security-Policy": csp,
+    "X-Content-Type-Options": "nosniff",
+    "Referrer-Policy": "no-referrer",
+    "Cache-Control": "no-store",
+    // CI-local consistency metadata only; not a provenance attestation.
+    "X-M32-Local-SHA256": resource.sha256,
+  });
+  res.end(req.method === "HEAD" ? undefined : resource.body);
 });
 server.on("error", error => { console.error("M32_STATIC_SERVER_FAIL", error.code); process.exitCode = 1; });
 server.listen(14279, "127.0.0.1", () => {
