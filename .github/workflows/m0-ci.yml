@@ -36,6 +36,48 @@ jobs:
       - name: M3.2 G2-A inert operator consent proposal refusal unit tests
         run: python -m unittest discover -s tools -p "test_m32_g2a_consent_contract.py" -v
 
+      - name: M3.2 G2-A exact candidate source-only adversarial checks
+        run: python -m unittest discover -s tools -p "test_m32_g2a_exact_block_source.py" -v
+
+      - name: M3.2 G2-A PowerShell candidate AST parse ONLY, no candidate execution
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $doc = Get-Content -LiteralPath docs/qualification/M3_2_G2A_EXACT_BLOCK_REVIEW.md -Raw -Encoding UTF8
+          $lines = @($doc -split '\r?\n')
+          $opening = ([char]96).ToString() * 3 + 'powershell'
+          $closing = ([char]96).ToString() * 3
+          if (@($lines | Where-Object { $_ -ceq $opening }).Count -ne 1) {
+            throw 'STOP: exactly one opening code fence required'
+          }
+          if (@($lines | Where-Object { $_ -ceq $closing }).Count -ne 1) {
+            throw 'STOP: exactly one closing code fence required'
+          }
+          $first = [Array]::IndexOf($lines,$opening)
+          $last = [Array]::IndexOf($lines,$closing,$first+1)
+          if ($first -lt 0 -or $last -le ($first+1)) {
+            throw 'STOP: invalid code fence order'
+          }
+          $candidate = ($lines[($first+1)..($last-1)] -join [Environment]::NewLine)
+          $tokens = $null
+          $parseErrors = $null
+          $ast = [System.Management.Automation.Language.Parser]::ParseInput(
+            $candidate, [ref]$tokens, [ref]$parseErrors)
+          if ($parseErrors.Count -ne 0) { throw 'STOP: PowerShell parser error' }
+          $commands = @($ast.FindAll({
+            param($node) $node -is [System.Management.Automation.Language.CommandAst]
+          }, $true))
+          $allowed = @('Get-Date','Join-Path','ConvertFrom-Csv','Where-Object',
+                       'Get-Process','Select-Object','Write-Output')
+          $unknown = @($commands | Where-Object {
+            $null -ne $_.GetCommandName() -and $allowed -notcontains $_.GetCommandName()
+          })
+          if ($unknown.Count -gt 0) { throw 'STOP: unexpected command name' }
+          $dynamic = @($commands | Where-Object { $null -eq $_.GetCommandName() })
+          Write-Output "M32_G2A_AST_DYNAMIC_CALL_COUNT: $($dynamic.Count) (informational; exact candidate is reviewed in source)"
+          if ($dynamic.Count -gt 4) { throw 'STOP: excessive dynamic invocation shape' }
+          Write-Output 'M32_G2A_AST_PARSE_ONLY_PASS: no candidate run; no owner approval'
+
       - name: Frontend tests
         run: npm run test:ci
 

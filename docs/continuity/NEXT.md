@@ -1,5 +1,25 @@
 # Fabulaxiom — Next Authorized Work
 
+## 2026-10-19 — PR #85 : AST syntaxe qualifiée, cardinalité dynamique diagnostique
+
+La CI au HEAD `6dd7e28897d226c02e0d212b2784293ff28606a3` a passé 20 tests Python et la syntaxe PowerShell `Parser.ParseInput`, mais la cardinalité attendue pour les `CommandAst` dynamiques a déclenché un STOP du job avant les régressions. La nouvelle version garde l'inventaire de commandes connues et un seuil de refus conservateur (`>4`), avec un compteur informatif ; les contrôles Python sur le texte restent requis. La liste de refus de sortie mentionne explicitement G3/G4/G5/G6. Le bloc demeure un candidat **non exécuté**, G2-A non autorisé. Nouvelle CI exact-head indispensable ; ancienne preuve FAIL/SKIPPED non réutilisable.
+
+
+## 2026-10-19 — PR #85 : correction du seul extracteur AST de Markdown
+
+Au HEAD `b14fb8d1bcff1ca28387c65233c4c010268abe6a`, CI `pull_request` Windows a passé les 20 tests source-only du candidat, mais STOP à l'extraction `[regex]::Matches` des délimiteurs Markdown ; aucune exécution du bloc, suites aval ignorées. L'extracteur GitHub CI a été remplacé par comparaison **exacte des deux lignes de clôture**, découpage par IndexOf puis `Parser.ParseInput` (non exécuté). Aucun octet du bloc PowerShell proposé n'est changé. La qualification du nouveau HEAD est obligatoire : CI antérieure FAIL/SKIPPED non réutilisable.
+
+
+## 2026-10-19 — PR #85 correction du workflow invalide, requalification HEAD neuf
+
+La première version `16de4a37a8bb09d7208925859aa761014ba81352` a produit un workflow YAML invalide, détecté par GitHub avant création de job (run #39215639069 `failure`, `push`, zéro job). Cause : remplacement de texte Javascript interprétant `$'` dans l'expression régulière et insérant une copie du reste du workflow. Le workflow a été reconstruit **à partir du main vérifié**, avec insertion contrôlée par callback et préflight d'unicité des étapes. Aucun test ancien à recycler ; la **nouvelle CI pull_request au SHA nouveau** sera la seule preuve. Le bloc PowerShell G2-A reste INERTE/NON AUTORISÉ et n'est jamais exécuté.
+
+
+## 2026-10-19 — qualifier syntaxe et refus du bloc G2-A pour revue humaine
+
+Exiger 20 tests source-only de mutations sur le bloc Markdown et l'analyse AST Windows par `Parser.ParseInput` sans l'exécuter ; marqueur `M32_G2A_AST_PARSE_ONLY_PASS`. Requalifier les contrôles antérieurs, inspecter CI obligatoire SHA exact, diff/ruleset/reviews/threads et main anti-course avant fusion. Même après fusion, présenter code et avertissements à l'opérateur, puis demander autorisation **spécifique** avant toute commande Windows. G2-A=NOT_ASSESSED/NOT_AUTHORIZED, G2-B/C/D et G3–G6 inchangés.
+
+
 ## 2026-10-19 — qualifier le dossier G2-A de revue sans script
 
 Exiger les 24 nouveaux tests `test_m32_g2a_consent_contract.py` : absence de commandes et chemins privés, absence d'accord/planification, zéro ouverture SQLite, élévation/arrêt/ACL/sidecar/Git local interdits, `G2A_RUNTIME=NOT_ASSESSED`. Garder les 20 tests du registre d'autorité précédent, tous les tests Rust et Chromium, `M32_SECURITY_PREFLIGHT_STOP`. Une CI terminale au HEAD nouveau + analyse de diff, reviews, ruleset, re-fetch avant toute fusion. Après fusion, **G2-A n'est pas effectué** : présenter séparément à l'opérateur un bloc examiné et obtenir accord explicite avant exécution. Maintenir G2-B/G2-C/G2-D/G3–G6 `NOT_AUTHORIZED`.

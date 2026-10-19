@@ -1,5 +1,25 @@
 # Fabulaxiom — Current State
 
+## 2026-10-19 — PR #85 : AST syntaxe qualifiée, cardinalité dynamique diagnostique
+
+La CI au HEAD `6dd7e28897d226c02e0d212b2784293ff28606a3` a passé 20 tests Python et la syntaxe PowerShell `Parser.ParseInput`, mais la cardinalité attendue pour les `CommandAst` dynamiques a déclenché un STOP du job avant les régressions. La nouvelle version garde l'inventaire de commandes connues et un seuil de refus conservateur (`>4`), avec un compteur informatif ; les contrôles Python sur le texte restent requis. La liste de refus de sortie mentionne explicitement G3/G4/G5/G6. Le bloc demeure un candidat **non exécuté**, G2-A non autorisé. Nouvelle CI exact-head indispensable ; ancienne preuve FAIL/SKIPPED non réutilisable.
+
+
+## 2026-10-19 — PR #85 : correction du seul extracteur AST de Markdown
+
+Au HEAD `b14fb8d1bcff1ca28387c65233c4c010268abe6a`, CI `pull_request` Windows a passé les 20 tests source-only du candidat, mais STOP à l'extraction `[regex]::Matches` des délimiteurs Markdown ; aucune exécution du bloc, suites aval ignorées. L'extracteur GitHub CI a été remplacé par comparaison **exacte des deux lignes de clôture**, découpage par IndexOf puis `Parser.ParseInput` (non exécuté). Aucun octet du bloc PowerShell proposé n'est changé. La qualification du nouveau HEAD est obligatoire : CI antérieure FAIL/SKIPPED non réutilisable.
+
+
+## 2026-10-19 — PR #85 correction du workflow invalide, requalification HEAD neuf
+
+La première version `16de4a37a8bb09d7208925859aa761014ba81352` a produit un workflow YAML invalide, détecté par GitHub avant création de job (run #39215639069 `failure`, `push`, zéro job). Cause : remplacement de texte Javascript interprétant `$'` dans l'expression régulière et insérant une copie du reste du workflow. Le workflow a été reconstruit **à partir du main vérifié**, avec insertion contrôlée par callback et préflight d'unicité des étapes. Aucun test ancien à recycler ; la **nouvelle CI pull_request au SHA nouveau** sera la seule preuve. Le bloc PowerShell G2-A reste INERTE/NON AUTORISÉ et n'est jamais exécuté.
+
+
+## 2026-10-19 — M3.2 G2-A : PowerShell exact préparé comme texte, non exécuté
+
+Base `main=9d058362a6804d642aad75cdb29cd6d7540e35cf`, PR #84 fusionnée et CI Windows #39211774008 60/60. Nouveau [candidat G2-A](../qualification/M3_2_G2A_EXACT_BLOCK_REVIEW.md) contenant un seul bloc PowerShell `& { ... }` non exécutable automatiquement, avec contrôle SID d'intégrité medium, version/horloge et noms de processus. Aucune lecture SQLite, ACL, backup, chemin opérateur, sortie de SID, Git local ou réseau ; absence de processus ne prouve PAS absence d'écrivain. Les tests Windows ajoutent 20 refus Python sur le texte et l'analyse AST PowerShell (ParseInput, **sans exécution**). Aucun `.ps1`, aucun lancement opérateur, approbation G2-A NON ACCORDÉE. CI nouvelle exact-head obligatoire, tous STOP maintenus.
+
+
 ## 2026-10-19 — M3.2 G2-A consentement : nouvelle proposition INERTE, aucune observation Windows
 
 Sur `main=41259a088c7d85fe7eda2ad5086964f464f93ff8` après PR #83 (CI Windows #39205535763 SUCCESS 59/59), ajout d'un [dossier G2-A de revue](../qualification/M3_2_G2A_OPERATOR_REVIEW_PROPOSAL.md), de son JSON non exécutable, d'un validateur strict et de 24 tests adversariaux dans la CI. Le contrat spécifie seulement une future inspection du jeton courant, de PowerShell, de l'horloge, des présences de processus et des références GitHub publiques. Aucun bloc PowerShell ni script de collecte n'est livré. G2-A reste `NOT_ASSESSED/NOT_AUTHORIZED`. Toute commande réelle devra être publiée séparément et recevoir **autorisation spécifique sur son contenu exact** avec avertissement sur les interactions/élévation/effets. Aucun ACL, SQLite, sidecar, chemin ou worktree privé observé ; G2-B/G3 non autorisés. Requalification au SHA exact impérative avant fusion.
