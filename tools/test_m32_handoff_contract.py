@@ -25,7 +25,7 @@ class HandoffContractTests(unittest.TestCase):
             self.assertRegex(self.data[key], r"^[0-9a-f]{40}$")
 
     def test_03_latest_verified_merge_not_promoted_to_runtime(self):
-        self.assertGreaterEqual(self.data["last_confirmed_merged_pr"], 86)
+        self.assertGreaterEqual(self.data["last_confirmed_merged_pr"], 88)
         self.assertEqual(self.data["g2a"]["corrected_execution"], "STOP_WEBVIEW2_PARENTAGE")
 
     def test_04_pr35_and_external_issues_still_open(self):
@@ -73,7 +73,16 @@ class HandoffContractTests(unittest.TestCase):
         self.assertIn('STOP_STAGE: WEBVIEW2_PARENTAGE', self.doc)
         self.assertIn('STOP_PROCESS_NAMES', self.doc)
 
-    def test_11_policy_requires_refetch_and_same_pr_handoff(self):
+    def test_11_new_candidate_stays_unexecuted_and_separate(self):
+        c = self.data["g2a"]["future_candidate"]
+        self.assertEqual(c["operator_execution"], "NOT_AUTHORIZED")
+        self.assertEqual(c["cause_of_operator_stop"], "UNKNOWN")
+        self.assertEqual(c["review"], "EXACT_SCRIPT_AND_EFFECTS_REVIEW_REQUIRED")
+        self.assertTrue((ROOT / c["path"]).is_file())
+        self.assertIn("M3_2_G2A_PID_ZERO_CANDIDATE_REVIEW.md", self.index)
+        self.assertIn("STOP_WEBVIEW2_PARENTAGE", self.doc)
+
+    def test_12_policy_requires_refetch_and_same_pr_handoff(self):
         for clause in ("Re-fetch", "HANDOFF_CURRENT.md", "HANDOFF_CURRENT.json",
                        "expected_head_sha", "autorisation"):
             self.assertIn(clause, self.policy)
