@@ -1,0 +1,91 @@
+{
+  "schema_version": 1,
+  "as_of": "2026-10-19",
+  "scope": "SOURCE_ONLY_GOVERNANCE_SNAPSHOT",
+  "repository": "LaurentCOLL1/Fabulaxiom",
+  "checkpoint": {
+    "main_sha": "f9e6b18236fd70674849f6e956c7cff410dcef2c",
+    "last_merged_pr": 82,
+    "last_pr_head": "07ce685d4d418f443b63b6946fe2582455811b9f",
+    "windows_ci_run": 39202144936,
+    "ci_result": "SUCCESS",
+    "ci_steps_passed": 58,
+    "ci_steps_total": 58,
+    "external_live_ci_recheck": "REQUIRED_BEFORE_NEW_MERGE"
+  },
+  "development": {
+    "pr35": "OPEN_DRAFT",
+    "issues": {
+      "36": "OPEN",
+      "38": "OPEN"
+    }
+  },
+  "historical": {
+    "status": "PENDING_EXTERNAL_ATTESTATION",
+    "historically_pinned": 21,
+    "observed_sha_only": 3,
+    "unanchored_observed": 2,
+    "roles": [
+      {
+        "role": "production/pre_m24_early_manifest",
+        "status": "OBSERVED_SHA256_ONLY"
+      },
+      {
+        "role": "acl/original_acls",
+        "status": "OBSERVED_SHA256_ONLY"
+      },
+      {
+        "role": "acl/pre_repair_json",
+        "status": "OBSERVED_SHA256_ONLY"
+      },
+      {
+        "role": "production/activation_marker",
+        "status": "UNANCHORED_OBSERVED"
+      },
+      {
+        "role": "m25/isolated_v6",
+        "status": "UNANCHORED_OBSERVED"
+      }
+    ]
+  },
+  "prospective": {
+    "status": "NOT_STARTED",
+    "solo_policy": "APPROVED_POLICY_ONLY",
+    "independent_human_review": "NOT_PERFORMED"
+  },
+  "operator_execution": {
+    "G2": "NOT_AUTHORIZED",
+    "G3": "NOT_AUTHORIZED",
+    "G4": "NOT_AUTHORIZED",
+    "G5": "NOT_AUTHORIZED",
+    "G6": "NOT_AUTHORIZED",
+    "production_007": "NOT_AUTHORIZED",
+    "writer_ipc": "NOT_AUTHORIZED",
+    "pr35_merge": "NOT_AUTHORIZED",
+    "M3_3": "NOT_AUTHORIZED",
+    "release": "NOT_AUTHORIZED"
+  },
+  "technical_evidence": {
+    "ci_core_manifests": "PASS_COMPILE_ONLY",
+    "ci_core_acl_window_separation": "PASS_COMPILE_ONLY",
+    "ci_synthetic_browser": "PASS_SYNTHETIC_ONLY",
+    "ci_synthetic_sqlite": "PASS_SYNTHETIC_ONLY",
+    "cli_config_resolution": "NOT_TESTED",
+    "tauri_webview_runtime": "NOT_TESTED",
+    "operator_acceptance": "NOT_PERFORMED",
+    "real_g3_source_provenance": "UNAVAILABLE"
+  },
+  "protected_assets": {
+    "active_production_sqlite": "RESTORED_V6_DO_NOT_OPEN",
+    "isolated_m31_sqlite": "V7_DO_NOT_OPEN",
+    "windows_worktrees": 7,
+    "originals_mutated_by_this_snapshot": false
+  },
+  "claims": {
+    "historic_attestation_proven": false,
+    "prospective_reference_established": false,
+    "real_g3_authorized": false,
+    "tauri_runtime_qualified": false,
+    "release_authorized": false
+  }
+}

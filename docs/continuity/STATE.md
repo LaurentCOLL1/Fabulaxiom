@@ -1,5 +1,10 @@
 # Fabulaxiom — Current State
 
+## 2026-10-19 — M3.2 : consolidation des autorités et blocages (preuve CI à qualifier)
+
+À partir de `main=f9e6b18236fd70674849f6e956c7cff410dcef2c`, synthèse datée dans [M3_2_GATE_SNAPSHOT.md](M3_2_GATE_SNAPSHOT.md) et JSON compagnon. Les PR #77 à #82 ayant été fusionnées avec leurs CI exactes, le haut des documents de continuité devait distinguer les confirmations récentes des anciennes sections « qualification en attente ». Ajout d'un **contrôle de refus source-only** à 20 cas adversariaux couvrant la vérité historique 21/3/2, les cinq rôles non résolus, la politique SOLO, la PR #35, les issues #36/#38, l'absence de permission G2–G6, et le caractère compile-only/synthétique des CI. Ce contrôle *ne donne jamais une permission Windows ou runtime*. Nouvelle CI obligatoire au HEAD de la PR de consolidation ; pas de promotion implicite. `M32_SECURITY_PREFLIGHT_STOP` conservé, opérateur et SQLite hors périmètre.
+
+
 ## 2026-10-19 — PR #82 : séparation des lectures Core après veto source-only
 
 CI initiale au HEAD `585d797fed1c811233535063e1c321a581dd7e77` : FAIL en étape `M3.2 fictional Tauri preview source-only policy` (`test_12_no_real_custody_or_automatic_migration_in_new_module`), parce que le module `m32_synthetic_preview.rs` contenait `fs::`. Les étapes suivantes, dont les tests des manifests Core, ont été SKIPPED. Correction **sans affaiblir le veto** : transfert des quatre tests Core dans `src-tauri/src/m32_generated_core_acl_tests.rs`, inclusion `#[cfg(test)]` dans le module M3.2, préservation de l'interdiction `fs::` dans la prévisualisation, et nouveau test Python `test_13` exigeant la séparation, les gardes CI/Windows, les lectures bornées et l'absence d'écriture/processus. Le fichier de manifest généré est seulement lu sur le runner. Aucun original opérateur.
