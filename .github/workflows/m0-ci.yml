@@ -33,6 +33,9 @@ jobs:
       - name: M3.2 dated authority boundary and five historical witness source-only tests
         run: python -m unittest discover -s tools -p "test_m32_gate_snapshot.py" -v
 
+      - name: M3.2 G2-A inert operator consent proposal refusal unit tests
+        run: python -m unittest discover -s tools -p "test_m32_g2a_consent_contract.py" -v
+
       - name: Frontend tests
         run: npm run test:ci
 
