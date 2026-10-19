@@ -1,6 +1,13 @@
 # Fabulaxiom M3.2 — Reprise opérationnelle courte
 
-**Checkpoint source-only du 20 octobre 2026, à re-fetch avant toute nouvelle écriture/fusion. Ce texte ne confère aucune autorisation locale.**
+**Checkpoint source-only mis à jour après fusion de PR #89 le 20 octobre 2026. Re-fetch obligatoire avant toute nouvelle action. Ce texte ne confère aucune autorisation locale.**
+
+## 20 octobre 2026 — PR #89 protégée et fusionnée, runtime G2-A toujours STOP
+
+- `main=f14e5991d34350682647ef6f0bd67b1d2055f41a` (fusion [PR #89](https://github.com/LaurentCOLL1/Fabulaxiom/pull/89)), CI `pull_request` [#39339365546](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/39339365546) terminale SUCCESS sur le HEAD `e188a98090112551b6a35dd78e8327914c0e9965` ; **68 étapes Windows SUCCESS**, dont 22 fixtures fictives, 11 tests source-only et parser AST PowerShell sans exécution. CI `push main` #39341197526 EN COURS au checkpoint, non qualifiée PASS.
+- Le nouveau [bloc PID 0 exact](../qualification/M3_2_G2A_PID_ZERO_CANDIDATE_REVIEW.md) est intégré en Markdown, **jamais exécuté sur Windows et NON AUTORISÉ pour l'opérateur**. Le bloc PR #86 reste distinct, intact, et son unique essai autorisé a déjà retourné `STOP_WEBVIEW2_PARENTAGE`.
+- Les causes exactes de ce STOP restent inconnues. Correction PID 0 = hypothèse de défaut de source, **pas confirmation runtime**. Tous les G2-B à G6, bases privées v6/v7, sauvegardes, ACL, markers, sidecars, migration 007, IPC writer, PR #35, M3.3 et release restent bloqués.
+- Prochaine frontière : présenter au propriétaire le **code intégral du nouveau bloc** avec effets (PowerShell, CIM/WMI, Entrée, pas de q/UAC prévu, journaux OS possibles) et solliciter son accord explicite distinct. Aucun `Continue` n'autorise à lui seul l'exécution.
 
 ## Reprise au 20 octobre 2026 — bloc candidat PID 0 SOURCE-ONLY
 
@@ -17,7 +24,7 @@ Lecture GitHub (sans exécution sur le PC opérateur) : `main`, PR #86/#87/#35, 
 ## Dernier état effectivement vérifié
 
 - Dépôt : https://github.com/LaurentCOLL1/Fabulaxiom
-- `main` observé : `6d9d9ff52459873347180f509717180ccccd0d5f` (merge [PR #88](https://github.com/LaurentCOLL1/Fabulaxiom/pull/88), après PR #87 et #86).
+- `main` observé : `f14e5991d34350682647ef6f0bd67b1d2055f41a` (merge [PR #89](https://github.com/LaurentCOLL1/Fabulaxiom/pull/89), après PR #88/#87/#86).
 - PR #86 : correction du filtre G2-A `SearchHost.exe` / `msedgewebview2.exe` **fusionnée** ; CI Windows PR #39241294071 terminale SUCCESS et CI `main` #39242342744 SUCCESS.
 - PR #87 : continuité versionnée et garde-fou de fraîcheur **fusionnés** ; CI Windows PR #39271702661 au HEAD `287c178063a4d2719742bac96d3bc57a8fa515bc` SUCCESS (62 étapes, contrôle same-PR PASS) ; CI `main` #39273165266 au SHA ci-dessus SUCCESS (62 étapes dont contrôle PR-only SKIPPED, attendu).
 - PR #35 : **OPEN / DRAFT**. Issues [#36](https://github.com/LaurentCOLL1/Fabulaxiom/issues/36) et [#38](https://github.com/LaurentCOLL1/Fabulaxiom/issues/38) : **OPEN**. Ruleset Protect main #24895490 actif, sans bypass (au checkpoint).
@@ -43,7 +50,7 @@ La PR #86 a préparé [le nouveau bloc exact](../qualification/M3_2_G2A_EXACT_BL
 
 ## Prochaine action concrète
 
-**Priorité actuelle au 20 octobre :** terminer la CI exact-head de la nouvelle PR PID 0 et inspecter les logs. Ne pas exécuter le candidat sur Windows sans un nouveau consentement exprès. Les actions historiques ci-dessous restent des références documentaires.
+**Priorité actuelle au 20 octobre :** nouvelle PR #89 SOURCE-ONLY fusionnée après CI exacte. Présenter le bloc complet à l'opérateur et obtenir une autorisation **distincte** avant toute exécution locale, tout en requalifiant le résultat terminal CI post-merge sur `main`. Les actions historiques ci-dessous restent des références documentaires.
 
 
 1. Préserver ce nouveau STOP sans arrêter SearchHost/WebView2 ni répéter les observations locales.
