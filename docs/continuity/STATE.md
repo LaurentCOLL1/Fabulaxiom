@@ -1,5 +1,10 @@
 # Fabulaxiom — Current State
 
+## 2026-10-19 — G2-A : correction proposée après STOP PROCESS_NAMES, aucune exécution autorisée
+
+Observation opérateur du bloc PR #85 : `G2A_LOCAL_METADATA: STOP`, `STOP_STAGE: PROCESS_NAMES`. Capture Process Explorer : six WebView2 sous SearchHost (PID 4740 à l'instant de capture, non utilisé dans le code). PR nouvelle : modifier le bloc PowerShell **en Markdown uniquement** pour distinguer l'arbre SearchHost des WebView2 étrangers, via `Get-CimInstance Win32_Process`, comparaison des PID de deux instantanés, vérification de l'ordre des dates de création et du parcours des parents (cycle, parent manquant, incohérence => STOP). Aucun processus n'est arrêté. Les vingt tests de texte sont actualisés et cinq contrôles ajoutés ; quatorze scénarios purement synthétiques vérifient les verdicts. L'AST Windows reste parser-only. Un PASS de ce futur bloc n'authentifiera ni le binaire SearchHost, ni l'absence d'un writer SQLite. Le bloc initial reste la seule version approuvée jusqu'à nouvel accord explicite. G2-A réel reste STOP, G2-B/C/D et G3–G6 non autorisés, Tauri/WebView2 opérateur non testé, PR #35 DRAFT, #36/#38 OPEN.
+
+
 ## 2026-10-19 — PR #85 : AST syntaxe qualifiée, cardinalité dynamique diagnostique
 
 La CI au HEAD `6dd7e28897d226c02e0d212b2784293ff28606a3` a passé 20 tests Python et la syntaxe PowerShell `Parser.ParseInput`, mais la cardinalité attendue pour les `CommandAst` dynamiques a déclenché un STOP du job avant les régressions. La nouvelle version garde l'inventaire de commandes connues et un seuil de refus conservateur (`>4`), avec un compteur informatif ; les contrôles Python sur le texte restent requis. La liste de refus de sortie mentionne explicitement G3/G4/G5/G6. Le bloc demeure un candidat **non exécuté**, G2-A non autorisé. Nouvelle CI exact-head indispensable ; ancienne preuve FAIL/SKIPPED non réutilisable.

@@ -8,7 +8,12 @@ REQUIRED = (
     "& {", "$ErrorActionPreference = 'Stop'", "[Environment]::SystemDirectory",
     "'whoami.exe'", "/groups /fo csv /nh", "ConvertFrom-Csv -Header",
     "'^S-1-16-[0-9]+$'", "'S-1-16-8192'",
-    "Get-Process -ErrorAction Stop", "'Fabulaxiom','ollama','msedgewebview2'",
+    "Get-Process -ErrorAction Stop", "Get-CimInstance -ClassName Win32_Process",
+    "'msedgewebview2.exe'", "'SearchHost.exe'",
+    "PROCESS_SNAPSHOT_CHANGED", "PROCESS_PARENT_TIME_INVALID",
+    "PROCESS_PARENT_NOT_SEARCHHOST", "PROCESS_PARENT_MISSING",
+    "PROCESS_ANCESTRY_CYCLE", "AMBIGUOUS_PROCESS_ID",
+    "WEBVIEW2_OWNERSHIP_AUTHENTICATED: NO",
     "throw 'RELATED_OR_AMBIGUOUS_PROCESS'", "catch {",
     "G2A_LOCAL_METADATA: PASS", "G2A_LOCAL_METADATA: STOP",
     "PROCESS_WRITER_ABSENCE: NOT_PROVEN", "PUBLIC_GITHUB_CHECK: NOT_ASSESSED_BY_THIS_BLOCK",
@@ -37,7 +42,8 @@ def check(script):
     if BANNED.search(script) or re.search(r"(?m)[12]?>>?", script):
         raise CandidateStop("STOP: unsafe command or file redirection")
     if script.count("/groups /fo csv /nh") != 1 or \
-       script.count("Get-Process -ErrorAction Stop") != 1:
+       script.count("Get-Process -ErrorAction Stop") != 1 or \
+       script.count("Get-CimInstance -ClassName Win32_Process") != 1:
         raise CandidateStop("STOP: duplicated token or process read")
     if script.count("Write-Output 'G2A_LOCAL_METADATA: STOP'") != 1:
         raise CandidateStop("STOP: missing STOP output")

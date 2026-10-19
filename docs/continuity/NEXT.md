@@ -1,5 +1,10 @@
 # Fabulaxiom — Next Authorized Work
 
+## 2026-10-19 — qualifier la correction SearchHost de G2-A et soumettre à consentement neuf
+
+Nouvelle CI `pull_request` au HEAD exact : 25 tests source-only du bloc PowerShell, 14 tests sur arbres de processus purement fictifs, parseur AST PowerShell sans exécuter le candidat, tous les contrôles existants et le marqueur `M32_SECURITY_PREFLIGHT_STOP`. Garder `Get-CimInstance` sous revue : WMI/CIM peut solliciter un service système, et le graphe PID + dates ne constitue pas une preuve d'identité cryptographique. Après CI et fusion protégée, soumettre le **nouveau code exact** au propriétaire pour accord distinct ; ne pas réutiliser l'autorisation de PR #85. Aucune ouverture de SQLite, migration 007, G3/G4/G5/G6 ni release.
+
+
 ## 2026-10-19 — PR #85 : AST syntaxe qualifiée, cardinalité dynamique diagnostique
 
 La CI au HEAD `6dd7e28897d226c02e0d212b2784293ff28606a3` a passé 20 tests Python et la syntaxe PowerShell `Parser.ParseInput`, mais la cardinalité attendue pour les `CommandAst` dynamiques a déclenché un STOP du job avant les régressions. La nouvelle version garde l'inventaire de commandes connues et un seuil de refus conservateur (`>4`), avec un compteur informatif ; les contrôles Python sur le texte restent requis. La liste de refus de sortie mentionne explicitement G3/G4/G5/G6. Le bloc demeure un candidat **non exécuté**, G2-A non autorisé. Nouvelle CI exact-head indispensable ; ancienne preuve FAIL/SKIPPED non réutilisable.
