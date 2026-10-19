@@ -37,7 +37,13 @@
     "stop_subcause": "NOT_IDENTIFIABLE_FROM_SANITIZED_OUTPUT",
     "latest_observation_source": "OWNER_REPORTED_FIVE_SAFE_OUTPUT_LINES_NOT_INDEPENDENTLY_ATTESTED",
     "latest_observation_date": "2026-10-19",
-    "g2b_to_g6": "NOT_AUTHORIZED"
+    "g2b_to_g6": "NOT_AUTHORIZED",
+    "possible_source_defect": {
+      "status": "HYPOTHESIS_NOT_OPERATOR_CONFIRMED",
+      "detail": "CURRENT_CIM_INVENTORY_PID_LE_ZERO_REJECTS_LEGITIMATE_SYSTEM_IDLE_PID_ZERO_IF_PRESENT",
+      "tests": "EXISTING_SYNTHETIC_FIXTURES_DO_NOT_COVER_PID_ZERO",
+      "follow_up": "SOURCE_ONLY_DESIGN_BEFORE_NEW_EXPLICIT_CONSENT"
+    }
   },
   "governance": {
     "historic": "PENDING_EXTERNAL_ATTESTATION(21/3/2)",
