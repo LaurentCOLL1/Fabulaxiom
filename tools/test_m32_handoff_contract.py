@@ -25,7 +25,7 @@ class HandoffContractTests(unittest.TestCase):
             self.assertRegex(self.data[key], r"^[0-9a-f]{40}$")
 
     def test_03_latest_verified_merge_not_promoted_to_runtime(self):
-        self.assertGreaterEqual(self.data["last_confirmed_merged_pr"], 88)
+        self.assertGreaterEqual(self.data["last_confirmed_merged_pr"], 89)
         self.assertEqual(self.data["g2a"]["corrected_execution"], "STOP_WEBVIEW2_PARENTAGE")
 
     def test_04_pr35_and_external_issues_still_open(self):
@@ -78,6 +78,9 @@ class HandoffContractTests(unittest.TestCase):
         self.assertEqual(c["operator_execution"], "NOT_AUTHORIZED")
         self.assertEqual(c["cause_of_operator_stop"], "UNKNOWN")
         self.assertEqual(c["review"], "EXACT_SCRIPT_AND_EFFECTS_REVIEW_REQUIRED")
+        self.assertEqual(c["development_status"], "SOURCE_ONLY_MERGED_EXACT_HEAD_CI_SUCCESS")
+        self.assertEqual(c["ci_run"], 39339365546)
+        self.assertEqual(c["source_review_completed"], True)
         self.assertTrue((ROOT / c["path"]).is_file())
         self.assertIn("M3_2_G2A_PID_ZERO_CANDIDATE_REVIEW.md", self.index)
         self.assertIn("STOP_WEBVIEW2_PARENTAGE", self.doc)
