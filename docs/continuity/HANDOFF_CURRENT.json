@@ -3,18 +3,20 @@
   "as_of": "2026-10-19",
   "status_kind": "DATED_PUBLIC_SOURCE_HANDOFF_ONLY",
   "repository": "LaurentCOLL1/Fabulaxiom",
-  "last_confirmed_main_before_handoff": "6d9650ee09d6f8a695a9b71a9ef1e1118f7229c9",
-  "last_confirmed_merged_pr": 86,
-  "last_verified_pr_head": "5c0525b061ddee77126784a67efaad5f1c638ece",
+  "last_confirmed_main_before_handoff": "0aa0dc6b097a386e8a192717b7115a41019bbd88",
+  "last_confirmed_merged_pr": 87,
+  "last_verified_pr_head": "287c178063a4d2719742bac96d3bc57a8fa515bc",
   "last_verified_ci": {
-    "run_id": 39241294071,
+    "run_id": 39271702661,
     "context": "Windows frontend and Rust checks",
     "conclusion": "SUCCESS",
-    "source": "PR_HEAD"
+    "source": "PR87_EXACT_HEAD"
   },
   "recent_changes": [
     "PR_85_EXACT_G2A_TEXT_AST_ONLY",
-    "PR_86_SEARCHHOST_WEBVIEW2_LINEAGE_SOURCE_ONLY"
+    "PR_86_SEARCHHOST_WEBVIEW2_LINEAGE_SOURCE_ONLY",
+    "PR_87_LIVING_HANDOFF_AND_CI_FRESHNESS",
+    "2026_10_19_GITHUB_REFETCH_VERIFIED_NO_WINDOWS_EXECUTION"
   ],
   "pr35": "OPEN_DRAFT",
   "issues": {
@@ -55,9 +57,29 @@
   "protections": {
     "originals_unmodified_in_current_task": true,
     "operator_script_never_executed_in_ci": true,
-    "all_gate_promotions_explicit_only": true
+    "all_gate_promotions_explicit_only": true,
+    "ruleset_id": 24895490,
+    "ruleset_enforcement": "ACTIVE",
+    "required_context": "Windows frontend and Rust checks",
+    "required_integration_id": 15368,
+    "verified_bypass_actors": 0,
+    "classic_branch_protection_read": "403_INTEGRATION_RESTRICTED"
   },
-  "next": "REVIEW_EXACT_PR86_G2A_BLOCK_WITH_OWNER_AND_GET_DISTINCT_EXECUTION_APPROVAL_BEFORE_MANUAL_WINDOWS_RUN",
+  "next": "PRESENT_EXACT_PR86_G2A_BLOCK_TO_OWNER_GET_NEW_EXPLICIT_APPROVAL_BEFORE_MANUAL_WINDOWS_EXECUTION",
   "live_refetch_required": true,
-  "hand_off_updated_by_future_pr": true
+  "hand_off_updated_by_future_pr": true,
+  "main_ci_post_merge": {
+    "sha": "0aa0dc6b097a386e8a192717b7115a41019bbd88",
+    "run_id": 39273165266,
+    "conclusion": "SUCCESS",
+    "source": "MAIN_PUSH",
+    "note": "62 steps; PR-only freshness check skipped on push as designed"
+  },
+  "g2a_candidate_ci": {
+    "pr": 86,
+    "head_sha": "5c0525b061ddee77126784a67efaad5f1c638ece",
+    "run_id": 39241294071,
+    "conclusion": "SUCCESS",
+    "scope": "AST_ONLY_AND_SYNTHETIC_NEVER_OPERATOR_EXECUTION"
+  }
 }
