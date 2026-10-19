@@ -45,7 +45,7 @@ class CandidateTests(unittest.TestCase):
         self.veto("PUBLIC_GITHUB_CHECK: NOT_ASSESSED_BY_THIS_BLOCK", "PUBLIC_GITHUB_CHECK: PASS")
 
     def test_11_downstream_gates_not_authorized(self):
-        self.veto("G2B_G2C_G2D_G3_G6: NOT_AUTHORIZED", "G2B_G2C_G2D_G3_G6: AUTHORIZED")
+        self.veto("G2B_G2C_G2D_G3_G4_G5_G6: NOT_AUTHORIZED", "G2B_G2C_G2D_G3_G6: AUTHORIZED")
 
     def test_12_catch_must_exist(self):
         self.veto("catch {", "finally {")

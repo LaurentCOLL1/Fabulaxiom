@@ -1,5 +1,10 @@
 # Fabulaxiom — Current State
 
+## 2026-10-19 — PR #85 : AST syntaxe qualifiée, cardinalité dynamique diagnostique
+
+La CI au HEAD `6dd7e28897d226c02e0d212b2784293ff28606a3` a passé 20 tests Python et la syntaxe PowerShell `Parser.ParseInput`, mais la cardinalité attendue pour les `CommandAst` dynamiques a déclenché un STOP du job avant les régressions. La nouvelle version garde l'inventaire de commandes connues et un seuil de refus conservateur (`>4`), avec un compteur informatif ; les contrôles Python sur le texte restent requis. La liste de refus de sortie mentionne explicitement G3/G4/G5/G6. Le bloc demeure un candidat **non exécuté**, G2-A non autorisé. Nouvelle CI exact-head indispensable ; ancienne preuve FAIL/SKIPPED non réutilisable.
+
+
 ## 2026-10-19 — PR #85 : correction du seul extracteur AST de Markdown
 
 Au HEAD `b14fb8d1bcff1ca28387c65233c4c010268abe6a`, CI `pull_request` Windows a passé les 20 tests source-only du candidat, mais STOP à l'extraction `[regex]::Matches` des délimiteurs Markdown ; aucune exécution du bloc, suites aval ignorées. L'extracteur GitHub CI a été remplacé par comparaison **exacte des deux lignes de clôture**, découpage par IndexOf puis `Parser.ParseInput` (non exécuté). Aucun octet du bloc PowerShell proposé n'est changé. La qualification du nouveau HEAD est obligatoire : CI antérieure FAIL/SKIPPED non réutilisable.

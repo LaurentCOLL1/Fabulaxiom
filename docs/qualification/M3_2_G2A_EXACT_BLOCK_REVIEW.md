@@ -59,7 +59,7 @@ Il ne consulte aucune base SQLite, aucun fichier de corpus, backup, marqueur, AC
     Write-Output "STOP_STAGE: $stage"
     Write-Output 'STOP_REASON: UNEXPECTED_OR_UNSAFE'
   }
-  Write-Output 'G2B_G2C_G2D_G3_G6: NOT_AUTHORIZED'
+  Write-Output 'G2B_G2C_G2D_G3_G4_G5_G6: NOT_AUTHORIZED'
   Write-Output 'TAURI_RUNTIME: NOT_TESTED'
 }
 ```

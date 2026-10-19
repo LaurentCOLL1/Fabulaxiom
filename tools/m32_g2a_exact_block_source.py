@@ -12,7 +12,7 @@ REQUIRED = (
     "throw 'RELATED_OR_AMBIGUOUS_PROCESS'", "catch {",
     "G2A_LOCAL_METADATA: PASS", "G2A_LOCAL_METADATA: STOP",
     "PROCESS_WRITER_ABSENCE: NOT_PROVEN", "PUBLIC_GITHUB_CHECK: NOT_ASSESSED_BY_THIS_BLOCK",
-    "G2B_G2C_G2D_G3_G6: NOT_AUTHORIZED", "TAURI_RUNTIME: NOT_TESTED",
+    "G2B_G2C_G2D_G3_G4_G5_G6: NOT_AUTHORIZED", "TAURI_RUNTIME: NOT_TESTED",
 )
 BANNED = re.compile(r"(?i)\b(?:Read-Host|Add-Type|Invoke-Expression|Invoke-Command|"
     r"Invoke-RestMethod|Invoke-WebRequest|Start-Process|Stop-Process|Get-Content|"
