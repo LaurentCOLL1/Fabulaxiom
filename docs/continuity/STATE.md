@@ -1,5 +1,10 @@
 # Fabulaxiom — Current State
 
+## 2026-10-19 — PR #85 correction du workflow invalide, requalification HEAD neuf
+
+La première version `16de4a37a8bb09d7208925859aa761014ba81352` a produit un workflow YAML invalide, détecté par GitHub avant création de job (run #39215639069 `failure`, `push`, zéro job). Cause : remplacement de texte Javascript interprétant `$'` dans l'expression régulière et insérant une copie du reste du workflow. Le workflow a été reconstruit **à partir du main vérifié**, avec insertion contrôlée par callback et préflight d'unicité des étapes. Aucun test ancien à recycler ; la **nouvelle CI pull_request au SHA nouveau** sera la seule preuve. Le bloc PowerShell G2-A reste INERTE/NON AUTORISÉ et n'est jamais exécuté.
+
+
 ## 2026-10-19 — M3.2 G2-A : PowerShell exact préparé comme texte, non exécuté
 
 Base `main=9d058362a6804d642aad75cdb29cd6d7540e35cf`, PR #84 fusionnée et CI Windows #39211774008 60/60. Nouveau [candidat G2-A](../qualification/M3_2_G2A_EXACT_BLOCK_REVIEW.md) contenant un seul bloc PowerShell `& { ... }` non exécutable automatiquement, avec contrôle SID d'intégrité medium, version/horloge et noms de processus. Aucune lecture SQLite, ACL, backup, chemin opérateur, sortie de SID, Git local ou réseau ; absence de processus ne prouve PAS absence d'écrivain. Les tests Windows ajoutent 20 refus Python sur le texte et l'analyse AST PowerShell (ParseInput, **sans exécution**). Aucun `.ps1`, aucun lancement opérateur, approbation G2-A NON ACCORDÉE. CI nouvelle exact-head obligatoire, tous STOP maintenus.

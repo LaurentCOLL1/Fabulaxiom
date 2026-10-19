@@ -39,212 +39,31 @@ jobs:
       - name: M3.2 G2-A exact candidate source-only adversarial checks
         run: python -m unittest discover -s tools -p "test_m32_g2a_exact_block_source.py" -v
 
-      - name: M3.2 G2-A PowerShell candidate AST parse only (NEVER run script)
+      - name: M3.2 G2-A PowerShell candidate AST parse ONLY, no candidate execution
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
           $doc = Get-Content -LiteralPath docs/qualification/M3_2_G2A_EXACT_BLOCK_REVIEW.md -Raw -Encoding UTF8
-          $regex = '(?ms)^`{3}powershell[ \t]*\r?\n(.*?)^`{3}[ \t]*
-        run: npm run test:ci
-
-      - name: M3.2 isolated synthetic chronology React preview tests
-        run: npm run test:ci -- src/m32ChronologyPreview.test.tsx
-
-      - name: M3.2 synthetic React world-order comparison tests
-        run: npm run test:ci -- src/m32WorldOrderComparison.test.tsx
-
-      - name: M3.2 synthetic React two-anchor consultation tests
-        run: npm run test:ci -- src/m32ChronologyConsultation.test.tsx
-
-      - name: M3.2 fictional exact-Git-blob staging adversarial tests (disposable CI repos)
-        run: node --test tools/test_m32_ci_git_source_binding.cjs
-
-      - name: M3.2 precompiled fiction-only byte pinning adversarial tests (CI scratch only)
-        run: node --test tools/test_m32_ci_static_byte_snapshot.cjs
-
-      - name: M3.2 fictional static server normalized and raw HTTP authority veto tests
-        run: node --test tools/test_m32_ci_http_authority.cjs
-
-      - name: M3.2 static fictional server direct-child IPC and occupied-port toy tests
-        run: node --test tools/test_m32_ci_owned_child_ready.cjs
-
-      - name: M3.2 real Chromium synthetic-only UI interaction (ephemeral pinned Playwright)
-        shell: pwsh
-        run: |
-          $ErrorActionPreference = 'Stop'
-          $Sandbox = Join-Path $env:RUNNER_TEMP 'fabulaxiom-m32-chromium'
-          New-Item -ItemType Directory -Force -Path $Sandbox | Out-Null
-          npm install --prefix $Sandbox --no-save --package-lock=false --ignore-scripts --no-audit --no-fund playwright@1.64.1
-          if ($LASTEXITCODE -ne 0) { throw 'Playwright isolated installation failed' }
-          $Cli = Join-Path $Sandbox 'node_modules\playwright\cli.js'
-          node $Cli install chromium
-          if ($LASTEXITCODE -ne 0) { throw 'Chromium browser installation failed' }
-          $env:FABULAXIOM_M32_PLAYWRIGHT_MODULE = Join-Path $Sandbox 'node_modules\playwright'
-          node tools/m32_browser_interaction.cjs
-          if ($LASTEXITCODE -ne 0) { throw 'Synthetic Chromium interaction tests failed' }
-          # A second test run compiles only invented staging files and serves
-          # them with a STRICT CSP: no HMR, unsafe-inline or normal UI routes.
-          # Uses the already pinned Chromium runner, not Tauri or WebView2.
-          $env:M32_CI_PRECOMPILED = '1'
-          node tools/m32_browser_interaction.cjs
-          if ($LASTEXITCODE -ne 0) { throw 'Strict CSP precompiled fictional Chromium tests failed' }
-
-      - name: M3.2 synthetic event explorer filtering pagination and witness tests
-        run: npm run test:ci -- src/m32SyntheticEventExplorer.test.tsx
-
-      - name: Frontend production build
-        run: npm run build
-
-      - name: Setup Python for isolated audit fixtures
-        uses: actions/setup-python@v6
-        with:
-          python-version: "3.12"
-
-      - name: Read-only pre-v7 audit fixture tests
-        run: python -m unittest discover -s tools -p "test_m3_1_v6_audit.py" -v
-
-      - name: Isolated pre-v7 backup and restore fixture tests
-        run: python -m unittest discover -s tools -p "test_m3_1_v6_backup.py" -v
-
-      - name: Copy-only candidate-v7 rehearsal synthetic fixtures
-        run: python -m unittest discover -s tools -p "test_m3_1_v7_copy_rehearsal.py" -v
-
-      - name: Fourth-copy forced rollback synthetic fixtures
-        run: python -m unittest discover -s tools -p "test_m3_1_v7_rollback_rehearsal.py" -v
-
-      - name: Real candidate-v7 read-only and RAM constraint fixtures
-        run: python -m unittest discover -s tools -p "test_m3_1_v7_final_readonly.py" -v
-
-      - name: M3.1 isolated Tauri identity and v7 copy preparation fixtures
-        run: python -m unittest discover -s tools -p "test_m3_1_v7_isolated_launch_prepare.py" -v
-
-      - name: M3.1 actual Windows token API smoke check (no staging)
-        run: |
-          python -c "import sys; sys.path.insert(0, 'tools'); import m3_1_v7_isolated_launch_prepare as m; value = m._windows_admin_token_enabled(); assert isinstance(value, bool); print('WINDOWS_TOKEN_API: PASS; elevated=' + str(value))"
-
-      - name: Rust tests from lockfile
-        run: cargo test --manifest-path src-tauri/Cargo.toml --all-targets --locked
-
-      - name: Rust check from lockfile
-        run: cargo check --manifest-path src-tauri/Cargo.toml --locked
-
-      - name: M3.1 isolated read-only Tauri preview Rust unit tests
-        working-directory: src-tauri
-        run: cargo test --locked --features m31-isolated-preview --lib m31_readonly_preview
-
-      - name: M3.2 fictional Tauri preview source-only policy (no launch)
-        run: python -m unittest discover -s tools -p "test_m3_2_synthetic_tauri_preview.py" -v
-
-      - name: M3.2 fictional Tauri explicit capability and merged-config source audit (no launch)
-        run: python -m unittest discover -s tools -p "test_m3_2_tauri_capability_boundary.py" -v
-
-      - name: M3.2 Tauri core default permissions and fictional window source-only matrix
-        run: python -m unittest discover -s tools -p "test_m3_2_tauri_effective_source_boundary.py" -v
-
-      - name: M3.2 fictional Tauri preview pure Rust identity tests (no launch)
-        working-directory: src-tauri
-        run: cargo test --locked --features m32-synthetic-preview --lib m32_synthetic_preview
-
-      - name: M3.2 native RuntimeAuthority fictional ACL matching Rust tests (no runtime)
-        working-directory: src-tauri
-        run: cargo test --locked --features m32-synthetic-preview --lib native_acl_ -- --nocapture
-
-      - name: M3.2 native Tauri invented manifest to ACL resolution Rust tests (no runtime)
-        working-directory: src-tauri
-        run: cargo test --locked --features m32-synthetic-preview --lib native_resolve_ -- --nocapture
-
-      - name: M3.2 generated real Core manifests and native ACL resolution CI tests (no runtime)
-        working-directory: src-tauri
-        run: cargo test --locked --features m32-synthetic-preview --lib native_generated_core_ -- --nocapture
-
-      - name: M3.2 fictional Tauri debug compile (no launch)
-        working-directory: src-tauri
-        run: cargo check --locked --features m32-synthetic-preview
-
-      - name: M3.2 Vite resolved network and CSP/shared-root preflight (no server launch)
-        run: node tools/m32_vite_csp_nonlaunch_audit.mjs --audit
-
-      - name: M3.2 inert static devCsp candidate adversarial source tests (no app launch)
-        run: python -m unittest discover -s tools -p "test_m3_2_static_tauri_candidate.py" -v
-
-      - name: M3.2 native Tauri compiled context audit (fictional only, no app launch)
-        run: python tools/m3_2_tauri_codegen_ci.py
-
-      - name: M3.2 solo baseline synthetic-only adversarial qualification
-        run: python -m unittest discover -s tools -p "test_m3_2_solo_synthetic_lab.py" -v
-
-      - name: M3.2 G3 sealed synthetic memory and exclusive file-stream qualification
-        run: python -m unittest discover -s tools -p "test_m3_2_g3_sealed_synthetic.py" -v
-
-      - name: M3.2 Win32 read-only source lease toy adversarial qualification
-        run: python -m unittest discover -s tools -p "test_m3_2_g3_win_read_lease_toy.py" -v
-
-      - name: M3.2 G3 Windows single source handle toy and RAM deserialize tests
-        run: python -m unittest discover -s tools -p "test_m3_2_g3_win_single_handle_toy.py" -v
-
-      - name: M3.2 G3 Windows pinned toy directory identity and rename guards
-        run: python -m unittest discover -s tools -p "test_m3_2_g3_win_pinned_toy_directory.py" -v
-
-      - name: M3.2 G3 G4 full synthetic exclusive snapshot and isolated restore
-        run: python -m unittest discover -s tools -p "test_m3_2_g3_win_full_toy_cycle.py" -v
-
-      - name: M3.2 G3 Windows ABA transient namespace counterexample toy tests
-        run: python -m unittest discover -s tools -p "test_m3_2_g3_namespace_aba_toy.py" -v
-
-      - name: M3.2 G3 source strategy refusal-only policy tests
-        run: python -m unittest discover -s tools -p "test_m3_2_g3_source_strategy_policy.py" -v
-
-      - name: M3.2 G3 existing-owner transactional SQLite RAM toy snapshot and restore
-        run: python -m unittest discover -s tools -p "test_m3_2_g3_owned_online_backup_toy.py" -v
-
-      - name: M3.2 G3 test-only Rust rusqlite preopened owner to RAM backup
-        working-directory: src-tauri
-        run: cargo test --locked --features m32-g3-owned-ram-toy --lib m32_owned_backup_toy -- --nocapture
-
-      - name: M3.2 G3 Rust test-only owner lifecycle and revocation
-        working-directory: src-tauri
-        run: cargo test --locked --features m32-g3-owned-ram-toy --lib m32_owner_lifecycle_toy -- --nocapture
-
-      - name: M3.2 G3 Rust test-only moved-RAM-owner actor and terminal revocation
-        working-directory: src-tauri
-        run: cargo test --locked --features m32-g3-owned-ram-toy --lib m32_owner_handoff_actor_toy -- --nocapture
-
-      - name: M3.2 G3 owner-runtime code-only feasibility and refusal tests
-        run: python -m unittest discover -s tools -p "test_m3_2_g3_owner_runtime_contract.py" -v
-
-      - name: M3.2 G3 Tauri owner integration source-only drift audit
-        run: python -m unittest discover -s tools -p "test_m3_2_g3_tauri_owner_integration_audit.py" -v
-
-      - name: M3.2 G3 source identity SQLite Win32 shortcut refusal and Rust source audit
-        run: python -m unittest discover -s tools -p "test_m3_2_g3_source_identity_boundaries.py" -v
-
-      - name: Verify dependency locks are unchanged
-        shell: pwsh
-        run: |
-          git --no-pager diff --exit-code -- package-lock.json src-tauri/Cargo.lock
-          if ($LASTEXITCODE -ne 0) {
-            throw "Dependency lockfiles changed during deterministic CI."
-          }
-
-          $matches = [regex]::Matches($doc,$regex)
-          if ($matches.Count -ne 1) { throw 'STOP: expected one fenced candidate' }
+          $pattern = '(?ms)^\x60{3}powershell[ \t]*\r?\n(.*?)^\x60{3}[ \t]*$'
+          $matches = [regex]::Matches($doc, $pattern)
+          if ($matches.Count -ne 1) { throw 'STOP: one candidate code fence required' }
           $tokens = $null
-          $errors = $null
+          $parseErrors = $null
           $ast = [System.Management.Automation.Language.Parser]::ParseInput(
-            $matches[0].Groups[1].Value,[ref]$tokens,[ref]$errors)
-          if ($errors.Count -gt 0) { throw 'STOP: syntax error in nonexecuted code' }
+            $matches[0].Groups[1].Value, [ref]$tokens, [ref]$parseErrors)
+          if ($parseErrors.Count -ne 0) { throw 'STOP: PowerShell parser error' }
           $commands = @($ast.FindAll({
-            param($x) $x -is [System.Management.Automation.Language.CommandAst]
-          },$true))
-          $allow = @('Get-Date','Join-Path','ConvertFrom-Csv','Where-Object',
-                     'Get-Process','Select-Object','Write-Output')
-          $other = @($commands | Where-Object {
-             $null -ne $_.GetCommandName() -and $allow -notcontains $_.GetCommandName()
+            param($node) $node -is [System.Management.Automation.Language.CommandAst]
+          }, $true))
+          $allowed = @('Get-Date','Join-Path','ConvertFrom-Csv','Where-Object',
+                       'Get-Process','Select-Object','Write-Output')
+          $unknown = @($commands | Where-Object {
+            $null -ne $_.GetCommandName() -and $allowed -notcontains $_.GetCommandName()
           })
-          if ($other.Count -ne 0) { throw 'STOP: unknown PowerShell command' }
+          if ($unknown.Count -gt 0) { throw 'STOP: unexpected command name' }
           $dynamic = @($commands | Where-Object { $null -eq $_.GetCommandName() })
           if ($dynamic.Count -ne 1) { throw 'STOP: unexpected dynamic invocation' }
-          Write-Output 'M32_G2A_AST_PARSE_ONLY_PASS: candidate not executed'
+          Write-Output 'M32_G2A_AST_PARSE_ONLY_PASS: no candidate run; no owner approval'
 
       - name: Frontend tests
         run: npm run test:ci
