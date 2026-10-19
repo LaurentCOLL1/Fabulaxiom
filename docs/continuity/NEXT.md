@@ -1,5 +1,10 @@
 # Fabulaxiom — Next Authorized Work
 
+## 2026-10-19 — G2-A #86 exécuté une fois : STOP WEBVIEW2_PARENTAGE
+
+Résultat exact communiqué par l'opérateur : `G2A_LOCAL_METADATA: STOP`, `STOP_STAGE: WEBVIEW2_PARENTAGE`, `STOP_REASON: UNEXPECTED_OR_UNSAFE`; G2-B à G6 restent NOT_AUTHORIZED, Tauri NOT_TESTED. L'autorisation distincte de ce seul essai a été consommée. Aucun détail de parenté ni PID ni sous-motif disponible. Priorité : documenter et qualifier **source-only** un candidat de diagnostic plus discriminant (sans données personnelles ni faiblesse des veto) ; proposer le script exact et obtenir une nouvelle autorisation avant toute exécution manuelle. Interdit : relancer #86, arrêter SearchHost/WebView2, accéder aux SQLite v6/v7, sidecars, backups, migration 007, IPC writer ou G3–G6. Nouvelle CI exact-HEAD indispensable après mise à jour de la PR #88.
+
+
 ## 2026-10-19 — prochaine reprise depuis living handoff GitHub
 
 Lire `docs/continuity/README.md` puis `HANDOFF_CURRENT.md`, `HANDOFF_CURRENT.json`, `HANDOFF_PROTOCOL.md` et `HANDOFF_HISTORY.md` ; re-fetch les SHA, PRs, CI/ruleset. Nouvelle priorité opérateur : revue du **bloc corrigé #86** (parenté SearchHost via CIM), approbation explicite du code exact, puis exécution manuelle G2-A uniquement si l'utilisateur le confirme. Ne pas réutiliser l'autorisation de l'ancien bloc #85 ni prétendre à une absence d'écrivain SQLite. Sur toute PR future M3.2, mettre à jour MD + JSON du handoff pour satisfaire le garde-fou CI.
