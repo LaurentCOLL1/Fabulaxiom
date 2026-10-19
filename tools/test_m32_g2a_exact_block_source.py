@@ -32,8 +32,8 @@ class CandidateTests(unittest.TestCase):
     def test_06_medium_sid_only(self):
         self.veto("'S-1-16-8192'", "'S-1-16-12288'")
 
-    def test_07_no_ambiguous_webview_omission(self):
-        self.veto("'Fabulaxiom','ollama','msedgewebview2'", "'Fabulaxiom','ollama'")
+    def test_07_searchhost_lineage_check_is_indispensable(self):
+        self.veto("'SearchHost.exe'", "'OtherHost.exe'")
 
     def test_08_get_process_errors_must_stop(self):
         self.veto("Get-Process -ErrorAction Stop", "Get-Process -ErrorAction SilentlyContinue")
@@ -79,6 +79,24 @@ class CandidateTests(unittest.TestCase):
 
     def test_20_stop_output_required(self):
         self.veto("Write-Output 'G2A_LOCAL_METADATA: STOP'", "Write-Output 'CONTINUE'")
+
+
+    def test_21_cim_parent_query_required(self):
+        self.veto("Get-CimInstance -ClassName Win32_Process",
+                  "Write-Output 'fake'")
+
+    def test_22_pid_snapshot_drift_must_stop(self):
+        self.veto("PROCESS_SNAPSHOT_CHANGED", "PROCESS_SNAPSHOT_ACCEPTED")
+
+    def test_23_invalid_parent_creation_time_must_stop(self):
+        self.veto("PROCESS_PARENT_TIME_INVALID", "PROCESS_PARENT_TIME_ACCEPTED")
+
+    def test_24_unknown_parent_must_stop(self):
+        self.veto("PROCESS_PARENT_NOT_SEARCHHOST", "PROCESS_PARENT_ACCEPTED")
+
+    def test_25_unverified_webview_ownership_must_remain_unverified(self):
+        self.veto("WEBVIEW2_OWNERSHIP_AUTHENTICATED: NO",
+                  "WEBVIEW2_OWNERSHIP_AUTHENTICATED: YES")
 
 if __name__ == "__main__":
     unittest.main()

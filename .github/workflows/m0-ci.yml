@@ -39,6 +39,9 @@ jobs:
       - name: M3.2 G2-A exact candidate source-only adversarial checks
         run: python -m unittest discover -s tools -p "test_m32_g2a_exact_block_source.py" -v
 
+      - name: M3.2 G2-A synthetic WebView2 parentage negative matrix
+        run: python -m unittest discover -s tools -p "test_m32_g2a_process_lineage_model.py" -v
+
       - name: M3.2 G2-A PowerShell candidate AST parse ONLY, no candidate execution
         shell: pwsh
         run: |
@@ -68,7 +71,7 @@ jobs:
             param($node) $node -is [System.Management.Automation.Language.CommandAst]
           }, $true))
           $allowed = @('Get-Date','Join-Path','ConvertFrom-Csv','Where-Object',
-                       'Get-Process','Select-Object','Write-Output')
+                       'Get-Process','Get-CimInstance','Select-Object','Write-Output')
           $unknown = @($commands | Where-Object {
             $null -ne $_.GetCommandName() -and $allowed -notcontains $_.GetCommandName()
           })
