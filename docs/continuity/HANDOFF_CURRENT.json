@@ -3,14 +3,14 @@
   "as_of": "2026-10-20",
   "status_kind": "DATED_PUBLIC_SOURCE_HANDOFF_ONLY",
   "repository": "LaurentCOLL1/Fabulaxiom",
-  "last_confirmed_main_before_handoff": "6d9d9ff52459873347180f509717180ccccd0d5f",
-  "last_confirmed_merged_pr": 88,
-  "last_verified_pr_head": "0b7c55f30f0a7967270e9a58be7beae25087fec5",
+  "last_confirmed_main_before_handoff": "f14e5991d34350682647ef6f0bd67b1d2055f41a",
+  "last_confirmed_merged_pr": 89,
+  "last_verified_pr_head": "e188a98090112551b6a35dd78e8327914c0e9965",
   "last_verified_ci": {
-    "run_id": 39303355912,
+    "run_id": 39339365546,
     "context": "Windows frontend and Rust checks",
     "conclusion": "SUCCESS",
-    "source": "PR88_EXACT_HEAD"
+    "source": "PR89_EXACT_HEAD"
   },
   "recent_changes": [
     "PR_85_EXACT_G2A_TEXT_AST_ONLY",
@@ -19,7 +19,8 @@
     "2026_10_19_GITHUB_REFETCH_VERIFIED_NO_WINDOWS_EXECUTION",
     "2026_10_19_OWNER_REPORTED_REVISED_G2A_STOP_WEBVIEW2_PARENTAGE",
     "PR_88_G2A_REPORTED_STOP_HANDOFF_MERGED",
-    "2026_10_20_PID_ZERO_CANDIDATE_SOURCE_ONLY_NOT_EXECUTED"
+    "2026_10_20_PID_ZERO_CANDIDATE_SOURCE_ONLY_NOT_EXECUTED",
+    "PR_89_PID_ZERO_CANDIDATE_CI_QUALIFIED_AND_MERGED_SOURCE_ONLY"
   ],
   "pr35": "OPEN_DRAFT",
   "issues": {
@@ -49,12 +50,17 @@
     "future_candidate": {
       "path": "docs/qualification/M3_2_G2A_PID_ZERO_CANDIDATE_REVIEW.md",
       "kind": "STRICT_SINGLE_SYSTEM_IDLE_PID_ZERO_EXCEPTION",
-      "development_status": "SOURCE_ONLY_AWAITING_EXACT_HEAD_CI",
+      "development_status": "SOURCE_ONLY_MERGED_EXACT_HEAD_CI_SUCCESS",
       "operator_execution": "NOT_AUTHORIZED",
       "review": "EXACT_SCRIPT_AND_EFFECTS_REVIEW_REQUIRED",
       "historic_pr86_blob_sha": "ebeb8800f9f8e8cd9918579fca7e32c9e5231622",
       "changes_outside_pid_zero_guard": "NONE_INTENDED",
-      "cause_of_operator_stop": "UNKNOWN"
+      "cause_of_operator_stop": "UNKNOWN",
+      "source_review_completed": true,
+      "merge_commit_sha": "f14e5991d34350682647ef6f0bd67b1d2055f41a",
+      "pr_head_sha": "e188a98090112551b6a35dd78e8327914c0e9965",
+      "ci_run": 39339365546,
+      "ci_checks": "68_WINDOWS_JOB_STEPS_SUCCESS"
     }
   },
   "governance": {
@@ -91,15 +97,15 @@
     "verified_bypass_actors": 0,
     "classic_branch_protection_read": "403_INTEGRATION_RESTRICTED"
   },
-  "next": "QUALIFY_PID_ZERO_PROPOSAL_SOURCE_ONLY_CI_AT_FINAL_SHA_AND_STOP_BEFORE_ANY_OPERATOR_EXECUTION",
+  "next": "REVIEW_FULL_EXACT_MERGED_PID_ZERO_POWERSHELL_SCRIPT_AND_GET_SEPARATE_OWNER_APPROVAL_BEFORE_ANY_MANUAL_WINDOWS_RUN",
   "live_refetch_required": true,
   "hand_off_updated_by_future_pr": true,
   "main_ci_post_merge": {
-    "sha": "6d9d9ff52459873347180f509717180ccccd0d5f",
-    "run_id": 39338867733,
+    "sha": "f14e5991d34350682647ef6f0bd67b1d2055f41a",
+    "run_id": 39341197526,
     "conclusion": "IN_PROGRESS_AT_CHECKPOINT",
     "source": "MAIN_PUSH",
-    "note": "Do not treat as terminal success until rechecked"
+    "note": "Do not promote pending push CI to success"
   },
   "g2a_candidate_ci": {
     "pr": 86,
