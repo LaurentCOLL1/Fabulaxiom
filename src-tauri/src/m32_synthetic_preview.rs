@@ -215,4 +215,141 @@ mod tests {
         assert!(authority.resolve_access("plugin:fs|read_file", LAB_WINDOW, LAB_WINDOW, &Origin::Local).is_none());
     }
 
+
+    // Real Tauri capability->manifest resolution, but only on an INVENTED
+    // permission/manifest. It is not the actual generated core:default ACL.
+    // No App, Context access, process, WebView or SQLite is created.
+    fn native_resolution_manifest(deny: bool) -> std::collections::BTreeMap<
+        String, tauri::utils::acl::manifest::Manifest
+    > {
+        use tauri::utils::acl::{manifest::Manifest, Permission};
+        let allow: Permission = serde_json::from_value(serde_json::json!({
+            "identifier": "allow-consult",
+            "commands": { "allow": ["consult"] }
+        })).expect("valid fabricated test permission");
+        let mut manifest = Manifest::default();
+        manifest.permissions.insert("allow-consult".into(), allow);
+        if deny {
+            let denied: Permission = serde_json::from_value(serde_json::json!({
+                "identifier": "deny-consult",
+                "commands": { "deny": ["consult"] }
+            })).expect("valid fabricated deny permission");
+            manifest.permissions.insert("deny-consult".into(), denied);
+        }
+        [("m32fixture".into(), manifest)].into()
+    }
+
+    fn native_resolution_source_capability() -> serde_json::Value {
+        let mut cap: serde_json::Value = serde_json::from_str(
+            include_str!("../capabilities/default.json")
+        ).expect("checked-in public default capability");
+        assert_eq!(cap["identifier"], "default");
+        assert_eq!(cap["windows"], serde_json::json!(["main"]));
+        assert_eq!(cap["permissions"], serde_json::json!(["core:default"]));
+        assert!(cap.get("remote").is_none());
+        assert!(cap.get("webviews").is_none());
+        // Replace only the TEST INPUT permission, NOT the real capability file.
+        cap["permissions"] = serde_json::json!(["m32fixture:allow-consult"]);
+        cap
+    }
+
+    fn native_resolution_run(
+        toy_capabilities: Vec<serde_json::Value>,
+        include_manifest: bool,
+        deny: bool,
+    ) -> Result<tauri::utils::acl::resolved::Resolved, tauri::utils::acl::Error> {
+        use tauri::utils::acl::{capability::Capability, resolved::Resolved};
+        let caps: std::collections::BTreeMap<String, Capability> =
+            toy_capabilities.into_iter().map(|data| {
+                let c: Capability = serde_json::from_value(data)
+                    .expect("valid invented Tauri capability");
+                (c.identifier.clone(), c)
+            }).collect();
+        let manifests = if include_manifest {
+            native_resolution_manifest(deny)
+        } else {
+            Default::default()
+        };
+        Resolved::resolve(&manifests, caps, tauri::utils::platform::Target::current())
+    }
+
+    #[test]
+    fn native_resolve_source_main_to_fictional_manifest_and_denies_lab() {
+        use tauri::ipc::{Origin, RuntimeAuthority};
+        let resolved = native_resolution_run(
+            vec![native_resolution_source_capability()], true, false,
+        ).expect("real native Tauri resolver on fictional manifest");
+        assert!(resolved.allowed_commands.contains_key("plugin:m32fixture|consult"));
+        assert!(resolved.denied_commands.is_empty());
+        let authority = RuntimeAuthority::new(Default::default(), resolved);
+        assert!(authority.resolve_access(
+            "plugin:m32fixture|consult", "main", "main", &Origin::Local
+        ).is_some());
+        assert!(authority.resolve_access(
+            "plugin:m32fixture|consult", LAB_WINDOW, LAB_WINDOW, &Origin::Local
+        ).is_none());
+        assert!(authority.resolve_access(
+            "plugin:m32fixture|consult", "main", LAB_WINDOW,
+            &Origin::Remote { url: "https://example.invalid/".parse().unwrap() }
+        ).is_none());
+        println!("M32_NATIVE_ACL_MANIFEST_RESOLVE_TOY_PASS: Tauri native resolve + source main selector; fictional only");
+    }
+
+    #[test]
+    fn native_resolve_wildcard_and_union_can_expose_fictional_window() {
+        use tauri::ipc::{Origin, RuntimeAuthority};
+        for window_selector in ["m32-*", "*"] {
+            let mut cap = native_resolution_source_capability();
+            cap["windows"] = serde_json::json!([window_selector]);
+            let resolved = native_resolution_run(vec![cap], true, false)
+                .expect("valid toy wildcard capability");
+            let authority = RuntimeAuthority::new(Default::default(), resolved);
+            assert!(authority.resolve_access(
+                "plugin:m32fixture|consult", LAB_WINDOW, LAB_WINDOW, &Origin::Local
+            ).is_some(), "native resolution failed to expose wildcard {window_selector}");
+        }
+        let source = native_resolution_source_capability();
+        let mut second = source.clone();
+        second["identifier"] = serde_json::json!("another-toy-capability");
+        second["windows"] = serde_json::json!([LAB_WINDOW]);
+        let resolved = native_resolution_run(vec![source, second], true, false)
+            .expect("native resolution unions multiple invented capabilities");
+        assert_eq!(resolved.allowed_commands["plugin:m32fixture|consult"].len(), 2);
+        let authority = RuntimeAuthority::new(Default::default(), resolved);
+        assert!(authority.resolve_access(
+            "plugin:m32fixture|consult", LAB_WINDOW, LAB_WINDOW, &Origin::Local
+        ).is_some());
+    }
+
+    #[test]
+    fn native_resolve_deny_overrides_allow_even_for_other_window() {
+        use tauri::ipc::{Origin, RuntimeAuthority};
+        let source = native_resolution_source_capability();
+        let mut deny = source.clone();
+        deny["identifier"] = serde_json::json!("fictional-deny-only");
+        deny["windows"] = serde_json::json!(["unrelated"]);
+        deny["permissions"] = serde_json::json!(["m32fixture:deny-consult"]);
+        let resolved = native_resolution_run(vec![source, deny], true, true)
+            .expect("native resolution of fictional deny command");
+        assert!(resolved.allowed_commands.contains_key("plugin:m32fixture|consult"));
+        assert!(resolved.denied_commands.contains_key("plugin:m32fixture|consult"));
+        let authority = RuntimeAuthority::new(Default::default(), resolved);
+        // Tauri denies the matching command for this origin irrespective
+        // of window/webview labels on the denying capability.
+        assert!(authority.resolve_access(
+            "plugin:m32fixture|consult", "main", "main", &Origin::Local
+        ).is_none());
+    }
+
+    #[test]
+    fn native_resolve_fails_on_missing_manifest_or_permission() {
+        let source = native_resolution_source_capability();
+        assert!(native_resolution_run(vec![source.clone()], false, false).is_err(),
+            "missing manifest must not silently grant a fabricated permission");
+        let mut unknown = source;
+        unknown["permissions"] = serde_json::json!(["m32fixture:missing"]);
+        assert!(native_resolution_run(vec![unknown], true, false).is_err(),
+            "unknown permission must not silently become an allow");
+    }
+
 }

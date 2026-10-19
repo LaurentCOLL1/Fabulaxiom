@@ -1,5 +1,10 @@
 # Fabulaxiom — Next Authorized Work
 
+## 2026-10-19 — qualifier le résolveur ACL natif sur manifest fictif
+
+Attendre la CI Windows `pull_request` terminale et SUCCESS **au nouveau SHA exact**. Exiger quatre tests `native_resolve_` (source `default.json` relue sans altérer `core:default`, permission fictive `m32fixture`, vérifications source main/lab, wildcard et union, deny inter-fenêtres, manifest/permission absents), ainsi que `M32_NATIVE_ACL_MANIFEST_RESOLVE_TOY_PASS`. Confirmer tous les tests antérieurs : 12 Python permissions source-only, 4 Rust `native_acl_`, 29/29 Chromium x2, tests HTTP/IPC, 129 frontend, 100 Rust généraux, contextes générés compile-only, G3 et G4 fictifs, STOP Tauri. Revoir diff, logs, reviews/threads, ruleset #24895490/app Actions 15368 et `main` par re-fetch avant fusion `expected_head_sha`. Cela teste **le moteur natif sur un manifest inventé**, pas l'ACL Core réelle du contexte Tauri. Ne pas lancer Tauri/WebView2 ou accéder aux fichiers SQLite opérateur.
+
+
 ## 2026-10-19 — qualifier les tests Rust du matcher ACL natif fictif
 
 Au HEAD exact de la nouvelle PR, exiger la CI Windows obligatoire `Windows frontend and Rust checks` terminale SUCCESS : quatre tests `native_acl_` Rust sur une commande totalement inventée, marqueur `M32_NATIVE_ACL_TOY_MAIN_WINDOW_VETO_PASS`, source de `capabilities/default.json`, contre-exemples wildcard et webview, commande inconnue refusée. Conserver 12 tests source-only PR #79, 29/29 Chromium ×2, 129 frontend, 100 Rust généraux, les contextes `generate_context!` sans lancement, tests Node IPC/HTTP et G3 jouets. Contrôler logs, HEAD, reviews/threads, ruleset #24895490/app 15368, diff et anti-course sur main, puis fusion protégée `expected_head_sha` seulement si tout est vert. Le succès valide seulement un matcher Rust sur ACL inventée, **pas** l'ACL réelle du contexte Tauri et ne débloque pas G3 ni Windows opérateur.
