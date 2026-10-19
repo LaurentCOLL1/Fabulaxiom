@@ -81,6 +81,34 @@ jobs:
           if ($dynamic.Count -gt 4) { throw 'STOP: excessive dynamic invocation shape' }
           Write-Output 'M32_G2A_AST_PARSE_ONLY_PASS: no candidate run; no owner approval'
 
+      - name: M3.2 living handoff source-only contract checks
+        run: python -m unittest discover -s tools -p "test_m32_handoff_contract.py" -v
+
+      - name: M3.2 require handoff refresh for material pull request changes
+        if: github.event_name == 'pull_request'
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $eventData = Get-Content -LiteralPath $env:GITHUB_EVENT_PATH -Raw -Encoding UTF8 | ConvertFrom-Json
+          $baseSha = [string]$eventData.pull_request.base.sha
+          if ($baseSha -notmatch '^[a-f0-9]{40}$') { throw 'STOP invalid base SHA' }
+          git fetch --no-tags --depth=1 origin $baseSha
+          if ($LASTEXITCODE -ne 0) { throw 'STOP cannot fetch exact base' }
+          $modified = @(git diff --name-only $baseSha HEAD)
+          if ($LASTEXITCODE -ne 0) { throw 'STOP cannot inspect PR diff' }
+          $material = @($modified | Where-Object {
+            $_ -match '^(src/|src-tauri/src/|src-tauri/capabilities/|tools/|docs/qualification/|[.]github/workflows/)'
+          })
+          if ($material.Count -gt 0) {
+            foreach ($path in @('docs/continuity/HANDOFF_CURRENT.md',
+                                 'docs/continuity/HANDOFF_CURRENT.json')) {
+              if ($modified -notcontains $path) {
+                throw "STOP M3.2 handoff missing from material PR: $path"
+              }
+            }
+          }
+          Write-Output 'M32_HANDOFF_SAME_PR_REQUIRED_PASS: material changes have both continuity files'
+
       - name: Frontend tests
         run: npm run test:ci
 

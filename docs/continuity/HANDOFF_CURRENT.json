@@ -1,0 +1,63 @@
+{
+  "schema": 1,
+  "as_of": "2026-10-19",
+  "status_kind": "DATED_PUBLIC_SOURCE_HANDOFF_ONLY",
+  "repository": "LaurentCOLL1/Fabulaxiom",
+  "last_confirmed_main_before_handoff": "6d9650ee09d6f8a695a9b71a9ef1e1118f7229c9",
+  "last_confirmed_merged_pr": 86,
+  "last_verified_pr_head": "5c0525b061ddee77126784a67efaad5f1c638ece",
+  "last_verified_ci": {
+    "run_id": 39241294071,
+    "context": "Windows frontend and Rust checks",
+    "conclusion": "SUCCESS",
+    "source": "PR_HEAD"
+  },
+  "recent_changes": [
+    "PR_85_EXACT_G2A_TEXT_AST_ONLY",
+    "PR_86_SEARCHHOST_WEBVIEW2_LINEAGE_SOURCE_ONLY"
+  ],
+  "pr35": "OPEN_DRAFT",
+  "issues": {
+    "36": "OPEN",
+    "38": "OPEN"
+  },
+  "g2a": {
+    "previous_operator_observation": "STOP_PROCESS_NAMES",
+    "observed_searchhost_webview2": "SIX_PROCESS_CHILD_TREE_SCREENSHOT",
+    "corrected_candidate": "PR86_SOURCE_REVIEW_ONLY",
+    "corrected_execution": "NOT_ASSESSED",
+    "exact_corrected_script_owner_approval": "REQUIRES_EXACT_BYTES_REVIEW",
+    "absence_of_sqlite_writer": "NOT_PROVEN"
+  },
+  "governance": {
+    "historic": "PENDING_EXTERNAL_ATTESTATION(21/3/2)",
+    "prospective": "NOT_STARTED",
+    "independent_human_attestation": "NOT_PERFORMED",
+    "cli_config": "NOT_TESTED",
+    "tauri_runtime": "NOT_TESTED"
+  },
+  "prohibited": [
+    "G2B",
+    "G2C",
+    "G2D",
+    "G3",
+    "G4",
+    "G5",
+    "G6",
+    "SQLITE_PRODUCTION_V6",
+    "SQLITE_ISOLATED_V7",
+    "MIGRATION_007",
+    "WRITER_IPC",
+    "PR35_MERGE",
+    "M3_3",
+    "RELEASE"
+  ],
+  "protections": {
+    "originals_unmodified_in_current_task": true,
+    "operator_script_never_executed_in_ci": true,
+    "all_gate_promotions_explicit_only": true
+  },
+  "next": "REVIEW_EXACT_PR86_G2A_BLOCK_WITH_OWNER_AND_GET_DISTINCT_EXECUTION_APPROVAL_BEFORE_MANUAL_WINDOWS_RUN",
+  "live_refetch_required": true,
+  "hand_off_updated_by_future_pr": true
+}
