@@ -16,7 +16,8 @@
     "PR_85_EXACT_G2A_TEXT_AST_ONLY",
     "PR_86_SEARCHHOST_WEBVIEW2_LINEAGE_SOURCE_ONLY",
     "PR_87_LIVING_HANDOFF_AND_CI_FRESHNESS",
-    "2026_10_19_GITHUB_REFETCH_VERIFIED_NO_WINDOWS_EXECUTION"
+    "2026_10_19_GITHUB_REFETCH_VERIFIED_NO_WINDOWS_EXECUTION",
+    "2026_10_19_OWNER_REPORTED_REVISED_G2A_STOP_WEBVIEW2_PARENTAGE"
   ],
   "pr35": "OPEN_DRAFT",
   "issues": {
@@ -27,9 +28,16 @@
     "previous_operator_observation": "STOP_PROCESS_NAMES",
     "observed_searchhost_webview2": "SIX_PROCESS_CHILD_TREE_SCREENSHOT",
     "corrected_candidate": "PR86_SOURCE_REVIEW_ONLY",
-    "corrected_execution": "NOT_ASSESSED",
-    "exact_corrected_script_owner_approval": "REQUIRES_EXACT_BYTES_REVIEW",
-    "absence_of_sqlite_writer": "NOT_PROVEN"
+    "corrected_execution": "STOP_WEBVIEW2_PARENTAGE",
+    "exact_corrected_script_owner_approval": "APPROVED_FOR_ONE_MANUAL_RUN_CONSUMED",
+    "absence_of_sqlite_writer": "NOT_PROVEN",
+    "future_script_approval": "EXPLICIT_NEW_REVIEW_REQUIRED",
+    "current_stop_stage": "WEBVIEW2_PARENTAGE",
+    "current_stop_reason": "UNEXPECTED_OR_UNSAFE",
+    "stop_subcause": "NOT_IDENTIFIABLE_FROM_SANITIZED_OUTPUT",
+    "latest_observation_source": "OWNER_REPORTED_FIVE_SAFE_OUTPUT_LINES_NOT_INDEPENDENTLY_ATTESTED",
+    "latest_observation_date": "2026-10-19",
+    "g2b_to_g6": "NOT_AUTHORIZED"
   },
   "governance": {
     "historic": "PENDING_EXTERNAL_ATTESTATION(21/3/2)",
@@ -65,7 +73,7 @@
     "verified_bypass_actors": 0,
     "classic_branch_protection_read": "403_INTEGRATION_RESTRICTED"
   },
-  "next": "PRESENT_EXACT_PR86_G2A_BLOCK_TO_OWNER_GET_NEW_EXPLICIT_APPROVAL_BEFORE_MANUAL_WINDOWS_EXECUTION",
+  "next": "DESIGN_SOURCE_ONLY_FAIL_CLOSED_PARENTAGE_DIAGNOSTICS_REQUIRES_SEPARATE_OWNER_APPROVAL_BEFORE_ANY_NEW_WINDOWS_COMMAND",
   "live_refetch_required": true,
   "hand_off_updated_by_future_pr": true,
   "main_ci_post_merge": {
