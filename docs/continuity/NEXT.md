@@ -1,5 +1,10 @@
 # Fabulaxiom — Next Authorized Work
 
+## 2026-10-19 — qualifier syntaxe et refus du bloc G2-A pour revue humaine
+
+Exiger 20 tests source-only de mutations sur le bloc Markdown et l'analyse AST Windows par `Parser.ParseInput` sans l'exécuter ; marqueur `M32_G2A_AST_PARSE_ONLY_PASS`. Requalifier les contrôles antérieurs, inspecter CI obligatoire SHA exact, diff/ruleset/reviews/threads et main anti-course avant fusion. Même après fusion, présenter code et avertissements à l'opérateur, puis demander autorisation **spécifique** avant toute commande Windows. G2-A=NOT_ASSESSED/NOT_AUTHORIZED, G2-B/C/D et G3–G6 inchangés.
+
+
 ## 2026-10-19 — qualifier le dossier G2-A de revue sans script
 
 Exiger les 24 nouveaux tests `test_m32_g2a_consent_contract.py` : absence de commandes et chemins privés, absence d'accord/planification, zéro ouverture SQLite, élévation/arrêt/ACL/sidecar/Git local interdits, `G2A_RUNTIME=NOT_ASSESSED`. Garder les 20 tests du registre d'autorité précédent, tous les tests Rust et Chromium, `M32_SECURITY_PREFLIGHT_STOP`. Une CI terminale au HEAD nouveau + analyse de diff, reviews, ruleset, re-fetch avant toute fusion. Après fusion, **G2-A n'est pas effectué** : présenter séparément à l'opérateur un bloc examiné et obtenir accord explicite avant exécution. Maintenir G2-B/G2-C/G2-D/G3–G6 `NOT_AUTHORIZED`.

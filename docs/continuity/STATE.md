@@ -1,5 +1,10 @@
 # Fabulaxiom — Current State
 
+## 2026-10-19 — M3.2 G2-A : PowerShell exact préparé comme texte, non exécuté
+
+Base `main=9d058362a6804d642aad75cdb29cd6d7540e35cf`, PR #84 fusionnée et CI Windows #39211774008 60/60. Nouveau [candidat G2-A](../qualification/M3_2_G2A_EXACT_BLOCK_REVIEW.md) contenant un seul bloc PowerShell `& { ... }` non exécutable automatiquement, avec contrôle SID d'intégrité medium, version/horloge et noms de processus. Aucune lecture SQLite, ACL, backup, chemin opérateur, sortie de SID, Git local ou réseau ; absence de processus ne prouve PAS absence d'écrivain. Les tests Windows ajoutent 20 refus Python sur le texte et l'analyse AST PowerShell (ParseInput, **sans exécution**). Aucun `.ps1`, aucun lancement opérateur, approbation G2-A NON ACCORDÉE. CI nouvelle exact-head obligatoire, tous STOP maintenus.
+
+
 ## 2026-10-19 — M3.2 G2-A consentement : nouvelle proposition INERTE, aucune observation Windows
 
 Sur `main=41259a088c7d85fe7eda2ad5086964f464f93ff8` après PR #83 (CI Windows #39205535763 SUCCESS 59/59), ajout d'un [dossier G2-A de revue](../qualification/M3_2_G2A_OPERATOR_REVIEW_PROPOSAL.md), de son JSON non exécutable, d'un validateur strict et de 24 tests adversariaux dans la CI. Le contrat spécifie seulement une future inspection du jeton courant, de PowerShell, de l'horloge, des présences de processus et des références GitHub publiques. Aucun bloc PowerShell ni script de collecte n'est livré. G2-A reste `NOT_ASSESSED/NOT_AUTHORIZED`. Toute commande réelle devra être publiée séparément et recevoir **autorisation spécifique sur son contenu exact** avec avertissement sur les interactions/élévation/effets. Aucun ACL, SQLite, sidecar, chemin ou worktree privé observé ; G2-B/G3 non autorisés. Requalification au SHA exact impérative avant fusion.
