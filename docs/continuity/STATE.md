@@ -1,5 +1,10 @@
 # Fabulaxiom — Current State
 
+## 2026-10-19 — continuité durable M3.2 (point d'entrée « living handoff »)
+
+Après PR #86 protégée (main observé `6d9650ee09d6f8a695a9b71a9ef1e1118f7229c9`, CI PR #39241294071 SUCCESS), introduction d'un [README de reprise](README.md), d'un [état courant court](HANDOFF_CURRENT.md), de sa [forme JSON](HANDOFF_CURRENT.json), d'un [protocole](HANDOFF_PROTOCOL.md), d'un [historique](HANDOFF_HISTORY.md) et d'un [prompt minimal](RESUME_PROMPT.md). Chaque nouvelle PR technique M3.2 devra modifier les fichiers MD et JSON de handoff dans la même PR ; tests CI source-only et contrôle du diff empêchent les oublis. Les références sont datées, jamais lues comme autorisations réelles. Correctif SearchHost de PR #86 **fusionné mais jamais exécuté sur le PC opérateur**. L'accord de principe doit être confirmé sur les octets exacts avant essai G2-A ; G2-B/C/D et G3–G6 restent STOP.
+
+
 ## 2026-10-19 — G2-A : correction proposée après STOP PROCESS_NAMES, aucune exécution autorisée
 
 Observation opérateur du bloc PR #85 : `G2A_LOCAL_METADATA: STOP`, `STOP_STAGE: PROCESS_NAMES`. Capture Process Explorer : six WebView2 sous SearchHost (PID 4740 à l'instant de capture, non utilisé dans le code). PR nouvelle : modifier le bloc PowerShell **en Markdown uniquement** pour distinguer l'arbre SearchHost des WebView2 étrangers, via `Get-CimInstance Win32_Process`, comparaison des PID de deux instantanés, vérification de l'ordre des dates de création et du parcours des parents (cycle, parent manquant, incohérence => STOP). Aucun processus n'est arrêté. Les vingt tests de texte sont actualisés et cinq contrôles ajoutés ; quatorze scénarios purement synthétiques vérifient les verdicts. L'AST Windows reste parser-only. Un PASS de ce futur bloc n'authentifiera ni le binaire SearchHost, ni l'absence d'un writer SQLite. Le bloc initial reste la seule version approuvée jusqu'à nouvel accord explicite. G2-A réel reste STOP, G2-B/C/D et G3–G6 non autorisés, Tauri/WebView2 opérateur non testé, PR #35 DRAFT, #36/#38 OPEN.

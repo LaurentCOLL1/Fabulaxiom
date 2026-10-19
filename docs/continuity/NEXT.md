@@ -1,5 +1,10 @@
 # Fabulaxiom — Next Authorized Work
 
+## 2026-10-19 — prochaine reprise depuis living handoff GitHub
+
+Lire `docs/continuity/README.md` puis `HANDOFF_CURRENT.md`, `HANDOFF_CURRENT.json`, `HANDOFF_PROTOCOL.md` et `HANDOFF_HISTORY.md` ; re-fetch les SHA, PRs, CI/ruleset. Nouvelle priorité opérateur : revue du **bloc corrigé #86** (parenté SearchHost via CIM), approbation explicite du code exact, puis exécution manuelle G2-A uniquement si l'utilisateur le confirme. Ne pas réutiliser l'autorisation de l'ancien bloc #85 ni prétendre à une absence d'écrivain SQLite. Sur toute PR future M3.2, mettre à jour MD + JSON du handoff pour satisfaire le garde-fou CI.
+
+
 ## 2026-10-19 — qualifier la correction SearchHost de G2-A et soumettre à consentement neuf
 
 Nouvelle CI `pull_request` au HEAD exact : 25 tests source-only du bloc PowerShell, 14 tests sur arbres de processus purement fictifs, parseur AST PowerShell sans exécuter le candidat, tous les contrôles existants et le marqueur `M32_SECURITY_PREFLIGHT_STOP`. Garder `Get-CimInstance` sous revue : WMI/CIM peut solliciter un service système, et le graphe PID + dates ne constitue pas une preuve d'identité cryptographique. Après CI et fusion protégée, soumettre le **nouveau code exact** au propriétaire pour accord distinct ; ne pas réutiliser l'autorisation de PR #85. Aucune ouverture de SQLite, migration 007, G3/G4/G5/G6 ni release.
