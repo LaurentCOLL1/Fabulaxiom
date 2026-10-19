@@ -81,6 +81,46 @@ jobs:
           if ($dynamic.Count -gt 4) { throw 'STOP: excessive dynamic invocation shape' }
           Write-Output 'M32_G2A_AST_PARSE_ONLY_PASS: no candidate run; no owner approval'
 
+      - name: M3.2 PID-zero G2-A candidate exact source-only diff guard
+        run: python -m unittest discover -s tools -p "test_m32_g2a_pid_zero_candidate_source.py" -v
+
+      - name: M3.2 PID-zero G2-A fictional lineage 22-test matrix
+        run: python -m unittest discover -s tools -p "test_m32_g2a_pid_zero_model.py" -v
+
+      - name: M3.2 PID-zero G2-A PowerShell AST parse ONLY, never execute
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $doc = Get-Content -LiteralPath docs/qualification/M3_2_G2A_PID_ZERO_CANDIDATE_REVIEW.md -Raw -Encoding UTF8
+          $lines = @($doc -split '\r?\n')
+          $opening = ([char]96).ToString() * 3 + 'powershell'
+          $closing = ([char]96).ToString() * 3
+          if (@($lines | Where-Object { $_ -ceq $opening }).Count -ne 1 -or
+              @($lines | Where-Object { $_ -ceq $closing }).Count -ne 1) {
+            throw 'STOP PID-zero review requires exactly one code fence'
+          }
+          $first = [Array]::IndexOf($lines,$opening)
+          $last = [Array]::IndexOf($lines,$closing,$first+1)
+          if ($first -lt 0 -or $last -le ($first+1)) { throw 'STOP invalid fence order' }
+          $candidate = ($lines[($first+1)..($last-1)] -join [Environment]::NewLine)
+          $tokens = $null
+          $errors = $null
+          $ast = [System.Management.Automation.Language.Parser]::ParseInput(
+            $candidate, [ref]$tokens, [ref]$errors)
+          if ($errors.Count -ne 0) { throw 'STOP PID-zero AST syntax error' }
+          $commands = @($ast.FindAll({
+            param($node) $node -is [System.Management.Automation.Language.CommandAst]
+          }, $true))
+          $allowed = @('Get-Date','Join-Path','ConvertFrom-Csv','Where-Object',
+                       'Get-Process','Get-CimInstance','Select-Object','Write-Output')
+          $unknown = @($commands | Where-Object {
+            $null -ne $_.GetCommandName() -and $allowed -notcontains $_.GetCommandName()
+          })
+          if ($unknown.Count -gt 0) { throw 'STOP unexpected command name' }
+          $dynamic = @($commands | Where-Object { $null -eq $_.GetCommandName() })
+          if ($dynamic.Count -gt 4) { throw 'STOP too many dynamic calls' }
+          Write-Output 'M32_G2A_PID_ZERO_AST_PARSE_ONLY_PASS: proposal never executed'
+
       - name: M3.2 living handoff source-only contract checks
         run: python -m unittest discover -s tools -p "test_m32_handoff_contract.py" -v
 
