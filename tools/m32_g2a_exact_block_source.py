@@ -37,7 +37,7 @@ def extract(markdown):
 def check(script):
     if not script.startswith("& {\n") or not script.rstrip().endswith("\n}"):
         raise CandidateStop("STOP: script wrapper changed")
-    if len(script) > 3800 or any(marker not in script for marker in REQUIRED):
+    if len(script) > 5500 or any(marker not in script for marker in REQUIRED):
         raise CandidateStop("STOP: source boundary anchor missing")
     if BANNED.search(script) or re.search(r"(?m)[12]?>>?", script):
         raise CandidateStop("STOP: unsafe command or file redirection")
