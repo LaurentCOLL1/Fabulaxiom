@@ -1,5 +1,12 @@
 # Fabulaxiom — Current State
 
+## 2026-10-19 — PR #82 : séparation des lectures Core après veto source-only
+
+CI initiale au HEAD `585d797fed1c811233535063e1c321a581dd7e77` : FAIL en étape `M3.2 fictional Tauri preview source-only policy` (`test_12_no_real_custody_or_automatic_migration_in_new_module`), parce que le module `m32_synthetic_preview.rs` contenait `fs::`. Les étapes suivantes, dont les tests des manifests Core, ont été SKIPPED. Correction **sans affaiblir le veto** : transfert des quatre tests Core dans `src-tauri/src/m32_generated_core_acl_tests.rs`, inclusion `#[cfg(test)]` dans le module M3.2, préservation de l'interdiction `fs::` dans la prévisualisation, et nouveau test Python `test_13` exigeant la séparation, les gardes CI/Windows, les lectures bornées et l'absence d'écriture/processus. Le fichier de manifest généré est seulement lu sur le runner. Aucun original opérateur.
+
+Le nouveau commit doit avoir sa **propre** CI Windows `pull_request` terminale au SHA exact ; aucune preuve avant sa réussite. `M32_SECURITY_PREFLIGHT_STOP`, `CLI_CONFIG_RESOLUTION_NOT_TESTED`, `TAURI_RUNTIME_NOT_TESTED`, `OPERATOR_ACCEPTANCE_NOT_PERFORMED`, `REAL_G3_STOP_UNAVAILABLE`, historique `PENDING_EXTERNAL_ATTESTATION(21/3/2)`, prospective `NOT_STARTED`, G3–G6 réels `NOT_AUTHORIZED` demeurent inchangés.
+
+
 ## 2026-10-19 — M3.2 : contrôle des manifestes Core réellement générés par Tauri (PR en qualification)
 
 Après fusion protégée de [PR #81](https://github.com/LaurentCOLL1/Fabulaxiom/pull/81), `main=5bbaf9cfb6412329106cfa4ac8e37e0a228089b6`. Cette tranche Windows CI seule lit les **vrais** artefacts `src-tauri/gen/schemas/acl-manifests.json` et `capabilities.json` générés dans le checkout éphémère par `tauri-build` (pas de copie du PC opérateur ; fichiers ignorés par Git). Quatre nouveaux tests Rust `#[cfg(test)]` contrôlent (1) l'identité de `default.json` avec le `default` généré et les familles `core:app` à `core:window`, (2) `Resolved::resolve` sur les **vrais manifests Core** générés, permissions sur `main` et refus de *toutes* les commandes Core obtenues sur la fenêtre fictive `m32-fiction`, (3) un contrefactuel wildcard **en mémoire seulement** qui permet volontairement l'accès, (4) le refus d'une permission Core inexistante. Lecture bornée au répertoire du checkout CI, refus des symlinks de destination, `CI=true` et `RUNNER_OS=Windows` obligatoires, aucun `TAURI_CONFIG` / `TAURI_DEV_HOST` hérité.

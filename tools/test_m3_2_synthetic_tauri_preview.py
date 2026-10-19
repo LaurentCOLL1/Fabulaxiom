@@ -115,6 +115,23 @@ class FictionalTauriPreviewPolicy(unittest.TestCase):
             self.assertNotIn(disallowed, source)
         self.assertIn("fictional", source.lower())
 
+    def test_13_generated_core_reading_is_separate_test_only_module(self):
+        expected = ('#[cfg(test)]' + chr(10) +
+                    '#[path = "m32_generated_core_acl_tests.rs"]' + chr(10) +
+                    'mod m32_generated_core_acl_tests;')
+        self.assertIn(expected, self.source)
+        generated = (ROOT / "src-tauri" / "src" /
+                     "m32_generated_core_acl_tests.rs").read_text(encoding="utf-8")
+        self.assertIn('std::env::var("CI")', generated)
+        self.assertIn('std::env::var("RUNNER_OS")', generated)
+        self.assertIn('fs::read_to_string', generated)
+        self.assertIn('symlink_metadata', generated)
+        for forbidden in ["tauri::Builder", "run(context)", "Connection::open",
+                          "fs::write", "fs::remove", "fs::create", "sqlite3",
+                          "std::process::Command", "std::process::Stdio"]:
+            self.assertNotIn(forbidden, generated)
+
+
 
 if __name__ == "__main__":
     unittest.main()

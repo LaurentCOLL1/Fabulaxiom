@@ -1,5 +1,10 @@
 # M3.2 — Prévisualisation Tauri Windows fictive : variante compilable, lancement interdit à cette étape
 
+## Séparation obligatoire du test natif de lecture des fichiers Core générés
+
+Le premier passage de PR #82 a correctement activé le refus historique `fs::` dans le module M3.2 de prévisualisation. La seconde tentative laisse le module principal sans lecture de fichiers et déplace les contrôles des artefacts `tauri-build` dans un fichier Rust explicitement chargé uniquement par `#[cfg(test)]`. Le 13ᵉ test Python ajoute la preuve de cette séparation. Aucun relâchement des garde-fous n'est autorisé pour obtenir une CI verte.
+
+
 ## Test du manifeste Core généré par Tauri (19 octobre 2026, CI seulement)
 
 Les sources officielles de `tauri-build` écrivent les manifests de permissions dans `gen/schemas/acl-manifests.json` et les capabilities dans `gen/schemas/capabilities.json`, puis Tauri codegen relit ces fichiers : https://docs.rs/crate/tauri-build/latest/source/src/acl.rs et https://docs.rs/tauri-codegen/latest/src/tauri_codegen/context.rs.html . La nouvelle qualification utilise ces fichiers **réellement générés dans GitHub Actions** avec les API Rust natives `Resolved::resolve` et `RuntimeAuthority::resolve_access`, pour vérifier les permissions Core associées au sélecteur source `main`. Les artefacts sont locaux au runner et `src-tauri/gen/` est ignoré par Git. Le contrefactuel `windows=["*"]` est modifié uniquement dans une structure en mémoire. Aucun fichier de capability versionné ni original de l'opérateur n'est touché.
