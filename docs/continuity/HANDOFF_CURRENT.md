@@ -2,7 +2,15 @@
 
 **Checkpoint source-only mis à jour après fusion de PR #89 le 20 octobre 2026. Re-fetch obligatoire avant toute nouvelle action. Ce texte ne confère aucune autorisation locale.**
 
-## 20 octobre 2026 — PR #89 protégée et fusionnée, runtime G2-A toujours STOP
+## 2026-10-20 01:31:24 +02:00 — G2-A PID 0 : PASS de métadonnées (déclaration opérateur)
+  
+- Le propriétaire a examiné le bloc exact PR #89 et donné un **nouvel accord explicite limité à une exécution**. Sortie communiquée : `G2A_LOCAL_METADATA: PASS`, `TOKEN_INTEGRITY: MEDIUM`, `FABULAXIOM_OLLAMA_PROCESS: NONE_MATCHED`, `WEBVIEW2_SEARCHHOST_LINEAGE: 6 OBSERVED_METADATA_ONLY`, `WEBVIEW2_OWNERSHIP_AUTHENTICATED: NO`, `PROCESS_WRITER_ABSENCE: NOT_PROVEN`, `PUBLIC_GITHUB_CHECK: NOT_ASSESSED_BY_THIS_BLOCK`, `G2B_G2C_G2D_G3_G4_G5_G6: NOT_AUTHORIZED`, `TAURI_RUNTIME: NOT_TESTED`. PowerShell 5.1.26100.9587 ; fuseau Romance Standard Time. Preuve déclarative de l'opérateur, non attestée indépendamment.
+- **Le PASS porte exclusivement sur l'observation locale G2-A.** Le contrôle n'authentifie pas SearchHost et ne démontre pas l'absence d'écrivain SQLite ; la cause détaillée de l'ancien STOP PR #86 reste **inconnue**, même si le nouveau script corrige son rejet théorique du PID 0.
+- Une seule exécution de ce nouveau texte a été approuvée et effectuée. **Consentement consommé** : ni deuxième exécution, ni G2-B/C/D, ni G3/G4/G5/G6 sans approbation distincte du propriétaire.
+- GitHub `main=f14e5991d34350682647ef6f0bd67b1d2055f41a`, [PR #89](https://github.com/LaurentCOLL1/Fabulaxiom/pull/89) fusionnée ; CI push main #39341197526 recontrôlée SUCCESS et CI PR #90 #39341376262 était SUCCESS à son **ancien** HEAD avant cette modification. Toute CI de PR #90 au HEAD nouveau doit être entièrement requalifiée.
+- Production SQLite v6 et v7 isolée, sidecars, sauvegardes, ACL, marqueur, migration 007, writer IPC, PR #35, M3.3 et release restent interdits. Provenance historique `PENDING_EXTERNAL_ATTESTATION(21/3/2)`, prospective `NOT_STARTED`, issues #36/#38 OPEN.
+
+## 20 octobre 2026 — checkpoint AVANT l'exécution locale G2-A (historique)
 
 - `main=f14e5991d34350682647ef6f0bd67b1d2055f41a` (fusion [PR #89](https://github.com/LaurentCOLL1/Fabulaxiom/pull/89)), CI `pull_request` [#39339365546](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/39339365546) terminale SUCCESS sur le HEAD `e188a98090112551b6a35dd78e8327914c0e9965` ; **68 étapes Windows SUCCESS**, dont 22 fixtures fictives, 11 tests source-only et parser AST PowerShell sans exécution. CI `push main` #39341197526 EN COURS au checkpoint, non qualifiée PASS.
 - Le nouveau [bloc PID 0 exact](../qualification/M3_2_G2A_PID_ZERO_CANDIDATE_REVIEW.md) est intégré en Markdown, **jamais exécuté sur Windows et NON AUTORISÉ pour l'opérateur**. Le bloc PR #86 reste distinct, intact, et son unique essai autorisé a déjà retourné `STOP_WEBVIEW2_PARENTAGE`.
@@ -41,16 +49,16 @@ La PR #86 a préparé [le nouveau bloc exact](../qualification/M3_2_G2A_EXACT_BL
 
 **Hypothèse de défaut source identifié sans essai sur Windows :** le bloc PR #86 refuse tout `ProcessId <= 0` pendant la construction de la table complète `Win32_Process`, alors que cette classe peut retourner `System Idle Process` avec `ProcessId=0`. Si cet enregistrement figure dans l'inventaire, `AMBIGUOUS_PROCESS_ID` provoque le STOP avant tout parcours WebView2. Les 14 fixtures antérieures n'incluent aucun PID 0. Ce mécanisme est une **cause possible forte, non confirmée par la sortie opérateur** car le catch masque le sous-motif ; il faut des tests fictifs PID 0 et une future proposition explicite sans réexécution implicite. Références : https://learn.microsoft.com/en-us/powershell/module/cimcmdlets/get-ciminstance et https://learn.microsoft.com/en-us/windows/win32/cimwin32prov/win32-process .
 
-## STOP à préserver
+## STOP historique PR #86 et interdictions toujours applicables
 
-- `G2A_REVISED_RUNTIME=STOP_WEBVIEW2_PARENTAGE` (compte-rendu opérateur), `STOP_REASON=UNEXPECTED_OR_UNSAFE` ; cause fine inconnue. Le précédent `STOP_PROCESS_NAMES` reste historique. Aucun PASS.
+- `G2A_REVISED_RUNTIME=STOP_WEBVIEW2_PARENTAGE` (compte-rendu opérateur), `STOP_REASON=UNEXPECTED_OR_UNSAFE` ; cause fine inconnue. Le précédent `STOP_PROCESS_NAMES` reste historique. Aucun PASS de ce bloc historique PR #86 (le nouveau bloc PR #89 a ensuite produit un PASS de métadonnées).
 - `G2-B/G2-C/G2-D/G3/G4/G5/G6=NOT_AUTHORIZED`, `REAL_G3_STOP_UNAVAILABLE`.
 - `CLI_CONFIG_RESOLUTION_NOT_TESTED`, `TAURI_RUNTIME_NOT_TESTED`, `OPERATOR_ACCEPTANCE_NOT_PERFORMED`.
 - Interdits : originales SQLite (v6 prod/v7 isolée), sidecars, ACL, sauvegardes, marker d'activation, migration 007, IPC writer, fusion PR #35, M3.3, release. Aucun reset Git destructeur ni faux relecteur indépendant.
 
 ## Prochaine action concrète
 
-**Priorité actuelle au 20 octobre :** nouvelle PR #89 SOURCE-ONLY fusionnée après CI exacte. Présenter le bloc complet à l'opérateur et obtenir une autorisation **distincte** avant toute exécution locale, tout en requalifiant le résultat terminal CI post-merge sur `main`. Les actions historiques ci-dessous restent des références documentaires.
+**Priorité actuelle au 20 octobre après le PASS local :** conserver le PASS limité aux métadonnées, requalifier la CI au nouveau HEAD documentaire, poursuivre seulement l'analyse source-only de l'absence d'écrivain SQLite NON PROUVÉE ; toute autre commande Windows nécessite un accord explicite neuf. Les étapes précédentes ci-dessous sont historiques.
 
 
 1. Préserver ce nouveau STOP sans arrêter SearchHost/WebView2 ni répéter les observations locales.
