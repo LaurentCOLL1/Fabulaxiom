@@ -30,6 +30,9 @@ jobs:
       - name: Install frontend dependencies from lockfile
         run: npm ci
 
+      - name: M3.2 dated authority boundary and five historical witness source-only tests
+        run: python -m unittest discover -s tools -p "test_m32_gate_snapshot.py" -v
+
       - name: Frontend tests
         run: npm run test:ci
 

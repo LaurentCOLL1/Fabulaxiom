@@ -1,5 +1,10 @@
 # Fabulaxiom — Next Authorized Work
 
+## 2026-10-19 — prochaine qualification : registre M3.2 de refus et préparation G2 documentaire
+
+Qualifier au SHA exact le JSON [M3_2_GATE_SNAPSHOT.json](M3_2_GATE_SNAPSHOT.json), sa documentation et les 20 tests Python adversariaux dans la CI Windows obligatoire, puis vérifier toutes les régressions et `M32_SECURITY_PREFLIGHT_STOP`. Le registre est daté et requiert un re-fetch GitHub pour toute nouvelle PR/fusion ; il ne qualifie pas lui-même les sources ou attestations de l'opérateur. Après une fusion protégée, seules la recherche de preuves historiques indépendantes (#36) et la préparation d'un runbook G2 soumis à **autorisation spécifique** (#38) sont envisageables ; G2–G6, Tauri/WebView2 réel et G3 opérateur demeurent bloqués. Ne pas ouvrir les SQLite originales, ni déclencher migration 007, IPC writer, PR #35 ou release.
+
+
 ## 2026-10-19 — PR #82 : nouvelle qualification HEAD exact obligatoire
 
 Ne pas réutiliser la CI initiale FAIL/SKIPPED. Exiger 13 tests source-only de la preview, quatre tests Rust `native_generated_core_` dans un fichier distinct compilé sous `#[cfg(test)]`, les marqueurs `M32_NATIVE_GENERATED_CORE_SOURCE_BINDING_PASS` et `M32_NATIVE_GENERATED_CORE_LAB_DENIAL_PASS`, puis toutes les régressions antérieures. Re-vérifier logs, contrôle GitHub Actions app 15368, ruleset #24895490, reviews/threads, diff, re-fetch anti-course avant fusion `expected_head_sha`. Aucun Tauri/WebView2 opérateur ni SQLite originale.
