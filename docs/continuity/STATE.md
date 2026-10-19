@@ -1,5 +1,10 @@
 # Fabulaxiom — Current State
 
+## 2026-10-20 — PR #89 fusionnée, AST et fixtures PASS, G2-A toujours STOP
+
+Après re-fetch anti-course de `main` et HEAD, CI #39339365546 au HEAD exact `e188a98090112551b6a35dd78e8327914c0e9965` terminale SUCCESS, 68 étapes Windows. Ruleset Protect main #24895490 actif sans bypass, required check app 15368 validé, zéro discussion non résolue/demande de changements, diff borné. PR #89 protégée fusionnée : `main=f14e5991d34350682647ef6f0bd67b1d2055f41a`. Nouveau candidat exact PID 0 Markdown seulement, non exécuté/non approuvé sur Windows. Historique STOP `WEBVIEW2_PARENTAGE` inchangé, cause fine inconnue. Prochaine étape : présenter au propriétaire le nouveau texte intégral et obtenir son autorisation explicite avant tout essai local ; ne pas poursuivre G2-B/G6 ni toucher SQLite/ACL/backup/sidecars/migration 007/writer IPC.
+
+
 ## 2026-10-20 — PR #88 fusionnée ; correction candidate PID 0 préparée sans runtime
 
 CI PR #88 #39303355912 à la source exacte `0b7c55f30f0a7967270e9a58be7beae25087fec5` : SUCCESS, puis fusion protégée `main=6d9d9ff52459873347180f509717180ccccd0d5f`. Le nouveau candidat dans `docs/qualification/M3_2_G2A_PID_ZERO_CANDIDATE_REVIEW.md` est DISTINCT et NON EXÉCUTÉ ; exception bornée à un `System Idle Process` PID 0, rejet du double zéro, des alias et des PID invalides, maintien des ancêtres hors zéro. Script #86 historique conservé. Qualification à mener sur le SHA final de sa propre PR (Python fictif, exact-source guard, AST Windows seulement). Aucun élargissement G2–G6, SQLite, migration 007, IPC writer, release. Le STOP réel WEBVIEW2_PARENTAGE est maintenu, la cause exacte non démontrée.
