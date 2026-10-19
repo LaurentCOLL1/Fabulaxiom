@@ -1,6 +1,14 @@
 # Fabulaxiom M3.2 — Reprise opérationnelle courte
 
-**Checkpoint documentaire mis à jour après observation opérateur du 19 octobre 2026. Re-fetch GitHub avant toute nouvelle écriture, CI ou fusion. Ce texte n'autorise aucune commande locale.**
+**Checkpoint source-only du 20 octobre 2026, à re-fetch avant toute nouvelle écriture/fusion. Ce texte ne confère aucune autorisation locale.**
+
+## Reprise au 20 octobre 2026 — bloc candidat PID 0 SOURCE-ONLY
+
+- Après re-fetch GitHub : PR #88 fusionnée sur `main=6d9d9ff52459873347180f509717180ccccd0d5f` ; CI PR #88 [#39303355912](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/39303355912) terminale SUCCESS au HEAD exact `0b7c55f30f0a7967270e9a58be7beae25087fec5` ; CI push `main` #39338867733 initialement EN COURS, ne pas la présenter comme PASS.
+- Une branche technique DISTINCTE propose [un nouveau bloc exact](../qualification/M3_2_G2A_PID_ZERO_CANDIDATE_REVIEW.md), **non exécuté et non autorisé**. La version PR #86 réellement exécutée et son blob `ebeb8800f9f8e8cd9918579fca7e32c9e5231622` demeurent inchangés.
+- Diff intentionnel : un seul PID 0 admis seulement s'il est nommé exactement `System Idle Process`, non ajouté aux ancêtres. Deux PID 0, nom atypique, PID négatif, PID parent zéro WebView2 et tous les veto antérieurs continuent STOP. Tests adversariaux sur fixtures, garde de diff exact et analyse PowerShell AST **sans exécuter**.
+- La cause réelle du STOP `WEBVIEW2_PARENTAGE` n'est **pas identifiée** ; le PID 0 est une hypothèse techniquement plausible, pas une preuve sur le PC. Ancienne autorisation entièrement consommée. Aucune nouvelle commande Windows, SQLite, ACL, backup, marqueur ou Tauri.
+- G2-B/G2-C/G2-D/G3/G4/G5/G6, migration 007, IPC writer, PR #35, M3.3 et release restent `NOT_AUTHORIZED`.
 
 ## Vérification de reprise du 19 octobre 2026
 
@@ -9,7 +17,7 @@ Lecture GitHub (sans exécution sur le PC opérateur) : `main`, PR #86/#87/#35, 
 ## Dernier état effectivement vérifié
 
 - Dépôt : https://github.com/LaurentCOLL1/Fabulaxiom
-- `main` observé : `0aa0dc6b097a386e8a192717b7115a41019bbd88` (merge [PR #87](https://github.com/LaurentCOLL1/Fabulaxiom/pull/87), après PR #86).
+- `main` observé : `6d9d9ff52459873347180f509717180ccccd0d5f` (merge [PR #88](https://github.com/LaurentCOLL1/Fabulaxiom/pull/88), après PR #87 et #86).
 - PR #86 : correction du filtre G2-A `SearchHost.exe` / `msedgewebview2.exe` **fusionnée** ; CI Windows PR #39241294071 terminale SUCCESS et CI `main` #39242342744 SUCCESS.
 - PR #87 : continuité versionnée et garde-fou de fraîcheur **fusionnés** ; CI Windows PR #39271702661 au HEAD `287c178063a4d2719742bac96d3bc57a8fa515bc` SUCCESS (62 étapes, contrôle same-PR PASS) ; CI `main` #39273165266 au SHA ci-dessus SUCCESS (62 étapes dont contrôle PR-only SKIPPED, attendu).
 - PR #35 : **OPEN / DRAFT**. Issues [#36](https://github.com/LaurentCOLL1/Fabulaxiom/issues/36) et [#38](https://github.com/LaurentCOLL1/Fabulaxiom/issues/38) : **OPEN**. Ruleset Protect main #24895490 actif, sans bypass (au checkpoint).
@@ -34,6 +42,9 @@ La PR #86 a préparé [le nouveau bloc exact](../qualification/M3_2_G2A_EXACT_BL
 - Interdits : originales SQLite (v6 prod/v7 isolée), sidecars, ACL, sauvegardes, marker d'activation, migration 007, IPC writer, fusion PR #35, M3.3, release. Aucun reset Git destructeur ni faux relecteur indépendant.
 
 ## Prochaine action concrète
+
+**Priorité actuelle au 20 octobre :** terminer la CI exact-head de la nouvelle PR PID 0 et inspecter les logs. Ne pas exécuter le candidat sur Windows sans un nouveau consentement exprès. Les actions historiques ci-dessous restent des références documentaires.
+
 
 1. Préserver ce nouveau STOP sans arrêter SearchHost/WebView2 ni répéter les observations locales.
 2. Étudier sur sources et fixtures fictives une proposition DISTINCTE de diagnostic fail-closed produisant seulement un code de motif non personnel (`PROCESS_SNAPSHOT_CHANGED`, parent manquant, chronologie invalide, échec CIM, etc.), sans commande Windows aujourd'hui. Les métadonnées de parenté ne prouvent jamais l'absence de writer SQLite.
