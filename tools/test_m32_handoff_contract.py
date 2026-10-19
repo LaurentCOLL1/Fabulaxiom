@@ -26,7 +26,7 @@ class HandoffContractTests(unittest.TestCase):
 
     def test_03_latest_verified_merge_not_promoted_to_runtime(self):
         self.assertGreaterEqual(self.data["last_confirmed_merged_pr"], 86)
-        self.assertEqual(self.data["g2a"]["corrected_execution"], "NOT_ASSESSED")
+        self.assertEqual(self.data["g2a"]["corrected_execution"], "STOP_WEBVIEW2_PARENTAGE")
 
     def test_04_pr35_and_external_issues_still_open(self):
         self.assertEqual(self.data["pr35"], "OPEN_DRAFT")
@@ -34,7 +34,9 @@ class HandoffContractTests(unittest.TestCase):
 
     def test_05_no_implicit_windows_authorization(self):
         self.assertEqual(self.data["g2a"]["exact_corrected_script_owner_approval"],
-                         "REQUIRES_EXACT_BYTES_REVIEW")
+                         "APPROVED_FOR_ONE_MANUAL_RUN_CONSUMED")
+        self.assertEqual(self.data["g2a"]["future_script_approval"],
+                         "EXPLICIT_NEW_REVIEW_REQUIRED")
         self.assertEqual(self.data["g2a"]["absence_of_sqlite_writer"], "NOT_PROVEN")
 
     def test_06_prospective_and_historical_not_promoted(self):
@@ -58,9 +60,20 @@ class HandoffContractTests(unittest.TestCase):
         self.assertIn("SearchHost.exe", self.doc)
         self.assertIn("PR #86", self.doc)
         self.assertIn(self.data["last_confirmed_main_before_handoff"], self.doc)
-        self.assertIn("NOT_ASSESSED", self.doc)
+        self.assertIn("STOP_WEBVIEW2_PARENTAGE", self.doc)
 
-    def test_10_policy_requires_refetch_and_same_pr_handoff(self):
+    def test_10_operator_stop_cannot_promote_any_gate(self):
+        g = self.data['g2a']
+        self.assertEqual(g['current_stop_stage'], 'WEBVIEW2_PARENTAGE')
+        self.assertEqual(g['current_stop_reason'], 'UNEXPECTED_OR_UNSAFE')
+        self.assertEqual(g['stop_subcause'], 'NOT_IDENTIFIABLE_FROM_SANITIZED_OUTPUT')
+        self.assertEqual(g['absence_of_sqlite_writer'], 'NOT_PROVEN')
+        self.assertEqual(self.data['governance']['prospective'], 'NOT_STARTED')
+        self.assertEqual(self.data['governance']['tauri_runtime'], 'NOT_TESTED')
+        self.assertIn('STOP_STAGE: WEBVIEW2_PARENTAGE', self.doc)
+        self.assertIn('STOP_PROCESS_NAMES', self.doc)
+
+    def test_11_policy_requires_refetch_and_same_pr_handoff(self):
         for clause in ("Re-fetch", "HANDOFF_CURRENT.md", "HANDOFF_CURRENT.json",
                        "expected_head_sha", "autorisation"):
             self.assertIn(clause, self.policy)
