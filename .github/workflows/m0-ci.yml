@@ -139,6 +139,10 @@ jobs:
         working-directory: src-tauri
         run: cargo test --locked --features m32-synthetic-preview --lib native_resolve_ -- --nocapture
 
+      - name: M3.2 generated real Core manifests and native ACL resolution CI tests (no runtime)
+        working-directory: src-tauri
+        run: cargo test --locked --features m32-synthetic-preview --lib native_generated_core_ -- --nocapture
+
       - name: M3.2 fictional Tauri debug compile (no launch)
         working-directory: src-tauri
         run: cargo check --locked --features m32-synthetic-preview

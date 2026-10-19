@@ -1,5 +1,15 @@
 # Fabulaxiom — Next Authorized Work
 
+## 2026-10-19 — PR #82 : nouvelle qualification HEAD exact obligatoire
+
+Ne pas réutiliser la CI initiale FAIL/SKIPPED. Exiger 13 tests source-only de la preview, quatre tests Rust `native_generated_core_` dans un fichier distinct compilé sous `#[cfg(test)]`, les marqueurs `M32_NATIVE_GENERATED_CORE_SOURCE_BINDING_PASS` et `M32_NATIVE_GENERATED_CORE_LAB_DENIAL_PASS`, puis toutes les régressions antérieures. Re-vérifier logs, contrôle GitHub Actions app 15368, ruleset #24895490, reviews/threads, diff, re-fetch anti-course avant fusion `expected_head_sha`. Aucun Tauri/WebView2 opérateur ni SQLite originale.
+
+
+## 2026-10-19 — qualifier les véritables manifests Core générés par Tauri (CI sans runtime)
+
+Exiger la CI Windows `pull_request` au HEAD exact de la nouvelle PR : quatre tests Rust `native_generated_core_` lisant uniquement les artefacts `gen/schemas` produits par `tauri-build` sur le runner, marqueurs `M32_NATIVE_GENERATED_CORE_SOURCE_BINDING_PASS` et `M32_NATIVE_GENERATED_CORE_LAB_DENIAL_PASS`, commande témoin `plugin:app|version` autorisée pour `main` et toutes les commandes Core refusées sur `m32-fiction`. Vérifier le mutant wildcard en mémoire et l'erreur sur permission inconnue. Conserver tests natifs précédents, les tests Python ACL, 29/29 Chromium ×2, 129 frontend, 100 Rust, tests HTTP et G3 fictifs, et `M32_SECURITY_PREFLIGHT_STOP`. Revoir logs/CI app 15368, ruleset #24895490, PR diff, reviews/threads, re-fetch anti-course avant fusion `expected_head_sha`. Ne pas présenter les artefacts générés comme une preuve d'autorité Tauri **runtime**. Aucun lancement, ni accès aux données opérateur.
+
+
 ## 2026-10-19 — qualifier le résolveur ACL natif sur manifest fictif
 
 Attendre la CI Windows `pull_request` terminale et SUCCESS **au nouveau SHA exact**. Exiger quatre tests `native_resolve_` (source `default.json` relue sans altérer `core:default`, permission fictive `m32fixture`, vérifications source main/lab, wildcard et union, deny inter-fenêtres, manifest/permission absents), ainsi que `M32_NATIVE_ACL_MANIFEST_RESOLVE_TOY_PASS`. Confirmer tous les tests antérieurs : 12 Python permissions source-only, 4 Rust `native_acl_`, 29/29 Chromium x2, tests HTTP/IPC, 129 frontend, 100 Rust généraux, contextes générés compile-only, G3 et G4 fictifs, STOP Tauri. Revoir diff, logs, reviews/threads, ruleset #24895490/app Actions 15368 et `main` par re-fetch avant fusion `expected_head_sha`. Cela teste **le moteur natif sur un manifest inventé**, pas l'ACL Core réelle du contexte Tauri. Ne pas lancer Tauri/WebView2 ou accéder aux fichiers SQLite opérateur.

@@ -1,5 +1,17 @@
 # M3.2 — Prévisualisation Tauri Windows fictive : variante compilable, lancement interdit à cette étape
 
+## Séparation obligatoire du test natif de lecture des fichiers Core générés
+
+Le premier passage de PR #82 a correctement activé le refus historique `fs::` dans le module M3.2 de prévisualisation. La seconde tentative laisse le module principal sans lecture de fichiers et déplace les contrôles des artefacts `tauri-build` dans un fichier Rust explicitement chargé uniquement par `#[cfg(test)]`. Le 13ᵉ test Python ajoute la preuve de cette séparation. Aucun relâchement des garde-fous n'est autorisé pour obtenir une CI verte.
+
+
+## Test du manifeste Core généré par Tauri (19 octobre 2026, CI seulement)
+
+Les sources officielles de `tauri-build` écrivent les manifests de permissions dans `gen/schemas/acl-manifests.json` et les capabilities dans `gen/schemas/capabilities.json`, puis Tauri codegen relit ces fichiers : https://docs.rs/crate/tauri-build/latest/source/src/acl.rs et https://docs.rs/tauri-codegen/latest/src/tauri_codegen/context.rs.html . La nouvelle qualification utilise ces fichiers **réellement générés dans GitHub Actions** avec les API Rust natives `Resolved::resolve` et `RuntimeAuthority::resolve_access`, pour vérifier les permissions Core associées au sélecteur source `main`. Les artefacts sont locaux au runner et `src-tauri/gen/` est ignoré par Git. Le contrefactuel `windows=["*"]` est modifié uniquement dans une structure en mémoire. Aucun fichier de capability versionné ni original de l'opérateur n'est touché.
+
+**Pas de confusions :** il s'agit de la résolution sur manifests Core authentiquement générés par `tauri-build` dans ce checkout, et non de l'ACL privée du `Context` effectivement instancié dans un WebView2. Une CI verte ne constitue pas le droit de lancer l'application ou G3 réel ; `M32_SECURITY_PREFLIGHT_STOP` demeure.
+
+
 ## Résolution de manifeste et capability par la vraie API Tauri (19 octobre, CI seulement)
 
 La nouvelle tranche utilise `tauri::utils::acl::resolved::Resolved::resolve` sur une capability construite à partir du sélecteur de fenêtre réellement présent dans `default.json`, mais avec une permission et un manifeste **entièrement fictifs**. Il s'agit de la chaîne de traitement native *capability → permission/manifest → Resolved → RuntimeAuthority*, sans démarrage de fenêtre, Tauri CLI, IPC utilisateur ou lecture de base de données. Quatre tests opposent autorisation explicite et refus de `m32-fiction`, cumuls par globs et multiples capabilities, effet global d'un deny pour une origine donnée, et échecs lorsqu'un manifest ou une permission manque.

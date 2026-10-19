@@ -351,5 +351,8 @@ mod tests {
         assert!(native_resolution_run(vec![unknown], true, false).is_err(),
             "unknown permission must not silently become an allow");
     }
-
 }
+
+#[cfg(test)]
+#[path = "m32_generated_core_acl_tests.rs"]
+mod m32_generated_core_acl_tests;
