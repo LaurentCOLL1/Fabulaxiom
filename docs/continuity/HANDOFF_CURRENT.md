@@ -1,12 +1,17 @@
 # Fabulaxiom M3.2 — Reprise opérationnelle courte
 
-**Checkpoint documentaire au 19 octobre 2026, à revérifier sur GitHub avant toute action.**
+**Checkpoint documentaire revérifié le 19 octobre 2026 depuis GitHub, instantané non exécutable ; nouveau re-fetch requis avant toute écriture ou fusion ultérieure.**
+
+## Vérification de reprise du 19 octobre 2026
+
+Lecture GitHub (sans exécution sur le PC opérateur) : `main`, PR #86/#87/#35, issues #36/#38, runs/actions et ruleset #24895490 `Protect main` revérifiés. Ruleset actif, check `Windows frontend and Rust checks` de l'app 15368 exigé, branche `main` sous PR, interdiction de suppression et de non-fast-forward, `bypass_actors=[]`. La lecture REST historique de protection de branche renvoie 403 pour cette intégration ; cela **n'annule pas** le ruleset lu directement. Pas de nouveau résultat G2-A local : `REVISED_NOT_ASSESSED`. Le candidat exact reste dans `docs/qualification/M3_2_G2A_EXACT_BLOCK_REVIEW.md` et requiert revue et consentement explicite neuf avant collage/exécution. Les métadonnées de processus ne prouvent jamais l'absence d'un écrivain SQLite. Cette mise à jour documentaire n'ouvre aucun gate.
 
 ## Dernier état effectivement vérifié
 
 - Dépôt : https://github.com/LaurentCOLL1/Fabulaxiom
-- `main` observé : `6d9650ee09d6f8a695a9b71a9ef1e1118f7229c9` (merge [PR #86](https://github.com/LaurentCOLL1/Fabulaxiom/pull/86)).
-- PR #86 : correction du filtre G2-A `SearchHost.exe` / `msedgewebview2.exe` **déjà fusionnée** ; CI Windows PR #39241294071 terminale SUCCESS, contrôle obligatoire réussi. La CI `main` après fusion a également réussi (#39242342744).
+- `main` observé : `0aa0dc6b097a386e8a192717b7115a41019bbd88` (merge [PR #87](https://github.com/LaurentCOLL1/Fabulaxiom/pull/87), après PR #86).
+- PR #86 : correction du filtre G2-A `SearchHost.exe` / `msedgewebview2.exe` **fusionnée** ; CI Windows PR #39241294071 terminale SUCCESS et CI `main` #39242342744 SUCCESS.
+- PR #87 : continuité versionnée et garde-fou de fraîcheur **fusionnés** ; CI Windows PR #39271702661 au HEAD `287c178063a4d2719742bac96d3bc57a8fa515bc` SUCCESS (62 étapes, contrôle same-PR PASS) ; CI `main` #39273165266 au SHA ci-dessus SUCCESS (62 étapes dont contrôle PR-only SKIPPED, attendu).
 - PR #35 : **OPEN / DRAFT**. Issues [#36](https://github.com/LaurentCOLL1/Fabulaxiom/issues/36) et [#38](https://github.com/LaurentCOLL1/Fabulaxiom/issues/38) : **OPEN**. Ruleset Protect main #24895490 actif, sans bypass (au checkpoint).
 - Application : Windows, React + Tauri v2 + Rust + SQLite. Production SQLite v6 protégée, v7 isolée ; **aucune ouverture/migration des fichiers opérateur**. Pas de migration 007.
 - Historique de provenance : `PENDING_EXTERNAL_ATTESTATION(21/3/2)` (21 ancrés, 3 empreintes observées seulement, 2 non ancrés). Politique compensatoire opérateur unique documentaire, baseline prospective `NOT_STARTED`.
