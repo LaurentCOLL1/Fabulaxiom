@@ -1,23 +1,25 @@
 {
   "schema": 1,
-  "as_of": "2026-10-19",
+  "as_of": "2026-10-20",
   "status_kind": "DATED_PUBLIC_SOURCE_HANDOFF_ONLY",
   "repository": "LaurentCOLL1/Fabulaxiom",
-  "last_confirmed_main_before_handoff": "0aa0dc6b097a386e8a192717b7115a41019bbd88",
-  "last_confirmed_merged_pr": 87,
-  "last_verified_pr_head": "287c178063a4d2719742bac96d3bc57a8fa515bc",
+  "last_confirmed_main_before_handoff": "6d9d9ff52459873347180f509717180ccccd0d5f",
+  "last_confirmed_merged_pr": 88,
+  "last_verified_pr_head": "0b7c55f30f0a7967270e9a58be7beae25087fec5",
   "last_verified_ci": {
-    "run_id": 39271702661,
+    "run_id": 39303355912,
     "context": "Windows frontend and Rust checks",
     "conclusion": "SUCCESS",
-    "source": "PR87_EXACT_HEAD"
+    "source": "PR88_EXACT_HEAD"
   },
   "recent_changes": [
     "PR_85_EXACT_G2A_TEXT_AST_ONLY",
     "PR_86_SEARCHHOST_WEBVIEW2_LINEAGE_SOURCE_ONLY",
     "PR_87_LIVING_HANDOFF_AND_CI_FRESHNESS",
     "2026_10_19_GITHUB_REFETCH_VERIFIED_NO_WINDOWS_EXECUTION",
-    "2026_10_19_OWNER_REPORTED_REVISED_G2A_STOP_WEBVIEW2_PARENTAGE"
+    "2026_10_19_OWNER_REPORTED_REVISED_G2A_STOP_WEBVIEW2_PARENTAGE",
+    "PR_88_G2A_REPORTED_STOP_HANDOFF_MERGED",
+    "2026_10_20_PID_ZERO_CANDIDATE_SOURCE_ONLY_NOT_EXECUTED"
   ],
   "pr35": "OPEN_DRAFT",
   "issues": {
@@ -43,6 +45,16 @@
       "detail": "CURRENT_CIM_INVENTORY_PID_LE_ZERO_REJECTS_LEGITIMATE_SYSTEM_IDLE_PID_ZERO_IF_PRESENT",
       "tests": "EXISTING_SYNTHETIC_FIXTURES_DO_NOT_COVER_PID_ZERO",
       "follow_up": "SOURCE_ONLY_DESIGN_BEFORE_NEW_EXPLICIT_CONSENT"
+    },
+    "future_candidate": {
+      "path": "docs/qualification/M3_2_G2A_PID_ZERO_CANDIDATE_REVIEW.md",
+      "kind": "STRICT_SINGLE_SYSTEM_IDLE_PID_ZERO_EXCEPTION",
+      "development_status": "SOURCE_ONLY_AWAITING_EXACT_HEAD_CI",
+      "operator_execution": "NOT_AUTHORIZED",
+      "review": "EXACT_SCRIPT_AND_EFFECTS_REVIEW_REQUIRED",
+      "historic_pr86_blob_sha": "ebeb8800f9f8e8cd9918579fca7e32c9e5231622",
+      "changes_outside_pid_zero_guard": "NONE_INTENDED",
+      "cause_of_operator_stop": "UNKNOWN"
     }
   },
   "governance": {
@@ -79,15 +91,15 @@
     "verified_bypass_actors": 0,
     "classic_branch_protection_read": "403_INTEGRATION_RESTRICTED"
   },
-  "next": "DESIGN_SOURCE_ONLY_FAIL_CLOSED_PARENTAGE_DIAGNOSTICS_REQUIRES_SEPARATE_OWNER_APPROVAL_BEFORE_ANY_NEW_WINDOWS_COMMAND",
+  "next": "QUALIFY_PID_ZERO_PROPOSAL_SOURCE_ONLY_CI_AT_FINAL_SHA_AND_STOP_BEFORE_ANY_OPERATOR_EXECUTION",
   "live_refetch_required": true,
   "hand_off_updated_by_future_pr": true,
   "main_ci_post_merge": {
-    "sha": "0aa0dc6b097a386e8a192717b7115a41019bbd88",
-    "run_id": 39273165266,
-    "conclusion": "SUCCESS",
+    "sha": "6d9d9ff52459873347180f509717180ccccd0d5f",
+    "run_id": 39338867733,
+    "conclusion": "IN_PROGRESS_AT_CHECKPOINT",
     "source": "MAIN_PUSH",
-    "note": "62 steps; PR-only freshness check skipped on push as designed"
+    "note": "Do not treat as terminal success until rechecked"
   },
   "g2a_candidate_ci": {
     "pr": 86,
