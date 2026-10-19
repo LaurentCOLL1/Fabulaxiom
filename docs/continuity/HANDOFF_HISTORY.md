@@ -12,6 +12,7 @@ Les détails exhaustifs restent dans [STATE.md](STATE.md) et les PR GitHub. **To
 | [#84](https://github.com/LaurentCOLL1/Fabulaxiom/pull/84) | Proposition inerte G2-A, tests de consentement | aucune commande fournie |
 | [#85](https://github.com/LaurentCOLL1/Fabulaxiom/pull/85) | Bloc PowerShell exact en Markdown, parser AST uniquement | exécuté manuellement ensuite : STOP PROCESS_NAMES |
 | [#86](https://github.com/LaurentCOLL1/Fabulaxiom/pull/86) | Correction de détection WebView2 rattaché à SearchHost | tests synthétiques et syntaxe CI ; **nouveau bloc non exécuté** |
+| [#87](https://github.com/LaurentCOLL1/Fabulaxiom/pull/87) | Handoff de reprise versionné et obligation CI de le rafraîchir pour les PR matérielles | CI PR #39271702661 et `main` #39273165266 SUCCESS ; aucun G2-A local nouveau, STOP inchangés |
 
 L'échec du premier G2-A ne doit pas être « corrigé » en arrêtant la recherche Windows. Les relations parent/enfant changent avec le temps ; les PID visibles dans une ancienne capture ne sont pas une liste blanche. Microsoft note que les PID peuvent être réutilisés et que les horodatages aident à détecter les relations incohérentes.
 
