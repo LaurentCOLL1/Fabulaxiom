@@ -1,0 +1,94 @@
+{
+  "schema_version": 1,
+  "as_of": "2026-10-19",
+  "scope": "G2_A_OPERATOR_REVIEW_PROPOSAL_ONLY",
+  "title": "Fabulaxiom M3.2 G2-A observation préliminaire",
+  "authority": {
+    "reference_main": "41259a088c7d85fe7eda2ad5086964f464f93ff8",
+    "continuity_snapshot": "docs/continuity/M3_2_GATE_SNAPSHOT.json",
+    "historical": "PENDING_EXTERNAL_ATTESTATION(21/3/2)",
+    "prospective": "NOT_STARTED",
+    "g2_real": "NOT_AUTHORIZED",
+    "g3_real": "NOT_AUTHORIZED",
+    "tauri_runtime": "NOT_TESTED"
+  },
+  "packet": {
+    "commands_included": false,
+    "script_sha256": null,
+    "operator_paths_included": false,
+    "private_data_included": false,
+    "auto_execution": false,
+    "auto_scheduling": false,
+    "operator_approval": "NOT_REQUESTED",
+    "execution_approval": "NOT_GRANTED",
+    "requires_distinct_reviewed_command": true
+  },
+  "proposed_observations": [
+    {
+      "id": "windows_token_integrity",
+      "purpose": "Read own token integrity label without requesting elevation",
+      "scope": "CURRENT_PROCESS_METADATA",
+      "execution": "PROPOSAL_ONLY"
+    },
+    {
+      "id": "powershell_version",
+      "purpose": "Observe locally installed PowerShell version",
+      "scope": "CURRENT_SESSION_METADATA",
+      "execution": "PROPOSAL_ONLY"
+    },
+    {
+      "id": "clock_context",
+      "purpose": "Observe current local timestamp and time zone label",
+      "scope": "CURRENT_SESSION_METADATA",
+      "execution": "PROPOSAL_ONLY"
+    },
+    {
+      "id": "process_presence",
+      "purpose": "Observe whether related program processes might still run without stopping them",
+      "scope": "PROCESS_NAMES_ONLY",
+      "execution": "PROPOSAL_ONLY"
+    },
+    {
+      "id": "git_reference_review",
+      "purpose": "Fresh public GitHub ref and required check evaluation outside any local repository mutation",
+      "scope": "PUBLIC_GITHUB_READ_ONLY",
+      "execution": "PROPOSAL_ONLY"
+    }
+  ],
+  "effect_contract": {
+    "operator_filesystem_read": "NOT_AUTHORIZED",
+    "operator_filesystem_write": "PROHIBITED",
+    "protected_sqlite_open": "PROHIBITED",
+    "sqlite_sidecars": "NO_ACCESS",
+    "acl_read": "NOT_AUTHORIZED",
+    "process_stop": "PROHIBITED",
+    "elevation": "PROHIBITED",
+    "interactive_input": "NONE",
+    "remote_network_on_operator_machine": "NOT_AUTHORIZED",
+    "local_git_mutation": "PROHIBITED",
+    "tauri_webview_launch": "PROHIBITED",
+    "log_upload": "PROHIBITED"
+  },
+  "abort_policy": {
+    "fail_or_unknown": "STOP",
+    "unexpected_process": "STOP_AND_REVIEW",
+    "unexpected_integrity": "STOP_AND_REVIEW",
+    "ambiguous_git_ref": "STOP_AND_REVIEW",
+    "private_path_needed": "STOP_REQUEST_SEPARATE_G2_B_AUTHORIZATION",
+    "any_command_not_preapproved": "STOP"
+  },
+  "operator_fields": {
+    "confirmed_will_review_effects": false,
+    "confirmed_no_automatic_execution": false,
+    "approved_exact_command_sha256": null,
+    "authorized_run_id": null
+  },
+  "results": {
+    "g2a_runtime": "NOT_ASSESSED",
+    "g2b": "NOT_AUTHORIZED",
+    "g2c": "NOT_AUTHORIZED",
+    "g2d": "NOT_AUTHORIZED",
+    "g3": "NOT_AUTHORIZED",
+    "real_g2a_authorized": false
+  }
+}

@@ -1,5 +1,10 @@
 # Fabulaxiom — Next Authorized Work
 
+## 2026-10-19 — qualifier le dossier G2-A de revue sans script
+
+Exiger les 24 nouveaux tests `test_m32_g2a_consent_contract.py` : absence de commandes et chemins privés, absence d'accord/planification, zéro ouverture SQLite, élévation/arrêt/ACL/sidecar/Git local interdits, `G2A_RUNTIME=NOT_ASSESSED`. Garder les 20 tests du registre d'autorité précédent, tous les tests Rust et Chromium, `M32_SECURITY_PREFLIGHT_STOP`. Une CI terminale au HEAD nouveau + analyse de diff, reviews, ruleset, re-fetch avant toute fusion. Après fusion, **G2-A n'est pas effectué** : présenter séparément à l'opérateur un bloc examiné et obtenir accord explicite avant exécution. Maintenir G2-B/G2-C/G2-D/G3–G6 `NOT_AUTHORIZED`.
+
+
 ## 2026-10-19 — prochaine qualification : registre M3.2 de refus et préparation G2 documentaire
 
 Qualifier au SHA exact le JSON [M3_2_GATE_SNAPSHOT.json](M3_2_GATE_SNAPSHOT.json), sa documentation et les 20 tests Python adversariaux dans la CI Windows obligatoire, puis vérifier toutes les régressions et `M32_SECURITY_PREFLIGHT_STOP`. Le registre est daté et requiert un re-fetch GitHub pour toute nouvelle PR/fusion ; il ne qualifie pas lui-même les sources ou attestations de l'opérateur. Après une fusion protégée, seules la recherche de preuves historiques indépendantes (#36) et la préparation d'un runbook G2 soumis à **autorisation spécifique** (#38) sont envisageables ; G2–G6, Tauri/WebView2 réel et G3 opérateur demeurent bloqués. Ne pas ouvrir les SQLite originales, ni déclencher migration 007, IPC writer, PR #35 ou release.

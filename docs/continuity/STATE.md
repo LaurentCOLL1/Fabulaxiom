@@ -1,5 +1,10 @@
 # Fabulaxiom — Current State
 
+## 2026-10-19 — M3.2 G2-A consentement : nouvelle proposition INERTE, aucune observation Windows
+
+Sur `main=41259a088c7d85fe7eda2ad5086964f464f93ff8` après PR #83 (CI Windows #39205535763 SUCCESS 59/59), ajout d'un [dossier G2-A de revue](../qualification/M3_2_G2A_OPERATOR_REVIEW_PROPOSAL.md), de son JSON non exécutable, d'un validateur strict et de 24 tests adversariaux dans la CI. Le contrat spécifie seulement une future inspection du jeton courant, de PowerShell, de l'horloge, des présences de processus et des références GitHub publiques. Aucun bloc PowerShell ni script de collecte n'est livré. G2-A reste `NOT_ASSESSED/NOT_AUTHORIZED`. Toute commande réelle devra être publiée séparément et recevoir **autorisation spécifique sur son contenu exact** avec avertissement sur les interactions/élévation/effets. Aucun ACL, SQLite, sidecar, chemin ou worktree privé observé ; G2-B/G3 non autorisés. Requalification au SHA exact impérative avant fusion.
+
+
 ## 2026-10-19 — M3.2 : consolidation des autorités et blocages (preuve CI à qualifier)
 
 À partir de `main=f9e6b18236fd70674849f6e956c7cff410dcef2c`, synthèse datée dans [M3_2_GATE_SNAPSHOT.md](M3_2_GATE_SNAPSHOT.md) et JSON compagnon. Les PR #77 à #82 ayant été fusionnées avec leurs CI exactes, le haut des documents de continuité devait distinguer les confirmations récentes des anciennes sections « qualification en attente ». Ajout d'un **contrôle de refus source-only** à 20 cas adversariaux couvrant la vérité historique 21/3/2, les cinq rôles non résolus, la politique SOLO, la PR #35, les issues #36/#38, l'absence de permission G2–G6, et le caractère compile-only/synthétique des CI. Ce contrôle *ne donne jamais une permission Windows ou runtime*. Nouvelle CI obligatoire au HEAD de la PR de consolidation ; pas de promotion implicite. `M32_SECURITY_PREFLIGHT_STOP` conservé, opérateur et SQLite hors périmètre.
