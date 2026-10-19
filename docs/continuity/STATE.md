@@ -1,5 +1,10 @@
 # Fabulaxiom — Current State
 
+## 2026-10-19 — PR #85 : correction du seul extracteur AST de Markdown
+
+Au HEAD `b14fb8d1bcff1ca28387c65233c4c010268abe6a`, CI `pull_request` Windows a passé les 20 tests source-only du candidat, mais STOP à l'extraction `[regex]::Matches` des délimiteurs Markdown ; aucune exécution du bloc, suites aval ignorées. L'extracteur GitHub CI a été remplacé par comparaison **exacte des deux lignes de clôture**, découpage par IndexOf puis `Parser.ParseInput` (non exécuté). Aucun octet du bloc PowerShell proposé n'est changé. La qualification du nouveau HEAD est obligatoire : CI antérieure FAIL/SKIPPED non réutilisable.
+
+
 ## 2026-10-19 — PR #85 correction du workflow invalide, requalification HEAD neuf
 
 La première version `16de4a37a8bb09d7208925859aa761014ba81352` a produit un workflow YAML invalide, détecté par GitHub avant création de job (run #39215639069 `failure`, `push`, zéro job). Cause : remplacement de texte Javascript interprétant `$'` dans l'expression régulière et insérant une copie du reste du workflow. Le workflow a été reconstruit **à partir du main vérifié**, avec insertion contrôlée par callback et préflight d'unicité des étapes. Aucun test ancien à recycler ; la **nouvelle CI pull_request au SHA nouveau** sera la seule preuve. Le bloc PowerShell G2-A reste INERTE/NON AUTORISÉ et n'est jamais exécuté.

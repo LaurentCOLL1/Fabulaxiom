@@ -44,13 +44,25 @@ jobs:
         run: |
           $ErrorActionPreference = 'Stop'
           $doc = Get-Content -LiteralPath docs/qualification/M3_2_G2A_EXACT_BLOCK_REVIEW.md -Raw -Encoding UTF8
-          $pattern = '(?ms)^\x60{3}powershell[ \t]*\r?\n(.*?)^\x60{3}[ \t]*$'
-          $matches = [regex]::Matches($doc, $pattern)
-          if ($matches.Count -ne 1) { throw 'STOP: one candidate code fence required' }
+          $lines = @($doc -split '\r?\n')
+          $opening = ([char]96).ToString() * 3 + 'powershell'
+          $closing = ([char]96).ToString() * 3
+          if (@($lines | Where-Object { $_ -ceq $opening }).Count -ne 1) {
+            throw 'STOP: exactly one opening code fence required'
+          }
+          if (@($lines | Where-Object { $_ -ceq $closing }).Count -ne 1) {
+            throw 'STOP: exactly one closing code fence required'
+          }
+          $first = [Array]::IndexOf($lines,$opening)
+          $last = [Array]::IndexOf($lines,$closing,$first+1)
+          if ($first -lt 0 -or $last -le ($first+1)) {
+            throw 'STOP: invalid code fence order'
+          }
+          $candidate = ($lines[($first+1)..($last-1)] -join [Environment]::NewLine)
           $tokens = $null
           $parseErrors = $null
           $ast = [System.Management.Automation.Language.Parser]::ParseInput(
-            $matches[0].Groups[1].Value, [ref]$tokens, [ref]$parseErrors)
+            $candidate, [ref]$tokens, [ref]$parseErrors)
           if ($parseErrors.Count -ne 0) { throw 'STOP: PowerShell parser error' }
           $commands = @($ast.FindAll({
             param($node) $node -is [System.Management.Automation.Language.CommandAst]
