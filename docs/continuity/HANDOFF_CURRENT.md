@@ -1,6 +1,13 @@
 # Fabulaxiom M3.2 — Reprise opérationnelle courte
 
-**Checkpoint source-only mis à jour après fusion de PR #89 le 20 octobre 2026. Re-fetch obligatoire avant toute nouvelle action. Ce texte ne confère aucune autorisation locale.**
+**Checkpoint du 20 octobre 2026 après PR #92. Instantané documentaire : re-fetch GitHub obligatoire. Aucune autorisation Windows, SQLite ou G2-B/G3 créée.**
+
+## 2026-10-20 — décision courante des gates distincte de l'historique
+
+- Main `8e358d61b7f5438b893a416aa8f82d884569c5da` après fusion protégée de [PR #92](https://github.com/LaurentCOLL1/Fabulaxiom/pull/92), HEAD `cb5e1eaeaaf64bd684be6a80c9cc3b85fc56492b`, CI [#39388988034](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/39388988034) SUCCESS (70 étapes). La CI push `main` #39391283127 était EN COURS au checkpoint et ne constitue pas un PASS terminal.
+- [Table de décision G2–G6 actuelle](M3_2_GATE_DECISION_CURRENT.md) : **G2-A PASS exclusivement de métadonnées** (déclaration opérateur), G2-B/C/D NON AUTORISÉS ; G3 réel STOP, G4-G6 NON AUTORISÉS. Writer SQLite absent : `NOT_PROVEN` ; aucun owner non migrant attesté, aucune source froide quiescente qualifiée.
+- [Snapshot précédent](M3_2_GATE_SNAPSHOT.md) explicitement historique au 19 octobre : ne pas confondre son `G2: NOT_AUTHORIZED` de l'époque avec le résultat G2-A du 20. Le nouveau document **ne remplace ni les preuves historiques ni le runbook de capture**.
+- Consentement unique au bloc G2-A consommé ; nouveau script Windows soumis à revue intégrale et approbation spécifique distincte AVANT exécution. Pas de bases v6/v7, sidecars, ACL, backups, marqueurs, migration 007, IPC writer, PR #35, M3.3 ou release.
 
 ## 2026-10-20 — garde-fou textuel des points d'entrée SQLite (source-only)
 
