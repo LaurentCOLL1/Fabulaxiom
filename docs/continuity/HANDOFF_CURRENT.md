@@ -1,6 +1,13 @@
 # Fabulaxiom M3.2 — Reprise opérationnelle courte
 
-**Checkpoint du 20 octobre 2026 après PR #96. Instantané documentaire : re-fetch GitHub obligatoire. Aucune autorisation Windows, SQLite ou G2-B/G3 créée.**
+**Checkpoint du 20 octobre 2026 après PR #97. Instantané documentaire : re-fetch GitHub obligatoire. Aucune autorisation Windows, SQLite ou G2-B/G3 créée.**
+
+## 2026-10-20 — incrément produit M3.2 : édition de chronologie en navigateur fictif (candidat)
+
+- Après [PR #97](https://github.com/LaurentCOLL1/Fabulaxiom/pull/97) fusionnée sur `main=a839953f73f17379aa7c5ccde69d807b5b99a2f6`, CI PR #39426793283 SUCCESS (74 étapes) au HEAD `00defd8fb25891f4cffb7f2acdd7871ef005cccc`; CI push main #39428345389 terminale SUCCESS. La roadmap V1 est désormais assortie d'une matrice de suivi et de neuf tests.
+- Nouveau [laboratoire manuel fictif](../qualification/M3_2_SYNTHETIC_MANUAL_CHRONOLOGY_LAB.md) en candidat : formulaire de création des quatre dates, ajout de relation `avant/après` avec veto de cycle, révocation explicite, remplacement append-only préservant les sources anciennes et journal dans l'état mémoire. `src/m32BrowserLab.tsx` seul expose l'atelier ; **pas** `App.tsx` ni Tauri production, aucune DB, fichier, IPC ou donnée opérateur.
+- 13 nouveaux tests Vitest de contrat fonctionnel et refus, **plus 3 scénarios Chromium réels (32 au total)** sur manifest Git exact limité aux deux nouveaux modules fictifs, à faire qualifier par la **nouvelle CI au SHA final** avant toute fusion. Les contrôles d'historique M2, identité, chronologie monde/narration/révélation restent inconditionnels ; le caractère synthétique ne constitue PAS le CRUD réellement accepté.
+- M3.2 **IN_PROGRESS_NOT_ACCEPTED** ; PR #35 toujours DRAFT, UI native Windows et preuve de préservation réelles absentes. G2A PASS metadata-only déjà autorisé/consommé ; absence écrivain `NOT_PROVEN`, G2B/C/D et G3–G6 `NOT_AUTHORIZED`, G3 réel `STOP_UNAVAILABLE`, historique 21/3/2 non attesté, prospective NOT_STARTED. Protection v6/v7, WAL, sidecars, ACL, sauvegardes, marqueur, migration 007, writer IPC, M3.3 et release inchangée.
 
 ## 2026-10-20 — audit intégral des cinq roadmaps V1, M3.2 encore non livrée
 

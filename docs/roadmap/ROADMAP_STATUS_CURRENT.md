@@ -25,6 +25,10 @@ Les [cinq plans de source](README.md) gardent leurs exigences et preuves histori
 | M9 — imports, exports, résilience, distribution | **NOT_STARTED_NOT_AUTHORIZED** | Les sauvegardes M1.5 n'équivalent pas à l'ensemble M9 ni à une release |
 | Références visuelles / ComfyUI | **PROPOSAL_ONLY_NOT_AUTHORIZED** | [Proposition](V1_VISUAL_REFERENCES_COMFYUI_PROPOSAL.md) et issue [#19](https://github.com/LaurentCOLL1/Fabulaxiom/issues/19) ouverte ; pas de code ComfyUI, pas de garantie de sauvegarde des images |
 
+## 20 octobre 2026 — nouveau jalon candidat, actions humaines sur fixtures
+
+Une nouvelle tranche `feat/m3-2-fictional-manual-chronology-lab-20261020` propose, sans livraison de production, un [laboratoire navigateur fictif](../qualification/M3_2_SYNTHETIC_MANUAL_CHRONOLOGY_LAB.md) : créer une date, saisir `A avant B`, rejeter les cycles, corriger par supersession et révoquer avec historique. Treize tests frontend doivent être vérifiés au HEAD de la nouvelle PR. **Cette démonstration n'est pas le CRUD persistant ni l'acceptation Windows** exigés ; M3.2 demeure `IN_PROGRESS_NOT_ACCEPTED`. PR #35 et gates G2B–G6 inchangés.
+
 ## Écart principal et chemin de retour au produit M3.2
 
 Le [plan M3](M3_TIME_KNOWLEDGE_RELATIONSHIPS.md) prévoit précisément **saisie/édition manuelles des ancres temporelles et contraintes avant/après**, dates exactes/approximatives/relatives/inconnues, deux Universes, plusieurs romans, références de scènes et révisions immuables, refus des cycles et conflits, distinction visible entre **ordre du monde**, **ordre de narration** et **ordre de révélation**, fonctionnement hors ligne, puis **tests Windows réels**, preuves de sauvegarde/activation intactes, CI au SHA exact, fusion et normalisation indépendante.

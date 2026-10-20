@@ -23,6 +23,8 @@ Ce dossier constitue la **mémoire de travail versionnée du projet**. Lire en p
 
 14. [Deux connexions RAM fictives et preuve négative d'absence d'écrivain](../qualification/M3_2_SHARED_RAM_EXTERNAL_WRITER_NEGATIVE_PROOF.md) : 12 tests CI sur SQLite en mémoire, G3 toujours STOP.
 
+15. [Atelier fictif d'édition chronologique M3.2](../qualification/M3_2_SYNTHETIC_MANUAL_CHRONOLOGY_LAB.md) : premier CRUD simulé en mémoire sur le laboratoire navigateur, 13 tests, **pas** une acceptation M3.2.
+
 Pour une nouvelle conversation, copier seulement le [prompt court](RESUME_PROMPT.md). Le dépôt GitHub réel prévaut sur tout texte ou souvenir du modèle. Les SHA inscrits ici sont des **repères historiques**, jamais la preuve que GitHub n'a pas changé entre-temps.
 
 Les PR qui modifient le code ou les procédures de M3.2 doivent aussi mettre à jour `HANDOFF_CURRENT.md` et `HANDOFF_CURRENT.json` ; un garde-fou CI refusera leur omission. Ce garde-fou ne met pas les fichiers à jour automatiquement : **le développeur doit inscrire une preuve juste, datée et vérifiable**. Seule une fusion réussie les rendra disponibles dans `main`.

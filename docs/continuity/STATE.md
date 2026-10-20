@@ -1,5 +1,10 @@
 # Fabulaxiom — Current State
 
+## 2026-10-20 — amélioration produit fictive, toujours aucun accès à la production
+
+PR #97 fusionnée sur `main=a839953f73f17379aa7c5ccde69d807b5b99a2f6`, CI PR #39426793283 SUCCESS (74/74), push main #39428345389 SUCCESS. Nouveau réducteur TS sans persistance `src/m32FictionalManualChronology.ts`, formulaires `src/M32ManualChronologyLab.tsx` exposés seulement dans `m32BrowserLab.tsx` et 13 tests Vitest. Saisie des quatre temporalités, précédence `avant/après` acyclique, refus des références douteuses, supersession append-only et révocation humaine. Aucun chemin SQL, aucune migration 007, aucune modification App.tsx/Tauri ou vraie DB. Nouveau HEAD CI à qualifier, état M3.2 IN_PROGRESS_NOT_ACCEPTED, G2B–G6 STOP, absence writer réel non prouvée, provenance 21/3/2 et prospective NOT_STARTED.
+
+
 ## 2026-10-20 — revue des cinq roadmaps de V1 et écart M3.2
 
 PR #96 protégée fusionnée à `main=e35b7c92441c517d4f0fcacb829711c4d1e9da97`, CI #39414915855 SUCCESS 73/73 et CI push main #39416303498 SUCCESS 72/72. Audit direct GitHub des cinq fichiers `docs/roadmap/` : le master V1 et M2 avaient des déclarations historiques « M3 non autorisée » malgré PR #33+PR #34 prouvant M3.1 fusionnée et normalisée. Nouveau `docs/roadmap/ROADMAP_STATUS_CURRENT.md` et `docs/roadmap/README.md`, bannière de statut daté en tête de chaque roadmap. M3.2 pas encore acceptée : manque CRUD chrono/GUI manuel offline, préservation opérateur et normalisation ; PR #35 DRAFT, G2B–G6 toujours STOP. 9 tests source-only de cohérence sont ajoutés en CI, qualification exacte du nouveau PR à faire. M3.3–M3.6/M4–M9 et ComfyUI restent en attente. Aucun changement SQLite, Tauri, production v6, iso v7, sauvegarde, ACL, sidecar, migration 007, writer IPC ou release.
