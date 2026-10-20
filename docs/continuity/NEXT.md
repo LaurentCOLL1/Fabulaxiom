@@ -1,5 +1,10 @@
 # Fabulaxiom — Next Authorized Work
 
+## 2026-10-20 — couverture source-only élargie des sites SQLite Rust
+
+PR #93 fusionnée sur main 15c91039243206dc61190fec5668f32a87f3faf0, CI #39391766661 PASS 70/70 au HEAD exact. Revoir [M3_2_WIDE_RUST_SQLITE_SITE_INVENTORY.md](../qualification/M3_2_WIDE_RUST_SQLITE_SITE_INVENTORY.md) : 25 fichiers Rust sous src-tauri/src, 20 contenant au moins un motif textuel de création/ouverture/migration/ATTACH/VACUUM. 18 tests adversariaux purement source-only doivent être qualifiés par CI au nouveau commit. Re-fetch main/PR/ruleset/reviews/threads puis fusion gouvernée si terminal SUCCESS. Réel G3 toujours STOP, G2B–G6 non autorisés, absence d'écrivain NOT_PROVEN, historique 21/3/2 et future baseline NOT_STARTED ; pas d'intervention opérateur ni d'accès v6/v7/journaux/ACL/backups/markers. L'accord G2-A unique est consommé.
+
+
 ## 2026-10-20 — état actuel des gates après PR #92, uniquement documentaire
 
 Lire [M3_2_GATE_DECISION_CURRENT.md](M3_2_GATE_DECISION_CURRENT.md) : G2-A PASS metadata-only rapporté le 20 octobre ; G2-B/C/D, G3, G4, G5, G6 non autorisés, absence de writer `NOT_PROVEN`, historique 21/3/2 et prospective NOT_STARTED. PR #92 fusionnée sous protection, main `8e358d61b7f5438b893a416aa8f82d884569c5da`, CI #39388988034 SUCCESS au HEAD exact (70 étapes). Le snapshot `M3_2_GATE_SNAPSHOT.md/json` du 19 octobre reste historique et n'est pas réécrit. Prochaine tâche technique seulement après définition d'un chemin de preuve non migrant/source froide sur papier ; aucune commande locale ou accès aux originales. Le consentement unique G2-A a été consommé ; tout script exact futur exige un nouvel accord explicite. Tester la cohérence de cette décision au SHA final de sa PR avant fusion.
