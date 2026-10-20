@@ -1,5 +1,10 @@
 # Fabulaxiom — Next Authorized Work
 
+## 2026-10-20 — qualifier le lien manuel à une scène et révision fictives exactes
+
+PR #98 protégée fusionnée `main=7477001cd0ebc69d4701f21eddbda898f94c79c5`, CI PR #39447951647 SUCCESS 74/74, CI push #39449601527 SUCCESS. La [tranche suivante](../qualification/M3_2_FICTIONAL_SCENE_REVISION_EXACT_BINDING.md) fait choisir dans le laboratoire fictif le couple `scene_id` et `revision_id` immuable, rejette mélanges roman/Univers/scène, préserve le lien historique après supersession et ne lit jamais la révision courante. 9 nouveaux tests unitaires (22) et 2 scénarios Chromium (34) à qualifier au SHA exact ; ne pas propager les anciens résultats de CI. Aucun Tauri, SQLite original ou script Windows. M3.2 toujours IN_PROGRESS_NOT_ACCEPTED ; PR35 DRAFT, G2B–G6 STOP.
+
+
 ## 2026-10-20 — développer l'UX manuelle fictive M3.2, puis prouver ses tests
 
 `main=a839953f73f17379aa7c5ccde69d807b5b99a2f6` après PR #97, CI PR #39426793283 (74 étapes) et push main #39428345389 SUCCESS. Le [laboratoire fictif](../qualification/M3_2_SYNTHETIC_MANUAL_CHRONOLOGY_LAB.md) ajoute les opérations ajout ancre `exact/approximate/relative/unknown`, précédence humaine avec veto de cycle et doublon, correction append-only et révocation explicite. Seul `m32BrowserLab.tsx` peut le monter, jamais `App.tsx`. 13 tests TS ont été ajoutés : vérifier leur nouvelle CI frontend + tsc + Rust sur SHA exact ; corriger et recommencer avec tout nouveau HEAD. Mettre à jour les fichiers de reprise à chaque évolution, contrôler les PR, puis fusion sous ruleset si PASS. **Ne pas marquer M3.2 achevée** : absence de vrai CRUD persistant, UI Windows opérateur, preuves de sauvegarde, normalisation, G2B/G3. Production v6/v7, sidecars, marqueurs, migration 007, IPC writer et PR #35 restent STOP.
