@@ -127,7 +127,23 @@ class HandoffContractTests(unittest.TestCase):
         self.assertIn("M3_2_G3_RUNTIME_ENTRYPOINT_SOURCE_AUDIT.md", self.doc)
         self.assertIn("M3_2_G3_RUNTIME_ENTRYPOINT_SOURCE_AUDIT.md", self.index)
 
-    def test_15_policy_requires_refetch_and_same_pr_handoff(self):
+    def test_15_current_gate_decision_cannot_promote_a_downstream_gate(self):
+        d = self.data["gate_decision_current"]
+        self.assertEqual(d["status"], "DATED_PUBLIC_SOURCE_HANDOFF_ONLY")
+        self.assertEqual(d["scope"], "DOCUMENTARY_DECISION_NOT_EXECUTABLE")
+        self.assertEqual(d["g2a"], "PASS_METADATA_ONLY_OWNER_REPORTED")
+        for gate in ("g2b", "g2c", "g2d", "g4", "g5", "g6"):
+            self.assertEqual(d[gate], "NOT_AUTHORIZED")
+        self.assertEqual(d["g3"], "STOP_UNAVAILABLE_NOT_AUTHORIZED")
+        self.assertEqual(d["process_writer_absence"], "NOT_PROVEN")
+        self.assertEqual(d["historical"], "PENDING_EXTERNAL_ATTESTATION(21/3/2)")
+        self.assertEqual(d["prospective"], "NOT_STARTED")
+        self.assertEqual(d["last_operator_consent"], "SINGLE_G2A_PID_ZERO_RUN_CONSUMED")
+        self.assertTrue((ROOT / d["document"]).is_file())
+        self.assertIn("M3_2_GATE_DECISION_CURRENT.md", self.index)
+        self.assertIn("M3_2_GATE_DECISION_CURRENT.md", self.doc)
+
+    def test_16_policy_requires_refetch_and_same_pr_handoff(self):
         for clause in ("Re-fetch", "HANDOFF_CURRENT.md", "HANDOFF_CURRENT.json",
                        "expected_head_sha", "autorisation"):
             self.assertIn(clause, self.policy)

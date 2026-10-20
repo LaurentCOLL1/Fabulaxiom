@@ -3,14 +3,14 @@
   "as_of": "2026-10-20",
   "status_kind": "DATED_PUBLIC_SOURCE_HANDOFF_ONLY",
   "repository": "LaurentCOLL1/Fabulaxiom",
-  "last_confirmed_main_before_handoff": "fb4625450439ecf236cc9065f434eda002f71533",
-  "last_confirmed_merged_pr": 91,
-  "last_verified_pr_head": "94c9886e4e362867cab86c39efc5b13125a94dac",
+  "last_confirmed_main_before_handoff": "8e358d61b7f5438b893a416aa8f82d884569c5da",
+  "last_confirmed_merged_pr": 92,
+  "last_verified_pr_head": "cb5e1eaeaaf64bd684be6a80c9cc3b85fc56492b",
   "last_verified_ci": {
-    "run_id": 39376628743,
+    "run_id": 39388988034,
     "context": "Windows frontend and Rust checks",
     "conclusion": "SUCCESS",
-    "source": "PR91_EXACT_HEAD"
+    "source": "PR92_EXACT_HEAD"
   },
   "recent_changes": [
     "PR_85_EXACT_G2A_TEXT_AST_ONLY",
@@ -25,7 +25,9 @@
     "PR_90_G2A_METADATA_ONLY_PASS_HANDOFF_MERGED",
     "2026_10_20_SQLITE_WRITER_ABSENCE_PUBLIC_SOURCE_ANALYSIS_NO_OPERATOR_ACCESS",
     "PR_91_SQLITE_WRITER_GAP_SOURCE_ONLY_13_TESTS_MERGED",
-    "2026_10_20_G3_RUNTIME_ENTRYPOINT_KNOWN_SOURCE_AUDIT_18_NEGATIVE_TESTS_PROPOSED"
+    "2026_10_20_G3_RUNTIME_ENTRYPOINT_KNOWN_SOURCE_AUDIT_18_NEGATIVE_TESTS_PROPOSED",
+    "PR_92_RUST_SQLITE_ENTRYPOINTS_18_TESTS_SOURCE_ONLY_MERGED",
+    "2026_10_20_GATE_DECISION_LIVE_DISTINCT_FROM_HISTORIC_20261019_SNAPSHOT"
   ],
   "pr35": "OPEN_DRAFT",
   "issues": {
@@ -165,15 +167,15 @@
     "verified_bypass_actors": 0,
     "classic_branch_protection_read": "403_INTEGRATION_RESTRICTED"
   },
-  "next": "QUALIFY_KNOWN_SQLITE_ENTRYPOINTS_SOURCE_AUDIT_WITH_18_TESTS_AT_NEW_EXACT_PR_HEAD_NO_OPERATOR_ACTION",
+  "next": "REVIEW_GATE_DECISION_CURRENT_SOURCE_ONLY_NO_G2B_G3_WINDOWS_EXECUTION",
   "live_refetch_required": true,
   "hand_off_updated_by_future_pr": true,
   "main_ci_post_merge": {
-    "sha": "fb4625450439ecf236cc9065f434eda002f71533",
-    "run_id": 39388025822,
+    "sha": "8e358d61b7f5438b893a416aa8f82d884569c5da",
+    "run_id": 39391283127,
+    "conclusion": "IN_PROGRESS_AT_CHECKPOINT",
     "source": "MAIN_PUSH",
-    "conclusion": "NOT_TERMINAL_VERIFIED_AT_CHECKPOINT",
-    "note": "Never treat as successful until rechecked"
+    "note": "Recheck terminal state; not a gate proof even if SUCCESS."
   },
   "g2a_candidate_ci": {
     "pr": 86,
@@ -181,5 +183,23 @@
     "run_id": 39241294071,
     "conclusion": "SUCCESS",
     "scope": "AST_ONLY_AND_SYNTHETIC_NEVER_OPERATOR_EXECUTION"
+  },
+  "gate_decision_current": {
+    "document": "docs/continuity/M3_2_GATE_DECISION_CURRENT.md",
+    "status": "DATED_PUBLIC_SOURCE_HANDOFF_ONLY",
+    "g2a": "PASS_METADATA_ONLY_OWNER_REPORTED",
+    "g2b": "NOT_AUTHORIZED",
+    "g2c": "NOT_AUTHORIZED",
+    "g2d": "NOT_AUTHORIZED",
+    "g3": "STOP_UNAVAILABLE_NOT_AUTHORIZED",
+    "g4": "NOT_AUTHORIZED",
+    "g5": "NOT_AUTHORIZED",
+    "g6": "NOT_AUTHORIZED",
+    "process_writer_absence": "NOT_PROVEN",
+    "historical": "PENDING_EXTERNAL_ATTESTATION(21/3/2)",
+    "prospective": "NOT_STARTED",
+    "last_operator_consent": "SINGLE_G2A_PID_ZERO_RUN_CONSUMED",
+    "next_operator_procedure": "NOT_AUTHORIZED_WITHOUT_EXACT_SCRIPT_AND_NEW_APPROVAL",
+    "scope": "DOCUMENTARY_DECISION_NOT_EXECUTABLE"
   }
 }

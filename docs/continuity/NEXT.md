@@ -1,5 +1,10 @@
 # Fabulaxiom — Next Authorized Work
 
+## 2026-10-20 — état actuel des gates après PR #92, uniquement documentaire
+
+Lire [M3_2_GATE_DECISION_CURRENT.md](M3_2_GATE_DECISION_CURRENT.md) : G2-A PASS metadata-only rapporté le 20 octobre ; G2-B/C/D, G3, G4, G5, G6 non autorisés, absence de writer `NOT_PROVEN`, historique 21/3/2 et prospective NOT_STARTED. PR #92 fusionnée sous protection, main `8e358d61b7f5438b893a416aa8f82d884569c5da`, CI #39388988034 SUCCESS au HEAD exact (70 étapes). Le snapshot `M3_2_GATE_SNAPSHOT.md/json` du 19 octobre reste historique et n'est pas réécrit. Prochaine tâche technique seulement après définition d'un chemin de preuve non migrant/source froide sur papier ; aucune commande locale ou accès aux originales. Le consentement unique G2-A a été consommé ; tout script exact futur exige un nouvel accord explicite. Tester la cohérence de cette décision au SHA final de sa PR avant fusion.
+
+
 ## 2026-10-20 — tests source-only des chemins SQLite connus
 
 Après fusion PR #91 sur main=fb4625450439ecf236cc9065f434eda002f71533, qualification de [M3_2_G3_RUNTIME_ENTRYPOINT_SOURCE_AUDIT.md](../qualification/M3_2_G3_RUNTIME_ENTRYPOINT_SOURCE_AUDIT.md). Scanner textuel connu uniquement sur trois sources Rust publiques ; 18 tests de mutation/observation sur fichiers du dépôt, aucune connexion DB ou Tauri. Une modification de code actuel exige requalification, pas ouverture de l'original. Démarche non exhaustive : nouveau point d'entrée non reconnu possible. G2-A PASS_METADATA_ONLY ; writer absence NOT_PROVEN ; G3 STOP_UNAVAILABLE ; G2-B/C/D à G6 non autorisés. CI exact-head de la nouvelle PR puis fusion protégée si tout PASS. Consentement opérateur unique G2-A consommé, ne rien exécuter sur Windows.
