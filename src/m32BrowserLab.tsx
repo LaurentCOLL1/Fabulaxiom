@@ -5,6 +5,7 @@ import { M32SyntheticConsultationLab } from "./M32ChronologyConsultation";
 import M32SyntheticEventExplorer from "./M32SyntheticEventExplorer";
 import M32ManualChronologyLab from "./M32ManualChronologyLab";
 import type { M32ChronologyProjection } from "./M32ChronologyPreview";
+import type { FictionalRevision } from "./m32FictionalManualChronology";
 
 /** DISPOSABLE FICTITIOUS BROWSER TEST PAGE. NOT an App.tsx import or Tauri route.
  * No original user data, IPC, storage, fetch or filesystem reads.
@@ -48,6 +49,14 @@ const first: M32ChronologyProjection = {
       chapter_order: 0, scene_order: 0, scene_title: "L'ouverture" },
   ],
 };
+
+/** Literal historical IDs; neither display text nor a mutable scene HEAD. */
+const fictionalRevisions: readonly FictionalRevision[] = [
+  { universe_id: "fiction-world-one", novel_id: "novel-1", scene_id: "s1",
+    revision_id: "invented-rev-A", revision_label: "Ancienne rédaction A" },
+  { universe_id: "fiction-world-one", novel_id: "novel-1", scene_id: "s1",
+    revision_id: "invented-rev-B", revision_label: "Autre rédaction B" },
+];
 
 const second: M32ChronologyProjection = {
   universe_id: "fiction-world-two",
@@ -100,7 +109,8 @@ function BrowserFixture() {
       </button>
     </section>
     {mode === "editor"
-      ? <M32ManualChronologyLab key={scenario} initial={snapshot} />
+      ? <M32ManualChronologyLab key={scenario} initial={snapshot}
+          revisions={scenario === "two" ? [] : fictionalRevisions} />
       : mode === "consultation" ? <M32SyntheticConsultationLab
         scenarioKey={scenario}
         expectedUniverseId={snapshot.universe_id}
