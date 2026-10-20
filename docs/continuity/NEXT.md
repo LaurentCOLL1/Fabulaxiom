@@ -1,5 +1,10 @@
 # Fabulaxiom — Next Authorized Work
 
+## 2026-10-20 — contre-exemples de writer externe sur RAM fictive
+
+Après PR #95 fusionnée `main=a8578b8e128af2264e85a7341a96e13d0e086b23` et CI #39406700987 SUCCESS (72/72), voir [M3_2_SHARED_RAM_EXTERNAL_WRITER_NEGATIVE_PROOF.md](../qualification/M3_2_SHARED_RAM_EXTERNAL_WRITER_NEGATIVE_PROOF.md). Tests Python sur deux connexions SQLite inventées à URI `mode=memory&cache=shared`, aucun chemin privé ni modification de fichier. 12 tests refusent explicitement d'assimiler `query_only`, `total_changes`, `data_version` ou snapshot de métadonnées à une preuve d'absence d'écrivain. Vérifier la CI au SHA exact de la nouvelle PR, préserver G2B–G6 STOP, jamais de nouveau script Windows sans accord. Historique 21/3/2 et baseline prospective NOT_STARTED restent bloquants.
+
+
 ## 2026-10-20 — prototype Rust query_only sur RAM inventée, aucune base privée
 
 PR #94 source-only fusionnée, main 632e6d6d985affa6989bb220ddec99911e6ba1e6, CI PR #39394068343 au head exact 74395428c185198632cc2cd2c19eec4b7132e4ad SUCCESS (71 étapes). Nouveau [M3_2_PREOPENED_QUERY_ONLY_RAM_READER_TOY.md](../qualification/M3_2_PREOPENED_QUERY_ONLY_RAM_READER_TOY.md) et module `src-tauri/src/m32_preopened_query_only_toy.rs`, compilation seulement cfg(test) + feature déjà réservé `m32-g3-owned-ram-toy`. 13 tests de fixture SQLite RAM imaginaire, sans appel open_database ni migration. Intégrer dans CI sous sa branche, re-fetch SHA et attester exact-head avant fusion si PASS. Tout résultat reste un toy : query_only/total_changes ne démontrent pas absence de writer externe. Aucune commande opérateur autorisée. G2B–G6 STOP, production v6/v7 et journaux/backup protégés, historique 21/3/2 non résolu, prospective NOT_STARTED.

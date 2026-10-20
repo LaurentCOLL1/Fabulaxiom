@@ -3,14 +3,14 @@
   "as_of": "2026-10-20",
   "status_kind": "DATED_PUBLIC_SOURCE_HANDOFF_ONLY",
   "repository": "LaurentCOLL1/Fabulaxiom",
-  "last_confirmed_main_before_handoff": "632e6d6d985affa6989bb220ddec99911e6ba1e6",
-  "last_confirmed_merged_pr": 94,
-  "last_verified_pr_head": "74395428c185198632cc2cd2c19eec4b7132e4ad",
+  "last_confirmed_main_before_handoff": "a8578b8e128af2264e85a7341a96e13d0e086b23",
+  "last_confirmed_merged_pr": 95,
+  "last_verified_pr_head": "29bae8aee7e6985e20bfd1ebda34f7a5b2c8732d",
   "last_verified_ci": {
-    "run_id": 39394068343,
+    "run_id": 39406700987,
     "context": "Windows frontend and Rust checks",
     "conclusion": "SUCCESS",
-    "source": "PR94_EXACT_HEAD"
+    "source": "PR95_EXACT_HEAD"
   },
   "recent_changes": [
     "PR_85_EXACT_G2A_TEXT_AST_ONLY",
@@ -31,7 +31,9 @@
     "PR_93_CURRENT_GATE_DECISION_DOCUMENTARY_MERGED",
     "2026_10_20_WIDE_RUST_SQLITE_SITE_INVENTORY_SOURCE_ONLY_18_TESTS_PROPOSED",
     "PR_94_WIDE_RUST_SQLITE_TEXTUAL_INVENTORY_18_TESTS_MERGED",
-    "2026_10_20_PREOPENED_QUERY_ONLY_FICTIONAL_RAM_READER_TEST_ONLY_13_CASES_PROPOSED"
+    "2026_10_20_PREOPENED_QUERY_ONLY_FICTIONAL_RAM_READER_TEST_ONLY_13_CASES_PROPOSED",
+    "PR_95_PREOPENED_RAM_QUERYONLY_RUST_13_TESTS_MERGED_CI_SUCCESS",
+    "2026_10_20_EXTERNAL_WRITER_RAM_ONLY_PYTHON_12_NEGATIVE_TESTS_PROPOSED"
   ],
   "pr35": "OPEN_DRAFT",
   "issues": {
@@ -166,6 +168,21 @@
       "real_g3": "STOP_UNAVAILABLE",
       "absence_of_real_writer": "NOT_PROVEN",
       "permission_promotion": "NEVER"
+    },
+    "other_writer_ram_counterexample": {
+      "document": "docs/qualification/M3_2_SHARED_RAM_EXTERNAL_WRITER_NEGATIVE_PROOF.md",
+      "tests": "tools/test_m32_shared_ram_other_writer_counterexample.py",
+      "fixture": "NAMED_URI_MODE_MEMORY_CACHE_SHARED_TWO_PYTHON_CONNECTIONS_CI_ONLY",
+      "sample_count": 12,
+      "disk_sqlite_access": "NONE",
+      "windows_operator_execution": "NOT_AUTHORIZED",
+      "query_only_global_exclusion": "FALSE",
+      "reader_total_changes_detects_other_writer": "FALSE",
+      "data_version_is_continuous_absence_proof": "FALSE",
+      "actual_other_writer_absence": "NOT_PROVEN",
+      "runtime_tauri_integration": "NONE",
+      "real_g3": "STOP_UNAVAILABLE",
+      "permissions": "NO_GATE_PROMOTION"
     }
   },
   "governance": {
@@ -202,15 +219,15 @@
     "verified_bypass_actors": 0,
     "classic_branch_protection_read": "403_INTEGRATION_RESTRICTED"
   },
-  "next": "QUALIFY_RAM_ONLY_PREOPENED_QUERY_ONLY_RUST_TESTS_AT_EXACT_PR_HEAD_AND_RETAIN_G3_STOP",
+  "next": "QUALIFY_TWO_CONNECTIONS_NAMED_RAM_EXTERNAL_WRITER_COUNTEREXAMPLE_IN_EXACT_HEAD_CI_KEEP_G2B_G3_DENIED",
   "live_refetch_required": true,
   "hand_off_updated_by_future_pr": true,
   "main_ci_post_merge": {
-    "sha": "632e6d6d985affa6989bb220ddec99911e6ba1e6",
-    "run_id": null,
-    "conclusion": "NOT_YET_ASSESSED_AT_CHECKPOINT",
+    "sha": "a8578b8e128af2264e85a7341a96e13d0e086b23",
+    "run_id": 39407869929,
+    "conclusion": "SUCCESS",
     "source": "MAIN_PUSH",
-    "note": "CI push main must be checked live before treating as SUCCESS; no gate promotion"
+    "note": "Terminal SUCCESS verified on 20 October 2026; does not authorize any local gate"
   },
   "g2a_candidate_ci": {
     "pr": 86,

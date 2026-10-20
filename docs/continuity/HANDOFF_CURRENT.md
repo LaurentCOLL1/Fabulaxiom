@@ -1,6 +1,13 @@
 # Fabulaxiom M3.2 — Reprise opérationnelle courte
 
-**Checkpoint du 20 octobre 2026 après PR #94. Instantané documentaire : re-fetch GitHub obligatoire. Aucune autorisation Windows, SQLite ou G2-B/G3 créée.**
+**Checkpoint du 20 octobre 2026 après PR #95. Instantané documentaire : re-fetch GitHub obligatoire. Aucune autorisation Windows, SQLite ou G2-B/G3 créée.**
+
+## 2026-10-20 — autre écrivain SQLite malgré query_only : contre-exemples sur RAM fictive
+
+- PR #95 fusionnée sur `main=a8578b8e128af2264e85a7341a96e13d0e086b23`, HEAD qualifié `29bae8aee7e6985e20bfd1ebda34f7a5b2c8732d`, CI PR #39406700987 SUCCESS (72/72) et CI push main #39407869929 SUCCESS recontrôlée. Les 13 tests Rust précédents sont donc intégrés, mais leur effet reste exclusivement local à une connexion fictive.
+- Nouvelle [preuve négative en RAM partagée](../qualification/M3_2_SHARED_RAM_EXTERNAL_WRITER_NEGATIVE_PROOF.md) : deux connexions SQLite Python distinctes, URI figée `mode=memory&cache=shared` validée par chemin principal vide, sans aucun fichier opérateur. Douze tests source-only montrent qu'une deuxième connexion peut écrire malgré le `query_only=ON` de la première et que `total_changes` du lecteur ne change pas.
+- `PRAGMA data_version` peut signaler une modification externe passée, mais ne prouve pas une quiescence continue ni une identité de propriétaire. Le test n'est pas un mécanisme à déployer : shared-cache uniquement pour l'expérience fictive.
+- **Décision inchangée** : G2-A `PASS_METADATA_ONLY_OWNER_REPORTED`, absence de writer réel `NOT_PROVEN`, G2-B/C/D/G3/G4/G5/G6 `NOT_AUTHORIZED`, vrai G3 `STOP_UNAVAILABLE` ; historique 21/3/2 et prospective NOT_STARTED ; consentement G2-A consommé. Aucune commande Windows, ni original v6/v7, sidecars, backups, ACL, marqueur, migration 007, IPC writer, PR #35 ou release.
 
 ## 2026-10-20 — lecture préouverte query-only en RAM fictive, Rust TEST-ONLY
 

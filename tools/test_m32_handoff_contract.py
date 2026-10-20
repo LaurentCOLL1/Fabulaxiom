@@ -173,7 +173,22 @@ class HandoffContractTests(unittest.TestCase):
         self.assertIn("M3_2_PREOPENED_QUERY_ONLY_RAM_READER_TOY.md", self.doc)
         self.assertIn("M3_2_PREOPENED_QUERY_ONLY_RAM_READER_TOY.md", self.index)
 
-    def test_18_policy_requires_refetch_and_same_pr_handoff(self):
+    def test_18_external_writer_in_memory_counterexample_not_production_proof(self):
+        e = self.data["g2a"]["other_writer_ram_counterexample"]
+        self.assertEqual(e["sample_count"], 12)
+        self.assertEqual(e["disk_sqlite_access"], "NONE")
+        self.assertEqual(e["windows_operator_execution"], "NOT_AUTHORIZED")
+        self.assertEqual(e["query_only_global_exclusion"], "FALSE")
+        self.assertEqual(e["reader_total_changes_detects_other_writer"], "FALSE")
+        self.assertEqual(e["actual_other_writer_absence"], "NOT_PROVEN")
+        self.assertEqual(e["real_g3"], "STOP_UNAVAILABLE")
+        self.assertEqual(e["permissions"], "NO_GATE_PROMOTION")
+        self.assertTrue((ROOT / e["tests"]).is_file())
+        self.assertTrue((ROOT / e["document"]).is_file())
+        self.assertIn("M3_2_SHARED_RAM_EXTERNAL_WRITER_NEGATIVE_PROOF.md", self.doc)
+        self.assertIn("M3_2_SHARED_RAM_EXTERNAL_WRITER_NEGATIVE_PROOF.md", self.index)
+
+    def test_19_policy_requires_refetch_and_same_pr_handoff(self):
         for clause in ("Re-fetch", "HANDOFF_CURRENT.md", "HANDOFF_CURRENT.json",
                        "expected_head_sha", "autorisation"):
             self.assertIn(clause, self.policy)

@@ -130,6 +130,9 @@ jobs:
       - name: M3.2 whole-tree Rust SQLite source-only inventory and 18 drift refusals
         run: python -m unittest discover -s tools -p "test_m32_rust_sqlite_open_inventory.py" -v
 
+      - name: M3.2 two-connection fictional RAM query-only 12 writer counterexamples
+        run: python -m unittest discover -s tools -p "test_m32_shared_ram_other_writer_counterexample.py" -v
+
       - name: M3.2 living handoff source-only contract checks
         run: python -m unittest discover -s tools -p "test_m32_handoff_contract.py" -v
 
