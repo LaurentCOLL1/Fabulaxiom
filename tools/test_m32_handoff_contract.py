@@ -208,6 +208,8 @@ class HandoffContractTests(unittest.TestCase):
         x = self.data["m3_2_product_progress"]
         self.assertEqual(x["delivery"], "SYNTHETIC_BROWSER_LAB_ONLY_UNQUALIFIED_PR")
         self.assertEqual(x["expected_tests"], 13)
+        self.assertEqual(x["browser_new_cases"], 3)
+        self.assertEqual(x["browser_total_expected"], 32)
         self.assertEqual(x["app_tauri_production_integration"], "NONE")
         self.assertEqual(x["sqlite_real_access"], "NONE")
         self.assertEqual(x["operator_windows_acceptance"], "NOT_STARTED")
