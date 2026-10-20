@@ -1,5 +1,10 @@
 # Fabulaxiom — Current State
 
+## 2026-10-20 — expérience négative d'un second écrivain sur RAM inventée
+
+PR #95 fusionnée `main=a8578b8e128af2264e85a7341a96e13d0e086b23`, CI PR #39406700987 au HEAD 29bae8aee7e6985e20bfd1ebda34f7a5b2c8732d SUCCESS (72/72), CI push main #39407869929 SUCCESS. Suite : tests source-only en Python avec deux connexions à la même RAM imaginaire (mode=memory, uri=True, cache=shared), démontrant écriture indépendante sous query_only du lecteur et compteur total_changes inchangé malgré modification externe. Aucun original, WAL/SHM, sauvegarde, ACL, marqueur, migration 007, writer IPC, release ou Tauri touché. G2A metadata-only PASS opérateur, absence de writer réel NOT_PROVEN, G2B–G6 pas autorisés, historique PENDING 21/3/2 et prospective NOT_STARTED. Nouvelle CI exact-head avant fusion.
+
+
 ## 2026-10-20 — PR #94 fusionnée ; nouveau prototype de lecteur RAM fictif
 
 PR #94 fusionnée sous règles main, SHA 632e6d6d985affa6989bb220ddec99911e6ba1e6, CI PR #39394068343 SUCCESS (71 étapes sur HEAD 74395428c185198632cc2cd2c19eec4b7132e4ad). Nouveau module test-only `m32_preopened_query_only_toy.rs` : emprunt d'une connexion fictive `&Connection` déjà ouverte, mode query_only vérifié et non activé par l'API de lecture, version 6/7 entièrement inventée, database_list sans chemin, 13 tests sur absence de migration et refus d'écriture/attaches/versions/état modifié. Aucun runtime Tauri/IPC ni base de production. Nouvelle CI exigée au SHA final de la PR. Aucun writer original attesté ; G3 réel toujours STOP, v6/v7 et sauvegardes/journaux/ACL/activation markers protégés, PR #35 DRAFT, provenance 21/3/2, prospective NOT_STARTED et release non autorisée.
