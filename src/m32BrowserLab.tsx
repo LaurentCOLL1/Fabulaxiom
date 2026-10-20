@@ -3,6 +3,7 @@ import "./m32BrowserLab.css";
 import { createRoot } from "react-dom/client";
 import { M32SyntheticConsultationLab } from "./M32ChronologyConsultation";
 import M32SyntheticEventExplorer from "./M32SyntheticEventExplorer";
+import M32ManualChronologyLab from "./M32ManualChronologyLab";
 import type { M32ChronologyProjection } from "./M32ChronologyPreview";
 
 /** DISPOSABLE FICTITIOUS BROWSER TEST PAGE. NOT an App.tsx import or Tauri route.
@@ -72,7 +73,7 @@ const cyclic: M32ChronologyProjection = {
 type Scenario = "one" | "two" | "cyclic";
 function BrowserFixture() {
   const [scenario, setScenario] = useState<Scenario>("one");
-  const [mode, setMode] = useState<"consultation" | "explorer">("consultation");
+  const [mode, setMode] = useState<"consultation" | "explorer" | "editor">("consultation");
   const snapshot = scenario === "two" ? second : scenario === "cyclic" ? cyclic : first;
   return <main aria-label="Laboratoire navigateur M3.2 exclusivement fictif">
     <h1>Tests navigateur — données imaginaires exclusivement</h1>
@@ -94,16 +95,21 @@ function BrowserFixture() {
       <button type="button" onClick={() => setMode("consultation")}>
         Afficher le parcours de consultation fictif
       </button>
+      <button type="button" onClick={() => setMode("editor")}>
+        Ouvrir l'atelier manuel fictif
+      </button>
     </section>
-    {mode === "consultation" ? <M32SyntheticConsultationLab
-      scenarioKey={scenario}
-      expectedUniverseId={snapshot.universe_id}
-      snapshot={snapshot}
-    /> : <M32SyntheticEventExplorer
-      scenarioKey={scenario}
-      expectedUniverseId={snapshot.universe_id}
-      snapshot={snapshot}
-    />}
+    {mode === "editor"
+      ? <M32ManualChronologyLab key={scenario} initial={snapshot} />
+      : mode === "consultation" ? <M32SyntheticConsultationLab
+        scenarioKey={scenario}
+        expectedUniverseId={snapshot.universe_id}
+        snapshot={snapshot}
+      /> : <M32SyntheticEventExplorer
+        scenarioKey={scenario}
+        expectedUniverseId={snapshot.universe_id}
+        snapshot={snapshot}
+      />}
     <p>Aucun événement dans cette page ne provient d'une base opérateur.</p>
   </main>;
 }
