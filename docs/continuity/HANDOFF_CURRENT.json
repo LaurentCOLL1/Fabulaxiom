@@ -304,6 +304,13 @@
     "m3_2_milestone": "IN_PROGRESS_NOT_ACCEPTED",
     "owner_writer_absence": "NOT_PROVEN",
     "g2b_to_g6": "NOT_AUTHORIZED",
-    "real_g3": "STOP_UNAVAILABLE"
+    "real_g3": "STOP_UNAVAILABLE",
+    "browser_new_cases": 3,
+    "browser_total_expected": 32,
+    "browser_fixture_manifest": "EXACT_TWO_ADDITIONAL_FICTION_ONLY_SOURCE_MODULES",
+    "initial_ci_failures": [
+      "HTML_ESCAPING_EXPECTATION_FIXED",
+      "CHROMIUM_PINNED_MANIFEST_ENLARGED_ONLY_FOR_TWO_FICTION_FILES"
+    ]
   }
 }
