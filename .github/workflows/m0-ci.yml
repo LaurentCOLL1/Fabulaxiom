@@ -124,6 +124,9 @@ jobs:
       - name: M3.2 G2-A writer absence SOURCE-ONLY 13 adversarial denials
         run: python -m unittest discover -s tools -p "test_m32_g2a_writer_gap_model.py" -v
 
+      - name: M3.2 G3 runtime entrypoints public source-only audit and 18 refusals
+        run: python -m unittest discover -s tools -p "test_m32_g3_runtime_entrypoint_source_audit.py" -v
+
       - name: M3.2 living handoff source-only contract checks
         run: python -m unittest discover -s tools -p "test_m32_handoff_contract.py" -v
 
