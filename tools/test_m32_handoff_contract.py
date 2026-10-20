@@ -25,7 +25,7 @@ class HandoffContractTests(unittest.TestCase):
             self.assertRegex(self.data[key], r"^[0-9a-f]{40}$")
 
     def test_03_latest_verified_merge_not_promoted_to_runtime(self):
-        self.assertGreaterEqual(self.data["last_confirmed_merged_pr"], 88)
+        self.assertGreaterEqual(self.data["last_confirmed_merged_pr"], 89)
         self.assertEqual(self.data["g2a"]["corrected_execution"], "STOP_WEBVIEW2_PARENTAGE")
 
     def test_04_pr35_and_external_issues_still_open(self):
@@ -36,7 +36,7 @@ class HandoffContractTests(unittest.TestCase):
         self.assertEqual(self.data["g2a"]["exact_corrected_script_owner_approval"],
                          "APPROVED_FOR_ONE_MANUAL_RUN_CONSUMED")
         self.assertEqual(self.data["g2a"]["future_script_approval"],
-                         "EXPLICIT_NEW_REVIEW_REQUIRED")
+                         "NEW_EXPLICIT_APPROVAL_REQUIRED_FOR_ANY_FURTHER_MANUAL_RUN")
         self.assertEqual(self.data["g2a"]["absence_of_sqlite_writer"], "NOT_PROVEN")
 
     def test_06_prospective_and_historical_not_promoted(self):
@@ -64,9 +64,9 @@ class HandoffContractTests(unittest.TestCase):
 
     def test_10_operator_stop_cannot_promote_any_gate(self):
         g = self.data['g2a']
-        self.assertEqual(g['current_stop_stage'], 'WEBVIEW2_PARENTAGE')
-        self.assertEqual(g['current_stop_reason'], 'UNEXPECTED_OR_UNSAFE')
-        self.assertEqual(g['stop_subcause'], 'NOT_IDENTIFIABLE_FROM_SANITIZED_OUTPUT')
+        self.assertEqual(g['pr86_historic_stop']['stage'], 'WEBVIEW2_PARENTAGE')
+        self.assertEqual(g['pr86_historic_stop']['reason'], 'UNEXPECTED_OR_UNSAFE')
+        self.assertEqual(g['pr86_historic_stop']['subcause'], 'NOT_IDENTIFIABLE_FROM_SANITIZED_OUTPUT')
         self.assertEqual(g['absence_of_sqlite_writer'], 'NOT_PROVEN')
         self.assertEqual(self.data['governance']['prospective'], 'NOT_STARTED')
         self.assertEqual(self.data['governance']['tauri_runtime'], 'NOT_TESTED')
@@ -75,14 +75,33 @@ class HandoffContractTests(unittest.TestCase):
 
     def test_11_new_candidate_stays_unexecuted_and_separate(self):
         c = self.data["g2a"]["future_candidate"]
-        self.assertEqual(c["operator_execution"], "NOT_AUTHORIZED")
-        self.assertEqual(c["cause_of_operator_stop"], "UNKNOWN")
-        self.assertEqual(c["review"], "EXACT_SCRIPT_AND_EFFECTS_REVIEW_REQUIRED")
+        self.assertEqual(c["operator_execution"], "PASS_METADATA_ONLY_OWNER_REPORTED_SINGLE_RUN")
+        self.assertEqual(c["cause_of_operator_stop"], "UNKNOWN_HISTORIC_PR86")
+        self.assertEqual(c["review"], "EXACT_SCRIPT_REVIEWED_AND_ONE_TIME_RUN_CONSUMED")
+        self.assertEqual(c["development_status"], "SOURCE_MERGED_AND_OWNER_REPORTED_LOCAL_METADATA_PASS")
+        self.assertEqual(c["ci_run"], 39339365546)
+        self.assertEqual(c["source_review_completed"], True)
         self.assertTrue((ROOT / c["path"]).is_file())
         self.assertIn("M3_2_G2A_PID_ZERO_CANDIDATE_REVIEW.md", self.index)
         self.assertIn("STOP_WEBVIEW2_PARENTAGE", self.doc)
 
-    def test_12_policy_requires_refetch_and_same_pr_handoff(self):
+    def test_12_local_metadata_pass_stays_tightly_bounded(self):
+        g = self.data["g2a"]
+        observation = g["latest_operator_observation"]
+        self.assertEqual(observation["g2a_local_metadata"], "PASS")
+        self.assertEqual(observation["webview2_searchhost_lineage"], 6)
+        self.assertEqual(observation["lineage_evidence"], "OBSERVED_METADATA_ONLY")
+        self.assertEqual(observation["webview2_ownership_authenticated"], "NO")
+        self.assertEqual(observation["process_writer_absence"], "NOT_PROVEN")
+        self.assertEqual(observation["g2b_to_g6"], "NOT_AUTHORIZED")
+        self.assertEqual(observation["tauri_runtime"], "NOT_TESTED")
+        self.assertEqual(observation["authorized_single_manual_execution"], "CONSUMED")
+        self.assertEqual(g["absence_of_sqlite_writer"], "NOT_PROVEN")
+        self.assertEqual(g["pr86_historic_stop"]["actual_runtime"], "STOP_WEBVIEW2_PARENTAGE")
+        self.assertIn("G2A_LOCAL_METADATA: PASS", self.doc)
+        self.assertIn("G2B_G2C_G2D_G3_G4_G5_G6: NOT_AUTHORIZED", self.doc)
+
+    def test_13_policy_requires_refetch_and_same_pr_handoff(self):
         for clause in ("Re-fetch", "HANDOFF_CURRENT.md", "HANDOFF_CURRENT.json",
                        "expected_head_sha", "autorisation"):
             self.assertIn(clause, self.policy)

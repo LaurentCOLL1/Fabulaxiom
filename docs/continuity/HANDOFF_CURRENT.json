@@ -3,14 +3,14 @@
   "as_of": "2026-10-20",
   "status_kind": "DATED_PUBLIC_SOURCE_HANDOFF_ONLY",
   "repository": "LaurentCOLL1/Fabulaxiom",
-  "last_confirmed_main_before_handoff": "6d9d9ff52459873347180f509717180ccccd0d5f",
-  "last_confirmed_merged_pr": 88,
-  "last_verified_pr_head": "0b7c55f30f0a7967270e9a58be7beae25087fec5",
+  "last_confirmed_main_before_handoff": "f14e5991d34350682647ef6f0bd67b1d2055f41a",
+  "last_confirmed_merged_pr": 89,
+  "last_verified_pr_head": "e188a98090112551b6a35dd78e8327914c0e9965",
   "last_verified_ci": {
-    "run_id": 39303355912,
+    "run_id": 39339365546,
     "context": "Windows frontend and Rust checks",
     "conclusion": "SUCCESS",
-    "source": "PR88_EXACT_HEAD"
+    "source": "PR89_EXACT_HEAD"
   },
   "recent_changes": [
     "PR_85_EXACT_G2A_TEXT_AST_ONLY",
@@ -19,7 +19,9 @@
     "2026_10_19_GITHUB_REFETCH_VERIFIED_NO_WINDOWS_EXECUTION",
     "2026_10_19_OWNER_REPORTED_REVISED_G2A_STOP_WEBVIEW2_PARENTAGE",
     "PR_88_G2A_REPORTED_STOP_HANDOFF_MERGED",
-    "2026_10_20_PID_ZERO_CANDIDATE_SOURCE_ONLY_NOT_EXECUTED"
+    "2026_10_20_PID_ZERO_CANDIDATE_SOURCE_ONLY_NOT_EXECUTED",
+    "PR_89_PID_ZERO_CANDIDATE_CI_QUALIFIED_AND_MERGED_SOURCE_ONLY",
+    "2026_10_20_OWNER_REPORTED_PID_ZERO_G2A_LOCAL_METADATA_PASS_013124_CEST"
   ],
   "pr35": "OPEN_DRAFT",
   "issues": {
@@ -33,28 +35,60 @@
     "corrected_execution": "STOP_WEBVIEW2_PARENTAGE",
     "exact_corrected_script_owner_approval": "APPROVED_FOR_ONE_MANUAL_RUN_CONSUMED",
     "absence_of_sqlite_writer": "NOT_PROVEN",
-    "future_script_approval": "EXPLICIT_NEW_REVIEW_REQUIRED",
-    "current_stop_stage": "WEBVIEW2_PARENTAGE",
-    "current_stop_reason": "UNEXPECTED_OR_UNSAFE",
-    "stop_subcause": "NOT_IDENTIFIABLE_FROM_SANITIZED_OUTPUT",
-    "latest_observation_source": "OWNER_REPORTED_FIVE_SAFE_OUTPUT_LINES_NOT_INDEPENDENTLY_ATTESTED",
-    "latest_observation_date": "2026-10-19",
+    "future_script_approval": "NEW_EXPLICIT_APPROVAL_REQUIRED_FOR_ANY_FURTHER_MANUAL_RUN",
+    "latest_observation_source": "OWNER_REPORTED_PID0_LOCAL_METADATA_PASS_NOT_INDEPENDENTLY_ATTESTED",
+    "latest_observation_date": "2026-10-20",
     "g2b_to_g6": "NOT_AUTHORIZED",
     "possible_source_defect": {
-      "status": "HYPOTHESIS_NOT_OPERATOR_CONFIRMED",
+      "status": "FIXED_SOURCE_GUARD_AND_NEW_RUNTIME_PASS_BUT_PREVIOUS_STOP_CAUSE_UNPROVEN",
       "detail": "CURRENT_CIM_INVENTORY_PID_LE_ZERO_REJECTS_LEGITIMATE_SYSTEM_IDLE_PID_ZERO_IF_PRESENT",
-      "tests": "EXISTING_SYNTHETIC_FIXTURES_DO_NOT_COVER_PID_ZERO",
-      "follow_up": "SOURCE_ONLY_DESIGN_BEFORE_NEW_EXPLICIT_CONSENT"
+      "tests": "22_SYNTHETIC_PROCESS_FIXTURES_AND_11_EXACT_SOURCE_TESTS_PASS",
+      "follow_up": "DO_NOT_ASSUME_PID_ZERO_WAS_ROOT_CAUSE_OF_PREVIOUS_STOP"
     },
     "future_candidate": {
       "path": "docs/qualification/M3_2_G2A_PID_ZERO_CANDIDATE_REVIEW.md",
       "kind": "STRICT_SINGLE_SYSTEM_IDLE_PID_ZERO_EXCEPTION",
-      "development_status": "SOURCE_ONLY_AWAITING_EXACT_HEAD_CI",
-      "operator_execution": "NOT_AUTHORIZED",
-      "review": "EXACT_SCRIPT_AND_EFFECTS_REVIEW_REQUIRED",
+      "development_status": "SOURCE_MERGED_AND_OWNER_REPORTED_LOCAL_METADATA_PASS",
+      "operator_execution": "PASS_METADATA_ONLY_OWNER_REPORTED_SINGLE_RUN",
+      "review": "EXACT_SCRIPT_REVIEWED_AND_ONE_TIME_RUN_CONSUMED",
       "historic_pr86_blob_sha": "ebeb8800f9f8e8cd9918579fca7e32c9e5231622",
       "changes_outside_pid_zero_guard": "NONE_INTENDED",
-      "cause_of_operator_stop": "UNKNOWN"
+      "cause_of_operator_stop": "UNKNOWN_HISTORIC_PR86",
+      "source_review_completed": true,
+      "merge_commit_sha": "f14e5991d34350682647ef6f0bd67b1d2055f41a",
+      "pr_head_sha": "e188a98090112551b6a35dd78e8327914c0e9965",
+      "ci_run": 39339365546,
+      "ci_checks": "68_WINDOWS_JOB_STEPS_SUCCESS",
+      "one_time_operator_approval": "CONSUMED",
+      "verified_scope": "METADATA_OBSERVATION_ONLY"
+    },
+    "corrected_execution_scope": "HISTORIC_PR86_ONLY",
+    "pr86_historic_stop": {
+      "stage": "WEBVIEW2_PARENTAGE",
+      "reason": "UNEXPECTED_OR_UNSAFE",
+      "subcause": "NOT_IDENTIFIABLE_FROM_SANITIZED_OUTPUT",
+      "actual_runtime": "STOP_WEBVIEW2_PARENTAGE"
+    },
+    "latest_runtime_result": "PASS_METADATA_ONLY_OWNER_REPORTED",
+    "latest_operator_observation": {
+      "date_time": "2026-10-20T01:31:24+02:00",
+      "timezone": "Romance Standard Time",
+      "powershell_version": "5.1.26100.9587",
+      "source": "USER_SUPPLIED_SANITIZED_POWERSHELL_OUTPUT_NOT_INDEPENDENTLY_ATTESTED",
+      "script_source": "PR89_PID_ZERO_MD_EXACT_SOURCE",
+      "script_blob_sha": "b8600f65a53baa7935966bd40bc16dd790febe9f",
+      "authorized_single_manual_execution": "CONSUMED",
+      "g2a_local_metadata": "PASS",
+      "token_integrity": "MEDIUM",
+      "fabulaxiom_ollama_process": "NONE_MATCHED",
+      "webview2_searchhost_lineage": 6,
+      "lineage_evidence": "OBSERVED_METADATA_ONLY",
+      "webview2_ownership_authenticated": "NO",
+      "process_writer_absence": "NOT_PROVEN",
+      "public_github_check": "NOT_ASSESSED_BY_THIS_BLOCK",
+      "tauri_runtime": "NOT_TESTED",
+      "g2b_to_g6": "NOT_AUTHORIZED",
+      "evidence_limit": "NO_SQLITE_WRITER_ATTESTATION_NO_OWNER_AUTHENTICATION_NO_GATE_ESCALATION"
     }
   },
   "governance": {
@@ -91,15 +125,15 @@
     "verified_bypass_actors": 0,
     "classic_branch_protection_read": "403_INTEGRATION_RESTRICTED"
   },
-  "next": "QUALIFY_PID_ZERO_PROPOSAL_SOURCE_ONLY_CI_AT_FINAL_SHA_AND_STOP_BEFORE_ANY_OPERATOR_EXECUTION",
+  "next": "PRESERVE_LOCAL_METADATA_PASS_SOURCE_ONLY_ANALYZE_WRITER_ABSENCE_GOVERNANCE_REMAINING_STOP_AND_REQUIRE_NEW_APPROVAL_FOR_ANY_NEW_OPERATOR_ACTION",
   "live_refetch_required": true,
   "hand_off_updated_by_future_pr": true,
   "main_ci_post_merge": {
-    "sha": "6d9d9ff52459873347180f509717180ccccd0d5f",
-    "run_id": 39338867733,
-    "conclusion": "IN_PROGRESS_AT_CHECKPOINT",
+    "sha": "f14e5991d34350682647ef6f0bd67b1d2055f41a",
+    "run_id": 39341197526,
+    "conclusion": "SUCCESS",
     "source": "MAIN_PUSH",
-    "note": "Do not treat as terminal success until rechecked"
+    "note": "Final live run result rechecked before PR90 new HEAD; not a CI proof for this upcoming commit"
   },
   "g2a_candidate_ci": {
     "pr": 86,

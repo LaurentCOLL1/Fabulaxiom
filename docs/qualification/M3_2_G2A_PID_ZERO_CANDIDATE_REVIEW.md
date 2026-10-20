@@ -1,6 +1,6 @@
 # M3.2 — Candidat distinct G2-A : PID 0 « System Idle Process »
 
-**REVUE SOURCE UNIQUEMENT — NE PAS EXÉCUTER.** La version PR #86 réellement exécutée est conservée, inchangée, dans `M3_2_G2A_EXACT_BLOCK_REVIEW.md` (blob Git `ebeb8800f9f8e8cd9918579fca7e32c9e5231622`). Ce document contient une **nouvelle proposition**, jamais exécutée.
+**MISE À JOUR DOCUMENTAIRE DU 20 OCTOBRE 2026 (code PowerShell strictement inchangé) :** après revue intégrale du code et accord explicite limité à une exécution, le propriétaire a exécuté manuellement ce bloc et signalé `G2A_LOCAL_METADATA: PASS` à `01:31:24+02:00`, avec `WEBVIEW2_SEARCHHOST_LINEAGE: 6 OBSERVED_METADATA_ONLY`, `WEBVIEW2_OWNERSHIP_AUTHENTICATED: NO` et `PROCESS_WRITER_ABSENCE: NOT_PROVEN`. **L'autorisation a été consommée : NE PAS RELANCER sans un nouvel accord explicite.** Le document original est celui d'une revue source-only antérieure à cette observation ; la version #86 reste séparée et inchangée (blob Git `ebeb8800f9f8e8cd9918579fca7e32c9e5231622`).
 
 ## Modification exacte et portée
 
@@ -8,9 +8,9 @@ Dans le parcours de l'inventaire complet `Win32_Process`, autoriser **un seul** 
 
 La sortie opérateur #86 était `G2A_LOCAL_METADATA: STOP`, `STOP_STAGE: WEBVIEW2_PARENTAGE`, `STOP_REASON: UNEXPECTED_OR_UNSAFE`. La sous-cause étant masquée, **PID 0 reste une hypothèse technique, pas une cause démontrée sur ce PC**.
 
-L'analyse est uniquement textuelle et par fixtures fictives. Le runner CI analysera l'AST mais **n'exécutera pas ce bloc**. Aucun accès voulu à une base SQLite, sauvegarde, sidecar, ACL, marqueur, worktree, réseau ou fichier, et aucune élévation, UAC, fermeture/lancement de processus ni écriture. `Get-CimInstance` peut solliciter WMI/CIM et le système d'exploitation peut journaliser. Une éventuelle utilisation locale demanderait un collage dans PowerShell suivi éventuellement d'Entrée, sans mot de passe ni `q`. **Aucune autorisation pour cette version : ne pas la coller.**
+La qualification GitHub est uniquement textuelle et par fixtures fictives ; le runner CI analyse l'AST mais **n'exécute jamais ce bloc**. Une exécution manuelle distincte a ensuite été rapportée par le propriétaire. Aucun accès voulu à une base SQLite, sauvegarde, sidecar, ACL, marqueur, worktree, réseau ou fichier, et aucune élévation, UAC, fermeture/lancement de processus ni écriture. `Get-CimInstance` peut solliciter WMI/CIM et le système d'exploitation peut journaliser. Une éventuelle utilisation locale demanderait un collage dans PowerShell suivi éventuellement d'Entrée, sans mot de passe ni `q`. **Une seule autorisation manuelle a été donnée puis consommée ; ne pas la recoller.**
 
-## Script exact — non autorisé
+## Script exact conservé — réexécution NON autorisée
 
 ```powershell
 & {
@@ -132,6 +132,6 @@ L'analyse est uniquement textuelle et par fixtures fictives. Le runner CI analys
 
 ## Conditions permanentes
 
-Un PASS futur n'authentifierait pas SearchHost et ne prouverait pas l'absence d'un writer SQLite : les PID peuvent être réutilisés et les processus changent pendant l'inventaire. Tout autre PID anormal ou parent inconnu reste STOP. `G2B_G2C_G2D_G3_G4_G5_G6: NOT_AUTHORIZED` ; production v6, v7 isolée, migrations 007, IPC writer et release interdits. `TAURI_RUNTIME: NOT_TESTED`, `REAL_G3_STOP_UNAVAILABLE`, PR #35 DRAFT. L'ancienne approbation a été consommée ; **nouvel accord explicite sur les octets exacts indispensable avant tout essai**.
+Le PASS observé n'authentifie pas SearchHost et ne prouve pas l'absence d'un writer SQLite : les PID peuvent être réutilisés et les processus changent pendant l'inventaire. Tout autre PID anormal ou parent inconnu reste STOP. `G2B_G2C_G2D_G3_G4_G5_G6: NOT_AUTHORIZED` ; production v6, v7 isolée, migrations 007, IPC writer et release interdits. `TAURI_RUNTIME: NOT_TESTED`, `REAL_G3_STOP_UNAVAILABLE`, PR #35 DRAFT. L'accord sur cette version est consommé ; **un nouvel accord explicite sur les octets exacts reste indispensable avant tout autre essai**.
 
 Sources : https://learn.microsoft.com/en-us/powershell/scripting/samples/managing-processes-with-process-cmdlets ; https://learn.microsoft.com/en-us/powershell/module/cimcmdlets/get-ciminstance ; https://learn.microsoft.com/en-us/windows/win32/cimwin32prov/win32-process .

@@ -1,5 +1,15 @@
 # Fabulaxiom — Current State
 
+## 2026-10-20 01:31 — G2-A nouvelle version PID 0 : PASS_METADATA_ONLY opérateur
+
+L'utilisateur a donné une autorisation explicite, distincte et limitée à l'exécution manuelle du code exact dans `docs/qualification/M3_2_G2A_PID_ZERO_CANDIDATE_REVIEW.md`, après CI PR #89 SUCCESS. Sortie assainie : `G2A_LOCAL_METADATA: PASS`, `POWERSHELL_VERSION: 5.1.26100.9587`, `LOCAL_CLOCK: 2026-10-20T01:31:24+02:00`, `TIMEZONE: Romance Standard Time`, `TOKEN_INTEGRITY: MEDIUM`, `FABULAXIOM_OLLAMA_PROCESS: NONE_MATCHED`, `WEBVIEW2_SEARCHHOST_LINEAGE: 6 OBSERVED_METADATA_ONLY`, `WEBVIEW2_OWNERSHIP_AUTHENTICATED: NO`, `PROCESS_WRITER_ABSENCE: NOT_PROVEN`, `PUBLIC_GITHUB_CHECK: NOT_ASSESSED_BY_THIS_BLOCK`, `G2B_G2C_G2D_G3_G4_G5_G6: NOT_AUTHORIZED`, `TAURI_RUNTIME: NOT_TESTED`. Consentement unique consommé, pas de réexécution sans une nouvelle autorisation. Ce PASS atteste **uniquement** des métadonnées observées ; pas d'identité Microsoft vérifiée, ni absence d'écrivain SQLite, ni admission d'autres gates. L'ancien STOP PR #86 reste historique et sa cause fine inconnue ; le correctif PID 0 ne prouve pas qu'il en était la cause. Le dépôt GitHub a été interrogé en dehors de ce script. Aucun fichier opérateur, processus Windows ou SQLite n'a été manipulé depuis ChatGPT. CI PR #90 à revérifier au HEAD neuf avant toute fusion.
+
+
+## 2026-10-20 — PR #89 fusionnée, AST et fixtures PASS, G2-A toujours STOP
+
+Après re-fetch anti-course de `main` et HEAD, CI #39339365546 au HEAD exact `e188a98090112551b6a35dd78e8327914c0e9965` terminale SUCCESS, 68 étapes Windows. Ruleset Protect main #24895490 actif sans bypass, required check app 15368 validé, zéro discussion non résolue/demande de changements, diff borné. PR #89 protégée fusionnée : `main=f14e5991d34350682647ef6f0bd67b1d2055f41a`. Nouveau candidat exact PID 0 Markdown seulement, non exécuté/non approuvé sur Windows. Historique STOP `WEBVIEW2_PARENTAGE` inchangé, cause fine inconnue. Prochaine étape : présenter au propriétaire le nouveau texte intégral et obtenir son autorisation explicite avant tout essai local ; ne pas poursuivre G2-B/G6 ni toucher SQLite/ACL/backup/sidecars/migration 007/writer IPC.
+
+
 ## 2026-10-20 — PR #88 fusionnée ; correction candidate PID 0 préparée sans runtime
 
 CI PR #88 #39303355912 à la source exacte `0b7c55f30f0a7967270e9a58be7beae25087fec5` : SUCCESS, puis fusion protégée `main=6d9d9ff52459873347180f509717180ccccd0d5f`. Le nouveau candidat dans `docs/qualification/M3_2_G2A_PID_ZERO_CANDIDATE_REVIEW.md` est DISTINCT et NON EXÉCUTÉ ; exception bornée à un `System Idle Process` PID 0, rejet du double zéro, des alias et des PID invalides, maintien des ancêtres hors zéro. Script #86 historique conservé. Qualification à mener sur le SHA final de sa propre PR (Python fictif, exact-source guard, AST Windows seulement). Aucun élargissement G2–G6, SQLite, migration 007, IPC writer, release. Le STOP réel WEBVIEW2_PARENTAGE est maintenu, la cause exacte non démontrée.

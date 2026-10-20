@@ -1,5 +1,15 @@
 # Fabulaxiom — Next Authorized Work
 
+## 2026-10-20 — nouveau PASS G2-A PID 0 : observation seulement, aucun gate suivant
+
+À 01:31:24 +02:00, sortie propriétaire du script exact fusionné #89 : `G2A_LOCAL_METADATA: PASS`, `TOKEN_INTEGRITY: MEDIUM`, `WEBVIEW2_SEARCHHOST_LINEAGE: 6 OBSERVED_METADATA_ONLY` ; `PROCESS_WRITER_ABSENCE: NOT_PROVEN`, `WEBVIEW2_OWNERSHIP_AUTHENTICATED: NO`, `G2B_G2C_G2D_G3_G4_G5_G6: NOT_AUTHORIZED`, `TAURI_RUNTIME: NOT_TESTED`. Autorisation de **cette seule exécution épuisée**. Préserver PR #86 STOP en historique et ne pas conclure que PID 0 l'expliquait. Après mise à jour MD+JSON via PR #90, valider CI à son SHA final, puis fusion protégée si totalement conforme. Ne pas préparer de commandes opérateur G2-B/C/D/G3–G6 ni ouvrir v6/v7, backup/ACL/sidecars, migration 007, writer IPC, PR #35 ou release. Travail suivant permis : analyse publique/documentaire source-only des preuves encore manquantes et des risques, sans utiliser le PASS pour promouvoir les gates. Ce checkpoint prime toutes les instructions datées plus bas.
+
+
+## 2026-10-20 — source-only PID 0 fusionnée, accord local non donné
+
+PR #89 fusionnée (merge `f14e5991d34350682647ef6f0bd67b1d2055f41a`, HEAD exact `e188a98090112551b6a35dd78e8327914c0e9965`, CI #39339365546 Windows 68/68 étapes SUCCESS). Le seul prochain geste opérateur est la **revue intégrale** du nouveau bloc PowerShell dans `docs/qualification/M3_2_G2A_PID_ZERO_CANDIDATE_REVIEW.md` et une autorisation spécifique ; ne pas émettre de commandes à exécuter sans consentement. La CI main #39341197526 est encore en cours au checkpoint : contrôler sa conclusion avant de la déclarer terminale. G2A réel `STOP_WEBVIEW2_PARENTAGE`, cause non prouvée, #35 DRAFT, #36/#38 OPEN, G2-B à G6/SQLite/migration 007/IPC writer/release toujours STOP. Cette note prime les prochaines actions historiques ci-dessous.
+
+
 ## 2026-10-20 — nouveau candidat PID 0 G2-A, aucun script Windows à lancer
 
 PR #88 protégée et fusionnée sur `main=6d9d9ff52459873347180f509717180ccccd0d5f` après CI PR exact-head #39303355912 SUCCESS. Conserver l'ancien fichier exact PR #86 comme preuve du STOP. Nouveau candidat `docs/qualification/M3_2_G2A_PID_ZERO_CANDIDATE_REVIEW.md` en revue SOURCE-ONLY : admettre au maximum un seul PID 0 nommé exactement `System Idle Process`, ne pas l'insérer dans la map des ancêtres et maintenir tous les veto. Tests Python 22 scénarios fictifs + comparaison exacte avec l'ancien candidat + parser AST PowerShell non exécutant dans CI. Vérifier logs et check obligatoire au NOUVEAU SHA de PR, puis anti-course refs/ruleset et handoff. Même si la CI réussit, aucune exécution locale n'est autorisée sans présenter le bloc exact et obtenir le consentement spécifique ; G2-B à G6, v6/v7, migration 007, writer IPC, PR #35 et release INTERDITS.
