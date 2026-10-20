@@ -33,7 +33,7 @@ function name(d: FictionalDraft): string {
 }
 function activeGraph(snapshot: M32ChronologyProjection): Map<string, string[]> {
   const active = new Set(snapshot.anchors.filter(a => a.status === "current").map(a => a.id));
-  const graph = new Map([...active].map(a => [a, [] as string[]]));
+  const graph = new Map<string, string[]>([...active].map(a => [a, []]));
   const seen = new Set<string>();
   for (const edge of snapshot.precedences.filter(e => e.status === "current")) {
     if (!active.has(edge.before_anchor_id) || !active.has(edge.after_anchor_id))
