@@ -1,6 +1,13 @@
 # Fabulaxiom M3.2 — Reprise opérationnelle courte
 
-**Checkpoint du 20 octobre 2026 après PR #92. Instantané documentaire : re-fetch GitHub obligatoire. Aucune autorisation Windows, SQLite ou G2-B/G3 créée.**
+**Checkpoint du 20 octobre 2026 après PR #93. Instantané documentaire : re-fetch GitHub obligatoire. Aucune autorisation Windows, SQLite ou G2-B/G3 créée.**
+
+## 2026-10-20 — inventaire élargi de tous les modules Rust Tauri (source-only)
+
+- Re-fetch GitHub : PR #93 fusionnée sur `main=15c91039243206dc61190fec5668f32a87f3faf0`, CI PR [#39391766661](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/39391766661) SUCCESS au HEAD `dcad1a905d8f21cf0a18a03e2cfc2c95050cf100` (70 étapes). CI push main #39393215542 EN COURS au checkpoint.
+- Nouvel [inventaire textuel complet des sites SQLite Rust](../qualification/M3_2_WIDE_RUST_SQLITE_SITE_INVENTORY.md) : 25 fichiers `.rs` du dépôt, 20 contenant les motifs retenus ; garde-fou CI + 18 tests sur modifications fictives. La seule présence de nouveaux noms/calls force réévaluation des empreintes textuelles, sans lire un seul fichier SQLite privé.
+- Limite : le scanner ne comprend pas les macros/alias Rust ni les appels dynamiques ; plusieurs substitutions compensatoires peuvent préserver les compteurs. C'est un **tripwire de maintenance**, jamais une preuve de sécurité runtime ni une autorisation de G2B-G6.
+- G2-A `PASS_METADATA_ONLY_OWNER_REPORTED` (accord unique consommé) ; `PROCESS_WRITER_ABSENCE=NOT_PROVEN`, owner non migrant non attesté, G3 `STOP_UNAVAILABLE`, provenance historique `PENDING_EXTERNAL_ATTESTATION(21/3/2)`, prospective `NOT_STARTED`. Aucune commande sur Windows ou accès aux originales v6/v7/journaux/backups/ACL/markers, migration 007, writer IPC, PR #35, M3.3/release.
 
 ## 2026-10-20 — décision courante des gates distincte de l'historique
 

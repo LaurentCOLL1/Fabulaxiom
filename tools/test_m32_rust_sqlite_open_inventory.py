@@ -1,0 +1,98 @@
+"""Adversarial source-only tests of broad textual SQLite-site inventory.
+
+Runs in CI on checked-in Rust text and invented mutations; never opens SQLite.
+"""
+import unittest
+from pathlib import Path
+from m32_rust_sqlite_open_inventory import (
+    ROOT, TREE, EXPECTED, ReviewRequired, audit_inventory, repository_inventory,
+)
+
+def source_map():
+    return {
+        p.relative_to(ROOT).as_posix(): p.read_text(encoding="utf-8")
+        for p in sorted(TREE.rglob("*.rs"))
+    }
+
+class RustSqliteOpenInventoryTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.src = source_map()
+
+    def veto(self, path, code):
+        changed = dict(self.src)
+        changed[path] = changed.get(path, "") + "\n" + code + "\n"
+        with self.assertRaises(ReviewRequired):
+            audit_inventory(changed)
+
+    def test_01_repository_scan_match_never_proves_writer_absence(self):
+        a=repository_inventory()
+        self.assertEqual(a["writer_absence"],"NOT_PROVEN")
+        self.assertEqual(a["real_g3"],"STOP_UNAVAILABLE")
+        self.assertFalse(a["real_g3_authorized"])
+        self.assertFalse(a["originals_opened"])
+        self.assertEqual(a["matched_files"],len(EXPECTED))
+
+    def test_02_verified_known_sources_match(self):
+        self.assertEqual(audit_inventory(self.src)["operator_execution"],"NOT_AUTHORIZED")
+
+    def test_03_new_rust_file_with_sqlite_open_veto(self):
+        self.veto("src-tauri/src/brand_new.rs","Connection::open(path)?;")
+
+    def test_04_existing_untracked_rust_file_veto(self):
+        self.veto("src-tauri/src/main.rs","Connection::open_with_flags(path, flags)?;")
+
+    def test_05_new_application_open_database_call_veto(self):
+        self.veto("src-tauri/src/facts.rs","database::open_database(&path)?;")
+
+    def test_06_new_migration_call_veto(self):
+        self.veto("src-tauri/src/entity.rs","run_migrations(&mut conn)?;")
+
+    def test_07_new_vacuum_into_veto(self):
+        self.veto("src-tauri/src/revisions.rs",'let query = "VACUUM INTO ?1";')
+
+    def test_08_new_attach_database_veto(self):
+        self.veto("src-tauri/src/backup.rs", 'let stmt = "ATTACH DATABASE ?1 AS temp";')
+
+    def test_09_new_open_create_flag_veto(self):
+        self.veto("src-tauri/src/main.rs","OpenFlags::SQLITE_OPEN_CREATE")
+
+    def test_10_new_raw_ffi_sqlite_open_veto(self):
+        self.veto("src-tauri/src/main.rs","unsafe { sqlite3_open_v2(ptr) }")
+
+    def test_11_new_backup_api_marker_veto(self):
+        self.veto("src-tauri/src/main.rs","backup::Backup::new(&source, &dest)")
+
+    def test_12_removing_known_call_requires_reaudit(self):
+        changed = dict(self.src)
+        name = "src-tauri/src/database.rs"
+        self.assertIn("Connection::open(path)?;", changed[name])
+        changed[name] = changed[name].replace("Connection::open(path)?;", "safe_nonmigrating_open(path)?;", 1)
+        with self.assertRaises(ReviewRequired):
+            audit_inventory(changed)
+
+    def test_13_new_unrelated_file_allowed_but_no_gate_pass(self):
+        changed = dict(self.src)
+        changed["src-tauri/src/new_unrelated.rs"] = "pub fn hello() -> bool { true }"
+        self.assertFalse(audit_inventory(changed)["real_g3_authorized"])
+
+    def test_14_reject_path_escape(self):
+        self.veto("src-tauri/src/../private.rs","Connection::open(path)?;")
+
+    def test_15_reject_bad_input_type(self):
+        with self.assertRaises(ReviewRequired):
+            audit_inventory({"src-tauri/src/test.rs": 9})
+
+    def test_16_empty_inventory_denied(self):
+        with self.assertRaises(ReviewRequired):
+            audit_inventory({})
+
+    def test_17_new_file_without_extension_rejected_even_if_sqlite(self):
+        self.veto("src-tauri/src/new.txt","Connection::open(path)?;")
+
+    def test_18_all_fictional_positive_larger_inventory_never_authorizes_g3(self):
+        self.assertEqual(audit_inventory(self.src)["review"],"EXACT_KNOWN_TEXT_COUNTS_MATCH_NOT_EXHAUSTIVE")
+        self.assertEqual(audit_inventory(self.src)["real_g3"],"STOP_UNAVAILABLE")
+
+if __name__ == "__main__":
+    unittest.main()
