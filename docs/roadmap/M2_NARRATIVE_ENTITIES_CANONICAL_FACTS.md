@@ -1,5 +1,7 @@
 # M2 — Narrative Entities and Canonical Facts
 
+> **Statut courant revérifié le 20 octobre 2026 :** M2.1–M2.5 **COMPLETE + MERGED + NORMALIZED** après PR #30. Les formules historiques de ce plan disant « M3 implementation remains unauthorized » et « M2.5 awaits normalization » reflètent des étapes antérieures : M3.1 a depuis été fusionnée dans PR #33 et normalisée dans PR #34. M3.2 est seulement **IN_PROGRESS_NOT_ACCEPTED**. Voir [suivi courant V1](ROADMAP_STATUS_CURRENT.md). Les règles M2 de provenance immuable et d'approbation humaine restent intégralement contraignantes.
+
 ## Authority and prerequisites
 
 **PLAN ACCEPTED — M2.1–M2.5 COMPLETE + MERGED + NORMALIZED.** Protected post-M2.5 normalization PR #30 merged on `main=f13b4f8c249866ff60a19d7895b6cfaede56398a` after exact-head CI #38041908126 SUCCESS. M3 implementation remains unauthorized.

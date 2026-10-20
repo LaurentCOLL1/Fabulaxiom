@@ -1,6 +1,14 @@
 # Fabulaxiom M3.2 — Reprise opérationnelle courte
 
-**Checkpoint du 20 octobre 2026 après PR #95. Instantané documentaire : re-fetch GitHub obligatoire. Aucune autorisation Windows, SQLite ou G2-B/G3 créée.**
+**Checkpoint du 20 octobre 2026 après PR #96. Instantané documentaire : re-fetch GitHub obligatoire. Aucune autorisation Windows, SQLite ou G2-B/G3 créée.**
+
+## 2026-10-20 — audit intégral des cinq roadmaps V1, M3.2 encore non livrée
+
+- Re-fetch `main=e35b7c92441c517d4f0fcacb829711c4d1e9da97`, PR #96 fusionnée sous ruleset, CI PR #39414915855 au HEAD `5ac35ff196b27ca85b79f73296c33082044c0d98` SUCCESS (73/73) ; CI push main #39416303498 terminale SUCCESS (72 étapes), sans effet sur les gates.
+- Audit des **cinq** fichiers de `docs/roadmap/`, avec [index de suivi](../roadmap/README.md) et [matrice actuelle](../roadmap/ROADMAP_STATUS_CURRENT.md). M0–M2 `COMPLETE + MERGED + NORMALIZED` ; M3.1 aussi (PR #33 implémentation, PR #34 normalisation) ; M3.2 `IN_PROGRESS_NOT_ACCEPTED`, PR #35 DRAFT. M3.3–M3.6, M4–M9 non autorisés ; ComfyUI proposition issue #19 OPEN.
+- **Écart produit** : les tests de sécurité G2/G3 et fixtures permettent de préparer M3.2, mais **ne remplissent pas** son CRUD manuel chronologique, l'UX acceptée et l'audit Windows de données. Les plans historiques « M3 planning pending » / « M3 unauthorized » sont explicitement datés, non une règle courante.
+- Ajout de 9 tests **source-only** `tools/test_m32_roadmap_traceability.py` en CI : présence des cinq plans, états acceptés, livrables restant, interdictions et ComfyUI. La roadmap **n'accorde jamais** une autorisation locale.
+- G2-A `PASS_METADATA_ONLY_OWNER_REPORTED` (consentement consommé), writer réel `NOT_PROVEN`, G2-B/C/D et G3–G6 `NOT_AUTHORIZED`, G3 `STOP_UNAVAILABLE`, historique 21/3/2, prospective NOT_STARTED. Aucune action PC/SQLite v6/v7, backup, ACL, sidecar, marker, migration 007, writer IPC, PR #35 merge, M3.3, release.
 
 ## 2026-10-20 — autre écrivain SQLite malgré query_only : contre-exemples sur RAM fictive
 

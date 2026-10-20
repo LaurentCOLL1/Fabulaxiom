@@ -133,6 +133,9 @@ jobs:
       - name: M3.2 two-connection fictional RAM query-only 12 writer counterexamples
         run: python -m unittest discover -s tools -p "test_m32_shared_ram_other_writer_counterexample.py" -v
 
+      - name: M3.2 V1 roadmap source-only consistency 9 tests
+        run: python -m unittest discover -s tools -p "test_m32_roadmap_traceability.py" -v
+
       - name: M3.2 living handoff source-only contract checks
         run: python -m unittest discover -s tools -p "test_m32_handoff_contract.py" -v
 

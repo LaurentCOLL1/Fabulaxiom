@@ -1,5 +1,10 @@
 # Fabulaxiom — Current State
 
+## 2026-10-20 — revue des cinq roadmaps de V1 et écart M3.2
+
+PR #96 protégée fusionnée à `main=e35b7c92441c517d4f0fcacb829711c4d1e9da97`, CI #39414915855 SUCCESS 73/73 et CI push main #39416303498 SUCCESS 72/72. Audit direct GitHub des cinq fichiers `docs/roadmap/` : le master V1 et M2 avaient des déclarations historiques « M3 non autorisée » malgré PR #33+PR #34 prouvant M3.1 fusionnée et normalisée. Nouveau `docs/roadmap/ROADMAP_STATUS_CURRENT.md` et `docs/roadmap/README.md`, bannière de statut daté en tête de chaque roadmap. M3.2 pas encore acceptée : manque CRUD chrono/GUI manuel offline, préservation opérateur et normalisation ; PR #35 DRAFT, G2B–G6 toujours STOP. 9 tests source-only de cohérence sont ajoutés en CI, qualification exacte du nouveau PR à faire. M3.3–M3.6/M4–M9 et ComfyUI restent en attente. Aucun changement SQLite, Tauri, production v6, iso v7, sauvegarde, ACL, sidecar, migration 007, writer IPC ou release.
+
+
 ## 2026-10-20 — expérience négative d'un second écrivain sur RAM inventée
 
 PR #95 fusionnée `main=a8578b8e128af2264e85a7341a96e13d0e086b23`, CI PR #39406700987 au HEAD 29bae8aee7e6985e20bfd1ebda34f7a5b2c8732d SUCCESS (72/72), CI push main #39407869929 SUCCESS. Suite : tests source-only en Python avec deux connexions à la même RAM imaginaire (mode=memory, uri=True, cache=shared), démontrant écriture indépendante sous query_only du lecteur et compteur total_changes inchangé malgré modification externe. Aucun original, WAL/SHM, sauvegarde, ACL, marqueur, migration 007, writer IPC, release ou Tauri touché. G2A metadata-only PASS opérateur, absence de writer réel NOT_PROVEN, G2B–G6 pas autorisés, historique PENDING 21/3/2 et prospective NOT_STARTED. Nouvelle CI exact-head avant fusion.

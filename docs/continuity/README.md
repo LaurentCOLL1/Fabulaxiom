@@ -7,6 +7,7 @@ Ce dossier constitue la **mémoire de travail versionnée du projet**. Lire en p
 3. [HANDOFF_PROTOCOL.md](HANDOFF_PROTOCOL.md) : règles permanentes de reprise et de mise à jour.
 4. [HANDOFF_HISTORY.md](HANDOFF_HISTORY.md) : étapes déjà fusionnées, pour éviter de refaire les mêmes audits.
 5. [NEXT.md](NEXT.md), puis [STATE.md](STATE.md) : historique détaillé et plans antérieurs (certains en-têtes anciens ont un statut « en attente » depuis clos).
+5a. [Roadmap V1, matrice courante](../roadmap/ROADMAP_STATUS_CURRENT.md) et [index des cinq plans](../roadmap/README.md) : M3.1 normalisée, M3.2 non acceptée, jalons M3.3–M9 non autorisés.
 6. [M3_2_GATE_DECISION_CURRENT.md](M3_2_GATE_DECISION_CURRENT.md) : **état décisionnel courant** séparant G2-A PASS observé et G2-B à G6 non autorisés.
 7. [M3_2_GATE_SNAPSHOT.md](M3_2_GATE_SNAPSHOT.md) : photographie **historique du 19 octobre**, pas l'état G2-A actuel.
 8. [bloc historique PR #86](../qualification/M3_2_G2A_EXACT_BLOCK_REVIEW.md) : **déjà exécuté sur Windows une fois, résultat STOP_WEBVIEW2_PARENTAGE** ; ne pas relancer.

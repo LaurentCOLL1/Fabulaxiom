@@ -188,7 +188,23 @@ class HandoffContractTests(unittest.TestCase):
         self.assertIn("M3_2_SHARED_RAM_EXTERNAL_WRITER_NEGATIVE_PROOF.md", self.doc)
         self.assertIn("M3_2_SHARED_RAM_EXTERNAL_WRITER_NEGATIVE_PROOF.md", self.index)
 
-    def test_19_policy_requires_refetch_and_same_pr_handoff(self):
+    def test_19_v1_roadmap_audit_is_dated_not_completion(self):
+        r = self.data["roadmap_alignment"]
+        self.assertEqual(r["m3_1"], "COMPLETE_MERGED_NORMALIZED_PR33_PR34")
+        self.assertEqual(r["m3_2"], "IN_PROGRESS_NOT_ACCEPTED")
+        self.assertEqual(r["m3_2_product_acceptance"],
+                         "MISSING_REAL_MANUAL_CHRONOLOGY_CRUD_UI_WINDOWS_EVIDENCE_NORMALIZATION")
+        self.assertEqual(r["future_m3_3_to_m3_6"], "NOT_STARTED_NOT_AUTHORIZED")
+        self.assertEqual(r["m4_to_m9"], "NOT_STARTED_NOT_AUTHORIZED")
+        self.assertEqual(r["comfyui"], "PROPOSAL_ONLY_NOT_AUTHORIZED")
+        self.assertTrue(r["no_local_operator_commands"])
+        self.assertEqual(r["expected_tests"], 9)
+        for p in (*r["source_files"], r["index"], r["current"], r["check"]):
+            self.assertTrue((ROOT / p).is_file())
+        self.assertIn("ROADMAP_STATUS_CURRENT.md", self.doc)
+        self.assertIn("ROADMAP_STATUS_CURRENT.md", self.index)
+
+    def test_20_policy_requires_refetch_and_same_pr_handoff(self):
         for clause in ("Re-fetch", "HANDOFF_CURRENT.md", "HANDOFF_CURRENT.json",
                        "expected_head_sha", "autorisation"):
             self.assertIn(clause, self.policy)

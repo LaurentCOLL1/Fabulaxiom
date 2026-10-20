@@ -1,5 +1,7 @@
 # Fabulaxiom V1 — Atelier de références visuelles et ComfyUI local (proposition)
 
+> **Statut revérifié le 20 octobre 2026 :** toujours **PROPOSAL_ONLY_NOT_AUTHORIZED** ; [issue #19](https://github.com/LaurentCOLL1/Fabulaxiom/issues/19) encore ouverte. Aucune phase import/galerie/ComfyUI n'est acceptée pour implémentation. La sauvegarde M1.5 actuelle ne constitue pas à elle seule un contrat de sauvegarde d'images hors SQLite. Voir [suivi courant V1](ROADMAP_STATUS_CURRENT.md).
+
 ## Statut et autorité
 
 **PROPOSITION DOCUMENTAIRE — AUCUNE IMPLÉMENTATION AUTORISÉE**

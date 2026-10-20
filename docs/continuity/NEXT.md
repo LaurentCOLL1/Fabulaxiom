@@ -1,5 +1,10 @@
 # Fabulaxiom — Next Authorized Work
 
+## 2026-10-20 — retour au suivi des exigences produit de la roadmap V1
+
+Après PR #96 fusionnée sur `main=e35b7c92441c517d4f0fcacb829711c4d1e9da97` (CI #39414915855 SUCCESS 73/73, push main #39416303498 SUCCESS), les cinq fichiers `docs/roadmap/` ont été audités. Voir [ROADMAP_STATUS_CURRENT.md](../roadmap/ROADMAP_STATUS_CURRENT.md) et [index](../roadmap/README.md). M3.1 normalisée via PR #34 ; M3.2 `IN_PROGRESS_NOT_ACCEPTED` même si les contre-exemples SQLite en RAM ont réussi. Le plan exige toujours **CRUD des ancres et précédences temporelles, ordre du monde/narration/révélation, UI Windows, preuves de conservation et normalisation indépendante**. Une PR roadmap ajoute 9 tests source-only et clarifie les titres historiques. Qualifier le nouveau HEAD CI et fusion gouvernée si PASS. Ensuite faire avancer sur fixtures le CRUD/UX M3.2 plutôt que confondre les tests défensifs avec une livraison. Aucune procédure opérateur, aucune migration prod 007, writer IPC, PR #35, M3.3 ou ComfyUI autorisés. Historique 21/3/2 non attesté, prospective NOT_STARTED, G2B–G6 STOP.
+
+
 ## 2026-10-20 — contre-exemples de writer externe sur RAM fictive
 
 Après PR #95 fusionnée `main=a8578b8e128af2264e85a7341a96e13d0e086b23` et CI #39406700987 SUCCESS (72/72), voir [M3_2_SHARED_RAM_EXTERNAL_WRITER_NEGATIVE_PROOF.md](../qualification/M3_2_SHARED_RAM_EXTERNAL_WRITER_NEGATIVE_PROOF.md). Tests Python sur deux connexions SQLite inventées à URI `mode=memory&cache=shared`, aucun chemin privé ni modification de fichier. 12 tests refusent explicitement d'assimiler `query_only`, `total_changes`, `data_version` ou snapshot de métadonnées à une preuve d'absence d'écrivain. Vérifier la CI au SHA exact de la nouvelle PR, préserver G2B–G6 STOP, jamais de nouveau script Windows sans accord. Historique 21/3/2 et baseline prospective NOT_STARTED restent bloquants.

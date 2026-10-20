@@ -1,5 +1,7 @@
 # M1 — Persistence and Project Foundation
 
+> **Statut courant revérifié le 20 octobre 2026 :** M1.1–M1.5 restent **COMPLETE + MERGED + NORMALIZED**. La phrase de fin sur l'acceptation future de M2 est historique : M2 est depuis terminée et normalisée, et M3.1 aussi. Voir [suivi courant V1](ROADMAP_STATUS_CURRENT.md). Aucun retour en arrière sur la base active restaurée v6, les sauvegardes ou les marqueurs n'est autorisé par cette mise à jour.
+
 ## Goal
 
 Establish Fabulaxiom's authoritative local persistence layer and usable no-AI project foundation before narrative-memory intelligence.
