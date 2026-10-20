@@ -1,5 +1,10 @@
 # Fabulaxiom — Current State
 
+## 2026-10-20 — nouveaux tests de couverture du Rust source-only
+
+Après PR #93 fusionnée sur main 15c91039243206dc61190fec5668f32a87f3faf0, CI #39391766661 SUCCESS au HEAD dcad1a905d8f21cf0a18a03e2cfc2c95050cf100 (70 étapes), nouvel inventaire de 25 fichiers .rs Rust/Tauri sur les seuls textes du dépôt GitHub. Vingt fichiers présentent les signatures retenues ; le nouveau scanner `tools/m32_rust_sqlite_open_inventory.py` fige les comptes de base par fichier, bloque les écarts et n'autorise jamais G3 réel ; 18 tests fictifs ajoutés en CI. Ne pas confondre le tripwire textuel avec une preuve d'absence de writer ni une vérification exhaustive des macros Rust. Historique 21/3/2 toujours en attente, prospective NOT_STARTED, G2B–G6/SQLite originaux/migration 007/writer IPC/PR35/release INTERDITS. Prochain contrôle : CI exact-head au SHA de la nouvelle PR.
+
+
 ## 2026-10-20 — décision documentaire G2–G6 à jour, sans promotion
 
 PR #92 fusionnée sur `main=8e358d61b7f5438b893a416aa8f82d884569c5da` après CI PR #39388988034 SUCCESS (70 étapes au HEAD `cb5e1eaeaaf64bd684be6a80c9cc3b85fc56492b`). Le nouveau `docs/continuity/M3_2_GATE_DECISION_CURRENT.md` sépare G2-A PASS uniquement métadonnées (opérateur, 01:31:24+02:00) des G2-B/C/D/G3/G4/G5/G6, tous non autorisés. Ancien snapshot G2 global du 19 octobre conserve ses constats datés. Writer SQLite absent non prouvé, accès original toujours STOP, provenance 21/3/2, prospective NOT_STARTED. La correction documentaire n'autorise aucun script Windows ni accès à la production v6, à v7 isolée, aux sidecars/ACL/backups/markers, à migration 007, writer IPC ou à PR #35/release.
