@@ -537,9 +537,33 @@ async function run() {
       assert.equal(await witness.getByRole("list", { name: "Chaîne de précédence sélectionnée" })
         .getByRole("listitem").count(), 2);
     });
-    assert.equal(cases.length, 29);
-    console.log("M32_BROWSER_REAL_CHROMIUM_PASS 29/29");
-    // Actual Chromium enforced-CSP veto, separate from the 29 pre-existing
+    await caseRun("30-manual-fictional-anchor-added-without-persistence", async () => {
+      await page.getByRole("button", { name: "Ouvrir l'atelier manuel fictif" }).click();
+      const lab = page.getByRole("region", { name: "Atelier manuel M3.2 exclusivement fictif" });
+      assert.equal(await lab.count(), 1);
+      await lab.getByRole("button", { name: "Ajouter l'ancre" }).click();
+      assert.ok(await lab.getByText("fiction-draft-0001", { exact: false }).count() >= 1);
+      assert.equal(await lab.getByRole("status").filter({ hasText: "Ancre fictive créée" }).count(), 1);
+    });
+    await caseRun("31-manual-fictitious-cycle-rejected-before-commit", async () => {
+      await page.getByRole("button", { name: "Ouvrir l'atelier manuel fictif" }).click();
+      const lab = page.getByRole("region", { name: "Atelier manuel M3.2 exclusivement fictif" });
+      await lab.getByRole("combobox", { name: "Événement antérieur" }).selectOption("C");
+      await lab.getByRole("combobox", { name: "Événement postérieur" }).selectOption("A");
+      await lab.getByRole("textbox", { name: "Justification humaine fictive" }).fill("Cycle fictif refusé");
+      await lab.getByRole("button", { name: "Ajouter avant/après" }).click();
+      assert.ok((await lab.getByRole("alert").innerText()).includes("cycle temporel"));
+      assert.equal(await lab.getByText("Cycle fictif refusé", { exact: true }).count(), 0);
+    });
+    await caseRun("32-invalid-cycle-fixture-refuses-manual-form", async () => {
+      await page.getByRole("button", { name: "Charger un cycle fictif invalide" }).click();
+      await page.getByRole("button", { name: "Ouvrir l'atelier manuel fictif" }).click();
+      assert.equal(await page.getByRole("heading", { name: "Atelier fictif refusé" }).count(), 1);
+      assert.equal(await page.getByRole("button", { name: "Ajouter l'ancre" }).count(), 0);
+    });
+    assert.equal(cases.length, 32);
+    console.log("M32_BROWSER_REAL_CHROMIUM_PASS 32/32");
+    // Actual Chromium enforced-CSP veto, separate from the 32
     // fictional interaction cases. Never make an off-loopback network call.
     const cspVeto = await page.evaluate(async () => {
       const notices = [];
@@ -569,9 +593,9 @@ async function run() {
       });
       assert.equal(scriptVeto, false, "STOP: inline JS executed under strict CSP");
       console.log("M32_CI_PRECOMPILED_INLINE_SCRIPT_DENIED_PASS");
-      console.log("M32_CI_PRECOMPILED_STRICT_CSP_BROWSER_PASS: 29/29");
+      console.log("M32_CI_PRECOMPILED_STRICT_CSP_BROWSER_PASS: 32/32");
     }
-    console.log("M32_CI_FIXTURE_ONLY_BROWSER_PASS: 29/29; no normal source pages");
+    console.log("M32_CI_FIXTURE_ONLY_BROWSER_PASS: 32/32; no normal source pages");
   } finally {
     if (browser) await browser.close();
     server.kill();
