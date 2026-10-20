@@ -1,5 +1,10 @@
 # Fabulaxiom — Current State
 
+## 2026-10-20 — identité de révision historique dans l'atelier manuel fictif
+
+`main=7477001cd0ebc69d4701f21eddbda898f94c79c5` après fusion de PR #98, CI PR #39447951647 SUCCESS 74/74, CI push main #39449601527 SUCCESS. Candidat `m32FictionalManualChronology.ts` / `M32ManualChronologyLab.tsx` : catalogue littéral de scènes+révisions inventées, sélection explicite d'une ancienne révision, vérifications Universe/novel/scene/exact revision, hériter la référence lors d'une correction par supersession. Références source non authentifiées puisque inventées ; aucune lecture du texte réel, de SQLite, du head actuel ou de l'IPC. Nouveaux tests : 22 Vitest et 34 Chromium à vérifier dans la CI fraîche. Roadmap M3.2 non acceptée, PR #35 brouillon, provenance 21/3/2 et baseline prospective NOT_STARTED, G2B–G6 STOP. Base v6 active, v7 isolée, journaux, sauvegardes, ACL, migration007, writer IPC et release non touchés.
+
+
 ## 2026-10-20 — amélioration produit fictive, toujours aucun accès à la production
 
 PR #97 fusionnée sur `main=a839953f73f17379aa7c5ccde69d807b5b99a2f6`, CI PR #39426793283 SUCCESS (74/74), push main #39428345389 SUCCESS. Nouveau réducteur TS sans persistance `src/m32FictionalManualChronology.ts`, formulaires `src/M32ManualChronologyLab.tsx` exposés seulement dans `m32BrowserLab.tsx` et 13 tests Vitest. Saisie des quatre temporalités, précédence `avant/après` acyclique, refus des références douteuses, supersession append-only et révocation humaine. Aucun chemin SQL, aucune migration 007, aucune modification App.tsx/Tauri ou vraie DB. Nouveau HEAD CI à qualifier, état M3.2 IN_PROGRESS_NOT_ACCEPTED, G2B–G6 STOP, absence writer réel non prouvée, provenance 21/3/2 et prospective NOT_STARTED.
