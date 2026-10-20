@@ -1,5 +1,10 @@
 # Fabulaxiom — Next Authorized Work
 
+## 2026-10-20 — développer l'UX manuelle fictive M3.2, puis prouver ses tests
+
+`main=a839953f73f17379aa7c5ccde69d807b5b99a2f6` après PR #97, CI PR #39426793283 (74 étapes) et push main #39428345389 SUCCESS. Le [laboratoire fictif](../qualification/M3_2_SYNTHETIC_MANUAL_CHRONOLOGY_LAB.md) ajoute les opérations ajout ancre `exact/approximate/relative/unknown`, précédence humaine avec veto de cycle et doublon, correction append-only et révocation explicite. Seul `m32BrowserLab.tsx` peut le monter, jamais `App.tsx`. 13 tests TS ont été ajoutés : vérifier leur nouvelle CI frontend + tsc + Rust sur SHA exact ; corriger et recommencer avec tout nouveau HEAD. Mettre à jour les fichiers de reprise à chaque évolution, contrôler les PR, puis fusion sous ruleset si PASS. **Ne pas marquer M3.2 achevée** : absence de vrai CRUD persistant, UI Windows opérateur, preuves de sauvegarde, normalisation, G2B/G3. Production v6/v7, sidecars, marqueurs, migration 007, IPC writer et PR #35 restent STOP.
+
+
 ## 2026-10-20 — retour au suivi des exigences produit de la roadmap V1
 
 Après PR #96 fusionnée sur `main=e35b7c92441c517d4f0fcacb829711c4d1e9da97` (CI #39414915855 SUCCESS 73/73, push main #39416303498 SUCCESS), les cinq fichiers `docs/roadmap/` ont été audités. Voir [ROADMAP_STATUS_CURRENT.md](../roadmap/ROADMAP_STATUS_CURRENT.md) et [index](../roadmap/README.md). M3.1 normalisée via PR #34 ; M3.2 `IN_PROGRESS_NOT_ACCEPTED` même si les contre-exemples SQLite en RAM ont réussi. Le plan exige toujours **CRUD des ancres et précédences temporelles, ordre du monde/narration/révélation, UI Windows, preuves de conservation et normalisation indépendante**. Une PR roadmap ajoute 9 tests source-only et clarifie les titres historiques. Qualifier le nouveau HEAD CI et fusion gouvernée si PASS. Ensuite faire avancer sur fixtures le CRUD/UX M3.2 plutôt que confondre les tests défensifs avec une livraison. Aucune procédure opérateur, aucune migration prod 007, writer IPC, PR #35, M3.3 ou ComfyUI autorisés. Historique 21/3/2 non attesté, prospective NOT_STARTED, G2B–G6 STOP.
