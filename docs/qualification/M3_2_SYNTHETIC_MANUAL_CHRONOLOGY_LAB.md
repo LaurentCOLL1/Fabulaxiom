@@ -15,6 +15,10 @@ Actions humaines fictives :
 
 `src/M32ManualChronologyLab.tsx` présente ces opérations à travers des formulaires React. Le [laboratoire navigateur fictif](../../src/m32BrowserLab.tsx) offre un **troisième mode** « atelier manuel fictif » avec réinitialisation à chaque changement de scénario. Un scénario cyclique initial est refusé sans afficher le formulaire. Ce laboratoire browser distinct **n'est pas** le `App.tsx` de production et ne peut ni lire l'ordinateur de l'opérateur ni émettre des IPC.
 
+## Essais interactifs Chromium et confinement
+
+`tools/m32_ci_fixture_stage.cjs` maintient un manifeste **littéral** des fichiers autorisés : seuls `src/m32FictionalManualChronology.ts` et `src/M32ManualChronologyLab.tsx` ont été ajoutés au laboratoire existant, sans copier `App.tsx` ni répertoire arbitraire. Le script `tools/m32_browser_interaction.cjs` ajoute trois cas réels (30–32) aux 29 contrôles existants, soit **32 scénarios Chromium fictifs** : création et affichage d'une ancre, veto d'un cycle C→A dans un graphe A→B→C, refus complet de formulaire sur fixture cyclique. Réseau limité au localhost éphémère de la CI et CSP inchangée. Nouvelle CI obligatoire au dernier SHA.
+
 ## Tests et limites
 
 `src/m32ManualChronologyLab.test.tsx` : 13 tests Vitest pour les quatre formes temporelles, refus des champs manquants, cycles, liens invalides ou doubles, conservation des révisions immuables, révocations avant correction, narration multiromans, refus d'un Univers étranger, volumes bornés et rendu des commandes fictives. Ils rejoignent le `npm run test:ci` existant et le contrôle `npm run build` de la CI Windows.
