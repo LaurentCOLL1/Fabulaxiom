@@ -25,7 +25,7 @@ class HandoffContractTests(unittest.TestCase):
             self.assertRegex(self.data[key], r"^[0-9a-f]{40}$")
 
     def test_03_latest_verified_merge_not_promoted_to_runtime(self):
-        self.assertGreaterEqual(self.data["last_confirmed_merged_pr"], 89)
+        self.assertGreaterEqual(self.data["last_confirmed_merged_pr"], 91)
         self.assertEqual(self.data["g2a"]["corrected_execution"], "STOP_WEBVIEW2_PARENTAGE")
 
     def test_04_pr35_and_external_issues_still_open(self):
@@ -113,7 +113,21 @@ class HandoffContractTests(unittest.TestCase):
         self.assertIn("M3_2_G2A_WRITER_ABSENCE_GAP_SOURCE_REVIEW.md", self.index)
         self.assertIn("PROCESS_WRITER_ABSENCE: NOT_PROVEN", self.doc)
 
-    def test_14_policy_requires_refetch_and_same_pr_handoff(self):
+    def test_14_runtime_entrypoint_source_audit_is_not_g3_permission(self):
+        d = self.data["g2a"]["runtime_entrypoint_source_audit"]
+        self.assertTrue(d["source_only"])
+        self.assertEqual(d["original_sqlite_access"], "PROHIBITED")
+        self.assertEqual(d["real_g3"], "STOP_UNAVAILABLE")
+        self.assertEqual(d["writer_absence"], "NOT_PROVEN")
+        self.assertEqual(d["operator_execution"], "NOT_AUTHORIZED")
+        self.assertIn("TEXTUAL", d["warning"])
+        self.assertTrue((ROOT / d["document"]).is_file())
+        self.assertTrue((ROOT / d["script"]).is_file())
+        self.assertTrue((ROOT / d["tests"]).is_file())
+        self.assertIn("M3_2_G3_RUNTIME_ENTRYPOINT_SOURCE_AUDIT.md", self.doc)
+        self.assertIn("M3_2_G3_RUNTIME_ENTRYPOINT_SOURCE_AUDIT.md", self.index)
+
+    def test_15_policy_requires_refetch_and_same_pr_handoff(self):
         for clause in ("Re-fetch", "HANDOFF_CURRENT.md", "HANDOFF_CURRENT.json",
                        "expected_head_sha", "autorisation"):
             self.assertIn(clause, self.policy)
