@@ -1,5 +1,10 @@
 # Fabulaxiom — Current State
 
+## 2026-10-20 — décision documentaire G2–G6 à jour, sans promotion
+
+PR #92 fusionnée sur `main=8e358d61b7f5438b893a416aa8f82d884569c5da` après CI PR #39388988034 SUCCESS (70 étapes au HEAD `cb5e1eaeaaf64bd684be6a80c9cc3b85fc56492b`). Le nouveau `docs/continuity/M3_2_GATE_DECISION_CURRENT.md` sépare G2-A PASS uniquement métadonnées (opérateur, 01:31:24+02:00) des G2-B/C/D/G3/G4/G5/G6, tous non autorisés. Ancien snapshot G2 global du 19 octobre conserve ses constats datés. Writer SQLite absent non prouvé, accès original toujours STOP, provenance 21/3/2, prospective NOT_STARTED. La correction documentaire n'autorise aucun script Windows ni accès à la production v6, à v7 isolée, aux sidecars/ACL/backups/markers, à migration 007, writer IPC ou à PR #35/release.
+
+
 ## 2026-10-20 — inventaire des six chemins SQLite et tests de dérive sans exécution
 
 PR #91 fusionnée sur main fb4625450439ecf236cc9065f434eda002f71533, CI #39376628743 au HEAD 94c9886e4e362867cab86c39efc5b13125a94dac SUCCESS (69 étapes), writer réel non prouvé. Source-only nouveau : `tools/m32_g3_runtime_entrypoint_source_audit.py` vérifie les séquences existantes des chemins open_database, database_status, create_backup, vacuum_copy, reserve_unique_file, read_validated_database sur fichiers Rust publics seulement ; 18 tests de refus imposent un nouveau review si le code change. Scanner textuel limité aux signatures connues, non exhaustif, non permission G3. Aucun original local v6/v7, sidecar, backup, ACL, activation marker, migration 007 ou writer IPC manipulé. STOP G2B–G6, PR #35 et M3.3/release. Prochaine étape : CI au nouveau SHA et fusion gouvernée si conformité.
