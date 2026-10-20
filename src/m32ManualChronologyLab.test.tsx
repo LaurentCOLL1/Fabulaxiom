@@ -34,16 +34,16 @@ describe("M3.2 manually authored fictional-only chronology laboratory", () => {
   it("01 creates unknown and relative dates without inventing Gregorian values", () => {
     const a = createFictionalAnchor(startFictionalDraft(invented), unknown);
     const b = createFictionalAnchor(a, { ...unknown, kind: "relative" });
-    expect(b.snapshot.anchors.at(-1)?.time_kind).toBe("relative");
-    expect(b.snapshot.anchors.at(-2)?.fictional_label).toBeNull();
+    expect(b.snapshot.anchors[b.snapshot.anchors.length - 1]?.time_kind).toBe("relative");
+    expect(b.snapshot.anchors[b.snapshot.anchors.length - 2]?.fictional_label).toBeNull();
     expect(b.snapshot.anchors).toHaveLength(5);
     expect(b.real_g3_authorized).toBe(false);
   });
   it("02 creates exact and approximate fictional dates, no time conversion", () => {
     const a = createFictionalAnchor(startFictionalDraft(invented), exact);
     const b = createFictionalAnchor(a, approximate);
-    expect(a.snapshot.anchors.at(-1)?.calendar_name).toBe("Marées inventées");
-    expect(b.snapshot.anchors.at(-1)?.precision_text).toContain("cinquième");
+    expect(a.snapshot.anchors[a.snapshot.anchors.length - 1]?.calendar_name).toBe("Marées inventées");
+    expect(b.snapshot.anchors[b.snapshot.anchors.length - 1]?.precision_text).toContain("cinquième");
   });
   it("03 fails closed on absent exact calendar or approximate precision", () => {
     expect(() => createFictionalAnchor(startFictionalDraft(invented), { ...exact, calendar: "" })).toThrow();
@@ -68,21 +68,21 @@ describe("M3.2 manually authored fictional-only chronology laboratory", () => {
     const corrected = supersedeFictionalAnchor(d, "A", exact);
     expect(corrected.snapshot.anchors.find(a => a.id === "A")?.status).toBe("superseded");
     expect(corrected.snapshot.anchors.find(a => a.id === "A")?.source_revision_id).toBe("fiction-revision-A");
-    expect(corrected.snapshot.anchors.at(-1)?.status).toBe("current");
+    expect(corrected.snapshot.anchors[corrected.snapshot.anchors.length - 1]?.status).toBe("current");
     expect(d.snapshot.anchors.find(a => a.id === "A")?.status).toBe("current");
   });
   it("07 requires explicit link revocation before anchor correction", () => {
     const d = createFictionalPrecedence(startFictionalDraft(invented), "A", "B", "reason");
     expect(() => supersedeFictionalAnchor(d, "A", exact)).toThrow(/révoquer/);
     const r = revokeFictionalPrecedence(d, d.snapshot.precedences[0].id, "historique corrigé");
-    expect(supersedeFictionalAnchor(r, "A", exact).snapshot.anchors.at(-1)?.status).toBe("current");
+    expect(supersedeFictionalAnchor(r, "A", exact).snapshot.anchors.slice(-1)[0]?.status).toBe("current");
   });
   it("08 keeps revoked relation and its separate audit reason", () => {
     const d = createFictionalPrecedence(startFictionalDraft(invented), "A", "B", "ordre originel");
     const r = revokeFictionalPrecedence(d, d.snapshot.precedences[0].id, "correction humaine");
     expect(r.snapshot.precedences[0].status).toBe("revoked");
     expect(r.snapshot.precedences[0].reason).toBe("ordre originel");
-    expect(r.audit.at(-1)?.explanation).toBe("correction humaine");
+    expect(r.audit[r.audit.length - 1]?.explanation).toBe("correction humaine");
     expect(d.snapshot.precedences[0].status).toBe("current");
   });
   it("09 preserves narration from both novels and reader reveal unknown", () => {
