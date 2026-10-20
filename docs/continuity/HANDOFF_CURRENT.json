@@ -3,14 +3,14 @@
   "as_of": "2026-10-20",
   "status_kind": "DATED_PUBLIC_SOURCE_HANDOFF_ONLY",
   "repository": "LaurentCOLL1/Fabulaxiom",
-  "last_confirmed_main_before_handoff": "8e358d61b7f5438b893a416aa8f82d884569c5da",
-  "last_confirmed_merged_pr": 92,
-  "last_verified_pr_head": "cb5e1eaeaaf64bd684be6a80c9cc3b85fc56492b",
+  "last_confirmed_main_before_handoff": "15c91039243206dc61190fec5668f32a87f3faf0",
+  "last_confirmed_merged_pr": 93,
+  "last_verified_pr_head": "dcad1a905d8f21cf0a18a03e2cfc2c95050cf100",
   "last_verified_ci": {
-    "run_id": 39388988034,
+    "run_id": 39391766661,
     "context": "Windows frontend and Rust checks",
     "conclusion": "SUCCESS",
-    "source": "PR92_EXACT_HEAD"
+    "source": "PR93_EXACT_HEAD"
   },
   "recent_changes": [
     "PR_85_EXACT_G2A_TEXT_AST_ONLY",
@@ -27,7 +27,9 @@
     "PR_91_SQLITE_WRITER_GAP_SOURCE_ONLY_13_TESTS_MERGED",
     "2026_10_20_G3_RUNTIME_ENTRYPOINT_KNOWN_SOURCE_AUDIT_18_NEGATIVE_TESTS_PROPOSED",
     "PR_92_RUST_SQLITE_ENTRYPOINTS_18_TESTS_SOURCE_ONLY_MERGED",
-    "2026_10_20_GATE_DECISION_LIVE_DISTINCT_FROM_HISTORIC_20261019_SNAPSHOT"
+    "2026_10_20_GATE_DECISION_LIVE_DISTINCT_FROM_HISTORIC_20261019_SNAPSHOT",
+    "PR_93_CURRENT_GATE_DECISION_DOCUMENTARY_MERGED",
+    "2026_10_20_WIDE_RUST_SQLITE_SITE_INVENTORY_SOURCE_ONLY_18_TESTS_PROPOSED"
   ],
   "pr35": "OPEN_DRAFT",
   "issues": {
@@ -131,6 +133,20 @@
       "real_g3": "STOP_UNAVAILABLE",
       "operator_execution": "NOT_AUTHORIZED",
       "operator_approval": "NEW_EXPLICIT_APPROVAL_REQUIRED"
+    },
+    "wide_rust_sqlite_inventory": {
+      "document": "docs/qualification/M3_2_WIDE_RUST_SQLITE_SITE_INVENTORY.md",
+      "scanner": "tools/m32_rust_sqlite_open_inventory.py",
+      "tests": "tools/test_m32_rust_sqlite_open_inventory.py",
+      "scope": "CHECKED_IN_SRC_TAURI_SRC_RS_TEXT_ONLY_25_FILES_AT_BASE",
+      "baseline_matched_files": 20,
+      "test_count": 18,
+      "operator_execution": "NOT_AUTHORIZED",
+      "actual_sqlite_access": "NONE",
+      "confidence_limit": "TEXTUAL_OCCURRENCE_COUNTS_NOT_RUST_PARSER_OR_RUNTIME_SECURITY",
+      "absence_of_writer": "NOT_PROVEN",
+      "real_g3": "STOP_UNAVAILABLE",
+      "gate_promotion": "NEVER_AUTOMATIC"
     }
   },
   "governance": {
@@ -167,15 +183,15 @@
     "verified_bypass_actors": 0,
     "classic_branch_protection_read": "403_INTEGRATION_RESTRICTED"
   },
-  "next": "REVIEW_GATE_DECISION_CURRENT_SOURCE_ONLY_NO_G2B_G3_WINDOWS_EXECUTION",
+  "next": "QUALIFY_WIDE_PUBLIC_RUST_SOURCE_SQLITE_SITE_INVENTORY_EXACT_HEAD_PR_CI_THEN_ONLY_PROTECTED_MERGE",
   "live_refetch_required": true,
   "hand_off_updated_by_future_pr": true,
   "main_ci_post_merge": {
-    "sha": "8e358d61b7f5438b893a416aa8f82d884569c5da",
-    "run_id": 39391283127,
+    "sha": "15c91039243206dc61190fec5668f32a87f3faf0",
+    "run_id": 39393215542,
     "conclusion": "IN_PROGRESS_AT_CHECKPOINT",
     "source": "MAIN_PUSH",
-    "note": "Recheck terminal state; not a gate proof even if SUCCESS."
+    "note": "Recheck terminal before reporting main CI as success"
   },
   "g2a_candidate_ci": {
     "pr": 86,
