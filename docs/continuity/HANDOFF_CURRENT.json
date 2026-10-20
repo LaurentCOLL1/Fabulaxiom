@@ -3,14 +3,14 @@
   "as_of": "2026-10-20",
   "status_kind": "DATED_PUBLIC_SOURCE_HANDOFF_ONLY",
   "repository": "LaurentCOLL1/Fabulaxiom",
-  "last_confirmed_main_before_handoff": "15c91039243206dc61190fec5668f32a87f3faf0",
-  "last_confirmed_merged_pr": 93,
-  "last_verified_pr_head": "dcad1a905d8f21cf0a18a03e2cfc2c95050cf100",
+  "last_confirmed_main_before_handoff": "632e6d6d985affa6989bb220ddec99911e6ba1e6",
+  "last_confirmed_merged_pr": 94,
+  "last_verified_pr_head": "74395428c185198632cc2cd2c19eec4b7132e4ad",
   "last_verified_ci": {
-    "run_id": 39391766661,
+    "run_id": 39394068343,
     "context": "Windows frontend and Rust checks",
     "conclusion": "SUCCESS",
-    "source": "PR93_EXACT_HEAD"
+    "source": "PR94_EXACT_HEAD"
   },
   "recent_changes": [
     "PR_85_EXACT_G2A_TEXT_AST_ONLY",
@@ -29,7 +29,9 @@
     "PR_92_RUST_SQLITE_ENTRYPOINTS_18_TESTS_SOURCE_ONLY_MERGED",
     "2026_10_20_GATE_DECISION_LIVE_DISTINCT_FROM_HISTORIC_20261019_SNAPSHOT",
     "PR_93_CURRENT_GATE_DECISION_DOCUMENTARY_MERGED",
-    "2026_10_20_WIDE_RUST_SQLITE_SITE_INVENTORY_SOURCE_ONLY_18_TESTS_PROPOSED"
+    "2026_10_20_WIDE_RUST_SQLITE_SITE_INVENTORY_SOURCE_ONLY_18_TESTS_PROPOSED",
+    "PR_94_WIDE_RUST_SQLITE_TEXTUAL_INVENTORY_18_TESTS_MERGED",
+    "2026_10_20_PREOPENED_QUERY_ONLY_FICTIONAL_RAM_READER_TEST_ONLY_13_CASES_PROPOSED"
   ],
   "pr35": "OPEN_DRAFT",
   "issues": {
@@ -138,8 +140,8 @@
       "document": "docs/qualification/M3_2_WIDE_RUST_SQLITE_SITE_INVENTORY.md",
       "scanner": "tools/m32_rust_sqlite_open_inventory.py",
       "tests": "tools/test_m32_rust_sqlite_open_inventory.py",
-      "scope": "CHECKED_IN_SRC_TAURI_SRC_RS_TEXT_ONLY_25_FILES_AT_BASE",
-      "baseline_matched_files": 20,
+      "scope": "CHECKED_IN_SRC_TAURI_SRC_RS_TEXT_ONLY_26_FILES_AFTER_TEST_TOY_ADDITION",
+      "baseline_matched_files": 21,
       "test_count": 18,
       "operator_execution": "NOT_AUTHORIZED",
       "actual_sqlite_access": "NONE",
@@ -147,6 +149,23 @@
       "absence_of_writer": "NOT_PROVEN",
       "real_g3": "STOP_UNAVAILABLE",
       "gate_promotion": "NEVER_AUTOMATIC"
+    },
+    "preopened_ram_query_only_toy": {
+      "document": "docs/qualification/M3_2_PREOPENED_QUERY_ONLY_RAM_READER_TOY.md",
+      "rust_module": "src-tauri/src/m32_preopened_query_only_toy.rs",
+      "feature": "m32-g3-owned-ram-toy",
+      "gates": "CFG_TEST_AND_NONDEFAULT_FEATURE_ONLY",
+      "fixture_kind": "FICTITIOUS_IN_MEMORY_PRIVATE_SQLITE",
+      "test_count": 13,
+      "existing_runtime_integration": "NONE",
+      "migration_invoked": "NO",
+      "disk_source_opened": "NONE",
+      "original_sqlite_access": "PROHIBITED",
+      "operator_execution": "NOT_AUTHORIZED",
+      "scope_limit": "QUERY_ONLY_AND_TOTAL_CHANGES_LOCAL_TO_THIS_CONNECTION_NOT_OTHER_WRITERS",
+      "real_g3": "STOP_UNAVAILABLE",
+      "absence_of_real_writer": "NOT_PROVEN",
+      "permission_promotion": "NEVER"
     }
   },
   "governance": {
@@ -183,15 +202,15 @@
     "verified_bypass_actors": 0,
     "classic_branch_protection_read": "403_INTEGRATION_RESTRICTED"
   },
-  "next": "QUALIFY_WIDE_PUBLIC_RUST_SOURCE_SQLITE_SITE_INVENTORY_EXACT_HEAD_PR_CI_THEN_ONLY_PROTECTED_MERGE",
+  "next": "QUALIFY_RAM_ONLY_PREOPENED_QUERY_ONLY_RUST_TESTS_AT_EXACT_PR_HEAD_AND_RETAIN_G3_STOP",
   "live_refetch_required": true,
   "hand_off_updated_by_future_pr": true,
   "main_ci_post_merge": {
-    "sha": "15c91039243206dc61190fec5668f32a87f3faf0",
-    "run_id": 39393215542,
-    "conclusion": "IN_PROGRESS_AT_CHECKPOINT",
+    "sha": "632e6d6d985affa6989bb220ddec99911e6ba1e6",
+    "run_id": null,
+    "conclusion": "NOT_YET_ASSESSED_AT_CHECKPOINT",
     "source": "MAIN_PUSH",
-    "note": "Recheck terminal before reporting main CI as success"
+    "note": "CI push main must be checked live before treating as SUCCESS; no gate promotion"
   },
   "g2a_candidate_ci": {
     "pr": 86,
