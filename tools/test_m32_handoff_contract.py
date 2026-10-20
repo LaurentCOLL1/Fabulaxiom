@@ -204,7 +204,23 @@ class HandoffContractTests(unittest.TestCase):
         self.assertIn("ROADMAP_STATUS_CURRENT.md", self.doc)
         self.assertIn("ROADMAP_STATUS_CURRENT.md", self.index)
 
-    def test_20_policy_requires_refetch_and_same_pr_handoff(self):
+    def test_20_manual_chronology_candidate_only_in_synthetic_lab(self):
+        x = self.data["m3_2_product_progress"]
+        self.assertEqual(x["delivery"], "SYNTHETIC_BROWSER_LAB_ONLY_UNQUALIFIED_PR")
+        self.assertEqual(x["expected_tests"], 13)
+        self.assertEqual(x["app_tauri_production_integration"], "NONE")
+        self.assertEqual(x["sqlite_real_access"], "NONE")
+        self.assertEqual(x["operator_windows_acceptance"], "NOT_STARTED")
+        self.assertEqual(x["m3_2_milestone"], "IN_PROGRESS_NOT_ACCEPTED")
+        self.assertEqual(x["owner_writer_absence"], "NOT_PROVEN")
+        self.assertEqual(x["g2b_to_g6"], "NOT_AUTHORIZED")
+        self.assertEqual(x["real_g3"], "STOP_UNAVAILABLE")
+        for p in (x["document"], x["reducer"], x["user_interface"],
+                  x["isolated_mount"], x["tests"]):
+            self.assertTrue((ROOT / p).is_file())
+        self.assertIn("M3_2_SYNTHETIC_MANUAL_CHRONOLOGY_LAB.md", self.doc)
+
+    def test_21_policy_requires_refetch_and_same_pr_handoff(self):
         for clause in ("Re-fetch", "HANDOFF_CURRENT.md", "HANDOFF_CURRENT.json",
                        "expected_head_sha", "autorisation"):
             self.assertIn(clause, self.policy)
