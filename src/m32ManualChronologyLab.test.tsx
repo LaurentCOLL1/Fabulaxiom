@@ -113,7 +113,7 @@ describe("M3.2 manually authored fictional-only chronology laboratory", () => {
     const html = renderToStaticMarkup(createElement(M32ManualChronologyLab, { initial: invented }));
     for (const word of ["Ajouter l'ancre", "Remplacer sans effacer", "Ajouter avant/après",
       "Révoquer explicitement", "Ordre de narration", "Ordre de révélation"]) {
-      expect(html).toContain(word);
+      expect(html).toContain(word.replace(/'/g, "&#x27;"));
     }
     expect(html).not.toContain("invoke(");
     expect(html).not.toContain("Date.parse");
