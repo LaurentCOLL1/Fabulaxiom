@@ -207,9 +207,9 @@ class HandoffContractTests(unittest.TestCase):
     def test_20_manual_chronology_candidate_only_in_synthetic_lab(self):
         x = self.data["m3_2_product_progress"]
         self.assertEqual(x["delivery"], "SYNTHETIC_BROWSER_LAB_ONLY_SOURCE_ONLY")
-        self.assertEqual(x["expected_tests"], 13)
-        self.assertEqual(x["browser_new_cases"], 3)
-        self.assertEqual(x["browser_total_expected"], 32)
+        self.assertEqual(x["expected_tests"], 22)
+        self.assertEqual(x["browser_new_cases"], 2)
+        self.assertEqual(x["browser_total_expected"], 34)
         self.assertEqual(x["app_tauri_production_integration"], "NONE")
         self.assertEqual(x["sqlite_real_access"], "NONE")
         self.assertEqual(x["operator_windows_acceptance"], "NOT_STARTED")
