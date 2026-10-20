@@ -3,14 +3,14 @@
   "as_of": "2026-10-20",
   "status_kind": "DATED_PUBLIC_SOURCE_HANDOFF_ONLY",
   "repository": "LaurentCOLL1/Fabulaxiom",
-  "last_confirmed_main_before_handoff": "f14e5991d34350682647ef6f0bd67b1d2055f41a",
-  "last_confirmed_merged_pr": 89,
-  "last_verified_pr_head": "e188a98090112551b6a35dd78e8327914c0e9965",
+  "last_confirmed_main_before_handoff": "45ce1511aa616fce9664dfc08cea39f290d2273d",
+  "last_confirmed_merged_pr": 90,
+  "last_verified_pr_head": "9c53d06c94cfbae62215c2407e4e146e7a344773",
   "last_verified_ci": {
-    "run_id": 39339365546,
+    "run_id": 39342493152,
     "context": "Windows frontend and Rust checks",
     "conclusion": "SUCCESS",
-    "source": "PR89_EXACT_HEAD"
+    "source": "PR90_EXACT_HEAD"
   },
   "recent_changes": [
     "PR_85_EXACT_G2A_TEXT_AST_ONLY",
@@ -21,7 +21,9 @@
     "PR_88_G2A_REPORTED_STOP_HANDOFF_MERGED",
     "2026_10_20_PID_ZERO_CANDIDATE_SOURCE_ONLY_NOT_EXECUTED",
     "PR_89_PID_ZERO_CANDIDATE_CI_QUALIFIED_AND_MERGED_SOURCE_ONLY",
-    "2026_10_20_OWNER_REPORTED_PID_ZERO_G2A_LOCAL_METADATA_PASS_013124_CEST"
+    "2026_10_20_OWNER_REPORTED_PID_ZERO_G2A_LOCAL_METADATA_PASS_013124_CEST",
+    "PR_90_G2A_METADATA_ONLY_PASS_HANDOFF_MERGED",
+    "2026_10_20_SQLITE_WRITER_ABSENCE_PUBLIC_SOURCE_ANALYSIS_NO_OPERATOR_ACCESS"
   ],
   "pr35": "OPEN_DRAFT",
   "issues": {
@@ -89,6 +91,21 @@
       "tauri_runtime": "NOT_TESTED",
       "g2b_to_g6": "NOT_AUTHORIZED",
       "evidence_limit": "NO_SQLITE_WRITER_ATTESTATION_NO_OWNER_AUTHENTICATION_NO_GATE_ESCALATION"
+    },
+    "writer_absence_review": {
+      "document": "docs/qualification/M3_2_G2A_WRITER_ABSENCE_GAP_SOURCE_REVIEW.md",
+      "evaluation": "SOURCE_ONLY_INVENTED_FIXTURES",
+      "operator_execution": "NOT_PERFORMED_NOT_AUTHORIZED",
+      "metadata_pass_scope": "OBSERVATION_ONLY",
+      "writer_absence": "NOT_PROVEN",
+      "source_identity": "NOT_AUTHENTICATED",
+      "trusted_nonmigrating_owner": "NOT_ESTABLISHED",
+      "cold_source_quiescence_and_journals": "NOT_ESTABLISHED",
+      "even_all_fictional_checks_true": "REAL_G3_STILL_STOP_UNAVAILABLE",
+      "current_open_database": "RUNS_MIGRATIONS_NOT_SAFE_FOR_PROTECTED_ORIGINAL",
+      "current_backup_create": "USES_OPEN_DATABASE_AND_VACUUM_INTO_NOT_G3",
+      "open_private_sqlite_or_sidecars": "PROHIBITED",
+      "new_operator_action": "EXPLICIT_NEW_APPROVAL_REQUIRED"
     }
   },
   "governance": {
@@ -125,15 +142,15 @@
     "verified_bypass_actors": 0,
     "classic_branch_protection_read": "403_INTEGRATION_RESTRICTED"
   },
-  "next": "PRESERVE_LOCAL_METADATA_PASS_SOURCE_ONLY_ANALYZE_WRITER_ABSENCE_GOVERNANCE_REMAINING_STOP_AND_REQUIRE_NEW_APPROVAL_FOR_ANY_NEW_OPERATOR_ACTION",
+  "next": "QUALIFY_SOURCE_ONLY_WRITER_ABSENCE_NEGATIVE_MATRIX_CI_EXACT_HEAD_AND_FUSE_GOVERNED_PR_ONLY_IF_SAFE",
   "live_refetch_required": true,
   "hand_off_updated_by_future_pr": true,
   "main_ci_post_merge": {
-    "sha": "f14e5991d34350682647ef6f0bd67b1d2055f41a",
-    "run_id": 39341197526,
-    "conclusion": "SUCCESS",
+    "sha": "45ce1511aa616fce9664dfc08cea39f290d2273d",
+    "run_id": null,
+    "conclusion": "NOT_ASSESSED_IN_CURRENT_SOURCE_REVIEW",
     "source": "MAIN_PUSH",
-    "note": "Final live run result rechecked before PR90 new HEAD; not a CI proof for this upcoming commit"
+    "note": "Do not infer push CI success; check live on next merge."
   },
   "g2a_candidate_ci": {
     "pr": 86,

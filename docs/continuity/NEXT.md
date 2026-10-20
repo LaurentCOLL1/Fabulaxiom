@@ -1,5 +1,10 @@
 # Fabulaxiom — Next Authorized Work
 
+## 2026-10-20 — audit public writer (source-only) après PASS G2-A
+
+Lire [M3_2_G2A_WRITER_ABSENCE_GAP_SOURCE_REVIEW.md](../qualification/M3_2_G2A_WRITER_ABSENCE_GAP_SOURCE_REVIEW.md) et qualifier les tests fictifs dans la nouvelle PR au SHA exact. Aucun probe Windows, ouverture SQLite, ou absence de writer supposée par `Get-Process`/hash/sidecars/handle simulé. `open_database` exécute migrations, `create_backup` y fait appel avec `VACUUM INTO` et aucun owner non migrant authentifié n'a été établi. Les deux stratégies futures (owner préexistant contrôlé / cold quiescent journal résolu) sont des études à accès réel **NON AUTORISÉ**. G2B-G6 STOP ; issues #36/#38 OPEN, PR #35 DRAFT, provenance 21/3/2. Travail source-only uniquement ; toute étape opérateur distincte exige revue et nouveau consentement.
+
+
 ## 2026-10-20 — nouveau PASS G2-A PID 0 : observation seulement, aucun gate suivant
 
 À 01:31:24 +02:00, sortie propriétaire du script exact fusionné #89 : `G2A_LOCAL_METADATA: PASS`, `TOKEN_INTEGRITY: MEDIUM`, `WEBVIEW2_SEARCHHOST_LINEAGE: 6 OBSERVED_METADATA_ONLY` ; `PROCESS_WRITER_ABSENCE: NOT_PROVEN`, `WEBVIEW2_OWNERSHIP_AUTHENTICATED: NO`, `G2B_G2C_G2D_G3_G4_G5_G6: NOT_AUTHORIZED`, `TAURI_RUNTIME: NOT_TESTED`. Autorisation de **cette seule exécution épuisée**. Préserver PR #86 STOP en historique et ne pas conclure que PID 0 l'expliquait. Après mise à jour MD+JSON via PR #90, valider CI à son SHA final, puis fusion protégée si totalement conforme. Ne pas préparer de commandes opérateur G2-B/C/D/G3–G6 ni ouvrir v6/v7, backup/ACL/sidecars, migration 007, writer IPC, PR #35 ou release. Travail suivant permis : analyse publique/documentaire source-only des preuves encore manquantes et des risques, sans utiliser le PASS pour promouvoir les gates. Ce checkpoint prime toutes les instructions datées plus bas.

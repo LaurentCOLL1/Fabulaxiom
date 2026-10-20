@@ -101,7 +101,19 @@ class HandoffContractTests(unittest.TestCase):
         self.assertIn("G2A_LOCAL_METADATA: PASS", self.doc)
         self.assertIn("G2B_G2C_G2D_G3_G4_G5_G6: NOT_AUTHORIZED", self.doc)
 
-    def test_13_policy_requires_refetch_and_same_pr_handoff(self):
+    def test_13_writer_gap_is_source_only_refusal(self):
+        review = self.data["g2a"]["writer_absence_review"]
+        self.assertEqual(review["writer_absence"], "NOT_PROVEN")
+        self.assertEqual(review["operator_execution"], "NOT_PERFORMED_NOT_AUTHORIZED")
+        self.assertEqual(review["trusted_nonmigrating_owner"], "NOT_ESTABLISHED")
+        self.assertEqual(review["even_all_fictional_checks_true"], "REAL_G3_STILL_STOP_UNAVAILABLE")
+        self.assertEqual(review["open_private_sqlite_or_sidecars"], "PROHIBITED")
+        self.assertEqual(self.data["g2a"]["latest_operator_observation"]["g2a_local_metadata"], "PASS")
+        self.assertIn("M3_2_G2A_WRITER_ABSENCE_GAP_SOURCE_REVIEW.md", self.doc)
+        self.assertIn("M3_2_G2A_WRITER_ABSENCE_GAP_SOURCE_REVIEW.md", self.index)
+        self.assertIn("PROCESS_WRITER_ABSENCE: NOT_PROVEN", self.doc)
+
+    def test_14_policy_requires_refetch_and_same_pr_handoff(self):
         for clause in ("Re-fetch", "HANDOFF_CURRENT.md", "HANDOFF_CURRENT.json",
                        "expected_head_sha", "autorisation"):
             self.assertIn(clause, self.policy)

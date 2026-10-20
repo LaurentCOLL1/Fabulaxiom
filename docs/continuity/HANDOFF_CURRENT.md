@@ -2,6 +2,14 @@
 
 **Checkpoint source-only mis à jour après fusion de PR #89 le 20 octobre 2026. Re-fetch obligatoire avant toute nouvelle action. Ce texte ne confère aucune autorisation locale.**
 
+## 2026-10-20 — écart de preuve SQLite writer après G2-A PASS (source-only)
+
+- Re-fetch `main=45ce1511aa616fce9664dfc08cea39f290d2273d` après fusion protégée [PR #90](https://github.com/LaurentCOLL1/Fabulaxiom/pull/90), PR head `9c53d06c94cfbae62215c2407e4e146e7a344773`, CI PR #39342493152 SUCCESS (68 étapes Windows). Aucun nouveau résultat opérateur après G2-A PASS_METADATA_ONLY.
+- Nouvelle [matrice source-only d'absence d'écrivain SQLite](../qualification/M3_2_G2A_WRITER_ABSENCE_GAP_SOURCE_REVIEW.md) : noms de processus absents, hashes, sidecars, noms de fichiers, verrous ponctuels ou fixtures `already-open` ne prouvent pas la quiescence du writer réel. Aucune ouverture de fichier/handle SQLite local.
+- Audit public ciblé : `database::open_database` peut créer le parent et exécuter `run_migrations`, `lib.rs::database_status` l'utilise, `backup::create_backup` l'utilise puis `VACUUM INTO`. Ces chemins **ne sont pas des commandes G3 autorisées** pour les originaux protégés.
+- Deux stratégies futures théoriques restent indisponibles sur originaux réels : propriétaire déjà ouvert non migrant et vérifiable, ou protocole cold-source avec origine/ancêtres authentifiés, quiescence continue et journaux résolus. Tests de refus sur fixtures fictives (aucune vraie connexion).
+- **STOP invariant :** `G2A_LOCAL_METADATA=PASS_METADATA_ONLY` ; `PROCESS_WRITER_ABSENCE=NOT_PROVEN` ; `REAL_G3=STOP_UNAVAILABLE` ; `G2B/C/D/G3/G4/G5/G6=NOT_AUTHORIZED`. Pas de manipulation des DB prod v6/v7, sidecars, ACL, sauvegardes, marqueurs, migration 007, IPC writer ou release. Une nouvelle opération Windows demande code exact, effets et autorisation propre.
+
 ## 2026-10-20 01:31:24 +02:00 — G2-A PID 0 : PASS de métadonnées (déclaration opérateur)
   
 - Le propriétaire a examiné le bloc exact PR #89 et donné un **nouvel accord explicite limité à une exécution**. Sortie communiquée : `G2A_LOCAL_METADATA: PASS`, `TOKEN_INTEGRITY: MEDIUM`, `FABULAXIOM_OLLAMA_PROCESS: NONE_MATCHED`, `WEBVIEW2_SEARCHHOST_LINEAGE: 6 OBSERVED_METADATA_ONLY`, `WEBVIEW2_OWNERSHIP_AUTHENTICATED: NO`, `PROCESS_WRITER_ABSENCE: NOT_PROVEN`, `PUBLIC_GITHUB_CHECK: NOT_ASSESSED_BY_THIS_BLOCK`, `G2B_G2C_G2D_G3_G4_G5_G6: NOT_AUTHORIZED`, `TAURI_RUNTIME: NOT_TESTED`. PowerShell 5.1.26100.9587 ; fuseau Romance Standard Time. Preuve déclarative de l'opérateur, non attestée indépendamment.
