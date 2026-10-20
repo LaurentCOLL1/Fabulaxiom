@@ -29,6 +29,10 @@ Les [cinq plans de source](README.md) gardent leurs exigences et preuves histori
 
 Une nouvelle tranche `feat/m3-2-fictional-manual-chronology-lab-20261020` propose, sans livraison de production, un [laboratoire navigateur fictif](../qualification/M3_2_SYNTHETIC_MANUAL_CHRONOLOGY_LAB.md) : créer une date, saisir `A avant B`, rejeter les cycles, corriger par supersession et révoquer avec historique. Treize tests frontend doivent être vérifiés au HEAD de la nouvelle PR. **Cette démonstration n'est pas le CRUD persistant ni l'acceptation Windows** exigés ; M3.2 demeure `IN_PROGRESS_NOT_ACCEPTED`. PR #35 et gates G2B–G6 inchangés.
 
+## 20 octobre 2026 — scène/révision historique explicite (nouvelle tranche sur fixtures)
+
+PR #98 a été fusionnée avec CI source-only, 13 tests Vitest et 32 cas Chromium, sur `main=7477001cd0ebc69d4701f21eddbda898f94c79c5`. La [tranche suivante](../qualification/M3_2_FICTIONAL_SCENE_REVISION_EXACT_BINDING.md) ajoute un choix manuel de `scene_id` et `revision_id` immuable **inventés**, y compris une version historique, avec rejets déterministes des références étrangères et préservation de l'ancien lien par supersession. 22 cas Vitest/34 cas Chromium prévus ; CI sur le nouveau commit non encore acquise à la rédaction. **Pas de CRUD persisté ni de certification opérateur ; M3.2 IN_PROGRESS_NOT_ACCEPTED.**
+
 ## Écart principal et chemin de retour au produit M3.2
 
 Le [plan M3](M3_TIME_KNOWLEDGE_RELATIONSHIPS.md) prévoit précisément **saisie/édition manuelles des ancres temporelles et contraintes avant/après**, dates exactes/approximatives/relatives/inconnues, deux Universes, plusieurs romans, références de scènes et révisions immuables, refus des cycles et conflits, distinction visible entre **ordre du monde**, **ordre de narration** et **ordre de révélation**, fonctionnement hors ligne, puis **tests Windows réels**, preuves de sauvegarde/activation intactes, CI au SHA exact, fusion et normalisation indépendante.
