@@ -3,14 +3,14 @@
   "as_of": "2026-10-20",
   "status_kind": "DATED_PUBLIC_SOURCE_HANDOFF_ONLY",
   "repository": "LaurentCOLL1/Fabulaxiom",
-  "last_confirmed_main_before_handoff": "a8578b8e128af2264e85a7341a96e13d0e086b23",
-  "last_confirmed_merged_pr": 95,
-  "last_verified_pr_head": "29bae8aee7e6985e20bfd1ebda34f7a5b2c8732d",
+  "last_confirmed_main_before_handoff": "e35b7c92441c517d4f0fcacb829711c4d1e9da97",
+  "last_confirmed_merged_pr": 96,
+  "last_verified_pr_head": "5ac35ff196b27ca85b79f73296c33082044c0d98",
   "last_verified_ci": {
-    "run_id": 39406700987,
+    "run_id": 39414915855,
     "context": "Windows frontend and Rust checks",
     "conclusion": "SUCCESS",
-    "source": "PR95_EXACT_HEAD"
+    "source": "PR96_EXACT_HEAD"
   },
   "recent_changes": [
     "PR_85_EXACT_G2A_TEXT_AST_ONLY",
@@ -33,7 +33,9 @@
     "PR_94_WIDE_RUST_SQLITE_TEXTUAL_INVENTORY_18_TESTS_MERGED",
     "2026_10_20_PREOPENED_QUERY_ONLY_FICTIONAL_RAM_READER_TEST_ONLY_13_CASES_PROPOSED",
     "PR_95_PREOPENED_RAM_QUERYONLY_RUST_13_TESTS_MERGED_CI_SUCCESS",
-    "2026_10_20_EXTERNAL_WRITER_RAM_ONLY_PYTHON_12_NEGATIVE_TESTS_PROPOSED"
+    "2026_10_20_EXTERNAL_WRITER_RAM_ONLY_PYTHON_12_NEGATIVE_TESTS_PROPOSED",
+    "PR_96_SHARED_RAM_EXTERNAL_WRITER_12_TESTS_MERGED_EXACT_HEAD_CI_SUCCESS",
+    "2026_10_20_ROADMAP_V1_FIVE_FILE_FULL_RECONCILIATION_M3_1_PR34_M3_2_NOT_ACCEPTED"
   ],
   "pr35": "OPEN_DRAFT",
   "issues": {
@@ -219,15 +221,15 @@
     "verified_bypass_actors": 0,
     "classic_branch_protection_read": "403_INTEGRATION_RESTRICTED"
   },
-  "next": "QUALIFY_TWO_CONNECTIONS_NAMED_RAM_EXTERNAL_WRITER_COUNTEREXAMPLE_IN_EXACT_HEAD_CI_KEEP_G2B_G3_DENIED",
+  "next": "VERIFY_V1_ROADMAP_ALIGNMENT_WITH_NINE_CI_TESTS_AT_NEW_EXACT_PR_HEAD_PRESERVE_M3_2_PRODUCT_GATES",
   "live_refetch_required": true,
   "hand_off_updated_by_future_pr": true,
   "main_ci_post_merge": {
-    "sha": "a8578b8e128af2264e85a7341a96e13d0e086b23",
-    "run_id": 39407869929,
+    "sha": "e35b7c92441c517d4f0fcacb829711c4d1e9da97",
+    "run_id": 39416303498,
     "conclusion": "SUCCESS",
     "source": "MAIN_PUSH",
-    "note": "Terminal SUCCESS verified on 20 October 2026; does not authorize any local gate"
+    "note": "Terminal success observed; not authorization for real G2B/G3"
   },
   "g2a_candidate_ci": {
     "pr": 86,
@@ -253,5 +255,30 @@
     "last_operator_consent": "SINGLE_G2A_PID_ZERO_RUN_CONSUMED",
     "next_operator_procedure": "NOT_AUTHORIZED_WITHOUT_EXACT_SCRIPT_AND_NEW_APPROVAL",
     "scope": "DOCUMENTARY_DECISION_NOT_EXECUTABLE"
+  },
+  "roadmap_alignment": {
+    "index": "docs/roadmap/README.md",
+    "current": "docs/roadmap/ROADMAP_STATUS_CURRENT.md",
+    "source_files": [
+      "docs/roadmap/FABULAXIOM_ROADMAP_V1.md",
+      "docs/roadmap/M1_PERSISTENCE_PROJECT_FOUNDATION.md",
+      "docs/roadmap/M2_NARRATIVE_ENTITIES_CANONICAL_FACTS.md",
+      "docs/roadmap/M3_TIME_KNOWLEDGE_RELATIONSHIPS.md",
+      "docs/roadmap/V1_VISUAL_REFERENCES_COMFYUI_PROPOSAL.md"
+    ],
+    "m0_m1_m2": "COMPLETE_MERGED_NORMALIZED",
+    "m3_1": "COMPLETE_MERGED_NORMALIZED_PR33_PR34",
+    "m3_2": "IN_PROGRESS_NOT_ACCEPTED",
+    "m3_2_product_acceptance": "MISSING_REAL_MANUAL_CHRONOLOGY_CRUD_UI_WINDOWS_EVIDENCE_NORMALIZATION",
+    "future_m3_3_to_m3_6": "NOT_STARTED_NOT_AUTHORIZED",
+    "m4_to_m9": "NOT_STARTED_NOT_AUTHORIZED",
+    "comfyui": "PROPOSAL_ONLY_NOT_AUTHORIZED",
+    "gates": "G2A_METADATA_ONLY_G2B_TO_G6_NOT_AUTHORIZED",
+    "historical_provenance": "PENDING_EXTERNAL_ATTESTATION(21/3/2)",
+    "prospective": "NOT_STARTED",
+    "no_local_operator_commands": true,
+    "check": "tools/test_m32_roadmap_traceability.py",
+    "expected_tests": 9,
+    "status_kind": "DATED_DOCUMENTATION_NOT_OPERATOR_AUTHORIZATION"
   }
 }
