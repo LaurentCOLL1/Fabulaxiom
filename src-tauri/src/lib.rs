@@ -42,6 +42,9 @@ mod m32_owner_lifecycle_toy;
 // Pure-RAM thread handoff actor: ownership/teardown only, never source provenance.
 #[cfg(all(test, feature = "m32-g3-owned-ram-toy"))]
 mod m32_owner_handoff_actor_toy;
+// TEST-ONLY: borrowed query-only connection to a completely fictitious RAM DB.
+#[cfg(all(test, feature = "m32-g3-owned-ram-toy"))]
+mod m32_preopened_query_only_toy;
 
 use std::time::Duration;
 

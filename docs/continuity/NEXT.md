@@ -1,5 +1,10 @@
 # Fabulaxiom — Next Authorized Work
 
+## 2026-10-20 — prototype Rust query_only sur RAM inventée, aucune base privée
+
+PR #94 source-only fusionnée, main 632e6d6d985affa6989bb220ddec99911e6ba1e6, CI PR #39394068343 au head exact 74395428c185198632cc2cd2c19eec4b7132e4ad SUCCESS (71 étapes). Nouveau [M3_2_PREOPENED_QUERY_ONLY_RAM_READER_TOY.md](../qualification/M3_2_PREOPENED_QUERY_ONLY_RAM_READER_TOY.md) et module `src-tauri/src/m32_preopened_query_only_toy.rs`, compilation seulement cfg(test) + feature déjà réservé `m32-g3-owned-ram-toy`. 13 tests de fixture SQLite RAM imaginaire, sans appel open_database ni migration. Intégrer dans CI sous sa branche, re-fetch SHA et attester exact-head avant fusion si PASS. Tout résultat reste un toy : query_only/total_changes ne démontrent pas absence de writer externe. Aucune commande opérateur autorisée. G2B–G6 STOP, production v6/v7 et journaux/backup protégés, historique 21/3/2 non résolu, prospective NOT_STARTED.
+
+
 ## 2026-10-20 — couverture source-only élargie des sites SQLite Rust
 
 PR #93 fusionnée sur main 15c91039243206dc61190fec5668f32a87f3faf0, CI #39391766661 PASS 70/70 au HEAD exact. Revoir [M3_2_WIDE_RUST_SQLITE_SITE_INVENTORY.md](../qualification/M3_2_WIDE_RUST_SQLITE_SITE_INVENTORY.md) : 25 fichiers Rust sous src-tauri/src, 20 contenant au moins un motif textuel de création/ouverture/migration/ATTACH/VACUUM. 18 tests adversariaux purement source-only doivent être qualifiés par CI au nouveau commit. Re-fetch main/PR/ruleset/reviews/threads puis fusion gouvernée si terminal SUCCESS. Réel G3 toujours STOP, G2B–G6 non autorisés, absence d'écrivain NOT_PROVEN, historique 21/3/2 et future baseline NOT_STARTED ; pas d'intervention opérateur ni d'accès v6/v7/journaux/ACL/backups/markers. L'accord G2-A unique est consommé.

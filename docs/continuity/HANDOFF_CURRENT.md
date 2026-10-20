@@ -1,6 +1,13 @@
 # Fabulaxiom M3.2 — Reprise opérationnelle courte
 
-**Checkpoint du 20 octobre 2026 après PR #93. Instantané documentaire : re-fetch GitHub obligatoire. Aucune autorisation Windows, SQLite ou G2-B/G3 créée.**
+**Checkpoint du 20 octobre 2026 après PR #94. Instantané documentaire : re-fetch GitHub obligatoire. Aucune autorisation Windows, SQLite ou G2-B/G3 créée.**
+
+## 2026-10-20 — lecture préouverte query-only en RAM fictive, Rust TEST-ONLY
+
+- Re-fetch GitHub : PR #94 fusionnée sur `main=632e6d6d985affa6989bb220ddec99911e6ba1e6` après CI [#39394068343](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/39394068343) SUCCESS au HEAD `74395428c185198632cc2cd2c19eec4b7132e4ad` (71 étapes). La CI post-merge de main doit être revérifiée avant de déclarer un succès terminal ; cette qualification ne déverrouille aucun gate.
+- Nouveau [prototype Rust fictif](../qualification/M3_2_PREOPENED_QUERY_ONLY_RAM_READER_TOY.md) : seule une connexion `&Connection` déjà ouverte sur une base RAM **inventée** est empruntée ; la fixture seule fait `Connection::open_in_memory`, puis PRAGMA `query_only=ON`. 13 tests négatifs vérifient lecture sans migration, refus des écritures, schémas ATTACH supplémentaires et dérives de la même connexion. Feature non défaut + `cfg(test)` ; aucune API de production/Tauri/IPC.
+- La surveillance source-only élargie reconnaît maintenant 26 fichiers Rust, dont 21 comportent des marqueurs SQLite. Son test des comptes textuels est ajusté pour la nouvelle fixture, sans reconnaître de droit de lecture sur les originaux.
+- **Limits** : query_only et total_changes ne concernent que cette connexion ; aucun écrivain externe Windows authentifié ou exclu. G2-A reste `PASS_METADATA_ONLY_OWNER_REPORTED` (consentement consommé), writer SQLite absent `NOT_PROVEN`, G2-B/C/D et G3–G6 `NOT_AUTHORIZED`, `REAL_G3=STOP_UNAVAILABLE`, historique 21/3/2, prospective NOT_STARTED. Ne rien exécuter localement, ne pas ouvrir v6/v7, sidecars, backups, ACL, marqueurs, migration 007, writer IPC ou PR #35.
 
 ## 2026-10-20 — inventaire élargi de tous les modules Rust Tauri (source-only)
 

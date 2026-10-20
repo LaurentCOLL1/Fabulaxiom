@@ -150,7 +150,7 @@ class HandoffContractTests(unittest.TestCase):
         self.assertEqual(i["absence_of_writer"], "NOT_PROVEN")
         self.assertEqual(i["real_g3"], "STOP_UNAVAILABLE")
         self.assertEqual(i["gate_promotion"], "NEVER_AUTOMATIC")
-        self.assertEqual(i["baseline_matched_files"], 20)
+        self.assertEqual(i["baseline_matched_files"], 21)
         self.assertEqual(i["test_count"], 18)
         self.assertTrue((ROOT / i["document"]).is_file())
         self.assertTrue((ROOT / i["scanner"]).is_file())
@@ -158,7 +158,22 @@ class HandoffContractTests(unittest.TestCase):
         self.assertIn("M3_2_WIDE_RUST_SQLITE_SITE_INVENTORY.md", self.doc)
         self.assertIn("M3_2_WIDE_RUST_SQLITE_SITE_INVENTORY.md", self.index)
 
-    def test_17_policy_requires_refetch_and_same_pr_handoff(self):
+    def test_17_preopened_ram_reader_only_toy_no_operator_access(self):
+        t = self.data["g2a"]["preopened_ram_query_only_toy"]
+        self.assertEqual(t["gates"], "CFG_TEST_AND_NONDEFAULT_FEATURE_ONLY")
+        self.assertEqual(t["test_count"], 13)
+        self.assertEqual(t["migration_invoked"], "NO")
+        self.assertEqual(t["disk_source_opened"], "NONE")
+        self.assertEqual(t["operator_execution"], "NOT_AUTHORIZED")
+        self.assertEqual(t["real_g3"], "STOP_UNAVAILABLE")
+        self.assertEqual(t["absence_of_real_writer"], "NOT_PROVEN")
+        self.assertEqual(t["permission_promotion"], "NEVER")
+        self.assertTrue((ROOT / t["document"]).is_file())
+        self.assertTrue((ROOT / t["rust_module"]).is_file())
+        self.assertIn("M3_2_PREOPENED_QUERY_ONLY_RAM_READER_TOY.md", self.doc)
+        self.assertIn("M3_2_PREOPENED_QUERY_ONLY_RAM_READER_TOY.md", self.index)
+
+    def test_18_policy_requires_refetch_and_same_pr_handoff(self):
         for clause in ("Re-fetch", "HANDOFF_CURRENT.md", "HANDOFF_CURRENT.json",
                        "expected_head_sha", "autorisation"):
             self.assertIn(clause, self.policy)

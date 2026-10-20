@@ -30,6 +30,7 @@ EXPECTED = {
     "src-tauri/src/lib.rs": (0, 1, 0, 0, 0, 0, 0),
     "src-tauri/src/m31_readonly_preview.rs": (1, 2, 0, 0, 0, 1, 0),
     "src-tauri/src/m32_owned_backup_toy.rs": (14, 0, 0, 0, 2, 0, 0),
+    "src-tauri/src/m32_preopened_query_only_toy.rs": (1, 0, 0, 0, 2, 0, 0),
     "src-tauri/src/m32_owner_handoff_actor_toy.rs": (2, 0, 0, 0, 1, 0, 0),
     "src-tauri/src/m32_owner_lifecycle_toy.rs": (4, 0, 0, 0, 1, 0, 0),
     "src-tauri/src/review_commands.rs": (0, 1, 0, 0, 0, 0, 0),
