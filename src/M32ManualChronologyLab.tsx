@@ -4,17 +4,22 @@ import M32ChronologyPreview from "./M32ChronologyPreview";
 import {
   startFictionalDraft, createFictionalAnchor, supersedeFictionalAnchor,
   createFictionalPrecedence, revokeFictionalPrecedence,
-  type FictionalDraft, type FictionalTimeInput,
+  type FictionalDraft, type FictionalTimeInput, type FictionalRevision,
 } from "./m32FictionalManualChronology";
 
 /** Isolated browser-only fictional UX lab. No App.tsx, Tauri invoke, storage or network. */
-function Lab({ initial }: { initial: M32ChronologyProjection }): ReactElement {
+function Lab({ initial, revisions }: {
+  initial: M32ChronologyProjection;
+  revisions: readonly FictionalRevision[];
+}): ReactElement {
   const id = useId();
-  const [draft, setDraft] = useState<FictionalDraft>(() => startFictionalDraft(initial));
+  const [draft, setDraft] = useState<FictionalDraft>(() => startFictionalDraft(initial, revisions));
   const [kind, setKind] = useState<M32TimeKind>("unknown");
   const [calendar, setCalendar] = useState("");
   const [label, setLabel] = useState("");
   const [precision, setPrecision] = useState("");
+  const [sceneId, setSceneId] = useState("");
+  const [revisionId, setRevisionId] = useState("");
   const [replace, setReplace] = useState("");
   const [before, setBefore] = useState("");
   const [after, setAfter] = useState("");
@@ -24,7 +29,14 @@ function Lab({ initial }: { initial: M32ChronologyProjection }): ReactElement {
   const [notice, setNotice] = useState<string | null>(null);
   const active = draft.snapshot.anchors.filter(a => a.status === "current");
   const edges = draft.snapshot.precedences.filter(e => e.status === "current");
-  const input: FictionalTimeInput = { kind, calendar, label, precision };
+  const scenes = draft.revisions.filter((r, index, all) =>
+    all.findIndex(first => first.scene_id === r.scene_id) === index);
+  const availableRevisions = draft.revisions.filter(r => r.scene_id === sceneId);
+  const input: FictionalTimeInput = {
+    kind, calendar, label, precision,
+    source_scene_id: sceneId || undefined,
+    source_revision_id: sceneId ? revisionId : undefined,
+  };
   function apply(action: () => FictionalDraft, message: string) {
     try {
       setDraft(action());
@@ -65,6 +77,28 @@ function Lab({ initial }: { initial: M32ChronologyProjection }): ReactElement {
         <input id={id + "-precision"} value={precision} maxLength={160}
           onChange={e => setPrecision(e.currentTarget.value)} />
       </>}
+      <label htmlFor={id + "-scene"}>Scène inventée à citer (facultatif)</label>
+      <select id={id + "-scene"} value={sceneId} onChange={e => {
+        setSceneId(e.currentTarget.value);
+        setRevisionId("");
+      }}>
+        <option value="">Sans nouvelle référence de scène</option>
+        {scenes.map(r => <option key={r.scene_id} value={r.scene_id}>
+          {draft.snapshot.narration.find(n => n.scene_id === r.scene_id)?.scene_title}
+          {" — "}{r.novel_id} / {r.scene_id}
+        </option>)}
+      </select>
+      {sceneId && <>
+        <label htmlFor={id + "-revision"}>Révision exacte et immuable de cette scène</label>
+        <select id={id + "-revision"} value={revisionId}
+          onChange={e => setRevisionId(e.currentTarget.value)}>
+          <option value="">Choisir la révision exacte</option>
+          {availableRevisions.map(r => <option key={r.revision_id} value={r.revision_id}>
+            {r.revision_label} — {r.revision_id}
+          </option>)}
+        </select>
+      </>}
+      <p>Aucun titre de scène ne sert d'identifiant ; aucune révision courante n'est déduite.</p>
       <button type="button" onClick={() => apply(
         () => createFictionalAnchor(draft, input), "Ancre fictive créée")}>
         Ajouter l'ancre
@@ -131,13 +165,13 @@ function Lab({ initial }: { initial: M32ChronologyProjection }): ReactElement {
   </section>;
 }
 export default function M32ManualChronologyLab({
-  initial,
-}: { initial: M32ChronologyProjection }): ReactElement {
+  initial, revisions = [],
+}: { initial: M32ChronologyProjection; revisions?: readonly FictionalRevision[] }): ReactElement {
   try {
-    startFictionalDraft(initial);
+    startFictionalDraft(initial, revisions);
   } catch {
     return <section role="alert"><h2>Atelier fictif refusé</h2>
       <p>Univers ou graphe initial incohérent. Aucune saisie autorisée.</p></section>;
   }
-  return <Lab initial={initial} />;
+  return <Lab initial={initial} revisions={revisions} />;
 }
