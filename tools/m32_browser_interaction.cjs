@@ -561,9 +561,29 @@ async function run() {
       assert.equal(await page.getByRole("heading", { name: "Atelier fictif refusé" }).count(), 1);
       assert.equal(await page.getByRole("button", { name: "Ajouter l'ancre" }).count(), 0);
     });
-    assert.equal(cases.length, 32);
-    console.log("M32_BROWSER_REAL_CHROMIUM_PASS 32/32");
-    // Actual Chromium enforced-CSP veto, separate from the 32
+    await caseRun("33-explicit-historical-scene-revision-select-and-create", async () => {
+      await page.getByRole("button", { name: "Ouvrir l'atelier manuel fictif" }).click();
+      const lab = page.getByRole("region", { name: "Atelier manuel M3.2 exclusivement fictif" });
+      await lab.getByRole("combobox", { name: "Scène inventée à citer (facultatif)" }).selectOption("s1");
+      await lab.getByRole("combobox", { name: "Révision exacte et immuable de cette scène" })
+        .selectOption("invented-rev-B");
+      await lab.getByRole("button", { name: "Ajouter l'ancre" }).click();
+      assert.equal(await lab.getByText("Ancre fictive créée").count(), 1);
+      assert.equal(await lab.getByText("révision : invented-rev-B", { exact: false }).count(), 1);
+      assert.equal(await lab.getByText("révision : invented-rev-A", { exact: false }).count(), 1);
+    });
+    await caseRun("34-second-fiction-universe-has-no-foreign-revision-choices", async () => {
+      await page.getByRole("button", { name: "Charger un autre univers fictif" }).click();
+      await page.getByRole("button", { name: "Ouvrir l'atelier manuel fictif" }).click();
+      const lab = page.getByRole("region", { name: "Atelier manuel M3.2 exclusivement fictif" });
+      assert.equal(await lab.getByRole("combobox", { name: "Scène inventée à citer (facultatif)" })
+        .locator("option").count(), 1);
+      assert.equal(await lab.getByRole("combobox", { name: "Révision exacte et immuable de cette scène" }).count(), 0);
+      assert.equal(await lab.getByText("invented-rev-A", { exact: false }).count(), 0);
+    });
+    assert.equal(cases.length, 34);
+    console.log("M32_BROWSER_REAL_CHROMIUM_PASS 34/34");
+    // Actual Chromium enforced-CSP veto, separate from the 34
     // fictional interaction cases. Never make an off-loopback network call.
     const cspVeto = await page.evaluate(async () => {
       const notices = [];
@@ -593,9 +613,9 @@ async function run() {
       });
       assert.equal(scriptVeto, false, "STOP: inline JS executed under strict CSP");
       console.log("M32_CI_PRECOMPILED_INLINE_SCRIPT_DENIED_PASS");
-      console.log("M32_CI_PRECOMPILED_STRICT_CSP_BROWSER_PASS: 32/32");
+      console.log("M32_CI_PRECOMPILED_STRICT_CSP_BROWSER_PASS: 34/34");
     }
-    console.log("M32_CI_FIXTURE_ONLY_BROWSER_PASS: 32/32; no normal source pages");
+    console.log("M32_CI_FIXTURE_ONLY_BROWSER_PASS: 34/34; no normal source pages");
   } finally {
     if (browser) await browser.close();
     server.kill();

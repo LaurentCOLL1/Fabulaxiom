@@ -206,10 +206,10 @@ class HandoffContractTests(unittest.TestCase):
 
     def test_20_manual_chronology_candidate_only_in_synthetic_lab(self):
         x = self.data["m3_2_product_progress"]
-        self.assertEqual(x["delivery"], "SYNTHETIC_BROWSER_LAB_ONLY_UNQUALIFIED_PR")
-        self.assertEqual(x["expected_tests"], 13)
-        self.assertEqual(x["browser_new_cases"], 3)
-        self.assertEqual(x["browser_total_expected"], 32)
+        self.assertEqual(x["delivery"], "SYNTHETIC_BROWSER_LAB_ONLY_SOURCE_ONLY")
+        self.assertEqual(x["expected_tests"], 22)
+        self.assertEqual(x["browser_new_cases"], 2)
+        self.assertEqual(x["browser_total_expected"], 34)
         self.assertEqual(x["app_tauri_production_integration"], "NONE")
         self.assertEqual(x["sqlite_real_access"], "NONE")
         self.assertEqual(x["operator_windows_acceptance"], "NOT_STARTED")
@@ -222,7 +222,21 @@ class HandoffContractTests(unittest.TestCase):
             self.assertTrue((ROOT / p).is_file())
         self.assertIn("M3_2_SYNTHETIC_MANUAL_CHRONOLOGY_LAB.md", self.doc)
 
-    def test_21_policy_requires_refetch_and_same_pr_handoff(self):
+    def test_21_exact_scene_revision_binding_stays_fictional(self):
+        x = self.data["m3_2_product_progress"]
+        r = x["scene_revision_binding"]
+        self.assertEqual(x["expected_tests"], 22)
+        self.assertEqual(x["browser_total_expected"], 34)
+        self.assertEqual(r["fixture_catalog_limit"], 128)
+        self.assertEqual(r["source_head_resolution"], "NEVER")
+        self.assertFalse(r["accepts_cross_universe"])
+        self.assertEqual(r["persisted_sqlite_access"], "NONE")
+        self.assertEqual(r["operator_windows_execution"], "NOT_AUTHORIZED")
+        self.assertEqual(x["m3_2_milestone"], "IN_PROGRESS_NOT_ACCEPTED")
+        self.assertTrue((ROOT / r["doc"]).is_file())
+        self.assertIn("M3_2_FICTIONAL_SCENE_REVISION_EXACT_BINDING.md", self.doc)
+
+    def test_22_policy_requires_refetch_and_same_pr_handoff(self):
         for clause in ("Re-fetch", "HANDOFF_CURRENT.md", "HANDOFF_CURRENT.json",
                        "expected_head_sha", "autorisation"):
             self.assertIn(clause, self.policy)

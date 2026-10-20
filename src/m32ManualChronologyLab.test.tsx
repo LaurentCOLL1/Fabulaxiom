@@ -4,8 +4,9 @@ import { renderToStaticMarkup } from "react-dom/server";
 import type { M32ChronologyProjection } from "./M32ChronologyPreview";
 import M32ManualChronologyLab from "./M32ManualChronologyLab";
 import {
-  startFictionalDraft, createFictionalAnchor, supersedeFictionalAnchor,
+  startFictionalDraft as startDraft, createFictionalAnchor, supersedeFictionalAnchor,
   createFictionalPrecedence, revokeFictionalPrecedence,
+  type FictionalRevision,
 } from "./m32FictionalManualChronology";
 
 const invented: M32ChronologyProjection = {
@@ -25,6 +26,17 @@ const invented: M32ChronologyProjection = {
       scene_id: "s-two", scene_title: "Scène inventée 2", scene_order: 0 },
   ],
 };
+const history: readonly FictionalRevision[] = [
+  { universe_id: "fiction-one", novel_id: "novel-one", scene_id: "s-one",
+    revision_id: "fiction-revision-A", revision_label: "Texte initial" },
+  { universe_id: "fiction-one", novel_id: "novel-one", scene_id: "s-one",
+    revision_id: "fiction-revision-B", revision_label: "Texte de travail plus tardif" },
+  { universe_id: "fiction-one", novel_id: "novel-two", scene_id: "s-two",
+    revision_id: "fiction-revision-C", revision_label: "Deuxième roman" },
+];
+function startFictionalDraft(snapshot: M32ChronologyProjection) {
+  return startDraft(snapshot, history);
+}
 const unknown = { kind: "unknown" as const, calendar: "", label: "", precision: "" };
 const exact = { kind: "exact" as const, calendar: "Marées inventées",
   label: "Cloche XII", precision: "" };
@@ -100,7 +112,7 @@ describe("M3.2 manually authored fictional-only chronology laboratory", () => {
         after_anchor_id: "A", status: "current" as const, reason: "B A" },
     ] };
     expect(() => startFictionalDraft(cyclic)).toThrow();
-    const html = renderToStaticMarkup(createElement(M32ManualChronologyLab, { initial: cyclic }));
+    const html = renderToStaticMarkup(createElement(M32ManualChronologyLab, { initial: cyclic, revisions: history }));
     expect(html).toContain("Atelier fictif refusé");
     expect(html).not.toContain("<fieldset");
   });
@@ -110,7 +122,7 @@ describe("M3.2 manually authored fictional-only chronology laboratory", () => {
       { ...exact, label: "X".repeat(161) })).toThrow();
   });
   it("12 static form exposes manual actions only in fictional mode", () => {
-    const html = renderToStaticMarkup(createElement(M32ManualChronologyLab, { initial: invented }));
+    const html = renderToStaticMarkup(createElement(M32ManualChronologyLab, { initial: invented, revisions: history }));
     for (const word of ["Ajouter l'ancre", "Remplacer sans effacer", "Ajouter avant/après",
       "Révoquer explicitement", "Ordre de narration", "Ordre de révélation"]) {
       expect(html).toContain(word.replace(/'/g, "&#x27;"));
@@ -118,6 +130,67 @@ describe("M3.2 manually authored fictional-only chronology laboratory", () => {
     expect(html).not.toContain("invoke(");
     expect(html).not.toContain("Date.parse");
     expect(html).not.toContain("fetch(");
+  });
+  it("14 selects exact historical revision by immutable identifier, not latest scene head", () => {
+    const d = createFictionalAnchor(startFictionalDraft(invented),
+      { ...exact, source_scene_id: "s-one", source_revision_id: "fiction-revision-A" });
+    expect(d.snapshot.anchors.slice(-1)[0].source_revision_id).toBe("fiction-revision-A");
+    expect(d.snapshot.narration[0].scene_id).toBe("s-one");
+    expect(d.snapshot.reader_reveal_status).toBe("not_authored");
+  });
+  it("15 rejects source scene paired with a revision belonging to another scene", () => {
+    expect(() => createFictionalAnchor(startFictionalDraft(invented),
+      { ...exact, source_scene_id: "s-two", source_revision_id: "fiction-revision-A" })).toThrow(/révision/);
+  });
+  it("16 refuses unlisted revision, guessed head or orphan scene", () => {
+    const d = startFictionalDraft(invented);
+    expect(() => createFictionalAnchor(d,
+      { ...unknown, source_scene_id: "s-one", source_revision_id: "fiction-current-head" })).toThrow();
+    expect(() => createFictionalAnchor(d,
+      { ...unknown, source_scene_id: "orphan", source_revision_id: "fiction-revision-A" })).toThrow();
+    expect(() => createFictionalAnchor(d,
+      { ...unknown, source_scene_id: "s-one", source_revision_id: "" })).toThrow();
+  });
+  it("17 rejects duplicate revision IDs even if display labels differ", () => {
+    expect(() => startDraft(invented, [...history, { ...history[0], revision_label: "Changed name" }])).toThrow();
+  });
+  it("18 rejects foreign universe, novel mismatch and scene missing from narration", () => {
+    for (const catalog of [
+      [{ ...history[0], universe_id: "fiction-two" }],
+      [{ ...history[0], novel_id: "novel-two" }],
+      [{ ...history[0], scene_id: "ghost" }],
+    ]) {
+      expect(() => startDraft(invented, catalog)).toThrow();
+    }
+  });
+  it("19 prior source revision survives supersession and next version inherits it", () => {
+    const d = startFictionalDraft(invented);
+    const next = supersedeFictionalAnchor(d, "A", unknown);
+    expect(next.snapshot.anchors.find(a => a.id === "A")?.source_revision_id).toBe("fiction-revision-A");
+    expect(next.snapshot.anchors.slice(-1)[0].source_revision_id).toBe("fiction-revision-A");
+    expect(next.revisions.find(r => r.revision_id === "fiction-revision-A")?.scene_id).toBe("s-one");
+  });
+  it("20 an explicit correction can choose a different historical revision", () => {
+    const d = supersedeFictionalAnchor(startFictionalDraft(invented), "A",
+      { ...unknown, source_scene_id: "s-one", source_revision_id: "fiction-revision-B" });
+    expect(d.snapshot.anchors.find(a => a.id === "A")?.source_revision_id).toBe("fiction-revision-A");
+    expect(d.snapshot.anchors.slice(-1)[0].source_revision_id).toBe("fiction-revision-B");
+  });
+  it("21 source arrays remain detached from caller-owned invented objects", () => {
+    const revisions = history.map(r => ({ ...r }));
+    const draft = startDraft(invented, revisions);
+    revisions[0].revision_label = "Tampered by caller";
+    expect(draft.revisions[0].revision_label).toBe("Texte initial");
+    expect(draft.snapshot.anchors[0].source_revision_id).toBe("fiction-revision-A");
+    expect(draft.real_g3_authorized).toBe(false);
+  });
+  it("22 view shows historical revision choices and cannot acquire real data", () => {
+    const html = renderToStaticMarkup(createElement(M32ManualChronologyLab,
+      { initial: invented, revisions: history }));
+    expect(html).toContain("Scène inventée à citer");
+    expect(html).toContain("s-one");
+    expect(html).toContain("Sans nouvelle référence de scène");
+    expect(html).not.toContain("invoke(");
   });
   it("13 refuses malformed legacy edge and forbids promotion to G3", () => {
     const d = startFictionalDraft(invented);

@@ -1,6 +1,13 @@
 # Fabulaxiom M3.2 — Reprise opérationnelle courte
 
-**Checkpoint du 20 octobre 2026 après PR #97. Instantané documentaire : re-fetch GitHub obligatoire. Aucune autorisation Windows, SQLite ou G2-B/G3 créée.**
+**Checkpoint du 20 octobre 2026 après PR #98. Instantané documentaire : re-fetch GitHub obligatoire. Aucune autorisation Windows, SQLite ou G2-B/G3 créée.**
+
+## 2026-10-20 — scènes et révisions historiques exactes (laboratoire fictif, candidat)
+
+- PR #98 fusionnée sur `main=7477001cd0ebc69d4701f21eddbda898f94c79c5` sous ruleset Protect main, CI PR [#39447951647](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/39447951647) **SUCCESS 74/74** au HEAD `783e9e10f225f877a3222a089008a394e596fcc8`; CI push main #39449601527 SUCCESS terminal.
+- [Nouvelle tranche fictive](../qualification/M3_2_FICTIONAL_SCENE_REVISION_EXACT_BINDING.md) : sélection manuelle **scène fictive + identifiant exact de révision immuable**, même ancienne, sans lecture `head` ni contenu. Rejet d'une révision hors scène/roman/Univers, dupliquée ou inconnue ; préservation de la référence précédente lors de la supersession ; aucune persistance.
+- 9 nouveaux cas Vitest (22 au total pour l'atelier) et 2 cas Chromium (34 au total) **à qualifier dans une nouvelle CI au HEAD exact**. Deux allowlists restent limitées aux 9 sources historiques fictives ; pas de nouvelle dépendance, pas d'IPC.
+- M3.2 `IN_PROGRESS_NOT_ACCEPTED`, PR #35 DRAFT. G2-A `PASS_METADATA_ONLY_OWNER_REPORTED`, absence writer `NOT_PROVEN`, G2-B/C/D et G3–G6 `NOT_AUTHORIZED`, G3 réel `STOP_UNAVAILABLE`, historique 21/3/2 et prospective NOT_STARTED. V6/v7, sidecars, ACL, backups, marqueurs, migration 007, writer IPC, M3.3, release protégés.
 
 ## 2026-10-20 — incrément produit M3.2 : édition de chronologie en navigateur fictif (candidat)
 
