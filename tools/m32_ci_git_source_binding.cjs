@@ -1,7 +1,7 @@
 "use strict";
 
 /** M3.2 fictional-only CI source binding.
- * Compares exact seven tracked files with immutable blobs from the CHECKED
+ * Compares exact nine tracked files with immutable blobs from the CHECKED
  * OUT Git commit. This is a local CI consistency check, NOT an authenticated
  * external provenance, signature, independent GitHub attestation, or G3 proof.
  */
@@ -20,6 +20,8 @@ const EXPECTED = Object.freeze([
   "src/M32ChronologyPreview.tsx",
   "src/M32WorldOrderComparison.tsx",
   "src/M32SyntheticEventExplorer.tsx",
+  "src/m32FictionalManualChronology.ts",
+  "src/M32ManualChronologyLab.tsx",
 ]);
 function git(root, args, options = {}) {
   const result = spawnSync("git", ["-C", root, ...args], {
@@ -56,7 +58,7 @@ function bindSourcesToCheckout(root, expectedCommit, allowlist) {
   const blobs = new Map();
   const inventory = [];
   for (const relative of allowlist) {
-    assert.match(relative, /^(?:m32-browser-lab\.html|src\/[A-Za-z0-9_]+\.tsx|src\/m32BrowserLab\.css)$/,
+    assert.match(relative, /^(?:m32-browser-lab\.html|src\/(?:[A-Za-z0-9_]+\.tsx|m32FictionalManualChronology\.ts)|src\/m32BrowserLab\.css)$/,
       "STOP: a source path outside the known fictional module family");
     const source = path.resolve(root, relative);
     assert.ok(source.startsWith(path.resolve(root) + path.sep), "STOP: source path escaped checkout");
