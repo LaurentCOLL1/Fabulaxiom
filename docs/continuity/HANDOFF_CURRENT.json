@@ -3,14 +3,14 @@
   "as_of": "2026-10-20",
   "status_kind": "DATED_PUBLIC_SOURCE_HANDOFF_ONLY",
   "repository": "LaurentCOLL1/Fabulaxiom",
-  "last_confirmed_main_before_handoff": "e35b7c92441c517d4f0fcacb829711c4d1e9da97",
-  "last_confirmed_merged_pr": 96,
-  "last_verified_pr_head": "5ac35ff196b27ca85b79f73296c33082044c0d98",
+  "last_confirmed_main_before_handoff": "a839953f73f17379aa7c5ccde69d807b5b99a2f6",
+  "last_confirmed_merged_pr": 97,
+  "last_verified_pr_head": "00defd8fb25891f4cffb7f2acdd7871ef005cccc",
   "last_verified_ci": {
-    "run_id": 39414915855,
+    "run_id": 39426793283,
     "context": "Windows frontend and Rust checks",
     "conclusion": "SUCCESS",
-    "source": "PR96_EXACT_HEAD"
+    "source": "PR97_EXACT_HEAD"
   },
   "recent_changes": [
     "PR_85_EXACT_G2A_TEXT_AST_ONLY",
@@ -35,7 +35,9 @@
     "PR_95_PREOPENED_RAM_QUERYONLY_RUST_13_TESTS_MERGED_CI_SUCCESS",
     "2026_10_20_EXTERNAL_WRITER_RAM_ONLY_PYTHON_12_NEGATIVE_TESTS_PROPOSED",
     "PR_96_SHARED_RAM_EXTERNAL_WRITER_12_TESTS_MERGED_EXACT_HEAD_CI_SUCCESS",
-    "2026_10_20_ROADMAP_V1_FIVE_FILE_FULL_RECONCILIATION_M3_1_PR34_M3_2_NOT_ACCEPTED"
+    "2026_10_20_ROADMAP_V1_FIVE_FILE_FULL_RECONCILIATION_M3_1_PR34_M3_2_NOT_ACCEPTED",
+    "PR_97_V1_ROADMAP_STATUS_AND_NINE_CI_TESTS_MERGED",
+    "2026_10_20_M32_MANUAL_FICTIONAL_CHRONOLOGY_LAB_13_VITESTS_CANDIDATE"
   ],
   "pr35": "OPEN_DRAFT",
   "issues": {
@@ -221,15 +223,15 @@
     "verified_bypass_actors": 0,
     "classic_branch_protection_read": "403_INTEGRATION_RESTRICTED"
   },
-  "next": "VERIFY_V1_ROADMAP_ALIGNMENT_WITH_NINE_CI_TESTS_AT_NEW_EXACT_PR_HEAD_PRESERVE_M3_2_PRODUCT_GATES",
+  "next": "QUALIFY_FICTIONAL_MANUAL_CHRONOLOGY_LAB_WITH_FULL_EXACT_HEAD_WIN_CI_M3_2_NOT_ACCEPTED",
   "live_refetch_required": true,
   "hand_off_updated_by_future_pr": true,
   "main_ci_post_merge": {
-    "sha": "e35b7c92441c517d4f0fcacb829711c4d1e9da97",
-    "run_id": 39416303498,
+    "sha": "a839953f73f17379aa7c5ccde69d807b5b99a2f6",
+    "run_id": 39428345389,
     "conclusion": "SUCCESS",
     "source": "MAIN_PUSH",
-    "note": "Terminal success observed; not authorization for real G2B/G3"
+    "note": "Live completed-success verified 20 Oct 2026; no G2-B/G3 permission"
   },
   "g2a_candidate_ci": {
     "pr": 86,
@@ -280,5 +282,28 @@
     "check": "tools/test_m32_roadmap_traceability.py",
     "expected_tests": 9,
     "status_kind": "DATED_DOCUMENTATION_NOT_OPERATOR_AUTHORIZATION"
+  },
+  "m3_2_product_progress": {
+    "document": "docs/qualification/M3_2_SYNTHETIC_MANUAL_CHRONOLOGY_LAB.md",
+    "reducer": "src/m32FictionalManualChronology.ts",
+    "user_interface": "src/M32ManualChronologyLab.tsx",
+    "isolated_mount": "src/m32BrowserLab.tsx",
+    "tests": "src/m32ManualChronologyLab.test.tsx",
+    "expected_tests": 13,
+    "delivery": "SYNTHETIC_BROWSER_LAB_ONLY_UNQUALIFIED_PR",
+    "implemented": [
+      "CREATE_ANCHOR_FOUR_KINDS",
+      "CREATE_BEFORE_AFTER_WITH_CYCLE_VETO",
+      "REVOKE_EDGE_HISTORY",
+      "SUPERSEDE_ANCHOR_HISTORY"
+    ],
+    "origin": "ONLY_FICTION_PREFIX_UNIVERSE_IN_BROWSER_MEMORY",
+    "app_tauri_production_integration": "NONE",
+    "operator_windows_acceptance": "NOT_STARTED",
+    "sqlite_real_access": "NONE",
+    "m3_2_milestone": "IN_PROGRESS_NOT_ACCEPTED",
+    "owner_writer_absence": "NOT_PROVEN",
+    "g2b_to_g6": "NOT_AUTHORIZED",
+    "real_g3": "STOP_UNAVAILABLE"
   }
 }
