@@ -150,7 +150,7 @@ class HandoffContractTests(unittest.TestCase):
         self.assertEqual(i["absence_of_writer"], "NOT_PROVEN")
         self.assertEqual(i["real_g3"], "STOP_UNAVAILABLE")
         self.assertEqual(i["gate_promotion"], "NEVER_AUTOMATIC")
-        self.assertEqual(i["baseline_matched_files"], 20)
+        self.assertEqual(i["baseline_matched_files"], 21)
         self.assertEqual(i["test_count"], 18)
         self.assertTrue((ROOT / i["document"]).is_file())
         self.assertTrue((ROOT / i["scanner"]).is_file())
