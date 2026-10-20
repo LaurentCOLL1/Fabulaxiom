@@ -1,5 +1,10 @@
 # Fabulaxiom — Current State
 
+## 2026-10-20 — inventaire des six chemins SQLite et tests de dérive sans exécution
+
+PR #91 fusionnée sur main fb4625450439ecf236cc9065f434eda002f71533, CI #39376628743 au HEAD 94c9886e4e362867cab86c39efc5b13125a94dac SUCCESS (69 étapes), writer réel non prouvé. Source-only nouveau : `tools/m32_g3_runtime_entrypoint_source_audit.py` vérifie les séquences existantes des chemins open_database, database_status, create_backup, vacuum_copy, reserve_unique_file, read_validated_database sur fichiers Rust publics seulement ; 18 tests de refus imposent un nouveau review si le code change. Scanner textuel limité aux signatures connues, non exhaustif, non permission G3. Aucun original local v6/v7, sidecar, backup, ACL, activation marker, migration 007 ou writer IPC manipulé. STOP G2B–G6, PR #35 et M3.3/release. Prochaine étape : CI au nouveau SHA et fusion gouvernée si conformité.
+
+
 ## 2026-10-20 — blocage restant : writer SQLite NON PROUVÉ (audit public source-only)
 
 Après fusion PR #90 sur `main=45ce1511aa616fce9664dfc08cea39f290d2273d`, PASS G2-A metadata-only de 01:31:24 conservé ; re-fetch repository `src-tauri/src/database.rs::open_database` (crée parent si requis, `Connection::open`, migrations), `lib.rs::database_status` (appel direct), `backup.rs::create_backup` (source via open_database, `VACUUM INTO`). Ces chemins ne conviennent **pas** à une capture G3 protégée. Nouvelle revue source-only `docs/qualification/M3_2_G2A_WRITER_ABSENCE_GAP_SOURCE_REVIEW.md` avec 13 tests purement inventés refusant toute promotion de G3 même en présence de tous les signaux simulés. Aucune interaction locale ni vrai handle/DB. Identité/provenance/cold-source journal/owner SQLite non migrant restent manquants. STOP G2-B à G6, PR #35 fusion, M3.3, migration 007 et release. Prochaine action sûre : CI exact-head de la nouvelle PR et documenter sans commande opérateur.

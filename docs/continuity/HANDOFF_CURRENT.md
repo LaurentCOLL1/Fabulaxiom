@@ -2,6 +2,13 @@
 
 **Checkpoint source-only mis à jour après fusion de PR #89 le 20 octobre 2026. Re-fetch obligatoire avant toute nouvelle action. Ce texte ne confère aucune autorisation locale.**
 
+## 2026-10-20 — garde-fou textuel des points d'entrée SQLite (source-only)
+
+- PR #91 fusionnée sur main=fb4625450439ecf236cc9065f434eda002f71533 après CI #39376628743 SUCCESS au HEAD 94c9886e4e362867cab86c39efc5b13125a94dac (69 étapes Windows). G2-A PASS métadonnées UNIQUEMENT, absence d'écrivain SQLite NOT_PROVEN, G3 réel STOP.
+- [Audit source-only des points d'entrée Rust](../qualification/M3_2_G3_RUNTIME_ENTRYPOINT_SOURCE_AUDIT.md) : open_database peut créer le dossier et ouvrir avec READ_WRITE|CREATE puis migrer ; database_status et create_backup appellent cette fonction ; backup réserve un nouveau fichier puis ferme son handle avant VACUUM INTO ; une lecture READ_ONLY n'atteste pas la non-modification de sidecars WAL.
+- Nouveau garde-fou examine seulement trois fichiers Rust publics ; ses 18 tests sur modifications fictives exigent une nouvelle revue en cas de dérive, même si le changement serait une amélioration. **Ce n'est pas une preuve exhaustive de sécurité Rust**, ni une procédure opérateur.
+- Interdictions inchangées : G2B/G2C/G2D/G3/G4/G5/G6, originaux v6/v7, sidecars/ACL/backups/markers, migration 007, writer IPC, PR #35, M3.3/release. Aucune commande locale autorisée sans procédure entière et nouvel accord explicite.
+
 ## 2026-10-20 — écart de preuve SQLite writer après G2-A PASS (source-only)
 
 - Re-fetch `main=45ce1511aa616fce9664dfc08cea39f290d2273d` après fusion protégée [PR #90](https://github.com/LaurentCOLL1/Fabulaxiom/pull/90), PR head `9c53d06c94cfbae62215c2407e4e146e7a344773`, CI PR #39342493152 SUCCESS (68 étapes Windows). Aucun nouveau résultat opérateur après G2-A PASS_METADATA_ONLY.

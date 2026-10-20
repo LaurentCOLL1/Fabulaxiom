@@ -1,5 +1,10 @@
 # Fabulaxiom — Next Authorized Work
 
+## 2026-10-20 — tests source-only des chemins SQLite connus
+
+Après fusion PR #91 sur main=fb4625450439ecf236cc9065f434eda002f71533, qualification de [M3_2_G3_RUNTIME_ENTRYPOINT_SOURCE_AUDIT.md](../qualification/M3_2_G3_RUNTIME_ENTRYPOINT_SOURCE_AUDIT.md). Scanner textuel connu uniquement sur trois sources Rust publiques ; 18 tests de mutation/observation sur fichiers du dépôt, aucune connexion DB ou Tauri. Une modification de code actuel exige requalification, pas ouverture de l'original. Démarche non exhaustive : nouveau point d'entrée non reconnu possible. G2-A PASS_METADATA_ONLY ; writer absence NOT_PROVEN ; G3 STOP_UNAVAILABLE ; G2-B/C/D à G6 non autorisés. CI exact-head de la nouvelle PR puis fusion protégée si tout PASS. Consentement opérateur unique G2-A consommé, ne rien exécuter sur Windows.
+
+
 ## 2026-10-20 — audit public writer (source-only) après PASS G2-A
 
 Lire [M3_2_G2A_WRITER_ABSENCE_GAP_SOURCE_REVIEW.md](../qualification/M3_2_G2A_WRITER_ABSENCE_GAP_SOURCE_REVIEW.md) et qualifier les tests fictifs dans la nouvelle PR au SHA exact. Aucun probe Windows, ouverture SQLite, ou absence de writer supposée par `Get-Process`/hash/sidecars/handle simulé. `open_database` exécute migrations, `create_backup` y fait appel avec `VACUUM INTO` et aucun owner non migrant authentifié n'a été établi. Les deux stratégies futures (owner préexistant contrôlé / cold quiescent journal résolu) sont des études à accès réel **NON AUTORISÉ**. G2B-G6 STOP ; issues #36/#38 OPEN, PR #35 DRAFT, provenance 21/3/2. Travail source-only uniquement ; toute étape opérateur distincte exige revue et nouveau consentement.

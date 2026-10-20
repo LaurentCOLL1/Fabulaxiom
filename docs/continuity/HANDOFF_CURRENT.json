@@ -3,14 +3,14 @@
   "as_of": "2026-10-20",
   "status_kind": "DATED_PUBLIC_SOURCE_HANDOFF_ONLY",
   "repository": "LaurentCOLL1/Fabulaxiom",
-  "last_confirmed_main_before_handoff": "45ce1511aa616fce9664dfc08cea39f290d2273d",
-  "last_confirmed_merged_pr": 90,
-  "last_verified_pr_head": "9c53d06c94cfbae62215c2407e4e146e7a344773",
+  "last_confirmed_main_before_handoff": "fb4625450439ecf236cc9065f434eda002f71533",
+  "last_confirmed_merged_pr": 91,
+  "last_verified_pr_head": "94c9886e4e362867cab86c39efc5b13125a94dac",
   "last_verified_ci": {
-    "run_id": 39342493152,
+    "run_id": 39376628743,
     "context": "Windows frontend and Rust checks",
     "conclusion": "SUCCESS",
-    "source": "PR90_EXACT_HEAD"
+    "source": "PR91_EXACT_HEAD"
   },
   "recent_changes": [
     "PR_85_EXACT_G2A_TEXT_AST_ONLY",
@@ -23,7 +23,9 @@
     "PR_89_PID_ZERO_CANDIDATE_CI_QUALIFIED_AND_MERGED_SOURCE_ONLY",
     "2026_10_20_OWNER_REPORTED_PID_ZERO_G2A_LOCAL_METADATA_PASS_013124_CEST",
     "PR_90_G2A_METADATA_ONLY_PASS_HANDOFF_MERGED",
-    "2026_10_20_SQLITE_WRITER_ABSENCE_PUBLIC_SOURCE_ANALYSIS_NO_OPERATOR_ACCESS"
+    "2026_10_20_SQLITE_WRITER_ABSENCE_PUBLIC_SOURCE_ANALYSIS_NO_OPERATOR_ACCESS",
+    "PR_91_SQLITE_WRITER_GAP_SOURCE_ONLY_13_TESTS_MERGED",
+    "2026_10_20_G3_RUNTIME_ENTRYPOINT_KNOWN_SOURCE_AUDIT_18_NEGATIVE_TESTS_PROPOSED"
   ],
   "pr35": "OPEN_DRAFT",
   "issues": {
@@ -106,6 +108,27 @@
       "current_backup_create": "USES_OPEN_DATABASE_AND_VACUUM_INTO_NOT_G3",
       "open_private_sqlite_or_sidecars": "PROHIBITED",
       "new_operator_action": "EXPLICIT_NEW_APPROVAL_REQUIRED"
+    },
+    "runtime_entrypoint_source_audit": {
+      "document": "docs/qualification/M3_2_G3_RUNTIME_ENTRYPOINT_SOURCE_AUDIT.md",
+      "script": "tools/m32_g3_runtime_entrypoint_source_audit.py",
+      "tests": "tools/test_m32_g3_runtime_entrypoint_source_audit.py",
+      "source_only": true,
+      "original_sqlite_access": "PROHIBITED",
+      "reviewed_entrypoints": [
+        "database::open_database",
+        "lib::database_status",
+        "backup::create_backup",
+        "backup::vacuum_copy",
+        "backup::reserve_unique_file",
+        "backup::read_validated_database"
+      ],
+      "warning": "TEXTUAL_KNOWN_PATTERNS_NOT_EXHAUSTIVE_RUST_PARSER",
+      "missing_runtime_owner": "NOT_ESTABLISHED",
+      "writer_absence": "NOT_PROVEN",
+      "real_g3": "STOP_UNAVAILABLE",
+      "operator_execution": "NOT_AUTHORIZED",
+      "operator_approval": "NEW_EXPLICIT_APPROVAL_REQUIRED"
     }
   },
   "governance": {
@@ -142,15 +165,15 @@
     "verified_bypass_actors": 0,
     "classic_branch_protection_read": "403_INTEGRATION_RESTRICTED"
   },
-  "next": "QUALIFY_SOURCE_ONLY_WRITER_ABSENCE_NEGATIVE_MATRIX_CI_EXACT_HEAD_AND_FUSE_GOVERNED_PR_ONLY_IF_SAFE",
+  "next": "QUALIFY_KNOWN_SQLITE_ENTRYPOINTS_SOURCE_AUDIT_WITH_18_TESTS_AT_NEW_EXACT_PR_HEAD_NO_OPERATOR_ACTION",
   "live_refetch_required": true,
   "hand_off_updated_by_future_pr": true,
   "main_ci_post_merge": {
-    "sha": "45ce1511aa616fce9664dfc08cea39f290d2273d",
-    "run_id": null,
-    "conclusion": "NOT_ASSESSED_IN_CURRENT_SOURCE_REVIEW",
+    "sha": "fb4625450439ecf236cc9065f434eda002f71533",
+    "run_id": 39388025822,
     "source": "MAIN_PUSH",
-    "note": "Do not infer push CI success; check live on next merge."
+    "conclusion": "NOT_TERMINAL_VERIFIED_AT_CHECKPOINT",
+    "note": "Never treat as successful until rechecked"
   },
   "g2a_candidate_ci": {
     "pr": 86,
