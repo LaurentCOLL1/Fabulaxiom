@@ -143,7 +143,22 @@ class HandoffContractTests(unittest.TestCase):
         self.assertIn("M3_2_GATE_DECISION_CURRENT.md", self.index)
         self.assertIn("M3_2_GATE_DECISION_CURRENT.md", self.doc)
 
-    def test_16_policy_requires_refetch_and_same_pr_handoff(self):
+    def test_16_wide_rust_sqlite_inventory_never_permits_real_g3(self):
+        i = self.data["g2a"]["wide_rust_sqlite_inventory"]
+        self.assertEqual(i["operator_execution"], "NOT_AUTHORIZED")
+        self.assertEqual(i["actual_sqlite_access"], "NONE")
+        self.assertEqual(i["absence_of_writer"], "NOT_PROVEN")
+        self.assertEqual(i["real_g3"], "STOP_UNAVAILABLE")
+        self.assertEqual(i["gate_promotion"], "NEVER_AUTOMATIC")
+        self.assertEqual(i["baseline_matched_files"], 20)
+        self.assertEqual(i["test_count"], 18)
+        self.assertTrue((ROOT / i["document"]).is_file())
+        self.assertTrue((ROOT / i["scanner"]).is_file())
+        self.assertTrue((ROOT / i["tests"]).is_file())
+        self.assertIn("M3_2_WIDE_RUST_SQLITE_SITE_INVENTORY.md", self.doc)
+        self.assertIn("M3_2_WIDE_RUST_SQLITE_SITE_INVENTORY.md", self.index)
+
+    def test_17_policy_requires_refetch_and_same_pr_handoff(self):
         for clause in ("Re-fetch", "HANDOFF_CURRENT.md", "HANDOFF_CURRENT.json",
                        "expected_head_sha", "autorisation"):
             self.assertIn(clause, self.policy)
