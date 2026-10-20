@@ -19,6 +19,8 @@ const MANIFEST = Object.freeze([
   "src/M32ChronologyPreview.tsx",
   "src/M32WorldOrderComparison.tsx",
   "src/M32SyntheticEventExplorer.tsx",
+  "src/m32FictionalManualChronology.ts",
+  "src/M32ManualChronologyLab.tsx",
 ]);
 
 function stageFictionOnly() {
