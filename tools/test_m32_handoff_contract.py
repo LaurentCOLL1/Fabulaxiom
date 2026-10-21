@@ -207,9 +207,9 @@ class HandoffContractTests(unittest.TestCase):
     def test_20_manual_chronology_candidate_only_in_synthetic_lab(self):
         x = self.data["m3_2_product_progress"]
         self.assertEqual(x["delivery"], "SYNTHETIC_BROWSER_LAB_ONLY_SOURCE_ONLY")
-        self.assertEqual(x["expected_tests"], 51)
+        self.assertEqual(x["expected_tests"], 55)
         self.assertEqual(x["browser_new_cases"], 2)
-        self.assertEqual(x["browser_total_expected"], 46)
+        self.assertEqual(x["browser_total_expected"], 48)
         self.assertEqual(x["app_tauri_production_integration"], "NONE")
         self.assertEqual(x["sqlite_real_access"], "NONE")
         self.assertEqual(x["operator_windows_acceptance"], "NOT_STARTED")
@@ -225,8 +225,8 @@ class HandoffContractTests(unittest.TestCase):
     def test_21_exact_scene_revision_binding_stays_fictional(self):
         x = self.data["m3_2_product_progress"]
         r = x["scene_revision_binding"]
-        self.assertEqual(x["expected_tests"], 51)
-        self.assertEqual(x["browser_total_expected"], 46)
+        self.assertEqual(x["expected_tests"], 55)
+        self.assertEqual(x["browser_total_expected"], 48)
         self.assertEqual(r["fixture_catalog_limit"], 128)
         self.assertEqual(r["source_head_resolution"], "NEVER")
         self.assertFalse(r["accepts_cross_universe"])
@@ -402,6 +402,22 @@ class HandoffContractTests(unittest.TestCase):
         self.assertEqual(x["real_g3"], "STOP_UNAVAILABLE")
         self.assertEqual(x["operator_execution"], "NONE")
         self.assertIn("39573518324", self.doc)
+
+    def test_33_preview_of_fictional_revocation_does_not_authorize_real_writes(self):
+        x = self.data["m3_2_product_progress"]["revocation_impact_preview"]
+        self.assertEqual(x["status"], "CANDIDATE_NOT_CI_QUALIFIED")
+        self.assertEqual(x["after_state"], "HYPOTHETICAL_WITHOUT_WRITES")
+        self.assertEqual(x["before_state"], "EXPLICIT_ACTIVE_HUMAN_EDGE_ONLY")
+        self.assertEqual(x["preserved_alternate_witness"], "ACTIVE_HUMAN_PATH_ONLY")
+        self.assertEqual(x["unit_total_expected"], 55)
+        self.assertEqual(x["browser_total_expected"], 48)
+        self.assertEqual(x["real_sqlite_access"], "NONE")
+        self.assertEqual(x["operator_execution"], "NONE")
+        self.assertEqual(x["product_status"], "IN_PROGRESS_NOT_ACCEPTED")
+        self.assertEqual(x["real_writer_absence"], "NOT_PROVEN")
+        self.assertEqual(x["g2b_to_g6"], "NOT_AUTHORIZED")
+        self.assertEqual(x["real_g3"], "STOP_UNAVAILABLE")
+        self.assertIn("conséquence d'une révocation humaine", self.doc)
 
     def test_24_policy_requires_refetch_and_same_pr_handoff(self):
         for clause in ("Re-fetch", "HANDOFF_CURRENT.md", "HANDOFF_CURRENT.json",

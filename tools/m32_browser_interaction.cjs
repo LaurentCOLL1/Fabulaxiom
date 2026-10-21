@@ -743,8 +743,39 @@ async function run() {
       assert.equal(await lab.getByRole("combobox", { name: "Première ancre à consulter" })
         .locator('option[value="K"]').count(), 0);
     });
-    assert.equal(cases.length, 46);
-    console.log("M32_BROWSER_REAL_CHROMIUM_PASS 46/46");
+    await caseRun("47-revocation-impact-preview-does-not-revoke-human-link", async () => {
+      await page.getByRole("button", { name: "Ouvrir l'atelier manuel fictif" }).click();
+      const lab = page.getByRole("region", { name: "Atelier manuel M3.2 exclusivement fictif" });
+      const impact = lab.getByRole("status", { name: "Prévisualisation de révocation fictive" });
+      await lab.getByRole("combobox", { name: "Relation à révoquer (historique conservé)" })
+        .selectOption("human-ab");
+      assert.ok((await impact.innerText()).includes("ordre indéterminé"));
+      assert.ok((await impact.innerText()).includes("ne révoque rien"));
+      await lab.getByRole("combobox", { name: "Première ancre à consulter" })
+        .selectOption("A");
+      await lab.getByRole("combobox", { name: "Deuxième ancre à consulter" })
+        .selectOption("B");
+      assert.ok((await lab.getByRole("region", { name: "Comparaison M3.2 isolée" })
+        .innerText()).includes("human-ab"));
+    });
+    await caseRun("48-alternate-authored-route-survives-hypothetical-direct-revocation", async () => {
+      await page.getByRole("button", { name: "Ouvrir l'atelier manuel fictif" }).click();
+      const lab = page.getByRole("region", { name: "Atelier manuel M3.2 exclusivement fictif" });
+      await lab.getByRole("combobox", { name: "Événement antérieur" }).selectOption("A");
+      await lab.getByRole("combobox", { name: "Événement postérieur" }).selectOption("C");
+      await lab.getByRole("textbox", { name: "Justification humaine fictive" })
+        .fill("raccourci humain AC");
+      await lab.getByRole("button", { name: "Ajouter avant/après" }).click();
+      await lab.getByRole("combobox", { name: "Relation à révoquer (historique conservé)" })
+        .selectOption("fiction-draft-0001");
+      const impact = lab.getByRole("status", { name: "Prévisualisation de révocation fictive" });
+      assert.ok((await impact.innerText()).includes("autre chemin humain actif"));
+      assert.ok((await impact.innerText()).includes("human-ab"));
+      assert.ok((await impact.innerText()).includes("human-bc"));
+      assert.ok((await lab.innerText()).includes("ordre de révélation non renseigné"));
+    });
+    assert.equal(cases.length, 48);
+    console.log("M32_BROWSER_REAL_CHROMIUM_PASS 48/48");
     // Actual Chromium enforced-CSP veto, separate from the 36
     // fictional interaction cases. Never make an off-loopback network call.
     const cspVeto = await page.evaluate(async () => {
@@ -775,9 +806,9 @@ async function run() {
       });
       assert.equal(scriptVeto, false, "STOP: inline JS executed under strict CSP");
       console.log("M32_CI_PRECOMPILED_INLINE_SCRIPT_DENIED_PASS");
-      console.log("M32_CI_PRECOMPILED_STRICT_CSP_BROWSER_PASS: 46/46");
+      console.log("M32_CI_PRECOMPILED_STRICT_CSP_BROWSER_PASS: 48/48");
     }
-    console.log("M32_CI_FIXTURE_ONLY_BROWSER_PASS: 46/46; no normal source pages");
+    console.log("M32_CI_FIXTURE_ONLY_BROWSER_PASS: 48/48; no normal source pages");
   } finally {
     if (browser) await browser.close();
     server.kill();

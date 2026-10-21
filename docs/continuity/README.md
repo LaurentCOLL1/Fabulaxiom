@@ -1,5 +1,8 @@
 # Fabulaxiom — Point d'entrée pour reprendre les discussions ChatGPT
 
+**Candidat UX M3.2 sur données inventées :** prévisualisation sans écriture des conséquences d'une révocation de précédence humaine avant l'action, en indiquant si un autre chemin actif conserve l'ordre. Cibles 55 Vitest / 48 Chromium par mode, CI fraîche obligatoire. G2B–G6 fermés, M3.2 non acceptée.
+
+
 **Checkpoint terminal vérifié le 21 octobre 2026 :** PR #108 fusionnée sur `main=ba4b8a599910cef6d1c76fa1e4fb561a0b45e631`, CI source #39572172593 SUCCESS (51 Vitest, 46 Chromium par mode), CI push post-fusion [#39573518324](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/39573518324) **SUCCESS** au SHA exact. Mentions « en cours » ci-dessous historiques. M3.2 NON ACCEPTÉE, PR #35 DRAFT, écrivain réel NOT_PROVEN, G2B–G6 STOP. Aucune exécution opérateur ni mutation SQLite.
 
 
