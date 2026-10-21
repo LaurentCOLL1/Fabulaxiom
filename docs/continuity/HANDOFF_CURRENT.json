@@ -51,7 +51,8 @@
     "PR_104_FICTIONAL_THREE_ORDERS_COMPARATOR_MERGED_MAIN_997B609",
     "POSTMERGE_PR104_MAIN_39554622761_TERMINAL_SUCCESS_ON_EXACT_SHA_20261021",
     "2026_10_21_FICTIONAL_EXISTING_HUMAN_WITNESS_PANEL_CANDIDATE_48_UNIT_44_CHROMIUM",
-    "PR106_ACTIVE_HUMAN_PRECEDENCE_WITNESS_FICTIONAL_PANEL_MERGED_MAIN_FBFC785A"
+    "PR106_ACTIVE_HUMAN_PRECEDENCE_WITNESS_FICTIONAL_PANEL_MERGED_MAIN_FBFC785A",
+    "PR106_POSTMERGE_MAIN_39567933461_TERMINAL_SUCCESS_EXACT_SHA_VERIFIED_20261021"
   ],
   "pr35": "OPEN_DRAFT",
   "issues": {
@@ -237,15 +238,15 @@
     "verified_bypass_actors": 0,
     "classic_branch_protection_read": "403_INTEGRATION_RESTRICTED"
   },
-  "next": "CHECK_TERMINAL_MAIN_39567933461_THEN_CONTINUE_M32_FIXTURE_ONLY_WITHOUT_GATE_PROMOTION",
+  "next": "FINISH_PR107_FRESH_EXACT_HEAD_CI_THEN_FICTION_ONLY_M32_INCREMENT_NO_GATE_PROMOTION",
   "live_refetch_required": true,
   "hand_off_updated_by_future_pr": true,
   "main_ci_post_merge": {
     "sha": "fbfc785afa6e5bdf92c337004d1bd2f925c4957a",
     "run_id": 39567933461,
-    "conclusion": "IN_PROGRESS",
+    "conclusion": "SUCCESS",
     "source": "MAIN_PUSH",
-    "note": "As of this checkpoint only; must re-fetch terminal result, no gate promotion"
+    "note": "Terminal SUCCESS verified 2026-10-21 at exact PR106 merge main SHA; this does not qualify later SHA nor authorize operator"
   },
   "g2a_candidate_ci": {
     "pr": 86,
@@ -423,7 +424,8 @@
       "pr": 106,
       "source_head": "4abcc5217be07cb65d089e55fa042ff757b9043e",
       "ci_pr": 39566947725,
-      "ci_main_pending": 39567933461
+      "ci_main_pending": 39567933461,
+      "ci_main_verified": 39567933461
     }
   },
   "post_pr100_normalization": {
@@ -506,7 +508,7 @@
     },
     "main_ci": {
       "run_id": 39567933461,
-      "conclusion": "IN_PROGRESS"
+      "conclusion": "SUCCESS"
     },
     "vitest": 48,
     "chromium": 44,

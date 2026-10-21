@@ -1,5 +1,14 @@
 # Fabulaxiom M3.2 — Reprise opérationnelle courte
 
+## 21 octobre 2026 — qualification post-fusion #106 devenue terminale
+
+GitHub revérifié : PR #106 MERGED sur `main=fbfc785afa6e5bdf92c337004d1bd2f925c4957a`. La CI PR #39566947725 a terminé **SUCCESS** au source head `4abcc5217be07cb65d089e55fa042ff757b9043e` (48 Vitest / 44 Chromium par mode). La CI push main [#39567933461](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/39567933461) a maintenant terminé **SUCCESS**, sur le SHA exact du merge. Toutes les mentions plus anciennes « en cours au checkpoint » restent des instantanés historiques. Ce nouveau correctif documentaire nécessite **sa propre CI au nouveau HEAD**, jamais réutilisée.
+
+**M3.2 IN_PROGRESS_NOT_ACCEPTED** ; PR #35 OPEN/DRAFT ; G2A metadata-only (accord consommé), écrivain SQLite réel NOT_PROVEN, G2B–G6 NOT_AUTHORIZED, G3 réel STOP_UNAVAILABLE. Aucune originale v6/v7, WAL/SHM, sauvegarde, ACL, marqueur, migration007, IPC writer, M3.3, release ni exécution Windows opérateur.
+
+---
+
+
 ## 21 octobre 2026 — PR #106 fusionnée : preuves humaines fictives
 
 **Re-fetch GitHub (instantané daté) :** [PR #106](https://github.com/LaurentCOLL1/Fabulaxiom/pull/106) MERGED sous « Protect main » au `main=fbfc785afa6e5bdf92c337004d1bd2f925c4957a`. HEAD source `4abcc5217be07cb65d089e55fa042ff757b9043e`, CI PR [#39566947725](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/39566947725) SUCCESS terminale (74 étapes Windows, 48 tests Vitest atelier et 44/44 scénarios Chromium dans deux modes). CI post-merge main [#39567933461](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/39567933461) **EN COURS AU CHECKPOINT**, résultat à vérifier avant de le déclarer terminal. Les anciennes CI ne sont pas transférables.

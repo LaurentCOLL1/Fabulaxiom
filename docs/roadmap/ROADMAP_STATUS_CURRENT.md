@@ -1,5 +1,8 @@
 # Fabulaxiom — suivi de la roadmap V1 (état actualisé au 21 octobre 2026)
 
+**Vérification terminale (21 octobre 2026) :** la CI push main [#39567933461](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/39567933461) après fusion protégée PR #106 est maintenant **SUCCESS** au `main=fbfc785afa6e5bdf92c337004d1bd2f925c4957a`. La CI PR #39566947725 avait déjà terminé SUCCESS (48 tests atelier, 44 Chromium par mode). Les anciens « en cours » sont des preuves historiques datées ; aucun nouveau gate ouvert : M3.2 NOT_ACCEPTED, G2B–G6 STOP, écrivain réel NOT_PROVEN. La présente PR documentaire demande une CI neuve au HEAD exact.
+
+
 **Checkpoint GitHub 21 octobre 2026 :** [PR #106](https://github.com/LaurentCOLL1/Fabulaxiom/pull/106) fusionnée au `main=fbfc785afa6e5bdf92c337004d1bd2f925c4957a`. CI PR #39566947725 terminale SUCCESS (48 tests atelier / 44 Chromium dans les deux modes, 74 étapes Windows), CI push main #39567933461 **EN COURS au checkpoint**. Laboratoire fictif de preuve humaine uniquement ; aucun original SQLite/Windows, M3.2 non acceptée, PR #35 DRAFT, G2B–G6 STOP.
 
 

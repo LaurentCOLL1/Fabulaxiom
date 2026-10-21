@@ -346,7 +346,7 @@ class HandoffContractTests(unittest.TestCase):
         self.assertEqual(x["g2b_to_g6"], "NOT_AUTHORIZED")
         self.assertEqual(x["sqlite_access"], "NONE")
         self.assertEqual(x["operator_execution"], "NONE")
-        self.assertIn("preuves humaines en lecture seule", self.doc)
+        self.assertIn("preuves humaines fictives", self.doc)
 
     def test_30_pr106_merge_does_not_accept_m32_or_authorize_sqlite(self):
         x = self.data["post_pr106_normalization"]
@@ -356,7 +356,8 @@ class HandoffContractTests(unittest.TestCase):
         self.assertEqual(x["pr_ci"]["run_id"], 39566947725)
         self.assertEqual(x["pr_ci"]["conclusion"], "SUCCESS")
         self.assertEqual(x["main_ci"]["run_id"], 39567933461)
-        self.assertEqual(x["main_ci"]["conclusion"], "IN_PROGRESS")
+        self.assertEqual(self.data["main_ci_post_merge"]["conclusion"], "SUCCESS")
+        self.assertEqual(x["main_ci"]["conclusion"], "SUCCESS")
         self.assertEqual(x["vitest"], 48)
         self.assertEqual(x["chromium"], 44)
         self.assertTrue(x["fiction_only"])
