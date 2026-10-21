@@ -59,7 +59,8 @@
     "M32_FICTITIOUS_REVOCATION_IMPACT_CANDIDATE_55_VITEST_48_CHROMIUM",
     "PR109_DOC_NORMALIZATION_MERGED_MAIN_51EAF9B0_CI_39576610264_SUCCESS",
     "PR110_FICTIONAL_REVOCATION_IMPACT_MERGED_MAIN_2BF4B6A6_PR_CI_39577527093_SUCCESS",
-    "PR110_MAIN_PUSH_39591429432_IN_PROGRESS_AT_CHECKPOINT"
+    "PR110_MAIN_PUSH_39591429432_IN_PROGRESS_AT_CHECKPOINT",
+    "PR110_MAIN_PUSH_39591429432_TERMINAL_SUCCESS_AT_EXACT_2BF4B6A6_VERIFIED"
   ],
   "pr35": "OPEN_DRAFT",
   "issues": {
@@ -245,15 +246,15 @@
     "verified_bypass_actors": 0,
     "classic_branch_protection_read": "403_INTEGRATION_RESTRICTED"
   },
-  "next": "REFETCH_PR110_MAIN_PUSH_TERMINAL_AND_NORMALIZE_WITH_NEW_SHA_NO_REAL_GATES",
+  "next": "QUALIFY_DOC_PR111_NEW_EXACT_HEAD_THEN_FICTION_ONLY_M32",
   "live_refetch_required": true,
   "hand_off_updated_by_future_pr": true,
   "main_ci_post_merge": {
     "sha": "2bf4b6a62ca22a21e1e7d34f5ead4e86dafe450b",
     "run_id": 39591429432,
-    "conclusion": "IN_PROGRESS_AT_CHECKPOINT",
+    "conclusion": "SUCCESS",
     "source": "MAIN_PUSH",
-    "note": "Dated in-progress observation; never declare terminal SUCCESS without fresh exact-SHA verification"
+    "note": "Terminal GitHub SUCCESS verified 2026-10-21 for exact PR110 merge SHA; never proves private operator safety"
   },
   "g2a_candidate_ci": {
     "pr": 86,
@@ -602,7 +603,7 @@
     },
     "main_ci": {
       "run_id": 39591429432,
-      "conclusion": "IN_PROGRESS_AT_CHECKPOINT"
+      "conclusion": "SUCCESS"
     },
     "fiction_only": true,
     "vitest": 55,
