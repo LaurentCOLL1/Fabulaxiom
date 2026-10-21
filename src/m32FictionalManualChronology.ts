@@ -256,7 +256,7 @@ export function previewFictionalCorrection(
   return {
     verdict: dependencies.length ? "blocked" : "allowed",
     reason: dependencies.length
-      ? "Révoquer explicitement les liens actifs avant correction : " + dependencies.join(", ")
+      ? "Il faut révoquer explicitement les liens actifs avant correction : " + dependencies.join(", ")
       : "Correction possible en conservant la version et sa révision historique.",
     active_edge_ids: dependencies,
     historical_revision_id: old.source_revision_id,
