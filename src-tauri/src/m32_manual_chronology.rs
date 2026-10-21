@@ -254,6 +254,33 @@ pub fn list_anchor_decisions(db: &Connection, universe_id: &str) -> Result<Vec<C
 
 
 
+// Stage 3: explicit restatement of one revoked, immutable precedence; test-only.
+// Authored replacement must reference an explicitly revoked old assertion;
+// new factual graph edges are persisted in a separate immutable table.
+pub fn restate_revoked_precedence(
+    db: &Connection,
+    id: &str,
+    universe_id: &str,
+    revoked_precedence_id: &str,
+    before_anchor_id: &str,
+    after_anchor_id: &str,
+    reason: &str,
+    source_revision_id: Option<&str>,
+) -> Result<()> {
+    db.execute(
+        "INSERT INTO world_time_precedence_restatements
+         (id,universe_id,revoked_precedence_id,before_anchor_id,after_anchor_id,reason,source_revision_id)
+         VALUES (?1,?2,?3,?4,?5,?6,?7)",
+        params![
+            id, universe_id, revoked_precedence_id, before_anchor_id,
+            after_anchor_id, reason, source_revision_id
+        ],
+    )?;
+    Ok(())
+}
+
+
+
 // Compilation is gated by #[cfg(test)] in lib.rs. Test databases exist only in RAM.
 
 #[cfg(test)]
@@ -263,6 +290,7 @@ mod tests {
 
     const V7_CANDIDATE: &str = include_str!("../sql/m3_1_world_time_v7_candidate.sql");
     const M32_DECISIONS: &str = include_str!("../sql/m3_2_chronology_decisions_candidate.sql");
+    const M32_RESTATEMENTS: &str = include_str!("../sql/m3_2_active_precedence_candidate.sql");
 
     fn fixture() -> Connection {
         let mut db = Connection::open_in_memory().expect("RAM only");
@@ -273,6 +301,7 @@ mod tests {
         ).expect("two invented universes");
         db.execute_batch(V7_CANDIDATE).expect("v7 candidate in disposable RAM");
         db.execute_batch(M32_DECISIONS).expect("decisions only in disposable RAM");
+        db.execute_batch(M32_RESTATEMENTS).expect("restatement schema only in RAM");
         assert_eq!(database::current_schema_version(&db).expect("schema version"), 6);
         db
     }
@@ -469,6 +498,73 @@ mod tests {
         create_precedence(&db,"p","u1","u1a","u1b","authored",None).unwrap();
         assert!(decide_precedence(&db,"wrong-owner","u2","p","revoke",None,"other",None).is_err());
         assert!(decide_precedence(&db,"wrong-action","u1","p","approve",None,"invalid",None).is_err());
+    }
+
+    #[test]
+    fn restatement_requires_explicit_same_universe_revoked_edge() {
+        let db=fixture();
+        for id in ["a","b","c"] { create_anchor(&db,draft(id,"u1","unknown")).unwrap(); }
+        create_anchor(&db,draft("foreign","u2","unknown")).unwrap();
+        create_precedence(&db,"old","u1","a","b","Auteur: avant",None).unwrap();
+        assert!(restate_revoked_precedence(&db,"attempt","u1","old","a","c","not revoked",None).is_err());
+        decide_precedence(&db,"revoke","u1","old","revoke",None,"Auteur corrige",None).unwrap();
+        restate_revoked_precedence(&db,"new","u1","old","a","c","A avant C",None).unwrap();
+        let n:i64=db.query_row("SELECT COUNT(*) FROM world_time_precedence_restatements WHERE universe_id='u1'",[],|r|r.get(0)).unwrap();
+        assert_eq!(n,1);
+        assert_eq!(list_precedences(&db,"u1").unwrap().len(),1);
+        assert!(list_current_precedence_ids(&db,"u1").unwrap().is_empty());
+        assert!(restate_revoked_precedence(&db,"foreign","u2","old","foreign","foreign","cross",None).is_err());
+    }
+
+    #[test]
+    fn restatement_rejects_reverse_cycle_against_current_human_edges() {
+        let db=fixture();
+        for id in ["a","b","c"] { create_anchor(&db,draft(id,"u1","unknown")).unwrap(); }
+        create_precedence(&db,"ab","u1","a","b","first",None).unwrap();
+        create_precedence(&db,"bc","u1","b","c","second",None).unwrap();
+        decide_precedence(&db,"withdraw-ab","u1","ab","revoke",None,"revision",None).unwrap();
+        assert!(restate_revoked_precedence(&db,"cycle","u1","ab","c","b","reverse cycle",None).is_err());
+        assert!(restate_revoked_precedence(&db,"self","u1","ab","b","b","self",None).is_err());
+        let n:i64=db.query_row("SELECT COUNT(*) FROM world_time_precedence_restatements",[],|r|r.get(0)).unwrap();
+        assert_eq!(n,0);
+    }
+
+    #[test]
+    fn restatement_is_immutable_and_original_can_only_be_rewritten_once() {
+        let db=fixture();
+        for id in ["a","b","c"] { create_anchor(&db,draft(id,"u1","unknown")).unwrap(); }
+        create_precedence(&db,"original","u1","a","b","authored",None).unwrap();
+        decide_precedence(&db,"revoke","u1","original","revoke",None,"withdraw",None).unwrap();
+        restate_revoked_precedence(&db,"correction","u1","original","a","c","corrected",None).unwrap();
+        assert!(restate_revoked_precedence(&db,"again","u1","original","c","a","fork",None).is_err());
+        assert!(db.execute("UPDATE world_time_precedence_restatements SET reason='changed' WHERE id='correction'",[]).is_err());
+        assert!(db.execute("DELETE FROM world_time_precedence_restatements WHERE id='correction'",[]).is_err());
+        assert_eq!(list_precedences(&db,"u1").unwrap().len(),1);
+    }
+
+    #[test]
+    fn retired_anchor_and_duplicate_live_relation_cannot_be_restatements() {
+        let db=fixture();
+        for id in ["a","b","c","d"] { create_anchor(&db,draft(id,"u1","unknown")).unwrap(); }
+        create_precedence(&db,"original","u1","a","b","authored",None).unwrap();
+        create_precedence(&db,"active","u1","c","d","authored",None).unwrap();
+        decide_precedence(&db,"withdraw","u1","original","revoke",None,"withdraw",None).unwrap();
+        assert!(restate_revoked_precedence(&db,"duplicate","u1","original","c","d","already live",None).is_err());
+        decide_anchor(&db,"retired","u1","a","revoke",None,"retired anchor",None).unwrap();
+        assert!(restate_revoked_precedence(&db,"historical","u1","original","a","d","retired",None).is_err());
+    }
+
+    #[test]
+    fn raw_precedence_insert_cannot_bypass_restated_active_cycle() {
+        let db=fixture();
+        for id in ["a","b","c"] { create_anchor(&db,draft(id,"u1","unknown")).unwrap(); }
+        create_precedence(&db,"original","u1","a","b","authored",None).unwrap();
+        decide_precedence(&db,"withdraw","u1","original","revoke",None,"withdraw",None).unwrap();
+        restate_revoked_precedence(&db,"corrected","u1","original","b","c","rephrase",None).unwrap();
+        assert!(create_precedence(&db,"cycle","u1","c","b","must veto",None).is_err());
+        let n:i64=db.query_row("SELECT COUNT(*) FROM world_time_precedences WHERE id='cycle'",[],|r|r.get(0)).unwrap();
+        assert_eq!(n,0);
+        assert_eq!(database::current_schema_version(&db).unwrap(),6);
     }
 
 }

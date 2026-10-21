@@ -588,14 +588,14 @@ class HandoffContractTests(unittest.TestCase):
 
     def test_43_pr116_merged_exact_ci_without_real_runtime_promotion(self):
         x = self.data["post_pr116_normalization"]
-        self.assertEqual(self.data["last_confirmed_merged_pr"], 116)
-        self.assertEqual(self.data["last_confirmed_main_before_handoff"], x["merge_sha"])
-        self.assertEqual(self.data["last_verified_pr_head"], x["pr_head_sha"])
+        self.assertEqual(x["merged_pr"], 116)
+        self.assertEqual(x["merge_sha"], "388cb745888f9f2d4d0a07fce1ed19fad9b4a548")
+        self.assertEqual(x["pr_head_sha"], "0b2555833c1a2c0152cba2185c8122f3d3ecbbae")
         self.assertEqual(x["pr_ci"]["run_id"], 39626827246)
         self.assertEqual(x["pr_ci"]["rust_tests"], 106)
         self.assertEqual(x["main_ci"]["run_id"], 39628479487)
         self.assertEqual(x["main_ci"]["conclusion"], "SUCCESS")
-        self.assertEqual(self.data["main_ci_post_merge"]["sha"], x["merge_sha"])
+        self.assertEqual(x["main_ci"]["run_id"], 39628479487)
         self.assertEqual(x["real_writer_absence"], "NOT_PROVEN")
         self.assertEqual(x["g2b_to_g6"], "NOT_AUTHORIZED")
         self.assertEqual(x["real_g3"], "STOP_UNAVAILABLE")
@@ -604,7 +604,7 @@ class HandoffContractTests(unittest.TestCase):
 
     def test_44_second_stage_decisions_are_candidate_ram_only(self):
         x = self.data["m3_2_product_progress"]["test_only_rust_second_stage"]
-        self.assertEqual(x["status"], "CANDIDATE_NOT_CI_QUALIFIED")
+        self.assertEqual(x["status"], "MERGED_TEST_ONLY_NOT_PRODUCT_ACCEPTED")
         self.assertTrue(x["compiled_only_during_tests"])
         self.assertEqual(x["new_rust_tests"], 6)
         self.assertEqual(x["auto_migration_max"], 6)
@@ -620,6 +620,43 @@ class HandoffContractTests(unittest.TestCase):
         self.assertIn("SECOND-STAGE TEST-ONLY", sql)
         self.assertNotIn("schema_migrations", sql)
         self.assertNotIn("#[tauri::command]", rust)
+        self.assertEqual(self.data["g2a"]["absence_of_sqlite_writer"], "NOT_PROVEN")
+
+
+    def test_45_pr117_merged_exact_ci_and_private_gates_remain_closed(self):
+        x = self.data["post_pr117_normalization"]
+        self.assertEqual(self.data["last_confirmed_merged_pr"], 117)
+        self.assertEqual(self.data["last_confirmed_main_before_handoff"], x["merge_sha"])
+        self.assertEqual(self.data["last_verified_pr_head"], x["pr_head_sha"])
+        self.assertEqual(x["pr_ci"]["run_id"], 39653506345)
+        self.assertEqual(x["pr_ci"]["rust_tests"], 112)
+        self.assertEqual(x["main_ci"]["run_id"], 39655214998)
+        self.assertEqual(x["main_ci"]["conclusion"], "SUCCESS")
+        self.assertEqual(self.data["main_ci_post_merge"]["sha"], x["merge_sha"])
+        self.assertEqual(x["real_writer_absence"], "NOT_PROVEN")
+        self.assertEqual(x["g2b_to_g6"], "NOT_AUTHORIZED")
+        self.assertEqual(x["real_g3"], "STOP_UNAVAILABLE")
+        self.assertEqual(x["operator_execution"], "NONE")
+        self.assertIn("PR #117 fusionnée", self.doc)
+
+    def test_46_restatement_third_stage_is_only_ram_fixture_not_operator(self):
+        x = self.data["m3_2_product_progress"]["test_only_rust_third_stage"]
+        self.assertEqual(x["status"], "CANDIDATE_NOT_CI_QUALIFIED")
+        self.assertTrue(x["compiled_only_during_tests"])
+        self.assertEqual(x["new_rust_tests"], 5)
+        self.assertEqual(x["auto_migration_max"], 6)
+        self.assertEqual(x["tauri_writer_ipc"], "NONE")
+        self.assertEqual(x["real_sqlite_access"], "NONE")
+        self.assertEqual(x["g2b_to_g6"], "NOT_AUTHORIZED")
+        self.assertEqual(x["real_g3"], "STOP_UNAVAILABLE")
+        src = (ROOT / "src-tauri" / "src" / "m32_manual_chronology.rs").read_text(encoding="utf-8")
+        for method in x["functions"]:
+            self.assertIn("pub fn " + method, src)
+        self.assertIn("db.execute_batch(M32_RESTATEMENTS)", src)
+        schema = (ROOT / x["sql_candidate"]).read_text(encoding="utf-8")
+        self.assertIn("STAGE 4: test-only", schema)
+        self.assertNotIn("schema_migrations", schema)
+        self.assertNotIn("#[tauri::command]", src)
         self.assertEqual(self.data["g2a"]["absence_of_sqlite_writer"], "NOT_PROVEN")
 
     def test_24_policy_requires_refetch_and_same_pr_handoff(self):
