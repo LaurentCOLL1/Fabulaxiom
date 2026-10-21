@@ -581,9 +581,34 @@ async function run() {
       assert.equal(await lab.getByRole("combobox", { name: "Révision exacte et immuable de cette scène" }).count(), 0);
       assert.equal(await lab.getByText("invented-rev-A", { exact: false }).count(), 0);
     });
-    assert.equal(cases.length, 34);
-    console.log("M32_BROWSER_REAL_CHROMIUM_PASS 34/34");
-    // Actual Chromium enforced-CSP veto, separate from the 34
+    await caseRun("35-conflict-preview-shows-existing-human-edges-before-click", async () => {
+      await page.getByRole("button", { name: "Ouvrir l'atelier manuel fictif" }).click();
+      const lab = page.getByRole("region", { name: "Atelier manuel M3.2 exclusivement fictif" });
+      await lab.getByRole("combobox", { name: "Événement antérieur" }).selectOption("C");
+      await lab.getByRole("combobox", { name: "Événement postérieur" }).selectOption("A");
+      const preview = lab.getByRole("status", { name: "Vérification avant/après fictive" });
+      assert.ok((await preview.innerText()).includes("cycle temporel"));
+      assert.ok((await preview.innerText()).includes("human-ab"));
+      assert.ok((await preview.innerText()).includes("human-bc"));
+      assert.equal(await lab.getByRole("alert").count(), 0);
+    });
+    await caseRun("36-explicit-revocation-updates-correction-preflight", async () => {
+      await page.getByRole("button", { name: "Ouvrir l'atelier manuel fictif" }).click();
+      const lab = page.getByRole("region", { name: "Atelier manuel M3.2 exclusivement fictif" });
+      await lab.getByRole("combobox", { name: "Correction : remplacer une ancre active" }).selectOption("A");
+      const preview = lab.getByRole("status", { name: "Vérification de correction fictive" });
+      assert.ok((await preview.innerText()).includes("human-ab"));
+      assert.ok((await preview.innerText()).includes("invented-rev-A"));
+      await lab.getByRole("combobox", { name: "Relation à révoquer (historique conservé)" })
+        .selectOption("human-ab");
+      await lab.getByRole("textbox", { name: "Justification humaine fictive" }).fill("Révocation humaine fictive");
+      await lab.getByRole("button", { name: "Révoquer explicitement" }).click();
+      assert.ok((await preview.innerText()).includes("Correction possible"));
+      assert.ok(!(await preview.innerText()).includes("Révoquer explicitement les liens actifs"));
+    });
+    assert.equal(cases.length, 36);
+    console.log("M32_BROWSER_REAL_CHROMIUM_PASS 36/36");
+    // Actual Chromium enforced-CSP veto, separate from the 36
     // fictional interaction cases. Never make an off-loopback network call.
     const cspVeto = await page.evaluate(async () => {
       const notices = [];
@@ -613,9 +638,9 @@ async function run() {
       });
       assert.equal(scriptVeto, false, "STOP: inline JS executed under strict CSP");
       console.log("M32_CI_PRECOMPILED_INLINE_SCRIPT_DENIED_PASS");
-      console.log("M32_CI_PRECOMPILED_STRICT_CSP_BROWSER_PASS: 34/34");
+      console.log("M32_CI_PRECOMPILED_STRICT_CSP_BROWSER_PASS: 36/36");
     }
-    console.log("M32_CI_FIXTURE_ONLY_BROWSER_PASS: 34/34; no normal source pages");
+    console.log("M32_CI_FIXTURE_ONLY_BROWSER_PASS: 36/36; no normal source pages");
   } finally {
     if (browser) await browser.close();
     server.kill();

@@ -154,10 +154,8 @@ export function supersedeFictionalAnchor(
   inspectFictionalDraft(d);
   const old = d.snapshot.anchors.find(a => a.id === oldId && a.status === "current");
   if (!old) return veto("ancre absente ou historique");
-  if (d.snapshot.precedences.some(e => e.status === "current" &&
-      (e.before_anchor_id === oldId || e.after_anchor_id === oldId))) {
-    return veto("révoquer explicitement les liens actifs avant correction");
-  }
+  const correction = previewFictionalCorrection(d, oldId);
+  if (correction.verdict !== "allowed") return veto(correction.reason);
   const replacement = makeAnchor(d, input, old);
   return inspectFictionalDraft({
     ...d, nextId: d.nextId + 1,
@@ -169,14 +167,109 @@ export function supersedeFictionalAnchor(
       explanation: "Remplacée par " + replacement.id + " (historique conservé)" }],
   });
 }
+/** Non-authoritative visual explanation for a proposed edge on fictional active IDs only.
+ * A partial order remains partial: no inferred calendar value, canon or world ordering.
+ */
+export type FictionalPrecedencePreview = Readonly<{
+  verdict: "unselected" | "allowed" | "blocked";
+  reason: string;
+  witness_anchor_ids: readonly string[];
+  witness_edge_ids: readonly string[];
+}>;
+export function previewFictionalPrecedence(
+  d: FictionalDraft, before: string, after: string,
+): FictionalPrecedencePreview {
+  inspectFictionalDraft(d);
+  const noWitness = { witness_anchor_ids: [], witness_edge_ids: [] };
+  if (!before || !after) return {
+    verdict: "unselected", reason: "Choisir deux ancres fictives actives.", ...noWitness,
+  };
+  const active = new Set(d.snapshot.anchors.filter(a => a.status === "current").map(a => a.id));
+  if (!active.has(before) || !active.has(after)) return {
+    verdict: "blocked", reason: "Référence étrangère, absente ou historique.", ...noWitness,
+  };
+  if (before === after) return {
+    verdict: "blocked", reason: "Relation réflexive interdite.", witness_anchor_ids: [before], witness_edge_ids: [],
+  };
+  const direct = d.snapshot.precedences.find(e => e.status === "current" &&
+    e.before_anchor_id === before && e.after_anchor_id === after);
+  if (direct) return {
+    verdict: "blocked", reason: "Relation directe déjà déclarée.",
+    witness_anchor_ids: [before, after], witness_edge_ids: [direct.id],
+  };
+  // BFS returns a deterministic shortest witness for after -> ... -> before.
+  // A human proposed before -> after would close exactly this existing path into a cycle.
+  const queue: { node: string; nodes: string[]; edges: string[] }[] = [
+    { node: after, nodes: [after], edges: [] },
+  ];
+  const seen = new Set([after]);
+  let cursor = 0;
+  while (cursor < queue.length) {
+    const current = queue[cursor++];
+    if (current.node === before) {
+      return {
+        verdict: "blocked",
+        reason: "cycle temporel : " + [before, ...current.nodes].join(" → "),
+        witness_anchor_ids: [before, ...current.nodes],
+        witness_edge_ids: current.edges,
+      };
+    }
+    const outbound = d.snapshot.precedences
+      .filter(e => e.status === "current" && e.before_anchor_id === current.node)
+      .sort((a, b) => a.after_anchor_id.localeCompare(b.after_anchor_id) ||
+        a.id.localeCompare(b.id));
+    for (const edge of outbound) {
+      if (!seen.has(edge.after_anchor_id)) {
+        seen.add(edge.after_anchor_id);
+        queue.push({
+          node: edge.after_anchor_id,
+          nodes: [...current.nodes, edge.after_anchor_id],
+          edges: [...current.edges, edge.id],
+        });
+      }
+    }
+  }
+  return { verdict: "allowed", reason: "Relation explicite possible, sans ordre total déduit.", ...noWitness };
+}
+
+/** Pure preflight. Never automatically revoke another assertion to permit correction. */
+export type FictionalCorrectionPreview = Readonly<{
+  verdict: "unselected" | "allowed" | "blocked";
+  reason: string;
+  active_edge_ids: readonly string[];
+  historical_revision_id: string | null;
+}>;
+export function previewFictionalCorrection(
+  d: FictionalDraft, oldId: string,
+): FictionalCorrectionPreview {
+  inspectFictionalDraft(d);
+  const old = d.snapshot.anchors.find(a => a.id === oldId && a.status === "current");
+  if (!old) return {
+    verdict: oldId ? "blocked" : "unselected",
+    reason: oldId ? "Ancre étrangère, absente ou déjà historique." : "Choisir une ancre à corriger.",
+    active_edge_ids: [], historical_revision_id: null,
+  };
+  const dependencies = d.snapshot.precedences
+    .filter(e => e.status === "current" &&
+      (e.before_anchor_id === oldId || e.after_anchor_id === oldId))
+    .map(e => e.id).sort();
+  return {
+    verdict: dependencies.length ? "blocked" : "allowed",
+    reason: dependencies.length
+      ? "Il faut révoquer explicitement les liens actifs avant correction : " + dependencies.join(", ")
+      : "Correction possible en conservant la version et sa révision historique.",
+    active_edge_ids: dependencies,
+    historical_revision_id: old.source_revision_id,
+  };
+}
+
 export function createFictionalPrecedence(
   d: FictionalDraft, before: string, after: string, explanation: string,
 ): FictionalDraft {
   inspectFictionalDraft(d);
   const reason = nonblank(explanation);
-  if (before === after) return veto("relation réflexive");
-  const active = new Set(d.snapshot.anchors.filter(a => a.status === "current").map(a => a.id));
-  if (!active.has(before) || !active.has(after)) return veto("les deux ancres doivent être actives");
+  const preview = previewFictionalPrecedence(d, before, after);
+  if (preview.verdict !== "allowed") return veto(preview.reason);
   const edge = {
     id: name(d), universe_id: d.snapshot.universe_id,
     before_anchor_id: before, after_anchor_id: after,

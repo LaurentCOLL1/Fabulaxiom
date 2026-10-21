@@ -1,5 +1,10 @@
 # Fabulaxiom — Current State
 
+## 2026-10-21 — aperçus explicites des blocages M3.2 sur données imaginaires
+
+PR #99 fusionnée avec `main=205a328150c90bf1fb4f52abd7fb8c04f3959468`, CI PR #39480662913 SUCCESS (74/74), push #39482419125 SUCCESS. Un candidat d'UX ajoute `previewFictionalPrecedence` (chemin-témoin d'un cycle au lieu d'une simple erreur), `previewFictionalCorrection` (relations actives devant être révoquées, référence exacte de révision historique conservée), visibles dans `M32ManualChronologyLab.tsx`. Rien dans `App.tsx`, Tauri, SQLite ou IPC ; aucun chemin disque ou réseau. 10 nouveaux tests Vitest (32) et 2 Chromium (36), CI à qualifier au HEAD exact. Roadmap M3.2 IN_PROGRESS_NOT_ACCEPTED ; PR #35 DRAFT ; absence de writer réel NOT_PROVEN ; G2B–G6 STOP ; historique PENDING 21/3/2 et prospective NOT_STARTED.
+
+
 ## 2026-10-20 — identité de révision historique dans l'atelier manuel fictif
 
 `main=7477001cd0ebc69d4701f21eddbda898f94c79c5` après fusion de PR #98, CI PR #39447951647 SUCCESS 74/74, CI push main #39449601527 SUCCESS. Candidat `m32FictionalManualChronology.ts` / `M32ManualChronologyLab.tsx` : catalogue littéral de scènes+révisions inventées, sélection explicite d'une ancienne révision, vérifications Universe/novel/scene/exact revision, hériter la référence lors d'une correction par supersession. Références source non authentifiées puisque inventées ; aucune lecture du texte réel, de SQLite, du head actuel ou de l'IPC. Nouveaux tests : 22 Vitest et 34 Chromium à vérifier dans la CI fraîche. Roadmap M3.2 non acceptée, PR #35 brouillon, provenance 21/3/2 et baseline prospective NOT_STARTED, G2B–G6 STOP. Base v6 active, v7 isolée, journaux, sauvegardes, ACL, migration007, writer IPC et release non touchés.

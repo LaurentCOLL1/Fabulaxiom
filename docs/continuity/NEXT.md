@@ -1,5 +1,10 @@
 # Fabulaxiom — Next Authorized Work
 
+## 2026-10-21 — prévisualiser les conflits de chronologie avant mutation, puis qualifier
+
+Re-fetch : PR #99 fusionnée à `main=205a328150c90bf1fb4f52abd7fb8c04f3959468`, CI PR #39480662913 SUCCESS (74 étapes), push main #39482419125 SUCCESS. La [nouvelle qualification fictive](../qualification/M3_2_FICTIONAL_CONFLICT_WITNESS_AND_CORRECTION_PREFLIGHT.md) offre des témoins explicatifs d'un cycle de relations et la liste des relations bloquant une correction. 10 tests Vitest (32 au total) et 2 tests de navigateur Chromium (36 au total) sont candidats. Qualifier les **nouvelles** suites sur la CI au SHA exact, corriger si échec et refaire tout le contrôle, puis refetch anti-course avant éventuelle fusion protégée. Ne pas promouvoir M3.2, ni migrer production v6, modifier v7 isolée, sauvegardes, journaux, ACL, marqueur, writer IPC, PR35 ou M3.3. G2-B à G6 non autorisés, G2-A metadata-only déjà exécuté une fois.
+
+
 ## 2026-10-20 — qualifier le lien manuel à une scène et révision fictives exactes
 
 PR #98 protégée fusionnée `main=7477001cd0ebc69d4701f21eddbda898f94c79c5`, CI PR #39447951647 SUCCESS 74/74, CI push #39449601527 SUCCESS. La [tranche suivante](../qualification/M3_2_FICTIONAL_SCENE_REVISION_EXACT_BINDING.md) fait choisir dans le laboratoire fictif le couple `scene_id` et `revision_id` immuable, rejette mélanges roman/Univers/scène, préserve le lien historique après supersession et ne lit jamais la révision courante. 9 nouveaux tests unitaires (22) et 2 scénarios Chromium (34) à qualifier au SHA exact ; ne pas propager les anciens résultats de CI. Aucun Tauri, SQLite original ou script Windows. M3.2 toujours IN_PROGRESS_NOT_ACCEPTED ; PR35 DRAFT, G2B–G6 STOP.

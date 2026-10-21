@@ -1,6 +1,13 @@
 # Fabulaxiom M3.2 — Reprise opérationnelle courte
 
-**Checkpoint du 20 octobre 2026 après PR #98. Instantané documentaire : re-fetch GitHub obligatoire. Aucune autorisation Windows, SQLite ou G2-B/G3 créée.**
+**Checkpoint du 21 octobre 2026 après PR #99. Instantané documentaire : re-fetch GitHub obligatoire. Aucune autorisation Windows, SQLite ou G2-B/G3 créée.**
+
+## 2026-10-21 — conflits de précédence expliqués avant saisie, correction historique guidée (candidat)
+
+- Re-fetch GitHub : PR #99 fusionnée à `main=205a328150c90bf1fb4f52abd7fb8c04f3959468`, CI de PR #39480662913 SUCCESS **74/74** au HEAD `37a98b2d70126fdffa6ba06ce599aaa42f88ca7a`, CI push main #39482419125 **SUCCESS terminale**. Ces badges restent rattachés à ces SHA.
+- [Aperçu de conflits du laboratoire fictif](../qualification/M3_2_FICTIONAL_CONFLICT_WITNESS_AND_CORRECTION_PREFLIGHT.md) : un graphe actif avant/après affiche le chemin `B → ... → A` qui rendrait cyclique l'ajout `A avant B`, avec les identifiants de relations humaines existantes. Correction d'ancre : les relations encore actives et la révision historique sont visibles ; **révocation humaine explicite** exigée avant remplacement append-only. Pas d'ordre total ou date inventée.
+- Dix tests Vitest supplémentaires (**32 en tout**) et deux tests Chromium (**36 en tout**) à qualifier sur le **nouveau SHA** ; les contrôles de provenance Git exact-source existants restent inchangés, aucun nouveau fichier dans l'allowlist.
+- **M3.2 IN_PROGRESS_NOT_ACCEPTED**, PR #35 DRAFT, pas de CRUD persistant ni GUI de production. G2A PASS métadonnées uniquement (accord consommé), writer `NOT_PROVEN`, G2B/C/D–G6 `NOT_AUTHORIZED`, réel G3 STOP ; historique 21/3/2 non attesté, prospective NOT_STARTED. Aucun PC Windows, base v6/v7, journaux, sauvegarde, ACL, marqueur, migration007, IPC writer ou release touché.
 
 ## 2026-10-20 — scènes et révisions historiques exactes (laboratoire fictif, candidat)
 

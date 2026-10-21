@@ -4,6 +4,7 @@ import M32ChronologyPreview from "./M32ChronologyPreview";
 import {
   startFictionalDraft, createFictionalAnchor, supersedeFictionalAnchor,
   createFictionalPrecedence, revokeFictionalPrecedence,
+  previewFictionalPrecedence, previewFictionalCorrection,
   type FictionalDraft, type FictionalTimeInput, type FictionalRevision,
 } from "./m32FictionalManualChronology";
 
@@ -29,6 +30,8 @@ function Lab({ initial, revisions }: {
   const [notice, setNotice] = useState<string | null>(null);
   const active = draft.snapshot.anchors.filter(a => a.status === "current");
   const edges = draft.snapshot.precedences.filter(e => e.status === "current");
+  const conflict = previewFictionalPrecedence(draft, before, after);
+  const correctionPreview = previewFictionalCorrection(draft, replace);
   const scenes = draft.revisions.filter((r, index, all) =>
     all.findIndex(first => first.scene_id === r.scene_id) === index);
   const availableRevisions = draft.revisions.filter(r => r.scene_id === sceneId);
@@ -109,6 +112,12 @@ function Lab({ initial, revisions }: {
         <option value="">Sélectionner une ancre</option>
         {active.map(a => <option key={a.id} value={a.id}>{a.id}</option>)}
       </select>
+      <section aria-label="Vérification de correction fictive" role="status">
+        <p>{correctionPreview.reason}</p>
+        {correctionPreview.historical_revision_id && <p>
+          Révision historique conservée : {correctionPreview.historical_revision_id}
+        </p>}
+      </section>
       <button type="button" onClick={() => apply(
         () => supersedeFictionalAnchor(draft, replace, input),
         "Correction fictive enregistrée, ancienne ancre conservée")}>
@@ -127,6 +136,12 @@ function Lab({ initial, revisions }: {
         <option value="">Choisir</option>
         {active.map(a => <option key={a.id} value={a.id}>{a.id}</option>)}
       </select>
+      <section aria-label="Vérification avant/après fictive" role="status">
+        <p>{conflict.reason}</p>
+        {conflict.witness_edge_ids.length > 0 && <p>
+          Témoins historiques : {conflict.witness_edge_ids.join(", ")}
+        </p>}
+      </section>
       <label htmlFor={id + "-reason"}>Justification humaine fictive</label>
       <input id={id + "-reason"} value={reason} maxLength={160}
         onChange={e => setReason(e.currentTarget.value)} />

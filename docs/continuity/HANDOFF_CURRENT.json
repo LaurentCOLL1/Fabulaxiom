@@ -3,14 +3,14 @@
   "as_of": "2026-10-20",
   "status_kind": "DATED_PUBLIC_SOURCE_HANDOFF_ONLY",
   "repository": "LaurentCOLL1/Fabulaxiom",
-  "last_confirmed_main_before_handoff": "7477001cd0ebc69d4701f21eddbda898f94c79c5",
-  "last_confirmed_merged_pr": 98,
-  "last_verified_pr_head": "783e9e10f225f877a3222a089008a394e596fcc8",
+  "last_confirmed_main_before_handoff": "205a328150c90bf1fb4f52abd7fb8c04f3959468",
+  "last_confirmed_merged_pr": 99,
+  "last_verified_pr_head": "37a98b2d70126fdffa6ba06ce599aaa42f88ca7a",
   "last_verified_ci": {
-    "run_id": 39447951647,
+    "run_id": 39480662913,
     "context": "Windows frontend and Rust checks",
     "conclusion": "SUCCESS",
-    "source": "PR98_EXACT_HEAD"
+    "source": "PR99_EXACT_HEAD"
   },
   "recent_changes": [
     "PR_85_EXACT_G2A_TEXT_AST_ONLY",
@@ -39,7 +39,9 @@
     "PR_97_V1_ROADMAP_STATUS_AND_NINE_CI_TESTS_MERGED",
     "2026_10_20_M32_MANUAL_FICTIONAL_CHRONOLOGY_LAB_13_VITESTS_CANDIDATE",
     "PR_98_FICTIONAL_MANUAL_TIMELINE_13_UNIT_32_BROWSER_MERGED",
-    "2026_10_20_FICTIONAL_EXACT_SCENE_REVISION_BINDING_VITEST_AND_BROWSER_CANDIDATE"
+    "2026_10_20_FICTIONAL_EXACT_SCENE_REVISION_BINDING_VITEST_AND_BROWSER_CANDIDATE",
+    "PR_99_EXACT_HISTORICAL_REVISION_SELECTION_22_UNIT_34_BROWSER_MERGED",
+    "2026_10_21_PREVIEW_CYCLE_WITNESS_AND_CORRECTION_DEPENDENCIES_SYNTHETIC_CANDIDATE"
   ],
   "pr35": "OPEN_DRAFT",
   "issues": {
@@ -225,15 +227,15 @@
     "verified_bypass_actors": 0,
     "classic_branch_protection_read": "403_INTEGRATION_RESTRICTED"
   },
-  "next": "QUALIFY_PR_FICTIONAL_SCENE_REVISION_EXACT_BINDING_22_UNIT_34_BROWSER_AT_FINAL_HEAD_PRESERVE_GATES",
+  "next": "VERIFY_FICTIONAL_CONFLICT_PREFLIGHT_32_VITEST_36_CHROMIUM_EXACT_HEAD_WIN_CI_KEEP_REAL_GATES_CLOSED",
   "live_refetch_required": true,
   "hand_off_updated_by_future_pr": true,
   "main_ci_post_merge": {
-    "sha": "7477001cd0ebc69d4701f21eddbda898f94c79c5",
-    "run_id": 39449601527,
+    "sha": "205a328150c90bf1fb4f52abd7fb8c04f3959468",
+    "run_id": 39482419125,
     "conclusion": "SUCCESS",
     "source": "MAIN_PUSH",
-    "note": "Terminal success verified 20 October 2026; no operator authorization"
+    "note": "Terminal SUCCESS checked 21 October 2026; no real gate change"
   },
   "g2a_candidate_ci": {
     "pr": 86,
@@ -291,7 +293,7 @@
     "user_interface": "src/M32ManualChronologyLab.tsx",
     "isolated_mount": "src/m32BrowserLab.tsx",
     "tests": "src/m32ManualChronologyLab.test.tsx",
-    "expected_tests": 22,
+    "expected_tests": 32,
     "delivery": "SYNTHETIC_BROWSER_LAB_ONLY_SOURCE_ONLY",
     "implemented": [
       "CREATE_ANCHOR_FOUR_KINDS",
@@ -308,7 +310,7 @@
     "g2b_to_g6": "NOT_AUTHORIZED",
     "real_g3": "STOP_UNAVAILABLE",
     "browser_new_cases": 2,
-    "browser_total_expected": 34,
+    "browser_total_expected": 36,
     "browser_fixture_manifest": "EXACT_TWO_ADDITIONAL_FICTION_ONLY_SOURCE_MODULES",
     "initial_ci_failures": [
       "HTML_ESCAPING_EXPECTATION_FIXED",
@@ -323,6 +325,27 @@
       "persisted_sqlite_access": "NONE",
       "operator_windows_execution": "NOT_AUTHORIZED",
       "acceptance": "TEST_CANDIDATE_NOT_PRODUCT_ACCEPTANCE"
+    },
+    "conflict_preflight": {
+      "document": "docs/qualification/M3_2_FICTIONAL_CONFLICT_WITNESS_AND_CORRECTION_PREFLIGHT.md",
+      "preview_function": "previewFictionalPrecedence",
+      "correction_function": "previewFictionalCorrection",
+      "verdicts": [
+        "unselected",
+        "allowed",
+        "blocked"
+      ],
+      "cycle_witness": "BFS_ACTIVE_HUMAN_EDGE_IDS_FICTIONAL_ONLY",
+      "correction_policy": "EXPLICIT_DEPENDENCY_REVOCATION_BEFORE_APPEND_ONLY_SUPERSESSION",
+      "state_mutations_by_previewer": "NONE",
+      "timestamp_inference": "NONE",
+      "source_revision_head_lookup": "NEVER",
+      "operator_runtime": "NOT_ACCESSED",
+      "expected_unit_tests": 32,
+      "expected_browser_cases": 36,
+      "real_g3": "STOP_UNAVAILABLE",
+      "gates": "G2B_TO_G6_NOT_AUTHORIZED",
+      "status": "PROPOSED_SOURCE_ONLY_NOT_PRODUCT_ACCEPTED"
     }
   }
 }
