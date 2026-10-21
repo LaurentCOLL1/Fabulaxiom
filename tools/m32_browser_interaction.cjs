@@ -586,7 +586,7 @@ async function run() {
       const lab = page.getByRole("region", { name: "Atelier manuel M3.2 exclusivement fictif" });
       await lab.getByRole("combobox", { name: "Événement antérieur" }).selectOption("C");
       await lab.getByRole("combobox", { name: "Événement postérieur" }).selectOption("A");
-      const preview = lab.getByRole("region", { name: "Vérification avant/après fictive" });
+      const preview = lab.getByRole("status", { name: "Vérification avant/après fictive" });
       assert.ok((await preview.innerText()).includes("cycle temporel"));
       assert.ok((await preview.innerText()).includes("human-ab"));
       assert.ok((await preview.innerText()).includes("human-bc"));
@@ -596,7 +596,7 @@ async function run() {
       await page.getByRole("button", { name: "Ouvrir l'atelier manuel fictif" }).click();
       const lab = page.getByRole("region", { name: "Atelier manuel M3.2 exclusivement fictif" });
       await lab.getByRole("combobox", { name: "Correction : remplacer une ancre active" }).selectOption("A");
-      const preview = lab.getByRole("region", { name: "Vérification de correction fictive" });
+      const preview = lab.getByRole("status", { name: "Vérification de correction fictive" });
       assert.ok((await preview.innerText()).includes("human-ab"));
       assert.ok((await preview.innerText()).includes("invented-rev-A"));
       await lab.getByRole("combobox", { name: "Relation à révoquer (historique conservé)" })
