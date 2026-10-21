@@ -3,14 +3,14 @@
   "as_of": "2026-10-21",
   "status_kind": "DATED_PUBLIC_SOURCE_HANDOFF_ONLY",
   "repository": "LaurentCOLL1/Fabulaxiom",
-  "last_confirmed_main_before_handoff": "3c489aa727129e4b090e2e80a49a93fb3fa95877",
-  "last_confirmed_merged_pr": 112,
-  "last_verified_pr_head": "56c5d4d55a616469cda36c5fef7f63369a08bdb2",
+  "last_confirmed_main_before_handoff": "e74f1001c01eff1f37c8b35d97d4ef34f6fbccb3",
+  "last_confirmed_merged_pr": 113,
+  "last_verified_pr_head": "6fd369de970e6e35d42c2162f197eb57009a1d42",
   "last_verified_ci": {
-    "run_id": 39596187154,
+    "run_id": 39605681206,
     "context": "Windows frontend and Rust checks",
     "conclusion": "SUCCESS",
-    "source": "PR112_EXACT_HEAD"
+    "source": "PR113_EXACT_HEAD"
   },
   "recent_changes": [
     "PR_85_EXACT_G2A_TEXT_AST_ONLY",
@@ -64,7 +64,9 @@
     "2026_10_21_SCENE_WORLD_PROOF_EXACT_REVISION_CANDIDATE_60_VITEST_50_CHROMIUM",
     "PR111_DOC_NORMALIZATION_MERGED_MAIN_0338EA94_PUSH_39595114020_SUCCESS",
     "PR112_SCENE_WORLD_PROOF_MERGED_MAIN_3C489AA7_EXACT_CI_39596187154_SUCCESS",
-    "PR112_MAIN_PUSH_39597532619_TERMINAL_SUCCESS_AT_EXACT_MERGE_3C489AA7_VERIFIED"
+    "PR112_MAIN_PUSH_39597532619_TERMINAL_SUCCESS_AT_EXACT_MERGE_3C489AA7_VERIFIED",
+    "PR113_DOC_NORMALIZATION_MERGED_MAIN_E74F1001_PR_CI_39605681206_AND_MAIN_CI_39607280677_SUCCESS",
+    "2026_10_21_PARALLEL_WORK_INDEPENDENT_STREAMS_EXCLUSIVE_WRITES_GATE_STOP_PRESERVED"
   ],
   "pr35": "OPEN_DRAFT",
   "issues": {
@@ -250,15 +252,15 @@
     "verified_bypass_actors": 0,
     "classic_branch_protection_read": "403_INTEGRATION_RESTRICTED"
   },
-  "next": "VERIFY_PR113_OWN_CI_AT_UPDATED_HEAD_THEN_PROTECTED_MERGE_NO_REAL_GATES",
+  "next": "RE_FETCH_MAIN_AND_PR35_THEN_PLAN_INDEPENDENT_SOURCE_ONLY_STREAMS_FICTIONAL_UX_CUSTODY_WRITER_AUDIT;_NO_OPERATOR_WINDOWS",
   "live_refetch_required": true,
   "hand_off_updated_by_future_pr": true,
   "main_ci_post_merge": {
-    "sha": "3c489aa727129e4b090e2e80a49a93fb3fa95877",
-    "run_id": 39597532619,
+    "sha": "e74f1001c01eff1f37c8b35d97d4ef34f6fbccb3",
+    "run_id": 39607280677,
     "conclusion": "SUCCESS",
     "source": "MAIN_PUSH",
-    "note": "GitHub terminal SUCCESS independently refetched 2026-10-21 at exact PR112 main merge SHA; no operator authority"
+    "note": "Terminal SUCCESS independently re-fetched on 2026-10-21; documentary evidence only, not operator acceptance"
   },
   "g2a_candidate_ci": {
     "pr": 86,
@@ -655,5 +657,46 @@
     "g2b_to_g6": "NOT_AUTHORIZED",
     "real_g3": "STOP_UNAVAILABLE",
     "operator_execution": "NONE"
+  },
+  "post_pr113_normalization": {
+    "kind": "DATED_DOCUMENTARY_SNAPSHOT_NO_RUNTIME_AUTHORITY",
+    "merged_pr": 113,
+    "merge_sha": "e74f1001c01eff1f37c8b35d97d4ef34f6fbccb3",
+    "pr_head_sha": "6fd369de970e6e35d42c2162f197eb57009a1d42",
+    "pr_ci": {
+      "run_id": 39605681206,
+      "conclusion": "SUCCESS",
+      "job_steps": 74
+    },
+    "main_ci": {
+      "run_id": 39607280677,
+      "conclusion": "SUCCESS"
+    },
+    "fiction_only": true,
+    "vitest": 60,
+    "chromium_per_mode": 50,
+    "product_status": "IN_PROGRESS_NOT_ACCEPTED",
+    "writer_absence": "NOT_PROVEN",
+    "g2b_to_g6": "NOT_AUTHORIZED",
+    "real_g3": "STOP_UNAVAILABLE",
+    "operator_execution": "NONE"
+  },
+  "execution_parallelism": {
+    "policy": "PARALLEL_WHEN_INDEPENDENT_WITH_EXCLUSIVE_WRITES_AND_SEQUENTIAL_MERGES",
+    "policy_document": "docs/continuity/HANDOFF_PROTOCOL.md",
+    "allowed_concurrent_streams": [
+      "GITHUB_READS_AND_CI_OBSERVATION",
+      "ROADMAP_GAP_AUDIT",
+      "PUBLIC_HISTORICAL_EVIDENCE_RESEARCH",
+      "FICTIONAL_FIXTURE_TESTS",
+      "SOURCE_ONLY_G2_G3_AUDIT"
+    ],
+    "separate_branches_or_worktrees_for_mutations": true,
+    "shared_branch_or_file_writes": "SERIAL_ONLY",
+    "protected_main_merges": "SERIAL_EXACT_HEAD_CI_AND_EXPECTED_HEAD_SHA",
+    "windows_operator_execution": "SEPARATE_EXPLICIT_APPROVAL_REQUIRED",
+    "real_sqlite_or_sidecars": "PROHIBITED",
+    "gate_promotion": "NONE_BY_PARALLELISM",
+    "m3_2_acceptance": "IN_PROGRESS_NOT_ACCEPTED"
   }
 }
