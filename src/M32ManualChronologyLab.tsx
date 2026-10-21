@@ -1,6 +1,7 @@
 import { useId, useState, type ReactElement } from "react";
 import type { M32ChronologyProjection, M32TimeKind } from "./M32ChronologyPreview";
 import M32ChronologyPreview from "./M32ChronologyPreview";
+import M32WorldOrderComparison from "./M32WorldOrderComparison";
 import {
   startFictionalDraft, createFictionalAnchor, supersedeFictionalAnchor,
   createFictionalPrecedence, revokeFictionalPrecedence,
@@ -28,6 +29,8 @@ function Lab({ initial, revisions }: {
   const [revoke, setRevoke] = useState("");
   const [firstScene, setFirstScene] = useState("");
   const [secondScene, setSecondScene] = useState("");
+  const [worldLeft, setWorldLeft] = useState("");
+  const [worldRight, setWorldRight] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const active = draft.snapshot.anchors.filter(a => a.status === "current");
@@ -192,6 +195,29 @@ function Lab({ initial, revisions }: {
         <p>{threeOrders.world_reason}</p>
         <p>{threeOrders.reader_reason}</p>
       </section>
+    </fieldset>
+    <fieldset>
+      <legend>Consulter une preuve de précédence humaine — fictive</legend>
+      <p>Seules les relations humaines encore en vigueur peuvent justifier un ordre.
+        Un tri de scènes ou une date littéraire ne constitue pas une preuve.</p>
+      <label htmlFor={id + "-world-left"}>Première ancre à consulter</label>
+      <select id={id + "-world-left"} value={worldLeft}
+        onChange={e => setWorldLeft(e.currentTarget.value)}>
+        <option value="">Choisir la première ancre</option>
+        {active.map(a => <option key={a.id} value={a.id}>{a.id}</option>)}
+      </select>
+      <label htmlFor={id + "-world-right"}>Deuxième ancre à consulter</label>
+      <select id={id + "-world-right"} value={worldRight}
+        onChange={e => setWorldRight(e.currentTarget.value)}>
+        <option value="">Choisir la deuxième ancre</option>
+        {active.map(a => <option key={a.id} value={a.id}>{a.id}</option>)}
+      </select>
+      {worldLeft && worldRight
+        ? <M32WorldOrderComparison expectedUniverseId={draft.snapshot.universe_id}
+            snapshot={draft.snapshot} leftAnchorId={worldLeft} rightAnchorId={worldRight} />
+        : <p>Choisir deux ancres actives pour consulter les preuves déclarées.</p>}
+      <p>Cette consultation ne crée ni ne révoque de relation, et ne renseigne
+        aucune révélation au lecteur.</p>
     </fieldset>
     {error && <p role="alert">Refus : {error}</p>}
     {notice && <p role="status">{notice}</p>}

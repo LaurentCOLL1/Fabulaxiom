@@ -663,8 +663,48 @@ async function run() {
       assert.ok((await lab.getByRole("status", { name: "Comparaison des trois ordres fictifs" })
         .innerText()).includes("Choisir deux scènes fictives"));
     });
-    assert.equal(cases.length, 41);
-    console.log("M32_BROWSER_REAL_CHROMIUM_PASS 41/41");
+    await caseRun("42-existing-human-witness-transitive-two-edges", async () => {
+      await page.getByRole("button", { name: "Ouvrir l'atelier manuel fictif" }).click();
+      const lab = page.getByRole("region", { name: "Atelier manuel M3.2 exclusivement fictif" });
+      await lab.getByRole("combobox", { name: "Première ancre à consulter" }).selectOption("A");
+      await lab.getByRole("combobox", { name: "Deuxième ancre à consulter" }).selectOption("C");
+      const proof = lab.getByRole("region", { name: "Comparaison M3.2 isolée" });
+      assert.ok((await proof.innerText()).includes("Avant : précédence humaine explicite ou transitive"));
+      assert.ok((await proof.innerText()).includes("human-ab"));
+      assert.ok((await proof.innerText()).includes("human-bc"));
+      assert.ok((await proof.innerText()).includes("Le messager arrive"));
+    });
+    await caseRun("43-revoked-edge-is-not-world-precedence-proof", async () => {
+      await page.getByRole("button", { name: "Ouvrir l'atelier manuel fictif" }).click();
+      const lab = page.getByRole("region", { name: "Atelier manuel M3.2 exclusivement fictif" });
+      await lab.getByRole("combobox", { name: "Première ancre à consulter" }).selectOption("A");
+      await lab.getByRole("combobox", { name: "Deuxième ancre à consulter" }).selectOption("D");
+      const proof = lab.getByRole("region", { name: "Comparaison M3.2 isolée" });
+      assert.ok((await proof.innerText()).includes("Ordre indéterminé"));
+      assert.ok(!(await proof.innerText()).includes("retired-ad"));
+      await lab.getByRole("combobox", { name: "Première ancre à consulter" }).selectOption("C");
+      await lab.getByRole("combobox", { name: "Deuxième ancre à consulter" }).selectOption("A");
+      assert.ok((await proof.innerText()).includes("Après : précédence humaine explicite ou transitive"));
+      assert.ok((await proof.innerText()).includes("human-ab"));
+    });
+    await caseRun("44-proof-refreshes-on-explicit-revocation-without-inventing-time", async () => {
+      await page.getByRole("button", { name: "Ouvrir l'atelier manuel fictif" }).click();
+      const lab = page.getByRole("region", { name: "Atelier manuel M3.2 exclusivement fictif" });
+      await lab.getByRole("combobox", { name: "Première ancre à consulter" }).selectOption("A");
+      await lab.getByRole("combobox", { name: "Deuxième ancre à consulter" }).selectOption("B");
+      const proof = lab.getByRole("region", { name: "Comparaison M3.2 isolée" });
+      assert.ok((await proof.innerText()).includes("human-ab"));
+      await lab.getByRole("combobox", { name: "Relation à révoquer (historique conservé)" })
+        .selectOption("human-ab");
+      await lab.getByRole("textbox", { name: "Justification humaine fictive" })
+        .fill("Révocation volontaire du lien humain");
+      await lab.getByRole("button", { name: "Révoquer explicitement" }).click();
+      assert.ok((await proof.innerText()).includes("Ordre indéterminé"));
+      assert.ok(!(await proof.innerText()).includes("human-ab"));
+      assert.ok((await lab.innerText()).includes("ordre de révélation non renseigné"));
+    });
+    assert.equal(cases.length, 44);
+    console.log("M32_BROWSER_REAL_CHROMIUM_PASS 44/44");
     // Actual Chromium enforced-CSP veto, separate from the 36
     // fictional interaction cases. Never make an off-loopback network call.
     const cspVeto = await page.evaluate(async () => {
@@ -695,9 +735,9 @@ async function run() {
       });
       assert.equal(scriptVeto, false, "STOP: inline JS executed under strict CSP");
       console.log("M32_CI_PRECOMPILED_INLINE_SCRIPT_DENIED_PASS");
-      console.log("M32_CI_PRECOMPILED_STRICT_CSP_BROWSER_PASS: 41/41");
+      console.log("M32_CI_PRECOMPILED_STRICT_CSP_BROWSER_PASS: 44/44");
     }
-    console.log("M32_CI_FIXTURE_ONLY_BROWSER_PASS: 41/41; no normal source pages");
+    console.log("M32_CI_FIXTURE_ONLY_BROWSER_PASS: 44/44; no normal source pages");
   } finally {
     if (browser) await browser.close();
     server.kill();

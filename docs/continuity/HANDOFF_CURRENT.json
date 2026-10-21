@@ -49,7 +49,8 @@
     "2026_10_21_FICTIONAL_THREE_ORDERS_READONLY_COMPARATOR_CANDIDATE",
     "PR_103_DOC_NORMALIZATION_MERGED_MAIN_DBD79CF",
     "PR_104_FICTIONAL_THREE_ORDERS_COMPARATOR_MERGED_MAIN_997B609",
-    "POSTMERGE_PR104_MAIN_39554622761_TERMINAL_SUCCESS_ON_EXACT_SHA_20261021"
+    "POSTMERGE_PR104_MAIN_39554622761_TERMINAL_SUCCESS_ON_EXACT_SHA_20261021",
+    "2026_10_21_FICTIONAL_EXISTING_HUMAN_WITNESS_PANEL_CANDIDATE_48_UNIT_44_CHROMIUM"
   ],
   "pr35": "OPEN_DRAFT",
   "issues": {
@@ -235,7 +236,7 @@
     "verified_bypass_actors": 0,
     "classic_branch_protection_read": "403_INTEGRATION_RESTRICTED"
   },
-  "next": "FICTION_ONLY_HUMAN_PRECEDENCE_EVIDENCE_EXPLANATION_READONLY_NO_INFERRED_WORLD_TIME",
+  "next": "QUALIFY_HUMAN_WITNESS_PANEL_FICTION_ONLY_48_VITEST_44_CHROMIUM_FRESH_SHA_CI",
   "live_refetch_required": true,
   "hand_off_updated_by_future_pr": true,
   "main_ci_post_merge": {
@@ -301,7 +302,7 @@
     "user_interface": "src/M32ManualChronologyLab.tsx",
     "isolated_mount": "src/m32BrowserLab.tsx",
     "tests": "src/m32ManualChronologyLab.test.tsx",
-    "expected_tests": 42,
+    "expected_tests": 48,
     "delivery": "SYNTHETIC_BROWSER_LAB_ONLY_SOURCE_ONLY",
     "implemented": [
       "CREATE_ANCHOR_FOUR_KINDS",
@@ -318,7 +319,7 @@
     "g2b_to_g6": "NOT_AUTHORIZED",
     "real_g3": "STOP_UNAVAILABLE",
     "browser_new_cases": 3,
-    "browser_total_expected": 41,
+    "browser_total_expected": 44,
     "browser_fixture_manifest": "EXACT_TWO_ADDITIONAL_FICTION_ONLY_SOURCE_MODULES",
     "initial_ci_failures": [
       "HTML_ESCAPING_EXPECTATION_FIXED",
@@ -400,6 +401,24 @@
       "ci_pr": 39553745685,
       "ci_main_pending": 39554622761,
       "ci_main_verified": 39554622761
+    },
+    "human_witness_panel": {
+      "status": "CANDIDATE_NOT_CI_QUALIFIED",
+      "scope": "BROWSER_FIXTURES_ONLY",
+      "existing_comparison_module": "M32WorldOrderComparison",
+      "proof_source": "EXPLICIT_ACTIVE_HUMAN_EDGES_ONLY",
+      "allows_revoked_witnesses": false,
+      "world_order_from_narration": "NEVER",
+      "reader_reveal": "NOT_AUTHORED",
+      "unit_tests_added": 6,
+      "unit_total_expected": 48,
+      "browser_cases_added": 3,
+      "browser_total_expected": 44,
+      "real_g3": "STOP_UNAVAILABLE",
+      "g2b_to_g6": "NOT_AUTHORIZED",
+      "app_integration": "NONE",
+      "sqlite_access": "NONE",
+      "operator_execution": "NONE"
     }
   },
   "post_pr100_normalization": {

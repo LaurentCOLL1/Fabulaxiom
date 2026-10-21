@@ -31,6 +31,10 @@ Une nouvelle interaction dans l'atelier de chronologie fictif sélectionne deux 
 
 PR [#104](https://github.com/LaurentCOLL1/Fabulaxiom/pull/104) MERGED sur `main=997b60901e1f18a426eae3efa34ddb29c07b5721` ; source HEAD `b320b711763659d9a3af670b685254eeb8b815e9`, CI PR #39553745685 SUCCESS (42 Vitest atelier, 41/41 Chromium dans les modes normal et précompilé strict CSP, 74 étapes Windows). CI push main #39554622761 encore **EN COURS** au moment de cet instantané. Le comparateur de trois ordres ne compare des scènes qu'au sein d'un même roman ; **monde et révélation restent indéterminés**. Pas de saisie de connaissances ou révélations M3.4/M3.5, ni nouvelle persistance, ni App.tsx ou Tauri. Les anciens candidats en dessous sont historiques. **M3.2 = IN_PROGRESS_NOT_ACCEPTED** ; G2-B à G6 fermés, PR #35 DRAFT, M3.3 non autorisée.
 
+## 21 octobre 2026 — candidat atelier fictif : preuve des relations humaines actives
+
+Intégration **proposée, non qualifiée** du module existant `M32WorldOrderComparison` dans l'atelier manuel fictif, avec consultation de deux ancres, témoins déterministes et motif humain, exclusion des liens révoqués, et actualisation sans écriture après révocation explicite. Objectifs : **48 tests Vitest atelier / 44 scénarios Chromium par mode**, nouvelle CI à prouver. Aucune inférence du temps du monde depuis la narration ni de révélation lecteur, pas de Tauri/App.tsx/SQLite original. M3.2 IN_PROGRESS_NOT_ACCEPTED, G2B–G6 STOP.
+
 ## Matrice de conformité
 
 | Jalon | État réel connu | Conformité / prochaine preuve |

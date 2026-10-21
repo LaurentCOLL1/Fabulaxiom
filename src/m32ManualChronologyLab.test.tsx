@@ -3,6 +3,7 @@ import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import type { M32ChronologyProjection } from "./M32ChronologyPreview";
 import M32ManualChronologyLab from "./M32ManualChronologyLab";
+import { compareM32WorldOrder } from "./M32WorldOrderComparison";
 import {
   startFictionalDraft as startDraft, createFictionalAnchor, supersedeFictionalAnchor,
   createFictionalPrecedence, revokeFictionalPrecedence,
@@ -356,6 +357,54 @@ describe("M3.2 manually authored fictional-only chronology laboratory", () => {
     expect(html).toContain("Comparaison des trois ordres fictifs");
     expect(html).toContain("Première scène à comparer");
     expect(html).toContain("Deuxième scène à comparer");
+    expect(html).not.toContain("invoke(");
+  });
+  it("43 reuses exact human edges, not manuscript placements, for active proof", () => {
+    const d = createFictionalPrecedence(startFictionalDraft(invented), "A", "B", "human A-B");
+    const x = compareM32WorldOrder(d.snapshot, "fiction-one", "A", "B");
+    expect(x.relation).toBe("before");
+    expect(x.witness.map(e => e.precedence_id)).toEqual(["fiction-draft-0001"]);
+    expect(x.witness[0].human_reason).toBe("human A-B");
+    expect(d.snapshot.reader_reveal_status).toBe("not_authored");
+  });
+  it("44 shows a two-link human witness without authoring an extra relation", () => {
+    const d = createFictionalPrecedence(
+      createFictionalPrecedence(startFictionalDraft(invented), "A", "B", "ab"), "B", "C", "bc");
+    const before = JSON.stringify(d);
+    const x = compareM32WorldOrder(d.snapshot, "fiction-one", "A", "C");
+    expect(x.relation).toBe("before");
+    expect(x.witness.map(e => e.precedence_id))
+      .toEqual(["fiction-draft-0001", "fiction-draft-0002"]);
+    expect(JSON.stringify(d)).toBe(before);
+  });
+  it("45 gives reverse relation without reversing the human witness", () => {
+    const d = createFictionalPrecedence(startFictionalDraft(invented), "A", "B", "ab");
+    const x = compareM32WorldOrder(d.snapshot, "fiction-one", "B", "A");
+    expect(x.relation).toBe("after");
+    expect(x.witness[0]).toMatchObject({ before_anchor_id: "A", after_anchor_id: "B" });
+  });
+  it("46 refuses to use revoked links as current time evidence", () => {
+    const d = createFictionalPrecedence(startFictionalDraft(invented), "A", "B", "human");
+    const r = revokeFictionalPrecedence(d, "fiction-draft-0001", "not current");
+    expect(compareM32WorldOrder(r.snapshot, "fiction-one", "A", "B").relation)
+      .toBe("incomparable");
+    expect(r.snapshot.precedences[0].reason).toBe("human");
+  });
+  it("47 refuses unknown and historical anchors without touching the draft", () => {
+    const d = startFictionalDraft(invented);
+    expect(() => compareM32WorldOrder(d.snapshot, "fiction-one", "A", "outsider")).toThrow();
+    expect(() => compareM32WorldOrder(d.snapshot, "fiction-two", "A", "B")).toThrow();
+    expect(compareM32WorldOrder(d.snapshot, "fiction-one", "C", "C").relation)
+      .toBe("same");
+    expect(d.audit).toHaveLength(0);
+  });
+  it("48 renders the independent read-only proof selectors in manual lab", () => {
+    const html = renderToStaticMarkup(createElement(M32ManualChronologyLab,
+      { initial: invented, revisions: history }));
+    expect(html).toContain("Consulter une preuve de précédence humaine");
+    expect(html).toContain("Première ancre à consulter");
+    expect(html).toContain("Deuxième ancre à consulter");
+    expect(html).toContain("Choisir deux ancres actives");
     expect(html).not.toContain("invoke(");
   });
   it("13 refuses malformed legacy edge and forbids promotion to G3", () => {
