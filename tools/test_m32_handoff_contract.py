@@ -225,8 +225,8 @@ class HandoffContractTests(unittest.TestCase):
     def test_21_exact_scene_revision_binding_stays_fictional(self):
         x = self.data["m3_2_product_progress"]
         r = x["scene_revision_binding"]
-        self.assertEqual(x["expected_tests"], 22)
-        self.assertEqual(x["browser_total_expected"], 34)
+        self.assertEqual(x["expected_tests"], 32)
+        self.assertEqual(x["browser_total_expected"], 36)
         self.assertEqual(r["fixture_catalog_limit"], 128)
         self.assertEqual(r["source_head_resolution"], "NEVER")
         self.assertFalse(r["accepts_cross_universe"])
