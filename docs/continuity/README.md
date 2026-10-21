@@ -1,5 +1,8 @@
 # Fabulaxiom — Point d'entrée pour reprendre les discussions ChatGPT
 
+**Checkpoint public du 21 octobre 2026 :** PR [#108](https://github.com/LaurentCOLL1/Fabulaxiom/pull/108) MERGED sur `main=ba4b8a599910cef6d1c76fa1e4fb561a0b45e631`, CI exacte de PR #39572172593 SUCCESS (74 étapes Windows, 51 tests atelier, 46 Chromium dans deux modes). CI post-fusion #39573518324 **EN COURS au présent instantané**, résultat terminal à vérifier. Fonctionnalité exclusivement fictive de refus des anciennes sélections historiques ; M3.2 NON ACCEPTÉE, PR #35 DRAFT, G2B–G6 STOP, écrivain SQLite réel NOT_PROVEN.
+
+
 **Nouvelle tranche M3.2 candidate, exclusivement fictive :** après correction d'une ancre, une sélection historique est signalée et ne peut plus servir de preuve temporelle courante ; changement d'Univers réinitialise les choix. 51 tests Vitest/46 Chromium prévus mais CI nouvelle à qualifier. Voir [handoff](HANDOFF_CURRENT.md). M3.2 non acceptée, G2B–G6 STOP.
 
 

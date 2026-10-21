@@ -1,5 +1,8 @@
 # Fabulaxiom — suivi de la roadmap V1 (état actualisé au 21 octobre 2026)
 
+**Checkpoint public du 21 octobre 2026 :** PR [#108](https://github.com/LaurentCOLL1/Fabulaxiom/pull/108) MERGED sur `main=ba4b8a599910cef6d1c76fa1e4fb561a0b45e631`, CI exacte de PR #39572172593 SUCCESS (74 étapes Windows, 51 tests atelier, 46 Chromium dans deux modes). CI post-fusion #39573518324 **EN COURS au présent instantané**, résultat terminal à vérifier. Fonctionnalité exclusivement fictive de refus des anciennes sélections historiques ; M3.2 NON ACCEPTÉE, PR #35 DRAFT, G2B–G6 STOP, écrivain SQLite réel NOT_PROVEN.
+
+
 **Tranche candidate M3.2 du 21 octobre 2026 (non acceptée) :** UX fictive de sélection d'ancre devenue historique après supersession : avertissement lisible, option historique désactivée, aucune relation actuelle tirée de cet ID ; isolement des choix entre Univers. Cibles 51 tests atelier/46 Chromium par mode, CI au nouveau SHA nécessaire. Le vrai CRUD/acceptation Windows et les gates G2B–G6 restent fermés.
 
 
