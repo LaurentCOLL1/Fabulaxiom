@@ -391,7 +391,7 @@ class HandoffContractTests(unittest.TestCase):
         self.assertEqual(x["pr_ci"]["run_id"], 39572172593)
         self.assertEqual(x["pr_ci"]["conclusion"], "SUCCESS")
         self.assertEqual(x["main_ci"]["run_id"], 39573518324)
-        self.assertEqual(self.data["main_ci_post_merge"]["conclusion"], "IN_PROGRESS_AT_CHECKPOINT")
+        # PR #108 has its own immutable historical CI record; never inspect the latest main_ci_post_merge here.
         self.assertEqual(x["main_ci"]["conclusion"], "SUCCESS")
         self.assertEqual(x["vitest"], 51)
         self.assertEqual(x["chromium"], 46)
