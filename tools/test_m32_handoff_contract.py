@@ -208,7 +208,7 @@ class HandoffContractTests(unittest.TestCase):
         x = self.data["m3_2_product_progress"]
         self.assertEqual(x["delivery"], "SYNTHETIC_BROWSER_LAB_ONLY_SOURCE_ONLY")
         self.assertEqual(x["expected_tests"], 42)
-        self.assertEqual(x["browser_new_cases"], 2)
+        self.assertEqual(x["browser_new_cases"], 3)
         self.assertEqual(x["browser_total_expected"], 41)
         self.assertEqual(x["app_tauri_production_integration"], "NONE")
         self.assertEqual(x["sqlite_real_access"], "NONE")
@@ -310,7 +310,7 @@ class HandoffContractTests(unittest.TestCase):
         self.assertEqual(x["real_g3"], "STOP_UNAVAILABLE")
         self.assertEqual(x["g2b_to_g6"], "NOT_AUTHORIZED")
         self.assertEqual(self.data["g2a"]["absence_of_sqlite_writer"], "NOT_PROVEN")
-        self.assertIn("Comparer les trois ordres", self.doc)
+        self.assertIn("comparateur des trois ordres", self.doc)
 
     def test_24_policy_requires_refetch_and_same_pr_handoff(self):
         for clause in ("Re-fetch", "HANDOFF_CURRENT.md", "HANDOFF_CURRENT.json",
