@@ -1,5 +1,8 @@
 # M3.2 — Historique condensé des qualifications (référence, pas CI réutilisable)
 
+**21 octobre 2026 — PR #110 fusionnée :** preview fictif sans écriture d'une révocation de précédence humaine ; SHA source `f69e36a24aedda15222bb3a4e3a198ba57d0174a`, CI exacte #39577527093 SUCCESS (55 Vitest, 48 Chromium par mode), merge protégé `2bf4b6a62ca22a21e1e7d34f5ead4e86dafe450b`. CI main #39591429432 en cours au présent checkpoint ; aucune réutilisation comme preuve terminale. M3.2 NON ACCEPTÉE, PR #35 DRAFT, writer réel NOT_PROVEN, G2B–G6 STOP ; jamais de commande Windows opérateur.
+
+
 Les détails exhaustifs restent dans [STATE.md](STATE.md) et les PR GitHub. **Toujours re-fetch les HEAD ; CI d'un commit A non transférable à B.**
 
 | Tranche | Avancée fusionnée | Preuve et limite |
