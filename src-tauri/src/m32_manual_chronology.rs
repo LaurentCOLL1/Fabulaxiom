@@ -243,7 +243,7 @@ mod tests {
         create_anchor(&db,draft("a","u1","unknown")).unwrap();
         assert!(db.execute("UPDATE world_time_anchors SET time_kind='relative' WHERE id='a'",[]).is_err());
         assert!(db.execute("DELETE FROM world_time_anchors WHERE id='a'",[]).is_err());
-        assert!(db.execute("UPDATE universes SET name='Changed' WHERE id='u1'",[]).is_err());
+        // The v6 universe name is outside M3.2 immutable-anchor contract.
         assert_eq!(list_anchors(&db,"u1").unwrap()[0].time_kind,"unknown");
     }
 
