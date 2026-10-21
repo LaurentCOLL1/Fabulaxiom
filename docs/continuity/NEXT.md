@@ -1,5 +1,14 @@
 # Fabulaxiom — Next Authorized Work
 
+## 21 octobre 2026 — nouvelle tranche fictive candidate : preuves humaines en lecture seule
+
+**CANDIDAT, PAS ENCORE QUALIFIÉ :** dans le seul atelier navigateur `M32ManualChronologyLab`, choisir deux ancres imaginaires actives pour afficher la relation temporelle existante et les identifiants/motifs des liens humains qui la justifient. Réutiliser `M32WorldOrderComparison` au lieu de recopier son moteur. Les liens révoqués, les ancres historiques et les scènes du manuscrit ne prouvent aucune relation actuelle. Vérifier l'actualisation après révocation manuelle. **Cible : 48 tests Vitest de l'atelier (+6), 44 scénarios Chromium par mode (+3)** ; nouvelle CI au SHA exact obligatoire.
+
+**STOP inchangé :** G2-A metadata-only avec accord consommé ; writer absence NOT_PROVEN, G2B–G6 NOT_AUTHORIZED ; M3.2 IN_PROGRESS_NOT_ACCEPTED, PR #35 DRAFT, vrai G3 STOP_UNAVAILABLE, M3.3 non autorisée. Aucun original SQLite v6/v7, WAL/SHM/journal, ACL, sauvegarde, migration 007, IPC writer, App.tsx ou commande opérateur Windows. Les résultats CI de #104 et #105 ne couvrent pas ce nouvel incrément.
+
+---
+
+
 ## 21 octobre 2026 — vérification terminale CI après PR #104
 
 GitHub vérifié : `main=997b60901e1f18a426eae3efa34ddb29c07b5721`, PR [#104](https://github.com/LaurentCOLL1/Fabulaxiom/pull/104) fusionnée ; CI PR [#39553745685](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/39553745685) **SUCCESS** (42 Vitest fictifs, 41 Chromium dans chacun des deux modes), CI push `main` [#39554622761](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/39554622761) **SUCCESS terminale** au SHA exact. Les passages « CI en cours » plus bas sont des instantanés historiques.
