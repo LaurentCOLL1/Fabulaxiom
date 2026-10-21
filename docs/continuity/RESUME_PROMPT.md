@@ -1,5 +1,11 @@
 # Prompt minimal de reprise — Fabulaxiom
 
+
+## Point actuel — 21 octobre 2026
+
+Re-fetch `main`, PR et exact-head CI avant toute action. Dernier main connu : `388cb745888f9f2d4d0a07fce1ed19fad9b4a548`, PR #116 MERGED, CI source #39626827246 SUCCESS et postmerge #39628479487 SUCCESS. Lire les handoffs md/json, protocole, historique, NEXT/STATE et roadmap ; poursuivre seulement les contrats de décisions fictives Rust sur SQLite RAM. Paralléliser recherches/audits indépendants et sérialiser fusions. M3.2 non acceptée, PR #35 DRAFT, G2-B–G6 STOP, aucun Windows opérateur ni original SQLite.
+
+
 ## Reprise actuelle du 21 octobre 2026
 
 Re-fetch d'abord le dépôt GitHub, `docs/continuity/README.md`, `HANDOFF_CURRENT.md/json`, `HANDOFF_PROTOCOL.md`, `NEXT.md`, `STATE.md`, `HANDOFF_HISTORY.md`, la roadmap, la PR #35 et les CI au HEAD exact. Dernier `main` vérifié : `33846c8c6813acda5eda5089827f81df99175d2c` après PR #115 MERGED ; CI post-fusion #39620942276 SUCCESS. Des tâches indépendantes peuvent avancer en parallèle selon le protocole ; écritures communes et fusions restent séquentielles. Nouvelle tranche candidate test-only du service Rust de #35 à qualifier sur son propre nouveau HEAD. M3.2 NON ACCEPTÉE, G2B–G6 STOP, aucun original SQLite, migration, IPC writer ni commande Windows opérateur.

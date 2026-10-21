@@ -1,5 +1,12 @@
 # Fabulaxiom — Next Authorized Work
 
+**21 octobre 2026 — PR #116 fusionnée et CI post-fusion vérifiée :** HEAD source `0b2555833c1a2c0152cba2185c8122f3d3ecbbae`, CI PR #39626827246 **SUCCESS** (74 étapes Windows ; 106 Rust dont 6 nouveaux tests RAM, 42 contrats de continuité, 21 inventaires SQLite, 50 Chromium par mode). Fusion protégée `main=388cb745888f9f2d4d0a07fce1ed19fad9b4a548`, CI post-merge #39628479487 **SUCCESS terminale au SHA exact**. PR #35 reste DRAFT/non fusionnable. Règle permanente de parallélisation inchangée.
+
+**Deuxième tranche source-only candidate :** reprise bornée de `decide_anchor`, `decide_precedence`, `supersede_anchor_atomically`, `list_current_anchor_ids`, `list_current_precedence_ids`, `list_anchor_decisions` et de `m3_2_chronology_decisions_candidate.sql` historique. Module Rust `#[cfg(test)]` uniquement, SQL candidat chargé **après v6 et v7 fictifs en mémoire** ; six nouveaux tests Rust prévus pour révocation, conservation de l'historique, rollback transactionnel, Univers distincts, cycles/contraintes. Aucune migration 007, aucun IPC ni base réelle ; CI au HEAD candidat obligatoire. Les restatements et chaînes de corrections restent hors portée.
+
+**STOP maintenu :** M3.2 `IN_PROGRESS_NOT_ACCEPTED`; `PROCESS_WRITER_ABSENCE=NOT_PROVEN`; G2-B–G6 `NOT_AUTHORIZED`, vrai G3 `STOP_UNAVAILABLE`; historique `PENDING_EXTERNAL_ATTESTATION(21/3/2)`, baseline prospective `NOT_STARTED`. Aucune action opérateur Windows, SQLite active v6, isolée v7, sauvegarde, ACL, sidecar, marqueur, migration 007, writer IPC, M3.3, ComfyUI ou release.
+
+
 **Correction CI du 21/10/2026 :** la CI #39626066048 a refusé une assertion Python dont le saut de ligne entre `#[cfg(test)]` et `mod m32_manual_chronology;` était mal échappé. Deux tests ont été corrigés avec `chr(10)` ; les sources Rust, les compteurs d'ouverture SQLite et les interdictions restent identiques. Nouvelle CI au nouveau HEAD obligatoire.
 
 
