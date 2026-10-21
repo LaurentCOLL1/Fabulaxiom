@@ -281,6 +281,64 @@ pub fn restate_revoked_precedence(
 
 
 
+// Stage four: test-only restatement withdrawal and immutable audit.
+#[derive(Debug, PartialEq, Eq)]
+pub struct RestatementHistory {
+    pub id: String,
+    pub revoked_precedence_id: String,
+    pub before_anchor_id: String,
+    pub after_anchor_id: String,
+    pub reason: String,
+    pub revocation_id: Option<String>,
+    pub revocation_reason: Option<String>,
+}
+
+// A correction is never silently deleted; one append-only decision retires it.
+pub fn revoke_restatement(
+    db: &Connection,
+    id: &str,
+    universe_id: &str,
+    restatement_id: &str,
+    reason: &str,
+    source_revision_id: Option<&str>,
+) -> Result<()> {
+    db.execute(
+        "INSERT INTO world_time_restatement_revocations
+         (id,universe_id,restatement_id,reason,source_revision_id)
+         VALUES (?1,?2,?3,?4,?5)",
+        params![id, universe_id, restatement_id, reason, source_revision_id],
+    )?;
+    Ok(())
+}
+
+// Full audit log includes retired restatements. It is NOT sorted by time.
+pub fn list_restatement_history(
+    db: &Connection,
+    universe_id: &str,
+) -> Result<Vec<RestatementHistory>> {
+    let mut stmt = db.prepare(
+        "SELECT t.id,t.revoked_precedence_id,t.before_anchor_id,t.after_anchor_id,
+                t.reason,d.id,d.reason
+         FROM world_time_precedence_restatements t
+         LEFT JOIN world_time_restatement_revocations d
+                ON d.restatement_id=t.id AND d.universe_id=t.universe_id
+         WHERE t.universe_id=?1 ORDER BY t.id",
+    )?;
+    stmt.query_map([universe_id], |row| {
+        Ok(RestatementHistory {
+            id: row.get(0)?,
+            revoked_precedence_id: row.get(1)?,
+            before_anchor_id: row.get(2)?,
+            after_anchor_id: row.get(3)?,
+            reason: row.get(4)?,
+            revocation_id: row.get(5)?,
+            revocation_reason: row.get(6)?,
+        })
+    })?.collect()
+}
+
+
+
 // Compilation is gated by #[cfg(test)] in lib.rs. Test databases exist only in RAM.
 
 #[cfg(test)]
@@ -291,6 +349,7 @@ mod tests {
     const V7_CANDIDATE: &str = include_str!("../sql/m3_1_world_time_v7_candidate.sql");
     const M32_DECISIONS: &str = include_str!("../sql/m3_2_chronology_decisions_candidate.sql");
     const M32_RESTATEMENTS: &str = include_str!("../sql/m3_2_active_precedence_candidate.sql");
+    const M32_REVOCATIONS: &str = include_str!("../sql/m3_2_restatement_revocations_candidate.sql");
 
     fn fixture() -> Connection {
         let mut db = Connection::open_in_memory().expect("RAM only");
@@ -302,6 +361,7 @@ mod tests {
         db.execute_batch(V7_CANDIDATE).expect("v7 candidate in disposable RAM");
         db.execute_batch(M32_DECISIONS).expect("decisions only in disposable RAM");
         db.execute_batch(M32_RESTATEMENTS).expect("restatement schema only in RAM");
+        db.execute_batch(M32_REVOCATIONS).expect("withdrawal only in invented RAM");
         assert_eq!(database::current_schema_version(&db).expect("schema version"), 6);
         db
     }
@@ -565,6 +625,56 @@ mod tests {
         let n:i64=db.query_row("SELECT COUNT(*) FROM world_time_precedences WHERE id='cycle'",[],|r|r.get(0)).unwrap();
         assert_eq!(n,0);
         assert_eq!(database::current_schema_version(&db).unwrap(),6);
+    }
+
+    fn sample_restatement(db: &Connection) {
+        for id in ["a","b","c"] { create_anchor(db,draft(id,"u1","unknown")).unwrap(); }
+        create_precedence(db,"old","u1","a","b","human",None).unwrap();
+        decide_precedence(db,"wd-old","u1","old","revoke",None,"human",None).unwrap();
+        restate_revoked_precedence(db,"corrected","u1","old","a","c","human",None).unwrap();
+    }
+
+    #[test]
+    fn restatement_withdrawal_is_historical_and_never_reinstates_legacy_edge() {
+        let db=fixture(); sample_restatement(&db);
+        revoke_restatement(&db,"withdraw-correction","u1","corrected","human withdraw",None).unwrap();
+        let history=list_restatement_history(&db,"u1").unwrap();
+        assert_eq!(history.len(),1);
+        assert_eq!(history[0].revocation_id.as_deref(),Some("withdraw-correction"));
+        assert_eq!(history[0].revocation_reason.as_deref(),Some("human withdraw"));
+        assert_eq!(history[0].revoked_precedence_id,"old");
+        assert_eq!(list_precedences(&db,"u1").unwrap().len(),1);
+        assert!(list_current_precedence_ids(&db,"u1").unwrap().is_empty());
+    }
+
+    #[test]
+    fn restatement_withdrawal_refuses_foreign_unknown_and_duplicate_targets() {
+        let db=fixture(); sample_restatement(&db);
+        assert!(revoke_restatement(&db,"wrong","u2","corrected","wrong universe",None).is_err());
+        assert!(revoke_restatement(&db,"missing","u1","no-such-id","missing",None).is_err());
+        revoke_restatement(&db,"one","u1","corrected","withdraw",None).unwrap();
+        assert!(revoke_restatement(&db,"two","u1","corrected","duplicate",None).is_err());
+        assert!(list_restatement_history(&db,"u2").unwrap().is_empty());
+    }
+
+    #[test]
+    fn restatement_withdrawal_records_are_immutable_and_do_not_migrate_disk() {
+        let db=fixture(); sample_restatement(&db);
+        revoke_restatement(&db,"withdraw","u1","corrected","immutable",None).unwrap();
+        assert!(db.execute("UPDATE world_time_restatement_revocations SET reason='changed'",[]).is_err());
+        assert!(db.execute("DELETE FROM world_time_restatement_revocations",[]).is_err());
+        assert_eq!(list_restatement_history(&db,"u1").unwrap().len(),1);
+        assert_eq!(database::current_schema_version(&db).unwrap(),6);
+    }
+
+    #[test]
+    fn other_universe_remains_independent_after_fictional_restatement_withdrawal() {
+        let db=fixture(); sample_restatement(&db);
+        create_anchor(&db,draft("other","u2","unknown")).unwrap();
+        revoke_restatement(&db,"withdraw","u1","corrected","human",None).unwrap();
+        assert_eq!(list_anchors(&db,"u2").unwrap().len(),1);
+        assert!(list_restatement_history(&db,"u2").unwrap().is_empty());
+        assert!(list_current_precedence_ids(&db,"u1").unwrap().is_empty());
     }
 
 }

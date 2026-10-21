@@ -3,14 +3,14 @@
   "as_of": "2026-10-21",
   "status_kind": "DATED_PUBLIC_SOURCE_HANDOFF_ONLY",
   "repository": "LaurentCOLL1/Fabulaxiom",
-  "last_confirmed_main_before_handoff": "b76e6c00c579bee36c194872e3679c48fe9788fa",
-  "last_confirmed_merged_pr": 117,
-  "last_verified_pr_head": "99d78a46e61a0765b6673353900cea55eb039e74",
+  "last_confirmed_main_before_handoff": "a0942b9566d6de21cf73e55dce47c3797dcb7c81",
+  "last_confirmed_merged_pr": 118,
+  "last_verified_pr_head": "ff996fc27da6df12697d68a46b8580a3a33e30b3",
   "last_verified_ci": {
-    "run_id": 39653506345,
+    "run_id": 39658544037,
     "context": "Windows frontend and Rust checks",
     "conclusion": "SUCCESS",
-    "source": "PR117_EXACT_HEAD"
+    "source": "PR118_EXACT_HEAD"
   },
   "recent_changes": [
     "PR_85_EXACT_G2A_TEXT_AST_ONLY",
@@ -76,7 +76,9 @@
     "PR116_MERGED_MAIN_388CB745_POST_CI_39628479487_SUCCESS",
     "SECOND_STAGE_DECISIONS_SQL_FIXTURE_ONLY_6_NEW_RUST_TESTS_CANDIDATE",
     "PR117_MERGED_MAIN_B76E6C00_PUSH_39655214998_SUCCESS",
-    "PR35_THIRD_STAGE_RESTATED_PRECEDENCE_RAM_ONLY_5_RUST_CASES_CANDIDATE"
+    "PR35_THIRD_STAGE_RESTATED_PRECEDENCE_RAM_ONLY_5_RUST_CASES_CANDIDATE",
+    "PR118_MERGED_MAIN_A0942B95_PUSH_39660168071_IN_PROGRESS_AT_CHECKPOINT",
+    "RESTATEMENT_WITHDRAWAL_TEST_ONLY_RAM_CANDIDATE_4_CASES"
   ],
   "pr35": "OPEN_DRAFT",
   "issues": {
@@ -262,15 +264,15 @@
     "verified_bypass_actors": 0,
     "classic_branch_protection_read": "403_INTEGRATION_RESTRICTED"
   },
-  "next": "QUALIFY_NEW_PR_EXACT_HEAD_RUST_RESTATEMENT_AND_SQL_FIXTURE_ONLY;_INDEPENDENT_HISTORY_RESEARCH_AND_G2B_TO_G6_STOP",
+  "next": "CHECK_PR118_POST_MAIN_TERMINAL_CI_AND_QUALIFY_FOURTH_STAGE_OWN_HEAD",
   "live_refetch_required": true,
   "hand_off_updated_by_future_pr": true,
   "main_ci_post_merge": {
-    "sha": "b76e6c00c579bee36c194872e3679c48fe9788fa",
-    "run_id": 39655214998,
-    "conclusion": "SUCCESS",
+    "sha": "a0942b9566d6de21cf73e55dce47c3797dcb7c81",
+    "run_id": 39660168071,
+    "conclusion": "IN_PROGRESS_AT_CHECKPOINT",
     "source": "MAIN_PUSH",
-    "note": "2026-10-21 terminal SUCCESS exactly on PR117 merge main; source-only evidence"
+    "note": "2026-10-21 dated checkpoint, re-fetch exact SHA terminal"
   },
   "g2a_candidate_ci": {
     "pr": 86,
@@ -575,7 +577,7 @@
       "real_g3": "STOP_UNAVAILABLE"
     },
     "test_only_rust_third_stage": {
-      "status": "CANDIDATE_NOT_CI_QUALIFIED",
+      "status": "MERGED_TEST_ONLY_NOT_PRODUCT_ACCEPTED",
       "source_pr35_sha": "41ce7b915e76d22785d53d7fffe288d113dd0bf5",
       "compiled_only_during_tests": true,
       "sql_candidate": "src-tauri/sql/m3_2_active_precedence_candidate.sql",
@@ -590,6 +592,24 @@
       "real_writer_absence": "NOT_PROVEN",
       "g2b_to_g6": "NOT_AUTHORIZED",
       "real_g3": "STOP_UNAVAILABLE"
+    },
+    "test_only_rust_fourth_stage": {
+      "status": "CANDIDATE_NOT_CI_QUALIFIED",
+      "source_pr35_sha": "41ce7b915e76d22785d53d7fffe288d113dd0bf5",
+      "compiled_only_during_tests": true,
+      "sql_candidate": "src-tauri/sql/m3_2_restatement_revocations_candidate.sql",
+      "functions": [
+        "revoke_restatement",
+        "list_restatement_history"
+      ],
+      "new_rust_tests": 4,
+      "real_sqlite_access": "NONE",
+      "tauri_writer_ipc": "NONE",
+      "auto_migration_max": 6,
+      "chain_promotion": "NONE",
+      "product_status": "IN_PROGRESS_NOT_ACCEPTED",
+      "real_writer_absence": "NOT_PROVEN",
+      "g2b_to_g6": "NOT_AUTHORIZED"
     }
   },
   "post_pr100_normalization": {
@@ -896,6 +916,27 @@
       "conclusion": "SUCCESS"
     },
     "fiction_only": true,
+    "operator_execution": "NONE",
+    "product_status": "IN_PROGRESS_NOT_ACCEPTED",
+    "real_writer_absence": "NOT_PROVEN",
+    "g2b_to_g6": "NOT_AUTHORIZED",
+    "real_g3": "STOP_UNAVAILABLE"
+  },
+  "post_pr118_normalization": {
+    "kind": "DATED_DOCUMENTARY_SNAPSHOT_NO_RUNTIME_AUTHORITY",
+    "merged_pr": 118,
+    "merge_sha": "a0942b9566d6de21cf73e55dce47c3797dcb7c81",
+    "pr_head_sha": "ff996fc27da6df12697d68a46b8580a3a33e30b3",
+    "pr_ci": {
+      "run_id": 39658544037,
+      "conclusion": "SUCCESS",
+      "job_steps": 74,
+      "rust_tests": 117
+    },
+    "main_ci": {
+      "run_id": 39660168071,
+      "conclusion": "IN_PROGRESS_AT_CHECKPOINT"
+    },
     "operator_execution": "NONE",
     "product_status": "IN_PROGRESS_NOT_ACCEPTED",
     "real_writer_absence": "NOT_PROVEN",
