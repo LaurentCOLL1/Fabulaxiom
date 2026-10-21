@@ -9,3 +9,5 @@ New tests to qualify: +5 Vitest (60 total) and +2 Chromium (50 per normal and st
 **STOP :** M3.2 IN_PROGRESS_NOT_ACCEPTED, PR #35 DRAFT, G2-A accord consommé, écrivain réel NOT_PROVEN, G2B–G6 NOT_AUTHORIZED, G3 réel STOP_UNAVAILABLE. Aucun Windows opérateur, original SQLite v6/v7, sauvegarde/ACL/journal, migration 007, IPC writer, M3.3 ou release.
 
 **Qualified source checkpoint (not product acceptance):** PR #112 merged on `3c489aa727129e4b090e2e80a49a93fb3fa95877`, head `56c5d4d55a616469cda36c5fef7f63369a08bdb2`, CI #39596187154 SUCCESS, 60 fictional Vitest, 50 Chromium per mode, 74 Windows job steps. Main push CI #39597532619 IN_PROGRESS at the dated snapshot; no real SQLite writer attestation or Windows operator execution.
+
+**Post-merge source CI update, 21 October 2026:** main push run #39597532619 completed SUCCESS at exact merge `3c489aa727129e4b090e2e80a49a93fb3fa95877`. Earlier in-progress observations remain historical. No production qualification or private DB access.
