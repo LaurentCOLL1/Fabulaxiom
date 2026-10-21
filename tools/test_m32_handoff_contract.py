@@ -515,13 +515,11 @@ class HandoffContractTests(unittest.TestCase):
         x = self.data["post_pr114_normalization"]
         self.assertEqual(x["merged_pr"], 114)
         self.assertEqual(x["merge_sha"], "ddb23311f40f09c04983b164ccd7afa361698ea8")
-        self.assertEqual(x["pr_head_sha"], "8262659d58045c127fe4ee3ac56e6dd5681a9f5f"
-        self.assertEqual(x["pr_ci"]["run_id"], 39612803528)
+        self.assertEqual(x["pr_head_sha"], "8262659d58045c127fe4ee3ac56e6dd5681a9f5f")
         self.assertEqual(x["pr_ci"]["run_id"], 39612803528)
         self.assertEqual(x["pr_ci"]["conclusion"], "SUCCESS")
         self.assertEqual(x["main_ci"]["run_id"], 39614175650)
         self.assertEqual(x["main_ci"]["conclusion"], "SUCCESS")
-        self.assertEqual(x["main_ci"]["run_id"], 39614175650)
         self.assertEqual(self.data["main_ci_post_merge"]["conclusion"], "SUCCESS")
         self.assertEqual(x["policy"],
                          "PARALLEL_WHEN_INDEPENDENT_WITH_EXCLUSIVE_WRITES_AND_SEQUENTIAL_MERGES")
