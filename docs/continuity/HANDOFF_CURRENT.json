@@ -78,7 +78,8 @@
     "PR117_MERGED_MAIN_B76E6C00_PUSH_39655214998_SUCCESS",
     "PR35_THIRD_STAGE_RESTATED_PRECEDENCE_RAM_ONLY_5_RUST_CASES_CANDIDATE",
     "PR118_MERGED_MAIN_A0942B95_PUSH_39660168071_IN_PROGRESS_AT_CHECKPOINT",
-    "RESTATEMENT_WITHDRAWAL_TEST_ONLY_RAM_CANDIDATE_4_CASES"
+    "RESTATEMENT_WITHDRAWAL_TEST_ONLY_RAM_CANDIDATE_4_CASES",
+    "PR119_CI_39661237200_FAILED_HISTORICAL_CI_ASSERTIONS_CORRECTED"
   ],
   "pr35": "OPEN_DRAFT",
   "issues": {
@@ -609,7 +610,14 @@
       "chain_promotion": "NONE",
       "product_status": "IN_PROGRESS_NOT_ACCEPTED",
       "real_writer_absence": "NOT_PROVEN",
-      "g2b_to_g6": "NOT_AUTHORIZED"
+      "g2b_to_g6": "NOT_AUTHORIZED",
+      "initial_ci": {
+        "run_id": 39661237200,
+        "conclusion": "FAILURE",
+        "reason": "THREE_HISTORICAL_HANDOFF_ROOT_CI_ASSERTIONS",
+        "correction": "READ_SELF_HISTORICAL_POST_PR112_113_114_SNAPSHOTS",
+        "rust_qualified": false
+      }
     }
   },
   "post_pr100_normalization": {
