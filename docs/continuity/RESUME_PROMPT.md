@@ -1,5 +1,7 @@
 # Prompt minimal de reprise — Fabulaxiom
 
+**Checkpoint 21/10/2026 :** PR #102 MERGED (`main=1f0a8cd9a369106202b57102aa28915de65b7472`; CI PR #39543328344 SUCCESS, CI main #39544279201 SUCCESS ; 36 Vitest/38 Chromium fictifs). PR #101 normalisation antérieure fusionnée. M3.2 IN_PROGRESS_NOT_ACCEPTED, PR #35 DRAFT, G2-A metadata-only consommé, écrivain réel NOT_PROVEN, G2-B–G6 STOP. Ne jamais utiliser ces SHA comme autorité actuelle sans re-fetch. Prochain travail : séparation visible des trois ordres dans le seul laboratoire fictif.
+
 **Statut GitHub daté au 21 octobre 2026 :** PR #100 MERGED sur `main=bf59b28b437470a4759a5971968e8f00f9fa895c`, CI PR #39533766395 SUCCESS et main #39534698504 SUCCESS, 32 Vitest/36 Chromium fictifs qualifiés. M3.2 toujours non acceptée, PR #35 DRAFT, G2A metadata-only consommé, writer absence NOT_PROVEN, G2B–G6 STOP. Re-fetch GitHub et [HANDOFF_CURRENT](HANDOFF_CURRENT.md) avant travail ; les anciens passages candidats sont historiques.
 
 Reprends le développement de **Fabulaxiom M3.2** et assure le suivi de la [roadmap V1](https://github.com/LaurentCOLL1/Fabulaxiom/tree/main/docs/roadmap) depuis l'état réel du dépôt : https://github.com/LaurentCOLL1/Fabulaxiom
