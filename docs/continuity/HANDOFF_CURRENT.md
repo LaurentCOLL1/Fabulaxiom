@@ -1,8 +1,19 @@
 # Fabulaxiom M3.2 — Reprise opérationnelle courte
 
+## 21 octobre 2026 — statut vérifié après fusion de PR #100
+
+**GitHub (checkpoint daté, sans autorisation opérateur) :** [PR #100](https://github.com/LaurentCOLL1/Fabulaxiom/pull/100) MERGED, `main=bf59b28b437470a4759a5971968e8f00f9fa895c`, head PR `95e2e0385979e2b226aa1d6289e12250c6e6e19d`. CI PR [#39533766395](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/39533766395) SUCCESS terminale au head exact ; CI push main [#39534698504](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/39534698504) SUCCESS terminale au merge exact. Ces CI ne valent pas pour de nouveaux commits.
+
+**Produit :** prévisualisation d'un chemin qui créerait un cycle, relations actives bloquant une correction, révocation humaine explicite avant supersession ; atelier exclusivement fictif (32 Vitest, 36 Chromium) et non persistant. M3.1 COMPLETE/MERGED/NORMALIZED ; **M3.2 IN_PROGRESS_NOT_ACCEPTED**, PR #35 OPEN/DRAFT. Ne pas refaire la PR #100. Prochain incrément autorisé sur fixtures uniquement : distinction entre ordre du monde, ordre de narration et ordre de révélation.
+
+**Gates :** G2-A PASS_METADATA_ONLY_OWNER_REPORTED, autorisation unique consommée ; PROCESS_WRITER_ABSENCE NOT_PROVEN ; G2-B/C/D et G3–G6 NOT_AUTHORIZED, G3 réel STOP_UNAVAILABLE ; historique PENDING_EXTERNAL_ATTESTATION(21/3/2), prospective NOT_STARTED. Aucune opération Windows autorisée, ni accès aux originales v6/v7, journaux, sauvegardes, ACL, marqueur, migration 007, IPC writer, M3.3, ComfyUI ou release. Avant toute commande locale : texte intégral, effets, interactions et nouvel accord explicite.
+
+---
+
+
 **Checkpoint du 21 octobre 2026 après PR #99. Instantané documentaire : re-fetch GitHub obligatoire. Aucune autorisation Windows, SQLite ou G2-B/G3 créée.**
 
-## 2026-10-21 — conflits de précédence expliqués avant saisie, correction historique guidée (candidat)
+## 2026-10-21 — historique candidat PR #100 depuis fusionnée
 
 - Re-fetch GitHub : PR #99 fusionnée à `main=205a328150c90bf1fb4f52abd7fb8c04f3959468`, CI de PR #39480662913 SUCCESS **74/74** au HEAD `37a98b2d70126fdffa6ba06ce599aaa42f88ca7a`, CI push main #39482419125 **SUCCESS terminale**. Ces badges restent rattachés à ces SHA.
 - [Aperçu de conflits du laboratoire fictif](../qualification/M3_2_FICTIONAL_CONFLICT_WITNESS_AND_CORRECTION_PREFLIGHT.md) : un graphe actif avant/après affiche le chemin `B → ... → A` qui rendrait cyclique l'ajout `A avant B`, avec les identifiants de relations humaines existantes. Correction d'ancre : les relations encore actives et la révision historique sont visibles ; **révocation humaine explicite** exigée avant remplacement append-only. Pas d'ordre total ou date inventée.

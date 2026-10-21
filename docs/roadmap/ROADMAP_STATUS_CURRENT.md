@@ -1,8 +1,16 @@
-# Fabulaxiom — suivi de la roadmap V1 (état daté au 20 octobre 2026)
+# Fabulaxiom — suivi de la roadmap V1 (état actualisé au 21 octobre 2026)
 
 **Référence de suivi, non autorisation d'exécution.** Établi après re-fetch GitHub de `main=e35b7c92441c517d4f0fcacb829711c4d1e9da97`, [PR #96](https://github.com/LaurentCOLL1/Fabulaxiom/pull/96) fusionnée, CI exact-head #39414915855 SUCCESS (73 étapes) et CI push main #39416303498 SUCCESS (72 étapes). Toujours re-fetch avant de prendre une décision ultérieure.
 
 Les [cinq plans de source](README.md) gardent leurs exigences et preuves historiques. Le présent statut **ne transforme pas** un test synthétique en fonctionnalité livrée, ni un jalon futur en autorisation.
+
+## 21 octobre 2026 — état après PR #100 fusionnée
+
+GitHub vérifié : PR [#100](https://github.com/LaurentCOLL1/Fabulaxiom/pull/100) MERGED, `main=bf59b28b437470a4759a5971968e8f00f9fa895c`, head PR `95e2e0385979e2b226aa1d6289e12250c6e6e19d`, CI PR #39533766395 SUCCESS et CI main #39534698504 SUCCESS, terminales sur leurs SHA respectifs. Aucun nouveau commit ne peut réutiliser ces CI. Preview des chemins qui créeraient un cycle, blocage des corrections avant révocation humaine, 32 Vitest et 36 Chromium : **uniquement un atelier sur données fictives**, ni produit accepté ni preuve Windows.
+
+M3.1 COMPLETE/MERGED/NORMALIZED ; **M3.2 IN_PROGRESS_NOT_ACCEPTED**, PR #35 OPEN/DRAFT. Étape produit suivante : UX des trois ordres monde/narration/révélation sur fixtures sans persistance et tests neufs. G2A PASS metadata-only, accord consommé ; écrivain SQLite réel NOT_PROVEN, G2B–G6 NOT_AUTHORIZED, G3 réel STOP_UNAVAILABLE, historique PENDING_EXTERNAL_ATTESTATION(21/3/2), prospective NOT_STARTED. Aucun original v6/v7, journaux/sidecars, sauvegardes, ACL, marqueur, migration007, writer IPC, M3.3, ComfyUI ou release. Nouveau script Windows uniquement avec texte intégral/effets/interactions et accord explicite.
+
+---
 
 ## Matrice de conformité
 
@@ -33,7 +41,7 @@ Une nouvelle tranche `feat/m3-2-fictional-manual-chronology-lab-20261020` propos
 
 PR #98 a été fusionnée avec CI source-only, 13 tests Vitest et 32 cas Chromium, sur `main=7477001cd0ebc69d4701f21eddbda898f94c79c5`. La [tranche suivante](../qualification/M3_2_FICTIONAL_SCENE_REVISION_EXACT_BINDING.md) ajoute un choix manuel de `scene_id` et `revision_id` immuable **inventés**, y compris une version historique, avec rejets déterministes des références étrangères et préservation de l'ancien lien par supersession. 22 cas Vitest/34 cas Chromium prévus ; CI sur le nouveau commit non encore acquise à la rédaction. **Pas de CRUD persisté ni de certification opérateur ; M3.2 IN_PROGRESS_NOT_ACCEPTED.**
 
-## 21 octobre 2026 — nouveau progrès sur les conflits de chronologie fictive
+## 21 octobre 2026 — historique du candidat PR #100, depuis fusionné
 
 PR #99 fusionnée à `main=205a328150c90bf1fb4f52abd7fb8c04f3959468`, CI PR #39480662913 SUCCESS et post-merge #39482419125 SUCCESS. Candidat [prévisualisation de conflit et correction](../qualification/M3_2_FICTIONAL_CONFLICT_WITNESS_AND_CORRECTION_PREFLIGHT.md) : afficher les relations humaines exactes constituant un chemin cyclique avant tout ajout ; nommer les liens bloquant une correction sans les retirer automatiquement, préserver la révision de scène historique. Le laboratoire navigateur source-only reste **non persistant** ; 32 tests Vitest et 36 interactions Chromium proposés, nouvelle CI obligatoire. **M3.2 IN_PROGRESS_NOT_ACCEPTED**, aucune promotion G2B–G6.
 
@@ -41,7 +49,7 @@ PR #99 fusionnée à `main=205a328150c90bf1fb4f52abd7fb8c04f3959468`, CI PR #394
 
 Le [plan M3](M3_TIME_KNOWLEDGE_RELATIONSHIPS.md) prévoit précisément **saisie/édition manuelles des ancres temporelles et contraintes avant/après**, dates exactes/approximatives/relatives/inconnues, deux Universes, plusieurs romans, références de scènes et révisions immuables, refus des cycles et conflits, distinction visible entre **ordre du monde**, **ordre de narration** et **ordre de révélation**, fonctionnement hors ligne, puis **tests Windows réels**, preuves de sauvegarde/activation intactes, CI au SHA exact, fusion et normalisation indépendante.
 
-Les tranches M3.2 déjà fusionnées (jusqu'à #96) qualifient principalement des **contre-exemples et protections sur des fichiers publics et fixtures SQLite fictives**. Elles sont utiles pour empêcher une corruption ou une conclusion de sécurité erronée, mais **n'achèvent pas les livrables M3.2** et ne doivent pas devenir une boucle indéfinie d'audits sans objectifs fonctionnels.
+Les tranches M3.2 déjà fusionnées (jusqu'à #100) qualifient principalement des **contre-exemples et protections sur des fichiers publics et fixtures SQLite fictives**. Elles sont utiles pour empêcher une corruption ou une conclusion de sécurité erronée, mais **n'achèvent pas les livrables M3.2** et ne doivent pas devenir une boucle indéfinie d'audits sans objectifs fonctionnels.
 
 La voie productive suivante : continuer en parallèle *seulement sur jeux de données inventés* les scénarios de CRUD/chronologie UI prévus, avec traçabilité exigences→tests, tout en conservant une **barrière indépendante** avant tout accès réel Windows. Les sources de production v6, v7 isolée, sauvegardes, journaux, ACL et marqueurs ne doivent pas être ouvertes ou migrées implicitement.
 
