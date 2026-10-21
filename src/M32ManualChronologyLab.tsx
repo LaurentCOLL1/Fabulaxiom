@@ -4,7 +4,7 @@ import M32ChronologyPreview from "./M32ChronologyPreview";
 import {
   startFictionalDraft, createFictionalAnchor, supersedeFictionalAnchor,
   createFictionalPrecedence, revokeFictionalPrecedence,
-  previewFictionalPrecedence, previewFictionalCorrection,
+  previewFictionalPrecedence, previewFictionalCorrection, previewFictionalThreeOrders,
   type FictionalDraft, type FictionalTimeInput, type FictionalRevision,
 } from "./m32FictionalManualChronology";
 
@@ -26,12 +26,15 @@ function Lab({ initial, revisions }: {
   const [after, setAfter] = useState("");
   const [reason, setReason] = useState("");
   const [revoke, setRevoke] = useState("");
+  const [firstScene, setFirstScene] = useState("");
+  const [secondScene, setSecondScene] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const active = draft.snapshot.anchors.filter(a => a.status === "current");
   const edges = draft.snapshot.precedences.filter(e => e.status === "current");
   const conflict = previewFictionalPrecedence(draft, before, after);
   const correctionPreview = previewFictionalCorrection(draft, replace);
+  const threeOrders = previewFictionalThreeOrders(draft, firstScene, secondScene);
   const scenes = draft.revisions.filter((r, index, all) =>
     all.findIndex(first => first.scene_id === r.scene_id) === index);
   const availableRevisions = draft.revisions.filter(r => r.scene_id === sceneId);
@@ -164,6 +167,31 @@ function Lab({ initial, revisions }: {
         "Relation fictive révoquée, historique conservé")}>
         Révoquer explicitement
       </button>
+    </fieldset>
+    <fieldset>
+      <legend>Comparer les trois ordres — fictif</legend>
+      <p>Une scène du manuscrit n'est ni une date du monde ni une révélation au lecteur.</p>
+      <label htmlFor={id + "-compare-first"}>Première scène à comparer</label>
+      <select id={id + "-compare-first"} value={firstScene}
+        onChange={e => setFirstScene(e.currentTarget.value)}>
+        <option value="">Choisir la première scène</option>
+        {draft.snapshot.narration.map(s => <option key={s.scene_id} value={s.scene_id}>
+          {s.novel_title} — {s.scene_title} ({s.scene_id})
+        </option>)}
+      </select>
+      <label htmlFor={id + "-compare-second"}>Deuxième scène à comparer</label>
+      <select id={id + "-compare-second"} value={secondScene}
+        onChange={e => setSecondScene(e.currentTarget.value)}>
+        <option value="">Choisir la deuxième scène</option>
+        {draft.snapshot.narration.map(s => <option key={s.scene_id} value={s.scene_id}>
+          {s.novel_title} — {s.scene_title} ({s.scene_id})
+        </option>)}
+      </select>
+      <section role="status" aria-label="Comparaison des trois ordres fictifs">
+        <p>Ordre de narration : {threeOrders.narration_reason}</p>
+        <p>{threeOrders.world_reason}</p>
+        <p>{threeOrders.reader_reason}</p>
+      </section>
     </fieldset>
     {error && <p role="alert">Refus : {error}</p>}
     {notice && <p role="status">{notice}</p>}

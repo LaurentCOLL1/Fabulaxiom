@@ -207,9 +207,9 @@ class HandoffContractTests(unittest.TestCase):
     def test_20_manual_chronology_candidate_only_in_synthetic_lab(self):
         x = self.data["m3_2_product_progress"]
         self.assertEqual(x["delivery"], "SYNTHETIC_BROWSER_LAB_ONLY_SOURCE_ONLY")
-        self.assertEqual(x["expected_tests"], 36)
+        self.assertEqual(x["expected_tests"], 42)
         self.assertEqual(x["browser_new_cases"], 2)
-        self.assertEqual(x["browser_total_expected"], 38)
+        self.assertEqual(x["browser_total_expected"], 41)
         self.assertEqual(x["app_tauri_production_integration"], "NONE")
         self.assertEqual(x["sqlite_real_access"], "NONE")
         self.assertEqual(x["operator_windows_acceptance"], "NOT_STARTED")
@@ -225,8 +225,8 @@ class HandoffContractTests(unittest.TestCase):
     def test_21_exact_scene_revision_binding_stays_fictional(self):
         x = self.data["m3_2_product_progress"]
         r = x["scene_revision_binding"]
-        self.assertEqual(x["expected_tests"], 36)
-        self.assertEqual(x["browser_total_expected"], 38)
+        self.assertEqual(x["expected_tests"], 42)
+        self.assertEqual(x["browser_total_expected"], 41)
         self.assertEqual(r["fixture_catalog_limit"], 128)
         self.assertEqual(r["source_head_resolution"], "NEVER")
         self.assertFalse(r["accepts_cross_universe"])
@@ -294,6 +294,23 @@ class HandoffContractTests(unittest.TestCase):
         self.assertEqual(x["real_g3"], "STOP_UNAVAILABLE")
         self.assertEqual(x["windows_operator_execution"], "NONE")
         self.assertIn("39544279201", self.doc)
+
+    def test_27_three_orders_comparator_stays_fictional_and_read_only(self):
+        x = self.data["m3_2_product_progress"]["three_orders_comparator"]
+        self.assertEqual(x["status"], "CANDIDATE_NOT_CI_QUALIFIED")
+        self.assertEqual(x["function"], "previewFictionalThreeOrders")
+        self.assertEqual(x["world_order"], "INDETERMINATE")
+        self.assertEqual(x["cross_novel_order"], "INDETERMINATE")
+        self.assertEqual(x["reader_reveal"], "NOT_AUTHORED")
+        self.assertTrue(x["no_inference_from_manuscript_to_world"])
+        self.assertEqual(x["unit_total_expected"], 42)
+        self.assertEqual(x["browser_total_expected"], 41)
+        self.assertEqual(x["real_sqlite_access"], "NONE")
+        self.assertEqual(x["operator_execution"], "NONE")
+        self.assertEqual(x["real_g3"], "STOP_UNAVAILABLE")
+        self.assertEqual(x["g2b_to_g6"], "NOT_AUTHORIZED")
+        self.assertEqual(self.data["g2a"]["absence_of_sqlite_writer"], "NOT_PROVEN")
+        self.assertIn("Comparer les trois ordres", self.doc)
 
     def test_24_policy_requires_refetch_and_same_pr_handoff(self):
         for clause in ("Re-fetch", "HANDOFF_CURRENT.md", "HANDOFF_CURRENT.json",

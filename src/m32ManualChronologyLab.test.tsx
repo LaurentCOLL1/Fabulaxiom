@@ -6,7 +6,7 @@ import M32ManualChronologyLab from "./M32ManualChronologyLab";
 import {
   startFictionalDraft as startDraft, createFictionalAnchor, supersedeFictionalAnchor,
   createFictionalPrecedence, revokeFictionalPrecedence,
-  previewFictionalPrecedence, previewFictionalCorrection,
+  previewFictionalPrecedence, previewFictionalCorrection, previewFictionalThreeOrders,
   type FictionalRevision,
 } from "./m32FictionalManualChronology";
 
@@ -307,6 +307,56 @@ describe("M3.2 manually authored fictional-only chronology laboratory", () => {
     expect(html).toContain("Ordre de révélation au lecteur");
     expect(d.snapshot.precedences).toHaveLength(0);
     expect(d.snapshot.reader_reveal_status).toBe("not_authored");
+  });
+  it("37 compares scene position only within an invented single novel", () => {
+    const first = invented.narration[0];
+    const added = { ...first, scene_id: "s-three", scene_title: "Troisième scène",
+      scene_order: first.scene_order + 2 };
+    const draft = startDraft({ ...invented, narration: [...invented.narration, added] }, history);
+    const forward = previewFictionalThreeOrders(draft, first.scene_id, added.scene_id);
+    const reverse = previewFictionalThreeOrders(draft, added.scene_id, first.scene_id);
+    expect(forward.narration).toBe("before");
+    expect(reverse.narration).toBe("after");
+    expect(forward.world_reason).toContain("indéterminée");
+    expect(forward.reader_reason).toContain("non renseignée");
+  });
+  it("38 rejects inferred global manuscript order between fictional novels", () => {
+    const d = startFictionalDraft(invented);
+    const p = previewFictionalThreeOrders(d, "s-one", "s-two");
+    expect(p.verdict).toBe("allowed");
+    expect(p.narration).toBe("separate_novels");
+    expect(p.narration_reason).toContain("indéterminé entre romans");
+  });
+  it("39 treats the same scene as identity not two world events", () => {
+    const p = previewFictionalThreeOrders(startFictionalDraft(invented), "s-one", "s-one");
+    expect(p.narration).toBe("same_scene");
+    expect(p.world_reason).toContain("indéterminée");
+  });
+  it("40 does not compare empty or foreign scene IDs", () => {
+    const d = startFictionalDraft(invented);
+    expect(previewFictionalThreeOrders(d, "", "s-one").verdict).toBe("unselected");
+    expect(previewFictionalThreeOrders(d, "missing", "s-one").verdict).toBe("blocked");
+    expect(d.audit).toHaveLength(0);
+  });
+  it("41 does not invent ordering for same-position scenes in one novel", () => {
+    const other = { ...invented.narration[0], scene_id: "same-slot" };
+    const draft = startDraft({ ...invented,
+      narration: [...invented.narration, other] }, history);
+    expect(previewFictionalThreeOrders(draft, "s-one", "same-slot").narration)
+      .toBe("indeterminate");
+  });
+  it("42 three-order comparison is read-only even with active temporal edges", () => {
+    const d = createFictionalPrecedence(startFictionalDraft(invented), "A", "B", "fiction only");
+    const before = JSON.stringify(d);
+    const x = previewFictionalThreeOrders(d, "s-one", "s-two");
+    expect(x.world_reason).toContain("indéterminée");
+    expect(JSON.stringify(d)).toBe(before);
+    const html = renderToStaticMarkup(createElement(M32ManualChronologyLab,
+      { initial: invented, revisions: history }));
+    expect(html).toContain("Comparaison des trois ordres fictifs");
+    expect(html).toContain("Première scène à comparer");
+    expect(html).toContain("Deuxième scène à comparer");
+    expect(html).not.toContain("invoke(");
   });
   it("13 refuses malformed legacy edge and forbids promotion to G3", () => {
     const d = startFictionalDraft(invented);

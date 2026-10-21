@@ -632,8 +632,37 @@ async function run() {
       assert.equal(await revisions.locator('option[value="invented-rev-B"]').count(), 1);
       assert.equal(await revisions.inputValue(), "");
     });
-    assert.equal(cases.length, 38);
-    console.log("M32_BROWSER_REAL_CHROMIUM_PASS 38/38");
+    await caseRun("39-three-orders-intra-novel-narration-only", async () => {
+      await page.getByRole("button", { name: "Revenir au premier univers fictif" }).click();
+      await page.getByRole("button", { name: "Ouvrir l'atelier manuel fictif" }).click();
+      const lab = page.getByRole("region", { name: "Atelier manuel M3.2 exclusivement fictif" });
+      await lab.getByRole("combobox", { name: "Première scène à comparer" }).selectOption("s1");
+      await lab.getByRole("combobox", { name: "Deuxième scène à comparer" }).selectOption("s3");
+      const explanation = lab.getByRole("status", { name: "Comparaison des trois ordres fictifs" });
+      assert.ok((await explanation.innerText()).includes("première scène précède la seconde"));
+      assert.ok((await explanation.innerText()).includes("Chronologie du monde : indéterminée"));
+      assert.ok((await explanation.innerText()).includes("Révélation au lecteur : non renseignée"));
+    });
+    await caseRun("40-three-orders-distinct-novels-have-no-shared-manuscript-order", async () => {
+      const lab = page.getByRole("region", { name: "Atelier manuel M3.2 exclusivement fictif" });
+      await lab.getByRole("combobox", { name: "Deuxième scène à comparer" }).selectOption("s2");
+      const explanation = lab.getByRole("status", { name: "Comparaison des trois ordres fictifs" });
+      assert.ok((await explanation.innerText()).includes("indéterminé entre romans distincts"));
+      assert.ok((await explanation.innerText()).includes("Révélation au lecteur : non renseignée"));
+    });
+    await caseRun("41-three-orders-empty-fictional-universe-has-no-foreign-scenes", async () => {
+      await page.getByRole("button", { name: "Charger un autre univers fictif" }).click();
+      await page.getByRole("button", { name: "Ouvrir l'atelier manuel fictif" }).click();
+      const lab = page.getByRole("region", { name: "Atelier manuel M3.2 exclusivement fictif" });
+      assert.equal(await lab.getByRole("combobox", { name: "Première scène à comparer" })
+        .locator("option").count(), 1);
+      assert.equal(await lab.getByRole("combobox", { name: "Deuxième scène à comparer" })
+        .locator("option").count(), 1);
+      assert.ok((await lab.getByRole("status", { name: "Comparaison des trois ordres fictifs" })
+        .innerText()).includes("Choisir deux scènes fictives"));
+    });
+    assert.equal(cases.length, 41);
+    console.log("M32_BROWSER_REAL_CHROMIUM_PASS 41/41");
     // Actual Chromium enforced-CSP veto, separate from the 36
     // fictional interaction cases. Never make an off-loopback network call.
     const cspVeto = await page.evaluate(async () => {
@@ -664,9 +693,9 @@ async function run() {
       });
       assert.equal(scriptVeto, false, "STOP: inline JS executed under strict CSP");
       console.log("M32_CI_PRECOMPILED_INLINE_SCRIPT_DENIED_PASS");
-      console.log("M32_CI_PRECOMPILED_STRICT_CSP_BROWSER_PASS: 38/38");
+      console.log("M32_CI_PRECOMPILED_STRICT_CSP_BROWSER_PASS: 41/41");
     }
-    console.log("M32_CI_FIXTURE_ONLY_BROWSER_PASS: 38/38; no normal source pages");
+    console.log("M32_CI_FIXTURE_ONLY_BROWSER_PASS: 41/41; no normal source pages");
   } finally {
     if (browser) await browser.close();
     server.kill();

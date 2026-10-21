@@ -1,5 +1,16 @@
 # Fabulaxiom M3.2 — Reprise opérationnelle courte
 
+## 21 octobre 2026 — comparateur des trois ordres (candidat fictif, non qualifié)
+
+Candidat de **laboratoire navigateur uniquement** : sélectionner deux scènes inventées et afficher séparément l'ordre de narration **dans un même roman**, l'indétermination **entre romans distincts**, et les états **chronologie du monde indéterminée** / **révélation non renseignée**. Aucun lien automatique entre position de manuscrit, ancre temporelle et connaissance du lecteur. Vérifications de scènes absentes/étrangères et d'une même scène, sans modification de l'historique.
+
+**Objectif de CI fraîche, pas résultat constaté :** 6 tests unitaires supplémentaires (**42 atelier**) et 3 scénarios Chromium (**41** par mode). Le précédent PR #102 (36/38) reste une preuve historique fusionnée, pas une CI transférable au candidat. Aucune fonction Tauri, SQLite original, IPC writer, donnée privée, App.tsx, commande Windows ou réseau externe.
+
+**Gates fermés :** M3.2 IN_PROGRESS_NOT_ACCEPTED ; PR #35 DRAFT ; G2A PASS_METADATA_ONLY_OWNER_REPORTED (accord consommé), absence d'écrivain réel NOT_PROVEN, G2-B/C/D et G3–G6 NOT_AUTHORIZED, REAL_G3 STOP_UNAVAILABLE, M3.3 et release interdits.
+
+---
+
+
 ## 21 octobre 2026 — PR #102 fusionnée et CI post-fusion vérifiée
 
 **Checkpoint public daté (non exécutable) :** [PR #102](https://github.com/LaurentCOLL1/Fabulaxiom/pull/102) MERGED sous « Protect main », HEAD source `07baf294286d427185c0817310d82418eb8c3fd2`, CI PR [#39543328344](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/39543328344) terminale SUCCESS (**74 étapes Windows** ; **36 tests unitaires de l'atelier / 38 scénarios Chromium**, en modes standard et précompilé). Merge `main=1f0a8cd9a369106202b57102aa28915de65b7472` et [CI push #39544279201](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/39544279201) **SUCCESS terminale** sur ce SHA. Les anciens passages « candidat / CI à qualifier » demeurent des preuves datées, pas des tâches à rejouer.
