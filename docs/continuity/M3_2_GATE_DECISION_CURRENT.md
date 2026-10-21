@@ -1,5 +1,8 @@
 # Fabulaxiom M3.2 — Décision de gates au 20 octobre 2026
 
+**Checkpoint public du 21/10/2026, sans ouvrir les gates :** PR #115 MERGED, CI push #39620942276 SUCCESS sur `33846c8c6813acda5eda5089827f81df99175d2c`. Un portage `#[cfg(test)]` sur SQLite en RAM n'authentifie aucun fichier opérateur. G2B–G6 restent NOT_AUTHORIZED ; aucun changement du tableau de décision ci-dessous.
+
+
 **Actualisation des sources publiques du 21/10/2026, pas décision opérateur :** PR #114 MERGED `ddb23311f40f09c04983b164ccd7afa361698ea8`, CI post-merge #39614175650 SUCCESS sur SHA exact. Le document de gates décrit toujours le résultat opérateur daté du 20/10 : aucune promotion. Des chantiers source-only parallèles sont décrits dans [le plan de réconciliation](../qualification/M3_2_PR35_SAFE_RECONCILIATION_PLAN.md) et [le protocole permanent](HANDOFF_PROTOCOL.md).
 
 **Revalidation documentaire du 21 octobre 2026, sans ouverture de gate :** PR #113 fusionnée sous Protect main à `e74f1001c01eff1f37c8b35d97d4ef34f6fbccb3` et CI post-fusion #39607280677 SUCCESS au SHA exact. Parallélisation des recherches, tests fictifs et lectures de source autorisée selon [HANDOFF_PROTOCOL.md](HANDOFF_PROTOCOL.md) ; **aucune** opération G2-B–G6 ni aucune autorisation implicite supplémentaire. La matrice G2-A/G2-B–G6 ci-dessous décrit toujours les gates observés au 20 octobre et reste inchangée.

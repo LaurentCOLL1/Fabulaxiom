@@ -1,0 +1,9 @@
+# M3.2 — first-stage Rust chronology service port (candidate, test-only)
+
+**CANDIDATE_NOT_CI_QUALIFIED at time of creation.** This scope extracts exactly five SQL-backed functions and their data structs from the historical PR #35 head `41ce7b915e76d22785d53d7fffe288d113dd0bf5`, without merging, rebasing or rewriting that PR.
+
+The module `src-tauri/src/m32_manual_chronology.rs` is included in current `src-tauri/src/lib.rs` under `#[cfg(test)]` **only**, not in normal/debug/release builds and not exported to Tauri command invoke. It uses parameterized inserts and read-only SELECTs. Six new Rust tests create `Connection::open_in_memory()` databases, migrate only the invented RAM v6 fixture, layer the existing M3.1 v7 candidate schema **inside that RAM connection only**, and exercise two Universes, four manually declared fictional time kinds, deterministic ordering without automatic chronology, explicit before/after, cycle/self/duplicate rejection, foreign-universe guard, immutability and historical scene revisions. Production schema max stays 6; no real v7 registration or migration 007.
+
+The material deliberately **does not** port chronology decisions/revocations/atomic supersession from PR #35 yet; these depend on additional append-only candidate SQL and will require a separate reviewed fixture-only increment. Success in CI cannot prove any Windows source ownership, sidecar quiescence, backup integrity, operator consent or product acceptance.
+
+STOP: M3.2 IN_PROGRESS_NOT_ACCEPTED; PR #35 OPEN/DRAFT and not mergeable; writer absence NOT_PROVEN, G2B–G6 NOT_AUTHORIZED, real G3 STOP_UNAVAILABLE, historical PENDING_EXTERNAL_ATTESTATION(21/3/2), prospective NOT_STARTED. Never access original production v6 or isolated v7 SQLite, backups, ACL, markers or journals; no runtime writer IPC, migration 007, ComfyUI, M3.3 or release.

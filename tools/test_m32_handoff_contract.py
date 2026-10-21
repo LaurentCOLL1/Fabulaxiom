@@ -513,15 +513,15 @@ class HandoffContractTests(unittest.TestCase):
 
     def test_39_post_pr114_normalized_at_immutable_exact_ci(self):
         x = self.data["post_pr114_normalization"]
-        self.assertEqual(self.data["last_confirmed_merged_pr"], 114)
-        self.assertEqual(self.data["last_confirmed_main_before_handoff"], x["merge_sha"])
-        self.assertEqual(self.data["last_verified_pr_head"], x["pr_head_sha"])
-        self.assertEqual(self.data["last_verified_ci"]["run_id"], 39612803528)
+        self.assertEqual(x["merged_pr"], 114)
+        self.assertEqual(x["merge_sha"], "ddb23311f40f09c04983b164ccd7afa361698ea8")
+        self.assertEqual(x["pr_head_sha"], "8262659d58045c127fe4ee3ac56e6dd5681a9f5f"
+        self.assertEqual(x["pr_ci"]["run_id"], 39612803528)
         self.assertEqual(x["pr_ci"]["run_id"], 39612803528)
         self.assertEqual(x["pr_ci"]["conclusion"], "SUCCESS")
         self.assertEqual(x["main_ci"]["run_id"], 39614175650)
         self.assertEqual(x["main_ci"]["conclusion"], "SUCCESS")
-        self.assertEqual(self.data["main_ci_post_merge"]["sha"], x["merge_sha"])
+        self.assertEqual(x["main_ci"]["run_id"], 39614175650)
         self.assertEqual(self.data["main_ci_post_merge"]["conclusion"], "SUCCESS")
         self.assertEqual(x["policy"],
                          "PARALLEL_WHEN_INDEPENDENT_WITH_EXCLUSIVE_WRITES_AND_SEQUENTIAL_MERGES")
@@ -537,7 +537,7 @@ class HandoffContractTests(unittest.TestCase):
         self.assertEqual(x["pr"], 35)
         self.assertEqual(x["status"], "PRELIMINARY_PUBLIC_PATH_OVERLAP_NOT_MERGE_AUTHORIZATION")
         self.assertEqual(x["main_ahead_commits"], 472)
-        self.assertEqual(x["target_main_sha"], self.data["last_confirmed_main_before_handoff"])
+        self.assertEqual(x["target_main_sha"], "ddb23311f40f09c04983b164ccd7afa361698ea8")
         self.assertEqual(x["pr_changed_paths"], 84)
         self.assertEqual(len(x["potential_overlapping_paths"]), 7)
         self.assertEqual(x["exact_text_conflicts"], "NOT_DETERMINED")
@@ -548,6 +548,44 @@ class HandoffContractTests(unittest.TestCase):
         self.assertIn("M3_2_PR35_SAFE_RECONCILIATION_PLAN.md", self.doc)
         self.assertEqual(self.data["g2a"]["absence_of_sqlite_writer"], "NOT_PROVEN")
         self.assertEqual(self.data["governance"]["prospective"], "NOT_STARTED")
+
+
+    def test_41_pr115_postmerge_ci_is_exact_and_no_private_gate_was_promoted(self):
+        x = self.data["post_pr115_normalization"]
+        self.assertEqual(self.data["last_confirmed_merged_pr"], 115)
+        self.assertEqual(self.data["last_confirmed_main_before_handoff"], x["merge_sha"])
+        self.assertEqual(self.data["last_verified_pr_head"], x["pr_head_sha"])
+        self.assertEqual(x["pr_ci"]["run_id"], 39619267259)
+        self.assertEqual(x["pr_ci"]["conclusion"], "SUCCESS")
+        self.assertEqual(x["main_ci"]["run_id"], 39620942276)
+        self.assertEqual(x["main_ci"]["conclusion"], "SUCCESS")
+        self.assertEqual(self.data["main_ci_post_merge"]["sha"], x["merge_sha"])
+        self.assertEqual(x["writer_absence"], "NOT_PROVEN")
+        self.assertEqual(x["g2b_to_g6"], "NOT_AUTHORIZED")
+        self.assertEqual(x["real_g3"], "STOP_UNAVAILABLE")
+        self.assertEqual(x["operator_execution"], "NONE")
+        self.assertIn("PR #115 fusionnée", self.doc)
+
+    def test_42_rust_m32_port_is_compile_test_only_synthetic_sqlite(self):
+        c = self.data["m3_2_product_progress"]["test_only_rust_first_stage"]
+        self.assertEqual(c["status"], "CANDIDATE_NOT_CI_QUALIFIED")
+        self.assertTrue(c["compiled_only_during_tests"])
+        self.assertFalse(c["uses_original_sqlite"])
+        self.assertEqual(c["rust_test_cases"], 6)
+        self.assertEqual(c["auto_migration_max"], 6)
+        self.assertEqual(c["real_tauri_ipc"], "NONE")
+        self.assertEqual(c["g2b_to_g6"], "NOT_AUTHORIZED")
+        self.assertEqual(c["real_g3"], "STOP_UNAVAILABLE")
+        lib = (ROOT / "src-tauri" / "src" / "lib.rs").read_text(encoding="utf-8")
+        self.assertIn("#[cfg(test)]\\nmod m32_manual_chronology;", lib)
+        source = (ROOT / "src-tauri" / "src" / "m32_manual_chronology.rs").read_text(encoding="utf-8")
+        for function_name in c["functions"]:
+            self.assertIn("pub fn " + function_name, source)
+        self.assertIn("Connection::open_in_memory()", source)
+        self.assertNotIn("#[tauri::command]", source)
+        self.assertNotIn("Connection::open(", source)
+        self.assertIn("portage limité", self.doc)
+        self.assertEqual(self.data["g2a"]["absence_of_sqlite_writer"], "NOT_PROVEN")
 
     def test_24_policy_requires_refetch_and_same_pr_handoff(self):
         for clause in ("Re-fetch", "HANDOFF_CURRENT.md", "HANDOFF_CURRENT.json",

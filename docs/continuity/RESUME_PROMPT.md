@@ -1,5 +1,10 @@
 # Prompt minimal de reprise — Fabulaxiom
 
+## Reprise actuelle du 21 octobre 2026
+
+Re-fetch d'abord le dépôt GitHub, `docs/continuity/README.md`, `HANDOFF_CURRENT.md/json`, `HANDOFF_PROTOCOL.md`, `NEXT.md`, `STATE.md`, `HANDOFF_HISTORY.md`, la roadmap, la PR #35 et les CI au HEAD exact. Dernier `main` vérifié : `33846c8c6813acda5eda5089827f81df99175d2c` après PR #115 MERGED ; CI post-fusion #39620942276 SUCCESS. Des tâches indépendantes peuvent avancer en parallèle selon le protocole ; écritures communes et fusions restent séquentielles. Nouvelle tranche candidate test-only du service Rust de #35 à qualifier sur son propre nouveau HEAD. M3.2 NON ACCEPTÉE, G2B–G6 STOP, aucun original SQLite, migration, IPC writer ni commande Windows opérateur.
+
+
 ## Reprise actuelle, 21 octobre 2026 — vérifier GitHub avant toute suite
 
 Reprendre Fabulaxiom M3.2 depuis [le dépôt](https://github.com/LaurentCOLL1/Fabulaxiom). Consulter en premier `README.md`, `HANDOFF_CURRENT.md/json`, `HANDOFF_PROTOCOL.md`, `NEXT.md`, `STATE.md`, historique et roadmap. Checkpoint daté : PR #114 MERGED, `main=ddb23311f40f09c04983b164ccd7afa361698ea8`, CI source #39612803528 SUCCESS, CI main #39614175650 SUCCESS. Ces valeurs doivent toujours être re-fetch avant emploi.
