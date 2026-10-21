@@ -1,5 +1,13 @@
 # Fabulaxiom — Next Authorized Work
 
+**21 octobre 2026 — résultat terminal post-fusion PR #112 :** la CI push [#39597532619](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/39597532619) a terminé **SUCCESS** sur `main=3c489aa727129e4b090e2e80a49a93fb3fa95877`, SHA exact du merge #112. Les mentions plus anciennes « en cours au checkpoint » sont des photographies historiques, et ne décrivent pas l'état terminal. Cette mise à jour de la PR #113 impose une CI nouvelle sur son nouveau HEAD. M3.2 reste IN_PROGRESS_NOT_ACCEPTED, PR #35 DRAFT, writer réel NOT_PROVEN, G2B–G6 STOP, aucun essai Windows opérateur ni SQLite protégée.
+
+
+**21 octobre 2026 — PR #112 fusionnée avec CI source exacte :** [PR #112](https://github.com/LaurentCOLL1/Fabulaxiom/pull/112) MERGED sous Protect main au SHA `3c489aa727129e4b090e2e80a49a93fb3fa95877` ; HEAD source `56c5d4d55a616469cda36c5fef7f63369a08bdb2`, [CI #39596187154](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/39596187154) terminale **SUCCESS** au HEAD exact (74 étapes Windows, 60 Vitest d'atelier fictif, 50 Chromium par mode normal et CSP stricte). [CI push `main` #39597532619](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/39597532619) **EN COURS AU CHECKPOINT** au SHA de fusion ; revérification terminale requise. Cette fonctionnalité fictive relie deux révisions immuables explicitement choisies à une chaîne de précédences humaines actives sans faire dépendre le temps du monde de l'ordre narratif.
+
+**STOP inchangé :** M3.2 `IN_PROGRESS_NOT_ACCEPTED`, PR #35 OPEN/DRAFT, G2-A metadata-only (accord ponctuel consommé), écrivain SQLite réel `NOT_PROVEN`, G2-B à G6 `NOT_AUTHORIZED`, vrai G3 `STOP_UNAVAILABLE`. Aucun Windows opérateur, base réelle v6/v7, sauvegarde, ACL, WAL/SHM, marqueur, migration 007, IPC writer, M3.3, ComfyUI ou release.
+
+
 **Candidat de preuves du monde par révisions exactes — 21/10/2026 :** le laboratoire fictif permet de sélectionner deux scènes et leurs révisions immuables pour lire une chaîne de précédences **humaines actives** entre leurs ancres, lorsque chacune possède exactement une ancre courante. Dates, ordre narratif entre romans et révélations ne sont pas déduits. Historique/révisions étrangères/ambiguïté : refus ou indétermination. 60 Vitest et 50 Chromium par mode **à qualifier sur une nouvelle CI**. Aucune intégration `App.tsx`/Tauri/SQLite.
 
 **STOP :** M3.2 IN_PROGRESS_NOT_ACCEPTED, PR #35 DRAFT, G2-A accord consommé, écrivain réel NOT_PROVEN, G2B–G6 NOT_AUTHORIZED, G3 réel STOP_UNAVAILABLE. Aucun Windows opérateur, original SQLite v6/v7, sauvegarde/ACL/journal, migration 007, IPC writer, M3.3 ou release.

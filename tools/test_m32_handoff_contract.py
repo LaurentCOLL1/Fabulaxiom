@@ -253,7 +253,7 @@ class HandoffContractTests(unittest.TestCase):
 
     def test_23_pr100_merge_status_not_runtime_acceptance(self):
         p = self.data["post_pr100_normalization"]
-        self.assertEqual(self.data["last_confirmed_merged_pr"], 110)
+        self.assertEqual(self.data["last_confirmed_merged_pr"], 112)
         self.assertEqual(p["main_merge_sha"], "bf59b28b437470a4759a5971968e8f00f9fa895c")
         self.assertEqual(p["pr_head_sha"], "95e2e0385979e2b226aa1d6289e12250c6e6e19d")
         self.assertEqual(p["pr_ci"]["run_id"], 39533766395)
@@ -421,13 +421,13 @@ class HandoffContractTests(unittest.TestCase):
 
     def test_34_pr110_merge_keeps_g2_to_g6_stopped(self):
         x = self.data["post_pr110_normalization"]
-        self.assertEqual(self.data["last_confirmed_merged_pr"], 110)
-        self.assertEqual(self.data["last_confirmed_main_before_handoff"], x["merge_sha"])
-        self.assertEqual(self.data["last_verified_pr_head"], x["pr_head_sha"])
+        self.assertEqual(x["merged_pr"], 110)
+        self.assertEqual(x["merge_sha"], "2bf4b6a62ca22a21e1e7d34f5ead4e86dafe450b")
+        self.assertEqual(x["pr_head_sha"], "f69e36a24aedda15222bb3a4e3a198ba57d0174a")
         self.assertEqual(x["pr_ci"]["run_id"], 39577527093)
         self.assertEqual(x["pr_ci"]["conclusion"], "SUCCESS")
         self.assertEqual(x["main_ci"]["run_id"], 39591429432)
-        self.assertEqual(self.data["main_ci_post_merge"]["conclusion"], "SUCCESS")
+        self.assertEqual(x["main_ci"]["conclusion"], "SUCCESS")
         self.assertEqual(x["main_ci"]["conclusion"], "SUCCESS")
         self.assertEqual(x["vitest"], 55)
         self.assertEqual(x["chromium_per_mode"], 48)
@@ -442,7 +442,7 @@ class HandoffContractTests(unittest.TestCase):
 
     def test_35_scene_world_proof_remains_fiction_only(self):
         x = self.data["m3_2_product_progress"]["scene_world_proof_candidate"]
-        self.assertEqual(x["status"], "CANDIDATE_NOT_CI_QUALIFIED")
+        self.assertEqual(x["status"], "MERGED_SOURCE_ONLY_NOT_PRODUCT_ACCEPTED")
         self.assertEqual(x["unit_total_expected"], 60)
         self.assertEqual(x["browser_total_expected"], 50)
         self.assertEqual(x["narration_world_inference"], "NEVER")
@@ -452,6 +452,27 @@ class HandoffContractTests(unittest.TestCase):
         self.assertEqual(x["g2b_to_g6"], "NOT_AUTHORIZED")
         self.assertEqual(x["real_g3"], "STOP_UNAVAILABLE")
         self.assertIn("preuves du monde par révisions exactes", self.doc)
+
+
+    def test_36_pr112_merge_keeps_real_gates_closed(self):
+        x = self.data["post_pr112_normalization"]
+        self.assertEqual(self.data["last_confirmed_merged_pr"], 112)
+        self.assertEqual(self.data["last_confirmed_main_before_handoff"], x["merge_sha"])
+        self.assertEqual(self.data["last_verified_pr_head"], x["pr_head_sha"])
+        self.assertEqual(x["pr_ci"]["run_id"], 39596187154)
+        self.assertEqual(x["pr_ci"]["conclusion"], "SUCCESS")
+        self.assertEqual(x["main_ci"]["run_id"], 39597532619)
+        self.assertEqual(x["main_ci"]["conclusion"], "SUCCESS")
+        self.assertEqual(self.data["main_ci_post_merge"]["conclusion"], "SUCCESS")
+        self.assertTrue(x["fiction_only"])
+        self.assertEqual(x["vitest"], 60)
+        self.assertEqual(x["chromium_per_mode"], 50)
+        self.assertEqual(x["product_status"], "IN_PROGRESS_NOT_ACCEPTED")
+        self.assertEqual(x["writer_absence"], "NOT_PROVEN")
+        self.assertEqual(x["g2b_to_g6"], "NOT_AUTHORIZED")
+        self.assertEqual(x["real_g3"], "STOP_UNAVAILABLE")
+        self.assertEqual(x["operator_execution"], "NONE")
+        self.assertIn("PR #112 fusionnée", self.doc)
 
     def test_24_policy_requires_refetch_and_same_pr_handoff(self):
         for clause in ("Re-fetch", "HANDOFF_CURRENT.md", "HANDOFF_CURRENT.json",
