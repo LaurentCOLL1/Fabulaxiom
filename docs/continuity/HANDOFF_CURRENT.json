@@ -3,14 +3,14 @@
   "as_of": "2026-10-21",
   "status_kind": "DATED_PUBLIC_SOURCE_HANDOFF_ONLY",
   "repository": "LaurentCOLL1/Fabulaxiom",
-  "last_confirmed_main_before_handoff": "ba4b8a599910cef6d1c76fa1e4fb561a0b45e631",
-  "last_confirmed_merged_pr": 108,
-  "last_verified_pr_head": "fd62c1afd4ad6eff9a6f9d2f18679ef0704f59c1",
+  "last_confirmed_main_before_handoff": "2bf4b6a62ca22a21e1e7d34f5ead4e86dafe450b",
+  "last_confirmed_merged_pr": 110,
+  "last_verified_pr_head": "f69e36a24aedda15222bb3a4e3a198ba57d0174a",
   "last_verified_ci": {
-    "run_id": 39572172593,
+    "run_id": 39577527093,
     "context": "Windows frontend and Rust checks",
     "conclusion": "SUCCESS",
-    "source": "PR108_EXACT_HEAD"
+    "source": "PR110_EXACT_HEAD"
   },
   "recent_changes": [
     "PR_85_EXACT_G2A_TEXT_AST_ONLY",
@@ -56,7 +56,11 @@
     "2026_10_21_FICTIONAL_HISTORICAL_SELECTED_ANCHOR_GUARD_CANDIDATE_51_TESTS_46_CHROMIUM",
     "PR108_HISTORIC_SELECTION_GUARD_MERGED_MAIN_BA4B8A59",
     "PR108_MAIN_39573518324_TERMINAL_SUCCESS_EXACT_SHA_VERIFIED",
-    "M32_FICTITIOUS_REVOCATION_IMPACT_CANDIDATE_55_VITEST_48_CHROMIUM"
+    "M32_FICTITIOUS_REVOCATION_IMPACT_CANDIDATE_55_VITEST_48_CHROMIUM",
+    "PR109_DOC_NORMALIZATION_MERGED_MAIN_51EAF9B0_CI_39576610264_SUCCESS",
+    "PR110_FICTIONAL_REVOCATION_IMPACT_MERGED_MAIN_2BF4B6A6_PR_CI_39577527093_SUCCESS",
+    "PR110_MAIN_PUSH_39591429432_IN_PROGRESS_AT_CHECKPOINT",
+    "PR110_MAIN_PUSH_39591429432_TERMINAL_SUCCESS_AT_EXACT_2BF4B6A6_VERIFIED"
   ],
   "pr35": "OPEN_DRAFT",
   "issues": {
@@ -242,15 +246,15 @@
     "verified_bypass_actors": 0,
     "classic_branch_protection_read": "403_INTEGRATION_RESTRICTED"
   },
-  "next": "QUALIFY_FICTIONAL_REVOCATION_IMPACT_NEW_SHA_AND_NO_REAL_DATA",
+  "next": "QUALIFY_DOC_PR111_NEW_EXACT_HEAD_THEN_FICTION_ONLY_M32",
   "live_refetch_required": true,
   "hand_off_updated_by_future_pr": true,
   "main_ci_post_merge": {
-    "sha": "ba4b8a599910cef6d1c76fa1e4fb561a0b45e631",
-    "run_id": 39573518324,
+    "sha": "2bf4b6a62ca22a21e1e7d34f5ead4e86dafe450b",
+    "run_id": 39591429432,
     "conclusion": "SUCCESS",
     "source": "MAIN_PUSH",
-    "note": "Verified terminal SUCCESS exact main merge on 2026-10-21; never operator authorization"
+    "note": "Terminal GitHub SUCCESS verified 2026-10-21 for exact PR110 merge SHA; never proves private operator safety"
   },
   "g2a_candidate_ci": {
     "pr": 86,
@@ -455,7 +459,7 @@
       "main_ci_verified": 39573518324
     },
     "revocation_impact_preview": {
-      "status": "CANDIDATE_NOT_CI_QUALIFIED",
+      "status": "MERGED_SOURCE_ONLY_NOT_PRODUCT_ACCEPTED",
       "scope": "BROWSER_FIXTURE_ONLY",
       "universe_separation": "EXACT_ID",
       "before_state": "EXPLICIT_ACTIVE_HUMAN_EDGE_ONLY",
@@ -581,6 +585,29 @@
     "fiction_only": true,
     "vitest": 51,
     "chromium": 46,
+    "product_status": "IN_PROGRESS_NOT_ACCEPTED",
+    "writer_absence": "NOT_PROVEN",
+    "g2b_to_g6": "NOT_AUTHORIZED",
+    "real_g3": "STOP_UNAVAILABLE",
+    "operator_execution": "NONE"
+  },
+  "post_pr110_normalization": {
+    "kind": "DATED_DOCUMENTARY_SNAPSHOT_NO_RUNTIME_AUTHORITY",
+    "merged_pr": 110,
+    "merge_sha": "2bf4b6a62ca22a21e1e7d34f5ead4e86dafe450b",
+    "pr_head_sha": "f69e36a24aedda15222bb3a4e3a198ba57d0174a",
+    "pr_ci": {
+      "run_id": 39577527093,
+      "conclusion": "SUCCESS",
+      "job_steps": 74
+    },
+    "main_ci": {
+      "run_id": 39591429432,
+      "conclusion": "SUCCESS"
+    },
+    "fiction_only": true,
+    "vitest": 55,
+    "chromium_per_mode": 48,
     "product_status": "IN_PROGRESS_NOT_ACCEPTED",
     "writer_absence": "NOT_PROVEN",
     "g2b_to_g6": "NOT_AUTHORIZED",

@@ -1,5 +1,19 @@
 # Fabulaxiom M3.2 — Reprise opérationnelle courte
 
+**Vérification terminale post-fusion #110 (21 octobre 2026) :** [CI `main` #39591429432](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/39591429432) **SUCCESS terminale** sur le SHA exact `2bf4b6a62ca22a21e1e7d34f5ead4e86dafe450b` ; PR #110 MERGED. Les anciennes mentions « en cours » documentent uniquement un instantané antérieur. Cette normalisation dans la PR #111 nécessite sa **propre CI fraîche au HEAD modifié** ; les deux CI de #110 ne sont pas transférables. **M3.2 toujours IN_PROGRESS_NOT_ACCEPTED**, PR #35 DRAFT ; G2-A métadonnées avec accord consommé, absence d'écrivain réel NOT_PROVEN, G2B–G6 NOT_AUTHORIZED, G3 réel STOP_UNAVAILABLE ; aucune commande Windows opérateur, originale SQLite, migration 007, IPC writer, M3.3 ni release.
+
+
+## 21 octobre 2026 — PR #110 fusionnée : effet hypothétique de révocation (atelier fictif)
+
+**Checkpoint GitHub confirmé le 21 octobre 2026 :** PR [#110](https://github.com/LaurentCOLL1/Fabulaxiom/pull/110) **MERGED** sous Protect main sur `main=2bf4b6a62ca22a21e1e7d34f5ead4e86dafe450b` ; source `f69e36a24aedda15222bb3a4e3a198ba57d0174a`, CI PR [#39577527093](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/39577527093) **SUCCESS terminale sur ce HEAD** (74 étapes Windows, 55 Vitest d'atelier fictif et 48 Chromium par mode normal / précompilé strict CSP). CI push [#39591429432](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/39591429432) **EN COURS AU CHECKPOINT** sur le SHA du merge : re-fetch terminal obligatoire. Les anciennes mentions « candidat » sont historiques ; aucune CI d'ancien SHA transférable.
+
+Le laboratoire en mémoire inventée affiche avant toute révocation si une autre chaîne humaine active conserve une preuve d'ordre. L'aperçu ne modifie aucun lien ; l'action réelle reste un choix humain séparé. La fonctionnalité **n'est pas intégrée au produit Windows** et ne constitue pas l'acceptation M3.2.
+
+**Sécurité inchangée :** M3.2 `IN_PROGRESS_NOT_ACCEPTED`, PR #35 OPEN/DRAFT ; G2-A PASS sur métadonnées seulement (accord unique consommé), absence d'écrivain SQLite réel `NOT_PROVEN`, G2-B/C/D et G3–G6 `NOT_AUTHORIZED`, G3 réel `STOP_UNAVAILABLE`. Aucune commande Windows opérateur, aucun original v6/v7, sauvegarde, WAL/SHM, ACL, marqueur, migration 007, IPC writer, M3.3, ComfyUI ou release.
+
+---
+
+
 ## 21 octobre 2026 — candidat M3.2 : conséquence d'une révocation humaine (fiction uniquement)
 
 **CANDIDAT — CI du nouveau SHA encore requise.** L'atelier manuel fictif permet de choisir une relation `avant/après` existante et de **prévisualiser sans modification** si sa révocation supprimerait toute preuve d'ordre entre ses deux ancres, ou si une autre chaîne de précédences **humaines actives** subsisterait. Témoins affichés par identifiants exacts. La suppression effective reste un clic humain distinct. Pas de date inventée, ordre total, changement de roman, révélation au lecteur ou propagation de canon.
