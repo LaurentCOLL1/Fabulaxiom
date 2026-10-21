@@ -1,6 +1,18 @@
 # Fabulaxiom — Current State
 
-## 2026-10-21 — nouvelle tranche produit candidate, deux romans fictifs dans l'atelier navigateur
+## 21 octobre 2026 — PR #102 fusionnée et CI post-fusion vérifiée
+
+**Checkpoint public daté (non exécutable) :** [PR #102](https://github.com/LaurentCOLL1/Fabulaxiom/pull/102) MERGED sous « Protect main », HEAD source `07baf294286d427185c0817310d82418eb8c3fd2`, CI PR [#39543328344](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/39543328344) terminale SUCCESS (**74 étapes Windows** ; **36 tests unitaires de l'atelier / 38 scénarios Chromium**, en modes standard et précompilé). Merge `main=1f0a8cd9a369106202b57102aa28915de65b7472` et [CI push #39544279201](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/39544279201) **SUCCESS terminale** sur ce SHA. Les anciens passages « candidat / CI à qualifier » demeurent des preuves datées, pas des tâches à rejouer.
+
+**Fonctionnalité fusionnée :** deuxième roman, scène et révision immuable du même Univers **strictement inventé** ; liste des révisions filtrée par identifiant exact de scène, sans déduire l'ordre du monde ni l'ordre de révélation des positions dans les manuscrits. Laboratoire navigateur seulement, sans accès SQLite réel, App.tsx, Tauri IPC ou exécution Windows opérateur. **M3.2 reste IN_PROGRESS_NOT_ACCEPTED**, PR #35 OPEN/DRAFT.
+
+**Limites de gouvernance inchangées :** G2-A PASS_METADATA_ONLY_OWNER_REPORTED (accord unique consommé) ; PROCESS_WRITER_ABSENCE=NOT_PROVEN ; G2-B/C/D et G3–G6 NOT_AUTHORIZED ; REAL_G3=STOP_UNAVAILABLE ; historique PENDING_EXTERNAL_ATTESTATION(21/3/2), prospective NOT_STARTED. Aucune ouverture/mutation des originales v6/v7, journaux, sauvegardes, ACL, marqueur, migration 007, writer IPC, M3.3, ComfyUI ou release. Toute commande Windows demanderait script intégral, effets et autorisation distincte.
+
+**Prochaine tranche admissible :** améliorer la lecture humaine des **trois ordres sans les confondre** sur fixtures uniquement ; CI neuve au prochain SHA, sans réutiliser celles de #102.
+
+---
+
+## 2026-10-21 — historique du candidat PR #102 (depuis fusionnée)
 
 Ajout d'une deuxième scène et d'une révision historique appartenant à un autre roman **du même Univers inventé** sur le banc d'essai `m32BrowserLab.tsx`. Tests proposés : 4 Vitest (36 total) et 2 Chromium (38 total) couvrant le filtrage strict des révisions par scène et l'absence d'ordre du monde/révélation déduit des positions de manuscrit. Nouvelle CI au head exact à obtenir : état actuel **CANDIDAT**, non une preuve de succès. Aucune intégration dans App.tsx, SQLite original, Tauri IPC ou Windows ; PR #35 DRAFT, M3.2 IN_PROGRESS_NOT_ACCEPTED, G2B–G6 STOP et écrivain réel NOT_PROVEN.
 

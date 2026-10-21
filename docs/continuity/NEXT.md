@@ -1,6 +1,18 @@
 # Fabulaxiom — Next Authorized Work
 
-## 21 octobre 2026 — candidat M3.2 : scénarios navigateur multiromans, exclusivement fictifs
+## 21 octobre 2026 — PR #102 fusionnée et CI post-fusion vérifiée
+
+**Checkpoint public daté (non exécutable) :** [PR #102](https://github.com/LaurentCOLL1/Fabulaxiom/pull/102) MERGED sous « Protect main », HEAD source `07baf294286d427185c0817310d82418eb8c3fd2`, CI PR [#39543328344](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/39543328344) terminale SUCCESS (**74 étapes Windows** ; **36 tests unitaires de l'atelier / 38 scénarios Chromium**, en modes standard et précompilé). Merge `main=1f0a8cd9a369106202b57102aa28915de65b7472` et [CI push #39544279201](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/39544279201) **SUCCESS terminale** sur ce SHA. Les anciens passages « candidat / CI à qualifier » demeurent des preuves datées, pas des tâches à rejouer.
+
+**Fonctionnalité fusionnée :** deuxième roman, scène et révision immuable du même Univers **strictement inventé** ; liste des révisions filtrée par identifiant exact de scène, sans déduire l'ordre du monde ni l'ordre de révélation des positions dans les manuscrits. Laboratoire navigateur seulement, sans accès SQLite réel, App.tsx, Tauri IPC ou exécution Windows opérateur. **M3.2 reste IN_PROGRESS_NOT_ACCEPTED**, PR #35 OPEN/DRAFT.
+
+**Limites de gouvernance inchangées :** G2-A PASS_METADATA_ONLY_OWNER_REPORTED (accord unique consommé) ; PROCESS_WRITER_ABSENCE=NOT_PROVEN ; G2-B/C/D et G3–G6 NOT_AUTHORIZED ; REAL_G3=STOP_UNAVAILABLE ; historique PENDING_EXTERNAL_ATTESTATION(21/3/2), prospective NOT_STARTED. Aucune ouverture/mutation des originales v6/v7, journaux, sauvegardes, ACL, marqueur, migration 007, writer IPC, M3.3, ComfyUI ou release. Toute commande Windows demanderait script intégral, effets et autorisation distincte.
+
+**Prochaine tranche admissible :** améliorer la lecture humaine des **trois ordres sans les confondre** sur fixtures uniquement ; CI neuve au prochain SHA, sans réutiliser celles de #102.
+
+---
+
+## 21 octobre 2026 — historique candidat PR #102 (depuis fusionnée)
 
 Tranche **NON ENCORE QUALIFIÉE** : enrichir `m32BrowserLab.tsx` avec un deuxième roman imaginaire, une scène et une révision immuable propres au même Univers fictif. L'atelier filtre les révisions par identifiant exact de scène (jamais par titre) et rappelle que l'ordre de narration de deux romans ne définit ni chronologie du monde ni révélation au lecteur. Cible : **36 tests Vitest atelier / 38 scénarios Chromium** ; nouvelle CI au HEAD exact obligatoire, non interchangeable avec la CI PR #100 (32/36).
 

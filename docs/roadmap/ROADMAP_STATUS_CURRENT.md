@@ -12,9 +12,13 @@ M3.1 COMPLETE/MERGED/NORMALIZED ; **M3.2 IN_PROGRESS_NOT_ACCEPTED**, PR #35 OPEN
 
 ---
 
-## 21 octobre 2026 — candidat de couverture multiromans M3.2 (non accepté)
+## 21 octobre 2026 — checkpoint historique du candidat PR #102, depuis fusionné
 
 Sur le **seul atelier navigateur entièrement inventé**, une deuxième scène du même Univers est placée dans un autre roman ; chaque scène possède ses révisions immuables propres. Quatre tests unitaires (36 total) et deux Chromium (38 total) sont **proposés, CI nouvelle encore requise**. Aucune chronologie du monde ni ordre de révélation n'est déduit des positions relatives des manuscrits. Cette preuve fictive ne remplace pas le CRUD persistant, l'essai Windows ni la normalisation M3.2. PR #35 reste DRAFT, G2B–G6 STOP.
+
+## 21 octobre 2026 — clôture technique fictive de PR #102, pas acceptation M3.2
+
+PR [#102](https://github.com/LaurentCOLL1/Fabulaxiom/pull/102) **fusionnée** sur `main=1f0a8cd9a369106202b57102aa28915de65b7472`, après CI PR [#39543328344](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/39543328344) SUCCESS au HEAD `07baf294286d427185c0817310d82418eb8c3fd2` (36 tests Vitest atelier, 38 scénarios Chromium en deux modes), et push main [#39544279201](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/39544279201) SUCCESS au merge exact. Couverture de deux romans dans un même Univers inventé, révisions de scènes filtrées strictement. **Ne pas confondre position manuscrit, précédences humaines et révélation lecteur**. Les mentions « CI à qualifier » des sections précédentes sont des checkpoints antérieurs, pas le statut actuel. M3.2 `IN_PROGRESS_NOT_ACCEPTED`, PR #35 DRAFT, G2B–G6 STOP, aucun vrai SQLite/Windows ; M3.3 et release non autorisées.
 
 ## Matrice de conformité
 

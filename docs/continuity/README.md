@@ -1,5 +1,7 @@
 # Fabulaxiom — Point d'entrée pour reprendre les discussions ChatGPT
 
+**Dernier checkpoint GitHub daté du 21 octobre 2026 :** PR [#102](https://github.com/LaurentCOLL1/Fabulaxiom/pull/102) fusionnée sur `main=1f0a8cd9a369106202b57102aa28915de65b7472` ; CI PR #39543328344 et CI push main #39544279201 SUCCESS aux SHA exacts. 36 tests Vitest atelier / 38 scénarios Chromium sur univers inventés. M3.2 NON ACCEPTÉE, G2-B–G6 STOP. Les étapes « candidat » antérieures demeurent historiques ; voir [HANDOFF_CURRENT](HANDOFF_CURRENT.md), puis refetch GitHub.
+
 **Autorité datée au 21 octobre 2026 :** PR #100 fusionnée sur `main=bf59b28b437470a4759a5971968e8f00f9fa895c` ; CI PR #39533766395 et CI main #39534698504 SUCCESS au SHA exact. 32 tests fictifs Vitest / 36 Chromium vérifiés pour ce candidat, sans acceptation M3.2 ni autorisation G2B–G6. Les mentions anciennes « à qualifier » sont des instantanés historiques ; voir [HANDOFF_CURRENT](HANDOFF_CURRENT.md). Re-fetch obligatoire.
 
 Ce dossier constitue la **mémoire de travail versionnée du projet**. Lire en priorité, dans cet ordre :

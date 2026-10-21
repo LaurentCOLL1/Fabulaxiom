@@ -253,7 +253,7 @@ class HandoffContractTests(unittest.TestCase):
 
     def test_23_pr100_merge_status_not_runtime_acceptance(self):
         p = self.data["post_pr100_normalization"]
-        self.assertEqual(self.data["last_confirmed_merged_pr"], 100)
+        self.assertEqual(self.data["last_confirmed_merged_pr"], 102)
         self.assertEqual(p["main_merge_sha"], "bf59b28b437470a4759a5971968e8f00f9fa895c")
         self.assertEqual(p["pr_head_sha"], self.data["last_verified_pr_head"])
         self.assertEqual(p["pr_ci"]["run_id"], 39533766395)
@@ -268,7 +268,7 @@ class HandoffContractTests(unittest.TestCase):
 
     def test_25_multinovel_fixture_candidate_never_implies_real_g3(self):
         m = self.data["m3_2_product_progress"]["multinovel_browser"]
-        self.assertEqual(m["status"], "PROPOSED_NOT_CI_QUALIFIED")
+        self.assertEqual(m["status"], "MERGED_SOURCE_ONLY_NOT_PRODUCT_ACCEPTED")
         self.assertEqual(m["total_unit_tests_expected"], 36)
         self.assertEqual(m["total_chromium_cases_expected"], 38)
         self.assertEqual(m["new_unit_tests"], 4)
@@ -279,6 +279,21 @@ class HandoffContractTests(unittest.TestCase):
         self.assertEqual(m["g2b_to_g6"], "NOT_AUTHORIZED")
         self.assertEqual(m["real_g3"], "STOP_UNAVAILABLE")
         self.assertEqual(self.data["g2a"]["absence_of_sqlite_writer"], "NOT_PROVEN")
+
+    def test_26_pr102_postmerge_snapshot_is_documentary_only(self):
+        x = self.data["post_pr102_normalization"]
+        self.assertEqual(x["merged_pr"], 102)
+        self.assertEqual(x["merge_sha"], self.data["last_confirmed_main_before_handoff"])
+        self.assertEqual(x["pr_head_sha"], self.data["last_verified_pr_head"])
+        self.assertEqual(x["pr_ci"]["run_id"], 39543328344)
+        self.assertEqual(x["main_ci"]["run_id"], 39544279201)
+        self.assertEqual(x["synthetic_tests"], {"vitest": 36, "chromium": 38})
+        self.assertEqual(x["product_status"], "IN_PROGRESS_NOT_ACCEPTED")
+        self.assertEqual(x["writer_absence"], "NOT_PROVEN")
+        self.assertEqual(x["g2b_to_g6"], "NOT_AUTHORIZED")
+        self.assertEqual(x["real_g3"], "STOP_UNAVAILABLE")
+        self.assertEqual(x["windows_operator_execution"], "NONE")
+        self.assertIn("39544279201", self.doc)
 
     def test_24_policy_requires_refetch_and_same_pr_handoff(self):
         for clause in ("Re-fetch", "HANDOFF_CURRENT.md", "HANDOFF_CURRENT.json",
