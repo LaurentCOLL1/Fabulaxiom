@@ -1,5 +1,12 @@
 # Prompt minimal de reprise — Fabulaxiom
 
+## Reprise actuelle, 21 octobre 2026 — vérifier GitHub avant toute suite
+
+Reprendre Fabulaxiom M3.2 depuis [le dépôt](https://github.com/LaurentCOLL1/Fabulaxiom). Consulter en premier `README.md`, `HANDOFF_CURRENT.md/json`, `HANDOFF_PROTOCOL.md`, `NEXT.md`, `STATE.md`, historique et roadmap. Checkpoint daté : PR #114 MERGED, `main=ddb23311f40f09c04983b164ccd7afa361698ea8`, CI source #39612803528 SUCCESS, CI main #39614175650 SUCCESS. Ces valeurs doivent toujours être re-fetch avant emploi.
+
+Appliquer la **règle permanente de parallélisation sûre** : A, service Rust/UX M3.2 sur fixtures fictives ; B, provenance documentaire #36 ; C, protocole G2/G3/baseline #38. Branches indépendantes possibles mais écritures conflictuelles, commits à la même ref, CI exacte et fusions sous protection sont séquentiels. PR #35 OPEN/DRAFT non fusionnable, 472 commits d'écart, 7 chemins chevauchants (non assimilés à 7 conflits). Ne pas lancer de commande Windows opérateur, migration, writer IPC ou ouvrir la SQLite originale sans autorisation distincte. M3.2 non acceptée, G2B–G6 STOP.
+
+
 ## Reprise courte actuelle — 21 octobre 2026
 
 Reprends Fabulaxiom M3.2 depuis https://github.com/LaurentCOLL1/Fabulaxiom. Lis d'abord `docs/continuity/README.md`, `HANDOFF_CURRENT.md`, `HANDOFF_CURRENT.json`, `HANDOFF_PROTOCOL.md`, `NEXT.md`, `STATE.md`, l'historique et les roadmaps, puis **re-fetch live** `main`, PR, CI et ruleset avant tout changement. Dernier `main` vérifié dans ce checkpoint : `e74f1001c01eff1f37c8b35d97d4ef34f6fbccb3` (PR #113 fusionnée, CI PR #39605681206 et CI push #39607280677 SUCCESS au SHA exact). Une information plus récente dans GitHub prime toujours.
