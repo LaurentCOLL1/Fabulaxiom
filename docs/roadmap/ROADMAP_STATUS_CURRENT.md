@@ -1,5 +1,10 @@
 # Fabulaxiom — suivi de la roadmap V1 (état actualisé au 21 octobre 2026)
 
+**Checkpoint GitHub confirmé le 21 octobre 2026 :** PR [#113](https://github.com/LaurentCOLL1/Fabulaxiom/pull/113) **MERGED** sous Protect main, HEAD source `6fd369de970e6e35d42c2162f197eb57009a1d42`, [CI exacte #39605681206](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/39605681206) **SUCCESS** (74 étapes Windows, 60 Vitest atelier fictif, 50 Chromium par mode), `main=e74f1001c01eff1f37c8b35d97d4ef34f6fbccb3` et [CI post-fusion #39607280677](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/39607280677) **SUCCESS terminale au SHA exact**. PR #35 reste OPEN/DRAFT, GitHub `mergeable=false` ; source réelle G2B–G6 non autorisée, absence d'écrivain SQLite réel `NOT_PROVEN`, M3.2 `IN_PROGRESS_NOT_ACCEPTED`. Aucun geste opérateur local réalisé.
+
+**Organisation de la roadmap :** mener en parallèle, quand ils sont indépendants, les travaux source-only sur fixtures, la traçabilité des exigences et la recherche documentaire des preuves #36 / de la baseline #38. Ne pas fusionner plusieurs branches concurrentes vers `main` sans re-fetch, CI et décision séquentielle ; aucune promotion M3.2 ni G2–G6. Voir [protocole](../continuity/HANDOFF_PROTOCOL.md).
+
+
 **21 octobre 2026 — résultat terminal post-fusion PR #112 :** la CI push [#39597532619](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/39597532619) a terminé **SUCCESS** sur `main=3c489aa727129e4b090e2e80a49a93fb3fa95877`, SHA exact du merge #112. Les mentions plus anciennes « en cours au checkpoint » sont des photographies historiques, et ne décrivent pas l'état terminal. Cette mise à jour de la PR #113 impose une CI nouvelle sur son nouveau HEAD. M3.2 reste IN_PROGRESS_NOT_ACCEPTED, PR #35 DRAFT, writer réel NOT_PROVEN, G2B–G6 STOP, aucun essai Windows opérateur ni SQLite protégée.
 
 

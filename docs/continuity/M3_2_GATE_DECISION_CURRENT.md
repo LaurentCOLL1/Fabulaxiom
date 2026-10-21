@@ -1,5 +1,7 @@
 # Fabulaxiom M3.2 — Décision de gates au 20 octobre 2026
 
+**Revalidation documentaire du 21 octobre 2026, sans ouverture de gate :** PR #113 fusionnée sous Protect main à `e74f1001c01eff1f37c8b35d97d4ef34f6fbccb3` et CI post-fusion #39607280677 SUCCESS au SHA exact. Parallélisation des recherches, tests fictifs et lectures de source autorisée selon [HANDOFF_PROTOCOL.md](HANDOFF_PROTOCOL.md) ; **aucune** opération G2-B–G6 ni aucune autorisation implicite supplémentaire. La matrice G2-A/G2-B–G6 ci-dessous décrit toujours les gates observés au 20 octobre et reste inchangée.
+
 **ÉTAT DATÉ DOCUMENTAIRE, NON EXÉCUTABLE.** Re-fetch GitHub requis. Ce fichier n'est ni une autorisation locale ni une preuve indépendante. Lire avec `HANDOFF_CURRENT.md` et le snapshot historique daté du 19 octobre.
 
 ## Résultats réels, distincts des tests CI

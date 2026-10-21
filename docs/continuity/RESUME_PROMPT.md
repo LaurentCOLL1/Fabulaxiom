@@ -1,5 +1,12 @@
 # Prompt minimal de reprise — Fabulaxiom
 
+## Reprise courte actuelle — 21 octobre 2026
+
+Reprends Fabulaxiom M3.2 depuis https://github.com/LaurentCOLL1/Fabulaxiom. Lis d'abord `docs/continuity/README.md`, `HANDOFF_CURRENT.md`, `HANDOFF_CURRENT.json`, `HANDOFF_PROTOCOL.md`, `NEXT.md`, `STATE.md`, l'historique et les roadmaps, puis **re-fetch live** `main`, PR, CI et ruleset avant tout changement. Dernier `main` vérifié dans ce checkpoint : `e74f1001c01eff1f37c8b35d97d4ef34f6fbccb3` (PR #113 fusionnée, CI PR #39605681206 et CI push #39607280677 SUCCESS au SHA exact). Une information plus récente dans GitHub prime toujours.
+
+**Accélère le travail en parallélisant seulement les analyses et développements indépendants**, selon `HANDOFF_PROTOCOL.md`. Branches et fixtures séparées ; écritures sur une même branche, fusions, CI au HEAD exact et décisions d'autorisation **séquentielles**. PR #35 DRAFT/non fusionnable, M3.2 NON ACCEPTÉE, G2-A accord consommé, absence d'écrivain réel NOT_PROVEN, G2B–G6 STOP. Aucun geste Windows opérateur ni SQLite protégée sans nouveau consentement spécifique. Consigne le checkpoint suivant dans tous les fichiers de continuité vivants.
+
+
 **Checkpoint terminal vérifié le 21 octobre 2026 :** PR #108 fusionnée sur `main=ba4b8a599910cef6d1c76fa1e4fb561a0b45e631`, CI source #39572172593 SUCCESS (51 Vitest, 46 Chromium par mode), CI push post-fusion [#39573518324](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/39573518324) **SUCCESS** au SHA exact. Mentions « en cours » ci-dessous historiques. M3.2 NON ACCEPTÉE, PR #35 DRAFT, écrivain réel NOT_PROVEN, G2B–G6 STOP. Aucune exécution opérateur ni mutation SQLite.
 
 

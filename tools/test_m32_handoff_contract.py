@@ -253,7 +253,7 @@ class HandoffContractTests(unittest.TestCase):
 
     def test_23_pr100_merge_status_not_runtime_acceptance(self):
         p = self.data["post_pr100_normalization"]
-        self.assertEqual(self.data["last_confirmed_merged_pr"], 112)
+        self.assertEqual(p["main_merge_sha"], "bf59b28b437470a4759a5971968e8f00f9fa895c")
         self.assertEqual(p["main_merge_sha"], "bf59b28b437470a4759a5971968e8f00f9fa895c")
         self.assertEqual(p["pr_head_sha"], "95e2e0385979e2b226aa1d6289e12250c6e6e19d")
         self.assertEqual(p["pr_ci"]["run_id"], 39533766395)
@@ -456,9 +456,9 @@ class HandoffContractTests(unittest.TestCase):
 
     def test_36_pr112_merge_keeps_real_gates_closed(self):
         x = self.data["post_pr112_normalization"]
-        self.assertEqual(self.data["last_confirmed_merged_pr"], 112)
-        self.assertEqual(self.data["last_confirmed_main_before_handoff"], x["merge_sha"])
-        self.assertEqual(self.data["last_verified_pr_head"], x["pr_head_sha"])
+        self.assertEqual(x["merged_pr"], 112)
+        self.assertEqual(x["merge_sha"], "3c489aa727129e4b090e2e80a49a93fb3fa95877")
+        self.assertEqual(x["pr_head_sha"], "56c5d4d55a616469cda36c5fef7f63369a08bdb2")
         self.assertEqual(x["pr_ci"]["run_id"], 39596187154)
         self.assertEqual(x["pr_ci"]["conclusion"], "SUCCESS")
         self.assertEqual(x["main_ci"]["run_id"], 39597532619)
@@ -473,6 +473,43 @@ class HandoffContractTests(unittest.TestCase):
         self.assertEqual(x["real_g3"], "STOP_UNAVAILABLE")
         self.assertEqual(x["operator_execution"], "NONE")
         self.assertIn("PR #112 fusionnée", self.doc)
+
+    def test_37_pr113_merge_and_postmerge_ci_without_gate_promotion(self):
+        x = self.data["post_pr113_normalization"]
+        self.assertEqual(self.data["last_confirmed_merged_pr"], 113)
+        self.assertEqual(self.data["last_confirmed_main_before_handoff"], x["merge_sha"])
+        self.assertEqual(self.data["last_verified_pr_head"], x["pr_head_sha"])
+        self.assertEqual(self.data["last_verified_ci"]["run_id"], 39605681206)
+        self.assertEqual(x["pr_ci"]["conclusion"], "SUCCESS")
+        self.assertEqual(x["main_ci"]["run_id"], 39607280677)
+        self.assertEqual(x["main_ci"]["conclusion"], "SUCCESS")
+        self.assertEqual(self.data["main_ci_post_merge"]["conclusion"], "SUCCESS")
+        self.assertEqual(x["product_status"], "IN_PROGRESS_NOT_ACCEPTED")
+        self.assertEqual(x["writer_absence"], "NOT_PROVEN")
+        self.assertEqual(x["g2b_to_g6"], "NOT_AUTHORIZED")
+        self.assertEqual(x["real_g3"], "STOP_UNAVAILABLE")
+        self.assertEqual(x["operator_execution"], "NONE")
+        self.assertIn("PR #113", self.doc)
+
+    def test_38_independent_parallelism_only_sequential_writes_and_stops(self):
+        p = self.data["execution_parallelism"]
+        self.assertEqual(p["policy"],
+                         "PARALLEL_WHEN_INDEPENDENT_WITH_EXCLUSIVE_WRITES_AND_SEQUENTIAL_MERGES")
+        self.assertEqual(p["policy_document"], "docs/continuity/HANDOFF_PROTOCOL.md")
+        self.assertTrue(p["separate_branches_or_worktrees_for_mutations"])
+        self.assertEqual(p["shared_branch_or_file_writes"], "SERIAL_ONLY")
+        self.assertEqual(p["protected_main_merges"],
+                         "SERIAL_EXACT_HEAD_CI_AND_EXPECTED_HEAD_SHA")
+        self.assertEqual(p["windows_operator_execution"], "SEPARATE_EXPLICIT_APPROVAL_REQUIRED")
+        self.assertEqual(p["real_sqlite_or_sidecars"], "PROHIBITED")
+        self.assertEqual(p["gate_promotion"], "NONE_BY_PARALLELISM")
+        self.assertEqual(p["m3_2_acceptance"], "IN_PROGRESS_NOT_ACCEPTED")
+        self.assertIn("Règle permanente — paralléliser", self.policy)
+        self.assertIn("expected_head_sha", self.policy)
+        self.assertIn("tâches sont indépendantes", self.index)
+        self.assertIn("PR #113", self.doc)
+        self.assertEqual(self.data["pr35"], "OPEN_DRAFT")
+        self.assertEqual(self.data["g2a"]["absence_of_sqlite_writer"], "NOT_PROVEN")
 
     def test_24_policy_requires_refetch_and_same_pr_handoff(self):
         for clause in ("Re-fetch", "HANDOFF_CURRENT.md", "HANDOFF_CURRENT.json",
