@@ -255,7 +255,7 @@ class HandoffContractTests(unittest.TestCase):
         p = self.data["post_pr100_normalization"]
         self.assertEqual(self.data["last_confirmed_merged_pr"], 102)
         self.assertEqual(p["main_merge_sha"], "bf59b28b437470a4759a5971968e8f00f9fa895c")
-        self.assertEqual(p["pr_head_sha"], self.data["last_verified_pr_head"])
+        self.assertEqual(p["pr_head_sha"], "95e2e0385979e2b226aa1d6289e12250c6e6e19d")
         self.assertEqual(p["pr_ci"]["run_id"], 39533766395)
         self.assertEqual(p["main_ci"]["run_id"], 39534698504)
         self.assertEqual(p["test_laboratory"]["vitest"], 32)
