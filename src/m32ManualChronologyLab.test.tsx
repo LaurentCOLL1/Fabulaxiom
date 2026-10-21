@@ -263,7 +263,8 @@ describe("M3.2 manually authored fictional-only chronology laboratory", () => {
       { initial: invented, revisions: history }));
     expect(html).toContain("Vérification avant/après fictive");
     expect(html).toContain("Vérification de correction fictive");
-    expect(html).toContain("Révision historique");
+    expect(html).toContain("Choisir une ancre à corriger.");
+    expect(html).toContain("Choisir deux ancres fictives actives.");
     const d = startFictionalDraft(invented);
     previewFictionalPrecedence(d, "A", "C");
     previewFictionalCorrection(d, "A");
