@@ -54,7 +54,8 @@
     "PR106_ACTIVE_HUMAN_PRECEDENCE_WITNESS_FICTIONAL_PANEL_MERGED_MAIN_FBFC785A",
     "PR106_POSTMERGE_MAIN_39567933461_TERMINAL_SUCCESS_EXACT_SHA_VERIFIED_20261021",
     "2026_10_21_FICTIONAL_HISTORICAL_SELECTED_ANCHOR_GUARD_CANDIDATE_51_TESTS_46_CHROMIUM",
-    "PR108_HISTORIC_SELECTION_GUARD_MERGED_MAIN_BA4B8A59"
+    "PR108_HISTORIC_SELECTION_GUARD_MERGED_MAIN_BA4B8A59",
+    "PR108_MAIN_39573518324_TERMINAL_SUCCESS_EXACT_SHA_VERIFIED"
   ],
   "pr35": "OPEN_DRAFT",
   "issues": {
@@ -240,15 +241,15 @@
     "verified_bypass_actors": 0,
     "classic_branch_protection_read": "403_INTEGRATION_RESTRICTED"
   },
-  "next": "CHECK_POSTMERGE_PR108_MAIN_CI_TERMINAL_THEN_CONTINUE_FICTIONAL_PRODUCT_ROADMAP_NO_GATE_PROMOTION",
+  "next": "QUALIFY_DOC109_AT_FRESH_HEAD_THEN_FICTIONAL_ONLY_M32",
   "live_refetch_required": true,
   "hand_off_updated_by_future_pr": true,
   "main_ci_post_merge": {
     "sha": "ba4b8a599910cef6d1c76fa1e4fb561a0b45e631",
     "run_id": 39573518324,
-    "conclusion": "IN_PROGRESS",
+    "conclusion": "SUCCESS",
     "source": "MAIN_PUSH",
-    "note": "At checkpoint only. Re-fetch terminal exact-main result; do not authorize operator."
+    "note": "Verified terminal SUCCESS exact main merge on 2026-10-21; never operator authorization"
   },
   "g2a_candidate_ci": {
     "pr": 86,
@@ -449,7 +450,8 @@
       "pr": 108,
       "source_head": "fd62c1afd4ad6eff9a6f9d2f18679ef0704f59c1",
       "pr_ci": 39572172593,
-      "main_ci_pending": 39573518324
+      "main_ci_pending": 39573518324,
+      "main_ci_verified": 39573518324
     }
   },
   "post_pr100_normalization": {
@@ -554,7 +556,7 @@
     },
     "main_ci": {
       "run_id": 39573518324,
-      "conclusion": "IN_PROGRESS"
+      "conclusion": "SUCCESS"
     },
     "fiction_only": true,
     "vitest": 51,
