@@ -3,14 +3,14 @@
   "as_of": "2026-10-21",
   "status_kind": "DATED_PUBLIC_SOURCE_HANDOFF_ONLY",
   "repository": "LaurentCOLL1/Fabulaxiom",
-  "last_confirmed_main_before_handoff": "e74f1001c01eff1f37c8b35d97d4ef34f6fbccb3",
-  "last_confirmed_merged_pr": 113,
-  "last_verified_pr_head": "6fd369de970e6e35d42c2162f197eb57009a1d42",
+  "last_confirmed_main_before_handoff": "ddb23311f40f09c04983b164ccd7afa361698ea8",
+  "last_confirmed_merged_pr": 114,
+  "last_verified_pr_head": "8262659d58045c127fe4ee3ac56e6dd5681a9f5f",
   "last_verified_ci": {
-    "run_id": 39605681206,
+    "run_id": 39612803528,
     "context": "Windows frontend and Rust checks",
     "conclusion": "SUCCESS",
-    "source": "PR113_EXACT_HEAD"
+    "source": "PR114_EXACT_HEAD"
   },
   "recent_changes": [
     "PR_85_EXACT_G2A_TEXT_AST_ONLY",
@@ -66,7 +66,9 @@
     "PR112_SCENE_WORLD_PROOF_MERGED_MAIN_3C489AA7_EXACT_CI_39596187154_SUCCESS",
     "PR112_MAIN_PUSH_39597532619_TERMINAL_SUCCESS_AT_EXACT_MERGE_3C489AA7_VERIFIED",
     "PR113_DOC_NORMALIZATION_MERGED_MAIN_E74F1001_PR_CI_39605681206_AND_MAIN_CI_39607280677_SUCCESS",
-    "2026_10_21_PARALLEL_WORK_INDEPENDENT_STREAMS_EXCLUSIVE_WRITES_GATE_STOP_PRESERVED"
+    "2026_10_21_PARALLEL_WORK_INDEPENDENT_STREAMS_EXCLUSIVE_WRITES_GATE_STOP_PRESERVED",
+    "PR114_PROTECTED_MERGE_DDB23311_SOURCE_CI_39612803528_POST_MAIN_39614175650_SUCCESS",
+    "PR35_MAIN_472_COMMITS_7_POTENTIAL_PATH_OVERLAPS_SOURCE_ONLY_NO_REBASE"
   ],
   "pr35": "OPEN_DRAFT",
   "issues": {
@@ -252,15 +254,15 @@
     "verified_bypass_actors": 0,
     "classic_branch_protection_read": "403_INTEGRATION_RESTRICTED"
   },
-  "next": "RE_FETCH_MAIN_AND_PR35_THEN_PLAN_INDEPENDENT_SOURCE_ONLY_STREAMS_FICTIONAL_UX_CUSTODY_WRITER_AUDIT;_NO_OPERATOR_WINDOWS",
+  "next": "QUALIFY_PR115_DOC_SNAPSHOT_AT_EXACT_HEAD_THEN_RECONCILE_PR35_SERVICE_ON_NEW_FICTION_ONLY_BRANCH_AND_KEEP_G2B_TO_G6_STOPPED",
   "live_refetch_required": true,
   "hand_off_updated_by_future_pr": true,
   "main_ci_post_merge": {
-    "sha": "e74f1001c01eff1f37c8b35d97d4ef34f6fbccb3",
-    "run_id": 39607280677,
+    "sha": "ddb23311f40f09c04983b164ccd7afa361698ea8",
+    "run_id": 39614175650,
     "conclusion": "SUCCESS",
     "source": "MAIN_PUSH",
-    "note": "Terminal SUCCESS independently re-fetched on 2026-10-21; documentary evidence only, not operator acceptance"
+    "note": "2026-10-21 terminal GitHub SUCCESS verified at exact PR114 merge SHA; not an operator safety claim"
   },
   "g2a_candidate_ci": {
     "pr": 86,
@@ -698,5 +700,50 @@
     "real_sqlite_or_sidecars": "PROHIBITED",
     "gate_promotion": "NONE_BY_PARALLELISM",
     "m3_2_acceptance": "IN_PROGRESS_NOT_ACCEPTED"
+  },
+  "post_pr114_normalization": {
+    "kind": "DATED_DOCUMENTARY_SNAPSHOT_NO_RUNTIME_AUTHORITY",
+    "merged_pr": 114,
+    "merge_sha": "ddb23311f40f09c04983b164ccd7afa361698ea8",
+    "pr_head_sha": "8262659d58045c127fe4ee3ac56e6dd5681a9f5f",
+    "pr_ci": {
+      "run_id": 39612803528,
+      "conclusion": "SUCCESS",
+      "job_steps": 74
+    },
+    "main_ci": {
+      "run_id": 39614175650,
+      "conclusion": "SUCCESS"
+    },
+    "policy": "PARALLEL_WHEN_INDEPENDENT_WITH_EXCLUSIVE_WRITES_AND_SEQUENTIAL_MERGES",
+    "product_status": "IN_PROGRESS_NOT_ACCEPTED",
+    "writer_absence": "NOT_PROVEN",
+    "g2b_to_g6": "NOT_AUTHORIZED",
+    "real_g3": "STOP_UNAVAILABLE",
+    "operator_execution": "NONE"
+  },
+  "pr35_reconciliation": {
+    "status": "PRELIMINARY_PUBLIC_PATH_OVERLAP_NOT_MERGE_AUTHORIZATION",
+    "pr": 35,
+    "head": "41ce7b915e76d22785d53d7fffe288d113dd0bf5",
+    "historic_base": "f7eabfea74480d307b52d4b053730021efc95352",
+    "target_main_sha": "ddb23311f40f09c04983b164ccd7afa361698ea8",
+    "main_ahead_commits": 472,
+    "pr_changed_paths": 84,
+    "main_changed_paths_in_comparison": 152,
+    "potential_overlapping_paths": [
+      ".github/workflows/m0-ci.yml",
+      "docs/continuity/NEXT.md",
+      "docs/continuity/STATE.md",
+      "src-tauri/Cargo.toml",
+      "src-tauri/src/lib.rs",
+      "src/M32ChronologyPreview.tsx",
+      "src/m32ChronologyPreview.test.tsx"
+    ],
+    "exact_text_conflicts": "NOT_DETERMINED",
+    "public_mergeable": false,
+    "rebase_or_reset_performed": false,
+    "operator_execution": "NONE",
+    "source_only_plan": "docs/qualification/M3_2_PR35_SAFE_RECONCILIATION_PLAN.md"
   }
 }
