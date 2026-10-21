@@ -310,7 +310,7 @@ class HandoffContractTests(unittest.TestCase):
         self.assertEqual(x["real_g3"], "STOP_UNAVAILABLE")
         self.assertEqual(x["g2b_to_g6"], "NOT_AUTHORIZED")
         self.assertEqual(self.data["g2a"]["absence_of_sqlite_writer"], "NOT_PROVEN")
-        self.assertIn("comparateur des trois ordres", self.doc)
+        self.assertIn("comparaison des trois ordres", self.doc)
 
     def test_28_pr104_postmerge_is_fictional_not_operator_permission(self):
         x = self.data["post_pr104_normalization"]
