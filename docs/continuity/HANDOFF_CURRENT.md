@@ -1,6 +1,26 @@
 # Fabulaxiom M3.2 — Reprise opérationnelle courte
 
-## 21 octobre 2026 — candidat fictif : protection des sélections devenues historiques
+## 21 octobre 2026 — CI post-fusion #108 maintenant terminale
+
+GitHub re-vérifié : `main=ba4b8a599910cef6d1c76fa1e4fb561a0b45e631`, PR #108 MERGED. CI PR #39572172593 **SUCCESS** au source head `fd62c1afd4ad6eff9a6f9d2f18679ef0704f59c1` (51 Vitest atelier fictif, 46 Chromium par mode, 74 étapes Windows). CI [post-fusion #39573518324](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/39573518324) **SUCCESS terminale** sur le SHA du merge. Les passages « en cours au checkpoint » restent historiques. Aucun de ces résultats n'est transférable à une nouvelle PR.
+
+**M3.2 IN_PROGRESS_NOT_ACCEPTED**, PR #35 OPEN/DRAFT, G2A metadata-only ponctuel consommé, `PROCESS_WRITER_ABSENCE=NOT_PROVEN`, G2B–G6 NOT_AUTHORIZED, vrai G3 STOP. Aucune originale SQLite v6/v7, sauvegarde, ACL, WAL/SHM, marqueurs, migration 007, IPC writer, M3.3, ComfyUI, release ni commande Windows opérateur.
+
+---
+
+
+## 21 octobre 2026 — PR #108 fusionnée : sélections historiques explicites
+
+Source GitHub vérifiée : PR [#108](https://github.com/LaurentCOLL1/Fabulaxiom/pull/108) MERGED sous Protect main au `main=ba4b8a599910cef6d1c76fa1e4fb561a0b45e631`. HEAD de PR `fd62c1afd4ad6eff9a6f9d2f18679ef0704f59c1`, CI PR [#39572172593](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/39572172593) terminale SUCCESS : 74 étapes Windows, 51 tests Vitest de l'atelier et 46/46 Chromium dans chacun des deux modes. CI push main [#39573518324](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/39573518324) **EN COURS au présent checkpoint**, ne pas convertir en succès sans re-fetch.
+
+L'atelier navigateur **exclusivement fictif** indique quand une ancre choisie pour consulter une preuve est devenue historique après correction, conserve son ancienne identité en option désactivée, supprime la comparaison courante jusqu'à nouvelle sélection et réinitialise les choix entre Univers fictifs. Les anciens paragraphes « candidat » sont des instantanés historiques conservés. **M3.2 IN_PROGRESS_NOT_ACCEPTED**, PR #35 OPEN/DRAFT ; aucune preuve Windows opérateur ou intégration SQLite réelle.
+
+**STOP inchangé :** G2-A metadata-only PASS avec accord ponctuel consommé, absence d'écrivain réel NOT_PROVEN, G2-B/C/D et G3–G6 NOT_AUTHORIZED, réel G3 STOP_UNAVAILABLE ; M3.3, migration 007, IPC writer, original v6/v7, sauvegardes, journaux, ACL, marqueurs, ComfyUI, release et commandes Windows opérateur non autorisés.
+
+---
+
+
+## 21 octobre 2026 — historique du candidat PR #108, désormais fusionné
 
 Candidat **NON QUALIFIÉ** exclusivement dans l'atelier navigateur inventé : si une ancre choisie pour consulter une preuve temporelle est explicitement remplacée, l'ancien identifiant reste visible comme **historique, désactivé** dans le sélecteur, avec une explication. Aucune preuve d'ordre courant ne s'affiche pour une référence historique. Un nouvel identifiant courant peut être choisi ; le changement d'Univers fictif repart sans sélection étrangère.
 

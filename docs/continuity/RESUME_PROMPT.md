@@ -1,5 +1,11 @@
 # Prompt minimal de reprise — Fabulaxiom
 
+**Checkpoint terminal vérifié le 21 octobre 2026 :** PR #108 fusionnée sur `main=ba4b8a599910cef6d1c76fa1e4fb561a0b45e631`, CI source #39572172593 SUCCESS (51 Vitest, 46 Chromium par mode), CI push post-fusion [#39573518324](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/39573518324) **SUCCESS** au SHA exact. Mentions « en cours » ci-dessous historiques. M3.2 NON ACCEPTÉE, PR #35 DRAFT, écrivain réel NOT_PROVEN, G2B–G6 STOP. Aucune exécution opérateur ni mutation SQLite.
+
+
+**Checkpoint public du 21 octobre 2026 :** PR [#108](https://github.com/LaurentCOLL1/Fabulaxiom/pull/108) MERGED sur `main=ba4b8a599910cef6d1c76fa1e4fb561a0b45e631`, CI exacte de PR #39572172593 SUCCESS (74 étapes Windows, 51 tests atelier, 46 Chromium dans deux modes). CI post-fusion #39573518324 **EN COURS au présent instantané**, résultat terminal à vérifier. Fonctionnalité exclusivement fictive de refus des anciennes sélections historiques ; M3.2 NON ACCEPTÉE, PR #35 DRAFT, G2B–G6 STOP, écrivain SQLite réel NOT_PROVEN.
+
+
 **Vérification terminale (21 octobre 2026) :** la CI push main [#39567933461](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/39567933461) après fusion protégée PR #106 est maintenant **SUCCESS** au `main=fbfc785afa6e5bdf92c337004d1bd2f925c4957a`. La CI PR #39566947725 avait déjà terminé SUCCESS (48 tests atelier, 44 Chromium par mode). Les anciens « en cours » sont des preuves historiques datées ; aucun nouveau gate ouvert : M3.2 NOT_ACCEPTED, G2B–G6 STOP, écrivain réel NOT_PROVEN. La présente PR documentaire demande une CI neuve au HEAD exact.
 
 
