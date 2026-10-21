@@ -137,6 +137,123 @@ pub fn list_precedences(db: &Connection, universe_id: &str) -> Result<Vec<Manual
 
 
 
+// Stage two: append-only author decisions on RAM-only candidate SQL (PR #35 lineage).
+#[derive(Debug, PartialEq, Eq)]
+pub struct ChronologyDecision {
+    pub id: String,
+    pub prior_id: String,
+    pub action: String,
+    pub replacement_id: Option<String>,
+    pub reason: String,
+    pub source_revision_id: Option<String>,
+}
+
+// Permanent append-only record, never an UPDATE or DELETE of source history.
+pub fn decide_anchor(
+    db: &Connection,
+    id: &str,
+    universe_id: &str,
+    prior_anchor_id: &str,
+    action: &str,
+    replacement_anchor_id: Option<&str>,
+    reason: &str,
+    source_revision_id: Option<&str>,
+) -> Result<()> {
+    db.execute(
+        "INSERT INTO world_time_anchor_decisions
+          (id,universe_id,prior_anchor_id,action,replacement_anchor_id,reason,source_revision_id)
+         VALUES (?1,?2,?3,?4,?5,?6,?7)",
+        params![
+            id, universe_id, prior_anchor_id, action, replacement_anchor_id, reason,
+            source_revision_id
+        ],
+    )?;
+    Ok(())
+}
+
+pub fn decide_precedence(
+    db: &Connection,
+    id: &str,
+    universe_id: &str,
+    prior_precedence_id: &str,
+    action: &str,
+    replacement_precedence_id: Option<&str>,
+    reason: &str,
+    source_revision_id: Option<&str>,
+) -> Result<()> {
+    db.execute(
+        "INSERT INTO world_time_precedence_decisions
+          (id,universe_id,prior_precedence_id,action,replacement_precedence_id,reason,source_revision_id)
+         VALUES (?1,?2,?3,?4,?5,?6,?7)",
+        params![
+            id, universe_id, prior_precedence_id, action, replacement_precedence_id,
+            reason, source_revision_id
+        ],
+    )?;
+    Ok(())
+}
+
+// New anchor insertion and the superseding decision must commit together.
+// The existing original anchor is never modified, even on failure.
+pub fn supersede_anchor_atomically(
+    db: &mut Connection,
+    new_anchor: AnchorDraft<'_>,
+    decision_id: &str,
+    prior_anchor_id: &str,
+    reason: &str,
+    source_revision_id: Option<&str>,
+) -> Result<()> {
+    let tx = db.transaction()?;
+    create_anchor(&tx, new_anchor)?;
+    decide_anchor(
+        &tx, decision_id, new_anchor.universe_id, prior_anchor_id,
+        "supersede", Some(new_anchor.id), reason, source_revision_id,
+    )?;
+    tx.commit()
+}
+
+// Stable identifier ordering is display order only; never fictional time.
+pub fn list_current_anchor_ids(db: &Connection, universe_id: &str) -> Result<Vec<String>> {
+    let mut stmt = db.prepare(
+        "SELECT a.id FROM world_time_anchors a
+         WHERE a.universe_id=?1 AND NOT EXISTS(
+             SELECT 1 FROM world_time_anchor_decisions d
+             WHERE d.prior_anchor_id=a.id AND d.universe_id=a.universe_id
+         ) ORDER BY a.id",
+    )?;
+    stmt.query_map([universe_id], |row| row.get(0))?.collect()
+}
+
+pub fn list_current_precedence_ids(db: &Connection, universe_id: &str) -> Result<Vec<String>> {
+    let mut stmt = db.prepare(
+        "SELECT p.id FROM world_time_precedences p
+         WHERE p.universe_id=?1 AND NOT EXISTS(
+             SELECT 1 FROM world_time_precedence_decisions d
+             WHERE d.prior_precedence_id=p.id AND d.universe_id=p.universe_id
+         ) ORDER BY p.id",
+    )?;
+    stmt.query_map([universe_id], |row| row.get(0))?.collect()
+}
+
+pub fn list_anchor_decisions(db: &Connection, universe_id: &str) -> Result<Vec<ChronologyDecision>> {
+    let mut stmt = db.prepare(
+        "SELECT id,prior_anchor_id,action,replacement_anchor_id,reason,source_revision_id
+         FROM world_time_anchor_decisions WHERE universe_id=?1 ORDER BY id",
+    )?;
+    stmt.query_map([universe_id], |row| {
+        Ok(ChronologyDecision {
+            id: row.get(0)?,
+            prior_id: row.get(1)?,
+            action: row.get(2)?,
+            replacement_id: row.get(3)?,
+            reason: row.get(4)?,
+            source_revision_id: row.get(5)?,
+        })
+    })?.collect()
+}
+
+
+
 // Compilation is gated by #[cfg(test)] in lib.rs. Test databases exist only in RAM.
 
 #[cfg(test)]
@@ -145,6 +262,7 @@ mod tests {
     use crate::database;
 
     const V7_CANDIDATE: &str = include_str!("../sql/m3_1_world_time_v7_candidate.sql");
+    const M32_DECISIONS: &str = include_str!("../sql/m3_2_chronology_decisions_candidate.sql");
 
     fn fixture() -> Connection {
         let mut db = Connection::open_in_memory().expect("RAM only");
@@ -154,6 +272,7 @@ mod tests {
             "INSERT INTO universes(id,name) VALUES ('u1','Imaginaire A'),('u2','Imaginaire B')", []
         ).expect("two invented universes");
         db.execute_batch(V7_CANDIDATE).expect("v7 candidate in disposable RAM");
+        db.execute_batch(M32_DECISIONS).expect("decisions only in disposable RAM");
         assert_eq!(database::current_schema_version(&db).expect("schema version"), 6);
         db
     }
@@ -271,4 +390,85 @@ mod tests {
         assert_eq!(list_anchors(&db,"u1").unwrap()[0].source_revision_id.as_deref(),
                    Some("old-r1"));
     }
+    #[test]
+    fn explicit_anchor_revocation_keeps_immutable_history() {
+        let db=fixture();
+        create_anchor(&db,draft("a","u1","unknown")).unwrap();
+        create_anchor(&db,draft("b","u1","relative")).unwrap();
+        decide_anchor(&db,"d1","u1","a","revoke",None,"L'auteur corrige",None).unwrap();
+        assert_eq!(list_current_anchor_ids(&db,"u1").unwrap(),vec!["b".to_string()]);
+        assert_eq!(list_anchors(&db,"u1").unwrap().len(),2);
+        let decisions=list_anchor_decisions(&db,"u1").unwrap();
+        assert_eq!(decisions.len(),1);
+        assert_eq!(decisions[0].action,"revoke");
+        assert!(decide_anchor(&db,"d2","u1","a","revoke",None,"double",None).is_err());
+        assert!(db.execute("DELETE FROM world_time_anchor_decisions WHERE id='d1'",[]).is_err());
+        assert!(db.execute("UPDATE world_time_anchor_decisions SET reason='new' WHERE id='d1'",[]).is_err());
+    }
+
+    #[test]
+    fn atomic_anchor_supersession_updates_current_selection_not_original() {
+        let mut db=fixture();
+        create_anchor(&db,draft("old","u1","unknown")).unwrap();
+        supersede_anchor_atomically(&mut db,draft("new","u1","relative"),
+            "decision","old","Decision manuelle",None).unwrap();
+        assert_eq!(list_current_anchor_ids(&db,"u1").unwrap(),vec!["new".to_string()]);
+        assert_eq!(list_anchors(&db,"u1").unwrap().len(),2);
+        let decision=&list_anchor_decisions(&db,"u1").unwrap()[0];
+        assert_eq!(decision.replacement_id.as_deref(),Some("new"));
+        assert_eq!(decision.prior_id,"old");
+        assert_eq!(database::current_schema_version(&db).unwrap(),6);
+    }
+
+    #[test]
+    fn failed_atomic_supersession_rolls_back_new_anchor_across_universes() {
+        let mut db=fixture();
+        create_anchor(&db,draft("prior","u1","unknown")).unwrap();
+        assert!(supersede_anchor_atomically(&mut db,draft("foreign","u2","unknown"),
+            "invalid","prior","Cross universe",None).is_err());
+        assert!(list_anchors(&db,"u2").unwrap().is_empty());
+        assert!(list_anchor_decisions(&db,"u1").unwrap().is_empty());
+        assert_eq!(list_current_anchor_ids(&db,"u1").unwrap(),vec!["prior".to_string()]);
+    }
+
+    #[test]
+    fn explicit_precedence_revocation_keeps_old_authored_edge() {
+        let db=fixture();
+        create_anchor(&db,draft("a","u1","unknown")).unwrap();
+        create_anchor(&db,draft("b","u1","unknown")).unwrap();
+        create_precedence(&db,"edge","u1","a","b","author before",None).unwrap();
+        assert_eq!(list_current_precedence_ids(&db,"u1").unwrap(),vec!["edge".to_string()]);
+        decide_precedence(&db,"d","u1","edge","revoke",None,"Author correction",None).unwrap();
+        assert!(list_current_precedence_ids(&db,"u1").unwrap().is_empty());
+        assert_eq!(list_precedences(&db,"u1").unwrap().len(),1);
+        assert!(decide_precedence(&db,"twice","u1","edge","revoke",None,"double",None).is_err());
+        assert!(db.execute("DELETE FROM world_time_precedence_decisions WHERE id='d'",[]).is_err());
+    }
+
+    #[test]
+    fn retired_anchors_cannot_receive_new_edges() {
+        let db=fixture();
+        create_anchor(&db,draft("a","u1","unknown")).unwrap();
+        create_anchor(&db,draft("b","u1","unknown")).unwrap();
+        decide_anchor(&db,"retire","u1","a","revoke",None,"Retired",None).unwrap();
+        assert!(create_precedence(&db,"edge","u1","a","b","invalid history",None).is_err());
+        assert!(list_precedences(&db,"u1").unwrap().is_empty());
+    }
+
+    #[test]
+    fn decision_validation_rejects_cross_world_missing_and_wrong_actions() {
+        let db=fixture();
+        create_anchor(&db,draft("u1a","u1","unknown")).unwrap();
+        create_anchor(&db,draft("u2a","u2","unknown")).unwrap();
+        assert!(decide_anchor(&db,"foreign","u2","u1a","revoke",None,"wrong",None).is_err());
+        assert!(decide_anchor(&db,"missing","u1","unknown","revoke",None,"missing",None).is_err());
+        assert!(decide_anchor(&db,"action","u1","u1a","approve",None,"invalid",None).is_err());
+        assert!(decide_anchor(&db,"replacement","u1","u1a","supersede",Some("u2a"),"cross",None).is_err());
+        create_precedence(&db,"p","u1","u1a","u1a","self",None).expect_err("self edge rejected");
+        create_anchor(&db,draft("u1b","u1","unknown")).unwrap();
+        create_precedence(&db,"p","u1","u1a","u1b","authored",None).unwrap();
+        assert!(decide_precedence(&db,"wrong-owner","u2","p","revoke",None,"other",None).is_err());
+        assert!(decide_precedence(&db,"wrong-action","u1","p","approve",None,"invalid",None).is_err());
+    }
+
 }

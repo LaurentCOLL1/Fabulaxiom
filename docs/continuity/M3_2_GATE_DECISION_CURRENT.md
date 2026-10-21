@@ -1,5 +1,8 @@
 # Fabulaxiom M3.2 — Décision de gates au 20 octobre 2026
 
+
+**Revalidation source publique au 21/10/2026 :** PR #116 MERGED `388cb745888f9f2d4d0a07fce1ed19fad9b4a548`, push CI #39628479487 SUCCESS au SHA exact. Les décisions Rust + SQL candidates de la prochaine tranche restent exclusivement dans des tests SQLite en RAM ; cette preuve ne modifie aucun statut de G2A/G2B–G6.
+
 **Checkpoint public du 21/10/2026, sans ouvrir les gates :** PR #115 MERGED, CI push #39620942276 SUCCESS sur `33846c8c6813acda5eda5089827f81df99175d2c`. Un portage `#[cfg(test)]` sur SQLite en RAM n'authentifie aucun fichier opérateur. G2B–G6 restent NOT_AUTHORIZED ; aucun changement du tableau de décision ci-dessous.
 
 
