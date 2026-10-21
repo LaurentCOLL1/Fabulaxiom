@@ -3,14 +3,14 @@
   "as_of": "2026-10-21",
   "status_kind": "DATED_PUBLIC_SOURCE_HANDOFF_ONLY",
   "repository": "LaurentCOLL1/Fabulaxiom",
-  "last_confirmed_main_before_handoff": "1f0a8cd9a369106202b57102aa28915de65b7472",
-  "last_confirmed_merged_pr": 102,
-  "last_verified_pr_head": "07baf294286d427185c0817310d82418eb8c3fd2",
+  "last_confirmed_main_before_handoff": "997b60901e1f18a426eae3efa34ddb29c07b5721",
+  "last_confirmed_merged_pr": 104,
+  "last_verified_pr_head": "b320b711763659d9a3af670b685254eeb8b815e9",
   "last_verified_ci": {
-    "run_id": 39543328344,
+    "run_id": 39553745685,
     "context": "Windows frontend and Rust checks",
     "conclusion": "SUCCESS",
-    "source": "PR102_EXACT_HEAD"
+    "source": "PR104_EXACT_HEAD"
   },
   "recent_changes": [
     "PR_85_EXACT_G2A_TEXT_AST_ONLY",
@@ -46,7 +46,10 @@
     "2026_10_21_MULTINOVEL_FICTIONAL_BROWSER_LAB_TWO_NOVELS_SAME_UNIVERSE_CANDIDATE",
     "PR_101_DOC_POST_PR100_NORMALIZATION_MERGED_MAIN_23F3CE9",
     "PR_102_TWO_FICTIONAL_NOVELS_36_VITEST_38_CHROMIUM_MERGED_MAIN_1F0A8CD9",
-    "2026_10_21_FICTIONAL_THREE_ORDERS_READONLY_COMPARATOR_CANDIDATE"
+    "2026_10_21_FICTIONAL_THREE_ORDERS_READONLY_COMPARATOR_CANDIDATE",
+    "PR_103_DOC_NORMALIZATION_MERGED_MAIN_DBD79CF",
+    "PR_104_FICTIONAL_THREE_ORDERS_COMPARATOR_MERGED_MAIN_997B609",
+    "POSTMERGE_PR104_MAIN_39554622761_TERMINAL_SUCCESS_ON_EXACT_SHA_20261021"
   ],
   "pr35": "OPEN_DRAFT",
   "issues": {
@@ -232,15 +235,15 @@
     "verified_bypass_actors": 0,
     "classic_branch_protection_read": "403_INTEGRATION_RESTRICTED"
   },
-  "next": "QUALIFY_42_FICTIONAL_UNIT_AND_41_REAL_CHROMIUM_THREE_ORDERS_EXACT_HEAD_CI_KEEP_REAL_G3_CLOSED",
+  "next": "FICTION_ONLY_HUMAN_PRECEDENCE_EVIDENCE_EXPLANATION_READONLY_NO_INFERRED_WORLD_TIME",
   "live_refetch_required": true,
   "hand_off_updated_by_future_pr": true,
   "main_ci_post_merge": {
-    "sha": "1f0a8cd9a369106202b57102aa28915de65b7472",
-    "run_id": 39544279201,
+    "sha": "997b60901e1f18a426eae3efa34ddb29c07b5721",
+    "run_id": 39554622761,
     "conclusion": "SUCCESS",
     "source": "MAIN_PUSH",
-    "note": "Terminal SUCCESS checked 21 Oct 2026; no gate promotion"
+    "note": "Terminal SUCCESS checked 21 Oct 2026, at merge main SHA; not transferable."
   },
   "g2a_candidate_ci": {
     "pr": 86,
@@ -375,7 +378,7 @@
       "verified_main_ci": 39544279201
     },
     "three_orders_comparator": {
-      "status": "CANDIDATE_NOT_CI_QUALIFIED",
+      "status": "MERGED_SOURCE_ONLY_NOT_PRODUCT_ACCEPTED",
       "kind": "READ_ONLY_FICTIONAL_BROWSER_ONLY",
       "function": "previewFictionalThreeOrders",
       "within_novel_order": "CHAPTER_AND_SCENE_POSITION_ONLY",
@@ -391,7 +394,12 @@
       "real_sqlite_access": "NONE",
       "operator_execution": "NONE",
       "real_g3": "STOP_UNAVAILABLE",
-      "g2b_to_g6": "NOT_AUTHORIZED"
+      "g2b_to_g6": "NOT_AUTHORIZED",
+      "pr": 104,
+      "source_head": "b320b711763659d9a3af670b685254eeb8b815e9",
+      "ci_pr": 39553745685,
+      "ci_main_pending": 39554622761,
+      "ci_main_verified": 39554622761
     }
   },
   "post_pr100_normalization": {
@@ -440,5 +448,27 @@
     "writer_absence": "NOT_PROVEN",
     "g2b_to_g6": "NOT_AUTHORIZED",
     "windows_operator_execution": "NONE"
+  },
+  "post_pr104_normalization": {
+    "kind": "DATED_DOCUMENTARY_SNAPSHOT_NOT_RUNTIME_AUTHORITY",
+    "pr": 104,
+    "merge_sha": "997b60901e1f18a426eae3efa34ddb29c07b5721",
+    "source_head": "b320b711763659d9a3af670b685254eeb8b815e9",
+    "ci_pr": {
+      "run_id": 39553745685,
+      "conclusion": "SUCCESS"
+    },
+    "ci_main": {
+      "run_id": 39554622761,
+      "conclusion": "SUCCESS"
+    },
+    "synthetic_only": true,
+    "vitest": 42,
+    "chromium": 41,
+    "product": "IN_PROGRESS_NOT_ACCEPTED",
+    "writer_absence": "NOT_PROVEN",
+    "g2b_to_g6": "NOT_AUTHORIZED",
+    "real_g3": "STOP_UNAVAILABLE",
+    "operator_execution": "NONE"
   }
 }
