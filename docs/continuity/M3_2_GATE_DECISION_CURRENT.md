@@ -1,5 +1,8 @@
 # Fabulaxiom M3.2 — Décision de gates au 20 octobre 2026
 
+**21 octobre 2026 — PR #118 MERGED :** source `ff996fc27da6df12697d68a46b8580a3a33e30b3`, CI #39658544037 SUCCESS (74 étapes, 117 Rust, 46 contrats, 21 inventaires SQLite, 50 Chromium par mode), fusion protégée `main=a0942b9566d6de21cf73e55dce47c3797dcb7c81`. CI push #39660168071 **IN_PROGRESS_AT_CHECKPOINT** : ne pas prétendre sa réussite terminale sans re-fetch exact. Nouvelle tranche test-only, uniquement SQLite RAM : révocation immuable de reformulation, historique conservé, 4 tests Rust supplémentaires ; aucune écriture active supplémentaire déduite.
+**STOP toujours effectif :** M3.2 IN_PROGRESS_NOT_ACCEPTED, PR #35 OPEN/DRAFT, réel writer NOT_PROVEN, G2B–G6 NOT_AUTHORIZED, G3 réel STOP_UNAVAILABLE, historique 21/3/2 PENDING_EXTERNAL_ATTESTATION, prospective NOT_STARTED. Pas de Windows opérateur, original SQLite v6/v7, backup, ACL, journal, marker, migration 007, IPC writer, M3.3 ni release.
+
 
 **Revalidation publique 21/10/2026 :** PR #117 MERGED à `b76e6c00c579bee36c194872e3679c48fe9788fa`, CI push #39655214998 SUCCESS. La prochaine tranche de reformulation explicite reste confinée aux bases SQLite RAM et ne prouve aucun état opérateur ni autorisation G2-B–G6.
 

@@ -87,3 +87,7 @@ Les blocages externes (issues #36/#38) demeurent. Les détails techniques de la 
 **2026-10-21 — PR #116 MERGED test-only :** source `0b2555833c1a2c0152cba2185c8122f3d3ecbbae`, CI #39626827246 SUCCESS ; `main=388cb745888f9f2d4d0a07fce1ed19fad9b4a548`, push #39628479487 SUCCESS, six nouveaux tests Rust; second-stage historical SQL decision candidate staged only for future fictitious RAM tests. Neither stage is production acceptance; G2B–G6 STOP.
 
 **2026-10-21 — PR #117 MERGED, source CI #39653506345 SUCCESS, post-main #39655214998 SUCCESS at `b76e6c00c579bee36c194872e3679c48fe9788fa`.** Third source-only fixture candidate: explicit corrected restatement from revoked human precedent; schema+module loaded only in SQLite RAM. 5 Rust tests planned, no writer IPC/migration 007/operator Windows; G2B–G6 STOP.
+
+**2026-10-21 — PR #118 MERGED**, main `a0942b9566d6de21cf73e55dce47c3797dcb7c81`, source CI #39658544037 SUCCESS; main push #39660168071 IN_PROGRESS at checkpoint. Fourth test-only RAM stage: restatement withdrawal + immutable history, no new author graph permission, no real gates.
+
+**2026-10-21 — PR #119 initial CI #39661237200 FAILED**: 3 legacy handoff tests used the live root main_ci_post_merge rather than their own immutable PR112/PR113/PR114 snapshots; fixed assertions only, new exact HEAD CI required. Source-only safety and gates unchanged.

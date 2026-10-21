@@ -462,7 +462,7 @@ class HandoffContractTests(unittest.TestCase):
         self.assertEqual(x["pr_ci"]["conclusion"], "SUCCESS")
         self.assertEqual(x["main_ci"]["run_id"], 39597532619)
         self.assertEqual(x["main_ci"]["conclusion"], "SUCCESS")
-        self.assertEqual(self.data["main_ci_post_merge"]["conclusion"], "SUCCESS")
+        self.assertEqual(x["main_ci"]["conclusion"], "SUCCESS")
         self.assertTrue(x["fiction_only"])
         self.assertEqual(x["vitest"], 60)
         self.assertEqual(x["chromium_per_mode"], 50)
@@ -482,7 +482,7 @@ class HandoffContractTests(unittest.TestCase):
         self.assertEqual(x["pr_ci"]["conclusion"], "SUCCESS")
         self.assertEqual(x["main_ci"]["run_id"], 39607280677)
         self.assertEqual(x["main_ci"]["conclusion"], "SUCCESS")
-        self.assertEqual(self.data["main_ci_post_merge"]["conclusion"], "SUCCESS")
+        self.assertEqual(x["main_ci"]["conclusion"], "SUCCESS")
         self.assertEqual(x["product_status"], "IN_PROGRESS_NOT_ACCEPTED")
         self.assertEqual(x["writer_absence"], "NOT_PROVEN")
         self.assertEqual(x["g2b_to_g6"], "NOT_AUTHORIZED")
@@ -520,7 +520,7 @@ class HandoffContractTests(unittest.TestCase):
         self.assertEqual(x["pr_ci"]["conclusion"], "SUCCESS")
         self.assertEqual(x["main_ci"]["run_id"], 39614175650)
         self.assertEqual(x["main_ci"]["conclusion"], "SUCCESS")
-        self.assertEqual(self.data["main_ci_post_merge"]["conclusion"], "SUCCESS")
+        self.assertEqual(x["main_ci"]["conclusion"], "SUCCESS")
         self.assertEqual(x["policy"],
                          "PARALLEL_WHEN_INDEPENDENT_WITH_EXCLUSIVE_WRITES_AND_SEQUENTIAL_MERGES")
         self.assertEqual(x["product_status"], "IN_PROGRESS_NOT_ACCEPTED")
@@ -625,14 +625,14 @@ class HandoffContractTests(unittest.TestCase):
 
     def test_45_pr117_merged_exact_ci_and_private_gates_remain_closed(self):
         x = self.data["post_pr117_normalization"]
-        self.assertEqual(self.data["last_confirmed_merged_pr"], 117)
-        self.assertEqual(self.data["last_confirmed_main_before_handoff"], x["merge_sha"])
-        self.assertEqual(self.data["last_verified_pr_head"], x["pr_head_sha"])
+        self.assertEqual(x["merged_pr"], 117)
+        self.assertEqual(x["merge_sha"], "b76e6c00c579bee36c194872e3679c48fe9788fa")
+        self.assertEqual(x["pr_head_sha"], "99d78a46e61a0765b6673353900cea55eb039e74")
         self.assertEqual(x["pr_ci"]["run_id"], 39653506345)
         self.assertEqual(x["pr_ci"]["rust_tests"], 112)
         self.assertEqual(x["main_ci"]["run_id"], 39655214998)
         self.assertEqual(x["main_ci"]["conclusion"], "SUCCESS")
-        self.assertEqual(self.data["main_ci_post_merge"]["sha"], x["merge_sha"])
+        self.assertEqual(x["main_ci"]["run_id"], 39655214998)
         self.assertEqual(x["real_writer_absence"], "NOT_PROVEN")
         self.assertEqual(x["g2b_to_g6"], "NOT_AUTHORIZED")
         self.assertEqual(x["real_g3"], "STOP_UNAVAILABLE")
@@ -641,7 +641,7 @@ class HandoffContractTests(unittest.TestCase):
 
     def test_46_restatement_third_stage_is_only_ram_fixture_not_operator(self):
         x = self.data["m3_2_product_progress"]["test_only_rust_third_stage"]
-        self.assertEqual(x["status"], "CANDIDATE_NOT_CI_QUALIFIED")
+        self.assertEqual(x["status"], "MERGED_TEST_ONLY_NOT_PRODUCT_ACCEPTED")
         self.assertTrue(x["compiled_only_during_tests"])
         self.assertEqual(x["new_rust_tests"], 5)
         self.assertEqual(x["auto_migration_max"], 6)
@@ -657,6 +657,42 @@ class HandoffContractTests(unittest.TestCase):
         self.assertIn("STAGE 4: test-only", schema)
         self.assertNotIn("schema_migrations", schema)
         self.assertNotIn("#[tauri::command]", src)
+        self.assertEqual(self.data["g2a"]["absence_of_sqlite_writer"], "NOT_PROVEN")
+
+
+    def test_47_pr118_merge_is_exact_and_real_gate_not_promoted(self):
+        x = self.data["post_pr118_normalization"]
+        self.assertEqual(self.data["last_confirmed_merged_pr"], 118)
+        self.assertEqual(self.data["last_confirmed_main_before_handoff"], x["merge_sha"])
+        self.assertEqual(self.data["last_verified_pr_head"], x["pr_head_sha"])
+        self.assertEqual(x["pr_ci"]["run_id"], 39658544037)
+        self.assertEqual(x["pr_ci"]["rust_tests"], 117)
+        self.assertEqual(x["main_ci"]["run_id"], 39660168071)
+        self.assertEqual(x["main_ci"]["conclusion"], "IN_PROGRESS_AT_CHECKPOINT")
+        self.assertEqual(x["real_writer_absence"], "NOT_PROVEN")
+        self.assertEqual(x["g2b_to_g6"], "NOT_AUTHORIZED")
+        self.assertEqual(x["real_g3"], "STOP_UNAVAILABLE")
+        self.assertEqual(x["operator_execution"], "NONE")
+        self.assertIn("PR #118 MERGED", self.doc)
+
+    def test_48_ram_restatement_withdrawals_do_not_promote_chain_or_runtime(self):
+        x = self.data["m3_2_product_progress"]["test_only_rust_fourth_stage"]
+        self.assertEqual(x["status"], "CANDIDATE_NOT_CI_QUALIFIED")
+        self.assertTrue(x["compiled_only_during_tests"])
+        self.assertEqual(x["new_rust_tests"], 4)
+        self.assertEqual(x["auto_migration_max"], 6)
+        self.assertEqual(x["tauri_writer_ipc"], "NONE")
+        self.assertEqual(x["real_sqlite_access"], "NONE")
+        self.assertEqual(x["chain_promotion"], "NONE")
+        self.assertEqual(x["g2b_to_g6"], "NOT_AUTHORIZED")
+        rust = (ROOT / "src-tauri" / "src" / "m32_manual_chronology.rs").read_text(encoding="utf-8")
+        for name in x["functions"]:
+            self.assertIn("pub fn " + name, rust)
+        self.assertIn("db.execute_batch(M32_REVOCATIONS)", rust)
+        self.assertNotIn("#[tauri::command]", rust)
+        schema = (ROOT / x["sql_candidate"]).read_text(encoding="utf-8")
+        self.assertIn("in-memory candidate only", schema)
+        self.assertNotIn("schema_migrations", schema)
         self.assertEqual(self.data["g2a"]["absence_of_sqlite_writer"], "NOT_PROVEN")
 
     def test_24_policy_requires_refetch_and_same_pr_handoff(self):

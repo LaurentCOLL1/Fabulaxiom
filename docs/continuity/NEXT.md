@@ -1,5 +1,13 @@
 # Fabulaxiom — Next Authorized Work
 
+**21/10/2026 — CI #39661237200 première tentative PR #119 : FAIL source-only handoff historique (3 assertions).** Les tests #36/#37/#39 consultaient le champ `main_ci_post_merge` vivant au lieu des snapshots historiques #112/#113/#114 ; correction ciblée vers `x["main_ci"]`, sans modifier les statuts réels, les comptes d'ouvertures SQLite ou les politiques STOP. Aucun test Rust de la nouvelle tranche n'a encore été qualifié sur ce HEAD. Nouvelle CI complète obligatoire.
+
+
+**21 octobre 2026 — PR #118 MERGED :** source `ff996fc27da6df12697d68a46b8580a3a33e30b3`, CI #39658544037 SUCCESS (74 étapes, 117 Rust, 46 contrats, 21 inventaires SQLite, 50 Chromium par mode), fusion protégée `main=a0942b9566d6de21cf73e55dce47c3797dcb7c81`. CI push #39660168071 **IN_PROGRESS_AT_CHECKPOINT** : ne pas prétendre sa réussite terminale sans re-fetch exact. Nouvelle tranche test-only, uniquement SQLite RAM : révocation immuable de reformulation, historique conservé, 4 tests Rust supplémentaires ; aucune écriture active supplémentaire déduite.
+
+**STOP toujours effectif :** M3.2 IN_PROGRESS_NOT_ACCEPTED, PR #35 OPEN/DRAFT, réel writer NOT_PROVEN, G2B–G6 NOT_AUTHORIZED, G3 réel STOP_UNAVAILABLE, historique 21/3/2 PENDING_EXTERNAL_ATTESTATION, prospective NOT_STARTED. Pas de Windows opérateur, original SQLite v6/v7, backup, ACL, journal, marker, migration 007, IPC writer, M3.3 ni release.
+
+
 **21 octobre 2026 — PR #117 fusionnée et CI post-fusion exacte confirmée :** source `99d78a46e61a0765b6673353900cea55eb039e74`, CI #39653506345 **SUCCESS** (74 étapes, 112 tests Rust, 44 tests de continuité, 21 tests d'inventaire, 50 Chromium par mode). Fusion protégée `main=b76e6c00c579bee36c194872e3679c48fe9788fa` ; CI post-merge #39655214998 **SUCCESS terminale** sur ce SHA. La règle permanente de parallélisation des tâches indépendantes est toujours en vigueur.
 
 **Troisième tranche test-only candidate :** reprise strictement limitée de la reformulation humaine explicite d'une précédence révoquée (`restate_revoked_precedence`) et du SQL candidat `m3_2_active_precedence_candidate.sql` sur SQLite **uniquement en mémoire**. Cinq tests Rust supplémentaires prévus : source révoquée obligatoire, interdiction de cycle, unicité, conservation immuable et blocage d'ancres retirées / insertion brute abusive. Le module reste `#[cfg(test)]`, sans exposition Tauri, migration 007 ni donnée locale opérateur. Révocation des reformulations, successeurs et corrections en chaîne sont hors portée. CI nouvelle au HEAD exact requise.
