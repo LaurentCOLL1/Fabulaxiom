@@ -3,14 +3,14 @@
   "as_of": "2026-10-21",
   "status_kind": "DATED_PUBLIC_SOURCE_HANDOFF_ONLY",
   "repository": "LaurentCOLL1/Fabulaxiom",
-  "last_confirmed_main_before_handoff": "388cb745888f9f2d4d0a07fce1ed19fad9b4a548",
-  "last_confirmed_merged_pr": 116,
-  "last_verified_pr_head": "0b2555833c1a2c0152cba2185c8122f3d3ecbbae",
+  "last_confirmed_main_before_handoff": "b76e6c00c579bee36c194872e3679c48fe9788fa",
+  "last_confirmed_merged_pr": 117,
+  "last_verified_pr_head": "99d78a46e61a0765b6673353900cea55eb039e74",
   "last_verified_ci": {
-    "run_id": 39626827246,
+    "run_id": 39653506345,
     "context": "Windows frontend and Rust checks",
     "conclusion": "SUCCESS",
-    "source": "PR116_EXACT_HEAD"
+    "source": "PR117_EXACT_HEAD"
   },
   "recent_changes": [
     "PR_85_EXACT_G2A_TEXT_AST_ONLY",
@@ -74,7 +74,9 @@
     "PR116_FIRST_CI_39625498131_INVENTORY_VETO_REVIEWED_1_RAM_OPEN_1_FIXTURE_MIGRATION",
     "PR116_SECOND_CI_39626066048_NEWLINE_ASSERTION_CORRECTED",
     "PR116_MERGED_MAIN_388CB745_POST_CI_39628479487_SUCCESS",
-    "SECOND_STAGE_DECISIONS_SQL_FIXTURE_ONLY_6_NEW_RUST_TESTS_CANDIDATE"
+    "SECOND_STAGE_DECISIONS_SQL_FIXTURE_ONLY_6_NEW_RUST_TESTS_CANDIDATE",
+    "PR117_MERGED_MAIN_B76E6C00_PUSH_39655214998_SUCCESS",
+    "PR35_THIRD_STAGE_RESTATED_PRECEDENCE_RAM_ONLY_5_RUST_CASES_CANDIDATE"
   ],
   "pr35": "OPEN_DRAFT",
   "issues": {
@@ -260,15 +262,15 @@
     "verified_bypass_actors": 0,
     "classic_branch_protection_read": "403_INTEGRATION_RESTRICTED"
   },
-  "next": "RE_FETCH_NEW_PR_CI_HEAD_FOR_SECOND_STAGE_DECISIONS_AND_FIXTURE_ONLY_TESTS;_CONTINUE_PROVENANCE_INDEPENDENTLY_GATES_STOP",
+  "next": "QUALIFY_NEW_PR_EXACT_HEAD_RUST_RESTATEMENT_AND_SQL_FIXTURE_ONLY;_INDEPENDENT_HISTORY_RESEARCH_AND_G2B_TO_G6_STOP",
   "live_refetch_required": true,
   "hand_off_updated_by_future_pr": true,
   "main_ci_post_merge": {
-    "sha": "388cb745888f9f2d4d0a07fce1ed19fad9b4a548",
-    "run_id": 39628479487,
+    "sha": "b76e6c00c579bee36c194872e3679c48fe9788fa",
+    "run_id": 39655214998,
     "conclusion": "SUCCESS",
     "source": "MAIN_PUSH",
-    "note": "2026-10-21 terminal SUCCESS exactly on PR116 merged main; no real Windows qualification"
+    "note": "2026-10-21 terminal SUCCESS exactly on PR117 merge main; source-only evidence"
   },
   "g2a_candidate_ci": {
     "pr": 86,
@@ -550,7 +552,7 @@
       }
     },
     "test_only_rust_second_stage": {
-      "status": "CANDIDATE_NOT_CI_QUALIFIED",
+      "status": "MERGED_TEST_ONLY_NOT_PRODUCT_ACCEPTED",
       "source_pr35_sha": "41ce7b915e76d22785d53d7fffe288d113dd0bf5",
       "compiled_only_during_tests": true,
       "sql_candidate": "src-tauri/sql/m3_2_chronology_decisions_candidate.sql",
@@ -567,6 +569,23 @@
       "real_sqlite_access": "NONE",
       "auto_migration_max": 6,
       "tauri_writer_ipc": "NONE",
+      "product_status": "IN_PROGRESS_NOT_ACCEPTED",
+      "real_writer_absence": "NOT_PROVEN",
+      "g2b_to_g6": "NOT_AUTHORIZED",
+      "real_g3": "STOP_UNAVAILABLE"
+    },
+    "test_only_rust_third_stage": {
+      "status": "CANDIDATE_NOT_CI_QUALIFIED",
+      "source_pr35_sha": "41ce7b915e76d22785d53d7fffe288d113dd0bf5",
+      "compiled_only_during_tests": true,
+      "sql_candidate": "src-tauri/sql/m3_2_active_precedence_candidate.sql",
+      "functions": [
+        "restate_revoked_precedence"
+      ],
+      "new_rust_tests": 5,
+      "real_sqlite_access": "NONE",
+      "tauri_writer_ipc": "NONE",
+      "auto_migration_max": 6,
       "product_status": "IN_PROGRESS_NOT_ACCEPTED",
       "real_writer_absence": "NOT_PROVEN",
       "g2b_to_g6": "NOT_AUTHORIZED",
@@ -852,6 +871,28 @@
     },
     "main_ci": {
       "run_id": 39628479487,
+      "conclusion": "SUCCESS"
+    },
+    "fiction_only": true,
+    "operator_execution": "NONE",
+    "product_status": "IN_PROGRESS_NOT_ACCEPTED",
+    "real_writer_absence": "NOT_PROVEN",
+    "g2b_to_g6": "NOT_AUTHORIZED",
+    "real_g3": "STOP_UNAVAILABLE"
+  },
+  "post_pr117_normalization": {
+    "kind": "DATED_DOCUMENTARY_SNAPSHOT_NO_RUNTIME_AUTHORITY",
+    "merged_pr": 117,
+    "merge_sha": "b76e6c00c579bee36c194872e3679c48fe9788fa",
+    "pr_head_sha": "99d78a46e61a0765b6673353900cea55eb039e74",
+    "pr_ci": {
+      "run_id": 39653506345,
+      "conclusion": "SUCCESS",
+      "job_steps": 74,
+      "rust_tests": 112
+    },
+    "main_ci": {
+      "run_id": 39655214998,
       "conclusion": "SUCCESS"
     },
     "fiction_only": true,

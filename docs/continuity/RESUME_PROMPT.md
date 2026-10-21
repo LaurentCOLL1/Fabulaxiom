@@ -3,6 +3,12 @@
 
 ## Point actuel — 21 octobre 2026
 
+Re-fetch GitHub `main`, les PR et chaque CI au SHA exact. Dernier `main` vérifié : `b76e6c00c579bee36c194872e3679c48fe9788fa` après PR #117 MERGED, CI source #39653506345 et push #39655214998 SUCCESS. Lire `docs/continuity/README.md`, HANDOFF_CURRENT.md/json, HANDOFF_PROTOCOL.md, HANDOFF_HISTORY.md, NEXT.md, STATE.md et roadmap. La tranche fictive suivante reformule une précédence révoquée sur SQLite RAM exclusivement ; qualifier le nouveau HEAD avant tout merge. Recherches/audits indépendants peuvent être parallélisés ; écritures concurrentes et fusions restent séquentielles. M3.2 non acceptée, PR #35 DRAFT, G2B–G6 STOP, aucune manipulation Windows opérateur/SQLite protégée.
+
+
+
+## Point actuel — 21 octobre 2026
+
 Re-fetch `main`, PR et exact-head CI avant toute action. Dernier main connu : `388cb745888f9f2d4d0a07fce1ed19fad9b4a548`, PR #116 MERGED, CI source #39626827246 SUCCESS et postmerge #39628479487 SUCCESS. Lire les handoffs md/json, protocole, historique, NEXT/STATE et roadmap ; poursuivre seulement les contrats de décisions fictives Rust sur SQLite RAM. Paralléliser recherches/audits indépendants et sérialiser fusions. M3.2 non acceptée, PR #35 DRAFT, G2-B–G6 STOP, aucun Windows opérateur ni original SQLite.
 
 
