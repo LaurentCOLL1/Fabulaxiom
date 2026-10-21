@@ -70,7 +70,8 @@
     "PR114_PROTECTED_MERGE_DDB23311_SOURCE_CI_39612803528_POST_MAIN_39614175650_SUCCESS",
     "PR35_MAIN_472_COMMITS_7_POTENTIAL_PATH_OVERLAPS_SOURCE_ONLY_NO_REBASE",
     "2026_10_21_PR115_MERGED_MAIN_33846C8C_CI_39620942276_SUCCESS",
-    "2026_10_21_TEST_ONLY_PR35_FIRST_STAGE_RUST_PORT_CANDIDATE_WITH_6_RAM_TESTS"
+    "2026_10_21_TEST_ONLY_PR35_FIRST_STAGE_RUST_PORT_CANDIDATE_WITH_6_RAM_TESTS",
+    "PR116_FIRST_CI_39625498131_INVENTORY_VETO_REVIEWED_1_RAM_OPEN_1_FIXTURE_MIGRATION"
   ],
   "pr35": "OPEN_DRAFT",
   "issues": {
@@ -256,7 +257,7 @@
     "verified_bypass_actors": 0,
     "classic_branch_protection_read": "403_INTEGRATION_RESTRICTED"
   },
-  "next": "QUALIFY_NEW_SOURCE_HEAD_RUST_TEST_ONLY_PORT_CI_THEN_INSPECT_MISSING_HISTORICAL_SUPERSESSION_WITH_NO_REAL_GATES",
+  "next": "RUN_NEW_EXACT_SHA_CI_FOR_REVIEWED_SQLITE_RUST_SOURCE_INVENTORY_AND_TEST_ONLY_PORT;_DO_NOT_MERGE_ON_FAILED_CI",
   "live_refetch_required": true,
   "hand_off_updated_by_future_pr": true,
   "main_ci_post_merge": {
@@ -520,7 +521,28 @@
       "product_status": "IN_PROGRESS_NOT_ACCEPTED",
       "real_writer_absence": "NOT_PROVEN",
       "g2b_to_g6": "NOT_AUTHORIZED",
-      "real_g3": "STOP_UNAVAILABLE"
+      "real_g3": "STOP_UNAVAILABLE",
+      "inventory_review": {
+        "initial_ci_run": 39625498131,
+        "initial_ci_conclusion": "FAILURE_EXPECTED_REVIEW_REQUIRED",
+        "source_path": "src-tauri/src/m32_manual_chronology.rs",
+        "observed_counts": [
+          1,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0
+        ],
+        "source_only": true,
+        "no_disk_open_pattern": true,
+        "expected_test_count": 21,
+        "all_other_changes_veto": true,
+        "requires_fresh_ci_head": true,
+        "real_sqlite_writer_absence": "NOT_PROVEN",
+        "g2b_to_g6": "NOT_AUTHORIZED"
+      }
     }
   },
   "post_pr100_normalization": {

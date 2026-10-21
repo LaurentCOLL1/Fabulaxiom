@@ -90,6 +90,26 @@ class RustSqliteOpenInventoryTests(unittest.TestCase):
     def test_17_new_file_without_extension_rejected_even_if_sqlite(self):
         self.veto("src-tauri/src/new.txt","Connection::open(path)?;")
 
+    def test_19_new_disk_open_in_reviewed_ram_module_is_vetoed(self):
+        self.veto("src-tauri/src/m32_manual_chronology.rs",
+                  "Connection::open(user_path)?;")
+
+    def test_20_new_migration_in_reviewed_ram_module_is_vetoed(self):
+        self.veto("src-tauri/src/m32_manual_chronology.rs",
+                  "run_migrations(&mut another_connection)?;")
+
+    def test_21_reviewed_module_is_ram_only_without_tauri_ipc(self):
+        content = self.src["src-tauri/src/m32_manual_chronology.rs"]
+        self.assertEqual(content.count("Connection::open_in_memory()"), 1)
+        self.assertEqual(content.count("database::run_migrations("), 1)
+        for forbidden in ("Connection::open(", "Connection::open_with_flags(",
+                          "database::open_database(", "#[tauri::command]",
+                          "std::fs::File::open(", "SQLITE_OPEN_CREATE"):
+            self.assertNotIn(forbidden, content)
+        lib = self.src["src-tauri/src/lib.rs"]
+        self.assertIn("#[cfg(test)]\\nmod m32_manual_chronology;", lib)
+        self.assertEqual(audit_inventory(self.src)["writer_absence"], "NOT_PROVEN")
+
     def test_18_all_fictional_positive_larger_inventory_never_authorizes_g3(self):
         self.assertEqual(audit_inventory(self.src)["review"],"EXACT_KNOWN_TEXT_COUNTS_MATCH_NOT_EXHAUSTIVE")
         self.assertEqual(audit_inventory(self.src)["real_g3"],"STOP_UNAVAILABLE")
