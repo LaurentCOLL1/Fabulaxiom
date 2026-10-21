@@ -107,7 +107,7 @@ class RustSqliteOpenInventoryTests(unittest.TestCase):
                           "std::fs::File::open(", "SQLITE_OPEN_CREATE"):
             self.assertNotIn(forbidden, content)
         lib = self.src["src-tauri/src/lib.rs"]
-        self.assertIn("#[cfg(test)]\\nmod m32_manual_chronology;", lib)
+        self.assertIn("#[cfg(test)]" + chr(10) + "mod m32_manual_chronology;", lib)
         self.assertEqual(audit_inventory(self.src)["writer_absence"], "NOT_PROVEN")
 
     def test_18_all_fictional_positive_larger_inventory_never_authorizes_g3(self):

@@ -11,3 +11,5 @@ STOP: M3.2 IN_PROGRESS_NOT_ACCEPTED; PR #35 OPEN/DRAFT and not mergeable; writer
 ## Source-inventory tripwire — 2026-10-21
 
 Initial CI #39625498131 **FAILED** in the whole-tree Rust SQLite occurrence audit, correctly detecting the newly introduced test-only source. Manual code review bounded to public PR116 files found exactly 1 `Connection::open_in_memory()` and 1 `database::run_migrations()` invocation in the RAM fixture, 0 other audited opening/backup/ATTACH/VACUUM/flags. The inventory `EXPECTED` was amended **only for this new path** to `(1,0,1,0,0,0,0)`, with 3 fresh adversarial tests refusing a second open/migration and asserting RAM-only + no IPC. No change to a production opening policy or gate. A newer exact-head CI must pass before acceptance of this synthetic tranche; the previous failure remains historical and cannot be reused.
+
+Second CI #39626066048: Python newline-escaping assertion failed while checking the existing test-only module declaration. Fix uses `chr(10)` in two tests; Rust module, source inventory and safety STOP unchanged. Requalification at newer HEAD required.

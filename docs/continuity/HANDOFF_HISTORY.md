@@ -81,3 +81,5 @@ Les blocages externes (issues #36/#38) demeurent. Les détails techniques de la 
 **2026-10-21 — PR #115 MERGED :** source `3f1c5676f7035398b61bc143a16eae5e115cdfbe`, source CI #39619267259 SUCCESS (74 étapes), main `33846c8c6813acda5eda5089827f81df99175d2c` et push #39620942276 SUCCESS au SHA exact. Candidat ultérieur de portage Rust strictement `#[cfg(test)]` de 5 fonctions CRUD/list sur SQLite RAM seulement ; pas de runtime ni de G2B–G6.
 
 **2026-10-21 — PR #116 first exact-head CI #39625498131 FAILED at source-inventory tripwire:** new Rust source introduces one strictly synthetic `Connection::open_in_memory` plus one `run_migrations` textual match. After explicit inspection no path opening/ATTACH/backup/flags discovered. Add exact entry and adversarial tests; **new commit and new CI required**, no bypass or retroactive PASS, G2B–G6 STOP.
+
+**2026-10-21 — CI #39626066048 : assertion Python de nouvelle ligne incorrecte, Rust test-only inchangé.** Correctif limité à deux tests de contrat, requalification requise, aucun gate ouvert.

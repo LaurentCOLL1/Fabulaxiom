@@ -577,7 +577,7 @@ class HandoffContractTests(unittest.TestCase):
         self.assertEqual(c["g2b_to_g6"], "NOT_AUTHORIZED")
         self.assertEqual(c["real_g3"], "STOP_UNAVAILABLE")
         lib = (ROOT / "src-tauri" / "src" / "lib.rs").read_text(encoding="utf-8")
-        self.assertIn("#[cfg(test)]\\nmod m32_manual_chronology;", lib)
+        self.assertIn("#[cfg(test)]" + chr(10) + "mod m32_manual_chronology;", lib)
         source = (ROOT / "src-tauri" / "src" / "m32_manual_chronology.rs").read_text(encoding="utf-8")
         for function_name in c["functions"]:
             self.assertIn("pub fn " + function_name, source)

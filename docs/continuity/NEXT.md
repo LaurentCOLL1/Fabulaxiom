@@ -1,5 +1,8 @@
 # Fabulaxiom — Next Authorized Work
 
+**Correction CI du 21/10/2026 :** la CI #39626066048 a refusé une assertion Python dont le saut de ligne entre `#[cfg(test)]` et `mod m32_manual_chronology;` était mal échappé. Deux tests ont été corrigés avec `chr(10)` ; les sources Rust, les compteurs d'ouverture SQLite et les interdictions restent identiques. Nouvelle CI au nouveau HEAD obligatoire.
+
+
 **21 octobre 2026 — correction de qualification PR #116 :** la première CI #39625498131 a délibérément **échoué** au contrôle d'inventaire textuel des occurrences Rust SQLite après ajout du module `#[cfg(test)]`. Comptage exact observé dans le nouveau fichier : `Connection::open_in_memory` **1**, `run_migrations` **1**, et **0** occurrence pour `Connection::open` disque, ouverture applicative, ATTACH, VACUUM, flags ouverts ou API backup brute. Après revue limitée à ces textes publics, l'inventaire attendu ajoute explicitement `(1,0,1,0,0,0,0)` pour `src-tauri/src/m32_manual_chronology.rs`, conserve toutes les entrées existantes et ajoute trois tests adversariaux (21 au lieu de 18). Toute autre occurrence, y compris dans ce module, reste un **STOP**. Cette qualification ne prouve pas l'absence de writer réel ni la sécurité des fichiers opérateur ; une nouvelle CI complète au nouveau HEAD est obligatoire.
 
 
