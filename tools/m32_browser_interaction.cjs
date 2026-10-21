@@ -703,8 +703,48 @@ async function run() {
       assert.ok(!(await proof.innerText()).includes("human-ab"));
       assert.ok((await lab.innerText()).includes("ordre de révélation non renseigné"));
     });
-    assert.equal(cases.length, 44);
-    console.log("M32_BROWSER_REAL_CHROMIUM_PASS 44/44");
+    await caseRun("45-corrected-anchor-never-remains-active-world-proof", async () => {
+      await page.getByRole("button", { name: "Ouvrir l'atelier manuel fictif" }).click();
+      const lab = page.getByRole("region", { name: "Atelier manuel M3.2 exclusivement fictif" });
+      await lab.getByRole("combobox", { name: "Première ancre à consulter" }).selectOption("C");
+      await lab.getByRole("combobox", { name: "Deuxième ancre à consulter" }).selectOption("D");
+      assert.ok((await lab.getByRole("region", { name: "Comparaison M3.2 isolée" })
+        .innerText()).includes("Ordre indéterminé"));
+      await lab.getByRole("combobox", { name: "Correction : remplacer une ancre active" })
+        .selectOption("D");
+      await lab.getByRole("button", { name: "Remplacer sans effacer l'historique" }).click();
+      assert.ok((await lab.innerText()).includes("Sélection historique"));
+      assert.equal(await lab.getByRole("region", { name: "Comparaison M3.2 isolée" }).count(), 0);
+      await lab.getByRole("combobox", { name: "Deuxième ancre à consulter" })
+        .selectOption("fiction-draft-0001");
+      assert.ok((await lab.getByRole("region", { name: "Comparaison M3.2 isolée" })
+        .innerText()).includes("Ordre indéterminé"));
+    });
+    await caseRun("46-switching-fictional-universe-clears-world-proof-selection", async () => {
+      await page.getByRole("button", { name: "Ouvrir l'atelier manuel fictif" }).click();
+      let lab = page.getByRole("region", { name: "Atelier manuel M3.2 exclusivement fictif" });
+      await lab.getByRole("combobox", { name: "Première ancre à consulter" }).selectOption("A");
+      await lab.getByRole("combobox", { name: "Deuxième ancre à consulter" }).selectOption("B");
+      assert.ok((await lab.getByRole("region", { name: "Comparaison M3.2 isolée" })
+        .innerText()).includes("human-ab"));
+      await page.getByRole("button", { name: "Charger un autre univers fictif" }).click();
+      lab = page.getByRole("region", { name: "Atelier manuel M3.2 exclusivement fictif" });
+      assert.ok((await lab.innerText()).includes("fiction-world-two"));
+      assert.equal(await lab.getByRole("combobox", { name: "Première ancre à consulter" })
+        .locator('option[value="A"]').count(), 0);
+      assert.equal(await lab.getByRole("region", { name: "Comparaison M3.2 isolée" }).count(), 0);
+      await lab.getByRole("combobox", { name: "Première ancre à consulter" }).selectOption("K");
+      await lab.getByRole("combobox", { name: "Deuxième ancre à consulter" }).selectOption("L");
+      assert.ok((await lab.getByRole("region", { name: "Comparaison M3.2 isolée" })
+        .innerText()).includes("Ordre indéterminé"));
+      await page.getByRole("button", { name: "Revenir au premier univers fictif" }).click();
+      lab = page.getByRole("region", { name: "Atelier manuel M3.2 exclusivement fictif" });
+      assert.equal(await lab.getByRole("region", { name: "Comparaison M3.2 isolée" }).count(), 0);
+      assert.equal(await lab.getByRole("combobox", { name: "Première ancre à consulter" })
+        .locator('option[value="K"]').count(), 0);
+    });
+    assert.equal(cases.length, 46);
+    console.log("M32_BROWSER_REAL_CHROMIUM_PASS 46/46");
     // Actual Chromium enforced-CSP veto, separate from the 36
     // fictional interaction cases. Never make an off-loopback network call.
     const cspVeto = await page.evaluate(async () => {
@@ -735,9 +775,9 @@ async function run() {
       });
       assert.equal(scriptVeto, false, "STOP: inline JS executed under strict CSP");
       console.log("M32_CI_PRECOMPILED_INLINE_SCRIPT_DENIED_PASS");
-      console.log("M32_CI_PRECOMPILED_STRICT_CSP_BROWSER_PASS: 44/44");
+      console.log("M32_CI_PRECOMPILED_STRICT_CSP_BROWSER_PASS: 46/46");
     }
-    console.log("M32_CI_FIXTURE_ONLY_BROWSER_PASS: 44/44; no normal source pages");
+    console.log("M32_CI_FIXTURE_ONLY_BROWSER_PASS: 46/46; no normal source pages");
   } finally {
     if (browser) await browser.close();
     server.kill();

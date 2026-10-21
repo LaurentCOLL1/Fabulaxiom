@@ -52,7 +52,8 @@
     "POSTMERGE_PR104_MAIN_39554622761_TERMINAL_SUCCESS_ON_EXACT_SHA_20261021",
     "2026_10_21_FICTIONAL_EXISTING_HUMAN_WITNESS_PANEL_CANDIDATE_48_UNIT_44_CHROMIUM",
     "PR106_ACTIVE_HUMAN_PRECEDENCE_WITNESS_FICTIONAL_PANEL_MERGED_MAIN_FBFC785A",
-    "PR106_POSTMERGE_MAIN_39567933461_TERMINAL_SUCCESS_EXACT_SHA_VERIFIED_20261021"
+    "PR106_POSTMERGE_MAIN_39567933461_TERMINAL_SUCCESS_EXACT_SHA_VERIFIED_20261021",
+    "2026_10_21_FICTIONAL_HISTORICAL_SELECTED_ANCHOR_GUARD_CANDIDATE_51_TESTS_46_CHROMIUM"
   ],
   "pr35": "OPEN_DRAFT",
   "issues": {
@@ -238,7 +239,7 @@
     "verified_bypass_actors": 0,
     "classic_branch_protection_read": "403_INTEGRATION_RESTRICTED"
   },
-  "next": "FINISH_PR107_FRESH_EXACT_HEAD_CI_THEN_FICTION_ONLY_M32_INCREMENT_NO_GATE_PROMOTION",
+  "next": "QUALIFY_CANDIDATE_HISTORIC_SELECTION_UI_51_VITEST_46_CHROMIUM_FRESH_CI_EXACT_SHA_NO_GATE_PROMOTION",
   "live_refetch_required": true,
   "hand_off_updated_by_future_pr": true,
   "main_ci_post_merge": {
@@ -304,7 +305,7 @@
     "user_interface": "src/M32ManualChronologyLab.tsx",
     "isolated_mount": "src/m32BrowserLab.tsx",
     "tests": "src/m32ManualChronologyLab.test.tsx",
-    "expected_tests": 48,
+    "expected_tests": 51,
     "delivery": "SYNTHETIC_BROWSER_LAB_ONLY_SOURCE_ONLY",
     "implemented": [
       "CREATE_ANCHOR_FOUR_KINDS",
@@ -320,8 +321,8 @@
     "owner_writer_absence": "NOT_PROVEN",
     "g2b_to_g6": "NOT_AUTHORIZED",
     "real_g3": "STOP_UNAVAILABLE",
-    "browser_new_cases": 3,
-    "browser_total_expected": 44,
+    "browser_new_cases": 2,
+    "browser_total_expected": 46,
     "browser_fixture_manifest": "EXACT_TWO_ADDITIONAL_FICTION_ONLY_SOURCE_MODULES",
     "initial_ci_failures": [
       "HTML_ESCAPING_EXPECTATION_FIXED",
@@ -426,6 +427,24 @@
       "ci_pr": 39566947725,
       "ci_main_pending": 39567933461,
       "ci_main_verified": 39567933461
+    },
+    "historical_selection_guard": {
+      "status": "CANDIDATE_NOT_CI_QUALIFIED",
+      "kind": "FICTION_ONLY_BROWSER_UI_NO_REAL_RUNTIME",
+      "explanation": "CORRECTED_ANCHOR_SELECTION_IS_HISTORICAL",
+      "stale_proof": "SUPPRESSED",
+      "historical_option": "DISABLED_IN_CONTROL",
+      "retired_identity_not_used_for_current_proof": true,
+      "other_universe_selection": "CLEARED_ON_SCENARIO_SWITCH",
+      "reader_reveal": "NOT_AUTHORED",
+      "new_vitest": 3,
+      "vitest_total_expected": 51,
+      "new_chromium": 2,
+      "chromium_total_expected": 46,
+      "operator_execution": "NONE",
+      "real_sqlite": "NONE",
+      "g2b_to_g6": "NOT_AUTHORIZED",
+      "real_g3": "STOP_UNAVAILABLE"
     }
   },
   "post_pr100_normalization": {
