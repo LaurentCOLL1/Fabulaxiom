@@ -774,8 +774,40 @@ async function run() {
       assert.ok((await impact.innerText()).includes("human-bc"));
       assert.ok((await lab.innerText()).includes("ordre de révélation non renseigné"));
     });
-    assert.equal(cases.length, 48);
-    console.log("M32_BROWSER_REAL_CHROMIUM_PASS 48/48");
+
+    await caseRun("49-exact-revision-proof-needs-unique-current-anchor", async () => {
+      await page.getByRole("button", { name: "Ouvrir l'atelier manuel fictif" }).click();
+      const lab = page.getByRole("region", { name: "Atelier manuel M3.2 exclusivement fictif" });
+      await lab.getByRole("combobox", { name: "Première scène à comparer" }).selectOption("s1");
+      await lab.getByRole("combobox", { name: "Deuxième scène à comparer" }).selectOption("s2");
+      await lab.getByRole("combobox", { name: "Révision exacte de la première scène pour le temps du monde" }).selectOption("invented-rev-A");
+      await lab.getByRole("combobox", { name: "Révision exacte de la deuxième scène pour le temps du monde" }).selectOption("invented-rev-C");
+      const proof = lab.getByRole("status", { name: "Résultat du temps du monde lié aux révisions" });
+      assert.ok((await proof.innerText()).includes("ancre courante unique"));
+    });
+    await caseRun("50-two-revisions-cross-novel-world-human-proof-only", async () => {
+      await page.getByRole("button", { name: "Ouvrir l'atelier manuel fictif" }).click();
+      const lab = page.getByRole("region", { name: "Atelier manuel M3.2 exclusivement fictif" });
+      await lab.getByRole("combobox", { name: "Scène inventée à citer (facultatif)" }).selectOption("s2");
+      await lab.getByRole("combobox", { name: "Révision exacte et immuable de cette scène" }).selectOption("invented-rev-C");
+      await lab.getByRole("button", { name: "Ajouter l'ancre" }).click();
+      await lab.getByRole("combobox", { name: "Événement antérieur" }).selectOption("A");
+      await lab.getByRole("combobox", { name: "Événement postérieur" }).selectOption("fiction-draft-0001");
+      await lab.getByRole("textbox", { name: "Justification humaine fictive" }).fill("ordre humain");
+      await lab.getByRole("button", { name: "Ajouter avant/après" }).click();
+      await lab.getByRole("combobox", { name: "Première scène à comparer" }).selectOption("s1");
+      await lab.getByRole("combobox", { name: "Deuxième scène à comparer" }).selectOption("s2");
+      await lab.getByRole("combobox", { name: "Révision exacte de la première scène pour le temps du monde" }).selectOption("invented-rev-A");
+      await lab.getByRole("combobox", { name: "Révision exacte de la deuxième scène pour le temps du monde" }).selectOption("invented-rev-C");
+      const proof = lab.getByRole("status", { name: "Résultat du temps du monde lié aux révisions" });
+      assert.ok((await proof.innerText()).includes("Temps du monde établi"));
+      assert.ok((await proof.innerText()).includes("fiction-draft-0002"));
+      assert.ok((await lab.getByRole("status", { name: "Comparaison des trois ordres fictifs" })
+        .innerText()).includes("indéterminé entre romans distincts"));
+      assert.ok((await proof.innerText()).includes("Révélation au lecteur non renseignée"));
+    });
+    assert.equal(cases.length, 50);
+    console.log("M32_BROWSER_REAL_CHROMIUM_PASS 50/50");
     // Actual Chromium enforced-CSP veto, separate from the 36
     // fictional interaction cases. Never make an off-loopback network call.
     const cspVeto = await page.evaluate(async () => {
@@ -806,9 +838,9 @@ async function run() {
       });
       assert.equal(scriptVeto, false, "STOP: inline JS executed under strict CSP");
       console.log("M32_CI_PRECOMPILED_INLINE_SCRIPT_DENIED_PASS");
-      console.log("M32_CI_PRECOMPILED_STRICT_CSP_BROWSER_PASS: 48/48");
+      console.log("M32_CI_PRECOMPILED_STRICT_CSP_BROWSER_PASS: 50/50");
     }
-    console.log("M32_CI_FIXTURE_ONLY_BROWSER_PASS: 48/48; no normal source pages");
+    console.log("M32_CI_FIXTURE_ONLY_BROWSER_PASS: 50/50; no normal source pages");
   } finally {
     if (browser) await browser.close();
     server.kill();

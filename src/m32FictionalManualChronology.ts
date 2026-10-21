@@ -1,3 +1,4 @@
+import { compareM32WorldOrder } from "./M32WorldOrderComparison";
 import { decodeM32ChronologyProjection, type M32AnchorProjection,
   type M32ChronologyProjection, type M32TimeKind } from "./M32ChronologyPreview";
 
@@ -345,5 +346,57 @@ export function previewFictionalThreeOrders(
     narration_reason: comparison < 0
       ? "La première scène précède la seconde dans ce roman."
       : "La première scène suit la seconde dans ce roman.",
+  };
+}
+
+/** Fictitious read-only bridge from exact immutable revisions to explicit human world time. */
+export type FictionalSceneWorldProof = Readonly<{
+  verdict: "unselected" | "blocked" | "indeterminate" | "proven";
+  relation: "before" | "after" | null;
+  witness_edge_ids: readonly string[];
+  reason: string;
+  data_origin: "fictional_browser_memory_only";
+  writes: false;
+}>;
+export function previewFictionalSceneRevisionWorldOrder(
+  d: FictionalDraft, firstSceneId: string, firstRevisionId: string,
+  secondSceneId: string, secondRevisionId: string,
+): FictionalSceneWorldProof {
+  inspectFictionalDraft(d);
+  const common = {
+    data_origin: "fictional_browser_memory_only" as const,
+    writes: false as const, relation: null, witness_edge_ids: [] as readonly string[],
+  };
+  if (!firstSceneId || !firstRevisionId || !secondSceneId || !secondRevisionId)
+    return { ...common, verdict: "unselected",
+      reason: "Choisir deux scènes et leurs révisions exactes avant toute preuve du monde." };
+  const first = d.revisions.find(r => r.scene_id === firstSceneId &&
+    r.revision_id === firstRevisionId && r.universe_id === d.snapshot.universe_id);
+  const second = d.revisions.find(r => r.scene_id === secondSceneId &&
+    r.revision_id === secondRevisionId && r.universe_id === d.snapshot.universe_id);
+  if (!first || !second)
+    return { ...common, verdict: "blocked",
+      reason: "Révision étrangère, inconnue ou associée à une autre scène : preuve refusée." };
+  if (firstSceneId === secondSceneId)
+    return { ...common, verdict: "indeterminate",
+      reason: "Deux révisions d'une scène ne prouvent pas deux événements distincts." };
+  const leftAnchors = d.snapshot.anchors.filter(a =>
+    a.status === "current" && a.source_revision_id === firstRevisionId);
+  const rightAnchors = d.snapshot.anchors.filter(a =>
+    a.status === "current" && a.source_revision_id === secondRevisionId);
+  if (leftAnchors.length !== 1 || rightAnchors.length !== 1)
+    return { ...common, verdict: "indeterminate",
+      reason: "Aucune ancre courante unique pour chaque révision : temps du monde indéterminé." };
+  const comparison = compareM32WorldOrder(d.snapshot, d.snapshot.universe_id,
+    leftAnchors[0].id, rightAnchors[0].id);
+  if (comparison.relation !== "before" && comparison.relation !== "after")
+    return { ...common, verdict: "indeterminate",
+      reason: "Aucune chaîne de précédences humaines actives entre ces ancres." };
+  return {
+    ...common, verdict: "proven", relation: comparison.relation,
+    witness_edge_ids: comparison.witness.map(w => w.precedence_id),
+    reason: comparison.relation === "before"
+      ? "Temps du monde établi : première ancre avant la seconde (preuves humaines)."
+      : "Temps du monde établi : première ancre après la seconde (preuves humaines).",
   };
 }

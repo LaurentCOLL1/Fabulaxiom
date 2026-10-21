@@ -10,6 +10,7 @@ import {
   startFictionalDraft as startDraft, createFictionalAnchor, supersedeFictionalAnchor,
   createFictionalPrecedence, revokeFictionalPrecedence,
   previewFictionalPrecedence, previewFictionalCorrection, previewFictionalThreeOrders,
+  previewFictionalSceneRevisionWorldOrder,
   type FictionalRevision,
 } from "./m32FictionalManualChronology";
 
@@ -473,6 +474,54 @@ describe("M3.2 manually authored fictional-only chronology laboratory", () => {
       { initial: invented, revisions: history }));
     expect(html).toContain("Prévisualisation de révocation fictive");
     expect(html).toContain("Cette prévisualisation ne révoque rien");
+  });
+
+  it("56 requires exact scene-specific revision IDs and never edits the draft", () => {
+    const d = startFictionalDraft(invented);
+    expect(previewFictionalSceneRevisionWorldOrder(d, "s-one", "", "s-two", "fiction-revision-C").verdict).toBe("unselected");
+    expect(previewFictionalSceneRevisionWorldOrder(d, "s-one", "fiction-revision-C", "s-two", "fiction-revision-A").verdict).toBe("blocked");
+    expect(d.audit).toHaveLength(0);
+  });
+  it("57 cross-novel narration and unbound revisions never prove world time", () => {
+    const d = startFictionalDraft(invented);
+    const p = previewFictionalSceneRevisionWorldOrder(d, "s-one", "fiction-revision-A", "s-two", "fiction-revision-C");
+    expect(p.verdict).toBe("indeterminate");
+    expect(p.witness_edge_ids).toEqual([]);
+    expect(d.snapshot.reader_reveal_status).toBe("not_authored");
+  });
+  it("58 exact immutable revisions support an explicit world witness across novels", () => {
+    const withAnchor = createFictionalAnchor(startFictionalDraft(invented), {
+      ...unknown, source_scene_id: "s-two", source_revision_id: "fiction-revision-C",
+    });
+    const withEdge = createFictionalPrecedence(withAnchor, "A", "fiction-draft-0001", "déclaration humaine");
+    const before = JSON.stringify(withEdge);
+    const p = previewFictionalSceneRevisionWorldOrder(withEdge, "s-one", "fiction-revision-A", "s-two", "fiction-revision-C");
+    expect(p.verdict).toBe("proven");
+    expect(p.relation).toBe("before");
+    expect(p.witness_edge_ids).toEqual(["fiction-draft-0002"]);
+    expect(previewFictionalThreeOrders(withEdge, "s-one", "s-two").narration).toBe("separate_novels");
+    expect(JSON.stringify(withEdge)).toBe(before);
+  });
+  it("59 revoked human links and superseded anchors withdraw proofs", () => {
+    const withAnchor = createFictionalAnchor(startFictionalDraft(invented), {
+      ...unknown, source_scene_id: "s-two", source_revision_id: "fiction-revision-C",
+    });
+    const withEdge = createFictionalPrecedence(withAnchor, "A", "fiction-draft-0001", "déclaration");
+    const revoked = revokeFictionalPrecedence(withEdge, "fiction-draft-0002", "retirée");
+    expect(previewFictionalSceneRevisionWorldOrder(revoked, "s-one", "fiction-revision-A", "s-two", "fiction-revision-C").verdict).toBe("indeterminate");
+    const corrected = supersedeFictionalAnchor(withAnchor, "A", {
+      ...unknown, source_revision_id: null, source_scene_id: null,
+    });
+    expect(previewFictionalSceneRevisionWorldOrder(corrected, "s-one", "fiction-revision-A", "s-two", "fiction-revision-C").verdict).toBe("indeterminate");
+  });
+  it("60 duplicate mappings and same-scene variants cannot imply chronology", () => {
+    const duplicate = createFictionalAnchor(startFictionalDraft(invented), {
+      ...unknown, source_scene_id: "s-one", source_revision_id: "fiction-revision-A",
+    });
+    expect(previewFictionalSceneRevisionWorldOrder(duplicate, "s-one", "fiction-revision-A", "s-two", "fiction-revision-C").verdict).toBe("indeterminate");
+    expect(previewFictionalSceneRevisionWorldOrder(duplicate, "s-one", "fiction-revision-A", "s-one", "fiction-revision-B").verdict).toBe("indeterminate");
+    expect(renderToStaticMarkup(createElement(M32ManualChronologyLab, { initial: invented, revisions: history })))
+      .toContain("Preuve du temps du monde — révisions explicites");
   });
   it("13 refuses malformed legacy edge and forbids promotion to G3", () => {
     const d = startFictionalDraft(invented);

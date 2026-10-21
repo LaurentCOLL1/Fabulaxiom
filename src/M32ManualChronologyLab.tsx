@@ -7,6 +7,7 @@ import {
   startFictionalDraft, createFictionalAnchor, supersedeFictionalAnchor,
   createFictionalPrecedence, revokeFictionalPrecedence,
   previewFictionalPrecedence, previewFictionalCorrection, previewFictionalThreeOrders,
+  previewFictionalSceneRevisionWorldOrder,
   type FictionalDraft, type FictionalTimeInput, type FictionalRevision,
 } from "./m32FictionalManualChronology";
 
@@ -38,6 +39,8 @@ function Lab({ initial, revisions }: {
   const [revoke, setRevoke] = useState("");
   const [firstScene, setFirstScene] = useState("");
   const [secondScene, setSecondScene] = useState("");
+  const [firstWorldRevision, setFirstWorldRevision] = useState("");
+  const [secondWorldRevision, setSecondWorldRevision] = useState("");
   const [worldLeft, setWorldLeft] = useState("");
   const [worldRight, setWorldRight] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -50,6 +53,8 @@ function Lab({ initial, revisions }: {
   const correctionPreview = previewFictionalCorrection(draft, replace);
   const revocationImpact = previewFictionalRevocationImpact(draft, revoke);
   const threeOrders = previewFictionalThreeOrders(draft, firstScene, secondScene);
+  const sceneWorld = previewFictionalSceneRevisionWorldOrder(
+    draft, firstScene, firstWorldRevision, secondScene, secondWorldRevision);
   const scenes = draft.revisions.filter((r, index, all) =>
     all.findIndex(first => first.scene_id === r.scene_id) === index);
   const availableRevisions = draft.revisions.filter(r => r.scene_id === sceneId);
@@ -195,7 +200,7 @@ function Lab({ initial, revisions }: {
       <p>Une scène du manuscrit n'est ni une date du monde ni une révélation au lecteur.</p>
       <label htmlFor={id + "-compare-first"}>Première scène à comparer</label>
       <select id={id + "-compare-first"} value={firstScene}
-        onChange={e => setFirstScene(e.currentTarget.value)}>
+        onChange={e => { setFirstScene(e.currentTarget.value); setFirstWorldRevision(""); }}>
         <option value="">Choisir la première scène</option>
         {draft.snapshot.narration.map(s => <option key={s.scene_id} value={s.scene_id}>
           {s.novel_title} — {s.scene_title} ({s.scene_id})
@@ -203,7 +208,7 @@ function Lab({ initial, revisions }: {
       </select>
       <label htmlFor={id + "-compare-second"}>Deuxième scène à comparer</label>
       <select id={id + "-compare-second"} value={secondScene}
-        onChange={e => setSecondScene(e.currentTarget.value)}>
+        onChange={e => { setSecondScene(e.currentTarget.value); setSecondWorldRevision(""); }}>
         <option value="">Choisir la deuxième scène</option>
         {draft.snapshot.narration.map(s => <option key={s.scene_id} value={s.scene_id}>
           {s.novel_title} — {s.scene_title} ({s.scene_id})
@@ -213,6 +218,35 @@ function Lab({ initial, revisions }: {
         <p>Ordre de narration : {threeOrders.narration_reason}</p>
         <p>{threeOrders.world_reason}</p>
         <p>{threeOrders.reader_reason}</p>
+      </section>
+      <section aria-label="Preuve du temps du monde par révisions exactes">
+        <h3>Preuve du temps du monde — révisions explicites</h3>
+        <p>Choisissez une version immuable par scène. Une position dans un roman ne prouve aucun temps du monde.</p>
+        <label htmlFor={id + "-first-world-rev"}>Révision exacte de la première scène pour le temps du monde</label>
+        <select id={id + "-first-world-rev"} value={firstWorldRevision}
+          onChange={e => setFirstWorldRevision(e.currentTarget.value)}>
+          <option value="">Choisir une version précise</option>
+          {draft.revisions.filter(r => r.scene_id === firstScene).map(r =>
+            <option key={r.revision_id} value={r.revision_id}>
+              {r.revision_label} — {r.revision_id}
+            </option>)}
+        </select>
+        <label htmlFor={id + "-second-world-rev"}>Révision exacte de la deuxième scène pour le temps du monde</label>
+        <select id={id + "-second-world-rev"} value={secondWorldRevision}
+          onChange={e => setSecondWorldRevision(e.currentTarget.value)}>
+          <option value="">Choisir une version précise</option>
+          {draft.revisions.filter(r => r.scene_id === secondScene).map(r =>
+            <option key={r.revision_id} value={r.revision_id}>
+              {r.revision_label} — {r.revision_id}
+            </option>)}
+        </select>
+        <section role="status" aria-label="Résultat du temps du monde lié aux révisions">
+          <p>{sceneWorld.reason}</p>
+          {sceneWorld.witness_edge_ids.length > 0 && <p>
+            Témoins humains actifs : {sceneWorld.witness_edge_ids.join(", ")}
+          </p>}
+          <p>Révélation au lecteur non renseignée ; aucune date ni ordre narratif inféré.</p>
+        </section>
       </section>
     </fieldset>
     <fieldset>
