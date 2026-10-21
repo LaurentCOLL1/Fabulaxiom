@@ -3,6 +3,7 @@ import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import type { M32ChronologyProjection } from "./M32ChronologyPreview";
 import M32ManualChronologyLab from "./M32ManualChronologyLab";
+import { fictionalSelectionIsHistorical } from "./M32ManualChronologyLab";
 import { compareM32WorldOrder } from "./M32WorldOrderComparison";
 import {
   startFictionalDraft as startDraft, createFictionalAnchor, supersedeFictionalAnchor,
@@ -405,6 +406,33 @@ describe("M3.2 manually authored fictional-only chronology laboratory", () => {
     expect(html).toContain("Première ancre à consulter");
     expect(html).toContain("Deuxième ancre à consulter");
     expect(html).toContain("Choisir deux ancres actives");
+    expect(html).not.toContain("invoke(");
+  });
+  it("49 after supersession the old fictional anchor cannot prove current time", () => {
+    const d = startFictionalDraft(invented);
+    const corrected = supersedeFictionalAnchor(d, "C", unknown);
+    expect(corrected.snapshot.anchors.find(a => a.id === "C")?.status).toBe("superseded");
+    expect(() => compareM32WorldOrder(corrected.snapshot, "fiction-one", "A", "C"))
+      .toThrow(/historique/);
+    expect(d.snapshot.anchors.find(a => a.id === "C")?.status).toBe("current");
+  });
+  it("50 the corrected anchor retains source history without promoting reader reveal", () => {
+    const corrected = supersedeFictionalAnchor(startFictionalDraft(invented), "A", exact);
+    const old = corrected.snapshot.anchors.find(a => a.id === "A");
+    expect(old?.source_revision_id).toBe("fiction-revision-A");
+    expect(old?.status).toBe("superseded");
+    expect(corrected.snapshot.reader_reveal_status).toBe("not_authored");
+    expect(corrected.audit).toHaveLength(1);
+  });
+  it("51 prevents showing a stale world proof for a corrected ID", () => {
+    expect(fictionalSelectionIsHistorical(["A", "B"], "A", "B")).toBe(false);
+    expect(fictionalSelectionIsHistorical(["A", "B"], "A", "C")).toBe(true);
+    expect(fictionalSelectionIsHistorical(["A", "B"], "C", "A")).toBe(true);
+    expect(fictionalSelectionIsHistorical(["A", "B"], "", "A")).toBe(false);
+    expect(fictionalSelectionIsHistorical(["K", "L"], "A", "K")).toBe(true);
+    const html = renderToStaticMarkup(createElement(M32ManualChronologyLab,
+      { initial: invented, revisions: history }));
+    expect(html).toContain("Consulter une preuve de précédence humaine");
     expect(html).not.toContain("invoke(");
   });
   it("13 refuses malformed legacy edge and forbids promotion to G3", () => {

@@ -1,5 +1,8 @@
 # Fabulaxiom — suivi de la roadmap V1 (état actualisé au 21 octobre 2026)
 
+**Tranche candidate M3.2 du 21 octobre 2026 (non acceptée) :** UX fictive de sélection d'ancre devenue historique après supersession : avertissement lisible, option historique désactivée, aucune relation actuelle tirée de cet ID ; isolement des choix entre Univers. Cibles 51 tests atelier/46 Chromium par mode, CI au nouveau SHA nécessaire. Le vrai CRUD/acceptation Windows et les gates G2B–G6 restent fermés.
+
+
 **Vérification terminale (21 octobre 2026) :** la CI push main [#39567933461](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/39567933461) après fusion protégée PR #106 est maintenant **SUCCESS** au `main=fbfc785afa6e5bdf92c337004d1bd2f925c4957a`. La CI PR #39566947725 avait déjà terminé SUCCESS (48 tests atelier, 44 Chromium par mode). Les anciens « en cours » sont des preuves historiques datées ; aucun nouveau gate ouvert : M3.2 NOT_ACCEPTED, G2B–G6 STOP, écrivain réel NOT_PROVEN. La présente PR documentaire demande une CI neuve au HEAD exact.
 
 

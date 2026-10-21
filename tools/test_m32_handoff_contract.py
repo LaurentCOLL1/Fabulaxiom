@@ -207,9 +207,9 @@ class HandoffContractTests(unittest.TestCase):
     def test_20_manual_chronology_candidate_only_in_synthetic_lab(self):
         x = self.data["m3_2_product_progress"]
         self.assertEqual(x["delivery"], "SYNTHETIC_BROWSER_LAB_ONLY_SOURCE_ONLY")
-        self.assertEqual(x["expected_tests"], 48)
-        self.assertEqual(x["browser_new_cases"], 3)
-        self.assertEqual(x["browser_total_expected"], 44)
+        self.assertEqual(x["expected_tests"], 51)
+        self.assertEqual(x["browser_new_cases"], 2)
+        self.assertEqual(x["browser_total_expected"], 46)
         self.assertEqual(x["app_tauri_production_integration"], "NONE")
         self.assertEqual(x["sqlite_real_access"], "NONE")
         self.assertEqual(x["operator_windows_acceptance"], "NOT_STARTED")
@@ -225,8 +225,8 @@ class HandoffContractTests(unittest.TestCase):
     def test_21_exact_scene_revision_binding_stays_fictional(self):
         x = self.data["m3_2_product_progress"]
         r = x["scene_revision_binding"]
-        self.assertEqual(x["expected_tests"], 48)
-        self.assertEqual(x["browser_total_expected"], 44)
+        self.assertEqual(x["expected_tests"], 51)
+        self.assertEqual(x["browser_total_expected"], 46)
         self.assertEqual(r["fixture_catalog_limit"], 128)
         self.assertEqual(r["source_head_resolution"], "NEVER")
         self.assertFalse(r["accepts_cross_universe"])
@@ -367,6 +367,21 @@ class HandoffContractTests(unittest.TestCase):
         self.assertEqual(x["real_g3"], "STOP_UNAVAILABLE")
         self.assertEqual(x["operator_runtime"], "NONE")
         self.assertIn("39567933461", self.doc)
+
+    def test_31_historic_selection_is_ui_only_no_gate_promotion(self):
+        x = self.data["m3_2_product_progress"]["historical_selection_guard"]
+        self.assertEqual(x["status"], "CANDIDATE_NOT_CI_QUALIFIED")
+        self.assertEqual(x["stale_proof"], "SUPPRESSED")
+        self.assertEqual(x["historical_option"], "DISABLED_IN_CONTROL")
+        self.assertTrue(x["retired_identity_not_used_for_current_proof"])
+        self.assertEqual(x["other_universe_selection"], "CLEARED_ON_SCENARIO_SWITCH")
+        self.assertEqual(x["vitest_total_expected"], 51)
+        self.assertEqual(x["chromium_total_expected"], 46)
+        self.assertEqual(x["operator_execution"], "NONE")
+        self.assertEqual(x["real_sqlite"], "NONE")
+        self.assertEqual(x["g2b_to_g6"], "NOT_AUTHORIZED")
+        self.assertEqual(x["real_g3"], "STOP_UNAVAILABLE")
+        self.assertIn("protection des sélections devenues historiques", self.doc)
 
     def test_24_policy_requires_refetch_and_same_pr_handoff(self):
         for clause in ("Re-fetch", "HANDOFF_CURRENT.md", "HANDOFF_CURRENT.json",

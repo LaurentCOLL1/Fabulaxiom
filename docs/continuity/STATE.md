@@ -1,5 +1,14 @@
 # Fabulaxiom — Current State
 
+## 21 octobre 2026 — candidat fictif : protection des sélections devenues historiques
+
+Candidat **NON QUALIFIÉ** exclusivement dans l'atelier navigateur inventé : si une ancre choisie pour consulter une preuve temporelle est explicitement remplacée, l'ancien identifiant reste visible comme **historique, désactivé** dans le sélecteur, avec une explication. Aucune preuve d'ordre courant ne s'affiche pour une référence historique. Un nouvel identifiant courant peut être choisi ; le changement d'Univers fictif repart sans sélection étrangère.
+
+Objectif d'acceptation au SHA **neuf** : trois Vitest additionnels (**51 atelier**) et deux scénarios Chromium (**46 par mode**). Ne pas recycler la CI des PR #106 ou #107. Pas de calendrier inféré, de révélation lecteur, de Tauri, d'App.tsx ou de persistance SQLite. **M3.2 IN_PROGRESS_NOT_ACCEPTED**, PR #35 DRAFT, G2-A metadata-only consommé, absence writer réel NOT_PROVEN ; G2B–G6 NOT_AUTHORIZED et G3 réel STOP_UNAVAILABLE. Aucun accès aux bases, sauvegardes, ACL, journaux, migration 007, IPC writer ou Windows opérateur.
+
+---
+
+
 ## 21 octobre 2026 — qualification post-fusion #106 devenue terminale
 
 GitHub revérifié : PR #106 MERGED sur `main=fbfc785afa6e5bdf92c337004d1bd2f925c4957a`. La CI PR #39566947725 a terminé **SUCCESS** au source head `4abcc5217be07cb65d089e55fa042ff757b9043e` (48 Vitest / 44 Chromium par mode). La CI push main [#39567933461](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/39567933461) a maintenant terminé **SUCCESS**, sur le SHA exact du merge. Toutes les mentions plus anciennes « en cours au checkpoint » restent des instantanés historiques. Ce nouveau correctif documentaire nécessite **sa propre CI au nouveau HEAD**, jamais réutilisée.

@@ -9,6 +9,14 @@ import {
   type FictionalDraft, type FictionalTimeInput, type FictionalRevision,
 } from "./m32FictionalManualChronology";
 
+/** Pure, scope-local UI preflight: never treat a corrected historical anchor as current. */
+export function fictionalSelectionIsHistorical(
+  activeIds: readonly string[], left: string, right: string,
+): boolean {
+  const available = new Set(activeIds);
+  return [left, right].some(id => id !== "" && !available.has(id));
+}
+
 /** Isolated browser-only fictional UX lab. No App.tsx, Tauri invoke, storage or network. */
 function Lab({ initial, revisions }: {
   initial: M32ChronologyProjection;
@@ -34,6 +42,8 @@ function Lab({ initial, revisions }: {
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const active = draft.snapshot.anchors.filter(a => a.status === "current");
+  const selectionIsHistorical = fictionalSelectionIsHistorical(
+    active.map(anchor => anchor.id), worldLeft, worldRight);
   const edges = draft.snapshot.precedences.filter(e => e.status === "current");
   const conflict = previewFictionalPrecedence(draft, before, after);
   const correctionPreview = previewFictionalCorrection(draft, replace);
@@ -204,18 +214,25 @@ function Lab({ initial, revisions }: {
       <select id={id + "-world-left"} value={worldLeft}
         onChange={e => setWorldLeft(e.currentTarget.value)}>
         <option value="">Choisir la première ancre</option>
+        {worldLeft && !active.some(a => a.id === worldLeft) &&
+          <option value={worldLeft} disabled>Historique : {worldLeft}</option>}
         {active.map(a => <option key={a.id} value={a.id}>{a.id}</option>)}
       </select>
       <label htmlFor={id + "-world-right"}>Deuxième ancre à consulter</label>
       <select id={id + "-world-right"} value={worldRight}
         onChange={e => setWorldRight(e.currentTarget.value)}>
         <option value="">Choisir la deuxième ancre</option>
+        {worldRight && !active.some(a => a.id === worldRight) &&
+          <option value={worldRight} disabled>Historique : {worldRight}</option>}
         {active.map(a => <option key={a.id} value={a.id}>{a.id}</option>)}
       </select>
-      {worldLeft && worldRight
-        ? <M32WorldOrderComparison expectedUniverseId={draft.snapshot.universe_id}
-            snapshot={draft.snapshot} leftAnchorId={worldLeft} rightAnchorId={worldRight} />
-        : <p>Choisir deux ancres actives pour consulter les preuves déclarées.</p>}
+      {selectionIsHistorical
+        ? <p role="status">Sélection historique : une ancre remplacée n'est plus une preuve courante.
+            Choisissez deux ancres actives ; l'historique est conservé.</p>
+        : worldLeft && worldRight
+          ? <M32WorldOrderComparison expectedUniverseId={draft.snapshot.universe_id}
+              snapshot={draft.snapshot} leftAnchorId={worldLeft} rightAnchorId={worldRight} />
+          : <p>Choisir deux ancres actives pour consulter les preuves déclarées.</p>}
       <p>Cette consultation ne crée ni ne révoque de relation, et ne renseigne
         aucune révélation au lecteur.</p>
     </fieldset>
