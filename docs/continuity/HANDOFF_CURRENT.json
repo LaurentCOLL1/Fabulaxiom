@@ -45,7 +45,8 @@
     "PR_100_FICTIONAL_CONFLICT_PREVIEW_MERGED_32_VITEST_36_CHROMIUM_20261021",
     "2026_10_21_MULTINOVEL_FICTIONAL_BROWSER_LAB_TWO_NOVELS_SAME_UNIVERSE_CANDIDATE",
     "PR_101_DOC_POST_PR100_NORMALIZATION_MERGED_MAIN_23F3CE9",
-    "PR_102_TWO_FICTIONAL_NOVELS_36_VITEST_38_CHROMIUM_MERGED_MAIN_1F0A8CD9"
+    "PR_102_TWO_FICTIONAL_NOVELS_36_VITEST_38_CHROMIUM_MERGED_MAIN_1F0A8CD9",
+    "2026_10_21_FICTIONAL_THREE_ORDERS_READONLY_COMPARATOR_CANDIDATE"
   ],
   "pr35": "OPEN_DRAFT",
   "issues": {
@@ -231,7 +232,7 @@
     "verified_bypass_actors": 0,
     "classic_branch_protection_read": "403_INTEGRATION_RESTRICTED"
   },
-  "next": "FICTION_ONLY_THREE_ORDERS_WORLD_NARRATION_REVEAL_READ_ONLY_EXPLANATION_NO_CANON_NO_G3",
+  "next": "QUALIFY_42_FICTIONAL_UNIT_AND_41_REAL_CHROMIUM_THREE_ORDERS_EXACT_HEAD_CI_KEEP_REAL_G3_CLOSED",
   "live_refetch_required": true,
   "hand_off_updated_by_future_pr": true,
   "main_ci_post_merge": {
@@ -297,7 +298,7 @@
     "user_interface": "src/M32ManualChronologyLab.tsx",
     "isolated_mount": "src/m32BrowserLab.tsx",
     "tests": "src/m32ManualChronologyLab.test.tsx",
-    "expected_tests": 36,
+    "expected_tests": 42,
     "delivery": "SYNTHETIC_BROWSER_LAB_ONLY_SOURCE_ONLY",
     "implemented": [
       "CREATE_ANCHOR_FOUR_KINDS",
@@ -313,8 +314,8 @@
     "owner_writer_absence": "NOT_PROVEN",
     "g2b_to_g6": "NOT_AUTHORIZED",
     "real_g3": "STOP_UNAVAILABLE",
-    "browser_new_cases": 2,
-    "browser_total_expected": 38,
+    "browser_new_cases": 3,
+    "browser_total_expected": 41,
     "browser_fixture_manifest": "EXACT_TWO_ADDITIONAL_FICTION_ONLY_SOURCE_MODULES",
     "initial_ci_failures": [
       "HTML_ESCAPING_EXPECTATION_FIXED",
@@ -372,6 +373,25 @@
       "verified_pr_head": "07baf294286d427185c0817310d82418eb8c3fd2",
       "verified_pr_ci": 39543328344,
       "verified_main_ci": 39544279201
+    },
+    "three_orders_comparator": {
+      "status": "CANDIDATE_NOT_CI_QUALIFIED",
+      "kind": "READ_ONLY_FICTIONAL_BROWSER_ONLY",
+      "function": "previewFictionalThreeOrders",
+      "within_novel_order": "CHAPTER_AND_SCENE_POSITION_ONLY",
+      "cross_novel_order": "INDETERMINATE",
+      "world_order": "INDETERMINATE",
+      "reader_reveal": "NOT_AUTHORED",
+      "no_inference_from_manuscript_to_world": true,
+      "new_unit_tests": 6,
+      "unit_total_expected": 42,
+      "new_browser_cases": 3,
+      "browser_total_expected": 41,
+      "app_integration": "NONE",
+      "real_sqlite_access": "NONE",
+      "operator_execution": "NONE",
+      "real_g3": "STOP_UNAVAILABLE",
+      "g2b_to_g6": "NOT_AUTHORIZED"
     }
   },
   "post_pr100_normalization": {

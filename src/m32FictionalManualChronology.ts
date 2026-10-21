@@ -295,3 +295,55 @@ export function revokeFictionalPrecedence(
     audit: [...d.audit, { action: "precedence_revoked", id: edgeId, explanation: why }],
   });
 }
+
+/** Read-only explanation of three independent coordinates in an invented manuscript.
+ * Chapter/scene position is comparable only within the SAME novel.
+ * It never proves an event's world time, calendar conversion or reader reveal.
+ */
+export type FictionalThreeOrdersPreview = Readonly<{
+  verdict: "unselected" | "blocked" | "allowed";
+  narration: "unselected" | "same_scene" | "before" | "after" |
+    "separate_novels" | "indeterminate";
+  narration_reason: string;
+  world_reason: string;
+  reader_reason: string;
+}>;
+export function previewFictionalThreeOrders(
+  d: FictionalDraft, firstId: string, secondId: string,
+): FictionalThreeOrdersPreview {
+  inspectFictionalDraft(d);
+  const common = {
+    world_reason: "Chronologie du monde : indéterminée par ces positions de manuscrit.",
+    reader_reason: "Révélation au lecteur : non renseignée (lecture seule).",
+  };
+  if (!firstId || !secondId) return {
+    ...common, verdict: "unselected", narration: "unselected",
+    narration_reason: "Choisir deux scènes fictives.",
+  };
+  const first = d.snapshot.narration.find(s => s.scene_id === firstId);
+  const second = d.snapshot.narration.find(s => s.scene_id === secondId);
+  if (!first || !second) return {
+    ...common, verdict: "blocked", narration: "indeterminate",
+    narration_reason: "Scène inconnue ou étrangère : comparaison refusée.",
+  };
+  if (first.scene_id === second.scene_id) return {
+    ...common, verdict: "allowed", narration: "same_scene",
+    narration_reason: "Même scène du manuscrit, aucun événement différent déduit.",
+  };
+  if (first.novel_id !== second.novel_id) return {
+    ...common, verdict: "allowed", narration: "separate_novels",
+    narration_reason: "Ordre de narration indéterminé entre romans distincts.",
+  };
+  const a = [first.chapter_order, first.scene_order];
+  const b = [second.chapter_order, second.scene_order];
+  const comparison = a[0] === b[0] ? a[1] - b[1] : a[0] - b[0];
+  return comparison === 0 ? {
+    ...common, verdict: "allowed", narration: "indeterminate",
+    narration_reason: "Même position déclarée pour deux scènes distinctes : ordre indéterminé.",
+  } : {
+    ...common, verdict: "allowed", narration: comparison < 0 ? "before" : "after",
+    narration_reason: comparison < 0
+      ? "La première scène précède la seconde dans ce roman."
+      : "La première scène suit la seconde dans ce roman.",
+  };
+}

@@ -20,6 +20,10 @@ Sur le **seul atelier navigateur entièrement inventé**, une deuxième scène d
 
 PR [#102](https://github.com/LaurentCOLL1/Fabulaxiom/pull/102) **fusionnée** sur `main=1f0a8cd9a369106202b57102aa28915de65b7472`, après CI PR [#39543328344](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/39543328344) SUCCESS au HEAD `07baf294286d427185c0817310d82418eb8c3fd2` (36 tests Vitest atelier, 38 scénarios Chromium en deux modes), et push main [#39544279201](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/39544279201) SUCCESS au merge exact. Couverture de deux romans dans un même Univers inventé, révisions de scènes filtrées strictement. **Ne pas confondre position manuscrit, précédences humaines et révélation lecteur**. Les mentions « CI à qualifier » des sections précédentes sont des checkpoints antérieurs, pas le statut actuel. M3.2 `IN_PROGRESS_NOT_ACCEPTED`, PR #35 DRAFT, G2B–G6 STOP, aucun vrai SQLite/Windows ; M3.3 et release non autorisées.
 
+## 21 octobre 2026 — candidat de comparaison des trois ordres (simulation uniquement)
+
+Une nouvelle interaction dans l'atelier de chronologie fictif sélectionne deux scènes par identifiants, compare **uniquement** leurs positions dans un même roman (ou affiche l'indétermination pour deux romans), conserve « chronologie du monde indéterminée » et « révélation au lecteur non renseignée ». Six tests Vitest et trois Chromium proposés : **42 tests atelier / 41 scénarios Chromium à qualifier sur un nouveau SHA**. Cela ne livre ni calendrier canonique, ni ordre global, ni GUI native acceptée. G2B–G6 et PR #35 inchangés.
+
 ## Matrice de conformité
 
 | Jalon | État réel connu | Conformité / prochaine preuve |
