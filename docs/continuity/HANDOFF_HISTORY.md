@@ -54,3 +54,5 @@ Les blocages externes (issues #36/#38) demeurent. Les détails techniques de la 
 
 **Vérification terminale du 21 octobre 2026 :** CI push `main=997b60901e1f18a426eae3efa34ddb29c07b5721` [#39554622761](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/39554622761) désormais **SUCCESS** au SHA exact, après PR #104 MERGED (CI PR #39553745685 SUCCESS, 42 Vitest atelier / 41 Chromium). Les mentions antérieures « en cours » sont des instantanés historiques. M3.2 non acceptée, G2-B–G6 STOP, writer absence NOT_PROVEN. Aucun test Windows opérateur.
 
+
+**Checkpoint GitHub 21 octobre 2026 :** [PR #106](https://github.com/LaurentCOLL1/Fabulaxiom/pull/106) fusionnée au `main=fbfc785afa6e5bdf92c337004d1bd2f925c4957a`. CI PR #39566947725 terminale SUCCESS (48 tests atelier / 44 Chromium dans les deux modes, 74 étapes Windows), CI push main #39567933461 **EN COURS au checkpoint**. Laboratoire fictif de preuve humaine uniquement ; aucun original SQLite/Windows, M3.2 non acceptée, PR #35 DRAFT, G2B–G6 STOP.

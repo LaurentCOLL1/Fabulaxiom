@@ -1,5 +1,8 @@
 # Prompt minimal de reprise — Fabulaxiom
 
+**Checkpoint GitHub du 21 octobre 2026 :** PR #106 MERGED sur `main=fbfc785afa6e5bdf92c337004d1bd2f925c4957a`, CI PR #39566947725 SUCCESS (48 tests Vitest de l'atelier fictif, 44 Chromium par mode). CI post-merge #39567933461 EN COURS au checkpoint. M3.2 NON ACCEPTÉE, PR #35 DRAFT, G2-A metadata-only consommé, écrivain SQLite réel NOT_PROVEN, G2-B–G6 STOP. Ne réutilise jamais une CI au mauvais SHA, re-fetch GitHub et les fichiers continuité avant reprise.
+
+
 **Vérification terminale du 21 octobre 2026 :** CI push `main=997b60901e1f18a426eae3efa34ddb29c07b5721` [#39554622761](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/39554622761) désormais **SUCCESS** au SHA exact, après PR #104 MERGED (CI PR #39553745685 SUCCESS, 42 Vitest atelier / 41 Chromium). Les mentions antérieures « en cours » sont des instantanés historiques. M3.2 non acceptée, G2-B–G6 STOP, writer absence NOT_PROVEN. Aucun test Windows opérateur.
 
 
