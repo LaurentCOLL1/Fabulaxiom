@@ -3,14 +3,14 @@
   "as_of": "2026-10-21",
   "status_kind": "DATED_PUBLIC_SOURCE_HANDOFF_ONLY",
   "repository": "LaurentCOLL1/Fabulaxiom",
-  "last_confirmed_main_before_handoff": "997b60901e1f18a426eae3efa34ddb29c07b5721",
-  "last_confirmed_merged_pr": 104,
-  "last_verified_pr_head": "b320b711763659d9a3af670b685254eeb8b815e9",
+  "last_confirmed_main_before_handoff": "fbfc785afa6e5bdf92c337004d1bd2f925c4957a",
+  "last_confirmed_merged_pr": 106,
+  "last_verified_pr_head": "4abcc5217be07cb65d089e55fa042ff757b9043e",
   "last_verified_ci": {
-    "run_id": 39553745685,
+    "run_id": 39566947725,
     "context": "Windows frontend and Rust checks",
     "conclusion": "SUCCESS",
-    "source": "PR104_EXACT_HEAD"
+    "source": "PR106_EXACT_HEAD"
   },
   "recent_changes": [
     "PR_85_EXACT_G2A_TEXT_AST_ONLY",
@@ -50,7 +50,9 @@
     "PR_103_DOC_NORMALIZATION_MERGED_MAIN_DBD79CF",
     "PR_104_FICTIONAL_THREE_ORDERS_COMPARATOR_MERGED_MAIN_997B609",
     "POSTMERGE_PR104_MAIN_39554622761_TERMINAL_SUCCESS_ON_EXACT_SHA_20261021",
-    "2026_10_21_FICTIONAL_EXISTING_HUMAN_WITNESS_PANEL_CANDIDATE_48_UNIT_44_CHROMIUM"
+    "2026_10_21_FICTIONAL_EXISTING_HUMAN_WITNESS_PANEL_CANDIDATE_48_UNIT_44_CHROMIUM",
+    "PR106_ACTIVE_HUMAN_PRECEDENCE_WITNESS_FICTIONAL_PANEL_MERGED_MAIN_FBFC785A",
+    "PR106_POSTMERGE_MAIN_39567933461_TERMINAL_SUCCESS_EXACT_SHA_VERIFIED_20261021"
   ],
   "pr35": "OPEN_DRAFT",
   "issues": {
@@ -236,15 +238,15 @@
     "verified_bypass_actors": 0,
     "classic_branch_protection_read": "403_INTEGRATION_RESTRICTED"
   },
-  "next": "QUALIFY_HUMAN_WITNESS_PANEL_FICTION_ONLY_48_VITEST_44_CHROMIUM_FRESH_SHA_CI",
+  "next": "FINISH_PR107_FRESH_EXACT_HEAD_CI_THEN_FICTION_ONLY_M32_INCREMENT_NO_GATE_PROMOTION",
   "live_refetch_required": true,
   "hand_off_updated_by_future_pr": true,
   "main_ci_post_merge": {
-    "sha": "997b60901e1f18a426eae3efa34ddb29c07b5721",
-    "run_id": 39554622761,
+    "sha": "fbfc785afa6e5bdf92c337004d1bd2f925c4957a",
+    "run_id": 39567933461,
     "conclusion": "SUCCESS",
     "source": "MAIN_PUSH",
-    "note": "Terminal SUCCESS checked 21 Oct 2026, at merge main SHA; not transferable."
+    "note": "Terminal SUCCESS verified 2026-10-21 at exact PR106 merge main SHA; this does not qualify later SHA nor authorize operator"
   },
   "g2a_candidate_ci": {
     "pr": 86,
@@ -403,7 +405,7 @@
       "ci_main_verified": 39554622761
     },
     "human_witness_panel": {
-      "status": "CANDIDATE_NOT_CI_QUALIFIED",
+      "status": "MERGED_SOURCE_ONLY_NOT_PRODUCT_ACCEPTED",
       "scope": "BROWSER_FIXTURES_ONLY",
       "existing_comparison_module": "M32WorldOrderComparison",
       "proof_source": "EXPLICIT_ACTIVE_HUMAN_EDGES_ONLY",
@@ -418,7 +420,12 @@
       "g2b_to_g6": "NOT_AUTHORIZED",
       "app_integration": "NONE",
       "sqlite_access": "NONE",
-      "operator_execution": "NONE"
+      "operator_execution": "NONE",
+      "pr": 106,
+      "source_head": "4abcc5217be07cb65d089e55fa042ff757b9043e",
+      "ci_pr": 39566947725,
+      "ci_main_pending": 39567933461,
+      "ci_main_verified": 39567933461
     }
   },
   "post_pr100_normalization": {
@@ -489,5 +496,27 @@
     "g2b_to_g6": "NOT_AUTHORIZED",
     "real_g3": "STOP_UNAVAILABLE",
     "operator_execution": "NONE"
+  },
+  "post_pr106_normalization": {
+    "kind": "DATED_DOCUMENTARY_ONLY_NO_RUNTIME_AUTHORITY",
+    "merge_sha": "fbfc785afa6e5bdf92c337004d1bd2f925c4957a",
+    "source_head": "4abcc5217be07cb65d089e55fa042ff757b9043e",
+    "merged_pr": 106,
+    "pr_ci": {
+      "run_id": 39566947725,
+      "conclusion": "SUCCESS"
+    },
+    "main_ci": {
+      "run_id": 39567933461,
+      "conclusion": "SUCCESS"
+    },
+    "vitest": 48,
+    "chromium": 44,
+    "fiction_only": true,
+    "product_status": "IN_PROGRESS_NOT_ACCEPTED",
+    "real_writer_absence": "NOT_PROVEN",
+    "g2b_to_g6": "NOT_AUTHORIZED",
+    "real_g3": "STOP_UNAVAILABLE",
+    "operator_runtime": "NONE"
   }
 }

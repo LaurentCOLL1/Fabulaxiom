@@ -253,7 +253,7 @@ class HandoffContractTests(unittest.TestCase):
 
     def test_23_pr100_merge_status_not_runtime_acceptance(self):
         p = self.data["post_pr100_normalization"]
-        self.assertEqual(self.data["last_confirmed_merged_pr"], 104)
+        self.assertEqual(self.data["last_confirmed_merged_pr"], 106)
         self.assertEqual(p["main_merge_sha"], "bf59b28b437470a4759a5971968e8f00f9fa895c")
         self.assertEqual(p["pr_head_sha"], "95e2e0385979e2b226aa1d6289e12250c6e6e19d")
         self.assertEqual(p["pr_ci"]["run_id"], 39533766395)
@@ -315,12 +315,12 @@ class HandoffContractTests(unittest.TestCase):
     def test_28_pr104_postmerge_is_fictional_not_operator_permission(self):
         x = self.data["post_pr104_normalization"]
         self.assertEqual(x["pr"], 104)
-        self.assertEqual(x["merge_sha"], self.data["last_confirmed_main_before_handoff"])
-        self.assertEqual(x["source_head"], self.data["last_verified_pr_head"])
+        self.assertEqual(x["merge_sha"], "997b60901e1f18a426eae3efa34ddb29c07b5721")
+        self.assertEqual(x["source_head"], "b320b711763659d9a3af670b685254eeb8b815e9")
         self.assertEqual(x["ci_pr"]["run_id"], 39553745685)
         self.assertEqual(x["ci_pr"]["conclusion"], "SUCCESS")
         self.assertEqual(x["ci_main"]["run_id"], 39554622761)
-        self.assertEqual(self.data["main_ci_post_merge"]["conclusion"], "SUCCESS")
+        self.assertEqual(self.data["post_pr104_normalization"]["ci_main"]["conclusion"], "SUCCESS")
         self.assertEqual(x["ci_main"]["conclusion"], "SUCCESS")
         self.assertTrue(x["synthetic_only"])
         self.assertEqual(x["vitest"], 42)
@@ -334,7 +334,7 @@ class HandoffContractTests(unittest.TestCase):
 
     def test_29_human_witness_panel_is_fiction_only_and_not_authority(self):
         x = self.data["m3_2_product_progress"]["human_witness_panel"]
-        self.assertEqual(x["status"], "CANDIDATE_NOT_CI_QUALIFIED")
+        self.assertEqual(x["status"], "MERGED_SOURCE_ONLY_NOT_PRODUCT_ACCEPTED")
         self.assertEqual(x["existing_comparison_module"], "M32WorldOrderComparison")
         self.assertEqual(x["proof_source"], "EXPLICIT_ACTIVE_HUMAN_EDGES_ONLY")
         self.assertFalse(x["allows_revoked_witnesses"])
@@ -346,7 +346,27 @@ class HandoffContractTests(unittest.TestCase):
         self.assertEqual(x["g2b_to_g6"], "NOT_AUTHORIZED")
         self.assertEqual(x["sqlite_access"], "NONE")
         self.assertEqual(x["operator_execution"], "NONE")
-        self.assertIn("preuves humaines en lecture seule", self.doc)
+        self.assertIn("preuves humaines fictives", self.doc)
+
+    def test_30_pr106_merge_does_not_accept_m32_or_authorize_sqlite(self):
+        x = self.data["post_pr106_normalization"]
+        self.assertEqual(self.data["last_confirmed_merged_pr"], 106)
+        self.assertEqual(x["merge_sha"], self.data["last_confirmed_main_before_handoff"])
+        self.assertEqual(x["source_head"], self.data["last_verified_pr_head"])
+        self.assertEqual(x["pr_ci"]["run_id"], 39566947725)
+        self.assertEqual(x["pr_ci"]["conclusion"], "SUCCESS")
+        self.assertEqual(x["main_ci"]["run_id"], 39567933461)
+        self.assertEqual(self.data["main_ci_post_merge"]["conclusion"], "SUCCESS")
+        self.assertEqual(x["main_ci"]["conclusion"], "SUCCESS")
+        self.assertEqual(x["vitest"], 48)
+        self.assertEqual(x["chromium"], 44)
+        self.assertTrue(x["fiction_only"])
+        self.assertEqual(x["product_status"], "IN_PROGRESS_NOT_ACCEPTED")
+        self.assertEqual(x["real_writer_absence"], "NOT_PROVEN")
+        self.assertEqual(x["g2b_to_g6"], "NOT_AUTHORIZED")
+        self.assertEqual(x["real_g3"], "STOP_UNAVAILABLE")
+        self.assertEqual(x["operator_runtime"], "NONE")
+        self.assertIn("39567933461", self.doc)
 
     def test_24_policy_requires_refetch_and_same_pr_handoff(self):
         for clause in ("Re-fetch", "HANDOFF_CURRENT.md", "HANDOFF_CURRENT.json",

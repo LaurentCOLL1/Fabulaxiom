@@ -1,6 +1,26 @@
 # Fabulaxiom — Next Authorized Work
 
-## 21 octobre 2026 — nouvelle tranche fictive candidate : preuves humaines en lecture seule
+## 21 octobre 2026 — qualification post-fusion #106 devenue terminale
+
+GitHub revérifié : PR #106 MERGED sur `main=fbfc785afa6e5bdf92c337004d1bd2f925c4957a`. La CI PR #39566947725 a terminé **SUCCESS** au source head `4abcc5217be07cb65d089e55fa042ff757b9043e` (48 Vitest / 44 Chromium par mode). La CI push main [#39567933461](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/39567933461) a maintenant terminé **SUCCESS**, sur le SHA exact du merge. Toutes les mentions plus anciennes « en cours au checkpoint » restent des instantanés historiques. Ce nouveau correctif documentaire nécessite **sa propre CI au nouveau HEAD**, jamais réutilisée.
+
+**M3.2 IN_PROGRESS_NOT_ACCEPTED** ; PR #35 OPEN/DRAFT ; G2A metadata-only (accord consommé), écrivain SQLite réel NOT_PROVEN, G2B–G6 NOT_AUTHORIZED, G3 réel STOP_UNAVAILABLE. Aucune originale v6/v7, WAL/SHM, sauvegarde, ACL, marqueur, migration007, IPC writer, M3.3, release ni exécution Windows opérateur.
+
+---
+
+
+## 21 octobre 2026 — PR #106 fusionnée : preuves humaines fictives
+
+**Re-fetch GitHub (instantané daté) :** [PR #106](https://github.com/LaurentCOLL1/Fabulaxiom/pull/106) MERGED sous « Protect main » au `main=fbfc785afa6e5bdf92c337004d1bd2f925c4957a`. HEAD source `4abcc5217be07cb65d089e55fa042ff757b9043e`, CI PR [#39566947725](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/39566947725) SUCCESS terminale (74 étapes Windows, 48 tests Vitest atelier et 44/44 scénarios Chromium dans deux modes). CI post-merge main [#39567933461](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/39567933461) **EN COURS AU CHECKPOINT**, résultat à vérifier avant de le déclarer terminal. Les anciennes CI ne sont pas transférables.
+
+**Produit :** `M32WorldOrderComparison` déjà existant rendu consultable dans l'atelier fictif de chronologie, avec deux ancres, témoins de précédence et motifs humains, exclusion des liens révoqués et actualisation après révocation humaine explicite. Aucun nouvel algorithme de graphe, aucune preuve de temps déduite de la narration, aucune révélation lecteur, aucune connexion App.tsx/Tauri/SQLite ou données opérateur. **M3.2 reste IN_PROGRESS_NOT_ACCEPTED**, PR #35 OPEN/DRAFT.
+
+**STOP :** G2-A metadata-only PASS, accord ponctuel consommé, écrivain réel NOT_PROVEN, G2B/C/D à G6 NOT_AUTHORIZED, REAL_G3 STOP_UNAVAILABLE. Aucune originale v6/v7, sauvegarde, ACL, journaux, marqueur, migration 007, writer IPC, M3.3, ComfyUI, release ou commande Windows opérateur. Prochaine étape : confirmer CI post-main exacte ; développement ultérieur uniquement sur fixtures.
+
+---
+
+
+## 21 octobre 2026 — historique du candidat PR #106 (depuis fusionné)
 
 **CANDIDAT, PAS ENCORE QUALIFIÉ :** dans le seul atelier navigateur `M32ManualChronologyLab`, choisir deux ancres imaginaires actives pour afficher la relation temporelle existante et les identifiants/motifs des liens humains qui la justifient. Réutiliser `M32WorldOrderComparison` au lieu de recopier son moteur. Les liens révoqués, les ancres historiques et les scènes du manuscrit ne prouvent aucune relation actuelle. Vérifier l'actualisation après révocation manuelle. **Cible : 48 tests Vitest de l'atelier (+6), 44 scénarios Chromium par mode (+3)** ; nouvelle CI au SHA exact obligatoire.
 
