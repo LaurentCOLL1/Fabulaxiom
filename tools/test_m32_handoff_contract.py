@@ -662,9 +662,9 @@ class HandoffContractTests(unittest.TestCase):
 
     def test_47_pr118_merge_is_exact_and_real_gate_not_promoted(self):
         x = self.data["post_pr118_normalization"]
-        self.assertEqual(self.data["last_confirmed_merged_pr"], 118)
-        self.assertEqual(self.data["last_confirmed_main_before_handoff"], x["merge_sha"])
-        self.assertEqual(self.data["last_verified_pr_head"], x["pr_head_sha"])
+        self.assertEqual(x["merged_pr"], 118)
+        self.assertEqual(x["merge_sha"], "a0942b9566d6de21cf73e55dce47c3797dcb7c81")
+        self.assertEqual(x["pr_head_sha"], "ff996fc27da6df12697d68a46b8580a3a33e30b3")
         self.assertEqual(x["pr_ci"]["run_id"], 39658544037)
         self.assertEqual(x["pr_ci"]["rust_tests"], 117)
         self.assertEqual(x["main_ci"]["run_id"], 39660168071)
@@ -677,7 +677,7 @@ class HandoffContractTests(unittest.TestCase):
 
     def test_48_ram_restatement_withdrawals_do_not_promote_chain_or_runtime(self):
         x = self.data["m3_2_product_progress"]["test_only_rust_fourth_stage"]
-        self.assertEqual(x["status"], "CANDIDATE_NOT_CI_QUALIFIED")
+        self.assertEqual(x["status"], "MERGED_TEST_ONLY_NOT_PRODUCT_ACCEPTED")
         self.assertTrue(x["compiled_only_during_tests"])
         self.assertEqual(x["new_rust_tests"], 4)
         self.assertEqual(x["auto_migration_max"], 6)
@@ -693,6 +693,42 @@ class HandoffContractTests(unittest.TestCase):
         schema = (ROOT / x["sql_candidate"]).read_text(encoding="utf-8")
         self.assertIn("in-memory candidate only", schema)
         self.assertNotIn("schema_migrations", schema)
+        self.assertEqual(self.data["g2a"]["absence_of_sqlite_writer"], "NOT_PROVEN")
+
+
+    def test_49_pr119_exact_head_source_qualified_without_windows_acceptance(self):
+        x = self.data["post_pr119_normalization"]
+        self.assertEqual(self.data["last_confirmed_merged_pr"], 119)
+        self.assertEqual(self.data["last_confirmed_main_before_handoff"], x["merge_sha"])
+        self.assertEqual(self.data["last_verified_pr_head"], x["pr_head_sha"])
+        self.assertEqual(x["pr_ci"]["run_id"], 39661776335)
+        self.assertEqual(x["pr_ci"]["rust_tests"], 121)
+        self.assertEqual(x["main_ci"]["run_id"], 39684342539)
+        self.assertEqual(x["main_ci"]["conclusion"], "IN_PROGRESS_AT_CHECKPOINT")
+        self.assertEqual(x["real_writer_absence"], "NOT_PROVEN")
+        self.assertEqual(x["g2b_to_g6"], "NOT_AUTHORIZED")
+        self.assertEqual(x["real_g3"], "STOP_UNAVAILABLE")
+        self.assertEqual(x["operator_execution"], "NONE")
+        self.assertIn("PR #119 MERGED", self.doc)
+
+    def test_50_one_successor_stage_remains_ram_only_and_partial_order(self):
+        x = self.data["m3_2_product_progress"]["test_only_rust_fifth_stage"]
+        self.assertEqual(x["status"], "CANDIDATE_NOT_CI_QUALIFIED")
+        self.assertTrue(x["compiled_only_during_tests"])
+        self.assertEqual(x["max_successors_per_withdrawn_restatement"], 1)
+        self.assertTrue(x["partial_order_only"])
+        self.assertEqual(x["auto_migration_max"], 6)
+        self.assertEqual(x["tauri_writer_ipc"], "NONE")
+        self.assertEqual(x["real_sqlite_access"], "NONE")
+        self.assertEqual(x["g2b_to_g6"], "NOT_AUTHORIZED")
+        src = (ROOT / "src-tauri" / "src" / "m32_manual_chronology.rs").read_text(encoding="utf-8")
+        for method in x["functions"]:
+            self.assertIn("pub fn " + method, src)
+        self.assertIn("db.execute_batch(M32_SUCCESSORS)", src)
+        self.assertNotIn("#[tauri::command]", src)
+        sql = (ROOT / x["sql_candidate"]).read_text(encoding="utf-8")
+        self.assertIn("ONE guarded successor", sql)
+        self.assertNotIn("schema_migrations", sql)
         self.assertEqual(self.data["g2a"]["absence_of_sqlite_writer"], "NOT_PROVEN")
 
     def test_24_policy_requires_refetch_and_same_pr_handoff(self):
