@@ -644,7 +644,9 @@ async function run() {
       assert.ok((await explanation.innerText()).includes("Révélation au lecteur : non renseignée"));
     });
     await caseRun("40-three-orders-distinct-novels-have-no-shared-manuscript-order", async () => {
+      await page.getByRole("button", { name: "Ouvrir l'atelier manuel fictif" }).click();
       const lab = page.getByRole("region", { name: "Atelier manuel M3.2 exclusivement fictif" });
+      await lab.getByRole("combobox", { name: "Première scène à comparer" }).selectOption("s1");
       await lab.getByRole("combobox", { name: "Deuxième scène à comparer" }).selectOption("s2");
       const explanation = lab.getByRole("status", { name: "Comparaison des trois ordres fictifs" });
       assert.ok((await explanation.innerText()).includes("indéterminé entre romans distincts"));
