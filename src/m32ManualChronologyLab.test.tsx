@@ -6,6 +6,7 @@ import M32ManualChronologyLab from "./M32ManualChronologyLab";
 import {
   startFictionalDraft as startDraft, createFictionalAnchor, supersedeFictionalAnchor,
   createFictionalPrecedence, revokeFictionalPrecedence,
+  previewFictionalPrecedence, previewFictionalCorrection,
   type FictionalRevision,
 } from "./m32FictionalManualChronology";
 
@@ -191,6 +192,83 @@ describe("M3.2 manually authored fictional-only chronology laboratory", () => {
     expect(html).toContain("s-one");
     expect(html).toContain("Sans nouvelle référence de scène");
     expect(html).not.toContain("invoke(");
+  });
+  it("23 refuses proposed C-before-A cycle with a deterministic A-B-C witness", () => {
+    const d = createFictionalPrecedence(
+      createFictionalPrecedence(startFictionalDraft(invented), "A", "B", "ab"),
+      "B", "C", "bc");
+    const p = previewFictionalPrecedence(d, "C", "A");
+    expect(p.verdict).toBe("blocked");
+    expect(p.reason).toContain("cycle temporel");
+    expect(p.witness_anchor_ids).toEqual(["C", "A", "B", "C"]);
+    expect(p.witness_edge_ids).toEqual(["fiction-draft-0001", "fiction-draft-0002"]);
+    expect(() => createFictionalPrecedence(d, "C", "A", "not allowed"))
+      .toThrow(/cycle temporel/);
+    expect(d.snapshot.precedences).toHaveLength(2);
+  });
+  it("24 treats blank selections as unselected with no fabricated order", () => {
+    expect(previewFictionalPrecedence(startFictionalDraft(invented), "", "B").verdict)
+      .toBe("unselected");
+  });
+  it("25 distinguishes missing, historical, and self references", () => {
+    const d = startFictionalDraft(invented);
+    expect(previewFictionalPrecedence(d, "unknown", "B").verdict).toBe("blocked");
+    expect(previewFictionalPrecedence(d, "A", "A").reason).toMatch(/réflexive/);
+  });
+  it("26 reports the matching already declared direct-edge ID", () => {
+    const d = createFictionalPrecedence(startFictionalDraft(invented), "A", "B", "once");
+    expect(previewFictionalPrecedence(d, "A", "B").witness_edge_ids)
+      .toEqual(["fiction-draft-0001"]);
+    expect(() => createFictionalPrecedence(d, "A", "B", "duplicate")).toThrow();
+  });
+  it("27 does not invent chronology between unrelated active anchors", () => {
+    const d = createFictionalPrecedence(startFictionalDraft(invented), "A", "B", "ab");
+    expect(previewFictionalPrecedence(d, "A", "C")).toMatchObject({
+      verdict: "allowed", witness_anchor_ids: [], witness_edge_ids: [],
+    });
+    expect(d.snapshot.precedences).toHaveLength(1);
+  });
+  it("28 resolves conflict after explicit revocation while keeping previous proof", () => {
+    const d = createFictionalPrecedence(startFictionalDraft(invented), "A", "B", "ab");
+    const e = createFictionalPrecedence(d, "B", "C", "bc");
+    const r = revokeFictionalPrecedence(e, "fiction-draft-0001", "user corrected historical claim");
+    expect(previewFictionalPrecedence(r, "C", "A").verdict).toBe("allowed");
+    expect(r.snapshot.precedences[0].status).toBe("revoked");
+    expect(e.snapshot.precedences[0].status).toBe("current");
+  });
+  it("29 previews the exact dependency ID before an anchor supersession", () => {
+    const d = createFictionalPrecedence(startFictionalDraft(invented), "A", "B", "ab");
+    expect(previewFictionalCorrection(d, "A")).toMatchObject({
+      verdict: "blocked", active_edge_ids: ["fiction-draft-0001"],
+      historical_revision_id: "fiction-revision-A",
+    });
+    expect(() => supersedeFictionalAnchor(d, "A", exact)).toThrow(/fiction-draft-0001/);
+  });
+  it("30 retains historic revision ID once dependency is explicitly revoked", () => {
+    const d = createFictionalPrecedence(startFictionalDraft(invented), "A", "B", "ab");
+    const r = revokeFictionalPrecedence(d, "fiction-draft-0001", "correct");
+    expect(previewFictionalCorrection(r, "A")).toMatchObject({
+      verdict: "allowed", active_edge_ids: [], historical_revision_id: "fiction-revision-A",
+    });
+    const next = supersedeFictionalAnchor(r, "A", exact);
+    expect(next.snapshot.anchors.find(a => a.id === "A")?.source_revision_id)
+      .toBe("fiction-revision-A");
+  });
+  it("31 never previews missing anchor as eligible to correct", () => {
+    expect(previewFictionalCorrection(startFictionalDraft(invented), "").verdict).toBe("unselected");
+    expect(previewFictionalCorrection(startFictionalDraft(invented), "foreign").verdict).toBe("blocked");
+  });
+  it("32 displays witness controls without changing source, narration or reveal", () => {
+    const html = renderToStaticMarkup(createElement(M32ManualChronologyLab,
+      { initial: invented, revisions: history }));
+    expect(html).toContain("Vérification avant/après fictive");
+    expect(html).toContain("Vérification de correction fictive");
+    expect(html).toContain("Révision historique");
+    const d = startFictionalDraft(invented);
+    previewFictionalPrecedence(d, "A", "C");
+    previewFictionalCorrection(d, "A");
+    expect(d.snapshot.narration).toEqual(invented.narration);
+    expect(d.snapshot.reader_reveal_status).toBe("not_authored");
   });
   it("13 refuses malformed legacy edge and forbids promotion to G3", () => {
     const d = startFictionalDraft(invented);
