@@ -1,5 +1,10 @@
 # Fabulaxiom — Current State
 
+## 2026-10-21 — nouvelle tranche produit candidate, deux romans fictifs dans l'atelier navigateur
+
+Ajout d'une deuxième scène et d'une révision historique appartenant à un autre roman **du même Univers inventé** sur le banc d'essai `m32BrowserLab.tsx`. Tests proposés : 4 Vitest (36 total) et 2 Chromium (38 total) couvrant le filtrage strict des révisions par scène et l'absence d'ordre du monde/révélation déduit des positions de manuscrit. Nouvelle CI au head exact à obtenir : état actuel **CANDIDAT**, non une preuve de succès. Aucune intégration dans App.tsx, SQLite original, Tauri IPC ou Windows ; PR #35 DRAFT, M3.2 IN_PROGRESS_NOT_ACCEPTED, G2B–G6 STOP et écrivain réel NOT_PROVEN.
+
+
 ## 21 octobre 2026 — état après PR #100 fusionnée
 
 GitHub vérifié : PR [#100](https://github.com/LaurentCOLL1/Fabulaxiom/pull/100) MERGED, `main=bf59b28b437470a4759a5971968e8f00f9fa895c`, head PR `95e2e0385979e2b226aa1d6289e12250c6e6e19d`, CI PR #39533766395 SUCCESS et CI main #39534698504 SUCCESS, terminales sur leurs SHA respectifs. Aucun nouveau commit ne peut réutiliser ces CI. Preview des chemins qui créeraient un cycle, blocage des corrections avant révocation humaine, 32 Vitest et 36 Chromium : **uniquement un atelier sur données fictives**, ni produit accepté ni preuve Windows.

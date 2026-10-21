@@ -47,6 +47,10 @@ const first: M32ChronologyProjection = {
       novel_id: "novel-1", novel_title: "Roman imaginaire",
       chapter_id: "chapter-1", chapter_title: "Premier chapitre",
       chapter_order: 0, scene_order: 0, scene_title: "L'ouverture" },
+    { universe_id: "fiction-world-one", scene_id: "s2",
+      novel_id: "novel-2", novel_title: "Deuxième roman imaginaire",
+      chapter_id: "chapter-2", chapter_title: "Autre chapitre",
+      chapter_order: 0, scene_order: 0, scene_title: "Le retour du messager" },
   ],
 };
 
@@ -56,6 +60,8 @@ const fictionalRevisions: readonly FictionalRevision[] = [
     revision_id: "invented-rev-A", revision_label: "Ancienne rédaction A" },
   { universe_id: "fiction-world-one", novel_id: "novel-1", scene_id: "s1",
     revision_id: "invented-rev-B", revision_label: "Autre rédaction B" },
+  { universe_id: "fiction-world-one", novel_id: "novel-2", scene_id: "s2",
+    revision_id: "invented-rev-C", revision_label: "Deuxième roman - texte historique" },
 ];
 
 const second: M32ChronologyProjection = {

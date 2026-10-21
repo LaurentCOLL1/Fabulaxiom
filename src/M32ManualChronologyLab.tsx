@@ -102,6 +102,7 @@ function Lab({ initial, revisions }: {
         </select>
       </>}
       <p>Aucun titre de scène ne sert d'identifiant ; aucune révision courante n'est déduite.</p>
+      <p>Les scènes peuvent appartenir à des romans différents du même Univers ; leur position de narration ne prouve aucune précédence dans le monde ni révélation au lecteur.</p>
       <button type="button" onClick={() => apply(
         () => createFictionalAnchor(draft, input), "Ancre fictive créée")}>
         Ajouter l'ancre

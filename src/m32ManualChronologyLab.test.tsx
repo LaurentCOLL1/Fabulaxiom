@@ -271,6 +271,43 @@ describe("M3.2 manually authored fictional-only chronology laboratory", () => {
     expect(d.snapshot.narration).toEqual(invented.narration);
     expect(d.snapshot.reader_reveal_status).toBe("not_authored");
   });
+  it("33 explicitly binds the historical revision of a second fictional novel", () => {
+    const d = createFictionalAnchor(startFictionalDraft(invented), {
+      ...unknown, source_scene_id: "s-two", source_revision_id: "fiction-revision-C",
+    });
+    expect(d.snapshot.anchors.slice(-1)[0]?.source_revision_id).toBe("fiction-revision-C");
+    expect(d.snapshot.narration.map(s => s.novel_id)).toEqual(["novel-one", "novel-two"]);
+    expect(d.snapshot.reader_reveal_status).toBe("not_authored");
+  });
+  it("34 refuses crossing revision IDs between two novels", () => {
+    const d = startFictionalDraft(invented);
+    expect(() => createFictionalAnchor(d, { ...unknown, source_scene_id: "s-two",
+      source_revision_id: "fiction-revision-A" })).toThrow(/révision/);
+    expect(() => createFictionalAnchor(d, { ...unknown, source_scene_id: "s-one",
+      source_revision_id: "fiction-revision-C" })).toThrow(/révision/);
+    expect(d.audit).toHaveLength(0);
+  });
+  it("35 a second-novel correction preserves the exact immutable historical source", () => {
+    const first = createFictionalAnchor(startFictionalDraft(invented), {
+      ...unknown, source_scene_id: "s-two", source_revision_id: "fiction-revision-C",
+    });
+    const lastId = first.snapshot.anchors.slice(-1)[0]!.id;
+    const next = supersedeFictionalAnchor(first, lastId, exact);
+    expect(next.snapshot.anchors.find(a => a.id === lastId)?.source_revision_id)
+      .toBe("fiction-revision-C");
+    expect(next.snapshot.anchors.slice(-1)[0]?.source_revision_id).toBe("fiction-revision-C");
+    expect(next.snapshot.narration).toEqual(invented.narration);
+  });
+  it("36 distinguishes manuscript order from world and read-only reveal across novels", () => {
+    const d = startFictionalDraft(invented);
+    const html = renderToStaticMarkup(createElement(M32ManualChronologyLab,
+      { initial: invented, revisions: history }));
+    expect(html).toContain("romans différents du même Univers");
+    expect(html).toContain("Ordre de narration");
+    expect(html).toContain("Ordre de révélation au lecteur");
+    expect(d.snapshot.precedences).toHaveLength(0);
+    expect(d.snapshot.reader_reveal_status).toBe("not_authored");
+  });
   it("13 refuses malformed legacy edge and forbids promotion to G3", () => {
     const d = startFictionalDraft(invented);
     expect(d.real_g3_authorized).toBe(false);

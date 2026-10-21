@@ -42,7 +42,8 @@
     "2026_10_20_FICTIONAL_EXACT_SCENE_REVISION_BINDING_VITEST_AND_BROWSER_CANDIDATE",
     "PR_99_EXACT_HISTORICAL_REVISION_SELECTION_22_UNIT_34_BROWSER_MERGED",
     "2026_10_21_PREVIEW_CYCLE_WITNESS_AND_CORRECTION_DEPENDENCIES_SYNTHETIC_CANDIDATE",
-    "PR_100_FICTIONAL_CONFLICT_PREVIEW_MERGED_32_VITEST_36_CHROMIUM_20261021"
+    "PR_100_FICTIONAL_CONFLICT_PREVIEW_MERGED_32_VITEST_36_CHROMIUM_20261021",
+    "2026_10_21_MULTINOVEL_FICTIONAL_BROWSER_LAB_TWO_NOVELS_SAME_UNIVERSE_CANDIDATE"
   ],
   "pr35": "OPEN_DRAFT",
   "issues": {
@@ -228,7 +229,7 @@
     "verified_bypass_actors": 0,
     "classic_branch_protection_read": "403_INTEGRATION_RESTRICTED"
   },
-  "next": "FICTIONAL_ONLY_THREE_ORDERS_WORLD_NARRATION_REVELATION_UI_TESTS_NEW_EXACT_HEAD_CI_GATES_STOP",
+  "next": "QUALIFY_FICTION_ONLY_MULTINOVEL_36_VITEST_38_CHROMIUM_FRESH_EXACT_HEAD_CI_NO_GATE_PROMOTION",
   "live_refetch_required": true,
   "hand_off_updated_by_future_pr": true,
   "main_ci_post_merge": {
@@ -294,7 +295,7 @@
     "user_interface": "src/M32ManualChronologyLab.tsx",
     "isolated_mount": "src/m32BrowserLab.tsx",
     "tests": "src/m32ManualChronologyLab.test.tsx",
-    "expected_tests": 32,
+    "expected_tests": 36,
     "delivery": "SYNTHETIC_BROWSER_LAB_ONLY_SOURCE_ONLY",
     "implemented": [
       "CREATE_ANCHOR_FOUR_KINDS",
@@ -311,7 +312,7 @@
     "g2b_to_g6": "NOT_AUTHORIZED",
     "real_g3": "STOP_UNAVAILABLE",
     "browser_new_cases": 2,
-    "browser_total_expected": 36,
+    "browser_total_expected": 38,
     "browser_fixture_manifest": "EXACT_TWO_ADDITIONAL_FICTION_ONLY_SOURCE_MODULES",
     "initial_ci_failures": [
       "HTML_ESCAPING_EXPECTATION_FIXED",
@@ -351,6 +352,20 @@
       "pr": 100,
       "ci_pr": 39533766395,
       "ci_main": 39534698504
+    },
+    "multinovel_browser": {
+      "status": "PROPOSED_NOT_CI_QUALIFIED",
+      "scope": "SECOND_NOVEL_SAME_FICTION_UNIVERSE_ONE_NEW_SCENE_EXACT_REVISION",
+      "production_integration": "NONE",
+      "real_sqlite_access": "NONE",
+      "new_unit_tests": 4,
+      "total_unit_tests_expected": 36,
+      "new_chromium_cases": 2,
+      "total_chromium_cases_expected": 38,
+      "no_cross_novel_world_order_inference": true,
+      "reader_reveal_status": "not_authored",
+      "g2b_to_g6": "NOT_AUTHORIZED",
+      "real_g3": "STOP_UNAVAILABLE"
     }
   },
   "post_pr100_normalization": {
