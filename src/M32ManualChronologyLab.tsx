@@ -2,6 +2,7 @@ import { useId, useState, type ReactElement } from "react";
 import type { M32ChronologyProjection, M32TimeKind } from "./M32ChronologyPreview";
 import M32ChronologyPreview from "./M32ChronologyPreview";
 import M32WorldOrderComparison from "./M32WorldOrderComparison";
+import { previewFictionalRevocationImpact } from "./m32FictionalRevocationImpact";
 import {
   startFictionalDraft, createFictionalAnchor, supersedeFictionalAnchor,
   createFictionalPrecedence, revokeFictionalPrecedence,
@@ -47,6 +48,7 @@ function Lab({ initial, revisions }: {
   const edges = draft.snapshot.precedences.filter(e => e.status === "current");
   const conflict = previewFictionalPrecedence(draft, before, after);
   const correctionPreview = previewFictionalCorrection(draft, replace);
+  const revocationImpact = previewFictionalRevocationImpact(draft, revoke);
   const threeOrders = previewFictionalThreeOrders(draft, firstScene, secondScene);
   const scenes = draft.revisions.filter((r, index, all) =>
     all.findIndex(first => first.scene_id === r.scene_id) === index);
@@ -175,6 +177,13 @@ function Lab({ initial, revisions }: {
           {e.before_anchor_id} avant {e.after_anchor_id}
         </option>)}
       </select>
+      <section role="status" aria-label="Prévisualisation de révocation fictive">
+        <p>{revocationImpact.reason}</p>
+        {revocationImpact.witness_after.length > 0 && <p>
+          Autre chemin humain encore actif : {revocationImpact.witness_after.join(", ")}
+        </p>}
+        <p>Cette prévisualisation ne révoque rien et n'invente aucune date.</p>
+      </section>
       <button type="button" onClick={() => apply(
         () => revokeFictionalPrecedence(draft, revoke, reason),
         "Relation fictive révoquée, historique conservé")}>

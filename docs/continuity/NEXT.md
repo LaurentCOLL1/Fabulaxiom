@@ -1,5 +1,16 @@
 # Fabulaxiom — Next Authorized Work
 
+## 21 octobre 2026 — candidat M3.2 : conséquence d'une révocation humaine (fiction uniquement)
+
+**CANDIDAT — CI du nouveau SHA encore requise.** L'atelier manuel fictif permet de choisir une relation `avant/après` existante et de **prévisualiser sans modification** si sa révocation supprimerait toute preuve d'ordre entre ses deux ancres, ou si une autre chaîne de précédences **humaines actives** subsisterait. Témoins affichés par identifiants exacts. La suppression effective reste un clic humain distinct. Pas de date inventée, ordre total, changement de roman, révélation au lecteur ou propagation de canon.
+
+Cibles de qualification : **55 tests Vitest de l'atelier**, **48 scénarios Chromium dans chacun des modes standard et précompilé strict CSP**, CI à HEAD exact. Ce nouveau candidat ne peut pas réutiliser les tests verts de #108/#109. Exclusivement navigateur avec données inventées, pas de Tauri/App.tsx/SQLite opérateur.
+
+**Gates STOP :** M3.2 IN_PROGRESS_NOT_ACCEPTED, PR #35 OPEN/DRAFT, G2-A metadata-only ponctuel consommé, écrivain réel NOT_PROVEN, G2-B à G6 NOT_AUTHORIZED, vrai G3 STOP_UNAVAILABLE, M3.3/release non autorisées, aucune originale v6/v7, sauvegarde, ACL, journaux, migration 007 ou IPC writer.
+
+---
+
+
 ## 21 octobre 2026 — CI post-fusion #108 maintenant terminale
 
 GitHub re-vérifié : `main=ba4b8a599910cef6d1c76fa1e4fb561a0b45e631`, PR #108 MERGED. CI PR #39572172593 **SUCCESS** au source head `fd62c1afd4ad6eff9a6f9d2f18679ef0704f59c1` (51 Vitest atelier fictif, 46 Chromium par mode, 74 étapes Windows). CI [post-fusion #39573518324](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/39573518324) **SUCCESS terminale** sur le SHA du merge. Les passages « en cours au checkpoint » restent historiques. Aucun de ces résultats n'est transférable à une nouvelle PR.

@@ -5,6 +5,7 @@ import type { M32ChronologyProjection } from "./M32ChronologyPreview";
 import M32ManualChronologyLab from "./M32ManualChronologyLab";
 import { fictionalSelectionIsHistorical } from "./M32ManualChronologyLab";
 import { compareM32WorldOrder } from "./M32WorldOrderComparison";
+import { previewFictionalRevocationImpact } from "./m32FictionalRevocationImpact";
 import {
   startFictionalDraft as startDraft, createFictionalAnchor, supersedeFictionalAnchor,
   createFictionalPrecedence, revokeFictionalPrecedence,
@@ -434,6 +435,44 @@ describe("M3.2 manually authored fictional-only chronology laboratory", () => {
       { initial: invented, revisions: history }));
     expect(html).toContain("Consulter une preuve de précédence humaine");
     expect(html).not.toContain("invoke(");
+  });
+  it("52 simulation without an explicitly chosen active edge remains unselected", () => {
+    const draft = startFictionalDraft(invented);
+    expect(previewFictionalRevocationImpact(draft, "").verdict).toBe("unselected");
+    expect(previewFictionalRevocationImpact(draft, "foreign").verdict).toBe("blocked");
+    expect(draft.audit).toHaveLength(0);
+  });
+  it("53 simulation of a sole human edge withdraws its proof, never the real draft", () => {
+    const draft = createFictionalPrecedence(startFictionalDraft(invented), "A", "B", "ab");
+    const before = JSON.stringify(draft);
+    const preview = previewFictionalRevocationImpact(draft, "fiction-draft-0001");
+    expect(preview.verdict).toBe("allowed");
+    expect(preview.relation_after).toBe("incomparable");
+    expect(preview.writes).toBe(false);
+    expect(JSON.stringify(draft)).toEqual(before);
+    expect(compareM32WorldOrder(draft.snapshot, "fiction-one", "A", "B").relation)
+      .toBe("before");
+  });
+  it("54 if a second authored route remains, it is named as the only surviving proof", () => {
+    const first = createFictionalPrecedence(startFictionalDraft(invented), "A", "B", "ab");
+    const second = createFictionalPrecedence(first, "B", "C", "bc");
+    const all = createFictionalPrecedence(second, "A", "C", "ac");
+    const preview = previewFictionalRevocationImpact(all, "fiction-draft-0003");
+    expect(preview.relation_after).toBe("before");
+    expect(preview.witness_after).toEqual(["fiction-draft-0001", "fiction-draft-0002"]);
+    expect(all.snapshot.precedences).toHaveLength(3);
+    expect(all.snapshot.reader_reveal_status).toBe("not_authored");
+  });
+  it("55 a revoked or foreign relation cannot be re-simulated as current", () => {
+    const d = createFictionalPrecedence(startFictionalDraft(invented), "A", "B", "ab");
+    const gone = revokeFictionalPrecedence(d, "fiction-draft-0001", "human corrected");
+    expect(previewFictionalRevocationImpact(gone, "fiction-draft-0001").verdict)
+      .toBe("blocked");
+    expect(gone.snapshot.precedences[0].reason).toBe("ab");
+    const html = renderToStaticMarkup(createElement(M32ManualChronologyLab,
+      { initial: invented, revisions: history }));
+    expect(html).toContain("Prévisualisation de révocation fictive");
+    expect(html).toContain("Cette prévisualisation ne révoque rien");
   });
   it("13 refuses malformed legacy edge and forbids promotion to G3", () => {
     const d = startFictionalDraft(invented);

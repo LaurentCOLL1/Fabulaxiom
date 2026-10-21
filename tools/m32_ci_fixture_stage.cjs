@@ -20,6 +20,7 @@ const MANIFEST = Object.freeze([
   "src/M32WorldOrderComparison.tsx",
   "src/M32SyntheticEventExplorer.tsx",
   "src/m32FictionalManualChronology.ts",
+  "src/m32FictionalRevocationImpact.ts",
   "src/M32ManualChronologyLab.tsx",
 ]);
 
@@ -43,7 +44,7 @@ function stageFictionOnly() {
   // Refuse new imports outside the exact fiction-only transitive module graph.
   // Importing a normal app module must fail BEFORE staging or starting Vite.
   const allow = new Set(MANIFEST);
-  for (const relative of MANIFEST.filter(f => f.endsWith(".tsx"))) {
+  for (const relative of MANIFEST.filter(f => f.endsWith(".tsx") || f.endsWith(".ts"))) {
     const content = fs.readFileSync(path.join(ROOT, relative), "utf8");
     const imports = [...content.matchAll(/\b(?:from\s*|import\s*|import\s*\(\s*)["']([^"']+)["']/g)];
     for (const match of imports) {

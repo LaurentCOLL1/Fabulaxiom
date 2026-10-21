@@ -55,7 +55,8 @@
     "PR106_POSTMERGE_MAIN_39567933461_TERMINAL_SUCCESS_EXACT_SHA_VERIFIED_20261021",
     "2026_10_21_FICTIONAL_HISTORICAL_SELECTED_ANCHOR_GUARD_CANDIDATE_51_TESTS_46_CHROMIUM",
     "PR108_HISTORIC_SELECTION_GUARD_MERGED_MAIN_BA4B8A59",
-    "PR108_MAIN_39573518324_TERMINAL_SUCCESS_EXACT_SHA_VERIFIED"
+    "PR108_MAIN_39573518324_TERMINAL_SUCCESS_EXACT_SHA_VERIFIED",
+    "M32_FICTITIOUS_REVOCATION_IMPACT_CANDIDATE_55_VITEST_48_CHROMIUM"
   ],
   "pr35": "OPEN_DRAFT",
   "issues": {
@@ -241,7 +242,7 @@
     "verified_bypass_actors": 0,
     "classic_branch_protection_read": "403_INTEGRATION_RESTRICTED"
   },
-  "next": "QUALIFY_DOC109_AT_FRESH_HEAD_THEN_FICTIONAL_ONLY_M32",
+  "next": "QUALIFY_FICTIONAL_REVOCATION_IMPACT_NEW_SHA_AND_NO_REAL_DATA",
   "live_refetch_required": true,
   "hand_off_updated_by_future_pr": true,
   "main_ci_post_merge": {
@@ -307,7 +308,7 @@
     "user_interface": "src/M32ManualChronologyLab.tsx",
     "isolated_mount": "src/m32BrowserLab.tsx",
     "tests": "src/m32ManualChronologyLab.test.tsx",
-    "expected_tests": 51,
+    "expected_tests": 55,
     "delivery": "SYNTHETIC_BROWSER_LAB_ONLY_SOURCE_ONLY",
     "implemented": [
       "CREATE_ANCHOR_FOUR_KINDS",
@@ -324,7 +325,7 @@
     "g2b_to_g6": "NOT_AUTHORIZED",
     "real_g3": "STOP_UNAVAILABLE",
     "browser_new_cases": 2,
-    "browser_total_expected": 46,
+    "browser_total_expected": 48,
     "browser_fixture_manifest": "EXACT_TWO_ADDITIONAL_FICTION_ONLY_SOURCE_MODULES",
     "initial_ci_failures": [
       "HTML_ESCAPING_EXPECTATION_FIXED",
@@ -452,6 +453,25 @@
       "pr_ci": 39572172593,
       "main_ci_pending": 39573518324,
       "main_ci_verified": 39573518324
+    },
+    "revocation_impact_preview": {
+      "status": "CANDIDATE_NOT_CI_QUALIFIED",
+      "scope": "BROWSER_FIXTURE_ONLY",
+      "universe_separation": "EXACT_ID",
+      "before_state": "EXPLICIT_ACTIVE_HUMAN_EDGE_ONLY",
+      "after_state": "HYPOTHETICAL_WITHOUT_WRITES",
+      "preserved_alternate_witness": "ACTIVE_HUMAN_PATH_ONLY",
+      "real_sqlite_access": "NONE",
+      "operator_execution": "NONE",
+      "reader_reveal": "NOT_AUTHORED",
+      "new_vitest": 4,
+      "unit_total_expected": 55,
+      "new_chromium": 2,
+      "browser_total_expected": 48,
+      "product_status": "IN_PROGRESS_NOT_ACCEPTED",
+      "real_writer_absence": "NOT_PROVEN",
+      "g2b_to_g6": "NOT_AUTHORIZED",
+      "real_g3": "STOP_UNAVAILABLE"
     }
   },
   "post_pr100_normalization": {
