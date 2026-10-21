@@ -17,7 +17,9 @@ PATTERNS = {
     "open_flags": re.compile(r"\bSQLITE_OPEN_(?:READ_ONLY|READ_WRITE|CREATE|URI)\b"),
     "raw_sqlite_or_backup": re.compile(r"\b(?:sqlite3_open(?:_v2)?|sqlite3_backup_init|backup::Backup::new)\b"),
 }
-# Exact known *textual occurrences* at 2026-10-20 main 15c9103. Not endorsements.
+# Exact known *textual occurrences*: 2026-10-20 main baseline plus 2026-10-21
+# independent human-readable review of the PR116 new #[cfg(test)] RAM module.
+# New counts are checked-in text patterns ONLY, never claims of runtime safety.
 EXPECTED = {
     "src-tauri/src/backup.rs": (10, 13, 0, 4, 0, 10, 0),
     "src-tauri/src/database.rs": (2, 0, 14, 0, 0, 0, 0),
@@ -29,6 +31,7 @@ EXPECTED = {
     "src-tauri/src/hierarchy_commands.rs": (0, 1, 0, 0, 0, 0, 0),
     "src-tauri/src/lib.rs": (0, 1, 0, 0, 0, 0, 0),
     "src-tauri/src/m31_readonly_preview.rs": (1, 2, 0, 0, 0, 1, 0),
+    "src-tauri/src/m32_manual_chronology.rs": (1, 0, 1, 0, 0, 0, 0),
     "src-tauri/src/m32_owned_backup_toy.rs": (14, 0, 0, 0, 2, 0, 0),
     "src-tauri/src/m32_preopened_query_only_toy.rs": (1, 0, 0, 0, 2, 0, 0),
     "src-tauri/src/m32_owner_handoff_actor_toy.rs": (2, 0, 0, 0, 1, 0, 0),

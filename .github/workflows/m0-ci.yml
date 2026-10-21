@@ -127,7 +127,7 @@ jobs:
       - name: M3.2 G3 runtime entrypoints public source-only audit and 18 refusals
         run: python -m unittest discover -s tools -p "test_m32_g3_runtime_entrypoint_source_audit.py" -v
 
-      - name: M3.2 whole-tree Rust SQLite source-only inventory and 18 drift refusals
+      - name: M3.2 whole-tree Rust SQLite source-only inventory and 21 drift refusals
         run: python -m unittest discover -s tools -p "test_m32_rust_sqlite_open_inventory.py" -v
 
       - name: M3.2 two-connection fictional RAM query-only 12 writer counterexamples

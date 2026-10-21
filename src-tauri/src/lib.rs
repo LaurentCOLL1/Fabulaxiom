@@ -22,6 +22,10 @@ mod hierarchy_commands;
 mod revision_commands;
 mod revisions;
 
+// PR #35 safe first-stage port: *only* compiled in Rust unit tests; never Tauri IPC.
+#[cfg(test)]
+mod m32_manual_chronology;
+
 // Offline, in-memory-only M3.1 candidate: never run on operator database.
 #[cfg(test)]
 mod world_time_schema_tests;
