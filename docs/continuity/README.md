@@ -27,6 +27,8 @@ Ce dossier constitue la **mémoire de travail versionnée du projet**. Lire en p
 
 16. [Références exactes de scènes/révisions dans l'atelier fictif](../qualification/M3_2_FICTIONAL_SCENE_REVISION_EXACT_BINDING.md) : source immuable inventée, 22 tests atelier/34 cas navigateur annoncés, jamais une preuve d'accès G3 réel.
 
+17. [Aperçu des conflits cycliques et liens bloquant une correction](../qualification/M3_2_FICTIONAL_CONFLICT_WITNESS_AND_CORRECTION_PREFLIGHT.md) : témoin de cycle fictif, 32 tests unitaires et 36 Chromium à qualifier ; aucune autorisation G3.
+
 Pour une nouvelle conversation, copier seulement le [prompt court](RESUME_PROMPT.md). Le dépôt GitHub réel prévaut sur tout texte ou souvenir du modèle. Les SHA inscrits ici sont des **repères historiques**, jamais la preuve que GitHub n'a pas changé entre-temps.
 
 Les PR qui modifient le code ou les procédures de M3.2 doivent aussi mettre à jour `HANDOFF_CURRENT.md` et `HANDOFF_CURRENT.json` ; un garde-fou CI refusera leur omission. Ce garde-fou ne met pas les fichiers à jour automatiquement : **le développeur doit inscrire une preuve juste, datée et vérifiable**. Seule une fusion réussie les rendra disponibles dans `main`.
