@@ -45,3 +45,5 @@ Les détails exhaustifs restent dans [STATE.md](STATE.md) et les PR GitHub. **To
 L'échec du premier G2-A ne doit pas être « corrigé » en arrêtant la recherche Windows. Les relations parent/enfant changent avec le temps ; les PID visibles dans une ancienne capture ne sont pas une liste blanche. Microsoft note que les PID peuvent être réutilisés et que les horodatages aident à détecter les relations incohérentes.
 
 Les blocages externes (issues #36/#38) demeurent. Les détails techniques de la préparation du snapshot SQLite et du contrôle d'ACL ne sont **pas** requalifiés par ce registre condensé.
+
+**21 octobre 2026 — PR #100 MERGED :** source HEAD `95e2e0385979e2b226aa1d6289e12250c6e6e19d`, CI PR #39533766395 SUCCESS (32 Vitest atelier/36 Chromium), merge sous ruleset `main=bf59b28b437470a4759a5971968e8f00f9fa895c`, CI push main #39534698504 SUCCESS. Le correctif documentaire post-fusion est dans une PR distincte, sans rejouer #100 ni transformer les checks historiques en nouvelle preuve. M3.2 non acceptée ; PR #35 DRAFT ; G2-A metadata-only, écrivain absent non prouvé et G2B–G6 STOP.

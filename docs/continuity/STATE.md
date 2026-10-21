@@ -1,6 +1,15 @@
 # Fabulaxiom — Current State
 
-## 2026-10-21 — aperçus explicites des blocages M3.2 sur données imaginaires
+## 21 octobre 2026 — état après PR #100 fusionnée
+
+GitHub vérifié : PR [#100](https://github.com/LaurentCOLL1/Fabulaxiom/pull/100) MERGED, `main=bf59b28b437470a4759a5971968e8f00f9fa895c`, head PR `95e2e0385979e2b226aa1d6289e12250c6e6e19d`, CI PR #39533766395 SUCCESS et CI main #39534698504 SUCCESS, terminales sur leurs SHA respectifs. Aucun nouveau commit ne peut réutiliser ces CI. Preview des chemins qui créeraient un cycle, blocage des corrections avant révocation humaine, 32 Vitest et 36 Chromium : **uniquement un atelier sur données fictives**, ni produit accepté ni preuve Windows.
+
+M3.1 COMPLETE/MERGED/NORMALIZED ; **M3.2 IN_PROGRESS_NOT_ACCEPTED**, PR #35 OPEN/DRAFT. Étape produit suivante : UX des trois ordres monde/narration/révélation sur fixtures sans persistance et tests neufs. G2A PASS metadata-only, accord consommé ; écrivain SQLite réel NOT_PROVEN, G2B–G6 NOT_AUTHORIZED, G3 réel STOP_UNAVAILABLE, historique PENDING_EXTERNAL_ATTESTATION(21/3/2), prospective NOT_STARTED. Aucun original v6/v7, journaux/sidecars, sauvegardes, ACL, marqueur, migration007, writer IPC, M3.3, ComfyUI ou release. Nouveau script Windows uniquement avec texte intégral/effets/interactions et accord explicite.
+
+---
+
+
+## 2026-10-21 — historique du candidat PR #100, depuis fusionné
 
 PR #99 fusionnée avec `main=205a328150c90bf1fb4f52abd7fb8c04f3959468`, CI PR #39480662913 SUCCESS (74/74), push #39482419125 SUCCESS. Un candidat d'UX ajoute `previewFictionalPrecedence` (chemin-témoin d'un cycle au lieu d'une simple erreur), `previewFictionalCorrection` (relations actives devant être révoquées, référence exacte de révision historique conservée), visibles dans `M32ManualChronologyLab.tsx`. Rien dans `App.tsx`, Tauri, SQLite ou IPC ; aucun chemin disque ou réseau. 10 nouveaux tests Vitest (32) et 2 Chromium (36), CI à qualifier au HEAD exact. Roadmap M3.2 IN_PROGRESS_NOT_ACCEPTED ; PR #35 DRAFT ; absence de writer réel NOT_PROVEN ; G2B–G6 STOP ; historique PENDING 21/3/2 et prospective NOT_STARTED.
 

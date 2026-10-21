@@ -247,11 +247,26 @@ class HandoffContractTests(unittest.TestCase):
         self.assertEqual(c["source_revision_head_lookup"], "NEVER")
         self.assertEqual(c["real_g3"], "STOP_UNAVAILABLE")
         self.assertEqual(c["gates"], "G2B_TO_G6_NOT_AUTHORIZED")
-        self.assertEqual(c["status"], "PROPOSED_SOURCE_ONLY_NOT_PRODUCT_ACCEPTED")
+        self.assertEqual(c["status"], "MERGED_SOURCE_ONLY_NOT_PRODUCT_ACCEPTED")
         self.assertTrue((ROOT / c["document"]).is_file())
         self.assertIn("M3_2_FICTIONAL_CONFLICT_WITNESS_AND_CORRECTION_PREFLIGHT.md", self.doc)
 
-    def test_23_policy_requires_refetch_and_same_pr_handoff(self):
+    def test_23_pr100_merge_status_not_runtime_acceptance(self):
+        p = self.data["post_pr100_normalization"]
+        self.assertEqual(self.data["last_confirmed_merged_pr"], 100)
+        self.assertEqual(p["main_merge_sha"], "bf59b28b437470a4759a5971968e8f00f9fa895c")
+        self.assertEqual(p["pr_head_sha"], self.data["last_verified_pr_head"])
+        self.assertEqual(p["pr_ci"]["run_id"], 39533766395)
+        self.assertEqual(p["main_ci"]["run_id"], 39534698504)
+        self.assertEqual(p["test_laboratory"]["vitest"], 32)
+        self.assertEqual(p["test_laboratory"]["chromium"], 36)
+        self.assertTrue(p["test_laboratory"]["fictional_only"])
+        self.assertEqual(p["product_m3_2"], "IN_PROGRESS_NOT_ACCEPTED")
+        self.assertEqual(p["real_writer_absence"], "NOT_PROVEN")
+        self.assertEqual(p["g2b_to_g6"], "NOT_AUTHORIZED")
+        self.assertIn("39534698504", self.doc)
+
+    def test_24_policy_requires_refetch_and_same_pr_handoff(self):
         for clause in ("Re-fetch", "HANDOFF_CURRENT.md", "HANDOFF_CURRENT.json",
                        "expected_head_sha", "autorisation"):
             self.assertIn(clause, self.policy)

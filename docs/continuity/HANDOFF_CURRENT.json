@@ -1,16 +1,16 @@
 {
   "schema": 1,
-  "as_of": "2026-10-20",
+  "as_of": "2026-10-21",
   "status_kind": "DATED_PUBLIC_SOURCE_HANDOFF_ONLY",
   "repository": "LaurentCOLL1/Fabulaxiom",
-  "last_confirmed_main_before_handoff": "205a328150c90bf1fb4f52abd7fb8c04f3959468",
-  "last_confirmed_merged_pr": 99,
-  "last_verified_pr_head": "37a98b2d70126fdffa6ba06ce599aaa42f88ca7a",
+  "last_confirmed_main_before_handoff": "bf59b28b437470a4759a5971968e8f00f9fa895c",
+  "last_confirmed_merged_pr": 100,
+  "last_verified_pr_head": "95e2e0385979e2b226aa1d6289e12250c6e6e19d",
   "last_verified_ci": {
-    "run_id": 39480662913,
+    "run_id": 39533766395,
     "context": "Windows frontend and Rust checks",
     "conclusion": "SUCCESS",
-    "source": "PR99_EXACT_HEAD"
+    "source": "PR100_EXACT_HEAD"
   },
   "recent_changes": [
     "PR_85_EXACT_G2A_TEXT_AST_ONLY",
@@ -41,7 +41,8 @@
     "PR_98_FICTIONAL_MANUAL_TIMELINE_13_UNIT_32_BROWSER_MERGED",
     "2026_10_20_FICTIONAL_EXACT_SCENE_REVISION_BINDING_VITEST_AND_BROWSER_CANDIDATE",
     "PR_99_EXACT_HISTORICAL_REVISION_SELECTION_22_UNIT_34_BROWSER_MERGED",
-    "2026_10_21_PREVIEW_CYCLE_WITNESS_AND_CORRECTION_DEPENDENCIES_SYNTHETIC_CANDIDATE"
+    "2026_10_21_PREVIEW_CYCLE_WITNESS_AND_CORRECTION_DEPENDENCIES_SYNTHETIC_CANDIDATE",
+    "PR_100_FICTIONAL_CONFLICT_PREVIEW_MERGED_32_VITEST_36_CHROMIUM_20261021"
   ],
   "pr35": "OPEN_DRAFT",
   "issues": {
@@ -227,15 +228,15 @@
     "verified_bypass_actors": 0,
     "classic_branch_protection_read": "403_INTEGRATION_RESTRICTED"
   },
-  "next": "VERIFY_FICTIONAL_CONFLICT_PREFLIGHT_32_VITEST_36_CHROMIUM_EXACT_HEAD_WIN_CI_KEEP_REAL_GATES_CLOSED",
+  "next": "FICTIONAL_ONLY_THREE_ORDERS_WORLD_NARRATION_REVELATION_UI_TESTS_NEW_EXACT_HEAD_CI_GATES_STOP",
   "live_refetch_required": true,
   "hand_off_updated_by_future_pr": true,
   "main_ci_post_merge": {
-    "sha": "205a328150c90bf1fb4f52abd7fb8c04f3959468",
-    "run_id": 39482419125,
+    "sha": "bf59b28b437470a4759a5971968e8f00f9fa895c",
+    "run_id": 39534698504,
     "conclusion": "SUCCESS",
     "source": "MAIN_PUSH",
-    "note": "Terminal SUCCESS checked 21 October 2026; no real gate change"
+    "note": "Terminal SUCCESS confirmed 21 Oct 2026, not transferable"
   },
   "g2a_candidate_ci": {
     "pr": 86,
@@ -345,7 +346,35 @@
       "expected_browser_cases": 36,
       "real_g3": "STOP_UNAVAILABLE",
       "gates": "G2B_TO_G6_NOT_AUTHORIZED",
-      "status": "PROPOSED_SOURCE_ONLY_NOT_PRODUCT_ACCEPTED"
+      "status": "MERGED_SOURCE_ONLY_NOT_PRODUCT_ACCEPTED",
+      "verified_exact_head": "95e2e0385979e2b226aa1d6289e12250c6e6e19d",
+      "pr": 100,
+      "ci_pr": 39533766395,
+      "ci_main": 39534698504
     }
+  },
+  "post_pr100_normalization": {
+    "kind": "DATED_PUBLIC_SOURCE_DOCUMENT_ONLY",
+    "main_merge_sha": "bf59b28b437470a4759a5971968e8f00f9fa895c",
+    "merged_pr": 100,
+    "pr_head_sha": "95e2e0385979e2b226aa1d6289e12250c6e6e19d",
+    "pr_ci": {
+      "run_id": 39533766395,
+      "conclusion": "SUCCESS"
+    },
+    "main_ci": {
+      "run_id": 39534698504,
+      "conclusion": "SUCCESS"
+    },
+    "test_laboratory": {
+      "vitest": 32,
+      "chromium": 36,
+      "fictional_only": true
+    },
+    "product_m3_2": "IN_PROGRESS_NOT_ACCEPTED",
+    "operator_execution": "NONE",
+    "real_writer_absence": "NOT_PROVEN",
+    "g2b_to_g6": "NOT_AUTHORIZED",
+    "next": "FICTIONAL_ONLY_THREE_ORDERS_UI"
   }
 }

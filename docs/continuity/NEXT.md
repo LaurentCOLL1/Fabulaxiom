@@ -1,6 +1,17 @@
 # Fabulaxiom — Next Authorized Work
 
-## 2026-10-21 — prévisualiser les conflits de chronologie avant mutation, puis qualifier
+## 21 octobre 2026 — statut vérifié après fusion de PR #100
+
+**GitHub (checkpoint daté, sans autorisation opérateur) :** [PR #100](https://github.com/LaurentCOLL1/Fabulaxiom/pull/100) MERGED, `main=bf59b28b437470a4759a5971968e8f00f9fa895c`, head PR `95e2e0385979e2b226aa1d6289e12250c6e6e19d`. CI PR [#39533766395](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/39533766395) SUCCESS terminale au head exact ; CI push main [#39534698504](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/39534698504) SUCCESS terminale au merge exact. Ces CI ne valent pas pour de nouveaux commits.
+
+**Produit :** prévisualisation d'un chemin qui créerait un cycle, relations actives bloquant une correction, révocation humaine explicite avant supersession ; atelier exclusivement fictif (32 Vitest, 36 Chromium) et non persistant. M3.1 COMPLETE/MERGED/NORMALIZED ; **M3.2 IN_PROGRESS_NOT_ACCEPTED**, PR #35 OPEN/DRAFT. Ne pas refaire la PR #100. Prochain incrément autorisé sur fixtures uniquement : distinction entre ordre du monde, ordre de narration et ordre de révélation.
+
+**Gates :** G2-A PASS_METADATA_ONLY_OWNER_REPORTED, autorisation unique consommée ; PROCESS_WRITER_ABSENCE NOT_PROVEN ; G2-B/C/D et G3–G6 NOT_AUTHORIZED, G3 réel STOP_UNAVAILABLE ; historique PENDING_EXTERNAL_ATTESTATION(21/3/2), prospective NOT_STARTED. Aucune opération Windows autorisée, ni accès aux originales v6/v7, journaux, sauvegardes, ACL, marqueur, migration 007, IPC writer, M3.3, ComfyUI ou release. Avant toute commande locale : texte intégral, effets, interactions et nouvel accord explicite.
+
+---
+
+
+## 2026-10-21 — historique candidat PR #100 depuis fusionnée
 
 Re-fetch : PR #99 fusionnée à `main=205a328150c90bf1fb4f52abd7fb8c04f3959468`, CI PR #39480662913 SUCCESS (74 étapes), push main #39482419125 SUCCESS. La [nouvelle qualification fictive](../qualification/M3_2_FICTIONAL_CONFLICT_WITNESS_AND_CORRECTION_PREFLIGHT.md) offre des témoins explicatifs d'un cycle de relations et la liste des relations bloquant une correction. 10 tests Vitest (32 au total) et 2 tests de navigateur Chromium (36 au total) sont candidats. Qualifier les **nouvelles** suites sur la CI au SHA exact, corriger si échec et refaire tout le contrôle, puis refetch anti-course avant éventuelle fusion protégée. Ne pas promouvoir M3.2, ni migrer production v6, modifier v7 isolée, sauvegardes, journaux, ACL, marqueur, writer IPC, PR35 ou M3.3. G2-B à G6 non autorisés, G2-A metadata-only déjà exécuté une fois.
 

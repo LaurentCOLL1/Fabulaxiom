@@ -1,5 +1,7 @@
 # Fabulaxiom — Point d'entrée pour reprendre les discussions ChatGPT
 
+**Autorité datée au 21 octobre 2026 :** PR #100 fusionnée sur `main=bf59b28b437470a4759a5971968e8f00f9fa895c` ; CI PR #39533766395 et CI main #39534698504 SUCCESS au SHA exact. 32 tests fictifs Vitest / 36 Chromium vérifiés pour ce candidat, sans acceptation M3.2 ni autorisation G2B–G6. Les mentions anciennes « à qualifier » sont des instantanés historiques ; voir [HANDOFF_CURRENT](HANDOFF_CURRENT.md). Re-fetch obligatoire.
+
 Ce dossier constitue la **mémoire de travail versionnée du projet**. Lire en priorité, dans cet ordre :
 
 1. [HANDOFF_CURRENT.md](HANDOFF_CURRENT.md) : état opérationnel concis, dernier checkpoint vérifié et prochaine action.
@@ -27,7 +29,7 @@ Ce dossier constitue la **mémoire de travail versionnée du projet**. Lire en p
 
 16. [Références exactes de scènes/révisions dans l'atelier fictif](../qualification/M3_2_FICTIONAL_SCENE_REVISION_EXACT_BINDING.md) : source immuable inventée, 22 tests atelier/34 cas navigateur annoncés, jamais une preuve d'accès G3 réel.
 
-17. [Aperçu des conflits cycliques et liens bloquant une correction](../qualification/M3_2_FICTIONAL_CONFLICT_WITNESS_AND_CORRECTION_PREFLIGHT.md) : témoin de cycle fictif, 32 tests unitaires et 36 Chromium à qualifier ; aucune autorisation G3.
+17. [Aperçu des conflits cycliques et liens bloquant une correction](../qualification/M3_2_FICTIONAL_CONFLICT_WITNESS_AND_CORRECTION_PREFLIGHT.md) : témoin de cycle fictif, 32 tests unitaires et 36 Chromium qualifiés sur la PR #100 (CI non transférable) ; aucune autorisation G3.
 
 Pour une nouvelle conversation, copier seulement le [prompt court](RESUME_PROMPT.md). Le dépôt GitHub réel prévaut sur tout texte ou souvenir du modèle. Les SHA inscrits ici sont des **repères historiques**, jamais la preuve que GitHub n'a pas changé entre-temps.
 
