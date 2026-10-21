@@ -275,7 +275,7 @@ describe("M3.2 manually authored fictional-only chronology laboratory", () => {
     const d = createFictionalAnchor(startFictionalDraft(invented), {
       ...unknown, source_scene_id: "s-two", source_revision_id: "fiction-revision-C",
     });
-    expect(d.snapshot.anchors.at(-1)?.source_revision_id).toBe("fiction-revision-C");
+    expect(d.snapshot.anchors.slice(-1)[0]?.source_revision_id).toBe("fiction-revision-C");
     expect(d.snapshot.narration.map(s => s.novel_id)).toEqual(["novel-one", "novel-two"]);
     expect(d.snapshot.reader_reveal_status).toBe("not_authored");
   });
@@ -291,11 +291,11 @@ describe("M3.2 manually authored fictional-only chronology laboratory", () => {
     const first = createFictionalAnchor(startFictionalDraft(invented), {
       ...unknown, source_scene_id: "s-two", source_revision_id: "fiction-revision-C",
     });
-    const lastId = first.snapshot.anchors.at(-1)!.id;
+    const lastId = first.snapshot.anchors.slice(-1)[0]!.id;
     const next = supersedeFictionalAnchor(first, lastId, exact);
     expect(next.snapshot.anchors.find(a => a.id === lastId)?.source_revision_id)
       .toBe("fiction-revision-C");
-    expect(next.snapshot.anchors.at(-1)?.source_revision_id).toBe("fiction-revision-C");
+    expect(next.snapshot.anchors.slice(-1)[0]?.source_revision_id).toBe("fiction-revision-C");
     expect(next.snapshot.narration).toEqual(invented.narration);
   });
   it("36 distinguishes manuscript order from world and read-only reveal across novels", () => {
