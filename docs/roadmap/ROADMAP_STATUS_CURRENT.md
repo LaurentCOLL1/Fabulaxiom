@@ -20,9 +20,13 @@ Sur le **seul atelier navigateur entièrement inventé**, une deuxième scène d
 
 PR [#102](https://github.com/LaurentCOLL1/Fabulaxiom/pull/102) **fusionnée** sur `main=1f0a8cd9a369106202b57102aa28915de65b7472`, après CI PR [#39543328344](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/39543328344) SUCCESS au HEAD `07baf294286d427185c0817310d82418eb8c3fd2` (36 tests Vitest atelier, 38 scénarios Chromium en deux modes), et push main [#39544279201](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/39544279201) SUCCESS au merge exact. Couverture de deux romans dans un même Univers inventé, révisions de scènes filtrées strictement. **Ne pas confondre position manuscrit, précédences humaines et révélation lecteur**. Les mentions « CI à qualifier » des sections précédentes sont des checkpoints antérieurs, pas le statut actuel. M3.2 `IN_PROGRESS_NOT_ACCEPTED`, PR #35 DRAFT, G2B–G6 STOP, aucun vrai SQLite/Windows ; M3.3 et release non autorisées.
 
-## 21 octobre 2026 — candidat de comparaison des trois ordres (simulation uniquement)
+## 21 octobre 2026 — historique du candidat PR #104, depuis fusionné
 
 Une nouvelle interaction dans l'atelier de chronologie fictif sélectionne deux scènes par identifiants, compare **uniquement** leurs positions dans un même roman (ou affiche l'indétermination pour deux romans), conserve « chronologie du monde indéterminée » et « révélation au lecteur non renseignée ». Six tests Vitest et trois Chromium proposés : **42 tests atelier / 41 scénarios Chromium à qualifier sur un nouveau SHA**. Cela ne livre ni calendrier canonique, ni ordre global, ni GUI native acceptée. G2B–G6 et PR #35 inchangés.
+
+## 21 octobre 2026 — après fusion protégée PR #104 (seul laboratoire fictif)
+
+PR [#104](https://github.com/LaurentCOLL1/Fabulaxiom/pull/104) MERGED sur `main=997b60901e1f18a426eae3efa34ddb29c07b5721` ; source HEAD `b320b711763659d9a3af670b685254eeb8b815e9`, CI PR #39553745685 SUCCESS (42 Vitest atelier, 41/41 Chromium dans les modes normal et précompilé strict CSP, 74 étapes Windows). CI push main #39554622761 encore **EN COURS** au moment de cet instantané. Le comparateur de trois ordres ne compare des scènes qu'au sein d'un même roman ; **monde et révélation restent indéterminés**. Pas de saisie de connaissances ou révélations M3.4/M3.5, ni nouvelle persistance, ni App.tsx ou Tauri. Les anciens candidats en dessous sont historiques. **M3.2 = IN_PROGRESS_NOT_ACCEPTED** ; G2-B à G6 fermés, PR #35 DRAFT, M3.3 non autorisée.
 
 ## Matrice de conformité
 

@@ -253,7 +253,7 @@ class HandoffContractTests(unittest.TestCase):
 
     def test_23_pr100_merge_status_not_runtime_acceptance(self):
         p = self.data["post_pr100_normalization"]
-        self.assertEqual(self.data["last_confirmed_merged_pr"], 102)
+        self.assertEqual(self.data["last_confirmed_merged_pr"], 104)
         self.assertEqual(p["main_merge_sha"], "bf59b28b437470a4759a5971968e8f00f9fa895c")
         self.assertEqual(p["pr_head_sha"], "95e2e0385979e2b226aa1d6289e12250c6e6e19d")
         self.assertEqual(p["pr_ci"]["run_id"], 39533766395)
@@ -283,8 +283,8 @@ class HandoffContractTests(unittest.TestCase):
     def test_26_pr102_postmerge_snapshot_is_documentary_only(self):
         x = self.data["post_pr102_normalization"]
         self.assertEqual(x["merged_pr"], 102)
-        self.assertEqual(x["merge_sha"], self.data["last_confirmed_main_before_handoff"])
-        self.assertEqual(x["pr_head_sha"], self.data["last_verified_pr_head"])
+        self.assertEqual(x["merge_sha"], "1f0a8cd9a369106202b57102aa28915de65b7472")
+        self.assertEqual(x["pr_head_sha"], "07baf294286d427185c0817310d82418eb8c3fd2")
         self.assertEqual(x["pr_ci"]["run_id"], 39543328344)
         self.assertEqual(x["main_ci"]["run_id"], 39544279201)
         self.assertEqual(x["synthetic_tests"], {"vitest": 36, "chromium": 38})
@@ -297,7 +297,7 @@ class HandoffContractTests(unittest.TestCase):
 
     def test_27_three_orders_comparator_stays_fictional_and_read_only(self):
         x = self.data["m3_2_product_progress"]["three_orders_comparator"]
-        self.assertEqual(x["status"], "CANDIDATE_NOT_CI_QUALIFIED")
+        self.assertEqual(x["status"], "MERGED_SOURCE_ONLY_NOT_PRODUCT_ACCEPTED")
         self.assertEqual(x["function"], "previewFictionalThreeOrders")
         self.assertEqual(x["world_order"], "INDETERMINATE")
         self.assertEqual(x["cross_novel_order"], "INDETERMINATE")
@@ -311,6 +311,25 @@ class HandoffContractTests(unittest.TestCase):
         self.assertEqual(x["g2b_to_g6"], "NOT_AUTHORIZED")
         self.assertEqual(self.data["g2a"]["absence_of_sqlite_writer"], "NOT_PROVEN")
         self.assertIn("comparateur des trois ordres", self.doc)
+
+    def test_28_pr104_postmerge_is_fictional_not_operator_permission(self):
+        x = self.data["post_pr104_normalization"]
+        self.assertEqual(x["pr"], 104)
+        self.assertEqual(x["merge_sha"], self.data["last_confirmed_main_before_handoff"])
+        self.assertEqual(x["source_head"], self.data["last_verified_pr_head"])
+        self.assertEqual(x["ci_pr"]["run_id"], 39553745685)
+        self.assertEqual(x["ci_pr"]["conclusion"], "SUCCESS")
+        self.assertEqual(x["ci_main"]["run_id"], 39554622761)
+        self.assertEqual(x["ci_main"]["conclusion"], "IN_PROGRESS")
+        self.assertTrue(x["synthetic_only"])
+        self.assertEqual(x["vitest"], 42)
+        self.assertEqual(x["chromium"], 41)
+        self.assertEqual(x["product"], "IN_PROGRESS_NOT_ACCEPTED")
+        self.assertEqual(x["writer_absence"], "NOT_PROVEN")
+        self.assertEqual(x["g2b_to_g6"], "NOT_AUTHORIZED")
+        self.assertEqual(x["real_g3"], "STOP_UNAVAILABLE")
+        self.assertEqual(x["operator_execution"], "NONE")
+        self.assertIn("39554622761", self.doc)
 
     def test_24_policy_requires_refetch_and_same_pr_handoff(self):
         for clause in ("Re-fetch", "HANDOFF_CURRENT.md", "HANDOFF_CURRENT.json",
