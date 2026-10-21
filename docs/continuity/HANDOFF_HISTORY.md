@@ -91,3 +91,5 @@ Les blocages externes (issues #36/#38) demeurent. Les détails techniques de la 
 **2026-10-21 — PR #118 MERGED**, main `a0942b9566d6de21cf73e55dce47c3797dcb7c81`, source CI #39658544037 SUCCESS; main push #39660168071 IN_PROGRESS at checkpoint. Fourth test-only RAM stage: restatement withdrawal + immutable history, no new author graph permission, no real gates.
 
 **2026-10-21 — PR #119 initial CI #39661237200 FAILED**: 3 legacy handoff tests used the live root main_ci_post_merge rather than their own immutable PR112/PR113/PR114 snapshots; fixed assertions only, new exact HEAD CI required. Source-only safety and gates unchanged.
+
+**2026-10-22 — PR #119 MERGED** source CI #39661776335 SUCCESS (121 Rust), `main=61e07deaf10fc393c567e8f1960874b75d81adc4`, CI push #39684342539 IN_PROGRESS at this checkpoint. Fifth branch candidate, one human-governed successor + partial active graph, only tests in SQLite RAM; no G2–G6 promotion.

@@ -1,5 +1,12 @@
 # Fabulaxiom M3.2 — Reprise opérationnelle courte
 
+**22 octobre 2026 — PR #119 MERGED sous Protect main :** source `0df96696e4abefe692f8a0fdca3ab10e726fa9d3`, CI PR #39661776335 SUCCESS (74 étapes, 121 tests Rust, 48 tests continuité, 21 inventaires SQLite, 50 Chromium par mode). Nouveau `main=61e07deaf10fc393c567e8f1960874b75d81adc4`, CI post-fusion #39684342539 **IN_PROGRESS_AT_CHECKPOINT** ; revérifier le résultat terminal au SHA exact.
+
+**Cinquième tranche test-only candidate :** un successeur humain unique d'une reformulation retirée, `succeed_withdrawn_restatement`, lecture du graphe actif partiel par `list_active_precedence_graph` et SQL candidat `m3_2_restatement_successors_candidate.sql` sur SQLite exclusivement en RAM. Quatre nouveaux tests Rust : retrait obligatoire, unicité, cycles/doublons, ancres retirées et historique immuable. Aucune correction en chaîne, aucune révocation de successeur, aucune inférence de chronologie totale.
+
+**STOP non levé :** M3.2 IN_PROGRESS_NOT_ACCEPTED, PR #35 OPEN/DRAFT, écrivain SQLite réel NOT_PROVEN, G2B–G6 NOT_AUTHORIZED, G3 réel STOP_UNAVAILABLE, historique PENDING_EXTERNAL_ATTESTATION(21/3/2), prospective NOT_STARTED. Pas de Windows opérateur, SQLite originale v6/v7, backups, ACL, sidecars, marker, migration 007, writer IPC, M3.3, ComfyUI ou release.
+
+
 **21/10/2026 — CI #39661237200 première tentative PR #119 : FAIL source-only handoff historique (3 assertions).** Les tests #36/#37/#39 consultaient le champ `main_ci_post_merge` vivant au lieu des snapshots historiques #112/#113/#114 ; correction ciblée vers `x["main_ci"]`, sans modifier les statuts réels, les comptes d'ouvertures SQLite ou les politiques STOP. Aucun test Rust de la nouvelle tranche n'a encore été qualifié sur ce HEAD. Nouvelle CI complète obligatoire.
 
 

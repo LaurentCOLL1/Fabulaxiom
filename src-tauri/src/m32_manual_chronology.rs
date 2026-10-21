@@ -339,6 +339,76 @@ pub fn list_restatement_history(
 
 
 
+// One human-governed successor; test-only source.
+#[derive(Debug, PartialEq, Eq)]
+pub struct ActivePrecedence {
+    pub id: String,
+    pub before_anchor_id: String,
+    pub after_anchor_id: String,
+    pub origin: String,
+}
+
+
+// Governed SINGLE successor generation after an initial restatement withdrawal.
+// The database validates same-Universe ownership and current graph acyclicity.
+// No automatic chain recursion, writes to source history, or production IPC.
+pub fn succeed_withdrawn_restatement(
+    db: &Connection,
+    id: &str,
+    universe_id: &str,
+    prior_restatement_id: &str,
+    before_anchor_id: &str,
+    after_anchor_id: &str,
+    reason: &str,
+    source_revision_id: Option<&str>,
+) -> Result<()> {
+    db.execute(
+        "INSERT INTO world_time_restatement_successors
+         (id,universe_id,prior_restatement_id,before_anchor_id,after_anchor_id,
+          reason,source_revision_id)
+         VALUES (?1,?2,?3,?4,?5,?6,?7)",
+        params![
+            id, universe_id, prior_restatement_id, before_anchor_id,
+            after_anchor_id, reason, source_revision_id
+        ],
+    )?;
+    Ok(())
+}
+
+
+#[derive(Debug, PartialEq, Eq)]
+pub struct SuccessorHistory {
+    pub id: String,
+    pub prior_restatement_id: String,
+    pub before_anchor_id: String,
+    pub after_anchor_id: String,
+    pub reason: String,
+    pub revocation_id: Option<String>,
+    pub revocation_reason: Option<String>,
+}
+
+
+// Reflects active partial-order assertions, not a chronological total order.
+// The original legacy and corrected assertions remain separately inspectable.
+pub fn list_active_precedence_graph(
+    db: &Connection,
+    universe_id: &str,
+) -> Result<Vec<ActivePrecedence>> {
+    let mut stmt = db.prepare(
+        "SELECT id,before_anchor_id,after_anchor_id,origin
+         FROM m32_active_precedence_projection
+         WHERE universe_id=?1 ORDER BY id,origin",
+    )?;
+    stmt.query_map([universe_id], |row| {
+        Ok(ActivePrecedence {
+            id: row.get(0)?,
+            before_anchor_id: row.get(1)?,
+            after_anchor_id: row.get(2)?,
+            origin: row.get(3)?,
+        })
+    })?.collect()
+}
+
 // Compilation is gated by #[cfg(test)] in lib.rs. Test databases exist only in RAM.
 
 #[cfg(test)]
@@ -350,6 +420,7 @@ mod tests {
     const M32_DECISIONS: &str = include_str!("../sql/m3_2_chronology_decisions_candidate.sql");
     const M32_RESTATEMENTS: &str = include_str!("../sql/m3_2_active_precedence_candidate.sql");
     const M32_REVOCATIONS: &str = include_str!("../sql/m3_2_restatement_revocations_candidate.sql");
+    const M32_SUCCESSORS: &str = include_str!("../sql/m3_2_restatement_successors_candidate.sql");
 
     fn fixture() -> Connection {
         let mut db = Connection::open_in_memory().expect("RAM only");
@@ -362,6 +433,7 @@ mod tests {
         db.execute_batch(M32_DECISIONS).expect("decisions only in disposable RAM");
         db.execute_batch(M32_RESTATEMENTS).expect("restatement schema only in RAM");
         db.execute_batch(M32_REVOCATIONS).expect("withdrawal only in invented RAM");
+        db.execute_batch(M32_SUCCESSORS).expect("one successor only in invented RAM");
         assert_eq!(database::current_schema_version(&db).expect("schema version"), 6);
         db
     }
@@ -675,6 +747,67 @@ mod tests {
         assert_eq!(list_anchors(&db,"u2").unwrap().len(),1);
         assert!(list_restatement_history(&db,"u2").unwrap().is_empty());
         assert!(list_current_precedence_ids(&db,"u1").unwrap().is_empty());
+    }
+
+    fn withdrawn_restatement_fixture(db: &Connection) {
+        for id in ["a","b","c","d"] { create_anchor(db,draft(id,"u1","unknown")).unwrap(); }
+        create_precedence(db,"original","u1","a","b","human",None).unwrap();
+        decide_precedence(db,"withdraw-original","u1","original","revoke",None,"human",None).unwrap();
+        restate_revoked_precedence(db,"corrected","u1","original","b","c","human",None).unwrap();
+        revoke_restatement(db,"withdraw-corrected","u1","corrected","human",None).unwrap();
+    }
+
+    #[test]
+    fn single_human_successor_is_visible_as_partial_active_graph() {
+        let db=fixture(); withdrawn_restatement_fixture(&db);
+        assert!(list_active_precedence_graph(&db,"u1").unwrap().is_empty());
+        succeed_withdrawn_restatement(&db,"successor","u1","corrected","a","c","human",None).unwrap();
+        let active=list_active_precedence_graph(&db,"u1").unwrap();
+        assert_eq!(active.len(),1);
+        assert_eq!(active[0].id,"successor");
+        assert_eq!(active[0].origin,"successor");
+        assert_eq!(active[0].before_anchor_id,"a");
+        assert_eq!(active[0].after_anchor_id,"c");
+        assert_eq!(list_precedences(&db,"u1").unwrap().len(),1);
+        assert_eq!(list_restatement_history(&db,"u1").unwrap().len(),1);
+        assert_eq!(database::current_schema_version(&db).unwrap(),6);
+    }
+
+    #[test]
+    fn successor_requires_prior_withdrawal_and_remains_unique_per_source() {
+        let db=fixture();
+        for id in ["a","b","c"] { create_anchor(&db,draft(id,"u1","unknown")).unwrap(); }
+        create_precedence(&db,"original","u1","a","b","human",None).unwrap();
+        decide_precedence(&db,"withdraw-original","u1","original","revoke",None,"human",None).unwrap();
+        restate_revoked_precedence(&db,"corrected","u1","original","b","c","human",None).unwrap();
+        assert!(succeed_withdrawn_restatement(&db,"premature","u1","corrected","a","c","early",None).is_err());
+        revoke_restatement(&db,"withdraw-corrected","u1","corrected","human",None).unwrap();
+        assert!(succeed_withdrawn_restatement(&db,"foreign","u2","corrected","a","c","wrong",None).is_err());
+        succeed_withdrawn_restatement(&db,"one","u1","corrected","a","c","author",None).unwrap();
+        assert!(succeed_withdrawn_restatement(&db,"two","u1","corrected","a","b","second",None).is_err());
+        assert_eq!(list_active_precedence_graph(&db,"u1").unwrap().len(),1);
+        assert!(list_active_precedence_graph(&db,"u2").unwrap().is_empty());
+    }
+
+    #[test]
+    fn successor_active_graph_rejects_raw_cycles_and_duplicates() {
+        let db=fixture(); withdrawn_restatement_fixture(&db);
+        succeed_withdrawn_restatement(&db,"successor","u1","corrected","a","c","human",None).unwrap();
+        assert!(create_precedence(&db,"backward","u1","c","a","cycle",None).is_err());
+        assert!(create_precedence(&db,"duplicate","u1","a","c","duplicate",None).is_err());
+        assert!(succeed_withdrawn_restatement(&db,"again","u1","corrected","c","a","not allowed",None).is_err());
+        assert_eq!(list_active_precedence_graph(&db,"u1").unwrap().len(),1);
+    }
+
+    #[test]
+    fn successor_cannot_use_retired_anchor_and_is_immutable() {
+        let db=fixture(); withdrawn_restatement_fixture(&db);
+        decide_anchor(&db,"retire-d","u1","d","revoke",None,"human",None).unwrap();
+        assert!(succeed_withdrawn_restatement(&db,"wrong","u1","corrected","a","d","retired",None).is_err());
+        succeed_withdrawn_restatement(&db,"one","u1","corrected","a","c","valid",None).unwrap();
+        assert!(db.execute("UPDATE world_time_restatement_successors SET reason='changed' WHERE id='one'",[]).is_err());
+        assert!(db.execute("DELETE FROM world_time_restatement_successors WHERE id='one'",[]).is_err());
+        assert_eq!(list_active_precedence_graph(&db,"u1").unwrap().len(),1);
     }
 
 }
