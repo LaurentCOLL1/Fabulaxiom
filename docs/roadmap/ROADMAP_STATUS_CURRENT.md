@@ -12,6 +12,10 @@ M3.1 COMPLETE/MERGED/NORMALIZED ; **M3.2 IN_PROGRESS_NOT_ACCEPTED**, PR #35 OPEN
 
 ---
 
+## 21 octobre 2026 — candidat de couverture multiromans M3.2 (non accepté)
+
+Sur le **seul atelier navigateur entièrement inventé**, une deuxième scène du même Univers est placée dans un autre roman ; chaque scène possède ses révisions immuables propres. Quatre tests unitaires (36 total) et deux Chromium (38 total) sont **proposés, CI nouvelle encore requise**. Aucune chronologie du monde ni ordre de révélation n'est déduit des positions relatives des manuscrits. Cette preuve fictive ne remplace pas le CRUD persistant, l'essai Windows ni la normalisation M3.2. PR #35 reste DRAFT, G2B–G6 STOP.
+
 ## Matrice de conformité
 
 | Jalon | État réel connu | Conformité / prochaine preuve |

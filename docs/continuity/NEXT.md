@@ -1,5 +1,14 @@
 # Fabulaxiom — Next Authorized Work
 
+## 21 octobre 2026 — candidat M3.2 : scénarios navigateur multiromans, exclusivement fictifs
+
+Tranche **NON ENCORE QUALIFIÉE** : enrichir `m32BrowserLab.tsx` avec un deuxième roman imaginaire, une scène et une révision immuable propres au même Univers fictif. L'atelier filtre les révisions par identifiant exact de scène (jamais par titre) et rappelle que l'ordre de narration de deux romans ne définit ni chronologie du monde ni révélation au lecteur. Cible : **36 tests Vitest atelier / 38 scénarios Chromium** ; nouvelle CI au HEAD exact obligatoire, non interchangeable avec la CI PR #100 (32/36).
+
+Aucune donnée opérateur, accès disque SQLite, Tauri IPC, réseau externe, migration 007, writer ou commande Windows. G2-A PASS_METADATA_ONLY_OWNER_REPORTED (accord consommé), écrivain SQLite absent NON PROUVÉ, G2B–G6 NOT_AUTHORIZED, réel G3 STOP ; M3.2 toujours IN_PROGRESS_NOT_ACCEPTED, PR #35 DRAFT, M3.3 STOP.
+
+---
+
+
 ## 21 octobre 2026 — statut vérifié après fusion de PR #100
 
 **GitHub (checkpoint daté, sans autorisation opérateur) :** [PR #100](https://github.com/LaurentCOLL1/Fabulaxiom/pull/100) MERGED, `main=bf59b28b437470a4759a5971968e8f00f9fa895c`, head PR `95e2e0385979e2b226aa1d6289e12250c6e6e19d`. CI PR [#39533766395](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/39533766395) SUCCESS terminale au head exact ; CI push main [#39534698504](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/39534698504) SUCCESS terminale au merge exact. Ces CI ne valent pas pour de nouveaux commits.

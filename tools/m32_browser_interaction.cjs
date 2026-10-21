@@ -606,8 +606,34 @@ async function run() {
       assert.ok((await preview.innerText()).includes("Correction possible"));
       assert.ok(!(await preview.innerText()).includes("Révoquer explicitement les liens actifs"));
     });
-    assert.equal(cases.length, 36);
-    console.log("M32_BROWSER_REAL_CHROMIUM_PASS 36/36");
+    await caseRun("37-second-novel-historical-revision-selected-without-world-order", async () => {
+      await page.getByRole("button", { name: "Revenir au premier univers fictif" }).click();
+      await page.getByRole("button", { name: "Ouvrir l'atelier manuel fictif" }).click();
+      const lab = page.getByRole("region", { name: "Atelier manuel M3.2 exclusivement fictif" });
+      assert.ok((await lab.innerText()).includes("romans différents du même Univers"));
+      await lab.getByRole("combobox", { name: "Scène inventée à citer (facultatif)" }).selectOption("s2");
+      await lab.getByRole("combobox", { name: "Révision exacte et immuable de cette scène" })
+        .selectOption("invented-rev-C");
+      await lab.getByRole("button", { name: "Ajouter l'ancre" }).click();
+      assert.equal(await lab.getByText("révision : invented-rev-C", { exact: false }).count(), 1);
+      assert.ok((await lab.innerText()).includes("Ordre de révélation au lecteur"));
+    });
+    await caseRun("38-two-novels-filter-revisions-by-immutable-scene-identity", async () => {
+      await page.getByRole("button", { name: "Revenir au premier univers fictif" }).click();
+      await page.getByRole("button", { name: "Ouvrir l'atelier manuel fictif" }).click();
+      const lab = page.getByRole("region", { name: "Atelier manuel M3.2 exclusivement fictif" });
+      const scene = lab.getByRole("combobox", { name: "Scène inventée à citer (facultatif)" });
+      await scene.selectOption("s2");
+      const revisions = lab.getByRole("combobox", { name: "Révision exacte et immuable de cette scène" });
+      assert.equal(await revisions.locator("option").count(), 2);
+      assert.equal(await revisions.locator('option[value="invented-rev-A"]').count(), 0);
+      await scene.selectOption("s1");
+      assert.equal(await revisions.locator('option[value="invented-rev-C"]').count(), 0);
+      assert.equal(await revisions.locator('option[value="invented-rev-B"]').count(), 1);
+      assert.equal(await revisions.inputValue(), "");
+    });
+    assert.equal(cases.length, 38);
+    console.log("M32_BROWSER_REAL_CHROMIUM_PASS 38/38");
     // Actual Chromium enforced-CSP veto, separate from the 36
     // fictional interaction cases. Never make an off-loopback network call.
     const cspVeto = await page.evaluate(async () => {
@@ -638,9 +664,9 @@ async function run() {
       });
       assert.equal(scriptVeto, false, "STOP: inline JS executed under strict CSP");
       console.log("M32_CI_PRECOMPILED_INLINE_SCRIPT_DENIED_PASS");
-      console.log("M32_CI_PRECOMPILED_STRICT_CSP_BROWSER_PASS: 36/36");
+      console.log("M32_CI_PRECOMPILED_STRICT_CSP_BROWSER_PASS: 38/38");
     }
-    console.log("M32_CI_FIXTURE_ONLY_BROWSER_PASS: 36/36; no normal source pages");
+    console.log("M32_CI_FIXTURE_ONLY_BROWSER_PASS: 38/38; no normal source pages");
   } finally {
     if (browser) await browser.close();
     server.kill();
