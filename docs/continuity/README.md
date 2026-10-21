@@ -1,5 +1,8 @@
 # Fabulaxiom — Point d'entrée pour reprendre les discussions ChatGPT
 
+**Vérification terminale du 21 octobre 2026 :** CI push `main=997b60901e1f18a426eae3efa34ddb29c07b5721` [#39554622761](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/39554622761) désormais **SUCCESS** au SHA exact, après PR #104 MERGED (CI PR #39553745685 SUCCESS, 42 Vitest atelier / 41 Chromium). Les mentions antérieures « en cours » sont des instantanés historiques. M3.2 non acceptée, G2-B–G6 STOP, writer absence NOT_PROVEN. Aucun test Windows opérateur.
+
+
 **État GitHub daté du 21 octobre 2026 :** PR [#104](https://github.com/LaurentCOLL1/Fabulaxiom/pull/104) fusionnée sur `main=997b60901e1f18a426eae3efa34ddb29c07b5721`, CI PR #39553745685 SUCCESS (42 tests atelier/41 Chromium dans deux modes). CI push main #39554622761 **en cours au checkpoint** ; re-fetch requis avant toute déclaration terminale. M3.2 non acceptée, PR #35 DRAFT, G2B–G6 STOP. Les mentions « candidat » ci-dessous sont historiques.
 
 **Candidat distinct après PR #102 (non qualifié) :** [comparaison fictive des trois ordres](../qualification/M3_2_FICTIONAL_THREE_ORDERS_EXPLANATION.md), sélection de scènes dans le laboratoire de navigateur uniquement ; cible 42 tests atelier / 41 Chromium au nouveau SHA. Aucune promotion G2B–G6, M3.2 NON ACCEPTÉE. Ce paragraphe n'est pas la preuve d'une CI réussie.

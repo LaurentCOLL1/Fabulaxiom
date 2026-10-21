@@ -1,5 +1,8 @@
 # Prompt minimal de reprise — Fabulaxiom
 
+**Vérification terminale du 21 octobre 2026 :** CI push `main=997b60901e1f18a426eae3efa34ddb29c07b5721` [#39554622761](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/39554622761) désormais **SUCCESS** au SHA exact, après PR #104 MERGED (CI PR #39553745685 SUCCESS, 42 Vitest atelier / 41 Chromium). Les mentions antérieures « en cours » sont des instantanés historiques. M3.2 non acceptée, G2-B–G6 STOP, writer absence NOT_PROVEN. Aucun test Windows opérateur.
+
+
 **Checkpoint GitHub daté 21/10/2026 :** PR #104 fusionnée sur `main=997b60901e1f18a426eae3efa34ddb29c07b5721` (CI PR #39553745685 SUCCESS, 42 Vitest atelier/41 Chromium) ; CI push main #39554622761 EN COURS à vérifier terminalement. La PR #103 documentaire antérieure est fusionnée. PR #35 OPEN/DRAFT, M3.2 NON ACCEPTÉE, G2-A uniquement métadonnées avec accord consommé, absence écrivain NOT_PROVEN, G2B–G6 STOP. Re-fetch GitHub obligatoire.
 
 **Checkpoint 21/10/2026 :** PR #102 MERGED (`main=1f0a8cd9a369106202b57102aa28915de65b7472`; CI PR #39543328344 SUCCESS, CI main #39544279201 SUCCESS ; 36 Vitest/38 Chromium fictifs). PR #101 normalisation antérieure fusionnée. M3.2 IN_PROGRESS_NOT_ACCEPTED, PR #35 DRAFT, G2-A metadata-only consommé, écrivain réel NOT_PROVEN, G2-B–G6 STOP. Ne jamais utiliser ces SHA comme autorité actuelle sans re-fetch. Prochain travail : séparation visible des trois ordres dans le seul laboratoire fictif.

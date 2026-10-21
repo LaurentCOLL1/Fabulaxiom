@@ -1,5 +1,14 @@
 # Fabulaxiom — Next Authorized Work
 
+## 21 octobre 2026 — vérification terminale CI après PR #104
+
+GitHub vérifié : `main=997b60901e1f18a426eae3efa34ddb29c07b5721`, PR [#104](https://github.com/LaurentCOLL1/Fabulaxiom/pull/104) fusionnée ; CI PR [#39553745685](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/39553745685) **SUCCESS** (42 Vitest fictifs, 41 Chromium dans chacun des deux modes), CI push `main` [#39554622761](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/39554622761) **SUCCESS terminale** au SHA exact. Les passages « CI en cours » plus bas sont des instantanés historiques.
+
+**STOP inchangé :** M3.2 IN_PROGRESS_NOT_ACCEPTED, PR #35 DRAFT ; G2-A PASS_METADATA_ONLY_OWNER_REPORTED (accord unique consommé), PROCESS_WRITER_ABSENCE NOT_PROVEN, G2-B/C/D et G3–G6 NOT_AUTHORIZED. Aucun accès original SQLite v6/v7, WAL/SHM, backups, ACL, migration 007, writer IPC, M3.3 ni release. Prochaine UX source-only : traçabilité des précédences humaines fictives, jamais inférées de l'ordre narratif.
+
+---
+
+
 ## 21 octobre 2026 — PR #104 fusionnée : comparaison des trois ordres fictifs
 
 **Autorité publique datée, pas autorisation opérateur :** PR [#104](https://github.com/LaurentCOLL1/Fabulaxiom/pull/104) MERGED au `main=997b60901e1f18a426eae3efa34ddb29c07b5721` après CI PR [#39553745685](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/39553745685) terminale SUCCESS (**74 étapes Windows**, **42 tests Vitest atelier**, **41/41 Chromium** en modes normal et précompilé). HEAD exact de source `b320b711763659d9a3af670b685254eeb8b815e9`. CI push post-merge [#39554622761](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/39554622761) **EN COURS au checkpoint : ne pas la déclarer SUCCESS sans preuve terminale**. CI d'ancien HEAD non transférable.

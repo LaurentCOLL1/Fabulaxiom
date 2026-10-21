@@ -48,7 +48,8 @@
     "PR_102_TWO_FICTIONAL_NOVELS_36_VITEST_38_CHROMIUM_MERGED_MAIN_1F0A8CD9",
     "2026_10_21_FICTIONAL_THREE_ORDERS_READONLY_COMPARATOR_CANDIDATE",
     "PR_103_DOC_NORMALIZATION_MERGED_MAIN_DBD79CF",
-    "PR_104_FICTIONAL_THREE_ORDERS_COMPARATOR_MERGED_MAIN_997B609"
+    "PR_104_FICTIONAL_THREE_ORDERS_COMPARATOR_MERGED_MAIN_997B609",
+    "POSTMERGE_PR104_MAIN_39554622761_TERMINAL_SUCCESS_ON_EXACT_SHA_20261021"
   ],
   "pr35": "OPEN_DRAFT",
   "issues": {
@@ -234,15 +235,15 @@
     "verified_bypass_actors": 0,
     "classic_branch_protection_read": "403_INTEGRATION_RESTRICTED"
   },
-  "next": "VERIFY_PR104_POSTMERGE_MAIN_CI_THEN_CONTINUE_FICTION_ONLY_PRODUCT_UX_NO_GATE_PROMOTION",
+  "next": "FICTION_ONLY_HUMAN_PRECEDENCE_EVIDENCE_EXPLANATION_READONLY_NO_INFERRED_WORLD_TIME",
   "live_refetch_required": true,
   "hand_off_updated_by_future_pr": true,
   "main_ci_post_merge": {
     "sha": "997b60901e1f18a426eae3efa34ddb29c07b5721",
     "run_id": 39554622761,
-    "conclusion": "IN_PROGRESS",
+    "conclusion": "SUCCESS",
     "source": "MAIN_PUSH",
-    "note": "Do not claim terminal SUCCESS without another GitHub check"
+    "note": "Terminal SUCCESS checked 21 Oct 2026, at merge main SHA; not transferable."
   },
   "g2a_candidate_ci": {
     "pr": 86,
@@ -397,7 +398,8 @@
       "pr": 104,
       "source_head": "b320b711763659d9a3af670b685254eeb8b815e9",
       "ci_pr": 39553745685,
-      "ci_main_pending": 39554622761
+      "ci_main_pending": 39554622761,
+      "ci_main_verified": 39554622761
     }
   },
   "post_pr100_normalization": {
@@ -458,7 +460,7 @@
     },
     "ci_main": {
       "run_id": 39554622761,
-      "conclusion": "IN_PROGRESS"
+      "conclusion": "SUCCESS"
     },
     "synthetic_only": true,
     "vitest": 42,
