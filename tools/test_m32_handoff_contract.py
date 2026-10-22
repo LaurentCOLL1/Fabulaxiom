@@ -1125,18 +1125,13 @@ class HandoffContractTests(unittest.TestCase):
 
     def test_67_pr132_protected_merge_keeps_real_m32_gates_closed(self):
         x = self.data["post_pr132_normalization"]
-        self.assertEqual(self.data["last_confirmed_merged_pr"], 132)
-        self.assertEqual(self.data["last_confirmed_main_before_handoff"], "202152a3e502b08e6b7b77344769b6b0a1ea76bf")
-        self.assertEqual(self.data["last_verified_pr_head"], "0ccc9af60075e90942d6e0bd7e2f92694bbe4876")
         self.assertEqual(x["merged_pr"], 132)
-        self.assertEqual(x["merge_sha"], self.data["last_confirmed_main_before_handoff"])
-        self.assertEqual(x["pr_head_sha"], self.data["last_verified_pr_head"])
+        self.assertEqual(x["merge_sha"], "202152a3e502b08e6b7b77344769b6b0a1ea76bf")
+        self.assertEqual(x["pr_head_sha"], "0ccc9af60075e90942d6e0bd7e2f92694bbe4876")
         self.assertEqual(x["pr_ci"]["run_id"], 39776896152)
         self.assertEqual(x["pr_ci"]["conclusion"], "SUCCESS")
         self.assertEqual(x["pr_ci"]["handoff_tests"], 66)
         self.assertEqual(x["main_ci"], {"run_id": 39778720560, "conclusion": "SUCCESS"})
-        self.assertEqual(self.data["main_ci_post_merge"]["sha"], x["merge_sha"])
-        self.assertEqual(self.data["main_ci_post_merge"]["conclusion"], "SUCCESS")
         self.assertEqual(self.data["post_pr131_normalization"]["main_ci"]["conclusion"], "IN_PROGRESS_AT_CHECKPOINT")
         observed = self.data["post_pr131_postmain_terminal_observation"]
         self.assertEqual(observed["run_id"], 39776433056)
@@ -1194,6 +1189,48 @@ class HandoffContractTests(unittest.TestCase):
         self.assertEqual(q["corrected_test_08"],
                          "ATTRIBUTE_ONLY_SHARE_READ_DID_NOT_EXCLUDE_NEW_GENERIC_WRITE_IN_WINDOWS_CI_TOY")
         self.assertIn("G2B_WIN32_FILEID", self.doc)
+
+    def test_69_pr133_win32_negative_proof_merge_never_promotes_operator(self):
+        x = self.data["post_pr133_normalization"]
+        self.assertEqual(self.data["last_confirmed_merged_pr"], 133)
+        self.assertEqual(self.data["last_confirmed_main_before_handoff"],
+                         "604817c8457aaf7136f587aaaff28ff862e2702a")
+        self.assertEqual(self.data["last_verified_pr_head"],
+                         "d2bf3134054c4f1a05432c51055134fec7b4a0b2")
+        self.assertEqual(x["merged_pr"], 133)
+        self.assertEqual(x["merge_sha"], self.data["last_confirmed_main_before_handoff"])
+        self.assertEqual(x["pr_head_sha"], self.data["last_verified_pr_head"])
+        self.assertEqual(x["pr_ci"], {"run_id": 39835840939, "conclusion": "SUCCESS",
+                                       "job_steps": 75, "g2b_counterexample_tests": 8,
+                                       "handoff_tests": 68, "rust_tests": 132,
+                                       "chromium_normal": 53, "chromium_strict_csp": 53})
+        self.assertEqual(x["first_failed_ci"]["run_id"], 39835364262)
+        self.assertEqual(x["first_failed_ci"]["conclusion"], "FAILURE")
+        self.assertEqual(x["main_ci"], {"run_id": 39837202639,
+                                         "conclusion": "IN_PROGRESS_AT_CHECKPOINT"})
+        self.assertEqual(self.data["main_ci_post_merge"]["sha"], x["merge_sha"])
+        self.assertEqual(self.data["main_ci_post_merge"]["conclusion"], "IN_PROGRESS_AT_CHECKPOINT")
+        self.assertEqual(x["source_identity"], "PARTIAL_LOCAL_IDENTITY_ONLY")
+        self.assertEqual(x["real_writer_absence"], "NOT_PROVEN")
+        self.assertEqual(x["g2b_global"], "NOT_ACCEPTED")
+        self.assertEqual(x["g2c"], "NOT_AUTHORIZED")
+        self.assertEqual(x["g2b_to_g6"], "NOT_AUTHORIZED")
+        self.assertEqual(x["real_g3"], "STOP_UNAVAILABLE")
+        self.assertEqual(x["historical"], "PENDING_EXTERNAL_ATTESTATION(21/3/2)")
+        self.assertEqual(x["prospective"], "NOT_STARTED")
+        self.assertEqual(x["product_status"], "IN_PROGRESS_NOT_ACCEPTED")
+        self.assertEqual(x["operator_execution"], "NONE")
+        self.assertEqual(x["real_sqlite_access"], "NONE")
+        self.assertEqual(x["tauri_writer_ipc"], "NONE")
+        self.assertFalse(x["operator_paths_published"])
+        toy = self.data["m3_2_product_progress"]["test_only_g2b_win32_share_all_writer_counterexample"]
+        self.assertEqual(toy["status"], "SOURCE_MERGED_WINDOWS_CI_QUALIFIED_TOY_ONLY_NOT_OPERATOR")
+        self.assertEqual(toy["corrected_ci"]["run_id"], 39835840939)
+        self.assertEqual(toy["corrected_ci"]["conclusion"], "SUCCESS")
+        self.assertFalse(toy["fileid_stability_proves_writer_absence"])
+        self.assertFalse(toy["attribute_only_share_read_excludes_writer"])
+        self.assertEqual(toy["operator_authority"], "NONE")
+        self.assertIn("PR #133", self.doc)
 
     def test_24_policy_requires_refetch_and_same_pr_handoff(self):
         for clause in ("Re-fetch", "HANDOFF_CURRENT.md", "HANDOFF_CURRENT.json",

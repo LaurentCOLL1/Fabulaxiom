@@ -3,14 +3,14 @@
   "as_of": "2026-10-22",
   "status_kind": "DATED_PUBLIC_SOURCE_HANDOFF_ONLY",
   "repository": "LaurentCOLL1/Fabulaxiom",
-  "last_confirmed_main_before_handoff": "202152a3e502b08e6b7b77344769b6b0a1ea76bf",
-  "last_confirmed_merged_pr": 132,
-  "last_verified_pr_head": "0ccc9af60075e90942d6e0bd7e2f92694bbe4876",
+  "last_confirmed_main_before_handoff": "604817c8457aaf7136f587aaaff28ff862e2702a",
+  "last_confirmed_merged_pr": 133,
+  "last_verified_pr_head": "d2bf3134054c4f1a05432c51055134fec7b4a0b2",
   "last_verified_ci": {
-    "run_id": 39776896152,
+    "run_id": 39835840939,
     "context": "Windows frontend and Rust checks",
     "conclusion": "SUCCESS",
-    "source": "PR132_EXACT_HEAD"
+    "source": "PR133_CORRECTED_EXACT_HEAD"
   },
   "recent_changes": [
     "PR_85_EXACT_G2A_TEXT_AST_ONLY",
@@ -102,7 +102,8 @@
     "2026_10_22_PR132_PROTECTED_MERGED_MAIN_202152A3_SOURCE_39776896152_SUCCESS_POSTMAIN_39778720560_SUCCESS",
     "2026_10_22_OWNER_REPORTED_G2B_DISCOVERY_MARKER_METADATA_FILEID_OBSERVATIONS_PARTIAL_ONLY",
     "2026_10_22_NEW_G2B_SYNTHETIC_SHARE_ALL_MUTABLE_BYTES_COUNTEREXAMPLE_NEW_EXACT_HEAD_CI_REQUIRED",
-    "2026_10_22_PR133_FIRST_CI_FAIL_TEST08_ATTRIBUTE_ONLY_SHARE_READ_DID_NOT_BLOCK_WRITER_CORRECTED_NEGATIVE_ASSERTION"
+    "2026_10_22_PR133_FIRST_CI_FAIL_TEST08_ATTRIBUTE_ONLY_SHARE_READ_DID_NOT_BLOCK_WRITER_CORRECTED_NEGATIVE_ASSERTION",
+    "2026_10_22_PR133_PROTECTED_MERGED_604817C8_AFTER_SOURCE_39835840939_SUCCESS_POSTMAIN_PENDING_AT_CHECKPOINT"
   ],
   "pr35": "OPEN_DRAFT",
   "issues": {
@@ -288,15 +289,15 @@
     "verified_bypass_actors": 0,
     "classic_branch_protection_read": "403_INTEGRATION_RESTRICTED"
   },
-  "next": "QUALIFY_SOURCE_ONLY_G2B_FILEID_WRITER_COUNTEREXAMPLE_AT_NEW_SHA; KEEP_REAL_G2C_G3_STOP; NO_OPERATOR_FILE_OPEN",
+  "next": "QUALIFY_DOC_PR134_OWN_EXACT_HEAD; REFETCH_PR133_POSTMAIN_CI_TERMINAL; KEEP_REAL_G2C_G3_STOP",
   "live_refetch_required": true,
   "hand_off_updated_by_future_pr": true,
   "main_ci_post_merge": {
-    "sha": "202152a3e502b08e6b7b77344769b6b0a1ea76bf",
-    "run_id": 39778720560,
-    "conclusion": "SUCCESS",
+    "sha": "604817c8457aaf7136f587aaaff28ff862e2702a",
+    "run_id": 39837202639,
+    "conclusion": "IN_PROGRESS_AT_CHECKPOINT",
     "source": "MAIN_PUSH",
-    "note": "2026-10-22 independently verified post PR132 CI terminal exact SHA; not operator or product acceptance"
+    "note": "Dated snapshot during PR134 drafting; independent exact-SHA terminal re-fetch required; not operator acceptance"
   },
   "g2a_candidate_ci": {
     "pr": 86,
@@ -741,7 +742,7 @@
       "global_chronology_inferred": false
     },
     "test_only_g2b_win32_share_all_writer_counterexample": {
-      "status": "SOURCE_CANDIDATE_NEW_EXACT_HEAD_CI_REQUIRED_NO_PRODUCT_AUTHORITY",
+      "status": "SOURCE_MERGED_WINDOWS_CI_QUALIFIED_TOY_ONLY_NOT_OPERATOR",
       "doc": "docs/qualification/M3_2_G2B_WIN32_FILEID_WRITER_COUNTEREXAMPLE.md",
       "tests": "tools/test_m32_g2b_fileid_writer_counterexample.py",
       "workflow": ".github/workflows/m0-ci.yml",
@@ -763,9 +764,18 @@
         "conclusion": "FAILURE",
         "failure": "TEST08_EXPECTED_SHARING_VIOLATION_BUT_FILE_READ_ATTRIBUTES_SHARE_READ_PERMITTED_GENERIC_WRITE",
         "lesson": "OBSERVED_NEGATIVE_COUNTEREXAMPLE",
-        "new_exact_head_ci_required": true
+        "new_exact_head_ci_required": false
       },
-      "corrected_test_08": "ATTRIBUTE_ONLY_SHARE_READ_DID_NOT_EXCLUDE_NEW_GENERIC_WRITE_IN_WINDOWS_CI_TOY"
+      "corrected_test_08": "ATTRIBUTE_ONLY_SHARE_READ_DID_NOT_EXCLUDE_NEW_GENERIC_WRITE_IN_WINDOWS_CI_TOY",
+      "corrected_ci": {
+        "run_id": 39835840939,
+        "conclusion": "SUCCESS",
+        "exact_head": "d2bf3134054c4f1a05432c51055134fec7b4a0b2",
+        "tests": 8
+      },
+      "fileid_stability_proves_writer_absence": false,
+      "attribute_only_share_read_excludes_writer": false,
+      "operator_authority": "NONE"
     }
   },
   "post_pr100_normalization": {
@@ -1564,5 +1574,44 @@
     "operator_paths_published": false,
     "marker_contents_published": false,
     "original_files_in_ci": "NONE"
+  },
+  "post_pr133_normalization": {
+    "kind": "DATED_POSTMERGE_DOCUMENTARY_ONLY_NO_RUNTIME_AUTHORITY",
+    "merged_pr": 133,
+    "merge_sha": "604817c8457aaf7136f587aaaff28ff862e2702a",
+    "pr_head_sha": "d2bf3134054c4f1a05432c51055134fec7b4a0b2",
+    "pr_ci": {
+      "run_id": 39835840939,
+      "conclusion": "SUCCESS",
+      "job_steps": 75,
+      "g2b_counterexample_tests": 8,
+      "handoff_tests": 68,
+      "rust_tests": 132,
+      "chromium_normal": 53,
+      "chromium_strict_csp": 53
+    },
+    "first_failed_ci": {
+      "run_id": 39835364262,
+      "conclusion": "FAILURE",
+      "reason": "TEST08_FALSE_ASSUMPTION_ATTRIBUTE_ONLY_SHARE_READ_BLOCKED_NEW_GENERIC_WRITE"
+    },
+    "main_ci": {
+      "run_id": 39837202639,
+      "conclusion": "IN_PROGRESS_AT_CHECKPOINT"
+    },
+    "product_status": "IN_PROGRESS_NOT_ACCEPTED",
+    "operator_execution": "NONE",
+    "real_sqlite_access": "NONE",
+    "source_identity": "PARTIAL_LOCAL_IDENTITY_ONLY",
+    "real_writer_absence": "NOT_PROVEN",
+    "g2b_global": "NOT_ACCEPTED",
+    "g2c": "NOT_AUTHORIZED",
+    "g2b_to_g6": "NOT_AUTHORIZED",
+    "real_g3": "STOP_UNAVAILABLE",
+    "historical": "PENDING_EXTERNAL_ATTESTATION(21/3/2)",
+    "prospective": "NOT_STARTED",
+    "tauri_writer_ipc": "NONE",
+    "runtime_app_mount": "NONE",
+    "operator_paths_published": false
   }
 }
