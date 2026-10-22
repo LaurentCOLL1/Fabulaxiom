@@ -88,7 +88,8 @@
     "2026_10_22_PR122_POSTMAIN_CI_39718851557_TERMINAL_SUCCESS_EXACT_MERGE_SHA",
     "2026_10_22_PR123_MERGED_MAIN_A3C4112B_STAGE8_RAM_ONLY_NEW_SEPARATE_BRANCH",
     "2026_10_22_PR124_MERGED_MAIN_DB097220_RAM_ONLY_APPEND_ONLY_RECURSIVE_CHAIN",
-    "2026_10_22_PR125_MERGED_PROTECTED_MAIN_4B14AFBC_STAGE8_RAM_ONLY_NORMALIZED"
+    "2026_10_22_PR125_MERGED_PROTECTED_MAIN_4B14AFBC_STAGE8_RAM_ONLY_NORMALIZED",
+    "2026_10_22_PR125_POSTMAIN_CI_39726331901_SUCCESS_TERMINAL"
   ],
   "pr35": "OPEN_DRAFT",
   "issues": {
@@ -280,9 +281,9 @@
   "main_ci_post_merge": {
     "sha": "4b14afbc7fe8de607429e795b656179724d7ee7f",
     "run_id": 39726331901,
-    "conclusion": "IN_PROGRESS_AT_CHECKPOINT",
+    "conclusion": "SUCCESS",
     "source": "MAIN_PUSH",
-    "note": "2026-10-22 exact postPR125 main CI; re-fetch terminal; not Windows operator authority"
+    "note": "2026-10-22 terminal GitHub run #39726331901 SUCCESS at exact PR125 protected merge SHA; no Windows operator authority"
   },
   "g2a_candidate_ci": {
     "pr": 86,
@@ -1183,7 +1184,8 @@
     },
     "main_ci": {
       "run_id": 39726331901,
-      "conclusion": "IN_PROGRESS_AT_CHECKPOINT"
+      "conclusion": "SUCCESS",
+      "job_steps": 74
     },
     "operator_execution": "NONE",
     "fiction_only": true,
