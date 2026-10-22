@@ -1,5 +1,12 @@
 # Fabulaxiom M3.2 — Reprise opérationnelle courte
 
+**22 octobre 2026 — PR #122 MERGED sous Protect main :** HEAD exact source `1ade25c7b8c500d712c452a08d90ed26a1ffbe89`, [CI #39717330885](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/39717330885) **SUCCESS terminale**, 74 étapes Windows, 128 Rust, 53 contrôles de continuité. Fusion protégée `main=52b06099ba0cff0da15fa697b0e2043afc883a00`, CI post-main [#39718851557](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/39718851557) **SUCCESS terminale au SHA exact**, à re-fetch au SHA exact. Sixième tranche: révocation immuable du seul successeur (SQL candidat, `revoke_successor`, `list_successor_history`), uniquement Rust `#[cfg(test)]` et SQLite fictive RAM, historique préservé. Aucune correction récursive.
+
+**STOP inchangé :** M3.2 `IN_PROGRESS_NOT_ACCEPTED`, absence de writer SQLite réel `NOT_PROVEN`, G2B–G6 `NOT_AUTHORIZED`, G3 réel `STOP_UNAVAILABLE`, historique `PENDING_EXTERNAL_ATTESTATION(21/3/2)`, prospective `NOT_STARTED`. PR #35 OPEN/DRAFT ; aucune commande Windows opérateur, original SQLite v6/v7, backups/ACL/sidecars/marker, migration 007, writer IPC, M3.3, ComfyUI ni release. La règle permanente de parallélisation des lectures/analyses et sérialisation des écritures/fusions demeure.
+
+**Prochain travail source-only possible :** après cette normalisation et CI HEAD exact, analyser et éventuellement développer **séparément** la correction récursive à partir de la PR #35 historique (`m3_2_recursive_chain_candidate.sql`) sur une nouvelle branche avec SQLite uniquement en RAM et tests adversariaux ; jamais de promotion des gates réels.
+
+
 **22 octobre 2026 — PR #121 MERGED sous Protect main :** HEAD source `6a1a22dedaa4e3d2c302a56959083017578dc7da`, CI PR [#39713440057](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/39713440057) **SUCCESS terminale** (74 étapes Windows, 125 tests Rust). Fusion protégée `main=08caad24e20eae484e94fd084edb487b5c370bd5`; CI post-fusion [#39716352685](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/39716352685) **SUCCESS au SHA exact**.
 
 **Tranche suivante candidate, non qualifiée :** sixième importation Rust limitée à une révocation terminale immuable d'un successeur fictif : `m3_2_successor_revocations_candidate.sql`, `revoke_successor`, `list_successor_history`, 3 nouveaux tests adversariaux. Module `#[cfg(test)]` et SQLite exclusivement `Connection::open_in_memory()`. Ne pas confondre cette tranche avec les chaînes récursives de PR #35 ; aucune migration de production ou commande Tauri.
