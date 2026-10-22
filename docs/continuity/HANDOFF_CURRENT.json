@@ -3,14 +3,14 @@
   "as_of": "2026-10-22",
   "status_kind": "DATED_PUBLIC_SOURCE_HANDOFF_ONLY",
   "repository": "LaurentCOLL1/Fabulaxiom",
-  "last_confirmed_main_before_handoff": "a1185b8345999f10814fd54dab96890f70236a5c",
-  "last_confirmed_merged_pr": 134,
-  "last_verified_pr_head": "f0db9b28d0e8492f3bc64c952b722873ae61311e",
+  "last_confirmed_main_before_handoff": "b54f4111eed020c80a70f91bd3e15b544f842545",
+  "last_confirmed_merged_pr": 135,
+  "last_verified_pr_head": "acb901bd1844d93ea0562415a7438a4b21e7f4b8",
   "last_verified_ci": {
-    "run_id": 39837909918,
+    "run_id": 39841578935,
     "context": "Windows frontend and Rust checks",
     "conclusion": "SUCCESS",
-    "source": "PR134_EXACT_HEAD"
+    "source": "PR135_EXACT_HEAD"
   },
   "recent_changes": [
     "PR_85_EXACT_G2A_TEXT_AST_ONLY",
@@ -105,7 +105,9 @@
     "2026_10_22_PR133_FIRST_CI_FAIL_TEST08_ATTRIBUTE_ONLY_SHARE_READ_DID_NOT_BLOCK_WRITER_CORRECTED_NEGATIVE_ASSERTION",
     "2026_10_22_PR133_PROTECTED_MERGED_604817C8_AFTER_SOURCE_39835840939_SUCCESS_POSTMAIN_PENDING_AT_CHECKPOINT",
     "2026_10_22_PR134_PROTECTED_MERGED_MAIN_A1185B83_SOURCE_39837909918_SUCCESS_POSTMAIN_39839580270_SUCCESS",
-    "2026_10_22_G2B_G3_NEW_EVIDENCE_DECISION_SOURCE_ONLY_OWNER_AND_COLD_ROUTES_STILL_UNAVAILABLE"
+    "2026_10_22_G2B_G3_NEW_EVIDENCE_DECISION_SOURCE_ONLY_OWNER_AND_COLD_ROUTES_STILL_UNAVAILABLE",
+    "2026_10_22_PR135_PROTECTED_MERGED_MAIN_B54F4111_SOURCE_CI39841578935_SUCCESS_POSTMAIN_CI39843166291_SUCCESS",
+    "2026_10_22_PR136_RESUME_PROMPT_AND_CONTINUITY_REFRESH_SOURCE_ONLY_CANDIDATE_NEW_CI_REQUIRED"
   ],
   "pr35": "OPEN_DRAFT",
   "issues": {
@@ -291,15 +293,15 @@
     "verified_bypass_actors": 0,
     "classic_branch_protection_read": "403_INTEGRATION_RESTRICTED"
   },
-  "next": "QUALIFY_SOURCE_ONLY_EVIDENCE_DECISION_NEW_EXACT_HEAD; REVIEW_M3_2_G2B_G3_PROVENANCE_GAP_NO_REAL_SQLITE; KEEP_G2C_G3_STOP",
+  "next": "PR136_EXACT_HEAD_CI_REQUIRED_FOR_CONTINUITY_AND_RESUME_PROMPT; THEN_VERIFY_POSTMAIN; FUTURE_REAL_G2C_G3_STOP_UNTIL_SEPARATE_AUTHENTICATED_SOURCE_OWNER_OR_COLD_CUSTODY",
   "live_refetch_required": true,
   "hand_off_updated_by_future_pr": true,
   "main_ci_post_merge": {
-    "sha": "a1185b8345999f10814fd54dab96890f70236a5c",
-    "run_id": 39839580270,
+    "sha": "b54f4111eed020c80a70f91bd3e15b544f842545",
+    "run_id": 39843166291,
     "conclusion": "SUCCESS",
     "source": "MAIN_PUSH",
-    "note": "2026-10-22 later exact-head post-PR134 successful verification; not operator/source or M3.2 acceptance"
+    "note": "Terminal exact-head independent live verification on 2026-10-22, 75 Windows steps; not source custody or product acceptance"
   },
   "g2a_candidate_ci": {
     "pr": 86,
@@ -1676,5 +1678,41 @@
     "g2c": "NOT_AUTHORIZED",
     "real_g3": "STOP_UNAVAILABLE",
     "product": "IN_PROGRESS_NOT_ACCEPTED"
+  },
+  "post_pr135_normalization": {
+    "kind": "DATED_DOCUMENTARY_ONLY_NO_RUNTIME_AUTHORITY",
+    "merged_pr": 135,
+    "merge_sha": "b54f4111eed020c80a70f91bd3e15b544f842545",
+    "pr_head_sha": "acb901bd1844d93ea0562415a7438a4b21e7f4b8",
+    "pr_ci": {
+      "run_id": 39841578935,
+      "conclusion": "SUCCESS",
+      "job_steps": 75,
+      "handoff_tests": 70,
+      "rust_tests": 132,
+      "chromium_normal": 53,
+      "chromium_strict_csp": 53
+    },
+    "main_ci": {
+      "run_id": 39843166291,
+      "conclusion": "SUCCESS",
+      "job_steps": 75
+    },
+    "result": "SOURCE_ONLY_ARCHITECTURE_GATE_DECISION_NO_REAL_CAPTURE",
+    "architecture_document": "docs/qualification/M3_2_G2B_G3_EVIDENCE_DECISION_AFTER_FILEID.md",
+    "product_status": "IN_PROGRESS_NOT_ACCEPTED",
+    "real_writer_absence": "NOT_PROVEN",
+    "g2b_global": "NOT_ACCEPTED",
+    "g2c": "NOT_AUTHORIZED",
+    "g2b_to_g6": "NOT_AUTHORIZED",
+    "real_g3": "STOP_UNAVAILABLE",
+    "historical": "PENDING_EXTERNAL_ATTESTATION(21/3/2)",
+    "prospective": "NOT_STARTED",
+    "operator_execution": "NONE",
+    "real_sqlite_access": "NONE",
+    "tauri_writer_ipc": "NONE",
+    "runtime_app_mount": "NONE",
+    "historic_snapshots_preserved": true,
+    "pr35_state": "OPEN_DRAFT"
   }
 }
