@@ -232,3 +232,5 @@ La voie productive suivante : continuer en parallèle *seulement sur jeux de don
 5. Tous les en-têtes « en attente » d'anciennes PR dans les plans détaillés sont des **preuves historiques datées** ; ce tableau résume la dernière vérification GitHub du présent checkpoint.
 
 **Sources d'autorité :** [roadmap V1](FABULAXIOM_ROADMAP_V1.md), [M1](M1_PERSISTENCE_PROJECT_FOUNDATION.md), [M2](M2_NARRATIVE_ENTITIES_CANONICAL_FACTS.md), [M3](M3_TIME_KNOWLEDGE_RELATIONSHIPS.md), [ComfyUI proposition](V1_VISUAL_REFERENCES_COMFYUI_PROPOSAL.md), [gates actuels](../continuity/M3_2_GATE_DECISION_CURRENT.md).
+
+**22 octobre 2026 — résultat terminal post-main PR #128 vérifié :** [CI #39755042137](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/39755042137) completed/SUCCESS (74 étapes Windows) au SHA exact `main=593b39e531e2a93e2f334220f37f6d8ed9bf9c93`. Cette observation est nouvelle et distincte du checkpoint historique daté `IN_PROGRESS_AT_CHECKPOINT`. Aucune promotion M3.2 ni G2B–G6 ; pas d'autorité Windows opérateur.

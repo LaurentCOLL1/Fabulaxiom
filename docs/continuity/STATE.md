@@ -1078,3 +1078,5 @@ Every subdivision must:
 - pass exact-head CI;
 - receive Windows operator qualification when local behavior is part of acceptance;
 - be merged and normalized before a dependent subdivision begins.
+
+**22 octobre 2026 — résultat terminal post-main PR #128 vérifié :** [CI #39755042137](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/39755042137) completed/SUCCESS (74 étapes Windows) au SHA exact `main=593b39e531e2a93e2f334220f37f6d8ed9bf9c93`. Cette observation est nouvelle et distincte du checkpoint historique daté `IN_PROGRESS_AT_CHECKPOINT`. Aucune promotion M3.2 ni G2B–G6 ; pas d'autorité Windows opérateur.

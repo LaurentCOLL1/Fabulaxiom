@@ -108,3 +108,5 @@
 **Originaux interdits :** production restaurée v6, v7 isolée, sidecars, ACL, backups, activation marker et worktrees locaux ; aucune migration 007, aucun IPC writer ni release. Aucun processus Windows n'a été lancé/arrêté et aucune base privée ouverte pour préparer cette décision.
 
 **Références :** [Runbook prospectif NON EXÉCUTABLE](../qualification/M3_2_PROSPECTIVE_BASELINE_WINDOWS_RUNBOOK_DRAFT.md), [issue #36](https://github.com/LaurentCOLL1/Fabulaxiom/issues/36), [issue #38](https://github.com/LaurentCOLL1/Fabulaxiom/issues/38), [SQLite WAL](https://www.sqlite.org/wal.html), [rusqlite Connection 0.40.2](https://docs.rs/rusqlite/0.40.2/rusqlite/struct.Connection.html).
+
+**22 octobre 2026 — résultat terminal post-main PR #128 vérifié :** [CI #39755042137](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/39755042137) completed/SUCCESS (74 étapes Windows) au SHA exact `main=593b39e531e2a93e2f334220f37f6d8ed9bf9c93`. Cette observation est nouvelle et distincte du checkpoint historique daté `IN_PROGRESS_AT_CHECKPOINT`. Aucune promotion M3.2 ni G2B–G6 ; pas d'autorité Windows opérateur.

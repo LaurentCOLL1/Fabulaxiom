@@ -120,3 +120,5 @@ Lis d'abord `docs/continuity/README.md`, `HANDOFF_CURRENT.md`, `HANDOFF_CURRENT.
 **Ne touche jamais** à la production SQLite v6, à la v7 isolée, aux sauvegardes/ACL/markers, ni aux opérations G3–G6, migration 007, IPC writer ou release sans autorisation distincte. Ne réutilise pas de CI d'un ancien HEAD.
 
 **À chaque PR importante, actualise** `HANDOFF_CURRENT.md`, `HANDOFF_CURRENT.json` et si nécessaire `HANDOFF_HISTORY.md`, `NEXT.md`, `STATE.md`. Lorsque la conversation devient longue, donne-moi seulement un prompt de reprise court pointant vers ces fichiers et l'état actuel.
+
+**22 octobre 2026 — résultat terminal post-main PR #128 vérifié :** [CI #39755042137](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/39755042137) completed/SUCCESS (74 étapes Windows) au SHA exact `main=593b39e531e2a93e2f334220f37f6d8ed9bf9c93`. Cette observation est nouvelle et distincte du checkpoint historique daté `IN_PROGRESS_AT_CHECKPOINT`. Aucune promotion M3.2 ni G2B–G6 ; pas d'autorité Windows opérateur.
