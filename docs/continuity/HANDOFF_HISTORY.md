@@ -109,3 +109,5 @@ Les blocages externes (issues #36/#38) demeurent. Les détails techniques de la 
 **2026-10-22 — PR #125 protected MERGED:** source `8ce7bb3ae2295662dfba8f4b5961f9394f1e771f`, CI #39723734278 completed/SUCCESS (74 Windows, 132 Rust, 57 handoff), `main=4b14afbc7fe8de607429e795b656179724d7ee7f`; postmain CI #39726331901 IN_PROGRESS_AT_CHECKPOINT. Only source-only M3.2 continuity, no operator authority.
 
 **2026-10-22 — PR #125 post-main terminal reverified:** [CI #39726331901](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/39726331901) completed/SUCCESS, 74 Windows steps on exact `main=4b14afbc7fe8de607429e795b656179724d7ee7f`. No operator G2B–G6 gates opened.
+
+**2026-10-22 — PR #126 MERGED** source `0a5f972472eec1e53cd2621ca1fb3d6955e5f18f`, CI #39727486056 SUCCESS (74 Windows, 132 Rust, 58 handoff), protected `main=7c4ff2f84bb67b51c8ca01eef0f9ca78a1bfe8d9`, push #39748359823 IN_PROGRESS_AT_CHECKPOINT. Source-only fictional React correction-history candidate prepared with 8 unit tests + 53 Chromium per mode, not qualified or a Windows product feature.

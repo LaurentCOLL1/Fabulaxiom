@@ -1,7 +1,7 @@
 "use strict";
 
 /** M3.2 fictional-only CI source binding.
- * Compares exact ten tracked files with immutable blobs from the CHECKED
+ * Compares exact eleven tracked files with immutable blobs from the CHECKED
  * OUT Git commit. This is a local CI consistency check, NOT an authenticated
  * external provenance, signature, independent GitHub attestation, or G3 proof.
  */
@@ -23,6 +23,7 @@ const EXPECTED = Object.freeze([
   "src/m32FictionalManualChronology.ts",
   "src/m32FictionalRevocationImpact.ts",
   "src/M32ManualChronologyLab.tsx",
+  "src/M32FictionalCorrectionHistory.tsx",
 ]);
 function git(root, args, options = {}) {
   const result = spawnSync("git", ["-C", root, ...args], {

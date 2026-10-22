@@ -880,9 +880,9 @@ class HandoffContractTests(unittest.TestCase):
 
     def test_58_pr125_protected_handoff_records_only_source_success(self):
         x = self.data["post_pr125_normalization"]
-        self.assertEqual(self.data["last_confirmed_merged_pr"], 125)
-        self.assertEqual(self.data["last_confirmed_main_before_handoff"], x["merge_sha"])
-        self.assertEqual(self.data["last_verified_pr_head"], x["pr_head_sha"])
+        self.assertEqual(x["merged_pr"], 125)
+        self.assertEqual(x["merge_sha"], "4b14afbc7fe8de607429e795b656179724d7ee7f")
+        self.assertEqual(x["pr_head_sha"], "8ce7bb3ae2295662dfba8f4b5961f9394f1e771f")
         self.assertEqual(x["merge_sha"], "4b14afbc7fe8de607429e795b656179724d7ee7f")
         self.assertEqual(x["pr_head_sha"], "8ce7bb3ae2295662dfba8f4b5961f9394f1e771f")
         self.assertEqual(x["pr_ci"]["run_id"], 39723734278)
@@ -893,8 +893,8 @@ class HandoffContractTests(unittest.TestCase):
         self.assertEqual(x["main_ci"]["run_id"], 39726331901)
         self.assertEqual(x["main_ci"]["conclusion"], "SUCCESS")
         self.assertEqual(x["main_ci"]["job_steps"], 74)
-        self.assertEqual(self.data["main_ci_post_merge"]["conclusion"], "SUCCESS")
-        self.assertEqual(self.data["main_ci_post_merge"]["sha"], x["merge_sha"])
+        self.assertEqual(x["main_ci"]["conclusion"], "SUCCESS")
+        self.assertEqual(x["merge_sha"], "4b14afbc7fe8de607429e795b656179724d7ee7f")
         self.assertEqual(x["operator_execution"], "NONE")
         self.assertEqual(x["real_writer_absence"], "NOT_PROVEN")
         self.assertEqual(x["g2b_to_g6"], "NOT_AUTHORIZED")
@@ -902,6 +902,55 @@ class HandoffContractTests(unittest.TestCase):
         self.assertEqual(x["normal_runtime_sqlite_schema_max"], 6)
         self.assertEqual(x["tauri_writer_ipc"], "NONE")
         self.assertIn("PR #125", self.doc)
+
+
+    def test_59_pr126_source_only_merge_does_not_promote_runtime(self):
+        x = self.data["post_pr126_normalization"]
+        self.assertEqual(self.data["last_confirmed_merged_pr"], 126)
+        self.assertEqual(self.data["last_confirmed_main_before_handoff"], x["merge_sha"])
+        self.assertEqual(self.data["last_verified_pr_head"], x["pr_head_sha"])
+        self.assertEqual(x["merge_sha"], "7c4ff2f84bb67b51c8ca01eef0f9ca78a1bfe8d9")
+        self.assertEqual(x["pr_head_sha"], "0a5f972472eec1e53cd2621ca1fb3d6955e5f18f")
+        self.assertEqual(x["pr_ci"]["run_id"], 39727486056)
+        self.assertEqual(x["pr_ci"]["conclusion"], "SUCCESS")
+        self.assertEqual(x["pr_ci"]["job_steps"], 74)
+        self.assertEqual(x["pr_ci"]["rust_tests"], 132)
+        self.assertEqual(x["pr_ci"]["handoff_tests"], 58)
+        self.assertEqual(x["main_ci"]["run_id"], 39748359823)
+        self.assertEqual(self.data["main_ci_post_merge"]["sha"], x["merge_sha"])
+        self.assertEqual(x["operator_execution"], "NONE")
+        self.assertEqual(x["real_writer_absence"], "NOT_PROVEN")
+        self.assertEqual(x["g2b_to_g6"], "NOT_AUTHORIZED")
+        self.assertEqual(x["real_g3"], "STOP_UNAVAILABLE")
+        self.assertEqual(x["normal_runtime_sqlite_schema_max"], 6)
+        self.assertIn("PR #126", self.doc)
+
+    def test_60_react_history_ui_candidate_is_isolated_fictional_only(self):
+        x = self.data["m3_2_product_progress"]["test_only_react_correction_history"]
+        self.assertEqual(x["status"], "CANDIDATE_NOT_CI_QUALIFIED")
+        self.assertEqual(x["new_unit_tests"], 8)
+        self.assertEqual(x["chromium_scenarios_per_mode"], 53)
+        self.assertEqual(x["runtime_app_mount"], "NONE")
+        self.assertEqual(x["tauri_ipc"], "NONE")
+        self.assertEqual(x["real_sqlite_access"], "NONE")
+        self.assertEqual(x["network_access"], "NONE")
+        self.assertEqual(x["storage_access"], "NONE")
+        self.assertFalse(x["editing_authorized"])
+        self.assertFalse(x["real_g3_authorized"])
+        self.assertEqual(x["g2b_to_g6"], "NOT_AUTHORIZED")
+        source = (ROOT / x["ui_component"]).read_text(encoding="utf-8")
+        fixture = (ROOT / x["synthetic_browser_lab"]).read_text(encoding="utf-8")
+        app = (ROOT / "src/App.tsx").read_text(encoding="utf-8")
+        self.assertIn("auditM32FictionalCorrectionChain", source)
+        self.assertIn("M32FictionalCorrectionHistory", fixture)
+        self.assertNotIn("M32FictionalCorrectionHistory", app)
+        self.assertNotIn("@tauri-apps", source)
+        self.assertNotIn("localStorage", source)
+        self.assertNotIn("fetch(", source)
+        self.assertNotIn("<button", source)
+        runner = (ROOT / "tools/m32_browser_interaction.cjs").read_text(encoding="utf-8")
+        self.assertIn("M32_BROWSER_REAL_CHROMIUM_PASS 53/53", runner)
+        self.assertEqual(self.data["g2a"]["absence_of_sqlite_writer"], "NOT_PROVEN")
 
     def test_24_policy_requires_refetch_and_same_pr_handoff(self):
         for clause in ("Re-fetch", "HANDOFF_CURRENT.md", "HANDOFF_CURRENT.json",

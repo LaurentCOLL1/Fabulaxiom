@@ -22,6 +22,7 @@ const MANIFEST = Object.freeze([
   "src/m32FictionalManualChronology.ts",
   "src/m32FictionalRevocationImpact.ts",
   "src/M32ManualChronologyLab.tsx",
+  "src/M32FictionalCorrectionHistory.tsx",
 ]);
 
 function stageFictionOnly() {
