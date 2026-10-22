@@ -84,7 +84,8 @@
     "ONE_HUMAN_SUCCESSOR_PARTIAL_ACTIVE_GRAPH_TEST_ONLY_RAM_CANDIDATE",
     "2026_10_22_PR120_MERGED_MAIN_01766707_POSTMAIN_CI_39686405108_SUCCESS",
     "2026_10_22_PR121_MERGED_MAIN_08CAAD24_STAGE7_REVOCATION_RAM_ONLY_CANDIDATE",
-    "2026_10_22_PR122_MERGED_MAIN_52B06099_RAM_ONLY_IMMUTABLE_SUCCESSOR_REVOCATION"
+    "2026_10_22_PR122_MERGED_MAIN_52B06099_RAM_ONLY_IMMUTABLE_SUCCESSOR_REVOCATION",
+    "2026_10_22_PR122_POSTMAIN_CI_39718851557_TERMINAL_SUCCESS_EXACT_MERGE_SHA"
   ],
   "pr35": "OPEN_DRAFT",
   "issues": {
@@ -270,15 +271,15 @@
     "verified_bypass_actors": 0,
     "classic_branch_protection_read": "403_INTEGRATION_RESTRICTED"
   },
-  "next": "VERIFY_PR122_EXACT_POSTMAIN_CI_TERMINAL_THEN_SEPARATELY_SCOPE_RECURSIVE_CHAIN_RAM_ONLY; M3_2_REAL_GATES_STILL_STOP",
+  "next": "SEPARATE_STAGE8_RECURSIVE_CHAIN_SOURCE_ONLY_FICTIONAL_RAM_NOT_PRODUCT_ACCEPTANCE",
   "live_refetch_required": true,
   "hand_off_updated_by_future_pr": true,
   "main_ci_post_merge": {
     "sha": "52b06099ba0cff0da15fa697b0e2043afc883a00",
     "run_id": 39718851557,
-    "conclusion": "IN_PROGRESS_AT_CHECKPOINT",
+    "conclusion": "SUCCESS",
     "source": "MAIN_PUSH",
-    "note": "Dated 2026-10-22 direct GitHub run at exact merge SHA, not operator evidence. Re-fetch terminal."
+    "note": "2026-10-22 GitHub post-main CI #39718851557 completed/success, 74 Windows steps on exact protected merge SHA; no operator authority."
   },
   "g2a_candidate_ci": {
     "pr": 86,
@@ -1075,7 +1076,8 @@
     },
     "main_ci": {
       "run_id": 39718851557,
-      "conclusion": "IN_PROGRESS_AT_CHECKPOINT"
+      "conclusion": "SUCCESS",
+      "job_steps": 74
     },
     "fiction_only": true,
     "operator_execution": "NONE",
