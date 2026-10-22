@@ -131,11 +131,17 @@ export default function M32FictionalCorrectionHistory({
     {history.ordered_history.length === 0
       ? <p>Aucune correction fictive dans cet univers.</p>
       : <ol aria-label="Corrections explicitement conservées">
-        {history.ordered_history.map(row => <li key={row.id}>
+        {history.ordered_history.map((row, index) => <li key={row.id}>
           <strong>{row.id}</strong> — {row.before_anchor_id} avant {row.after_anchor_id}
           {" — "}{row.reason} — {row.revocation_id === null
             ? "correction active"
             : "correction retirée : " + row.revocation_reason}
+          {index > 0 && <p>
+            Corrige explicitement <code>{history.ordered_history[index - 1].id}</code> :
+            ancienne assertion <code>{history.ordered_history[index - 1].before_anchor_id}</code>
+            {" avant "}<code>{history.ordered_history[index - 1].after_anchor_id}</code>.
+            Aucun ordre global déduit.
+          </p>}
         </li>)}
       </ol>}
     <p>Correction active : {history.active_id ?? "aucune"}. Aucune écriture autorisée.</p>
