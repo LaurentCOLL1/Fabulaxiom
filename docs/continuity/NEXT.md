@@ -726,3 +726,5 @@ GitHub reports `main.protected=false` for this private repository; repository ru
 ## Governance and distribution
 
 Keep the source-based release state unchanged. No release is authorized as part of this documentary normalization. No data migration or target-machine action is required. Preserve Tauri app identity in production, M1.5 active pointer, all existing operator backups, SQLite v6 data/history, deterministic lockfiles and independent local-only test worktrees. Never reuse CI from an earlier commit.
+
+**Revalidation terminale indépendante — 22 octobre 2026 :** [CI push main #39755042137](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/39755042137) est maintenant `completed/SUCCESS` (74/74 étapes Windows) sur le SHA exact `593b39e531e2a93e2f334220f37f6d8ed9bf9c93`. Le snapshot historique de PR #128 `IN_PROGRESS_AT_CHECKPOINT` reste **inchangé** ; l'observation ultérieure est ajoutée séparément dans `HANDOFF_CURRENT.json`, sans promotion de M3.2 ou des gates réels.

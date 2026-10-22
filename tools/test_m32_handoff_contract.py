@@ -995,6 +995,14 @@ class HandoffContractTests(unittest.TestCase):
         self.assertEqual(x["pr_ci"]["chromium_normal"], 53)
         self.assertEqual(x["pr_ci"]["chromium_strict_csp"], 53)
         self.assertEqual(x["main_ci"]["run_id"], 39755042137)
+        self.assertEqual(x["main_ci"]["conclusion"], "IN_PROGRESS_AT_CHECKPOINT")
+        observed = self.data["post_pr128_postmain_terminal_observation"]
+        self.assertEqual(observed["source_pr"], 128)
+        self.assertEqual(observed["merge_sha"], x["merge_sha"])
+        self.assertEqual(observed["run_id"], 39755042137)
+        self.assertEqual(observed["conclusion"], "SUCCESS")
+        self.assertEqual(observed["job_steps"], 74)
+        self.assertEqual(self.data["main_ci_post_merge"]["conclusion"], "SUCCESS")
         observed = self.data["post_pr127_postmain_terminal_observation"]
         self.assertEqual(observed["source_pr"], 127)
         self.assertEqual(observed["merge_sha"], "dd578161f1c84554c03434d0f1066f65d6e53dc6")

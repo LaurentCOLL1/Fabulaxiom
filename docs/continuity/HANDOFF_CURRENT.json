@@ -93,7 +93,8 @@
     "2026_10_22_PR126_MERGED_MAIN_7C4FF2F8_AND_FICTION_ONLY_REACT_HISTORY_CANDIDATE",
     "2026_10_22_PR127_MERGED_MAIN_DD578161_FAKE_REACT_HISTORY_ONLY",
     "2026_10_22_PR128_PROTECTED_MERGED_MAIN_593B39E5_POSTCI_CHECKPOINT",
-    "2026_10_22_PR127_HISTORICAL_PENDING_SNAPSHOT_RESTORED_TERMINAL_RESULT_SEPARATE"
+    "2026_10_22_PR127_HISTORICAL_PENDING_SNAPSHOT_RESTORED_TERMINAL_RESULT_SEPARATE",
+    "2026_10_22_PR128_POSTMAIN_CI_TERMINAL_SUCCESS_SEPARATE_OBSERVATION_NO_RETROACTIVE_MUTATION"
   ],
   "pr35": "OPEN_DRAFT",
   "issues": {
@@ -285,9 +286,9 @@
   "main_ci_post_merge": {
     "sha": "593b39e531e2a93e2f334220f37f6d8ed9bf9c93",
     "run_id": 39755042137,
-    "conclusion": "IN_PROGRESS_AT_CHECKPOINT",
+    "conclusion": "SUCCESS",
     "source": "MAIN_PUSH",
-    "note": "2026-10-22 exact protected PR128 merge; re-fetch terminal for positive claim; no operator authority"
+    "note": "2026-10-22 subsequent GitHub terminal re-fetch run #39755042137 SUCCESS at protected merge SHA; historical post_pr128_normalization.main_ci remains dated IN_PROGRESS_AT_CHECKPOINT; no operator authority"
   },
   "g2a_candidate_ci": {
     "pr": 86,
@@ -1306,6 +1307,16 @@
     "source_pr": 127,
     "merge_sha": "dd578161f1c84554c03434d0f1066f65d6e53dc6",
     "run_id": 39750459759,
+    "conclusion": "SUCCESS",
+    "job_steps": 74,
+    "operator_execution": "NONE",
+    "product_status": "IN_PROGRESS_NOT_ACCEPTED"
+  },
+  "post_pr128_postmain_terminal_observation": {
+    "kind": "DATED_LATER_RECHECK_NOT_RETROACTIVE_MUTATION",
+    "source_pr": 128,
+    "merge_sha": "593b39e531e2a93e2f334220f37f6d8ed9bf9c93",
+    "run_id": 39755042137,
     "conclusion": "SUCCESS",
     "job_steps": 74,
     "operator_execution": "NONE",

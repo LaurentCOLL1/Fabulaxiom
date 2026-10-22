@@ -406,3 +406,5 @@ La PR #86 a préparé [le nouveau bloc exact](../qualification/M3_2_G2A_EXACT_BL
 4. Re-fetch exact main/PR/CI/ruleset, mettre à jour MD+JSON à chaque PR significative ; requalifier CI au nouveau SHA après commit.
 
 Se reporter à [HANDOFF_PROTOCOL.md](HANDOFF_PROTOCOL.md) pour les invariants détaillés, sans réutiliser les anciennes CI après un nouveau commit.
+
+**Revalidation terminale indépendante — 22 octobre 2026 :** [CI push main #39755042137](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/39755042137) est maintenant `completed/SUCCESS` (74/74 étapes Windows) sur le SHA exact `593b39e531e2a93e2f334220f37f6d8ed9bf9c93`. Le snapshot historique de PR #128 `IN_PROGRESS_AT_CHECKPOINT` reste **inchangé** ; l'observation ultérieure est ajoutée séparément dans `HANDOFF_CURRENT.json`, sans promotion de M3.2 ou des gates réels.
