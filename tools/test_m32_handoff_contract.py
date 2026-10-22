@@ -752,15 +752,14 @@ class HandoffContractTests(unittest.TestCase):
 
     def test_52_pr121_merged_documentary_only_and_no_operator_promotion(self):
         x = self.data["post_pr121_normalization"]
-        self.assertEqual(self.data["last_confirmed_merged_pr"], 121)
-        self.assertEqual(self.data["last_confirmed_main_before_handoff"], x["merge_sha"])
-        self.assertEqual(self.data["last_verified_pr_head"], x["pr_head_sha"])
+        self.assertEqual(x["merged_pr"], 121)
         self.assertEqual(x["merge_sha"], "08caad24e20eae484e94fd084edb487b5c370bd5")
+        self.assertEqual(x["pr_head_sha"], "6a1a22dedaa4e3d2c302a56959083017578dc7da")
         self.assertEqual(x["pr_ci"]["run_id"], 39713440057)
         self.assertEqual(x["pr_ci"]["conclusion"], "SUCCESS")
         self.assertEqual(x["pr_ci"]["job_steps"], 74)
         self.assertEqual(x["main_ci"]["run_id"], 39716352685)
-        self.assertEqual(self.data["main_ci_post_merge"]["sha"], x["merge_sha"])
+        self.assertEqual(x["main_ci"]["conclusion"], "SUCCESS")
         self.assertEqual(x["operator_execution"], "NONE")
         self.assertEqual(x["real_writer_absence"], "NOT_PROVEN")
         self.assertEqual(x["g2b_to_g6"], "NOT_AUTHORIZED")
