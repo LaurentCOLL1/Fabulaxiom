@@ -1,5 +1,10 @@
 # Prompt minimal de reprise — Fabulaxiom
 
+**22 octobre 2026 — PR #128 protégée MERGED :** source `ab5d7ed9cc0d9aafe4803d2b5b40d7b9bd23cabd`, CI [#39751125802](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/39751125802) terminale SUCCESS (74 étapes Windows, 132 Rust, 61 tests handoff, 53/53 Chromium normal et CSP). Fusion `main=593b39e531e2a93e2f334220f37f6d8ed9bf9c93` protégée par `expected_head_sha`. CI post-main [#39755042137](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/39755042137) `IN_PROGRESS_AT_CHECKPOINT` lors de l'écriture : vérifier le résultat terminal. Aucun nouveau développement runtime n'est accepté ; consultation des corrections exclusivement fictive et confinée au navigateur de laboratoire.
+
+**STOP inchangé :** M3.2 `IN_PROGRESS_NOT_ACCEPTED`, writer réel `NOT_PROVEN`, G2B–G6 `NOT_AUTHORIZED`, G3 réel `STOP_UNAVAILABLE`, historique `PENDING_EXTERNAL_ATTESTATION(21/3/2)`, prospective `NOT_STARTED`, PR #35 DRAFT. Aucun opérateur Windows, base v6/v7 originale ou sauvegarde, ACL/sidecars/marker, migration 007, IPC writer, M3.3, ComfyUI ni release. Paralléliser uniquement travaux indépendants, sérialiser commits/merges.
+
+
 **22 octobre 2026 — PR #127 protégée MERGED :** HEAD `d71288e5f7a046c6e90131118de5cecd8a6ee5cb`, CI [#39749304955](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/39749304955) terminale SUCCESS : 74 étapes Windows, 132 Rust, 60 contrats, 53/53 Chromium normal et CSP, onze blobs Git fictifs liés au SHA exact. Fusion `main=dd578161f1c84554c03434d0f1066f65d6e53dc6`, push [#39750459759](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/39750459759) IN_PROGRESS_AT_CHECKPOINT à ce jour, re-fetch terminal. Le composant React historique des corrections est intégré uniquement dans la page navigateur fictive `m32-browser-lab.html`, jamais dans `App.tsx`, aucun IPC ni SQLite réel.
 
 **Gates inchangés :** M3.2 IN_PROGRESS_NOT_ACCEPTED ; writer réel NOT_PROVEN ; G2B–G6 NOT_AUTHORIZED ; G3 réel STOP_UNAVAILABLE ; historique PENDING_EXTERNAL_ATTESTATION(21/3/2) ; prospective NOT_STARTED ; PR #35 historique OPEN/DRAFT. Aucune action Windows opérateur, base v6/v7 originale, sauvegardes, ACL/sidecars/marqueurs, migration 007, IPC writer, M3.3, ComfyUI ou release. Garder lectures indépendantes en parallèle, écriture/fusion séquentielle.
@@ -115,3 +120,5 @@ Lis d'abord `docs/continuity/README.md`, `HANDOFF_CURRENT.md`, `HANDOFF_CURRENT.
 **Ne touche jamais** à la production SQLite v6, à la v7 isolée, aux sauvegardes/ACL/markers, ni aux opérations G3–G6, migration 007, IPC writer ou release sans autorisation distincte. Ne réutilise pas de CI d'un ancien HEAD.
 
 **À chaque PR importante, actualise** `HANDOFF_CURRENT.md`, `HANDOFF_CURRENT.json` et si nécessaire `HANDOFF_HISTORY.md`, `NEXT.md`, `STATE.md`. Lorsque la conversation devient longue, donne-moi seulement un prompt de reprise court pointant vers ces fichiers et l'état actuel.
+
+**22 octobre 2026 — résultat terminal post-main PR #128 vérifié :** [CI #39755042137](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/39755042137) completed/SUCCESS (74 étapes Windows) au SHA exact `main=593b39e531e2a93e2f334220f37f6d8ed9bf9c93`. Cette observation est nouvelle et distincte du checkpoint historique daté `IN_PROGRESS_AT_CHECKPOINT`. Aucune promotion M3.2 ni G2B–G6 ; pas d'autorité Windows opérateur.

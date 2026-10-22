@@ -3,14 +3,14 @@
   "as_of": "2026-10-22",
   "status_kind": "DATED_PUBLIC_SOURCE_HANDOFF_ONLY",
   "repository": "LaurentCOLL1/Fabulaxiom",
-  "last_confirmed_main_before_handoff": "dd578161f1c84554c03434d0f1066f65d6e53dc6",
-  "last_confirmed_merged_pr": 127,
-  "last_verified_pr_head": "d71288e5f7a046c6e90131118de5cecd8a6ee5cb",
+  "last_confirmed_main_before_handoff": "593b39e531e2a93e2f334220f37f6d8ed9bf9c93",
+  "last_confirmed_merged_pr": 128,
+  "last_verified_pr_head": "ab5d7ed9cc0d9aafe4803d2b5b40d7b9bd23cabd",
   "last_verified_ci": {
-    "run_id": 39749304955,
+    "run_id": 39751125802,
     "context": "Windows frontend and Rust checks",
     "conclusion": "SUCCESS",
-    "source": "PR127_EXACT_HEAD"
+    "source": "PR128_EXACT_HEAD"
   },
   "recent_changes": [
     "PR_85_EXACT_G2A_TEXT_AST_ONLY",
@@ -91,7 +91,10 @@
     "2026_10_22_PR125_MERGED_PROTECTED_MAIN_4B14AFBC_STAGE8_RAM_ONLY_NORMALIZED",
     "2026_10_22_PR125_POSTMAIN_CI_39726331901_SUCCESS_TERMINAL",
     "2026_10_22_PR126_MERGED_MAIN_7C4FF2F8_AND_FICTION_ONLY_REACT_HISTORY_CANDIDATE",
-    "2026_10_22_PR127_MERGED_MAIN_DD578161_FAKE_REACT_HISTORY_ONLY"
+    "2026_10_22_PR127_MERGED_MAIN_DD578161_FAKE_REACT_HISTORY_ONLY",
+    "2026_10_22_PR128_PROTECTED_MERGED_MAIN_593B39E5_POSTCI_CHECKPOINT",
+    "2026_10_22_PR127_HISTORICAL_PENDING_SNAPSHOT_RESTORED_TERMINAL_RESULT_SEPARATE",
+    "2026_10_22_PR128_POSTMAIN_CI_TERMINAL_SUCCESS_SEPARATE_OBSERVATION_NO_RETROACTIVE_MUTATION"
   ],
   "pr35": "OPEN_DRAFT",
   "issues": {
@@ -277,15 +280,15 @@
     "verified_bypass_actors": 0,
     "classic_branch_protection_read": "403_INTEGRATION_RESTRICTED"
   },
-  "next": "VERIFY_PR127_POSTMAIN_CI_THEN_NO_REAL_G2B_G6_GATE_PROMOTION; ROADMAP_M3_2_UNACCEPTED",
+  "next": "REVALIDATE_PR128_POSTMAIN_CI; KEEP_G2B_G6_STOP; SOURCE_ONLY_CLOSEOUT_NOT_PRODUCT_ACCEPTANCE",
   "live_refetch_required": true,
   "hand_off_updated_by_future_pr": true,
   "main_ci_post_merge": {
-    "sha": "dd578161f1c84554c03434d0f1066f65d6e53dc6",
-    "run_id": 39750459759,
-    "conclusion": "IN_PROGRESS_AT_CHECKPOINT",
+    "sha": "593b39e531e2a93e2f334220f37f6d8ed9bf9c93",
+    "run_id": 39755042137,
+    "conclusion": "SUCCESS",
     "source": "MAIN_PUSH",
-    "note": "2026-10-22 exact main merge CI; re-fetch terminal before claiming success; no operator authority."
+    "note": "2026-10-22 subsequent GitHub terminal re-fetch run #39755042137 SUCCESS at protected merge SHA; historical post_pr128_normalization.main_ci remains dated IN_PROGRESS_AT_CHECKPOINT; no operator authority"
   },
   "g2a_candidate_ci": {
     "pr": 86,
@@ -1271,5 +1274,52 @@
     "runtime_app_mount": "NONE",
     "tauri_ipc": "NONE",
     "real_sqlite_access": "NONE"
+  },
+  "post_pr128_normalization": {
+    "kind": "DATED_DOCUMENTARY_ONLY_NO_RUNTIME_AUTHORITY",
+    "merged_pr": 128,
+    "merge_sha": "593b39e531e2a93e2f334220f37f6d8ed9bf9c93",
+    "pr_head_sha": "ab5d7ed9cc0d9aafe4803d2b5b40d7b9bd23cabd",
+    "pr_ci": {
+      "run_id": 39751125802,
+      "conclusion": "SUCCESS",
+      "job_steps": 74,
+      "rust_tests": 132,
+      "handoff_tests": 61,
+      "chromium_normal": 53,
+      "chromium_strict_csp": 53
+    },
+    "main_ci": {
+      "run_id": 39755042137,
+      "conclusion": "IN_PROGRESS_AT_CHECKPOINT"
+    },
+    "product_status": "IN_PROGRESS_NOT_ACCEPTED",
+    "operator_execution": "NONE",
+    "real_writer_absence": "NOT_PROVEN",
+    "g2b_to_g6": "NOT_AUTHORIZED",
+    "real_g3": "STOP_UNAVAILABLE",
+    "runtime_app_mount": "NONE",
+    "real_sqlite_access": "NONE",
+    "tauri_writer_ipc": "NONE"
+  },
+  "post_pr127_postmain_terminal_observation": {
+    "kind": "DATED_LATER_RECHECK_NOT_RETROACTIVE_MUTATION",
+    "source_pr": 127,
+    "merge_sha": "dd578161f1c84554c03434d0f1066f65d6e53dc6",
+    "run_id": 39750459759,
+    "conclusion": "SUCCESS",
+    "job_steps": 74,
+    "operator_execution": "NONE",
+    "product_status": "IN_PROGRESS_NOT_ACCEPTED"
+  },
+  "post_pr128_postmain_terminal_observation": {
+    "kind": "DATED_LATER_RECHECK_NOT_RETROACTIVE_MUTATION",
+    "source_pr": 128,
+    "merge_sha": "593b39e531e2a93e2f334220f37f6d8ed9bf9c93",
+    "run_id": 39755042137,
+    "conclusion": "SUCCESS",
+    "job_steps": 74,
+    "operator_execution": "NONE",
+    "product_status": "IN_PROGRESS_NOT_ACCEPTED"
   }
 }
