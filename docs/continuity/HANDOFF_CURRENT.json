@@ -3,14 +3,14 @@
   "as_of": "2026-10-22",
   "status_kind": "DATED_PUBLIC_SOURCE_HANDOFF_ONLY",
   "repository": "LaurentCOLL1/Fabulaxiom",
-  "last_confirmed_main_before_handoff": "4b14afbc7fe8de607429e795b656179724d7ee7f",
-  "last_confirmed_merged_pr": 125,
-  "last_verified_pr_head": "8ce7bb3ae2295662dfba8f4b5961f9394f1e771f",
+  "last_confirmed_main_before_handoff": "7c4ff2f84bb67b51c8ca01eef0f9ca78a1bfe8d9",
+  "last_confirmed_merged_pr": 126,
+  "last_verified_pr_head": "0a5f972472eec1e53cd2621ca1fb3d6955e5f18f",
   "last_verified_ci": {
-    "run_id": 39723734278,
+    "run_id": 39727486056,
     "context": "Windows frontend and Rust checks",
     "conclusion": "SUCCESS",
-    "source": "PR125_EXACT_HEAD"
+    "source": "PR126_EXACT_HEAD"
   },
   "recent_changes": [
     "PR_85_EXACT_G2A_TEXT_AST_ONLY",
@@ -89,7 +89,8 @@
     "2026_10_22_PR123_MERGED_MAIN_A3C4112B_STAGE8_RAM_ONLY_NEW_SEPARATE_BRANCH",
     "2026_10_22_PR124_MERGED_MAIN_DB097220_RAM_ONLY_APPEND_ONLY_RECURSIVE_CHAIN",
     "2026_10_22_PR125_MERGED_PROTECTED_MAIN_4B14AFBC_STAGE8_RAM_ONLY_NORMALIZED",
-    "2026_10_22_PR125_POSTMAIN_CI_39726331901_SUCCESS_TERMINAL"
+    "2026_10_22_PR125_POSTMAIN_CI_39726331901_SUCCESS_TERMINAL",
+    "2026_10_22_PR126_MERGED_MAIN_7C4FF2F8_AND_FICTION_ONLY_REACT_HISTORY_CANDIDATE"
   ],
   "pr35": "OPEN_DRAFT",
   "issues": {
@@ -275,15 +276,15 @@
     "verified_bypass_actors": 0,
     "classic_branch_protection_read": "403_INTEGRATION_RESTRICTED"
   },
-  "next": "CHECK_PR125_POSTMAIN_CI_TERMINAL_AND_M32_STOP_GATES; ONLY_NEXT_SYNTHETIC_SOURCE_WORK_WITH_FRESH_AUTHORITY",
+  "next": "QUALIFY_SEPARATE_REACT_FICTIONAL_CORRECTION_HISTORY_EXACT_HEAD_CI; NO_M3_2_RUNTIME_PROMOTION",
   "live_refetch_required": true,
   "hand_off_updated_by_future_pr": true,
   "main_ci_post_merge": {
-    "sha": "4b14afbc7fe8de607429e795b656179724d7ee7f",
-    "run_id": 39726331901,
-    "conclusion": "SUCCESS",
+    "sha": "7c4ff2f84bb67b51c8ca01eef0f9ca78a1bfe8d9",
+    "run_id": 39748359823,
+    "conclusion": "IN_PROGRESS_AT_CHECKPOINT",
     "source": "MAIN_PUSH",
-    "note": "2026-10-22 terminal GitHub run #39726331901 SUCCESS at exact PR125 protected merge SHA; no Windows operator authority"
+    "note": "2026-10-22 exact protected PR126 merge push CI; must re-fetch terminal. Not Windows operator authority."
   },
   "g2a_candidate_ci": {
     "pr": 86,
@@ -687,6 +688,25 @@
       "real_sqlite_access": "NONE",
       "tauri_writer_ipc": "NONE",
       "auto_migration_max": 6,
+      "g2b_to_g6": "NOT_AUTHORIZED",
+      "real_g3": "STOP_UNAVAILABLE"
+    },
+    "test_only_react_correction_history": {
+      "status": "CANDIDATE_NOT_CI_QUALIFIED",
+      "source_only": true,
+      "ui_component": "src/M32FictionalCorrectionHistory.tsx",
+      "unit_tests": "src/M32FictionalCorrectionHistory.test.tsx",
+      "new_unit_tests": 8,
+      "chromium_scenarios_per_mode": 53,
+      "synthetic_browser_lab": "src/m32BrowserLab.tsx",
+      "runtime_app_mount": "NONE",
+      "tauri_ipc": "NONE",
+      "real_sqlite_access": "NONE",
+      "network_access": "NONE",
+      "storage_access": "NONE",
+      "data_origin": "fictional_browser_memory_only",
+      "editing_authorized": false,
+      "real_g3_authorized": false,
       "g2b_to_g6": "NOT_AUTHORIZED",
       "real_g3": "STOP_UNAVAILABLE"
     }
@@ -1195,5 +1215,31 @@
     "real_g3": "STOP_UNAVAILABLE",
     "normal_runtime_sqlite_schema_max": 6,
     "tauri_writer_ipc": "NONE"
+  },
+  "post_pr126_normalization": {
+    "kind": "DATED_SOURCE_ONLY_NO_OPERATOR_AUTHORITY",
+    "merged_pr": 126,
+    "merge_sha": "7c4ff2f84bb67b51c8ca01eef0f9ca78a1bfe8d9",
+    "pr_head_sha": "0a5f972472eec1e53cd2621ca1fb3d6955e5f18f",
+    "pr_ci": {
+      "run_id": 39727486056,
+      "conclusion": "SUCCESS",
+      "job_steps": 74,
+      "rust_tests": 132,
+      "handoff_tests": 58,
+      "chromium_normal": 50,
+      "chromium_strict_csp": 50
+    },
+    "main_ci": {
+      "run_id": 39748359823,
+      "conclusion": "IN_PROGRESS_AT_CHECKPOINT"
+    },
+    "operator_execution": "NONE",
+    "product_status": "IN_PROGRESS_NOT_ACCEPTED",
+    "real_writer_absence": "NOT_PROVEN",
+    "g2b_to_g6": "NOT_AUTHORIZED",
+    "real_g3": "STOP_UNAVAILABLE",
+    "fiction_only": true,
+    "normal_runtime_sqlite_schema_max": 6
   }
 }
