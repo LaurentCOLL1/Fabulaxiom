@@ -1,5 +1,10 @@
 # M3.2 — Historique condensé des qualifications (référence, pas CI réutilisable)
 
+**22 octobre 2026 — PR #129 MERGED protégée :** HEAD source `f19d59d2ddf20e502d621555b204935b93ad566f`, CI source [#39756548081](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/39756548081) `completed/SUCCESS` (74 étapes Windows) ; fusion `main=8f4b84bdccf19842aa98b35defe8e84a02e769db`, CI post-fusion [#39758153975](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/39758153975) `completed/SUCCESS` (74 étapes Windows). Normalisation documentaire PR #128 sans nouveau runtime. Historique PR #127/#128 `IN_PROGRESS_AT_CHECKPOINT` immuable, observations terminales ultérieures distinctes.
+
+**STOP inchangé :** M3.2 `IN_PROGRESS_NOT_ACCEPTED`, writer réel `NOT_PROVEN`, G2B–G6 `NOT_AUTHORIZED`, G3 réel `STOP_UNAVAILABLE`, historique `PENDING_EXTERNAL_ATTESTATION(21/3/2)`, prospective `NOT_STARTED`, PR #35 DRAFT. Aucun opérateur Windows ni SQLite originale v6/v7, sauvegarde, ACL, sidecar, marker, migration 007, writer IPC, M3.3, ComfyUI ni release. Parallélisme seulement indépendant, mutations/fusions séquentielles.
+
+
 **21 octobre 2026 — résultat terminal post-fusion PR #112 :** la CI push [#39597532619](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/39597532619) a terminé **SUCCESS** sur `main=3c489aa727129e4b090e2e80a49a93fb3fa95877`, SHA exact du merge #112. Les mentions plus anciennes « en cours au checkpoint » sont des photographies historiques, et ne décrivent pas l'état terminal. Cette mise à jour de la PR #113 impose une CI nouvelle sur son nouveau HEAD. M3.2 reste IN_PROGRESS_NOT_ACCEPTED, PR #35 DRAFT, writer réel NOT_PROVEN, G2B–G6 STOP, aucun essai Windows opérateur ni SQLite protégée.
 
 

@@ -3,14 +3,14 @@
   "as_of": "2026-10-22",
   "status_kind": "DATED_PUBLIC_SOURCE_HANDOFF_ONLY",
   "repository": "LaurentCOLL1/Fabulaxiom",
-  "last_confirmed_main_before_handoff": "593b39e531e2a93e2f334220f37f6d8ed9bf9c93",
-  "last_confirmed_merged_pr": 128,
-  "last_verified_pr_head": "ab5d7ed9cc0d9aafe4803d2b5b40d7b9bd23cabd",
+  "last_confirmed_main_before_handoff": "8f4b84bdccf19842aa98b35defe8e84a02e769db",
+  "last_confirmed_merged_pr": 129,
+  "last_verified_pr_head": "f19d59d2ddf20e502d621555b204935b93ad566f",
   "last_verified_ci": {
-    "run_id": 39751125802,
+    "run_id": 39756548081,
     "context": "Windows frontend and Rust checks",
     "conclusion": "SUCCESS",
-    "source": "PR128_EXACT_HEAD"
+    "source": "PR129_EXACT_HEAD"
   },
   "recent_changes": [
     "PR_85_EXACT_G2A_TEXT_AST_ONLY",
@@ -94,7 +94,8 @@
     "2026_10_22_PR127_MERGED_MAIN_DD578161_FAKE_REACT_HISTORY_ONLY",
     "2026_10_22_PR128_PROTECTED_MERGED_MAIN_593B39E5_POSTCI_CHECKPOINT",
     "2026_10_22_PR127_HISTORICAL_PENDING_SNAPSHOT_RESTORED_TERMINAL_RESULT_SEPARATE",
-    "2026_10_22_PR128_POSTMAIN_CI_TERMINAL_SUCCESS_SEPARATE_OBSERVATION_NO_RETROACTIVE_MUTATION"
+    "2026_10_22_PR128_POSTMAIN_CI_TERMINAL_SUCCESS_SEPARATE_OBSERVATION_NO_RETROACTIVE_MUTATION",
+    "2026_10_22_PR129_PROTECTED_MERGED_MAIN_8F4B84BD_POSTMAIN_39758153975_SUCCESS_TERMINAL_DOCS_ONLY"
   ],
   "pr35": "OPEN_DRAFT",
   "issues": {
@@ -280,15 +281,15 @@
     "verified_bypass_actors": 0,
     "classic_branch_protection_read": "403_INTEGRATION_RESTRICTED"
   },
-  "next": "REVALIDATE_PR128_POSTMAIN_CI; KEEP_G2B_G6_STOP; SOURCE_ONLY_CLOSEOUT_NOT_PRODUCT_ACCEPTANCE",
+  "next": "KEEP_G2B_G6_STOP; CONTINUE_SEPARATE_FICTIONAL_SOURCE_ONLY_OR_PUBLIC_EVIDENCE_REVIEW; NO_OPERATOR_AUTHORIZATION",
   "live_refetch_required": true,
   "hand_off_updated_by_future_pr": true,
   "main_ci_post_merge": {
-    "sha": "593b39e531e2a93e2f334220f37f6d8ed9bf9c93",
-    "run_id": 39755042137,
+    "sha": "8f4b84bdccf19842aa98b35defe8e84a02e769db",
+    "run_id": 39758153975,
     "conclusion": "SUCCESS",
     "source": "MAIN_PUSH",
-    "note": "2026-10-22 subsequent GitHub terminal re-fetch run #39755042137 SUCCESS at protected merge SHA; historical post_pr128_normalization.main_ci remains dated IN_PROGRESS_AT_CHECKPOINT; no operator authority"
+    "note": "Terminal exact-head re-fetch 2026-10-22; not operator or product acceptance; historic PR127/128 checkpoint statuses remain unchanged"
   },
   "g2a_candidate_ci": {
     "pr": 86,
@@ -1321,5 +1322,34 @@
     "job_steps": 74,
     "operator_execution": "NONE",
     "product_status": "IN_PROGRESS_NOT_ACCEPTED"
+  },
+  "post_pr129_normalization": {
+    "kind": "DATED_DOCUMENTARY_ONLY_NO_RUNTIME_AUTHORITY",
+    "merged_pr": 129,
+    "merge_sha": "8f4b84bdccf19842aa98b35defe8e84a02e769db",
+    "pr_head_sha": "f19d59d2ddf20e502d621555b204935b93ad566f",
+    "pr_ci": {
+      "run_id": 39756548081,
+      "conclusion": "SUCCESS",
+      "job_steps": 74
+    },
+    "main_ci": {
+      "run_id": 39758153975,
+      "conclusion": "SUCCESS",
+      "job_steps": 74
+    },
+    "historical_pr127_snapshot_unchanged": true,
+    "historical_pr128_snapshot_unchanged": true,
+    "product_status": "IN_PROGRESS_NOT_ACCEPTED",
+    "operator_execution": "NONE",
+    "real_writer_absence": "NOT_PROVEN",
+    "g2b_to_g6": "NOT_AUTHORIZED",
+    "real_g3": "STOP_UNAVAILABLE",
+    "historical": "PENDING_EXTERNAL_ATTESTATION(21/3/2)",
+    "prospective": "NOT_STARTED",
+    "normal_runtime_sqlite_schema_max": 6,
+    "runtime_app_mount": "NONE",
+    "real_sqlite_access": "NONE",
+    "tauri_writer_ipc": "NONE"
   }
 }
