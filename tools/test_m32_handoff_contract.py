@@ -1192,14 +1192,9 @@ class HandoffContractTests(unittest.TestCase):
 
     def test_69_pr133_win32_negative_proof_merge_never_promotes_operator(self):
         x = self.data["post_pr133_normalization"]
-        self.assertEqual(self.data["last_confirmed_merged_pr"], 133)
-        self.assertEqual(self.data["last_confirmed_main_before_handoff"],
-                         "604817c8457aaf7136f587aaaff28ff862e2702a")
-        self.assertEqual(self.data["last_verified_pr_head"],
-                         "d2bf3134054c4f1a05432c51055134fec7b4a0b2")
         self.assertEqual(x["merged_pr"], 133)
-        self.assertEqual(x["merge_sha"], self.data["last_confirmed_main_before_handoff"])
-        self.assertEqual(x["pr_head_sha"], self.data["last_verified_pr_head"])
+        self.assertEqual(x["merge_sha"], "604817c8457aaf7136f587aaaff28ff862e2702a")
+        self.assertEqual(x["pr_head_sha"], "d2bf3134054c4f1a05432c51055134fec7b4a0b2")
         self.assertEqual(x["pr_ci"], {"run_id": 39835840939, "conclusion": "SUCCESS",
                                        "job_steps": 75, "g2b_counterexample_tests": 8,
                                        "handoff_tests": 68, "rust_tests": 132,
@@ -1208,8 +1203,6 @@ class HandoffContractTests(unittest.TestCase):
         self.assertEqual(x["first_failed_ci"]["conclusion"], "FAILURE")
         self.assertEqual(x["main_ci"], {"run_id": 39837202639,
                                          "conclusion": "IN_PROGRESS_AT_CHECKPOINT"})
-        self.assertEqual(self.data["main_ci_post_merge"]["sha"], x["merge_sha"])
-        self.assertEqual(self.data["main_ci_post_merge"]["conclusion"], "IN_PROGRESS_AT_CHECKPOINT")
         self.assertEqual(x["source_identity"], "PARTIAL_LOCAL_IDENTITY_ONLY")
         self.assertEqual(x["real_writer_absence"], "NOT_PROVEN")
         self.assertEqual(x["g2b_global"], "NOT_ACCEPTED")
@@ -1231,6 +1224,64 @@ class HandoffContractTests(unittest.TestCase):
         self.assertFalse(toy["attribute_only_share_read_excludes_writer"])
         self.assertEqual(toy["operator_authority"], "NONE")
         self.assertIn("PR #133", self.doc)
+
+    def test_70_pr134_terminal_documentary_merge_and_evidence_boundary(self):
+        x = self.data["post_pr134_normalization"]
+        self.assertEqual(self.data["last_confirmed_merged_pr"], 134)
+        self.assertEqual(self.data["last_confirmed_main_before_handoff"],
+                         "a1185b8345999f10814fd54dab96890f70236a5c")
+        self.assertEqual(self.data["last_verified_pr_head"],
+                         "f0db9b28d0e8492f3bc64c952b722873ae61311e")
+        self.assertEqual(x["merged_pr"], 134)
+        self.assertEqual(x["merge_sha"], self.data["last_confirmed_main_before_handoff"])
+        self.assertEqual(x["pr_head_sha"], self.data["last_verified_pr_head"])
+        self.assertEqual(x["pr_ci"], {"run_id": 39837909918, "conclusion": "SUCCESS",
+                                       "job_steps": 75, "handoff_tests": 69,
+                                       "rust_tests": 132, "chromium_normal": 53,
+                                       "chromium_strict_csp": 53})
+        self.assertEqual(x["main_ci"], {"run_id": 39839580270, "conclusion": "SUCCESS", "job_steps": 75})
+        self.assertEqual(self.data["main_ci_post_merge"]["sha"], x["merge_sha"])
+        self.assertEqual(self.data["main_ci_post_merge"]["conclusion"], "SUCCESS")
+        self.assertEqual(self.data["post_pr133_normalization"]["main_ci"]["conclusion"],
+                         "IN_PROGRESS_AT_CHECKPOINT")
+        self.assertTrue(x["preserve_pr133_pending_snapshot"])
+        later = self.data["post_pr133_postmain_terminal_observation"]
+        self.assertEqual(later["run_id"], 39837202639)
+        self.assertEqual(later["conclusion"], "SUCCESS")
+        self.assertEqual(later["merge_sha"], "604817c8457aaf7136f587aaaff28ff862e2702a")
+        self.assertEqual(x["product_status"], "IN_PROGRESS_NOT_ACCEPTED")
+        self.assertEqual(x["real_writer_absence"], "NOT_PROVEN")
+        self.assertEqual(x["g2b_global"], "NOT_ACCEPTED")
+        self.assertEqual(x["g2c"], "NOT_AUTHORIZED")
+        self.assertEqual(x["g2b_to_g6"], "NOT_AUTHORIZED")
+        self.assertEqual(x["real_g3"], "STOP_UNAVAILABLE")
+        self.assertEqual(x["historical"], "PENDING_EXTERNAL_ATTESTATION(21/3/2)")
+        self.assertEqual(x["prospective"], "NOT_STARTED")
+        self.assertEqual(x["operator_execution"], "NONE")
+        self.assertEqual(x["real_sqlite_access"], "NONE")
+        self.assertEqual(x["tauri_writer_ipc"], "NONE")
+        evidence = self.data["m3_2_g2b_g3_evidence_decision"]
+        self.assertEqual(evidence["kind"], "SOURCE_ONLY_DECISION_NO_OPERATOR_AUTHORIZATION")
+        self.assertTrue((ROOT / evidence["document"]).is_file())
+        review = (ROOT / evidence["document"]).read_text(encoding="utf-8")
+        for phrase in ("NO REAL DATABASE ACCESS", "NOT PROVEN",
+                       "STOP_UNAVAILABLE", "Online Backup", "FILE_READ_ATTRIBUTES"):
+            self.assertIn(phrase, review)
+        self.assertEqual(evidence["trusted_owner_connection"], "NOT_PROVEN_OR_AVAILABLE")
+        self.assertEqual(evidence["safe_cold_source"], "NOT_PROVEN")
+        self.assertFalse(evidence["fileid_stability_proves_writer_absence"])
+        self.assertTrue(evidence["online_backup_requires_authenticated_owner"])
+        self.assertFalse(evidence["online_backup_source_lock_continuous"])
+        self.assertFalse(evidence["raw_copy_allowed"])
+        self.assertFalse(evidence["read_only_uri_sufficient"])
+        self.assertTrue(evidence["third_location_required"])
+        self.assertEqual(evidence["real_operator_execution"], "NONE")
+        self.assertEqual(evidence["original_db_opened"], "NONE")
+        self.assertEqual(evidence["g2b_global"], "NOT_ACCEPTED")
+        self.assertEqual(evidence["g2c"], "NOT_AUTHORIZED")
+        self.assertEqual(evidence["real_g3"], "STOP_UNAVAILABLE")
+        self.assertEqual(evidence["product"], "IN_PROGRESS_NOT_ACCEPTED")
+        self.assertIn("PR #134", self.doc)
 
     def test_24_policy_requires_refetch_and_same_pr_handoff(self):
         for clause in ("Re-fetch", "HANDOFF_CURRENT.md", "HANDOFF_CURRENT.json",
