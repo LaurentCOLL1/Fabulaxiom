@@ -92,7 +92,8 @@
     "2026_10_22_PR125_POSTMAIN_CI_39726331901_SUCCESS_TERMINAL",
     "2026_10_22_PR126_MERGED_MAIN_7C4FF2F8_AND_FICTION_ONLY_REACT_HISTORY_CANDIDATE",
     "2026_10_22_PR127_MERGED_MAIN_DD578161_FAKE_REACT_HISTORY_ONLY",
-    "2026_10_22_PR128_PROTECTED_MERGED_MAIN_593B39E5_POSTCI_CHECKPOINT"
+    "2026_10_22_PR128_PROTECTED_MERGED_MAIN_593B39E5_POSTCI_CHECKPOINT",
+    "2026_10_22_PR127_HISTORICAL_PENDING_SNAPSHOT_RESTORED_TERMINAL_RESULT_SEPARATE"
   ],
   "pr35": "OPEN_DRAFT",
   "issues": {
@@ -1262,8 +1263,7 @@
     },
     "main_ci": {
       "run_id": 39750459759,
-      "conclusion": "SUCCESS",
-      "job_steps": 74
+      "conclusion": "IN_PROGRESS_AT_CHECKPOINT"
     },
     "operator_execution": "NONE",
     "product_status": "IN_PROGRESS_NOT_ACCEPTED",
@@ -1300,5 +1300,15 @@
     "runtime_app_mount": "NONE",
     "real_sqlite_access": "NONE",
     "tauri_writer_ipc": "NONE"
+  },
+  "post_pr127_postmain_terminal_observation": {
+    "kind": "DATED_LATER_RECHECK_NOT_RETROACTIVE_MUTATION",
+    "source_pr": 127,
+    "merge_sha": "dd578161f1c84554c03434d0f1066f65d6e53dc6",
+    "run_id": 39750459759,
+    "conclusion": "SUCCESS",
+    "job_steps": 74,
+    "operator_execution": "NONE",
+    "product_status": "IN_PROGRESS_NOT_ACCEPTED"
   }
 }
