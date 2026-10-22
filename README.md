@@ -15,6 +15,8 @@ Fabulaxiom est une application locale de création et de gestion d'histoires, de
 
 ## État actuel
 
+**22 octobre 2026 — PR #129 :** normalisation documentaire fusionnée (`main=8f4b84bdccf19842aa98b35defe8e84a02e769db`) ; [CI PR #39756548081](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/39756548081) et [CI post-main #39758153975](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/39758153975) terminales SUCCESS au SHA exact. M3.2 demeure `IN_PROGRESS_NOT_ACCEPTED` : pas d'écrivain réel prouvé, G2B–G6 non autorisés, aucune action sur bases SQLite protégées ou Windows opérateur. Travaux de laboratoire fictifs uniquement.
+
 **M0 — Environment and architecture qualification : COMPLETE + MERGED + NORMALIZED**
 
 Architecture retenue :
