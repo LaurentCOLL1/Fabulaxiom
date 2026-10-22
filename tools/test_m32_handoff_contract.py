@@ -698,9 +698,9 @@ class HandoffContractTests(unittest.TestCase):
 
     def test_49_pr119_exact_head_source_qualified_without_windows_acceptance(self):
         x = self.data["post_pr119_normalization"]
-        self.assertEqual(self.data["last_confirmed_merged_pr"], 119)
-        self.assertEqual(self.data["last_confirmed_main_before_handoff"], x["merge_sha"])
-        self.assertEqual(self.data["last_verified_pr_head"], x["pr_head_sha"])
+        self.assertEqual(x["merged_pr"], 119)
+        self.assertEqual(x["merge_sha"], "61e07deaf10fc393c567e8f1960874b75d81adc4")
+        self.assertEqual(x["pr_head_sha"], "0df96696e4abefe692f8a0fdca3ab10e726fa9d3")
         self.assertEqual(x["pr_ci"]["run_id"], 39661776335)
         self.assertEqual(x["pr_ci"]["rust_tests"], 121)
         self.assertEqual(x["main_ci"]["run_id"], 39684342539)
@@ -713,7 +713,7 @@ class HandoffContractTests(unittest.TestCase):
 
     def test_50_one_successor_stage_remains_ram_only_and_partial_order(self):
         x = self.data["m3_2_product_progress"]["test_only_rust_fifth_stage"]
-        self.assertEqual(x["status"], "CANDIDATE_NOT_CI_QUALIFIED")
+        self.assertEqual(x["status"], "MERGED_TEST_ONLY_NOT_PRODUCT_ACCEPTED")
         self.assertTrue(x["compiled_only_during_tests"])
         self.assertEqual(x["max_successors_per_withdrawn_restatement"], 1)
         self.assertTrue(x["partial_order_only"])
@@ -730,6 +730,24 @@ class HandoffContractTests(unittest.TestCase):
         self.assertIn("ONE guarded successor", sql)
         self.assertNotIn("schema_migrations", sql)
         self.assertEqual(self.data["g2a"]["absence_of_sqlite_writer"], "NOT_PROVEN")
+
+
+    def test_51_pr120_merged_with_terminal_exact_main_ci_no_operator_authority(self):
+        x = self.data["post_pr120_normalization"]
+        self.assertEqual(self.data["last_confirmed_merged_pr"], 120)
+        self.assertEqual(self.data["last_confirmed_main_before_handoff"], x["merge_sha"])
+        self.assertEqual(self.data["last_verified_pr_head"], x["pr_head_sha"])
+        self.assertEqual(self.data["last_verified_ci"]["run_id"], 39685054113)
+        self.assertEqual(x["pr_ci"]["conclusion"], "SUCCESS")
+        self.assertEqual(x["pr_ci"]["job_steps"], 74)
+        self.assertEqual(x["main_ci"]["run_id"], 39686405108)
+        self.assertEqual(x["main_ci"]["conclusion"], "SUCCESS")
+        self.assertEqual(self.data["main_ci_post_merge"]["sha"], x["merge_sha"])
+        self.assertEqual(x["real_writer_absence"], "NOT_PROVEN")
+        self.assertEqual(x["g2b_to_g6"], "NOT_AUTHORIZED")
+        self.assertEqual(x["real_g3"], "STOP_UNAVAILABLE")
+        self.assertEqual(x["operator_execution"], "NONE")
+        self.assertIn("PR #120 fusionnée", self.doc)
 
     def test_24_policy_requires_refetch_and_same_pr_handoff(self):
         for clause in ("Re-fetch", "HANDOFF_CURRENT.md", "HANDOFF_CURRENT.json",
