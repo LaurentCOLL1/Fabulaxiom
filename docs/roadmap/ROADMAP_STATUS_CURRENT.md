@@ -1,5 +1,12 @@
 # Fabulaxiom — suivi de la roadmap V1 (état actualisé au 21 octobre 2026)
 
+**22 octobre 2026 — PR #122 protégée MERGED :** source `1ade25c7b8c500d712c452a08d90ed26a1ffbe89`, [CI #39717330885](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/39717330885) **SUCCESS** terminale 74 étapes Windows, 128 Rust et 53 contrats de handoff, fusion `main=52b06099ba0cff0da15fa697b0e2043afc883a00`. [CI post-fusion #39718851557](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/39718851557) **IN_PROGRESS_AT_CHECKPOINT au checkpoint**, résultat terminal à re-fetch. Le SQL candidat `m3_2_successor_revocations_candidate.sql` et les méthodes `revoke_successor`/`list_successor_history` sont fusionnés **uniquement sous Rust `#[cfg(test)]` et SQLite RAM**, avec historique append-only, sans chaînes récursives ni migration normale.
+
+**Barrières non levées :** M3.2 `IN_PROGRESS_NOT_ACCEPTED`, absence d'écrivain SQLite réel `NOT_PROVEN`, G2B–G6 `NOT_AUTHORIZED`, G3 réel `STOP_UNAVAILABLE`, historique `PENDING_EXTERNAL_ATTESTATION(21/3/2)`, prospective `NOT_STARTED`, PR #35 OPEN/DRAFT. Aucun travail Windows opérateur, SQLite réelle, backups, ACL/sidecars/marker, migration 007, IPC writer, M3.3, ComfyUI ou release. Continuer les travaux indépendants en parallèle, et sérialiser commits/merges/règles de sécurité.
+
+**Étape suivante autorisée seulement en tests fictifs :** normaliser la CI de PR #122 au SHA exact puis étudier séparément la correction récursive historique PR #35, avec nouvelle branche, fixture RAM, CI nouvelle et aucune promotion des gates réels.
+
+
 **22 octobre 2026 — PR #121 fusionnée :** HEAD source `6a1a22dedaa4e3d2c302a56959083017578dc7da`, CI exacte [#39713440057](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/39713440057) terminale **SUCCESS** (74 étapes, 125 Rust), fusion protégée `main=08caad24e20eae484e94fd084edb487b5c370bd5`, CI push [#39716352685](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/39716352685) terminale **SUCCESS** sur ce SHA.
 
 **Nouveau candidat Rust source-only :** révocation terminale et append-only du seul successeur permis, SQL `m3_2_successor_revocations_candidate.sql`, `revoke_successor` et `list_successor_history`, trois tests adversariaux supplémentaires en SQLite RAM `#[cfg(test)]`. Cette branche doit obtenir **sa propre nouvelle CI au dernier HEAD** ; ce n'est pas une acceptation produit. Pas de correction récursive ni de chaîne arbitraire.

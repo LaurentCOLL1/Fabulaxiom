@@ -97,3 +97,5 @@ Les blocages externes (issues #36/#38) demeurent. Les détails techniques de la 
 **2026-10-22 — PR #120 protected MERGED :** source `f7ef3ceeaee40bb90e1cb9fe180121f11867fc28`, PR CI #39685054113 SUCCESS, `main=01766707a347a269b283c2aa7ea02f44979759e9`, post-main push CI #39686405108 terminal SUCCESS at exact SHA. Stage 5: 1 human authored successor + partial active graph only in Rust RAM tests; no real product acceptance, writer IPC or gated operator migration.
 
 **2026-10-22 — PR #121 MERGED :** source CI #39713440057 SUCCESS 74 steps/125 Rust; main `08caad24e20eae484e94fd084edb487b5c370bd5`, post-main CI #39716352685 terminal SUCCESS. Separate RAM-only stage7 terminal successor revocation candidate created on its own branch with no G2B–G6 promotion.
+
+**2026-10-22 — PR #122 protected MERGED :** exact head `1ade25c7b8c500d712c452a08d90ed26a1ffbe89`, CI source #39717330885 SUCCESS (74 Windows steps; 128 Rust; 53 handoff), `main=52b06099ba0cff0da15fa697b0e2043afc883a00`, postmain CI #39718851557 IN_PROGRESS_AT_CHECKPOINT. Stage6 imported successor revocation remains Rust test-only + RAM; no real G2B–G6 authority or recursion.
