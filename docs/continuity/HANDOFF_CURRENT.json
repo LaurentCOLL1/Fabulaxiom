@@ -3,14 +3,14 @@
   "as_of": "2026-10-22",
   "status_kind": "DATED_PUBLIC_SOURCE_HANDOFF_ONLY",
   "repository": "LaurentCOLL1/Fabulaxiom",
-  "last_confirmed_main_before_handoff": "37d8aa100e9d6fe61bbe6650f554a147661e703e",
-  "last_confirmed_merged_pr": 131,
-  "last_verified_pr_head": "6b1973e077e90885d326cb5acbb2358368523bd2",
+  "last_confirmed_main_before_handoff": "202152a3e502b08e6b7b77344769b6b0a1ea76bf",
+  "last_confirmed_merged_pr": 132,
+  "last_verified_pr_head": "0ccc9af60075e90942d6e0bd7e2f92694bbe4876",
   "last_verified_ci": {
-    "run_id": 39770785693,
+    "run_id": 39776896152,
     "context": "Windows frontend and Rust checks",
     "conclusion": "SUCCESS",
-    "source": "PR131_EXACT_HEAD"
+    "source": "PR132_EXACT_HEAD"
   },
   "recent_changes": [
     "PR_85_EXACT_G2A_TEXT_AST_ONLY",
@@ -98,7 +98,11 @@
     "2026_10_22_PR129_PROTECTED_MERGED_MAIN_8F4B84BD_POSTMAIN_39758153975_SUCCESS_TERMINAL_DOCS_ONLY",
     "2026_10_22_PR130_PROTECTED_MERGED_MAIN_8F330A4F_SOURCE_CI_39764830760_SUCCESS_POSTMAIN_PENDING_AT_CHECKPOINT",
     "2026_10_22_NEW_CANDIDATE_FICTIONAL_CORRECTION_PREDECESSOR_VISIBLE_ONLY_NOT_QUALIFIED",
-    "2026_10_22_PR131_PROTECTED_MERGED_MAIN_37D8AA10_FICTIONAL_PREDECESSOR_ONLY_CI39770785693_SUCCESS"
+    "2026_10_22_PR131_PROTECTED_MERGED_MAIN_37D8AA10_FICTIONAL_PREDECESSOR_ONLY_CI39770785693_SUCCESS",
+    "2026_10_22_PR132_PROTECTED_MERGED_MAIN_202152A3_SOURCE_39776896152_SUCCESS_POSTMAIN_39778720560_SUCCESS",
+    "2026_10_22_OWNER_REPORTED_G2B_DISCOVERY_MARKER_METADATA_FILEID_OBSERVATIONS_PARTIAL_ONLY",
+    "2026_10_22_NEW_G2B_SYNTHETIC_SHARE_ALL_MUTABLE_BYTES_COUNTEREXAMPLE_NEW_EXACT_HEAD_CI_REQUIRED",
+    "2026_10_22_PR133_FIRST_CI_FAIL_TEST08_ATTRIBUTE_ONLY_SHARE_READ_DID_NOT_BLOCK_WRITER_CORRECTED_NEGATIVE_ASSERTION"
   ],
   "pr35": "OPEN_DRAFT",
   "issues": {
@@ -284,15 +288,15 @@
     "verified_bypass_actors": 0,
     "classic_branch_protection_read": "403_INTEGRATION_RESTRICTED"
   },
-  "next": "VERIFY_PR131_POSTMAIN_EXACT_SHA_TERMINAL; KEEP_M32_REAL_GATES_STOP; PLAN_SEPARATE_FICTIONAL_ONLY_DEVELOPMENT",
+  "next": "QUALIFY_SOURCE_ONLY_G2B_FILEID_WRITER_COUNTEREXAMPLE_AT_NEW_SHA; KEEP_REAL_G2C_G3_STOP; NO_OPERATOR_FILE_OPEN",
   "live_refetch_required": true,
   "hand_off_updated_by_future_pr": true,
   "main_ci_post_merge": {
-    "sha": "37d8aa100e9d6fe61bbe6650f554a147661e703e",
-    "run_id": 39776433056,
-    "conclusion": "IN_PROGRESS_AT_CHECKPOINT",
+    "sha": "202152a3e502b08e6b7b77344769b6b0a1ea76bf",
+    "run_id": 39778720560,
+    "conclusion": "SUCCESS",
     "source": "MAIN_PUSH",
-    "note": "Dated snapshot at PR132 preparation; new independently re-fetched terminal observation must not rewrite historical snapshot"
+    "note": "2026-10-22 independently verified post PR132 CI terminal exact SHA; not operator or product acceptance"
   },
   "g2a_candidate_ci": {
     "pr": 86,
@@ -735,6 +739,33 @@
       "g2b_to_g6": "NOT_AUTHORIZED",
       "editing_authorized": false,
       "global_chronology_inferred": false
+    },
+    "test_only_g2b_win32_share_all_writer_counterexample": {
+      "status": "SOURCE_CANDIDATE_NEW_EXACT_HEAD_CI_REQUIRED_NO_PRODUCT_AUTHORITY",
+      "doc": "docs/qualification/M3_2_G2B_WIN32_FILEID_WRITER_COUNTEREXAMPLE.md",
+      "tests": "tools/test_m32_g2b_fileid_writer_counterexample.py",
+      "workflow": ".github/workflows/m0-ci.yml",
+      "test_count": 8,
+      "windows_toy_count": 4,
+      "pure_refusal_count": 4,
+      "fixture": "DISPOSABLE_NON_SQLITE_BYTES_ONLY_GITHUB_ACTIONS_WINDOWS",
+      "real_sqlite_access": "NONE",
+      "marker_content_access": "NONE",
+      "operator_path_support": "NONE",
+      "historical": "PENDING_EXTERNAL_ATTESTATION(21/3/2)",
+      "prospective": "NOT_STARTED",
+      "writer_absence": "NOT_PROVEN",
+      "g2c": "NOT_AUTHORIZED",
+      "real_g3": "STOP_UNAVAILABLE",
+      "real_g3_authorized": false,
+      "first_ci": {
+        "run_id": 39835364262,
+        "conclusion": "FAILURE",
+        "failure": "TEST08_EXPECTED_SHARING_VIOLATION_BUT_FILE_READ_ATTRIBUTES_SHARE_READ_PERMITTED_GENERIC_WRITE",
+        "lesson": "OBSERVED_NEGATIVE_COUNTEREXAMPLE",
+        "new_exact_head_ci_required": true
+      },
+      "corrected_test_08": "ATTRIBUTE_ONLY_SHARE_READ_DID_NOT_EXCLUDE_NEW_GENERIC_WRITE_IN_WINDOWS_CI_TOY"
     }
   },
   "post_pr100_normalization": {
@@ -1446,5 +1477,92 @@
     "normal_runtime_sqlite_schema_max": 6,
     "real_sqlite_access": "NONE",
     "tauri_writer_ipc": "NONE"
+  },
+  "post_pr131_postmain_terminal_observation": {
+    "kind": "DATED_LATER_RECHECK_NOT_RETROACTIVE_MUTATION",
+    "source_pr": 131,
+    "merge_sha": "37d8aa100e9d6fe61bbe6650f554a147661e703e",
+    "run_id": 39776433056,
+    "conclusion": "SUCCESS",
+    "operator_execution": "NONE",
+    "product_status": "IN_PROGRESS_NOT_ACCEPTED"
+  },
+  "post_pr132_normalization": {
+    "kind": "DATED_DOCUMENTARY_ONLY_NO_RUNTIME_AUTHORITY",
+    "merged_pr": 132,
+    "merge_sha": "202152a3e502b08e6b7b77344769b6b0a1ea76bf",
+    "pr_head_sha": "0ccc9af60075e90942d6e0bd7e2f92694bbe4876",
+    "pr_ci": {
+      "run_id": 39776896152,
+      "conclusion": "SUCCESS",
+      "job_steps": 74,
+      "handoff_tests": 66,
+      "rust_tests": 132,
+      "chromium_normal": 53,
+      "chromium_strict_csp": 53
+    },
+    "main_ci": {
+      "run_id": 39778720560,
+      "conclusion": "SUCCESS"
+    },
+    "product_status": "IN_PROGRESS_NOT_ACCEPTED",
+    "real_writer_absence": "NOT_PROVEN",
+    "g2b_to_g6": "NOT_AUTHORIZED",
+    "real_g3": "STOP_UNAVAILABLE",
+    "historical": "PENDING_EXTERNAL_ATTESTATION(21/3/2)",
+    "prospective": "NOT_STARTED",
+    "runtime_app_mount": "NONE",
+    "real_sqlite_access": "NONE",
+    "tauri_writer_ipc": "NONE",
+    "operator_execution": "NONE"
+  },
+  "g2b_owner_reported_oct22": {
+    "kind": "OWNER_REPORTED_SANITIZED_STDOUT_NOT_INDEPENDENTLY_ATTESTED",
+    "observations": [
+      {
+        "name": "DISCOVERY",
+        "result": "PASS_METADATA_ONLY",
+        "restored_candidates": 1,
+        "activation_markers": 1,
+        "isolated_file": "PRESENT",
+        "prod_sidecars_seen": 0
+      },
+      {
+        "name": "MARKER",
+        "result": "PASS_OBSERVATION_ONLY",
+        "target_match": true,
+        "selected_db_sidecars_seen": 0,
+        "isolated_db_sidecars_seen": 0
+      },
+      {
+        "name": "METADATA",
+        "result": "PASS_OBSERVATION_ONLY",
+        "files": 3,
+        "volume": "FIXED_NTFS",
+        "acl": "READABLE",
+        "reparse_points": "NONE_OBSERVED",
+        "two_sample_stability": "PASS"
+      },
+      {
+        "name": "WIN32_FILE_ID",
+        "result": "PASS_OBSERVATION_ONLY",
+        "files": 3,
+        "ancestor_handles": "OBSERVED",
+        "reparse_points": "NONE_OBSERVED",
+        "two_handle_identity": "STABLE",
+        "share_mode": "FILE_SHARE_READ|WRITE|DELETE",
+        "access": "FILE_READ_ATTRIBUTES"
+      }
+    ],
+    "original_sqlite_opened": false,
+    "header_or_sql_version_verified": false,
+    "strong_historic_source_authentication": false,
+    "continuous_writer_exclusion": "NOT_PROVEN",
+    "global_g2b_acceptance": "NOT_ACCEPTED",
+    "g2c": "NOT_AUTHORIZED",
+    "real_g3": "STOP_UNAVAILABLE",
+    "operator_paths_published": false,
+    "marker_contents_published": false,
+    "original_files_in_ci": "NONE"
   }
 }
