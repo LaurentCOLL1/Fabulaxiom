@@ -734,20 +734,59 @@ class HandoffContractTests(unittest.TestCase):
 
     def test_51_pr120_merged_with_terminal_exact_main_ci_no_operator_authority(self):
         x = self.data["post_pr120_normalization"]
-        self.assertEqual(self.data["last_confirmed_merged_pr"], 120)
-        self.assertEqual(self.data["last_confirmed_main_before_handoff"], x["merge_sha"])
-        self.assertEqual(self.data["last_verified_pr_head"], x["pr_head_sha"])
-        self.assertEqual(self.data["last_verified_ci"]["run_id"], 39685054113)
+        self.assertEqual(x["merged_pr"], 120)
+        self.assertEqual(x["merge_sha"], "01766707a347a269b283c2aa7ea02f44979759e9")
+        self.assertEqual(x["pr_head_sha"], "f7ef3ceeaee40bb90e1cb9fe180121f11867fc28")
+        self.assertEqual(x["pr_ci"]["run_id"], 39685054113)
         self.assertEqual(x["pr_ci"]["conclusion"], "SUCCESS")
         self.assertEqual(x["pr_ci"]["job_steps"], 74)
         self.assertEqual(x["main_ci"]["run_id"], 39686405108)
         self.assertEqual(x["main_ci"]["conclusion"], "SUCCESS")
-        self.assertEqual(self.data["main_ci_post_merge"]["sha"], x["merge_sha"])
+        self.assertEqual(x["main_ci"]["conclusion"], "SUCCESS")
         self.assertEqual(x["real_writer_absence"], "NOT_PROVEN")
         self.assertEqual(x["g2b_to_g6"], "NOT_AUTHORIZED")
         self.assertEqual(x["real_g3"], "STOP_UNAVAILABLE")
         self.assertEqual(x["operator_execution"], "NONE")
         self.assertIn("PR #120 fusionnée", self.doc)
+
+
+    def test_52_pr121_merged_documentary_only_and_no_operator_promotion(self):
+        x = self.data["post_pr121_normalization"]
+        self.assertEqual(self.data["last_confirmed_merged_pr"], 121)
+        self.assertEqual(self.data["last_confirmed_main_before_handoff"], x["merge_sha"])
+        self.assertEqual(self.data["last_verified_pr_head"], x["pr_head_sha"])
+        self.assertEqual(x["merge_sha"], "08caad24e20eae484e94fd084edb487b5c370bd5")
+        self.assertEqual(x["pr_ci"]["run_id"], 39713440057)
+        self.assertEqual(x["pr_ci"]["conclusion"], "SUCCESS")
+        self.assertEqual(x["pr_ci"]["job_steps"], 74)
+        self.assertEqual(x["main_ci"]["run_id"], 39716352685)
+        self.assertEqual(self.data["main_ci_post_merge"]["sha"], x["merge_sha"])
+        self.assertEqual(x["operator_execution"], "NONE")
+        self.assertEqual(x["real_writer_absence"], "NOT_PROVEN")
+        self.assertEqual(x["g2b_to_g6"], "NOT_AUTHORIZED")
+        self.assertEqual(x["real_g3"], "STOP_UNAVAILABLE")
+        self.assertIn("PR #121", self.doc)
+
+    def test_53_terminal_successor_revocation_requires_ram_fixtures_and_stops(self):
+        x = self.data["m3_2_product_progress"]["test_only_rust_sixth_stage"]
+        self.assertEqual(x["status"], "CANDIDATE_NOT_CI_QUALIFIED")
+        self.assertTrue(x["compiled_only_during_tests"])
+        self.assertEqual(x["new_rust_tests"], 3)
+        self.assertEqual(x["auto_migration_max"], 6)
+        self.assertEqual(x["tauri_writer_ipc"], "NONE")
+        self.assertEqual(x["real_sqlite_access"], "NONE")
+        self.assertEqual(x["chain_promotion"], "NONE")
+        self.assertEqual(x["g2b_to_g6"], "NOT_AUTHORIZED")
+        source = (ROOT / "src-tauri/src/m32_manual_chronology.rs").read_text(encoding="utf-8")
+        for method in x["functions"]:
+            self.assertIn("pub fn " + method, source)
+        self.assertIn("db.execute_batch(M32_SUCCESSOR_REVOCATIONS)", source)
+        self.assertNotIn("#[tauri::command]", source)
+        schema = (ROOT / x["sql_candidate"]).read_text(encoding="utf-8")
+        self.assertIn("Test-only append-only retirement", schema)
+        self.assertIn("successor revocation immutable", schema)
+        self.assertNotIn("schema_migrations", schema)
+        self.assertEqual(self.data["g2a"]["absence_of_sqlite_writer"], "NOT_PROVEN")
 
     def test_24_policy_requires_refetch_and_same_pr_handoff(self):
         for clause in ("Re-fetch", "HANDOFF_CURRENT.md", "HANDOFF_CURRENT.json",
