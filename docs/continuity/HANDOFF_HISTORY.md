@@ -105,3 +105,5 @@ Les blocages externes (issues #36/#38) demeurent. Les détails techniques de la 
 **2026-10-22 — PR #123 MERGED** `main=a3c4112b335bba69e3d5d4fa4673ae05f1a57241`; source CI #39719646691 attempt 2 SUCCESS (74 Windows, 128 Rust, 54 handoff). CI postmain #39720904972 IN_PROGRESS at checkpoint. Stage8 source-only RAM chain candidate on separate branch; no operator gates promoted.
 
 **2026-10-22 — PR #124 protected MERGED:** source `1fdbe18b163dc8caa48bfde439a36b93b81c848a`, CI #39721484412 completed/SUCCESS (74 Windows steps, 132 Rust, 56 handoff), `main=db09722076561d35dcc0fe3495e21cf0d0ceef9f`, push CI #39723495236 IN_PROGRESS_AT_CHECKPOINT. Recursive corrections solely fictional RAM, no real operator G2B-G6 authority.
+
+**2026-10-22 — PR #125 protected MERGED:** source `8ce7bb3ae2295662dfba8f4b5961f9394f1e771f`, CI #39723734278 completed/SUCCESS (74 Windows, 132 Rust, 57 handoff), `main=4b14afbc7fe8de607429e795b656179724d7ee7f`; postmain CI #39726331901 IN_PROGRESS_AT_CHECKPOINT. Only source-only M3.2 continuity, no operator authority.
