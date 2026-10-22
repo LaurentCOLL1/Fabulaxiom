@@ -103,3 +103,5 @@ Les blocages externes (issues #36/#38) demeurent. Les détails techniques de la 
 **2026-10-22 — PR #122 post-main revalidated terminally:** [CI #39718851557](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/39718851557) completed/SUCCESS, Windows 74/74 job steps at exact protected `main=52b06099ba0cff0da15fa697b0e2043afc883a00`; none of this attests the real operator SQLite or unlocks G2B–G6.
 
 **2026-10-22 — PR #123 MERGED** `main=a3c4112b335bba69e3d5d4fa4673ae05f1a57241`; source CI #39719646691 attempt 2 SUCCESS (74 Windows, 128 Rust, 54 handoff). CI postmain #39720904972 IN_PROGRESS at checkpoint. Stage8 source-only RAM chain candidate on separate branch; no operator gates promoted.
+
+**2026-10-22 — PR #124 protected MERGED:** source `1fdbe18b163dc8caa48bfde439a36b93b81c848a`, CI #39721484412 completed/SUCCESS (74 Windows steps, 132 Rust, 56 handoff), `main=db09722076561d35dcc0fe3495e21cf0d0ceef9f`, push CI #39723495236 IN_PROGRESS_AT_CHECKPOINT. Recursive corrections solely fictional RAM, no real operator G2B-G6 authority.

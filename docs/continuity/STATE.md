@@ -1,5 +1,10 @@
 # Fabulaxiom — Current State
 
+**22 octobre 2026 — PR #124 MERGED :** source `1fdbe18b163dc8caa48bfde439a36b93b81c848a`, CI [#39721484412](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/39721484412) **SUCCESS** (74 étapes Windows, 132 Rust, 56 contrats, Chromium 50/50 normal et 50/50 CSP), fusion `main=db09722076561d35dcc0fe3495e21cf0d0ceef9f`. CI push [#39723495236](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/39723495236) `IN_PROGRESS_AT_CHECKPOINT`, re-fetch terminal obligatoire. Septième tranche historique de chaîne récursive en Rust `#[cfg(test)]` et SQLite exclusivement en mémoire, SQL candidat sans migration ni IPC.
+
+**Barrières inchangées :** M3.2 `IN_PROGRESS_NOT_ACCEPTED`, absence d'écrivain réel `NOT_PROVEN`, G2B–G6 `NOT_AUTHORIZED`, vrai G3 `STOP_UNAVAILABLE`, historique `PENDING_EXTERNAL_ATTESTATION(21/3/2)`, prospective `NOT_STARTED`, PR #35 historique OPEN/DRAFT. Aucune intervention Windows, bases originales v6/v7, backups/ACL/sidecars/marker, migration 007, writer IPC, M3.3, ComfyUI ni release. Maintenir parallélisme uniquement pour flux indépendants, et séries de commits/merges.
+
+
 **22 octobre 2026 — PR #123 MERGED :** CI source #39719646691 tentative 2 SUCCESS 74/74 Windows, 128 Rust, 54 handoff, Chromium normal/CSP 50/50. `main=a3c4112b335bba69e3d5d4fa4673ae05f1a57241` protégé ; CI post-main #39720904972 IN_PROGRESS_AT_CHECKPOINT, re-fetch terminal obligatoire. Nouvelle tranche 8 candidate séparée : chaînes append-only, Rust `#[cfg(test)]` et SQLite uniquement RAM, 4 tests fictifs ; aucune autorisation produit.
 
 **STOP inchangé :** M3.2 IN_PROGRESS_NOT_ACCEPTED ; writer absence NOT_PROVEN ; G2B–G6 NOT_AUTHORIZED ; G3 réel STOP_UNAVAILABLE ; historique PENDING_EXTERNAL_ATTESTATION(21/3/2) ; prospective NOT_STARTED ; PR #35 OPEN/DRAFT. Aucune base Windows v6/v7, backups, ACL/sidecars/marker, migration 007, IPC writer, M3.3, ComfyUI ou release. Paralléliser les travaux indépendants, sérialiser les merges et décisions de sécurité.
