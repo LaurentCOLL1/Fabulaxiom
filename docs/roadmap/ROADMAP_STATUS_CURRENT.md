@@ -1,5 +1,12 @@
 # Fabulaxiom — suivi de la roadmap V1 (état actualisé au 21 octobre 2026)
 
+**22 octobre 2026 — PR #133 protégée MERGED :** source corrigée `d2bf3134054c4f1a05432c51055134fec7b4a0b2`, [CI Windows source #39835840939](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/39835840939) terminale SUCCESS (8 contre-exemples Win32 fictifs, 68 contrats handoff, 132 Rust, Chromium 53/53 normal et CSP). Premier essai [#39835364262](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/39835364262) FAILURE conservé : handle `FILE_READ_ATTRIBUTES / FILE_SHARE_READ` n'interdit pas le nouveau `GENERIC_WRITE` sur fichier fictif ; assertion négative corrigée. Fusion `main=604817c8457aaf7136f587aaaff28ff862e2702a`, [CI post-main #39837202639](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/39837202639) `IN_PROGRESS_AT_CHECKPOINT` lors de cette normalisation ; re-fetch terminal indépendant requis, sans modifier rétroactivement cet instantané.
+
+**G2B local — preuves opérateur limitées :** quatre sorties anonymisées fournies par le propriétaire (discovery, marqueur M1.5, métadonnées NTFS, FileIdInfo). Les résultats sont des observations non attestées indépendamment, sans version SQL ni démonstration de quiescence. Les tests CI sont uniquement sur octets fictifs temporaires non-SQLite ; ils montrent qu'un FileId stable ne prouve PAS l'absence d'écrivain. Les chemins, identifiants et contenus privés n'ont pas été publiés.
+
+**STOP :** M3.2 `IN_PROGRESS_NOT_ACCEPTED`, G2B global `NOT_ACCEPTED`, writer réel `NOT_PROVEN`, G2C et G2B–G6 `NOT_AUTHORIZED`, G3 `STOP_UNAVAILABLE`, historique `PENDING_EXTERNAL_ATTESTATION(21/3/2)`, prospective `NOT_STARTED`, PR #35 DRAFT ; pas de SQLite protégée v6/v7, sauvegardes, ACL, sidecars, marqueurs, commandes Windows opérateur, migration 007, writer IPC, M3.3, ComfyUI ou release. Paralléliser lectures indépendantes ; sérialiser écritures et fusions.
+
+
 **Résultat contradictoire réel de CI fictive PR #133 :** [CI #39835364262](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/39835364262) a échoué sur la **supposition** que `FILE_READ_ATTRIBUTES / FILE_SHARE_READ` bloquait un nouveau `GENERIC_WRITE`. L'ouverture concurrente a au contraire **réussi** sur le fichier temporaire Windows. Le test 08 est corrigé pour affirmer le comportement réellement observé (sans rendre possible l'accès aux originaux). La CI précédente est invalidée, nouvelle qualification au SHA corrigé obligatoire ; writer réel `NOT_PROVEN`, G2C `NOT_AUTHORIZED`, G3 `STOP_UNAVAILABLE`.
 
 
