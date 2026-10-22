@@ -806,8 +806,36 @@ async function run() {
         .innerText()).includes("indéterminé entre romans distincts"));
       assert.ok((await proof.innerText()).includes("Révélation au lecteur non renseignée"));
     });
-    assert.equal(cases.length, 50);
-    console.log("M32_BROWSER_REAL_CHROMIUM_PASS 50/50");
+    await caseRun("51-fictional-correction-history-readonly-three-generations", async () => {
+      await page.getByRole("button", { name: "Afficher l'historique fictif des corrections" }).click();
+      const history = page.getByRole("region", {
+        name: "Historique fictif des corrections chronologiques",
+      });
+      assert.equal(await history.getByRole("listitem").count(), 3);
+      assert.ok((await history.innerText()).includes("fiction-chain-2"));
+      assert.ok((await history.innerText()).includes("correction retirée"));
+      assert.ok((await history.innerText()).includes("Correction active : fiction-chain-2"));
+      assert.equal(await history.getByRole("button").count(), 0);
+    });
+    await caseRun("52-fictional-correction-history-other-world-no-leak", async () => {
+      await page.getByRole("button", { name: "Charger un autre univers fictif" }).click();
+      await page.getByRole("button", { name: "Afficher l'historique fictif des corrections" }).click();
+      const history = page.getByRole("region", {
+        name: "Historique fictif des corrections chronologiques",
+      });
+      assert.ok((await history.innerText()).includes("Aucune correction fictive"));
+      assert.ok(!(await history.innerText()).includes("fiction-chain-2"));
+    });
+    await caseRun("53-fictional-correction-history-cycle-fails-closed", async () => {
+      await page.getByRole("button", { name: "Charger un cycle fictif invalide" }).click();
+      await page.getByRole("button", { name: "Afficher l'historique fictif des corrections" }).click();
+      const alert = page.getByRole("alert", { name: "Historique fictif rejeté" });
+      assert.equal(await alert.count(), 1);
+      assert.ok((await alert.innerText()).includes("Historique de corrections refusé"));
+      assert.equal(await page.getByText("fiction-chain-2", { exact: true }).count(), 0);
+    });
+    assert.equal(cases.length, 53);
+    console.log("M32_BROWSER_REAL_CHROMIUM_PASS 53/53");
     // Actual Chromium enforced-CSP veto, separate from the 36
     // fictional interaction cases. Never make an off-loopback network call.
     const cspVeto = await page.evaluate(async () => {

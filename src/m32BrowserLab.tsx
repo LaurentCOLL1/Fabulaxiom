@@ -6,6 +6,7 @@ import M32SyntheticEventExplorer from "./M32SyntheticEventExplorer";
 import M32ManualChronologyLab from "./M32ManualChronologyLab";
 import type { M32ChronologyProjection } from "./M32ChronologyPreview";
 import type { FictionalRevision } from "./m32FictionalManualChronology";
+import M32FictionalCorrectionHistory, { type M32FictionalCorrectionRow } from "./M32FictionalCorrectionHistory";
 
 /** DISPOSABLE FICTITIOUS BROWSER TEST PAGE. NOT an App.tsx import or Tauri route.
  * No original user data, IPC, storage, fetch or filesystem reads.
@@ -89,10 +90,37 @@ const cyclic: M32ChronologyProjection = {
   }],
 };
 
+/** Invented immutable descendants only, not a real SQLite history. */
+const inventedCorrections: readonly M32FictionalCorrectionRow[] = [
+  {
+    id: "fiction-successor", universe_id: "fiction-world-one", kind: "successor",
+    prior_successor_id: null, prior_chain_id: null,
+    before_anchor_id: "A", after_anchor_id: "B", reason: "Reformulation humaine fictive",
+    revocation_id: "fiction-withdraw-1", revocation_reason: "Auteur a retiré l'assertion",
+  },
+  {
+    id: "fiction-chain-1", universe_id: "fiction-world-one", kind: "chain",
+    prior_successor_id: "fiction-successor", prior_chain_id: null,
+    before_anchor_id: "B", after_anchor_id: "C", reason: "Correction explicite",
+    revocation_id: "fiction-withdraw-2", revocation_reason: "Auteur a révisé son ordre",
+  },
+  {
+    id: "fiction-chain-2", universe_id: "fiction-world-one", kind: "chain",
+    prior_successor_id: null, prior_chain_id: "fiction-chain-1",
+    before_anchor_id: "C", after_anchor_id: "D", reason: "Dernier ordre humain fictif",
+    revocation_id: null, revocation_reason: null,
+  },
+];
+const invalidCorrectionCycle: readonly M32FictionalCorrectionRow[] = [
+  inventedCorrections[0],
+  { ...inventedCorrections[1], prior_successor_id: null, prior_chain_id: "fiction-chain-1" },
+  inventedCorrections[2],
+];
+
 type Scenario = "one" | "two" | "cyclic";
 function BrowserFixture() {
   const [scenario, setScenario] = useState<Scenario>("one");
-  const [mode, setMode] = useState<"consultation" | "explorer" | "editor">("consultation");
+  const [mode, setMode] = useState<"consultation" | "explorer" | "editor" | "history">("consultation");
   const snapshot = scenario === "two" ? second : scenario === "cyclic" ? cyclic : first;
   return <main aria-label="Laboratoire navigateur M3.2 exclusivement fictif">
     <h1>Tests navigateur — données imaginaires exclusivement</h1>
@@ -117,8 +145,15 @@ function BrowserFixture() {
       <button type="button" onClick={() => setMode("editor")}>
         Ouvrir l'atelier manuel fictif
       </button>
+      <button type="button" onClick={() => setMode("history")}>
+        Afficher l'historique fictif des corrections
+      </button>
     </section>
-    {mode === "editor"
+    {mode === "history"
+      ? <M32FictionalCorrectionHistory expectedUniverseId={snapshot.universe_id}
+          records={scenario === "two" ? [] : scenario === "cyclic"
+            ? invalidCorrectionCycle : inventedCorrections} />
+      : mode === "editor"
       ? <M32ManualChronologyLab key={scenario} initial={snapshot}
           revisions={scenario === "two" ? [] : fictionalRevisions} />
       : mode === "consultation" ? <M32SyntheticConsultationLab
