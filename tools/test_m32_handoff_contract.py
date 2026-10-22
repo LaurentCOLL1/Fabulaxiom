@@ -815,9 +815,9 @@ class HandoffContractTests(unittest.TestCase):
 
     def test_55_pr123_documentary_normalization_passed_no_windows_gates(self):
         x = self.data["post_pr123_normalization"]
-        self.assertEqual(self.data["last_confirmed_merged_pr"], 123)
-        self.assertEqual(self.data["last_confirmed_main_before_handoff"], x["merge_sha"])
-        self.assertEqual(self.data["last_verified_pr_head"], x["pr_head_sha"])
+        self.assertEqual(x["merged_pr"], 123)
+        self.assertEqual(x["merge_sha"], "a3c4112b335bba69e3d5d4fa4673ae05f1a57241")
+        self.assertEqual(x["pr_head_sha"], "f72f1dd51d50661af7dfab39f4059e7a25940472")
         self.assertEqual(x["merge_sha"], "a3c4112b335bba69e3d5d4fa4673ae05f1a57241")
         self.assertEqual(x["pr_ci"]["run_id"], 39719646691)
         self.assertEqual(x["pr_ci"]["attempt"], 2)
@@ -826,7 +826,7 @@ class HandoffContractTests(unittest.TestCase):
         self.assertEqual(x["pr_ci"]["rust_tests"], 128)
         self.assertEqual(x["pr_ci"]["handoff_tests"], 54)
         self.assertEqual(x["main_ci"]["run_id"], 39720904972)
-        self.assertEqual(self.data["main_ci_post_merge"]["sha"], x["merge_sha"])
+        self.assertEqual(x["main_ci"]["conclusion"], "SUCCESS")
         self.assertEqual(x["operator_execution"], "NONE")
         self.assertEqual(x["real_writer_absence"], "NOT_PROVEN")
         self.assertEqual(x["g2b_to_g6"], "NOT_AUTHORIZED")
@@ -835,7 +835,7 @@ class HandoffContractTests(unittest.TestCase):
 
     def test_56_recursive_chain_candidate_is_ram_only_and_not_product_authority(self):
         x = self.data["m3_2_product_progress"]["test_only_rust_seventh_stage"]
-        self.assertEqual(x["status"], "CANDIDATE_NOT_CI_QUALIFIED")
+        self.assertEqual(x["status"], "MERGED_TEST_ONLY_NOT_PRODUCT_ACCEPTED")
         self.assertTrue(x["compiled_only_during_tests"])
         self.assertEqual(x["new_rust_tests"], 4)
         self.assertEqual(x["auto_migration_max"], 6)
@@ -853,6 +853,29 @@ class HandoffContractTests(unittest.TestCase):
         self.assertIn("stage 8: recursive append-only correction lineage", schema)
         self.assertNotIn("schema_migrations", schema)
         self.assertEqual(self.data["g2a"]["absence_of_sqlite_writer"], "NOT_PROVEN")
+
+
+    def test_57_pr124_protected_merge_only_fictional_ram_and_stops(self):
+        x = self.data["post_pr124_normalization"]
+        self.assertEqual(self.data["last_confirmed_merged_pr"], 124)
+        self.assertEqual(self.data["last_confirmed_main_before_handoff"], x["merge_sha"])
+        self.assertEqual(self.data["last_verified_pr_head"], x["pr_head_sha"])
+        self.assertEqual(x["merge_sha"], "db09722076561d35dcc0fe3495e21cf0d0ceef9f")
+        self.assertEqual(x["pr_head_sha"], "1fdbe18b163dc8caa48bfde439a36b93b81c848a")
+        self.assertEqual(x["pr_ci"]["run_id"], 39721484412)
+        self.assertEqual(x["pr_ci"]["conclusion"], "SUCCESS")
+        self.assertEqual(x["pr_ci"]["job_steps"], 74)
+        self.assertEqual(x["pr_ci"]["rust_tests"], 132)
+        self.assertEqual(x["pr_ci"]["handoff_tests"], 56)
+        self.assertEqual(x["main_ci"]["run_id"], 39723495236)
+        self.assertEqual(self.data["main_ci_post_merge"]["sha"], x["merge_sha"])
+        self.assertEqual(x["operator_execution"], "NONE")
+        self.assertEqual(x["real_writer_absence"], "NOT_PROVEN")
+        self.assertEqual(x["g2b_to_g6"], "NOT_AUTHORIZED")
+        self.assertEqual(x["real_g3"], "STOP_UNAVAILABLE")
+        self.assertEqual(x["normal_runtime_sqlite_schema_max"], 6)
+        self.assertEqual(x["tauri_writer_ipc"], "NONE")
+        self.assertIn("PR #124", self.doc)
 
     def test_24_policy_requires_refetch_and_same_pr_handoff(self):
         for clause in ("Re-fetch", "HANDOFF_CURRENT.md", "HANDOFF_CURRENT.json",

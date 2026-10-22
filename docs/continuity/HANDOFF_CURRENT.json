@@ -3,15 +3,14 @@
   "as_of": "2026-10-22",
   "status_kind": "DATED_PUBLIC_SOURCE_HANDOFF_ONLY",
   "repository": "LaurentCOLL1/Fabulaxiom",
-  "last_confirmed_main_before_handoff": "a3c4112b335bba69e3d5d4fa4673ae05f1a57241",
-  "last_confirmed_merged_pr": 123,
-  "last_verified_pr_head": "f72f1dd51d50661af7dfab39f4059e7a25940472",
+  "last_confirmed_main_before_handoff": "db09722076561d35dcc0fe3495e21cf0d0ceef9f",
+  "last_confirmed_merged_pr": 124,
+  "last_verified_pr_head": "1fdbe18b163dc8caa48bfde439a36b93b81c848a",
   "last_verified_ci": {
-    "run_id": 39719646691,
-    "attempt": 2,
+    "run_id": 39721484412,
     "context": "Windows frontend and Rust checks",
     "conclusion": "SUCCESS",
-    "source": "PR123_EXACT_HEAD"
+    "source": "PR124_EXACT_HEAD"
   },
   "recent_changes": [
     "PR_85_EXACT_G2A_TEXT_AST_ONLY",
@@ -87,7 +86,8 @@
     "2026_10_22_PR121_MERGED_MAIN_08CAAD24_STAGE7_REVOCATION_RAM_ONLY_CANDIDATE",
     "2026_10_22_PR122_MERGED_MAIN_52B06099_RAM_ONLY_IMMUTABLE_SUCCESSOR_REVOCATION",
     "2026_10_22_PR122_POSTMAIN_CI_39718851557_TERMINAL_SUCCESS_EXACT_MERGE_SHA",
-    "2026_10_22_PR123_MERGED_MAIN_A3C4112B_STAGE8_RAM_ONLY_NEW_SEPARATE_BRANCH"
+    "2026_10_22_PR123_MERGED_MAIN_A3C4112B_STAGE8_RAM_ONLY_NEW_SEPARATE_BRANCH",
+    "2026_10_22_PR124_MERGED_MAIN_DB097220_RAM_ONLY_APPEND_ONLY_RECURSIVE_CHAIN"
   ],
   "pr35": "OPEN_DRAFT",
   "issues": {
@@ -273,15 +273,15 @@
     "verified_bypass_actors": 0,
     "classic_branch_protection_read": "403_INTEGRATION_RESTRICTED"
   },
-  "next": "QUALIFY_STAGE8_RECURSIVE_CHAIN_SYNTHETIC_RAM_EXACT_PR_CI; NO_REAL_G2B_G6_AUTHORITY",
+  "next": "REQUALIFY_PR124_POSTMAIN_CI; PHASE_M3_2_REAL_RUNTIME_REMAINS_STOP_UNAUTHORIZED; READ_ROADMAP_AND_GATES",
   "live_refetch_required": true,
   "hand_off_updated_by_future_pr": true,
   "main_ci_post_merge": {
-    "sha": "a3c4112b335bba69e3d5d4fa4673ae05f1a57241",
-    "run_id": 39720904972,
+    "sha": "db09722076561d35dcc0fe3495e21cf0d0ceef9f",
+    "run_id": 39723495236,
     "conclusion": "IN_PROGRESS_AT_CHECKPOINT",
     "source": "MAIN_PUSH",
-    "note": "2026-10-22 GitHub exact main CI; terminal status must be re-fetched; synthetic, no Windows operator authority"
+    "note": "2026-10-22 GitHub post PR124 main CI exact SHA; re-fetch terminal; no operator authority"
   },
   "g2a_candidate_ci": {
     "pr": 86,
@@ -668,7 +668,7 @@
       "real_g3": "STOP_UNAVAILABLE"
     },
     "test_only_rust_seventh_stage": {
-      "status": "CANDIDATE_NOT_CI_QUALIFIED",
+      "status": "MERGED_TEST_ONLY_NOT_PRODUCT_ACCEPTED",
       "historical_source_pr": 35,
       "historical_source_sha": "41ce7b915e76d22785d53d7fffe288d113dd0bf5",
       "compiled_only_during_tests": true,
@@ -1128,7 +1128,8 @@
     },
     "main_ci": {
       "run_id": 39720904972,
-      "conclusion": "IN_PROGRESS_AT_CHECKPOINT"
+      "conclusion": "SUCCESS",
+      "job_steps": 74
     },
     "operator_execution": "NONE",
     "real_writer_absence": "NOT_PROVEN",
@@ -1136,5 +1137,32 @@
     "real_g3": "STOP_UNAVAILABLE",
     "fiction_only": true,
     "product_status": "IN_PROGRESS_NOT_ACCEPTED"
+  },
+  "post_pr124_normalization": {
+    "kind": "DATED_SOURCE_TEST_ONLY_NO_OPERATOR_AUTHORITY",
+    "merged_pr": 124,
+    "merge_sha": "db09722076561d35dcc0fe3495e21cf0d0ceef9f",
+    "pr_head_sha": "1fdbe18b163dc8caa48bfde439a36b93b81c848a",
+    "pr_ci": {
+      "run_id": 39721484412,
+      "conclusion": "SUCCESS",
+      "job_steps": 74,
+      "rust_tests": 132,
+      "handoff_tests": 56,
+      "chromium_normal": 50,
+      "chromium_strict_csp": 50
+    },
+    "main_ci": {
+      "run_id": 39723495236,
+      "conclusion": "IN_PROGRESS_AT_CHECKPOINT"
+    },
+    "fiction_only": true,
+    "operator_execution": "NONE",
+    "product_status": "IN_PROGRESS_NOT_ACCEPTED",
+    "real_writer_absence": "NOT_PROVEN",
+    "g2b_to_g6": "NOT_AUTHORIZED",
+    "real_g3": "STOP_UNAVAILABLE",
+    "normal_runtime_sqlite_schema_max": 6,
+    "tauri_writer_ipc": "NONE"
   }
 }
