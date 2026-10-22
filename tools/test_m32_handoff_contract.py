@@ -955,9 +955,9 @@ class HandoffContractTests(unittest.TestCase):
 
     def test_61_pr127_protected_merge_keeps_browser_history_outside_runtime(self):
         x = self.data["post_pr127_normalization"]
-        self.assertEqual(self.data["last_confirmed_merged_pr"], 127)
-        self.assertEqual(self.data["last_confirmed_main_before_handoff"], x["merge_sha"])
-        self.assertEqual(self.data["last_verified_pr_head"], x["pr_head_sha"])
+        self.assertEqual(x["merged_pr"], 127)
+        self.assertEqual(x["merge_sha"], "dd578161f1c84554c03434d0f1066f65d6e53dc6")
+        self.assertEqual(x["pr_head_sha"], "d71288e5f7a046c6e90131118de5cecd8a6ee5cb")
         self.assertEqual(x["merge_sha"], "dd578161f1c84554c03434d0f1066f65d6e53dc6")
         self.assertEqual(x["pr_head_sha"], "d71288e5f7a046c6e90131118de5cecd8a6ee5cb")
         self.assertEqual(x["pr_ci"]["run_id"], 39749304955)
@@ -969,7 +969,7 @@ class HandoffContractTests(unittest.TestCase):
         self.assertEqual(x["pr_ci"]["chromium_strict_csp"], 53)
         self.assertEqual(x["pr_ci"]["strict_pinned_fictional_blobs"], 11)
         self.assertEqual(x["main_ci"]["run_id"], 39750459759)
-        self.assertEqual(self.data["main_ci_post_merge"]["sha"], x["merge_sha"])
+        self.assertEqual(x["main_ci"]["conclusion"], "IN_PROGRESS_AT_CHECKPOINT")
         self.assertEqual(x["operator_execution"], "NONE")
         self.assertEqual(x["real_writer_absence"], "NOT_PROVEN")
         self.assertEqual(x["g2b_to_g6"], "NOT_AUTHORIZED")
@@ -978,6 +978,32 @@ class HandoffContractTests(unittest.TestCase):
         self.assertEqual(x["tauri_ipc"], "NONE")
         self.assertEqual(x["real_sqlite_access"], "NONE")
         self.assertIn("PR #127", self.doc)
+
+
+    def test_62_pr128_protected_documentary_normalization_not_operator_acceptance(self):
+        x = self.data["post_pr128_normalization"]
+        self.assertEqual(self.data["last_confirmed_merged_pr"], 128)
+        self.assertEqual(self.data["last_confirmed_main_before_handoff"], x["merge_sha"])
+        self.assertEqual(self.data["last_verified_pr_head"], x["pr_head_sha"])
+        self.assertEqual(x["merge_sha"], "593b39e531e2a93e2f334220f37f6d8ed9bf9c93")
+        self.assertEqual(x["pr_head_sha"], "ab5d7ed9cc0d9aafe4803d2b5b40d7b9bd23cabd")
+        self.assertEqual(x["pr_ci"]["run_id"], 39751125802)
+        self.assertEqual(x["pr_ci"]["conclusion"], "SUCCESS")
+        self.assertEqual(x["pr_ci"]["job_steps"], 74)
+        self.assertEqual(x["pr_ci"]["rust_tests"], 132)
+        self.assertEqual(x["pr_ci"]["handoff_tests"], 61)
+        self.assertEqual(x["pr_ci"]["chromium_normal"], 53)
+        self.assertEqual(x["pr_ci"]["chromium_strict_csp"], 53)
+        self.assertEqual(x["main_ci"]["run_id"], 39755042137)
+        self.assertEqual(self.data["main_ci_post_merge"]["sha"], x["merge_sha"])
+        self.assertEqual(x["operator_execution"], "NONE")
+        self.assertEqual(x["real_writer_absence"], "NOT_PROVEN")
+        self.assertEqual(x["g2b_to_g6"], "NOT_AUTHORIZED")
+        self.assertEqual(x["real_g3"], "STOP_UNAVAILABLE")
+        self.assertEqual(x["runtime_app_mount"], "NONE")
+        self.assertEqual(x["real_sqlite_access"], "NONE")
+        self.assertEqual(x["tauri_writer_ipc"], "NONE")
+        self.assertIn("PR #128", self.doc)
 
     def test_24_policy_requires_refetch_and_same_pr_handoff(self):
         for clause in ("Re-fetch", "HANDOFF_CURRENT.md", "HANDOFF_CURRENT.json",
