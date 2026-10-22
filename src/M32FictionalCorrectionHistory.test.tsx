@@ -85,6 +85,9 @@ describe("M3.2 browser-only fictional correction history", () => {
     expect(html).toContain("Historique fictif des corrections chronologiques");
     expect(html).toContain("correction active");
     expect(html).toContain("correction retirée");
+    expect(html).toContain("Corrige explicitement");
+    expect(html).toContain("ancienne assertion");
+    expect(html).toContain("Aucun ordre global déduit");
     expect(html).toContain("Aucun accès SQLite ni commande Tauri");
     expect(html).not.toContain("<button");
     expect(html).not.toContain("<input");
@@ -96,6 +99,7 @@ describe("M3.2 browser-only fictional correction history", () => {
     }));
     expect(bad).toContain("Historique de corrections refusé");
     expect(bad).not.toContain("s1");
+    expect(bad).not.toContain("ancienne assertion");
     expect(auditM32FictionalCorrectionChain("fabricated-two", []).active_id).toBeNull();
   });
 });

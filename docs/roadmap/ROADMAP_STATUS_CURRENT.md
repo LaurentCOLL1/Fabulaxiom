@@ -1,5 +1,12 @@
 # Fabulaxiom — suivi de la roadmap V1 (état actualisé au 21 octobre 2026)
 
+**22 octobre 2026 — PR #130 protégée MERGED :** source `f980e8e294f537f6b588ded56f6f79cc772558d6` ; [CI #39764830760](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/39764830760) terminale SUCCESS (74 étapes Windows, 132 Rust, 63 contrats, 53/53 Chromium normal et CSP) ; fusion `main=8f330a4feff30092847e5bf180160efed174ebdd`. [CI post-main #39769613787](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/39769613787) `IN_PROGRESS_AT_CHECKPOINT` ici : préserver cet instantané, vérifier le résultat terminal séparément.
+
+**Candidat suivant — source-only :** dans le navigateur fictif, afficher explicitement la correction précédente et son ancienne relation humaine `avant/après`, sans inférer de nouvelle chronologie. Tests existants renforcés ; qualification neuve obligatoire avant fusion. `App.tsx` et le runtime restent inchangés.
+
+**STOP strict :** M3.2 `IN_PROGRESS_NOT_ACCEPTED`, absence writer réel `NOT_PROVEN`, G2B–G6 `NOT_AUTHORIZED`, vrai G3 `STOP_UNAVAILABLE`, attestations `PENDING_EXTERNAL_ATTESTATION(21/3/2)`, prospective `NOT_STARTED`, PR #35 OPEN/DRAFT. Aucun Windows opérateur, SQLite originale v6/v7, backups, sidecars, ACL, marqueur, migration 007, writer IPC, M3.3, ComfyUI, release. Parallélisation seulement indépendante ; commits/merges séquentiels.
+
+
 **22 octobre 2026 — PR #129 MERGED protégée :** HEAD source `f19d59d2ddf20e502d621555b204935b93ad566f`, CI source [#39756548081](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/39756548081) `completed/SUCCESS` (74 étapes Windows) ; fusion `main=8f4b84bdccf19842aa98b35defe8e84a02e769db`, CI post-fusion [#39758153975](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/39758153975) `completed/SUCCESS` (74 étapes Windows). Normalisation documentaire PR #128 sans nouveau runtime. Historique PR #127/#128 `IN_PROGRESS_AT_CHECKPOINT` immuable, observations terminales ultérieures distinctes.
 
 **STOP inchangé :** M3.2 `IN_PROGRESS_NOT_ACCEPTED`, writer réel `NOT_PROVEN`, G2B–G6 `NOT_AUTHORIZED`, G3 réel `STOP_UNAVAILABLE`, historique `PENDING_EXTERNAL_ATTESTATION(21/3/2)`, prospective `NOT_STARTED`, PR #35 DRAFT. Aucun opérateur Windows ni SQLite originale v6/v7, sauvegarde, ACL, sidecar, marker, migration 007, writer IPC, M3.3, ComfyUI ni release. Parallélisme seulement indépendant, mutations/fusions séquentielles.

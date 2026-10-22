@@ -15,3 +15,9 @@ Un onglet isolé « Afficher l'historique fictif des corrections » présente tr
 ## Source manifest strict et refus des imports externes
 
 CI #39748895327 a initialement refusé l'import du nouveau composant parce que le manifeste Git fictif contenait exactement dix fichiers. L'ajout est **limité à un seul fichier** `src/M32FictionalCorrectionHistory.tsx` dans `tools/m32_ci_fixture_stage.cjs` et dans `tools/m32_ci_git_source_binding.cjs`, portant l'inventaire strict à onze. Le bind reste fondé sur les blobs du commit exact, refuse tout import hors de l'inventaire, `App.tsx`, les symlinks et les écarts de bytes. Le test de longueur a été adapté à onze, sans supprimer de test négatif. La nouvelle CI complète au nouveau HEAD est obligatoire.
+
+## Tranche suivante — lien explicite au prédécesseur, source-only (22 octobre 2026)
+
+Le tableau de consultation du laboratoire fictif affiche, après validation stricte de la chaîne, le prédécesseur immédiat de chaque correction et son assertion humaine précédente (`avant/après`). Cela décrit uniquement une ascendance explicitement déclarée ; ni la succession éditoriale des corrections ni la position des scènes ne crée une date ou un ordre global du monde. Le premier élément n'invente aucun prédécesseur. Un historique invalide reste rejeté entièrement, sans fuite du contenu partiel, et le deuxième univers reste vide.
+
+Seuls `src/M32FictionalCorrectionHistory.tsx`, ses assertions Vitest déjà existantes et le cas Chromium existant 51 sont modifiés. Le nombre de tests reste huit pour ce composant et 53 scénarios Chromium par mode ; ces nombres ne deviennent des résultats que si la CI du **nouveau SHA** les démontre. Aucun `App.tsx`, Tauri, IPC, SQLite, réseau, stockage ou Windows opérateur n'est concerné. M3.2 demeure `IN_PROGRESS_NOT_ACCEPTED`, G2B–G6 `NOT_AUTHORIZED`, vrai G3 `STOP_UNAVAILABLE`.

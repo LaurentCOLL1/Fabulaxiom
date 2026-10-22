@@ -815,6 +815,10 @@ async function run() {
       assert.ok((await history.innerText()).includes("fiction-chain-2"));
       assert.ok((await history.innerText()).includes("correction retirée"));
       assert.ok((await history.innerText()).includes("Correction active : fiction-chain-2"));
+      assert.ok((await history.innerText()).includes("Corrige explicitement fiction-successor"));
+      assert.ok((await history.innerText()).includes("Corrige explicitement fiction-chain-1"));
+      assert.ok((await history.innerText()).includes("ancienne assertion A avant B"));
+      assert.ok((await history.innerText()).includes("Aucun ordre global déduit"));
       assert.equal(await history.getByRole("button").count(), 0);
     });
     await caseRun("52-fictional-correction-history-other-world-no-leak", async () => {
