@@ -906,9 +906,9 @@ class HandoffContractTests(unittest.TestCase):
 
     def test_59_pr126_source_only_merge_does_not_promote_runtime(self):
         x = self.data["post_pr126_normalization"]
-        self.assertEqual(self.data["last_confirmed_merged_pr"], 126)
-        self.assertEqual(self.data["last_confirmed_main_before_handoff"], x["merge_sha"])
-        self.assertEqual(self.data["last_verified_pr_head"], x["pr_head_sha"])
+        self.assertEqual(x["merged_pr"], 126)
+        self.assertEqual(x["merge_sha"], "7c4ff2f84bb67b51c8ca01eef0f9ca78a1bfe8d9")
+        self.assertEqual(x["pr_head_sha"], "0a5f972472eec1e53cd2621ca1fb3d6955e5f18f")
         self.assertEqual(x["merge_sha"], "7c4ff2f84bb67b51c8ca01eef0f9ca78a1bfe8d9")
         self.assertEqual(x["pr_head_sha"], "0a5f972472eec1e53cd2621ca1fb3d6955e5f18f")
         self.assertEqual(x["pr_ci"]["run_id"], 39727486056)
@@ -917,7 +917,7 @@ class HandoffContractTests(unittest.TestCase):
         self.assertEqual(x["pr_ci"]["rust_tests"], 132)
         self.assertEqual(x["pr_ci"]["handoff_tests"], 58)
         self.assertEqual(x["main_ci"]["run_id"], 39748359823)
-        self.assertEqual(self.data["main_ci_post_merge"]["sha"], x["merge_sha"])
+        self.assertEqual(x["main_ci"]["conclusion"], "SUCCESS")
         self.assertEqual(x["operator_execution"], "NONE")
         self.assertEqual(x["real_writer_absence"], "NOT_PROVEN")
         self.assertEqual(x["g2b_to_g6"], "NOT_AUTHORIZED")
@@ -927,7 +927,7 @@ class HandoffContractTests(unittest.TestCase):
 
     def test_60_react_history_ui_candidate_is_isolated_fictional_only(self):
         x = self.data["m3_2_product_progress"]["test_only_react_correction_history"]
-        self.assertEqual(x["status"], "CANDIDATE_NOT_CI_QUALIFIED")
+        self.assertEqual(x["status"], "MERGED_FICTIONAL_BROWSER_ONLY_NOT_PRODUCT_ACCEPTED")
         self.assertEqual(x["new_unit_tests"], 8)
         self.assertEqual(x["chromium_scenarios_per_mode"], 53)
         self.assertEqual(x["runtime_app_mount"], "NONE")
@@ -951,6 +951,33 @@ class HandoffContractTests(unittest.TestCase):
         runner = (ROOT / "tools/m32_browser_interaction.cjs").read_text(encoding="utf-8")
         self.assertIn("M32_BROWSER_REAL_CHROMIUM_PASS 53/53", runner)
         self.assertEqual(self.data["g2a"]["absence_of_sqlite_writer"], "NOT_PROVEN")
+
+
+    def test_61_pr127_protected_merge_keeps_browser_history_outside_runtime(self):
+        x = self.data["post_pr127_normalization"]
+        self.assertEqual(self.data["last_confirmed_merged_pr"], 127)
+        self.assertEqual(self.data["last_confirmed_main_before_handoff"], x["merge_sha"])
+        self.assertEqual(self.data["last_verified_pr_head"], x["pr_head_sha"])
+        self.assertEqual(x["merge_sha"], "dd578161f1c84554c03434d0f1066f65d6e53dc6")
+        self.assertEqual(x["pr_head_sha"], "d71288e5f7a046c6e90131118de5cecd8a6ee5cb")
+        self.assertEqual(x["pr_ci"]["run_id"], 39749304955)
+        self.assertEqual(x["pr_ci"]["conclusion"], "SUCCESS")
+        self.assertEqual(x["pr_ci"]["job_steps"], 74)
+        self.assertEqual(x["pr_ci"]["rust_tests"], 132)
+        self.assertEqual(x["pr_ci"]["handoff_tests"], 60)
+        self.assertEqual(x["pr_ci"]["chromium_normal"], 53)
+        self.assertEqual(x["pr_ci"]["chromium_strict_csp"], 53)
+        self.assertEqual(x["pr_ci"]["strict_pinned_fictional_blobs"], 11)
+        self.assertEqual(x["main_ci"]["run_id"], 39750459759)
+        self.assertEqual(self.data["main_ci_post_merge"]["sha"], x["merge_sha"])
+        self.assertEqual(x["operator_execution"], "NONE")
+        self.assertEqual(x["real_writer_absence"], "NOT_PROVEN")
+        self.assertEqual(x["g2b_to_g6"], "NOT_AUTHORIZED")
+        self.assertEqual(x["real_g3"], "STOP_UNAVAILABLE")
+        self.assertEqual(x["runtime_app_mount"], "NONE")
+        self.assertEqual(x["tauri_ipc"], "NONE")
+        self.assertEqual(x["real_sqlite_access"], "NONE")
+        self.assertIn("PR #127", self.doc)
 
     def test_24_policy_requires_refetch_and_same_pr_handoff(self):
         for clause in ("Re-fetch", "HANDOFF_CURRENT.md", "HANDOFF_CURRENT.json",
