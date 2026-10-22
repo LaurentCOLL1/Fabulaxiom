@@ -999,7 +999,7 @@ class HandoffContractTests(unittest.TestCase):
         self.assertEqual(observed["run_id"], 39755042137)
         self.assertEqual(observed["conclusion"], "SUCCESS")
         self.assertEqual(observed["job_steps"], 74)
-        self.assertEqual(self.data["main_ci_post_merge"]["conclusion"], "SUCCESS")
+        self.assertEqual(self.data["post_pr128_postmain_terminal_observation"]["conclusion"], "SUCCESS")
         observed = self.data["post_pr127_postmain_terminal_observation"]
         self.assertEqual(observed["source_pr"], 127)
         self.assertEqual(observed["merge_sha"], "dd578161f1c84554c03434d0f1066f65d6e53dc6")
