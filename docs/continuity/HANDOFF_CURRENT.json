@@ -1,16 +1,16 @@
 {
   "schema": 1,
-  "as_of": "2026-10-21",
+  "as_of": "2026-10-22",
   "status_kind": "DATED_PUBLIC_SOURCE_HANDOFF_ONLY",
   "repository": "LaurentCOLL1/Fabulaxiom",
-  "last_confirmed_main_before_handoff": "01766707a347a269b283c2aa7ea02f44979759e9",
-  "last_confirmed_merged_pr": 120,
-  "last_verified_pr_head": "f7ef3ceeaee40bb90e1cb9fe180121f11867fc28",
+  "last_confirmed_main_before_handoff": "08caad24e20eae484e94fd084edb487b5c370bd5",
+  "last_confirmed_merged_pr": 121,
+  "last_verified_pr_head": "6a1a22dedaa4e3d2c302a56959083017578dc7da",
   "last_verified_ci": {
-    "run_id": 39685054113,
+    "run_id": 39713440057,
     "context": "Windows frontend and Rust checks",
     "conclusion": "SUCCESS",
-    "source": "PR120_EXACT_HEAD"
+    "source": "PR121_EXACT_HEAD"
   },
   "recent_changes": [
     "PR_85_EXACT_G2A_TEXT_AST_ONLY",
@@ -82,7 +82,8 @@
     "PR119_CI_39661237200_FAILED_HISTORICAL_CI_ASSERTIONS_CORRECTED",
     "PR119_MERGED_MAIN_61E07DEA_POST_39684342539_IN_PROGRESS_AT_CHECKPOINT",
     "ONE_HUMAN_SUCCESSOR_PARTIAL_ACTIVE_GRAPH_TEST_ONLY_RAM_CANDIDATE",
-    "2026_10_22_PR120_MERGED_MAIN_01766707_POSTMAIN_CI_39686405108_SUCCESS"
+    "2026_10_22_PR120_MERGED_MAIN_01766707_POSTMAIN_CI_39686405108_SUCCESS",
+    "2026_10_22_PR121_MERGED_MAIN_08CAAD24_STAGE7_REVOCATION_RAM_ONLY_CANDIDATE"
   ],
   "pr35": "OPEN_DRAFT",
   "issues": {
@@ -268,15 +269,15 @@
     "verified_bypass_actors": 0,
     "classic_branch_protection_read": "403_INTEGRATION_RESTRICTED"
   },
-  "next": "FIRST_QUALIFY_PR121_DOC_ONLY_NORMALIZATION_CI_THEN_NEW_SOURCE_ONLY_STAGE7_SUCCESSOR_WITHDRAWAL_FICTIONAL_RAM;_REAL_GATES_STILL_STOP",
+  "next": "QUALIFY_SEPARATE_STAGE7_IMMUTABLE_SUCCESSOR_WITHDRAWAL_RAM_ONLY_CI_AT_NEW_EXACT_PR_HEAD; NO_REAL_GATES_PROMOTED",
   "live_refetch_required": true,
   "hand_off_updated_by_future_pr": true,
   "main_ci_post_merge": {
-    "sha": "01766707a347a269b283c2aa7ea02f44979759e9",
-    "run_id": 39686405108,
+    "sha": "08caad24e20eae484e94fd084edb487b5c370bd5",
+    "run_id": 39716352685,
     "conclusion": "SUCCESS",
     "source": "MAIN_PUSH",
-    "note": "22 Oct 2026 verified completed/success at exact merge SHA, no private Windows authority"
+    "note": "22 October 2026 dated live main CI, re-fetch terminal and never infer Windows operator authority"
   },
   "g2a_candidate_ci": {
     "pr": 86,
@@ -639,6 +640,26 @@
       "auto_migration_max": 6,
       "product_status": "IN_PROGRESS_NOT_ACCEPTED",
       "real_writer_absence": "NOT_PROVEN",
+      "g2b_to_g6": "NOT_AUTHORIZED",
+      "real_g3": "STOP_UNAVAILABLE"
+    },
+    "test_only_rust_sixth_stage": {
+      "status": "CANDIDATE_NOT_CI_QUALIFIED",
+      "historical_source_pr": 35,
+      "historical_source_sha": "41ce7b915e76d22785d53d7fffe288d113dd0bf5",
+      "compiled_only_during_tests": true,
+      "sql_candidate": "src-tauri/sql/m3_2_successor_revocations_candidate.sql",
+      "functions": [
+        "revoke_successor",
+        "list_successor_history"
+      ],
+      "new_rust_tests": 3,
+      "immutable_revocation": true,
+      "active_graph_partial_order_only": true,
+      "chain_promotion": "NONE",
+      "auto_migration_max": 6,
+      "tauri_writer_ipc": "NONE",
+      "real_sqlite_access": "NONE",
       "g2b_to_g6": "NOT_AUTHORIZED",
       "real_g3": "STOP_UNAVAILABLE"
     }
@@ -1008,6 +1029,28 @@
     },
     "main_ci": {
       "run_id": 39686405108,
+      "conclusion": "SUCCESS"
+    },
+    "fiction_only": true,
+    "operator_execution": "NONE",
+    "product_status": "IN_PROGRESS_NOT_ACCEPTED",
+    "real_writer_absence": "NOT_PROVEN",
+    "g2b_to_g6": "NOT_AUTHORIZED",
+    "real_g3": "STOP_UNAVAILABLE"
+  },
+  "post_pr121_normalization": {
+    "kind": "DATED_DOCUMENTARY_SNAPSHOT_NO_RUNTIME_AUTHORITY",
+    "merged_pr": 121,
+    "merge_sha": "08caad24e20eae484e94fd084edb487b5c370bd5",
+    "pr_head_sha": "6a1a22dedaa4e3d2c302a56959083017578dc7da",
+    "pr_ci": {
+      "run_id": 39713440057,
+      "conclusion": "SUCCESS",
+      "job_steps": 74,
+      "rust_tests": 125
+    },
+    "main_ci": {
+      "run_id": 39716352685,
       "conclusion": "SUCCESS"
     },
     "fiction_only": true,
