@@ -1,5 +1,11 @@
 # Prompt minimal de reprise — Fabulaxiom
 
+
+## Reprise prioritaire — 22 octobre 2026, après PR #120
+
+Re-fetch d'abord https://github.com/LaurentCOLL1/Fabulaxiom et le HEAD `main`; au dernier checkpoint protégé, `01766707a347a269b283c2aa7ea02f44979759e9`. PR #120 MERGED, source `f7ef3ceeaee40bb90e1cb9fe180121f11867fc28`, CI source #39685054113 SUCCESS, CI post-main #39686405108 SUCCESS au SHA exact. Lire dans l'ordre README.md, HANDOFF_CURRENT.md, HANDOFF_CURRENT.json, HANDOFF_PROTOCOL.md, HANDOFF_HISTORY.md, NEXT.md, STATE.md, RESUME_PROMPT.md, les documents roadmap et issues #36/#38. Revalider toutes les références avant écriture et vérifier CI source/merge pour chaque HEAD; protéger main avec `expected_head_sha`. La PR #35 historique OPEN/DRAFT ne se fusionne pas en bloc. M3.2 IN_PROGRESS_NOT_ACCEPTED, absence d'écrivain réel NOT_PROVEN, G2B–G6 NOT_AUTHORIZED, G3 réel STOP_UNAVAILABLE, attestations 21/3/2 non résolues. Pas de commande Windows opérateur sans nouvelle autorisation explicite et complète, pas d'accès SQLite/prod v6/isolée v7/backups/ACL/sidecars/marqueur, ni migration 007, writer IPC, M3.3/ComfyUI/release. Poursuivre au besoin source-only sur stage 7: revocation immuable du successeur sur nouvelle branche RAM seulement, jamais chaînes arbitraires. Paralléliser recherches/branches/fixtures indépendantes ; conserver séquentielles les écritures conflictuelles, intégrations, CI et merges.
+
+
 **22 octobre 2026 — PR #119 MERGED sous Protect main :** source `0df96696e4abefe692f8a0fdca3ab10e726fa9d3`, CI PR #39661776335 SUCCESS (74 étapes, 121 tests Rust, 48 tests continuité, 21 inventaires SQLite, 50 Chromium par mode). Nouveau `main=61e07deaf10fc393c567e8f1960874b75d81adc4`, CI post-fusion #39684342539 **IN_PROGRESS_AT_CHECKPOINT** ; revérifier le résultat terminal au SHA exact.
 
 **Cinquième tranche test-only candidate :** un successeur humain unique d'une reformulation retirée, `succeed_withdrawn_restatement`, lecture du graphe actif partiel par `list_active_precedence_graph` et SQL candidat `m3_2_restatement_successors_candidate.sql` sur SQLite exclusivement en RAM. Quatre nouveaux tests Rust : retrait obligatoire, unicité, cycles/doublons, ancres retirées et historique immuable. Aucune correction en chaîne, aucune révocation de successeur, aucune inférence de chronologie totale.
