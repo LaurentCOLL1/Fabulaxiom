@@ -1189,6 +1189,10 @@ class HandoffContractTests(unittest.TestCase):
         self.assertIn('TOY_BYTES_AFTER', source)
         self.assertNotIn('LOCALAPPDATA', source)
         self.assertNotIn('sqlite3.connect', source)
+        self.assertEqual(q["first_ci"]["run_id"], 39835364262)
+        self.assertEqual(q["first_ci"]["conclusion"], "FAILURE")
+        self.assertEqual(q["corrected_test_08"],
+                         "ATTRIBUTE_ONLY_SHARE_READ_DID_NOT_EXCLUDE_NEW_GENERIC_WRITE_IN_WINDOWS_CI_TOY")
         self.assertIn("G2B_WIN32_FILEID", self.doc)
 
     def test_24_policy_requires_refetch_and_same_pr_handoff(self):

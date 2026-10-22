@@ -180,12 +180,18 @@ class WindowsScratchCounterexamples(unittest.TestCase):
         finally:
             self.assertTrue(self.api.close(writer))
 
-    def test_08_share_read_only_blocks_new_write_open_on_toy(self):
+    def test_08_attribute_only_share_read_does_not_exclude_writer(self):
+        # Windows CI demonstrated that an attribute-only handle does not
+        # establish a writer-exclusion lease, even without SHARE_WRITE.
         monitor = self.api.open(self.file, READ_ATTRIBUTES, SHARE_READ)
         try:
-            with self.assertRaises(OSError) as captured:
-                self.api.open(self.file, GENERIC_WRITE, SHARE_ALL)
-            self.assertEqual(captured.exception.errno, SHARING_VIOLATION)
+            before = self.api.identity(monitor)
+            writer = self.api.open(self.file, GENERIC_WRITE, SHARE_ALL)
+            try:
+                self.assertTrue(writer)
+            finally:
+                self.assertTrue(self.api.close(writer))
+            self.assertEqual(self.api.identity(monitor), before)
         finally:
             self.assertTrue(self.api.close(monitor))
 
