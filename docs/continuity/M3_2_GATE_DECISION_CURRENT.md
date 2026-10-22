@@ -1,5 +1,10 @@
 # Fabulaxiom M3.2 — Décision de gates au 20 octobre 2026
 
+**22 octobre 2026 — PR #131 protégée MERGED :** HEAD source `6b1973e077e90885d326cb5acbb2358368523bd2`; [CI #39770785693](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/39770785693) terminale SUCCESS (74 étapes Windows, 132 Rust, 65 tests de continuité, Chromium 53/53 normal et CSP). Fusion `main=37d8aa100e9d6fe61bbe6650f554a147661e703e`, [CI post-fusion #39776433056](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/39776433056) `IN_PROGRESS_AT_CHECKPOINT` à ce checkpoint (ne pas affirmer SUCCESS sans re-fetch). Historique fictif de corrections avec prédécesseur explicite uniquement hors `App.tsx` ; pas de preuve chronologique globale, pas d'IPC, SQLite, réseau ou écriture. Première CI échouée #39770570255 conservée ; seul test historique corrigé dans la source finalement qualifiée.
+
+**STOP maintenu :** M3.2 `IN_PROGRESS_NOT_ACCEPTED`, writer réel `NOT_PROVEN`, G2B–G6 `NOT_AUTHORIZED`, vrai G3 `STOP_UNAVAILABLE`, historique `PENDING_EXTERNAL_ATTESTATION(21/3/2)`, prospective `NOT_STARTED`, PR #35 OPEN/DRAFT. Pas de Windows opérateur, original SQLite v6/v7, backups, ACL, sidecars, marqueur, migration 007, IPC writer, M3.3, ComfyUI, release. Parallélisation indépendante seulement, écriture et fusion séquentielles.
+
+
 **22 octobre 2026 — PR #130 protégée MERGED :** source `f980e8e294f537f6b588ded56f6f79cc772558d6` ; [CI #39764830760](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/39764830760) terminale SUCCESS (74 étapes Windows, 132 Rust, 63 contrats, 53/53 Chromium normal et CSP) ; fusion `main=8f330a4feff30092847e5bf180160efed174ebdd`. [CI post-main #39769613787](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/39769613787) `IN_PROGRESS_AT_CHECKPOINT` ici : préserver cet instantané, vérifier le résultat terminal séparément.
 
 **Candidat suivant — source-only :** dans le navigateur fictif, afficher explicitement la correction précédente et son ancienne relation humaine `avant/après`, sans inférer de nouvelle chronologie. Tests existants renforcés ; qualification neuve obligatoire avant fusion. `App.tsx` et le runtime restent inchangés.

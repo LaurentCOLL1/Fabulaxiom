@@ -3,14 +3,14 @@
   "as_of": "2026-10-22",
   "status_kind": "DATED_PUBLIC_SOURCE_HANDOFF_ONLY",
   "repository": "LaurentCOLL1/Fabulaxiom",
-  "last_confirmed_main_before_handoff": "8f330a4feff30092847e5bf180160efed174ebdd",
-  "last_confirmed_merged_pr": 130,
-  "last_verified_pr_head": "f980e8e294f537f6b588ded56f6f79cc772558d6",
+  "last_confirmed_main_before_handoff": "37d8aa100e9d6fe61bbe6650f554a147661e703e",
+  "last_confirmed_merged_pr": 131,
+  "last_verified_pr_head": "6b1973e077e90885d326cb5acbb2358368523bd2",
   "last_verified_ci": {
-    "run_id": 39764830760,
+    "run_id": 39770785693,
     "context": "Windows frontend and Rust checks",
     "conclusion": "SUCCESS",
-    "source": "PR130_EXACT_HEAD"
+    "source": "PR131_EXACT_HEAD"
   },
   "recent_changes": [
     "PR_85_EXACT_G2A_TEXT_AST_ONLY",
@@ -97,7 +97,8 @@
     "2026_10_22_PR128_POSTMAIN_CI_TERMINAL_SUCCESS_SEPARATE_OBSERVATION_NO_RETROACTIVE_MUTATION",
     "2026_10_22_PR129_PROTECTED_MERGED_MAIN_8F4B84BD_POSTMAIN_39758153975_SUCCESS_TERMINAL_DOCS_ONLY",
     "2026_10_22_PR130_PROTECTED_MERGED_MAIN_8F330A4F_SOURCE_CI_39764830760_SUCCESS_POSTMAIN_PENDING_AT_CHECKPOINT",
-    "2026_10_22_NEW_CANDIDATE_FICTIONAL_CORRECTION_PREDECESSOR_VISIBLE_ONLY_NOT_QUALIFIED"
+    "2026_10_22_NEW_CANDIDATE_FICTIONAL_CORRECTION_PREDECESSOR_VISIBLE_ONLY_NOT_QUALIFIED",
+    "2026_10_22_PR131_PROTECTED_MERGED_MAIN_37D8AA10_FICTIONAL_PREDECESSOR_ONLY_CI39770785693_SUCCESS"
   ],
   "pr35": "OPEN_DRAFT",
   "issues": {
@@ -283,15 +284,15 @@
     "verified_bypass_actors": 0,
     "classic_branch_protection_read": "403_INTEGRATION_RESTRICTED"
   },
-  "next": "QUALIFY_NEW_FICTIONAL_PREDECESSOR_VIEW_AT_EXACT_HEAD; VERIFY_PR130_POSTMAIN_TERMINAL_INDEPENDENTLY; KEEP_REAL_GATES_STOP",
+  "next": "VERIFY_PR131_POSTMAIN_EXACT_SHA_TERMINAL; KEEP_M32_REAL_GATES_STOP; PLAN_SEPARATE_FICTIONAL_ONLY_DEVELOPMENT",
   "live_refetch_required": true,
   "hand_off_updated_by_future_pr": true,
   "main_ci_post_merge": {
-    "sha": "8f330a4feff30092847e5bf180160efed174ebdd",
-    "run_id": 39769613787,
+    "sha": "37d8aa100e9d6fe61bbe6650f554a147661e703e",
+    "run_id": 39776433056,
     "conclusion": "IN_PROGRESS_AT_CHECKPOINT",
     "source": "MAIN_PUSH",
-    "note": "Dated at candidate writing; terminal re-fetch separately before any success claim; not product acceptance"
+    "note": "Dated snapshot at PR132 preparation; new independently re-fetched terminal observation must not rewrite historical snapshot"
   },
   "g2a_candidate_ci": {
     "pr": 86,
@@ -1398,6 +1399,51 @@
     "historical": "PENDING_EXTERNAL_ATTESTATION(21/3/2)",
     "prospective": "NOT_STARTED",
     "runtime_app_mount": "NONE",
+    "real_sqlite_access": "NONE",
+    "tauri_writer_ipc": "NONE"
+  },
+  "post_pr130_postmain_terminal_observation": {
+    "kind": "DATED_LATER_RECHECK_NOT_RETROACTIVE_MUTATION",
+    "source_pr": 130,
+    "merge_sha": "8f330a4feff30092847e5bf180160efed174ebdd",
+    "run_id": 39769613787,
+    "conclusion": "SUCCESS",
+    "operator_execution": "NONE",
+    "product_status": "IN_PROGRESS_NOT_ACCEPTED"
+  },
+  "post_pr131_normalization": {
+    "kind": "DATED_DOCUMENTARY_ONLY_NO_RUNTIME_AUTHORITY",
+    "merged_pr": 131,
+    "merge_sha": "37d8aa100e9d6fe61bbe6650f554a147661e703e",
+    "pr_head_sha": "6b1973e077e90885d326cb5acbb2358368523bd2",
+    "pr_ci": {
+      "run_id": 39770785693,
+      "conclusion": "SUCCESS",
+      "job_steps": 74,
+      "rust_tests": 132,
+      "handoff_tests": 65,
+      "chromium_normal": 53,
+      "chromium_strict_csp": 53
+    },
+    "failed_earlier_ci": {
+      "run_id": 39770570255,
+      "conclusion": "FAILURE",
+      "reason": "TEST_62_MUTABLE_MAIN_CI_POINTER"
+    },
+    "main_ci": {
+      "run_id": 39776433056,
+      "conclusion": "IN_PROGRESS_AT_CHECKPOINT"
+    },
+    "product_status": "IN_PROGRESS_NOT_ACCEPTED",
+    "real_writer_absence": "NOT_PROVEN",
+    "g2b_to_g6": "NOT_AUTHORIZED",
+    "real_g3": "STOP_UNAVAILABLE",
+    "historical": "PENDING_EXTERNAL_ATTESTATION(21/3/2)",
+    "prospective": "NOT_STARTED",
+    "operator_execution": "NONE",
+    "ui": "FICTIONAL_BROWSER_ONLY_PREDECESSOR_DISPLAY",
+    "runtime_app_mount": "NONE",
+    "normal_runtime_sqlite_schema_max": 6,
     "real_sqlite_access": "NONE",
     "tauri_writer_ipc": "NONE"
   }
