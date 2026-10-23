@@ -133,11 +133,18 @@ export function inspectFictionalEventNotebook(book: FictionalEventNotebook): Fic
  */
 export type FictionalEventContentField =
   "title" | "note" | "anchor_id" | "source_revision_id";
+export type FictionalEventFieldDifference = Readonly<{
+  field: FictionalEventContentField;
+  before: string | null;
+  after: string | null;
+}>;
 export type FictionalEventHistoryEntry = Readonly<{
   event: FictionalEventVersion;
   audit: FictionalEventAudit;
   /** Differences only against the preceding invented version of the SAME event. */
   changed_fields: readonly FictionalEventContentField[];
+  /** Exact before/after values from two already-validated fictional versions. */
+  field_differences: readonly FictionalEventFieldDifference[];
 }>;
 const contentFields = ["title", "note", "anchor_id", "source_revision_id"] as const;
 export function auditedFictionalEventHistory(
@@ -153,10 +160,14 @@ export function auditedFictionalEventHistory(
     const previous = index === 0 ? null : versions[index - 1].event;
     const changedFields = previous === null ? [] : contentFields.filter(field =>
       event[field] !== previous[field]);
+    const fieldDifferences = changedFields.map(field => Object.freeze({
+      field, before: previous![field], after: event[field],
+    }));
     return Object.freeze({
       event: Object.freeze({ ...event }),
       audit: Object.freeze({ ...audit }),
       changed_fields: Object.freeze(changedFields),
+      field_differences: Object.freeze(fieldDifferences),
     });
   }));
 }

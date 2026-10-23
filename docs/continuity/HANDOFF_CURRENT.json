@@ -3,14 +3,14 @@
   "as_of": "2026-10-23",
   "status_kind": "DATED_PUBLIC_SOURCE_HANDOFF_ONLY",
   "repository": "LaurentCOLL1/Fabulaxiom",
-  "last_confirmed_main_before_handoff": "2e0b29bfc2d2698a636f4adc41d5b4e5a87c3ece",
-  "last_confirmed_merged_pr": 151,
-  "last_verified_pr_head": "ab0ffd3e1c0d08cb57325a2f5ef91c1967616716",
+  "last_confirmed_main_before_handoff": "5346ddb76fadfd3e2cec687522c41bf94bfedec9",
+  "last_confirmed_merged_pr": 152,
+  "last_verified_pr_head": "840c09535b6566b6738ea21d498ec347d2a76e44",
   "last_verified_ci": {
-    "run_id": 40010733862,
+    "run_id": 40014823165,
     "context": "Windows frontend and Rust checks",
     "conclusion": "SUCCESS",
-    "source": "PR151_EXACT_HEAD"
+    "source": "PR152_EXACT_HEAD"
   },
   "recent_changes": [
     "PR_85_EXACT_G2A_TEXT_AST_ONLY",
@@ -135,7 +135,8 @@
     "PR148_EVENT_AUDIT_LINEAGE_PROTECTED_MERGED_MAIN_4A8D09D9_EXACT_SOURCE_AND_POSTMAIN_CI_SUCCESS",
     "PR149_WITHDRAWAL_TOMBSTONE_GUARD_MERGED_MAIN_77E25319_SOURCE_39994596525_POSTMAIN_39996127567_SUCCESS",
     "PR150_RUNTIME_SHAPE_GUARD_MERGED_MAIN_20658FDC_SOURCE_40006337923_POSTMAIN_40007837202_SUCCESS",
-    "PR151_HISTORY_READONLY_MERGED_MAIN_2E0B29BF_SOURCE_40010733862_POSTMAIN_40012175419_SUCCESS"
+    "PR151_HISTORY_READONLY_MERGED_MAIN_2E0B29BF_SOURCE_40010733862_POSTMAIN_40012175419_SUCCESS",
+    "PR152_FICTIONAL_VERSION_FIELDS_MERGED_MAIN_5346DDB7_SOURCE_40014823165_POSTMAIN_40016058394_SUCCESS"
   ],
   "pr35": "OPEN_DRAFT",
   "issues": {
@@ -321,7 +322,7 @@
     "verified_bypass_actors": 0,
     "classic_branch_protection_read": "403_INTEGRATION_RESTRICTED"
   },
-  "next": "PR151_SOURCE_POSTMAIN_TERMINAL_SUCCESS; FICTIONAL_EVENT_VERSION_DELTA_CANDIDATE_NEW_EXACT_HEAD_CI; REAL_G3_STOP",
+  "next": "PR152_SOURCE_POSTMAIN_TERMINAL_SUCCESS; FICTIONAL_EVENT_BEFORE_AFTER_CANDIDATE_NEW_EXACT_HEAD_CI; REAL_G3_STOP",
   "live_refetch_required": true,
   "hand_off_updated_by_future_pr": true,
   "main_ci_post_merge": {
@@ -981,6 +982,19 @@
       "real_g3_authorized": false,
       "no_persistence": true,
       "no_operator_windows_execution": true
+    },
+    "fictional_event_before_after_candidate": {
+      "kind": "FICTIONAL_EVENT_EXACT_BEFORE_AFTER_DISPLAY",
+      "model": "src/m32FictionalEventNotebook.ts",
+      "preview": "src/M32FictionalEventNotebookPreview.tsx",
+      "tests": "src/m32FictionalEventNotebook.test.tsx",
+      "documentation": "docs/qualification/M3_2_FICTIONAL_EVENT_EXACT_BEFORE_AFTER.md",
+      "new_tests": 8,
+      "source_only": true,
+      "real_g3_authorized": false,
+      "structural_only": true,
+      "has_persistence": false,
+      "not_mounted_in_application": true
     }
   },
   "post_pr100_normalization": {
@@ -2534,6 +2548,46 @@
     "postmain_job_steps": 76,
     "handoff_tests": 86,
     "event_tests": 49,
+    "chromium_normal": 62,
+    "chromium_strict_csp": 62,
+    "rust_tests": 132,
+    "m3_2": "IN_PROGRESS_NOT_ACCEPTED",
+    "g2b": "NOT_ACCEPTED",
+    "source_identity": "PARTIAL_LOCAL_IDENTITY_ONLY",
+    "writer_absence": "NOT_PROVEN",
+    "g2c": "NOT_AUTHORIZED",
+    "real_g3": "STOP_UNAVAILABLE",
+    "historical": "PENDING_EXTERNAL_ATTESTATION(21/3/2)",
+    "prospective": "NOT_STARTED",
+    "pr35": "OPEN_DRAFT",
+    "operator_windows_validation": false,
+    "original_sqlite_touched": false
+  },
+  "post_pr152_terminal_observation": {
+    "as_of": "2026-10-23",
+    "pr": 152,
+    "merged": true,
+    "kind": "FICTIONAL_EVENT_CHANGED_FIELDS_ONLY",
+    "source_sha": "840c09535b6566b6738ea21d498ec347d2a76e44",
+    "initial_source_sha": "69ac669ab12b9d6219aca4c651c5ee30de9d3b96",
+    "initial_source_ci": {
+      "run_id": 40014673844,
+      "conclusion": "FAILURE",
+      "cause": "HISTORIC_PR150_CI_IN_SHORT_PROMPT"
+    },
+    "source_ci": {
+      "run_id": 40014823165,
+      "conclusion": "SUCCESS"
+    },
+    "merge_sha": "5346ddb76fadfd3e2cec687522c41bf94bfedec9",
+    "postmain_ci": {
+      "run_id": 40016058394,
+      "conclusion": "SUCCESS"
+    },
+    "source_job_steps": 76,
+    "postmain_job_steps": 76,
+    "handoff_tests": 87,
+    "event_tests": 57,
     "chromium_normal": 62,
     "chromium_strict_csp": 62,
     "rust_tests": 132,
