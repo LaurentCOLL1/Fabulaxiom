@@ -128,6 +128,29 @@ export function inspectFictionalEventNotebook(book: FictionalEventNotebook): Fic
     return stop("compteur d'événements incohérent");
   return book;
 }
+/** Verified, detached, read-only display history of an invented event.
+ * Alignment is structural only; it cannot authenticate an external audit.
+ */
+export type FictionalEventHistoryEntry = Readonly<{
+  event: FictionalEventVersion;
+  audit: FictionalEventAudit;
+}>;
+export function auditedFictionalEventHistory(
+  book: FictionalEventNotebook, eventId: string,
+): readonly FictionalEventHistoryEntry[] {
+  inspectFictionalEventNotebook(book);
+  if (typeof eventId !== "string" || !eventId ||
+      !book.events.some(e => e.event_id === eventId))
+    return stop("historique d'événement fictif absent ou étranger");
+  return Object.freeze(book.events.flatMap((event, index) =>
+    event.event_id !== eventId ? [] : [
+      Object.freeze({
+        event: Object.freeze({ ...event }),
+        audit: Object.freeze({ ...book.audit[index] }),
+      }),
+    ]));
+}
+
 export function startFictionalEventNotebook(draft: FictionalDraft): FictionalEventNotebook {
   inspectFictionalDraft(draft);
   return inspectFictionalEventNotebook({

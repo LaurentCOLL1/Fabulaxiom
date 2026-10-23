@@ -1,6 +1,6 @@
 import type { ReactElement } from "react";
 import {
-  currentFictionalEvents, inspectFictionalEventNotebook,
+  auditedFictionalEventHistory, currentFictionalEvents, inspectFictionalEventNotebook,
   type FictionalEventNotebook,
 } from "./m32FictionalEventNotebook";
 
@@ -21,5 +21,30 @@ export default function M32FictionalEventNotebookPreview({ notebook }: {
       {event.anchor_id === null ? " (date non liée)" :
         " (ancre explicite : " + event.anchor_id + ")"}
     </li>)}</ul>
+    <section aria-label="Historique des versions fictives">
+      <h3>Historique manuel des versions et justifications</h3>
+      <p role="note">Audit structurel inventé et non authentifié :
+        aucune reconstitution de source réelle, aucune date déduite.</p>
+      <ul>{notebook.events.filter(e => e.version === 1).map(created => {
+        const history = auditedFictionalEventHistory(notebook, created.event_id);
+        const latest = history[history.length - 1].event;
+        return <li key={created.event_id}>
+          <details>
+            <summary>{latest.title} — {latest.status === "withdrawn" ? "retiré" : "courant"}
+              {" — " + history.length + " version(s)"}</summary>
+            <ol>{history.map(({ event, audit }) => <li key={event.version}>
+              Version {event.version} — {audit.action} — {event.status}
+              {" ; justification : " + audit.explanation}
+              {" ; titre : " + event.title}
+              {event.note ? " ; note : " + event.note : ""}
+              {event.anchor_id === null ? " ; sans date liée" :
+                " ; ancre explicite : " + event.anchor_id}
+              {event.source_revision_id === null ? "" :
+                " ; révision source exacte : " + event.source_revision_id}
+            </li>)}</ol>
+          </details>
+        </li>;
+      })}</ul>
+    </section>
   </section>;
 }

@@ -8,6 +8,7 @@ import {
 import {
   startFictionalEventNotebook, createFictionalEvent, amendFictionalEvent,
   withdrawFictionalEvent, inspectFictionalEventNotebook, currentFictionalEvents,
+  auditedFictionalEventHistory,
 } from "./m32FictionalEventNotebook";
 import M32FictionalEventNotebookPreview from "./M32FictionalEventNotebookPreview";
 
@@ -347,5 +348,89 @@ describe("M3.2 invented notebook runtime-shape fail-closed checks", () => {
     expect(a.events.map(e => e.status)).toEqual([
       "superseded", "superseded", "current", "withdrawn",
     ]);
+  });
+});
+
+describe("M3.2 invented read-only event history: versions and human explanations", () => {
+  function first() {
+    return createFictionalEvent(fixture("fiction-alpha"), plain);
+  }
+  it("42 returns aligned create amend withdraw versions including withdrawn tombstone", () => {
+    const a = first();
+    const b = amendFictionalEvent(a, a.events[0].event_id,
+      { ...plain, title: "Rectification" }, "Justification manuelle");
+    const c = withdrawFictionalEvent(b, a.events[0].event_id, "Retrait motivé");
+    const entries = auditedFictionalEventHistory(c, a.events[0].event_id);
+    expect(entries.map(x => x.event.version)).toEqual([1, 2, 3]);
+    expect(entries.map(x => x.event.status)).toEqual([
+      "superseded", "superseded", "withdrawn",
+    ]);
+    expect(entries.map(x => x.audit.action)).toEqual(["created", "amended", "withdrawn"]);
+    expect(entries.map(x => x.audit.explanation)).toEqual([
+      "Événement créé manuellement en mémoire inventée",
+      "Justification manuelle", "Retrait motivé",
+    ]);
+  });
+  it("43 isolates histories across two event IDs despite interleaved operations", () => {
+    let a = first();
+    const firstId = a.events[0].event_id;
+    a = createFictionalEvent(a, { ...plain, title: "Second" });
+    const secondId = a.events[1].event_id;
+    a = amendFictionalEvent(a, firstId, { ...plain, title: "Première corrigée" }, "Correction");
+    a = withdrawFictionalEvent(a, secondId, "Retrait explicite");
+    expect(auditedFictionalEventHistory(a, firstId).map(x => x.audit.action))
+      .toEqual(["created", "amended"]);
+    expect(auditedFictionalEventHistory(a, secondId).map(x => x.audit.action))
+      .toEqual(["created", "withdrawn"]);
+  });
+  it("44 rejects an unknown invented event ID", () => {
+    const a = first();
+    expect(() => auditedFictionalEventHistory(a, "fiction-alpha-event-0999"))
+      .toThrow("historique d'événement fictif absent ou étranger");
+  });
+  it("45 refuses cross-universe event history lookup without fallback", () => {
+    const a = first();
+    expect(() => auditedFictionalEventHistory(a, "fiction-beta-event-0001"))
+      .toThrow("historique d'événement fictif absent ou étranger");
+  });
+  it("46 rejects null and numeric untyped selectors instead of producing empty history", () => {
+    const a = first();
+    for (const value of [null, 7, ""]) {
+      expect(() => auditedFictionalEventHistory(a, value as unknown as string))
+        .toThrow("historique d'événement fictif absent ou étranger");
+    }
+  });
+  it("47 rejects tampered notebook audit before exposing historical entries", () => {
+    const a = first();
+    expect(() => auditedFictionalEventHistory({
+      ...a, audit: [{ ...a.audit[0], action: "withdrawn" }],
+    } as unknown as typeof a, a.events[0].event_id)).toThrow("audit fictif");
+  });
+  it("48 detaches and freezes display entries without mutating input notebook", () => {
+    const a = first();
+    const history = auditedFictionalEventHistory(a, a.events[0].event_id);
+    expect(Object.isFrozen(history)).toBe(true);
+    expect(Object.isFrozen(history[0])).toBe(true);
+    expect(Object.isFrozen(history[0].event)).toBe(true);
+    expect(Object.isFrozen(history[0].audit)).toBe(true);
+    expect(history[0].event).not.toBe(a.events[0]);
+    expect(history[0].audit).not.toBe(a.audit[0]);
+    expect(a.audit[0].action).toBe("created");
+  });
+  it("49 renders a withdrawn event and explanations in collapsed accessible HTML", () => {
+    const a = createFictionalEvent(fixture("fiction-alpha"), {
+      ...plain, note: "<script>not-a-command</script>",
+    });
+    const b = withdrawFictionalEvent(a, a.events[0].event_id, "Choix de l'auteur");
+    const html = renderToStaticMarkup(createElement(M32FictionalEventNotebookPreview,
+      { notebook: b }));
+    expect(html).toContain("Historique des versions fictives");
+    expect(html).toContain("<details>");
+    expect(html).toContain("retiré");
+    expect(html).toContain("Choix de l&#x27;auteur");
+    expect(html).toContain("&lt;script&gt;not-a-command&lt;/script&gt;");
+    expect(html).not.toContain("<script>");
+    expect(html).toContain("aucune écriture SQLite");
+    expect(currentFictionalEvents(b)).toHaveLength(0);
   });
 });

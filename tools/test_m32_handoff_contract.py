@@ -1820,7 +1820,7 @@ class HandoffContractTests(unittest.TestCase):
         self.assertEqual(p["real_g3"], "STOP_UNAVAILABLE")
         self.assertFalse(p["operator_windows_validation"])
         self.assertFalse(p["original_sqlite_touched"])
-        self.assertEqual(self.data["last_confirmed_merged_pr"], 149)
+        self.assertGreaterEqual(self.data["last_confirmed_merged_pr"], 149)
         q = self.data["m3_2_product_progress"]["fictional_runtime_shape_denial_candidate"]
         self.assertEqual(q["new_tests"], 9)
         self.assertFalse(q["real_g3_authorized"])
@@ -1831,14 +1831,52 @@ class HandoffContractTests(unittest.TestCase):
         self.assertIn('Array.isArray(audit)', model)
         tests = (ROOT / q["tests"]).read_text(encoding="utf-8")
         self.assertIn("41 preserves legitimate interleaved", tests)
-        for name in ("RESUME_PROMPT_SHORT.md", "RESUME_PROMPT.md",
-                     "HANDOFF_CURRENT.md", "HANDOFF_HISTORY.md", "NEXT.md",
-                     "STATE.md", "M3_2_GATE_DECISION_CURRENT.md"):
+        # The short prompt is current-only, older terminal CI remains in full handoff.
+        for name in ("RESUME_PROMPT.md", "HANDOFF_CURRENT.md",
+                     "HANDOFF_HISTORY.md", "NEXT.md", "STATE.md",
+                     "M3_2_GATE_DECISION_CURRENT.md"):
             data = (DIRECTORY / name).read_text(encoding="utf-8")
             self.assertIn("39996127567", data, name)
             self.assertIn("IN_PROGRESS_NOT_ACCEPTED", data, name)
         self.assertIn("39996127567",
                       (ROOT / "docs/roadmap/ROADMAP_STATUS_CURRENT.md").read_text(encoding="utf-8"))
+
+    def test_86_pr150_terminal_and_readonly_fictional_event_history(self):
+        p = self.data["post_pr150_terminal_observation"]
+        self.assertEqual(p["pr"], 150)
+        self.assertTrue(p["merged"])
+        self.assertEqual(p["source_sha"], "b39506bce112b828477d9c4b1d1f14076dc3fb38")
+        self.assertEqual(p["source_ci"], {"run_id": 40006337923, "conclusion": "SUCCESS"})
+        self.assertEqual(p["merge_sha"], "20658fdc87fd8deca712611f74f4e9cdf1389807")
+        self.assertEqual(p["postmain_ci"], {"run_id": 40007837202, "conclusion": "SUCCESS"})
+        self.assertEqual(p["m3_2"], "IN_PROGRESS_NOT_ACCEPTED")
+        self.assertEqual(p["real_g3"], "STOP_UNAVAILABLE")
+        self.assertFalse(p["operator_windows_validation"])
+        self.assertFalse(p["original_sqlite_touched"])
+        self.assertGreaterEqual(self.data["last_confirmed_merged_pr"], 150)
+        q = self.data["m3_2_product_progress"]["fictional_event_readonly_history_candidate"]
+        self.assertEqual(q["new_tests"], 8)
+        self.assertTrue(q["source_only"])
+        self.assertFalse(q["real_g3_authorized"])
+        for key in ("model", "preview", "tests", "documentation"):
+            self.assertTrue((ROOT / q[key]).is_file(), key)
+        model = (ROOT / q["model"]).read_text(encoding="utf-8")
+        self.assertIn("auditedFictionalEventHistory", model)
+        self.assertIn("Object.freeze", model)
+        preview = (ROOT / q["preview"]).read_text(encoding="utf-8")
+        self.assertIn('aria-label="Historique des versions fictives"', preview)
+        self.assertIn("<details>", preview)
+        self.assertNotIn("invoke(", model + preview)
+        tests = (ROOT / q["tests"]).read_text(encoding="utf-8")
+        self.assertIn("49 renders a withdrawn event", tests)
+        for name in ("RESUME_PROMPT_SHORT.md", "RESUME_PROMPT.md",
+                     "HANDOFF_CURRENT.md", "HANDOFF_HISTORY.md", "NEXT.md",
+                     "STATE.md", "M3_2_GATE_DECISION_CURRENT.md"):
+            body = (DIRECTORY / name).read_text(encoding="utf-8")
+            self.assertIn("40007837202", body, name)
+            self.assertIn("IN_PROGRESS_NOT_ACCEPTED", body, name)
+        roadmap = (ROOT / "docs/roadmap/ROADMAP_STATUS_CURRENT.md").read_text(encoding="utf-8")
+        self.assertIn("40007837202", roadmap)
 
 if __name__ == "__main__":
     unittest.main()
