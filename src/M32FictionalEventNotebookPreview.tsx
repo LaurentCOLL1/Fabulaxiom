@@ -5,11 +5,24 @@ import {
   type FictionalEventNotebook,
 } from "./m32FictionalEventNotebook";
 
+/** Controlled input from an isolated caller; never an event mutation or source proof. */
+export type FictionalVersionPreviewSelection = Readonly<{
+  event_id: string;
+  from_version: number;
+  to_version: number;
+}>;
+
 /** Read-only notebook inspection; not mounted by App.tsx or connected to Tauri. */
-export default function M32FictionalEventNotebookPreview({ notebook }: {
+export default function M32FictionalEventNotebookPreview({ notebook, selection }: {
   notebook: FictionalEventNotebook;
+  selection?: FictionalVersionPreviewSelection;
 }): ReactElement {
   inspectFictionalEventNotebook(notebook);
+  if (selection !== undefined && (!selection || typeof selection !== "object" ||
+      Array.isArray(selection)))
+    throw new Error("Sélection fictive refusée : objet requis");
+  const selected = selection === undefined ? null : compareFictionalEventVersions(
+    notebook, selection.event_id, selection.from_version, selection.to_version);
   const current = currentFictionalEvents(notebook);
   const withdrawn = notebook.events.filter(e => e.status === "withdrawn").length;
   return <section aria-label="Carnet d'événements fictifs sans sauvegarde">
@@ -17,6 +30,21 @@ export default function M32FictionalEventNotebookPreview({ notebook }: {
     <p role="note">Mémoire de démonstration seulement : aucune écriture SQLite,
       aucun ordre mondial calculé, aucune révélation du lecteur déduite.</p>
     <p>Événements courants : {current.length} ; retraits historiques : {withdrawn}</p>
+    {selected && <section aria-label="Comparaison fictive demandée explicitement">
+      <h3>Comparaison sélectionnée, version {selected.from_version} vers version {selected.to_version}</h3>
+      <p>Événement inventé : {selected.event_id} ; état de la version finale :
+        {selected.to_status}. Aucune date ni provenance réelle déduite.</p>
+      {selected.field_differences.length === 0
+        ? <p>Aucun écart de contenu entre ces deux versions fictives.</p>
+        : <ul>{selected.field_differences.map(diff => <li key={diff.field}>
+          {({ title: "titre", note: "note", anchor_id: "ancre",
+            source_revision_id: "révision" }[diff.field])}
+          {" : avant = " + (diff.before === null ? "(non lié)" :
+            diff.before === "" ? "(vide)" : diff.before)}
+          {" ; après = " + (diff.after === null ? "(non lié)" :
+            diff.after === "" ? "(vide)" : diff.after)}
+        </li>)}</ul>}
+    </section>}
     <ul>{current.map(event => <li key={event.event_id}>
       {event.title} — version {event.version}
       {event.anchor_id === null ? " (date non liée)" :

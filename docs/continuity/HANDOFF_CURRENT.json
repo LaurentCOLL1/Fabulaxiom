@@ -3,14 +3,14 @@
   "as_of": "2026-10-23",
   "status_kind": "DATED_PUBLIC_SOURCE_HANDOFF_ONLY",
   "repository": "LaurentCOLL1/Fabulaxiom",
-  "last_confirmed_main_before_handoff": "c581ceb5056cb8e0d61646c02d3af722afb47a3e",
-  "last_confirmed_merged_pr": 153,
-  "last_verified_pr_head": "a211822c0618e68090633f874cde6b2c216204a8",
+  "last_confirmed_main_before_handoff": "391cc3972c87b7f3ae0fda033b55971f268d7fbe",
+  "last_confirmed_merged_pr": 154,
+  "last_verified_pr_head": "5d91e198e455c33a2782804310377f19ec746bee",
   "last_verified_ci": {
-    "run_id": 40020544737,
+    "run_id": 40025773741,
     "context": "Windows frontend and Rust checks",
     "conclusion": "SUCCESS",
-    "source": "PR153_EXACT_HEAD"
+    "source": "PR154_EXACT_HEAD"
   },
   "recent_changes": [
     "PR_85_EXACT_G2A_TEXT_AST_ONLY",
@@ -137,7 +137,8 @@
     "PR150_RUNTIME_SHAPE_GUARD_MERGED_MAIN_20658FDC_SOURCE_40006337923_POSTMAIN_40007837202_SUCCESS",
     "PR151_HISTORY_READONLY_MERGED_MAIN_2E0B29BF_SOURCE_40010733862_POSTMAIN_40012175419_SUCCESS",
     "PR152_FICTIONAL_VERSION_FIELDS_MERGED_MAIN_5346DDB7_SOURCE_40014823165_POSTMAIN_40016058394_SUCCESS",
-    "PR153_EXACT_INVENTED_BEFORE_AFTER_MERGED_MAIN_C581CEB5_SOURCE_40020544737_POSTMAIN_40021898423_SUCCESS"
+    "PR153_EXACT_INVENTED_BEFORE_AFTER_MERGED_MAIN_C581CEB5_SOURCE_40020544737_POSTMAIN_40021898423_SUCCESS",
+    "PR154_SELECTED_FICTIONAL_VERSION_COMPARE_MERGED_MAIN_391CC397_SOURCE_40025773741_POSTMAIN_40027154468_SUCCESS"
   ],
   "pr35": "OPEN_DRAFT",
   "issues": {
@@ -323,7 +324,7 @@
     "verified_bypass_actors": 0,
     "classic_branch_protection_read": "403_INTEGRATION_RESTRICTED"
   },
-  "next": "PR153_SOURCE_POSTMAIN_TERMINAL_SUCCESS; FICTIONAL_EVENT_EXPLICIT_NONADJACENT_VERSION_COMPARISON_NEW_EXACT_HEAD_CI; REAL_G3_STOP",
+  "next": "PR154_SOURCE_POSTMAIN_TERMINAL_SUCCESS; FICTIONAL_CONTROLLED_SELECTED_VERSION_PREVIEW_NEW_EXACT_HEAD_CI; REAL_G3_STOP",
   "live_refetch_required": true,
   "hand_off_updated_by_future_pr": true,
   "main_ci_post_merge": {
@@ -1009,6 +1010,19 @@
       "structural_only": true,
       "no_persistence": true,
       "not_mounted_in_application": true
+    },
+    "fictional_controlled_preview_selection_candidate": {
+      "kind": "FICTIONAL_CONTROLLED_REACT_EXPLICIT_VERSION_PAIR",
+      "preview": "src/M32FictionalEventNotebookPreview.tsx",
+      "model": "src/m32FictionalEventNotebook.ts",
+      "tests": "src/m32FictionalEventNotebook.test.tsx",
+      "documentation": "docs/qualification/M3_2_FICTIONAL_CONTROLLED_SELECTED_COMPARISON.md",
+      "new_tests": 9,
+      "source_only": true,
+      "no_persistence": true,
+      "real_g3_authorized": false,
+      "not_mounted_in_application": true,
+      "no_operator_windows_execution": true
     }
   },
   "post_pr100_normalization": {
@@ -2636,6 +2650,40 @@
     "postmain_job_steps": 76,
     "handoff_tests": 88,
     "event_tests": 65,
+    "chromium_normal": 62,
+    "chromium_strict_csp": 62,
+    "rust_tests": 132,
+    "m3_2": "IN_PROGRESS_NOT_ACCEPTED",
+    "g2b": "NOT_ACCEPTED",
+    "source_identity": "PARTIAL_LOCAL_IDENTITY_ONLY",
+    "writer_absence": "NOT_PROVEN",
+    "g2c": "NOT_AUTHORIZED",
+    "real_g3": "STOP_UNAVAILABLE",
+    "historical": "PENDING_EXTERNAL_ATTESTATION(21/3/2)",
+    "prospective": "NOT_STARTED",
+    "pr35": "OPEN_DRAFT",
+    "operator_windows_validation": false,
+    "original_sqlite_touched": false
+  },
+  "post_pr154_terminal_observation": {
+    "as_of": "2026-10-23",
+    "pr": 154,
+    "merged": true,
+    "kind": "FICTIONAL_SELECTED_NONADJACENT_EVENT_VERSION_COMPARISON",
+    "source_sha": "5d91e198e455c33a2782804310377f19ec746bee",
+    "source_ci": {
+      "run_id": 40025773741,
+      "conclusion": "SUCCESS"
+    },
+    "merge_sha": "391cc3972c87b7f3ae0fda033b55971f268d7fbe",
+    "postmain_ci": {
+      "run_id": 40027154468,
+      "conclusion": "SUCCESS"
+    },
+    "source_job_steps": 76,
+    "postmain_job_steps": 76,
+    "handoff_tests": 89,
+    "event_tests": 74,
     "chromium_normal": 62,
     "chromium_strict_csp": 62,
     "rust_tests": 132,
