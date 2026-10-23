@@ -75,6 +75,27 @@ class OwnerRuntimePolicyTests(unittest.TestCase):
                                 replace(self.all_true, **{name: False}))
                 self.assertIn(name, report.missing)
 
+    def test_unmediated_writer_veto_even_if_owner_mutex_is_serialized(self):
+        claims = replace(self.all_true,
+                         owner_access_serialized=True,
+                         all_mutation_entrypoints_mediated=False)
+        report = review(Route.EXISTING_OWNER_SERVICE, claims)
+        self.assertEqual(report.status, "STOP_UNPROVEN_CONDITIONS")
+        self.assertIn("all_mutation_entrypoints_mediated", report.missing)
+        self.assertFalse(report.real_g3_authorized)
+
+    def test_default_missing_mutation_inventory_remains_unproven(self):
+        report = current_rust_owner_status()
+        self.assertIn("all_mutation_entrypoints_mediated", report.missing)
+        self.assertFalse(report.real_g3_authorized)
+
+    def test_cold_route_does_not_infer_owner_writes(self):
+        report = review(Route.VERIFIED_COLD_CUSTODY,
+                        replace(self.all_true,
+                                all_mutation_entrypoints_mediated=False))
+        self.assertEqual(report.status, "HYPOTHETICAL_REVIEW_ONLY")
+        self.assertFalse(report.real_g3_authorized)
+
     def test_cold_route_does_not_claim_a_preopened_owner(self):
         claims = replace(
             self.all_true,

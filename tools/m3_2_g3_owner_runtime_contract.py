@@ -28,6 +28,7 @@ class HypotheticalEvidence:
     no_migrations_or_recovery_on_original: bool = False
     owner_session_lifetime_continuous: bool = False
     owner_access_serialized: bool = False
+    all_mutation_entrypoints_mediated: bool = False
     revocation_prevents_reopen: bool = False
     consistent_sqlite_snapshot_method: bool = False
     source_size_budget_verified: bool = False
@@ -62,6 +63,7 @@ _OWNER = (
     "owner_connection_already_exists",
     "owner_session_lifetime_continuous",
     "owner_access_serialized",
+    "all_mutation_entrypoints_mediated",
     "revocation_prevents_reopen",
 )
 _COLD = (
