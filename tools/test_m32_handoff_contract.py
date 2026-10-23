@@ -1775,5 +1775,36 @@ class HandoffContractTests(unittest.TestCase):
                        "expected_head_sha", "autorisation"):
             self.assertIn(clause, self.policy)
 
+    def test_84_pr148_terminal_and_fictional_tombstone_guard(self):
+        p = self.data["post_pr148_terminal_observation"]
+        self.assertEqual(p["pr"], 148)
+        self.assertTrue(p["merged"])
+        self.assertEqual(p["source_sha"], "f4ff680ef82d91e2b10fe7ea9701e90d073453b4")
+        self.assertEqual(p["source_ci"]["run_id"], 39985794291)
+        self.assertEqual(p["source_ci"]["conclusion"], "SUCCESS")
+        self.assertEqual(p["merge_sha"], "4a8d09d99c1b2b2eb716b17acf733981c51ac340")
+        self.assertEqual(p["postmain_ci"]["run_id"], 39987313809)
+        self.assertEqual(p["postmain_ci"]["conclusion"], "SUCCESS")
+        self.assertEqual(p["m3_2"], "IN_PROGRESS_NOT_ACCEPTED")
+        self.assertEqual(p["real_g3"], "STOP_UNAVAILABLE")
+        q = self.data["m3_2_product_progress"]["fictional_event_withdrawal_tombstone_candidate"]
+        self.assertEqual(q["added_tests"], 5)
+        self.assertFalse(q["real_g3_authorized"])
+        for k in ("model", "tests", "documentation"):
+            self.assertTrue((ROOT / q[k]).is_file(), q[k])
+        source = (ROOT / q["model"]).read_text(encoding="utf-8")
+        self.assertIn("retrait sans version précédente", source)
+        self.assertIn("pierre tombale modifiant la version précédente", source)
+        tests = (ROOT / q["tests"]).read_text(encoding="utf-8")
+        self.assertIn("32 accepts legitimate amend then withdraw", tests)
+        for name in ("RESUME_PROMPT_SHORT.md", "RESUME_PROMPT.md",
+                     "HANDOFF_CURRENT.md", "HANDOFF_HISTORY.md", "NEXT.md",
+                     "STATE.md", "M3_2_GATE_DECISION_CURRENT.md"):
+            body = (DIRECTORY / name).read_text(encoding="utf-8")
+            self.assertIn("39987313809", body, name)
+            self.assertIn("IN_PROGRESS_NOT_ACCEPTED", body, name)
+        roadmap = (ROOT / "docs/roadmap/ROADMAP_STATUS_CURRENT.md").read_text(encoding="utf-8")
+        self.assertIn("39987313809", roadmap)
+
 if __name__ == "__main__":
     unittest.main()
