@@ -662,3 +662,85 @@ describe("M3.2 invented-only explicit nonadjacent event-version comparison", () 
     expect(html).not.toContain("open=");
   });
 });
+
+describe("M3.2 controlled read-only selected-version fictional preview", () => {
+  function created() {
+    return createFictionalEvent(fixture("fiction-alpha"), plain);
+  }
+  function html(
+    notebook: ReturnType<typeof created>,
+    selection?: { event_id: string; from_version: number; to_version: number },
+  ) {
+    return renderToStaticMarkup(createElement(M32FictionalEventNotebookPreview,
+      { notebook, selection }));
+  }
+  it("75 keeps existing default historical view when no controlled selection is provided", () => {
+    const a = created();
+    expect(html(a)).not.toContain("Comparaison fictive demandée explicitement");
+    expect(html(a)).toContain("Historique manuel des versions");
+  });
+  it("76 shows the caller-selected middle-to-final version rather than implicit 1-to-last", () => {
+    const a = created(), id = a.events[0].event_id;
+    const b = amendFictionalEvent(a,id,{...plain,title:"Deuxième"},"Correction");
+    const c = amendFictionalEvent(b,id,{...plain,title:"Troisième"},"Correction");
+    const markup = html(c,{event_id:id,from_version:2,to_version:3});
+    expect(markup).toContain("Comparaison sélectionnée, version 2 vers version 3");
+    expect(markup).toContain("avant = Deuxième");
+    expect(markup).toContain("après = Troisième");
+    expect(markup).toContain("Comparaison manuelle, version 1 vers version 3");
+  });
+  it("77 never selects a neighboring event accidentally when revisions interleave", () => {
+    let a = created();
+    const first = a.events[0].event_id;
+    a = createFictionalEvent(a,{...plain,title:"Événement voisin"});
+    const neighbor = a.events[1].event_id;
+    a = amendFictionalEvent(a,neighbor,{...plain,title:"Voisin corrigé"},"Correction");
+    a = amendFictionalEvent(a,first,{...plain,note:"Note précise"},"Correction");
+    const markup = html(a,{event_id:first,from_version:1,to_version:2});
+    const explicit = markup.split('aria-label="Comparaison fictive demandée explicitement"')[1]
+      ?.split("</section>")[0];
+    expect(explicit).toContain("après = Note précise");
+    expect(explicit).not.toContain("Voisin corrigé");
+  });
+  it("78 rejects reversed and equal version selectors without rendering fallback", () => {
+    const a = created(), id = a.events[0].event_id;
+    for (const [from_version,to_version] of [[1,1],[2,1],[0,2],[1,1.5]]) {
+      expect(() => html(a,{event_id:id,from_version,to_version}))
+        .toThrow("comparaison de versions fictives non croissante");
+    }
+  });
+  it("79 refuses absent versions instead of silently falling back to existing history", () => {
+    const a = created(), id = a.events[0].event_id;
+    expect(() => html(a,{event_id:id,from_version:1,to_version:2}))
+      .toThrow("version fictive absente ou étrangère");
+  });
+  it("80 rejects cross-universe event IDs from a controlled caller", () => {
+    const a = created();
+    expect(() => html(a,{event_id:"fiction-beta-event-0001",from_version:1,to_version:2}))
+      .toThrow("historique d'événement fictif absent ou étranger");
+  });
+  it("81 rejects malformed null-controlled selections, not a silent default", () => {
+    const a = created();
+    expect(() => html(a,null as unknown as {event_id:string;from_version:number;to_version:number}))
+      .toThrow("Sélection fictive refusée");
+    expect(() => html(a,[] as unknown as {event_id:string;from_version:number;to_version:number}))
+      .toThrow("Sélection fictive refusée");
+  });
+  it("82 escapes HTML in caller-selected content and never emits a script", () => {
+    const a = created(),id=a.events[0].event_id;
+    const b = amendFictionalEvent(a,id,{...plain,title:"<script>attaque</script>"},"Correction");
+    const markup = html(b,{event_id:id,from_version:1,to_version:2});
+    expect(markup).toContain("Comparaison fictive demandée explicitement");
+    expect(markup).toContain("&lt;script&gt;attaque&lt;/script&gt;");
+    expect(markup).not.toContain("<script>");
+    expect(markup).not.toContain("open=");
+  });
+  it("83 compares a withdrawn tombstone without manufacturing a content change", () => {
+    const a = created(),id=a.events[0].event_id;
+    const b = withdrawFictionalEvent(a,id,"Retrait motivé");
+    const markup = html(b,{event_id:id,from_version:1,to_version:2});
+    expect(markup).toContain("Aucun écart de contenu entre ces deux versions fictives.");
+    expect(markup).toContain("withdrawn");
+    expect(currentFictionalEvents(b)).toHaveLength(0);
+  });
+});
