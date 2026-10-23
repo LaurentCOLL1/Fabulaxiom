@@ -83,13 +83,29 @@ export function inspectFictionalEventNotebook(book: FictionalEventNotebook): Fic
         return stop("historique de correction non monotone");
     }
   }
-  for (const audit of book.audit) {
-    if (!["created", "amended", "withdrawn"].includes(audit.action) ||
-        !grouped.has(audit.event_id) ||
-        !Number.isSafeInteger(audit.version) || audit.version < 1 ||
-        typeof audit.explanation !== "string" || !audit.explanation.trim())
-      return stop("audit fictif invalide");
+  // One appended version per human operation: preserve exact audit alignment.
+  // This is a structural sanity check, not an authentication of historical bytes.
+  if (book.audit.length !== book.events.length)
+    return stop("audit incomplet ou surnuméraire");
+  let createdCount = 0;
+  for (let index = 0; index < book.events.length; index += 1) {
+    const event = book.events[index];
+    const audit = book.audit[index];
+    if (event.version === 1) {
+      createdCount += 1;
+      if (event.event_id !== universe + "-event-" + String(createdCount).padStart(4, "0"))
+        return stop("identifiant événementiel non monotone");
+    }
+    const expectedAction = event.version === 1 ? "created" :
+      event.status === "withdrawn" ? "withdrawn" : "amended";
+    if (!audit || audit.event_id !== event.event_id ||
+        audit.version !== event.version || audit.action !== expectedAction ||
+        typeof audit.explanation !== "string" || !audit.explanation.trim() ||
+        audit.explanation.length > 240)
+      return stop("audit fictif absent, désordonné ou incompatible");
   }
+  if (book.nextId !== createdCount + 1)
+    return stop("compteur d'événements incohérent");
   return book;
 }
 export function startFictionalEventNotebook(draft: FictionalDraft): FictionalEventNotebook {
