@@ -1,16 +1,16 @@
 {
   "schema": 1,
-  "as_of": "2026-10-22",
+  "as_of": "2026-10-23",
   "status_kind": "DATED_PUBLIC_SOURCE_HANDOFF_ONLY",
   "repository": "LaurentCOLL1/Fabulaxiom",
-  "last_confirmed_main_before_handoff": "4d5a2bcb68dd439fac1846d354f3f808138457f1",
-  "last_confirmed_merged_pr": 137,
-  "last_verified_pr_head": "892a42e9ea0c84ab9af9fb45536d502d99252155",
+  "last_confirmed_main_before_handoff": "78050c11b882ec852d8f211cedf3980166f30e9a",
+  "last_confirmed_merged_pr": 138,
+  "last_verified_pr_head": "29e662e2b27307bdae0a0107e02a6f1ae1fc59b7",
   "last_verified_ci": {
-    "run_id": 39876891920,
+    "run_id": 39900743598,
     "context": "Windows frontend and Rust checks",
     "conclusion": "SUCCESS",
-    "source": "PR137_CORRECTED_EXACT_HEAD"
+    "source": "PR138_FINAL_EXACT_HEAD"
   },
   "recent_changes": [
     "PR_85_EXACT_G2A_TEXT_AST_ONLY",
@@ -111,7 +111,9 @@
     "2026_10_23_PR136_PROTECTED_MERGED_D4837F1B_SOURCE_39848398829_SUCCESS_POSTMAIN_39849940959_SUCCESS",
     "2026_10_23_NEW_RUST_TOY_UNMEDIATED_WRITE_STALE_LEASE_NEGATIVE_WITNESS_NEW_CI_REQUIRED",
     "2026_10_23_PR137_PROTECTED_MERGED_4D5A2BCB_SOURCE_39876891920_SUCCESS_POSTMAIN_39900039763_PENDING_AT_CHECKPOINT",
-    "2026_10_23_NEW_OWNER_ALL_MUTATION_CHANNELS_GUARD_DEFAULT_FALSE_SOURCE_ONLY_CI_REQUIRED"
+    "2026_10_23_NEW_OWNER_ALL_MUTATION_CHANNELS_GUARD_DEFAULT_FALSE_SOURCE_ONLY_CI_REQUIRED",
+    "2026_10_23_PR137_PR138_POSTMAIN_TERMINAL_LIVE_VERIFIED_SEPARATE_HISTORICAL_SNAPSHOTS",
+    "PR138_SOURCE_29e662e_EXACT_HEAD_CI_39900743598_MERGED_78050c11_POSTMAIN_39902762331"
   ],
   "pr35": "OPEN_DRAFT",
   "issues": {
@@ -297,7 +299,7 @@
     "verified_bypass_actors": 0,
     "classic_branch_protection_read": "403_INTEGRATION_RESTRICTED"
   },
-  "next": "PR138_EXACT_HEAD_CI_FOR_OWNER_ALL_MUTATION_CHANNELS_DENIAL; PR137_POSTMAIN_TERMINAL_LATER_RECHECK; G2C_G3_REAL_STOP",
+  "next": "POST_PR138_TERMINAL_DOCUMENTARY_NORMALIZATION_EXACT_HEAD_CI_AND_PROTECTED_MERGE; THEN_SYNTHETIC_ONLY_ADVERSARIAL_WRITER_CHANNEL_TESTS; G2C_G3_REAL_STOP",
   "live_refetch_required": true,
   "hand_off_updated_by_future_pr": true,
   "main_ci_post_merge": {
@@ -1825,5 +1827,65 @@
     "historical": "PENDING_EXTERNAL_ATTESTATION(21/3/2)",
     "prospective": "NOT_STARTED",
     "pr35_state": "OPEN_DRAFT"
+  },
+  "post_pr137_postmain_terminal_observation": {
+    "as_of": "2026-10-23",
+    "kind": "LATER_TERMINAL_OBSERVATION_PRESERVES_ORIGINAL_CHECKPOINT",
+    "sha": "4d5a2bcb68dd439fac1846d354f3f808138457f1",
+    "run_id": 39900039763,
+    "status": "completed",
+    "conclusion": "SUCCESS",
+    "job": "Windows frontend and Rust checks",
+    "historic_post_pr137_normalization_main_ci_preserved": true,
+    "real_g3_authorized": false
+  },
+  "post_pr138_terminal_observation": {
+    "as_of": "2026-10-23",
+    "kind": "GITHUB_VERIFIED_SOURCE_ONLY_DOCUMENTARY_NOT_REAL_SQLITE_AUTHORIZATION",
+    "pr": 138,
+    "merged": true,
+    "source_sha": "29e662e2b27307bdae0a0107e02a6f1ae1fc59b7",
+    "source_ci": {
+      "run_id": 39900743598,
+      "head_sha": "29e662e2b27307bdae0a0107e02a6f1ae1fc59b7",
+      "conclusion": "SUCCESS",
+      "status": "completed",
+      "job": "Windows frontend and Rust checks",
+      "job_steps": 75,
+      "handoff_tests": 73,
+      "rust_baseline_tests": 132,
+      "chromium_normal": 53,
+      "chromium_strict_csp": 53
+    },
+    "obsolete_run": {
+      "run_id": 39900643826,
+      "head_sha": "69d6dde571267ae1352b3c96cec06dbb8c5807c1",
+      "qualification_for_final_head": "INVALID"
+    },
+    "merge_sha": "78050c11b882ec852d8f211cedf3980166f30e9a",
+    "postmain_ci": {
+      "run_id": 39902762331,
+      "head_sha": "78050c11b882ec852d8f211cedf3980166f30e9a",
+      "conclusion": "SUCCESS",
+      "status": "completed",
+      "job": "Windows frontend and Rust checks",
+      "job_steps": 75
+    },
+    "all_mutation_entrypoints_mediated_default": false,
+    "real_writer_inventory_proven": false,
+    "real_g3_authorized": false,
+    "g2b_global": "NOT_ACCEPTED",
+    "source_authentication": "PARTIAL_LOCAL_IDENTITY_ONLY",
+    "sqlite_writer_absence": "NOT_PROVEN",
+    "g2c": "NOT_AUTHORIZED",
+    "g2b_to_g6": "NOT_AUTHORIZED",
+    "real_g3": "STOP_UNAVAILABLE",
+    "m3_2": "IN_PROGRESS_NOT_ACCEPTED",
+    "historical": "PENDING_EXTERNAL_ATTESTATION(21/3/2)",
+    "prospective": "NOT_STARTED",
+    "pr35": "OPEN_DRAFT",
+    "operator_file_access": "NONE",
+    "operator_commands": "NONE",
+    "notes": "Prior source-only candidate and IN_PROGRESS_AT_CHECKPOINT observations remain immutable in earlier objects; documentary PR requires its own exact SHA CI."
   }
 }
