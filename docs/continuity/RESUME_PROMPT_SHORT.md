@@ -8,7 +8,7 @@ Reprends immédiatement et méthodiquement Fabulaxiom depuis son GitHub vivant :
 
 Avant toute action, re-fetch `main`, PR, issues, CI et ruleset `Protect main`. Lis **d'abord le prompt détaillé** `docs/continuity/RESUME_PROMPT.md`, puis `HANDOFF_CURRENT.md`, `HANDOFF_CURRENT.json`, `HANDOFF_PROTOCOL.md`, `HANDOFF_HISTORY.md`, `STATE.md`, `NEXT.md`, `M3_2_GATE_DECISION_CURRENT.md` et `docs/roadmap/ROADMAP_STATUS_CURRENT.md` / `FABULAXIOM_ROADMAP_V1.md`. Ces fichiers GitHub sont l'autorité documentaire ; l'état GitHub actuel prime sur tous les SHA historiques.
 
-**Checkpoint du 23 octobre 2026 :** PR #144 **MERGED** sur `main=c969f2c29e168e99e24d675c25a3217e789c9e2d`, CI source #39940937603 **SUCCESS** et CI post-main #39942208143 **SUCCESS**. Nouvelle tranche en qualification : CRUD manuel d'événements sur données fictives et versions immuables. Re-fetch sa PR et sa CI avant toute fusion ; ne jamais réutiliser une CI d'un ancien SHA.
+**Checkpoint du 23 octobre 2026 :** PR #145 **MERGED** sur `main=26987ffaf6ec7c1a02bca8c288243a3da2092469`, CI source #39945373971 **SUCCESS**, CI post-main #39946911406 **SUCCESS**. Nouvelle tranche candidate : atelier React interactif de CRUD fictif, non monté dans l'application et sans SQLite. Re-fetch la PR, sa nouvelle CI exacte, reviews et règles avant fusion.
 
 **STOP réels :** M3.2 `IN_PROGRESS_NOT_ACCEPTED` ; G2B `NOT_ACCEPTED` ; écrivain `NOT_PROVEN` ; G2C `NOT_AUTHORIZED` ; G3 `STOP_UNAVAILABLE` ; historique `PENDING_EXTERNAL_ATTESTATION(21/3/2)` ; prospective `NOT_STARTED` ; PR #35 OPEN/DRAFT. Ne pas toucher aux SQLite originales v6/v7, backups, ACL, journaux, marqueur, migration 007 ou IPC writer sans autorisation distincte.
 

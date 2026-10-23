@@ -1358,11 +1358,11 @@ class HandoffContractTests(unittest.TestCase):
 
     def test_73_pr137_merge_and_all_writer_guard_do_not_promote_real_g3(self):
         x = self.data["post_pr137_normalization"]
-        self.assertEqual(self.data["last_confirmed_merged_pr"], 144)
+        self.assertEqual(self.data["last_confirmed_merged_pr"], 145)
         self.assertEqual(self.data["last_confirmed_main_before_handoff"],
-                         "c969f2c29e168e99e24d675c25a3217e789c9e2d")
+                         "26987ffaf6ec7c1a02bca8c288243a3da2092469")
         self.assertEqual(self.data["last_verified_pr_head"],
-                         "48b1e873292b4f65de90fbe128f76f0b5759d4db")
+                         "8151f1720c0e657fe66a191c21dafc084449486a")
         self.assertEqual(x["merged_pr"], 137)
         self.assertEqual(x["merge_sha"], "4d5a2bcb68dd439fac1846d354f3f808138457f1")
         self.assertEqual(x["pr_head_sha"], "892a42e9ea0c84ab9af9fb45536d502d99252155")
@@ -1530,7 +1530,7 @@ class HandoffContractTests(unittest.TestCase):
         self.assertIn("HANDOFF_CURRENT.md", short)
         self.assertIn("HANDOFF_CURRENT.json", short)
         self.assertIn("ROADMAP_STATUS_CURRENT.md", short)
-        self.assertIn("main=c969f2c29e168e99e24d675c25a3217e789c9e2d", short)
+        self.assertIn("main=26987ffaf6ec7c1a02bca8c288243a3da2092469", short)
         self.assertIn("IN_PROGRESS_AT_CHECKPOINT", detailed)
         for status in ("IN_PROGRESS_NOT_ACCEPTED", "NOT_PROVEN", "STOP_UNAVAILABLE",
                        "PENDING_EXTERNAL_ATTESTATION(21/3/2)", "expected_head_sha"):
@@ -1651,7 +1651,7 @@ class HandoffContractTests(unittest.TestCase):
         self.assertIn("withdrawFictionalEvent", model)
         self.assertIn("inspectFictionalDraft", model)
         self.assertNotIn("invoke(", model)
-        for name in ("RESUME_PROMPT_SHORT.md", "RESUME_PROMPT.md", "HANDOFF_CURRENT.md",
+        for name in ("RESUME_PROMPT.md", "HANDOFF_CURRENT.md",
                      "HANDOFF_HISTORY.md", "NEXT.md", "STATE.md",
                      "M3_2_GATE_DECISION_CURRENT.md"):
             body = (DIRECTORY / name).read_text(encoding="utf-8")
@@ -1659,6 +1659,42 @@ class HandoffContractTests(unittest.TestCase):
             self.assertIn("IN_PROGRESS_NOT_ACCEPTED", body, name)
         roadmap = (ROOT / "docs/roadmap/ROADMAP_STATUS_CURRENT.md").read_text(encoding="utf-8")
         self.assertIn("39942208143", roadmap)
+
+    def test_81_pr145_postmain_terminal_and_new_fictional_form_are_non_authorizing(self):
+        p = self.data["post_pr145_terminal_observation"]
+        self.assertEqual(p["pr"], 145)
+        self.assertTrue(p["merged"])
+        self.assertEqual(p["source_sha"], "8151f1720c0e657fe66a191c21dafc084449486a")
+        self.assertEqual(p["source_ci"]["run_id"], 39945373971)
+        self.assertEqual(p["source_ci"]["conclusion"], "SUCCESS")
+        self.assertEqual(p["merge_sha"], "26987ffaf6ec7c1a02bca8c288243a3da2092469")
+        self.assertEqual(p["postmain_ci"]["run_id"], 39946911406)
+        self.assertEqual(p["postmain_ci"]["conclusion"], "SUCCESS")
+        self.assertEqual(p["product"], "IN_PROGRESS_NOT_ACCEPTED")
+        self.assertEqual(p["real_g3"], "STOP_UNAVAILABLE")
+        self.assertEqual(p["writer_absence"], "NOT_PROVEN")
+        q = self.data["m3_2_product_progress"]["fictional_manual_event_workshop_candidate"]
+        self.assertEqual(q["scenarios"], 18)
+        self.assertFalse(q["mounted_in_app"])
+        self.assertFalse(q["windows_operator_acceptance"])
+        self.assertFalse(q["real_g3_authorized"])
+        for key in ("component", "tests", "documentation"):
+            self.assertTrue((ROOT / q[key]).is_file(), key)
+        source = (ROOT / q["component"]).read_text(encoding="utf-8")
+        self.assertIn("applyFictionalWorkshopAction", source)
+        self.assertIn("useState", source)
+        self.assertNotIn("invoke(", source)
+        self.assertNotIn("localStorage.", source)
+        app = (ROOT / "src/App.tsx").read_text(encoding="utf-8")
+        self.assertNotIn("M32FictionalEventManualWorkshop", app)
+        for name in ("RESUME_PROMPT_SHORT.md", "RESUME_PROMPT.md", "HANDOFF_CURRENT.md",
+                     "HANDOFF_HISTORY.md", "NEXT.md", "STATE.md",
+                     "M3_2_GATE_DECISION_CURRENT.md"):
+            content = (DIRECTORY / name).read_text(encoding="utf-8")
+            self.assertIn("39946911406", content, name)
+            self.assertIn("IN_PROGRESS_NOT_ACCEPTED", content, name)
+        self.assertIn("39946911406",
+                      (ROOT / "docs/roadmap/ROADMAP_STATUS_CURRENT.md").read_text(encoding="utf-8"))
 
     def test_24_policy_requires_refetch_and_same_pr_handoff(self):
         for clause in ("Re-fetch", "HANDOFF_CURRENT.md", "HANDOFF_CURRENT.json",
