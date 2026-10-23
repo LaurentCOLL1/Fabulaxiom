@@ -3,14 +3,14 @@
   "as_of": "2026-10-23",
   "status_kind": "DATED_PUBLIC_SOURCE_HANDOFF_ONLY",
   "repository": "LaurentCOLL1/Fabulaxiom",
-  "last_confirmed_main_before_handoff": "98216aa5f5045d6faa4202b76709507b61027534",
-  "last_confirmed_merged_pr": 142,
-  "last_verified_pr_head": "f17a5c62fb6cc5fcb6259138b4f529b8f07bc581",
+  "last_confirmed_main_before_handoff": "cf90661173e9e6ed8d29caa181557b04e2d6fb63",
+  "last_confirmed_merged_pr": 143,
+  "last_verified_pr_head": "61ae15427863ccaae7f2cd8a5b8ea6ff04c83f4c",
   "last_verified_ci": {
-    "run_id": 39930833733,
+    "run_id": 39935643729,
     "context": "Windows frontend and Rust checks",
     "conclusion": "SUCCESS",
-    "source": "PR142_FINAL_EXACT_HEAD"
+    "source": "PR143_EXACT_HEAD"
   },
   "recent_changes": [
     "PR_85_EXACT_G2A_TEXT_AST_ONLY",
@@ -121,7 +121,9 @@
     "PR141_MERGED_63e1e099_EXACT_SHA_WINDOWS_CI_39921099284_SUCCESS",
     "2026_10_23_SHORT_AND_LONG_RESUME_PROMPTS_EVERY_PR_CI_POLICY_CANDIDATE",
     "PR142_MERGED_SHORT_LONG_RESUME_PROMPTS_98216aa_EXACT_SHA_CI_AND_POSTMAIN_PASS",
-    "2026_10_23_CANDIDATE_PURE_PYTHON_12_NEGATIVE_PR_DIFF_POLICY_MATRIX"
+    "2026_10_23_CANDIDATE_PURE_PYTHON_12_NEGATIVE_PR_DIFF_POLICY_MATRIX",
+    "PR143_MERGED_EXACT_SOURCE_AND_POSTMAIN_TERMINAL_CI_SUCCESS",
+    "M32_TWO_UNIVERSES_TWO_NOVELS_ISOLATION_BROWSER_RAM_ONLY_CANDIDATE"
   ],
   "pr35": "OPEN_DRAFT",
   "issues": {
@@ -307,7 +309,7 @@
     "verified_bypass_actors": 0,
     "classic_branch_protection_read": "403_INTEGRATION_RESTRICTED"
   },
-  "next": "PR142_POSTMAIN_PASS_DOCUMENTED; NEW_RESUME_PR_DIFF_NEGATIVE_MATRIX_EXACT_SHA_CI_AND_PROTECTED_MERGE; REAL_G3_STOP",
+  "next": "M32_TWO_UNIVERSES_FIXTURES_EXACT_SHA_CI_AND_PROTECTED_MERGE; POSTMERGE_CI; REAL_G2C_G3_STOP",
   "live_refetch_required": true,
   "hand_off_updated_by_future_pr": true,
   "main_ci_post_merge": {
@@ -861,6 +863,17 @@
       "writer_absence": "NOT_PROVEN",
       "g2c": "NOT_AUTHORIZED",
       "g3": "STOP_UNAVAILABLE"
+    },
+    "two_universe_fictional_browser_only_candidate": {
+      "kind": "PENDING_NEW_EXACT_SHA_CI",
+      "component": "src/M32TwoUniverseSafetyPreview.tsx",
+      "tests": "src/m32TwoUniverseIsolation.test.tsx",
+      "documentation": "docs/qualification/M3_2_TWO_UNIVERSES_FICTIONAL_ISOLATION.md",
+      "scenarios": 14,
+      "real_g3_authorized": false,
+      "operator_windows_acceptance": false,
+      "real_sqlite_access": "NONE",
+      "integration_with_app": "NONE"
     }
   },
   "post_pr100_normalization": {
@@ -2096,5 +2109,43 @@
     "material_handoffs": true,
     "no_original_sqlite": true,
     "real_g3_authorized": false
+  },
+  "post_pr143_terminal_observation": {
+    "as_of": "2026-10-23",
+    "kind": "SOURCE_ONLY_PROMPT_DIFF_GUARD_MERGED_NO_RUNTIME_AUTHORITY",
+    "pr": 143,
+    "merged": true,
+    "source_sha": "61ae15427863ccaae7f2cd8a5b8ea6ff04c83f4c",
+    "source_ci": {
+      "run_id": 39935643729,
+      "conclusion": "SUCCESS",
+      "windows_steps": 76,
+      "handoff_tests": 78,
+      "prompt_negative_tests": 12,
+      "rust_baseline_tests": 132,
+      "chromium_normal": 53,
+      "chromium_strict_csp": 53
+    },
+    "merge_sha": "cf90661173e9e6ed8d29caa181557b04e2d6fb63",
+    "postmain_ci": {
+      "run_id": 39936839961,
+      "conclusion": "SUCCESS",
+      "windows_steps": 76,
+      "handoff_tests": 78,
+      "prompt_negative_tests": 12,
+      "rust_baseline_tests": 132,
+      "chromium_normal": 53,
+      "chromium_strict_csp": 53
+    },
+    "real_g3_authorized": false,
+    "source_authentication": "PARTIAL_LOCAL_IDENTITY_ONLY",
+    "sqlite_writer_absence": "NOT_PROVEN",
+    "g2b": "NOT_ACCEPTED",
+    "g2c": "NOT_AUTHORIZED",
+    "real_g3": "STOP_UNAVAILABLE",
+    "m3_2": "IN_PROGRESS_NOT_ACCEPTED",
+    "historical": "PENDING_EXTERNAL_ATTESTATION(21/3/2)",
+    "prospective": "NOT_STARTED",
+    "pr35": "OPEN_DRAFT"
   }
 }
