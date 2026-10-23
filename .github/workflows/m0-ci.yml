@@ -142,6 +142,9 @@ jobs:
       - name: M3.2 living handoff source-only contract checks
         run: python -m unittest discover -s tools -p "test_m32_handoff_contract.py" -v
 
+      - name: M3.2 resume prompt PR diff policy 12 synthetic negative cases
+        run: python -m unittest discover -s tools -p "test_m32_resume_pr_diff_policy.py" -v
+
       - name: M3.2 require both resume prompts on every pull request
         if: github.event_name == 'pull_request'
         shell: pwsh
@@ -154,26 +157,12 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw 'STOP cannot fetch exact base' }
           $modified = @(git diff --name-only $baseSha HEAD)
           if ($LASTEXITCODE -ne 0) { throw 'STOP cannot inspect PR diff' }
-          # Every PR must carry both copy-ready resume levels, even docs-only.
-          foreach ($path in @('docs/continuity/RESUME_PROMPT_SHORT.md',
-                               'docs/continuity/RESUME_PROMPT.md')) {
-            if ($modified -notcontains $path) {
-              throw "STOP missing required resume prompt in this PR: $path"
-            }
+          # Validate every PR against the exact changed-files diff using
+          # the same fail-closed policy qualified on invented filename lists.
+          $modified | python tools/m32_resume_pr_diff_policy.py
+          if ($LASTEXITCODE -ne 0) {
+            throw 'STOP M3.2 resume/handoff changed-files policy failed'
           }
-          Write-Output 'M32_BOTH_RESUME_PROMPTS_EVERY_PR_PASS'
-          $material = @($modified | Where-Object {
-            $_ -match '^(src/|src-tauri/src/|src-tauri/capabilities/|tools/|docs/qualification/|[.]github/workflows/)'
-          })
-          if ($material.Count -gt 0) {
-            foreach ($path in @('docs/continuity/HANDOFF_CURRENT.md',
-                                 'docs/continuity/HANDOFF_CURRENT.json')) {
-              if ($modified -notcontains $path) {
-                throw "STOP M3.2 handoff missing from material PR: $path"
-              }
-            }
-          }
-          Write-Output 'M32_HANDOFF_SAME_PR_REQUIRED_PASS: material changes have both continuity files'
 
       - name: Frontend tests
         run: npm run test:ci

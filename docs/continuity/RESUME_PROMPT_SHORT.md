@@ -8,7 +8,7 @@ Reprends immédiatement et méthodiquement Fabulaxiom depuis son GitHub vivant :
 
 Avant toute action, re-fetch `main`, PR, issues, CI et ruleset `Protect main`. Lis **d'abord le prompt détaillé** `docs/continuity/RESUME_PROMPT.md`, puis `HANDOFF_CURRENT.md`, `HANDOFF_CURRENT.json`, `HANDOFF_PROTOCOL.md`, `HANDOFF_HISTORY.md`, `STATE.md`, `NEXT.md`, `M3_2_GATE_DECISION_CURRENT.md` et `docs/roadmap/ROADMAP_STATUS_CURRENT.md` / `FABULAXIOM_ROADMAP_V1.md`. Ces fichiers GitHub sont l'autorité documentaire ; l'état GitHub actuel prime sur tous les SHA historiques.
 
-**Checkpoint du 23 octobre 2026 :** PR #141 fusionnée sur `main=63e1e09915c45d74592ce37fa9572a91d64027f1`, CI source #39921099284 SUCCESS. CI post-main #39929901931 **IN_PROGRESS_AT_CHECKPOINT** (re-vérifier avant de conclure). Prochain travail : qualifier toute PR en cours, notamment la nouvelle politique des prompts de reprise, puis poursuivre M3.2 selon la roadmap.
+**Checkpoint du 23 octobre 2026 :** PR #142 fusionnée sur `main=98216aa5f5045d6faa4202b76709507b61027534`, CI source #39930833733 **SUCCESS**, CI post-main #39932102283 **SUCCESS**. Une nouvelle PR renforce par tests fictifs la règle exigeant les deux prompts. Re-fetch sa PR et sa CI avant décision ; les anciens états `IN_PROGRESS_AT_CHECKPOINT` sont des observations historiques, pas des résultats actuels.
 
 **STOP réels :** M3.2 `IN_PROGRESS_NOT_ACCEPTED` ; G2B `NOT_ACCEPTED` ; écrivain `NOT_PROVEN` ; G2C `NOT_AUTHORIZED` ; G3 `STOP_UNAVAILABLE` ; historique `PENDING_EXTERNAL_ATTESTATION(21/3/2)` ; prospective `NOT_STARTED` ; PR #35 OPEN/DRAFT. Ne pas toucher aux SQLite originales v6/v7, backups, ACL, journaux, marqueur, migration 007 ou IPC writer sans autorisation distincte.
 

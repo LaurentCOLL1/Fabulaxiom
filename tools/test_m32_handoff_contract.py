@@ -1358,11 +1358,11 @@ class HandoffContractTests(unittest.TestCase):
 
     def test_73_pr137_merge_and_all_writer_guard_do_not_promote_real_g3(self):
         x = self.data["post_pr137_normalization"]
-        self.assertEqual(self.data["last_confirmed_merged_pr"], 141)
+        self.assertEqual(self.data["last_confirmed_merged_pr"], 142)
         self.assertEqual(self.data["last_confirmed_main_before_handoff"],
-                         "63e1e09915c45d74592ce37fa9572a91d64027f1")
+                         "98216aa5f5045d6faa4202b76709507b61027534")
         self.assertEqual(self.data["last_verified_pr_head"],
-                         "8e5726f984b3335d1977405cfdfadc1ece9077e7")
+                         "f17a5c62fb6cc5fcb6259138b4f529b8f07bc581")
         self.assertEqual(x["merged_pr"], 137)
         self.assertEqual(x["merge_sha"], "4d5a2bcb68dd439fac1846d354f3f808138457f1")
         self.assertEqual(x["pr_head_sha"], "892a42e9ea0c84ab9af9fb45536d502d99252155")
@@ -1530,7 +1530,7 @@ class HandoffContractTests(unittest.TestCase):
         self.assertIn("HANDOFF_CURRENT.md", short)
         self.assertIn("HANDOFF_CURRENT.json", short)
         self.assertIn("ROADMAP_STATUS_CURRENT.md", short)
-        self.assertIn("main=63e1e09915c45d74592ce37fa9572a91d64027f1", short)
+        self.assertIn("main=98216aa5f5045d6faa4202b76709507b61027534", short)
         self.assertIn("IN_PROGRESS_AT_CHECKPOINT", short)
         for status in ("IN_PROGRESS_NOT_ACCEPTED", "NOT_PROVEN", "STOP_UNAVAILABLE",
                        "PENDING_EXTERNAL_ATTESTATION(21/3/2)", "expected_head_sha"):
@@ -1545,11 +1545,47 @@ class HandoffContractTests(unittest.TestCase):
         self.assertEqual(policy["update_required"], "BOTH_FILES_IN_EVERY_FUTURE_PR")
         self.assertFalse(policy["real_g3_authorized"])
         ci = (ROOT / policy["diff_guard"]).read_text(encoding="utf-8")
-        self.assertIn("M32_BOTH_RESUME_PROMPTS_EVERY_PR_PASS", ci)
-        self.assertIn("STOP missing required resume prompt in this PR", ci)
-        self.assertIn("'docs/continuity/RESUME_PROMPT_SHORT.md'", ci)
-        self.assertIn("'docs/continuity/RESUME_PROMPT.md'", ci)
+        validator = (ROOT / "tools/m32_resume_pr_diff_policy.py").read_text(encoding="utf-8")
+        self.assertIn("python tools/m32_resume_pr_diff_policy.py", ci)
+        self.assertIn("M32_BOTH_RESUME_PROMPTS_EVERY_PR_PASS", validator)
+        self.assertIn("STOP missing required resume prompt in this PR", validator)
+        self.assertIn('"docs/continuity/RESUME_PROMPT_SHORT.md"', validator)
+        self.assertIn('"docs/continuity/RESUME_PROMPT.md"', validator)
         self.assertIn("if: github.event_name == 'pull_request'", ci)
+
+    def test_78_pr142_terminal_short_resume_and_negative_guard_do_not_promote_g3(self):
+        p = self.data["post_pr142_terminal_observation"]
+        self.assertEqual(p["pr"], 142)
+        self.assertTrue(p["merged"])
+        self.assertEqual(p["source_sha"], "f17a5c62fb6cc5fcb6259138b4f529b8f07bc581")
+        self.assertEqual(p["source_ci"]["run_id"], 39930833733)
+        self.assertEqual(p["source_ci"]["conclusion"], "SUCCESS")
+        self.assertEqual(p["source_ci"]["handoff_tests"], 77)
+        self.assertEqual(p["merge_sha"], "98216aa5f5045d6faa4202b76709507b61027534")
+        self.assertEqual(p["postmain_ci"]["run_id"], 39932102283)
+        self.assertEqual(p["postmain_ci"]["conclusion"], "SUCCESS")
+        self.assertEqual(p["product"], "IN_PROGRESS_NOT_ACCEPTED")
+        self.assertEqual(p["writer_absence"], "NOT_PROVEN")
+        self.assertEqual(p["g3"], "STOP_UNAVAILABLE")
+        self.assertFalse(p["real_g3_authorized"])
+        self.assertEqual(self.data["resume_prompts_policy"]["kind"],
+                         "PENDING_OWN_EXACT_SHA_CI_AND_PROTECTED_MERGE")
+        q = self.data["resume_pr_diff_policy_negative_matrix"]
+        self.assertEqual(q["test_cases"], 12)
+        self.assertTrue(q["both_prompts_every_pr"])
+        self.assertTrue(q["material_handoffs"])
+        self.assertFalse(q["real_g3_authorized"])
+        for key in ("code", "tests", "doc"):
+            self.assertTrue((ROOT / q[key]).is_file(), q[key])
+        short = (DIRECTORY / "RESUME_PROMPT_SHORT.md").read_text(encoding="utf-8")
+        self.assertIn("39932102283", short)
+        for filename in ("HANDOFF_CURRENT.md", "HANDOFF_HISTORY.md", "NEXT.md",
+                         "STATE.md", "M3_2_GATE_DECISION_CURRENT.md",
+                         "RESUME_PROMPT.md", "README.md"):
+            value = (DIRECTORY / filename).read_text(encoding="utf-8")
+            self.assertIn("39932102283", value, filename)
+        roadmap = (ROOT / "docs/roadmap/ROADMAP_STATUS_CURRENT.md").read_text(encoding="utf-8")
+        self.assertIn("39932102283", roadmap)
 
     def test_24_policy_requires_refetch_and_same_pr_handoff(self):
         for clause in ("Re-fetch", "HANDOFF_CURRENT.md", "HANDOFF_CURRENT.json",
