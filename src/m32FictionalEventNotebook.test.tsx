@@ -281,3 +281,71 @@ describe("M3.2 fictional event withdrawal tombstone integrity negative cases", (
     expect(c.audit.map(audit => audit.action)).toEqual(["created", "amended", "withdrawn"]);
   });
 });
+
+describe("M3.2 invented notebook runtime-shape fail-closed checks", () => {
+  function created() {
+    return createFictionalEvent(fixture("fiction-alpha"), plain);
+  }
+  function badEvent(a: ReturnType<typeof created>, value: unknown) {
+    return { ...a, events: [value] } as unknown as typeof a;
+  }
+  it("33 rejects null event with a domain refusal rather than raw TypeError", () => {
+    const a = created();
+    expect(() => inspectFictionalEventNotebook(badEvent(a, null)))
+      .toThrow("Carnet M3.2 fictif refusé");
+  });
+  it("34 rejects primitive event instead of treating it as a record", () => {
+    const a = created();
+    expect(() => inspectFictionalEventNotebook(badEvent(a, "fiction-alpha-event-0001")))
+      .toThrow("Carnet M3.2 fictif refusé");
+  });
+  it("35 rejects numeric event ID before attempting a string prefix", () => {
+    const a = created();
+    expect(() => inspectFictionalEventNotebook(badEvent(a, { ...a.events[0], event_id: 42 })))
+      .toThrow("Carnet M3.2 fictif refusé");
+  });
+  it("36 rejects a missing event ID on a structurally plausible version", () => {
+    const a = created();
+    const { event_id: _omitted, ...withoutId } = a.events[0];
+    expect(() => inspectFictionalEventNotebook(badEvent(a, withoutId)))
+      .toThrow("Carnet M3.2 fictif refusé");
+  });
+  it("37 rejects an array impersonating an invented event record", () => {
+    const a = created();
+    const forged = Object.assign([], a.events[0]);
+    expect(() => inspectFictionalEventNotebook(badEvent(a, forged)))
+      .toThrow("Carnet M3.2 fictif refusé");
+  });
+  it("38 rejects an array impersonating an invented audit record", () => {
+    const a = created();
+    const forged = Object.assign([], a.audit[0]);
+    expect(() => inspectFictionalEventNotebook({
+      ...a, audit: [forged],
+    } as unknown as typeof a)).toThrow("Carnet M3.2 fictif refusé");
+  });
+  it("39 rejects mutation from a malformed input notebook without changing the original", () => {
+    const a = created();
+    const tampered = badEvent(a, { ...a.events[0], event_id: 42 });
+    expect(() => createFictionalEvent(tampered, plain))
+      .toThrow("Carnet M3.2 fictif refusé");
+    expect(a.events).toHaveLength(1);
+    expect(a.nextId).toBe(2);
+  });
+  it("40 rejects a root array impersonating a fictional notebook", () => {
+    const a = created();
+    const forged = Object.assign([], a);
+    expect(() => inspectFictionalEventNotebook(forged as unknown as typeof a))
+      .toThrow("Carnet M3.2 fictif refusé");
+  });
+  it("41 preserves legitimate interleaved create, amend and withdraw histories", () => {
+    let a = created();
+    a = createFictionalEvent(a, { ...plain, title: "Autre événement" });
+    a = amendFictionalEvent(a, a.events[0].event_id,
+      { ...plain, title: "Événement rectifié" }, "Motif humain");
+    a = withdrawFictionalEvent(a, a.events[1].event_id, "Retrait humain");
+    expect(inspectFictionalEventNotebook(a)).toBe(a);
+    expect(a.events.map(e => e.status)).toEqual([
+      "superseded", "superseded", "current", "withdrawn",
+    ]);
+  });
+});

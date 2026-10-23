@@ -55,7 +55,8 @@ function checkInput(draft: FictionalDraft, data: FictionalEventInput): Fictional
   return { title, note: data.note.trim(), anchor_id: anchorId, source_revision_id: revisionId };
 }
 export function inspectFictionalEventNotebook(book: FictionalEventNotebook): FictionalEventNotebook {
-  if (!book || book.data_origin !== "fictional_browser_memory_only" ||
+  if (!book || typeof book !== "object" || Array.isArray(book) ||
+      book.data_origin !== "fictional_browser_memory_only" ||
       book.real_g3_authorized !== false || !Array.isArray(book.events) ||
       !Array.isArray(book.audit) || book.events.length > 512 ||
       book.audit.length > 512 || !Number.isSafeInteger(book.nextId) ||
@@ -66,7 +67,10 @@ export function inspectFictionalEventNotebook(book: FictionalEventNotebook): Fic
   const universe = book.draft.snapshot.universe_id;
   const grouped = new Map<string, FictionalEventVersion[]>();
   for (const event of book.events) {
-    if (event.universe_id !== universe ||
+    if (!event || typeof event !== "object" || Array.isArray(event) ||
+        typeof event.event_id !== "string" ||
+        typeof event.universe_id !== "string" ||
+        event.universe_id !== universe ||
         !event.event_id.startsWith(universe + "-event-") ||
         !Number.isSafeInteger(event.version) || event.version < 1 ||
         !["current", "superseded", "withdrawn"].includes(event.status)) {
@@ -112,7 +116,9 @@ export function inspectFictionalEventNotebook(book: FictionalEventNotebook): Fic
     }
     const expectedAction = event.version === 1 ? "created" :
       event.status === "withdrawn" ? "withdrawn" : "amended";
-    if (!audit || audit.event_id !== event.event_id ||
+    if (!audit || typeof audit !== "object" || Array.isArray(audit) ||
+        typeof audit.event_id !== "string" ||
+        audit.event_id !== event.event_id ||
         audit.version !== event.version || audit.action !== expectedAction ||
         typeof audit.explanation !== "string" || !audit.explanation.trim() ||
         audit.explanation.length > 240)
