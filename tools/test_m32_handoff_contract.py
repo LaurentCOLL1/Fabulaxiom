@@ -1334,7 +1334,7 @@ class HandoffContractTests(unittest.TestCase):
         self.assertEqual(x["pr35_state"], "OPEN_DRAFT")
 
         toy = self.data["m3_2_product_progress"]["test_only_unmediated_writer_negative_witness"]
-        self.assertEqual(toy["status"], "SOURCE_CANDIDATE_NEW_EXACT_HEAD_CI_REQUIRED")
+        self.assertEqual(toy["status"], "SOURCE_MERGED_WINDOWS_CI_QUALIFIED_RAM_TOY_ONLY_NOT_OPERATOR")
         self.assertEqual(toy["fixture"], "INVENTED_SQLITE_RAM_ONLY_NO_OPERATOR_FILE")
         self.assertFalse(toy["owner_token_proves_writer_exclusion"])
         self.assertFalse(toy["online_backup_proves_source_authentication"])
