@@ -1358,11 +1358,11 @@ class HandoffContractTests(unittest.TestCase):
 
     def test_73_pr137_merge_and_all_writer_guard_do_not_promote_real_g3(self):
         x = self.data["post_pr137_normalization"]
-        self.assertEqual(self.data["last_confirmed_merged_pr"], 138)
+        self.assertEqual(self.data["last_confirmed_merged_pr"], 139)
         self.assertEqual(self.data["last_confirmed_main_before_handoff"],
-                         "78050c11b882ec852d8f211cedf3980166f30e9a")
+                         "26e533c97d34ae36d25226730c7f74a7f0ee2e3f")
         self.assertEqual(self.data["last_verified_pr_head"],
-                         "29e662e2b27307bdae0a0107e02a6f1ae1fc59b7")
+                         "f9d28610bac2a97f517a39e9bceb5b0b4d85a96e")
         self.assertEqual(x["merged_pr"], 137)
         self.assertEqual(x["merge_sha"], "4d5a2bcb68dd439fac1846d354f3f808138457f1")
         self.assertEqual(x["pr_head_sha"], "892a42e9ea0c84ab9af9fb45536d502d99252155")
@@ -1444,6 +1444,38 @@ class HandoffContractTests(unittest.TestCase):
         roadmap = (ROOT / "docs/roadmap/ROADMAP_STATUS_CURRENT.md").read_text(encoding="utf-8")
         self.assertIn("39902762331", roadmap)
         self.assertIn("IN_PROGRESS_NOT_ACCEPTED", roadmap)
+
+    def test_75_pr139_terminal_and_trigger_candidate_do_not_promote_g3(self):
+        p = self.data["post_pr139_terminal_observation"]
+        self.assertEqual(p["pr"], 139)
+        self.assertTrue(p["merged"])
+        self.assertEqual(p["source_sha"], "f9d28610bac2a97f517a39e9bceb5b0b4d85a96e")
+        self.assertEqual(p["source_ci"]["run_id"], 39915173862)
+        self.assertEqual(p["source_ci"]["conclusion"], "SUCCESS")
+        self.assertEqual(p["source_ci"]["handoff_tests"], 74)
+        self.assertEqual(p["merge_sha"], "26e533c97d34ae36d25226730c7f74a7f0ee2e3f")
+        self.assertEqual(p["postmain_ci"]["conclusion"], "QUEUED_AT_CHECKPOINT")
+        self.assertTrue(p["historical_snapshots_preserved"])
+        t = self.data["m3_2_product_progress"]["test_only_indirect_trigger_writer_negative"]
+        self.assertEqual(t["ci"], "NEW_EXACT_HEAD_REQUIRED")
+        self.assertFalse(t["proof_of_real_writer_mediation"])
+        self.assertFalse(t["real_g3_authorized"])
+        self.assertEqual(t["g3"], "STOP_UNAVAILABLE")
+        self.assertEqual(t["writer_absence"], "NOT_PROVEN")
+        source = (ROOT / t["rust_path"]).read_text(encoding="utf-8")
+        self.assertIn(t["rust_test"], source)
+        self.assertIn("CREATE TRIGGER invented_indirect_update", source)
+        self.assertIn("Connection::open_in_memory()", source)
+        witness = (ROOT / t["documentation"]).read_text(encoding="utf-8")
+        self.assertIn("TEST-ONLY", witness)
+        self.assertIn("PENDING_EXTERNAL_ATTESTATION(21/3/2)", witness)
+        self.assertEqual(self.data["post_pr138_terminal_observation"]["merge_sha"],
+                         "78050c11b882ec852d8f211cedf3980166f30e9a")
+        for name in ("HANDOFF_CURRENT.md", "RESUME_PROMPT.md", "NEXT.md",
+                     "STATE.md", "M3_2_GATE_DECISION_CURRENT.md"):
+            body = (DIRECTORY / name).read_text(encoding="utf-8")
+            self.assertIn("39915173862", body, name)
+            self.assertIn("IN_PROGRESS_NOT_ACCEPTED", body, name)
 
     def test_24_policy_requires_refetch_and_same_pr_handoff(self):
         for clause in ("Re-fetch", "HANDOFF_CURRENT.md", "HANDOFF_CURRENT.json",

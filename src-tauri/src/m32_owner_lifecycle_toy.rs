@@ -387,6 +387,35 @@ fn m32_owner_lifecycle_unmediated_valid_write_does_not_revoke_old_ticket_negativ
 }
 
 #[test]
+fn m32_owner_lifecycle_indirect_trigger_unmediated_write_leaves_lease_stale_negative_witness() -> Result<()> {
+    // Only an invented in-memory SQLite connection is used here. The trigger
+    // is a second mutation entrypoint not routed through edit_fixture().
+    let mut owner = OwnerSlot::new_invented(6)?;
+    let stale = owner.lease()?;
+    let before = owner.capture(stale, MAX_TOY_BYTES)?;
+    let source = owner.source.as_ref().ok_or(Error::InvalidQuery)?;
+    source.execute_batch(
+        "CREATE TABLE invented_trigger_messages (id INTEGER PRIMARY KEY, message TEXT NOT NULL);
+         CREATE TRIGGER invented_indirect_update AFTER INSERT ON invented_trigger_messages
+         BEGIN
+             UPDATE invented_facts SET detail='Changed by indirect trigger' WHERE id=1;
+         END;
+         INSERT INTO invented_trigger_messages (id, message)
+         VALUES (1, 'Toy-only trigger writer');",
+    )?;
+    assert!(source.is_autocommit());
+    // The owner has no knowledge of the SQL trigger side-effect; its revision
+    // remains current even though the invented database content changed.
+    assert_eq!(owner.lease()?, stale);
+    let after = owner.capture(stale, MAX_TOY_BYTES)?;
+    assert_eq!(toy_detail(&before)?, "Before");
+    assert_eq!(toy_detail(&after)?, "Changed by indirect trigger");
+    assert_eq!(owner.state, ToyState::Ready);
+    qualified_snapshot(&after, 6)?;
+    Ok(())
+}
+
+#[test]
 fn m32_owner_lifecycle_mutex_serializes_test_threads() -> Result<()> {
     let shared = Arc::new(Mutex::new(OwnerSlot::new_invented(6)?));
     let ticket = shared.lock().map_err(|_| Error::InvalidQuery)?.lease()?;
