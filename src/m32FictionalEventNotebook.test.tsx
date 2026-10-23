@@ -8,7 +8,7 @@ import {
 import {
   startFictionalEventNotebook, createFictionalEvent, amendFictionalEvent,
   withdrawFictionalEvent, inspectFictionalEventNotebook, currentFictionalEvents,
-  auditedFictionalEventHistory,
+  auditedFictionalEventHistory, compareFictionalEventVersions,
 } from "./m32FictionalEventNotebook";
 import M32FictionalEventNotebookPreview from "./M32FictionalEventNotebookPreview";
 
@@ -573,6 +573,92 @@ describe("M3.2 fictional event exact before-after display differences", () => {
     expect(html).toContain("après = &lt;script&gt;mauvais&lt;/script&gt;");
     expect(html).not.toContain("<script>");
     expect(html).toContain("<details>");
+    expect(html).not.toContain("open=");
+  });
+});
+
+describe("M3.2 invented-only explicit nonadjacent event-version comparison", () => {
+  function created() {
+    return createFictionalEvent(fixture("fiction-alpha"), plain);
+  }
+  it("66 compares first and third versions cumulatively rather than adjacent only", () => {
+    const a = created(), id = a.events[0].event_id;
+    const b = amendFictionalEvent(a, id, { ...plain, title: "Titre ajusté" }, "Correction titre");
+    const c = amendFictionalEvent(b, id,
+      { ...plain, title: "Titre ajusté", note: "Note finale" }, "Correction note");
+    const diff = compareFictionalEventVersions(c, id, 1, 3);
+    expect(diff.field_differences).toEqual([
+      { field: "title", before: "Première rencontre", after: "Titre ajusté" },
+      { field: "note", before: "Evénement manuel", after: "Note finale" },
+    ]);
+    expect(diff.to_status).toBe("current");
+    expect(diff.from_version).toBe(1);
+    expect(diff.to_version).toBe(3);
+  });
+  it("67 cancels intermediate changes when the final invented value equals the original", () => {
+    const a = created(), id = a.events[0].event_id;
+    const b = amendFictionalEvent(a, id, { ...plain, title: "Intermédiaire" }, "Correction");
+    const c = amendFictionalEvent(b, id, plain, "Rétablissement");
+    expect(compareFictionalEventVersions(c, id, 1, 3).field_differences).toEqual([]);
+    expect(compareFictionalEventVersions(c, id, 2, 3).field_differences)
+      .toEqual([{ field: "title", before: "Intermédiaire", after: "Première rencontre" }]);
+  });
+  it("68 retains final withdrawal status without inventing content changes", () => {
+    const a = created(), id = a.events[0].event_id;
+    const b = withdrawFictionalEvent(a, id, "Retrait humain");
+    const diff = compareFictionalEventVersions(b, id, 1, 2);
+    expect(diff.to_status).toBe("withdrawn");
+    expect(diff.field_differences).toEqual([]);
+    expect(currentFictionalEvents(b)).toHaveLength(0);
+  });
+  it("69 rejects equal reversed fractional and nonsafe version selectors", () => {
+    const a = created(), id = a.events[0].event_id;
+    for (const pair of [[1,1],[2,1],[1,1.5],[1,Number.MAX_SAFE_INTEGER+1],[0,2]]) {
+      expect(() => compareFictionalEventVersions(a,id,pair[0],pair[1]))
+        .toThrow("comparaison de versions fictives non croissante");
+    }
+  });
+  it("70 refuses absent versions instead of silently falling back", () => {
+    const a = created(), id = a.events[0].event_id;
+    expect(() => compareFictionalEventVersions(a,id,1,2))
+      .toThrow("version fictive absente ou étrangère");
+  });
+  it("71 refuses different-universe event IDs and untyped null ID", () => {
+    const a = created();
+    for (const id of ["fiction-beta-event-0001",null]) {
+      expect(() => compareFictionalEventVersions(a,id as string,1,2))
+        .toThrow("Carnet M3.2 fictif refusé");
+    }
+  });
+  it("72 never compares interleaved versions of neighboring event IDs", () => {
+    let a = created();
+    const first = a.events[0].event_id;
+    a = createFictionalEvent(a,{...plain,title:"Deuxième"});
+    const second = a.events[1].event_id;
+    a = amendFictionalEvent(a,second,{...plain,title:"Deuxième corrigé"},"Deuxième correction");
+    a = amendFictionalEvent(a,first,{...plain,note:"Première corrigée"},"Première correction");
+    expect(compareFictionalEventVersions(a,first,1,2).field_differences)
+      .toEqual([{field:"note",before:"Evénement manuel",after:"Première corrigée"}]);
+    expect(compareFictionalEventVersions(a,second,1,2).field_differences)
+      .toEqual([{field:"title",before:"Deuxième",after:"Deuxième corrigé"}]);
+  });
+  it("73 freezes the detached cumulative result and each difference entry", () => {
+    const a = created(), id = a.events[0].event_id;
+    const b = amendFictionalEvent(a,id,{...plain,title:"Autre"},"Correction");
+    const diff = compareFictionalEventVersions(b,id,1,2);
+    expect(Object.isFrozen(diff)).toBe(true);
+    expect(Object.isFrozen(diff.field_differences)).toBe(true);
+    expect(Object.isFrozen(diff.field_differences[0])).toBe(true);
+    expect(a.events[0].title).toBe("Première rencontre");
+  });
+  it("74 presents cumulative first-to-last values in escaped collapsed fictional HTML", () => {
+    const a = created(), id = a.events[0].event_id;
+    const b = amendFictionalEvent(a,id,{...plain,title:"<script>test</script>"},"Correction");
+    const html = renderToStaticMarkup(createElement(M32FictionalEventNotebookPreview,{notebook:b}));
+    expect(html).toContain("Comparaison cumulative des versions fictives");
+    expect(html).toContain("version 1 vers version 2");
+    expect(html).toContain("après = &lt;script&gt;test&lt;/script&gt;");
+    expect(html).not.toContain("<script>");
     expect(html).not.toContain("open=");
   });
 });

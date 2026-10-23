@@ -1952,13 +1952,53 @@ class HandoffContractTests(unittest.TestCase):
         tests = (ROOT / q["tests"]).read_text(encoding="utf-8")
         self.assertIn("65 renders explicit before-after", tests)
         # Only current checkpoint belongs to SHORT. The full documents hold history.
-        for name in ("RESUME_PROMPT_SHORT.md", "RESUME_PROMPT.md",
-                     "HANDOFF_CURRENT.md", "HANDOFF_HISTORY.md", "NEXT.md",
-                     "STATE.md", "M3_2_GATE_DECISION_CURRENT.md"):
+        # SHORT is current-only. Old PR152 exact CI is retained in detailed history.
+        for name in ("RESUME_PROMPT.md", "HANDOFF_CURRENT.md",
+                     "HANDOFF_HISTORY.md", "NEXT.md", "STATE.md",
+                     "M3_2_GATE_DECISION_CURRENT.md"):
             body = (DIRECTORY / name).read_text(encoding="utf-8")
             self.assertIn("40016058394", body, name)
             self.assertIn("IN_PROGRESS_NOT_ACCEPTED", body, name)
         self.assertIn("40016058394",
+                      (ROOT / "docs/roadmap/ROADMAP_STATUS_CURRENT.md").read_text(encoding="utf-8"))
+
+    def test_89_pr153_terminal_and_explicit_selected_fictional_event_comparison(self):
+        p = self.data["post_pr153_terminal_observation"]
+        self.assertEqual(p["pr"], 153)
+        self.assertTrue(p["merged"])
+        self.assertEqual(p["source_sha"], "a211822c0618e68090633f874cde6b2c216204a8")
+        self.assertEqual(p["source_ci"], {"run_id": 40020544737, "conclusion": "SUCCESS"})
+        self.assertEqual(p["merge_sha"], "c581ceb5056cb8e0d61646c02d3af722afb47a3e")
+        self.assertEqual(p["postmain_ci"], {"run_id": 40021898423, "conclusion": "SUCCESS"})
+        self.assertGreaterEqual(self.data["last_confirmed_merged_pr"], 153)
+        self.assertEqual(p["m3_2"], "IN_PROGRESS_NOT_ACCEPTED")
+        self.assertEqual(p["real_g3"], "STOP_UNAVAILABLE")
+        self.assertFalse(p["operator_windows_validation"])
+        self.assertFalse(p["original_sqlite_touched"])
+        q = self.data["m3_2_product_progress"]["fictional_event_selected_version_comparison_candidate"]
+        self.assertEqual(q["new_tests"], 9)
+        self.assertTrue(q["source_only"])
+        self.assertFalse(q["real_g3_authorized"])
+        self.assertFalse(q["no_persistence"] is False)
+        for key in ("model", "preview", "tests", "documentation"):
+            self.assertTrue((ROOT / q[key]).is_file(), key)
+        model = (ROOT / q["model"]).read_text(encoding="utf-8")
+        self.assertIn("compareFictionalEventVersions", model)
+        self.assertIn("Object.freeze(differences)", model)
+        self.assertIn("toVersion <= fromVersion", model)
+        preview = (ROOT / q["preview"]).read_text(encoding="utf-8")
+        self.assertIn("Comparaison cumulative des versions fictives", preview)
+        self.assertIn("<details>", preview)
+        self.assertNotIn("invoke(", model + preview)
+        tests = (ROOT / q["tests"]).read_text(encoding="utf-8")
+        self.assertIn("74 presents cumulative first-to-last", tests)
+        for name in ("RESUME_PROMPT_SHORT.md", "RESUME_PROMPT.md",
+                     "HANDOFF_CURRENT.md", "HANDOFF_HISTORY.md", "NEXT.md",
+                     "STATE.md", "M3_2_GATE_DECISION_CURRENT.md"):
+            body = (DIRECTORY / name).read_text(encoding="utf-8")
+            self.assertIn("40021898423", body, name)
+            self.assertIn("IN_PROGRESS_NOT_ACCEPTED", body, name)
+        self.assertIn("40021898423",
                       (ROOT / "docs/roadmap/ROADMAP_STATUS_CURRENT.md").read_text(encoding="utf-8"))
 
 if __name__ == "__main__":
