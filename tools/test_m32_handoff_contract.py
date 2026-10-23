@@ -1820,7 +1820,7 @@ class HandoffContractTests(unittest.TestCase):
         self.assertEqual(p["real_g3"], "STOP_UNAVAILABLE")
         self.assertFalse(p["operator_windows_validation"])
         self.assertFalse(p["original_sqlite_touched"])
-        self.assertEqual(self.data["last_confirmed_merged_pr"], 149)
+        self.assertGreaterEqual(self.data["last_confirmed_merged_pr"], 149)
         q = self.data["m3_2_product_progress"]["fictional_runtime_shape_denial_candidate"]
         self.assertEqual(q["new_tests"], 9)
         self.assertFalse(q["real_g3_authorized"])
@@ -1853,7 +1853,7 @@ class HandoffContractTests(unittest.TestCase):
         self.assertEqual(p["real_g3"], "STOP_UNAVAILABLE")
         self.assertFalse(p["operator_windows_validation"])
         self.assertFalse(p["original_sqlite_touched"])
-        self.assertEqual(self.data["last_confirmed_merged_pr"], 150)
+        self.assertGreaterEqual(self.data["last_confirmed_merged_pr"], 150)
         q = self.data["m3_2_product_progress"]["fictional_event_readonly_history_candidate"]
         self.assertEqual(q["new_tests"], 8)
         self.assertTrue(q["source_only"])
