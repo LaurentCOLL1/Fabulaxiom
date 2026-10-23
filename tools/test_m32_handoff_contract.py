@@ -1878,5 +1878,45 @@ class HandoffContractTests(unittest.TestCase):
         roadmap = (ROOT / "docs/roadmap/ROADMAP_STATUS_CURRENT.md").read_text(encoding="utf-8")
         self.assertIn("40007837202", roadmap)
 
+    def test_87_pr151_terminal_and_fictional_version_deltas(self):
+        p = self.data["post_pr151_terminal_observation"]
+        self.assertEqual(p["pr"], 151)
+        self.assertTrue(p["merged"])
+        self.assertEqual(p["source_sha"], "ab0ffd3e1c0d08cb57325a2f5ef91c1967616716")
+        self.assertEqual(p["initial_source_ci"], {
+            "run_id": 40010433915, "conclusion": "FAILURE",
+            "cause": "HISTORIC_HANDOFF_ASSERTION_EQUAL_149"})
+        self.assertEqual(p["source_ci"], {"run_id": 40010733862, "conclusion": "SUCCESS"})
+        self.assertEqual(p["merge_sha"], "2e0b29bfc2d2698a636f4adc41d5b4e5a87c3ece")
+        self.assertEqual(p["postmain_ci"], {"run_id": 40012175419, "conclusion": "SUCCESS"})
+        self.assertGreaterEqual(self.data["last_confirmed_merged_pr"], 151)
+        self.assertEqual(p["m3_2"], "IN_PROGRESS_NOT_ACCEPTED")
+        self.assertEqual(p["real_g3"], "STOP_UNAVAILABLE")
+        self.assertFalse(p["operator_windows_validation"])
+        self.assertFalse(p["original_sqlite_touched"])
+        q = self.data["m3_2_product_progress"]["fictional_event_version_delta_candidate"]
+        self.assertEqual(q["new_tests"], 8)
+        self.assertTrue(q["source_only"])
+        self.assertFalse(q["real_g3_authorized"])
+        for key in ("model", "preview", "tests", "documentation"):
+            self.assertTrue((ROOT / q[key]).is_file(), key)
+        model = (ROOT / q["model"]).read_text(encoding="utf-8")
+        self.assertIn("changed_fields", model)
+        self.assertIn("Object.freeze(changedFields)", model)
+        preview = (ROOT / q["preview"]).read_text(encoding="utf-8")
+        self.assertIn("modifications de contenu", preview)
+        self.assertIn("<details>", preview)
+        self.assertNotIn("invoke(", model + preview)
+        tests = (ROOT / q["tests"]).read_text(encoding="utf-8")
+        self.assertIn("57 renders accessible version differences", tests)
+        for name in ("RESUME_PROMPT_SHORT.md", "RESUME_PROMPT.md",
+                     "HANDOFF_CURRENT.md", "HANDOFF_HISTORY.md", "NEXT.md",
+                     "STATE.md", "M3_2_GATE_DECISION_CURRENT.md"):
+            body = (DIRECTORY / name).read_text(encoding="utf-8")
+            self.assertIn("40012175419", body, name)
+            self.assertIn("IN_PROGRESS_NOT_ACCEPTED", body, name)
+        self.assertIn("40012175419",
+                      (ROOT / "docs/roadmap/ROADMAP_STATUS_CURRENT.md").read_text(encoding="utf-8"))
+
 if __name__ == "__main__":
     unittest.main()

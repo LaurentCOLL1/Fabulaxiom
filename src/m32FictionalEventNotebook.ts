@@ -131,10 +131,15 @@ export function inspectFictionalEventNotebook(book: FictionalEventNotebook): Fic
 /** Verified, detached, read-only display history of an invented event.
  * Alignment is structural only; it cannot authenticate an external audit.
  */
+export type FictionalEventContentField =
+  "title" | "note" | "anchor_id" | "source_revision_id";
 export type FictionalEventHistoryEntry = Readonly<{
   event: FictionalEventVersion;
   audit: FictionalEventAudit;
+  /** Differences only against the preceding invented version of the SAME event. */
+  changed_fields: readonly FictionalEventContentField[];
 }>;
+const contentFields = ["title", "note", "anchor_id", "source_revision_id"] as const;
 export function auditedFictionalEventHistory(
   book: FictionalEventNotebook, eventId: string,
 ): readonly FictionalEventHistoryEntry[] {
@@ -142,13 +147,18 @@ export function auditedFictionalEventHistory(
   if (typeof eventId !== "string" || !eventId ||
       !book.events.some(e => e.event_id === eventId))
     return stop("historique d'événement fictif absent ou étranger");
-  return Object.freeze(book.events.flatMap((event, index) =>
-    event.event_id !== eventId ? [] : [
-      Object.freeze({
-        event: Object.freeze({ ...event }),
-        audit: Object.freeze({ ...book.audit[index] }),
-      }),
-    ]));
+  const versions = book.events.flatMap((event, index) =>
+    event.event_id === eventId ? [{ event, audit: book.audit[index] }] : []);
+  return Object.freeze(versions.map(({ event, audit }, index) => {
+    const previous = index === 0 ? null : versions[index - 1].event;
+    const changedFields = previous === null ? [] : contentFields.filter(field =>
+      event[field] !== previous[field]);
+    return Object.freeze({
+      event: Object.freeze({ ...event }),
+      audit: Object.freeze({ ...audit }),
+      changed_fields: Object.freeze(changedFields),
+    });
+  }));
 }
 
 export function startFictionalEventNotebook(draft: FictionalDraft): FictionalEventNotebook {
