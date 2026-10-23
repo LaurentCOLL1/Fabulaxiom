@@ -67,7 +67,7 @@ describe("M3.2 two-Universe / two-Novel invented-only acceptance rehearsal", () 
     const updated = createFictionalAnchor(a, {
       kind: "exact", calendar: "Cycle Alpha", label: "Marée XII", precision: "",
     });
-    expect(updated.snapshot.anchors.at(-1)?.calendar_name).toBe("Cycle Alpha");
+    expect(updated.snapshot.anchors[updated.snapshot.anchors.length - 1]?.calendar_name).toBe("Cycle Alpha");
     expect(b.snapshot.anchors).toHaveLength(3);
     expect(a.snapshot.anchors).toHaveLength(3);
     expect(updated.snapshot.universe_id).toBe("fiction-alpha");
@@ -79,10 +79,10 @@ describe("M3.2 two-Universe / two-Novel invented-only acceptance rehearsal", () 
       precision: "phase inconnue",
     });
     const c = createFictionalAnchor(a, { ...unknown, kind: "relative" });
-    expect(c.snapshot.anchors.at(-1)?.time_kind).toBe("relative");
-    expect(c.snapshot.anchors.at(-1)?.calendar_name).toBeNull();
-    expect(b.snapshot.anchors.at(-1)?.precision_text).toBe("phase inconnue");
-    expect(b.snapshot.anchors.at(-1)?.calendar_name).toBe("Lunes Bêta");
+    expect(c.snapshot.anchors[c.snapshot.anchors.length - 1]?.time_kind).toBe("relative");
+    expect(c.snapshot.anchors[c.snapshot.anchors.length - 1]?.calendar_name).toBeNull();
+    expect(b.snapshot.anchors[b.snapshot.anchors.length - 1]?.precision_text).toBe("phase inconnue");
+    expect(b.snapshot.anchors[b.snapshot.anchors.length - 1]?.calendar_name).toBe("Lunes Bêta");
   });
   it("05 identically named anchors can have opposite human order in distinct Universes", () => {
     const a = createFictionalPrecedence(alpha(), "A", "B", "Alpha avant B");
