@@ -3,14 +3,14 @@
   "as_of": "2026-10-23",
   "status_kind": "DATED_PUBLIC_SOURCE_HANDOFF_ONLY",
   "repository": "LaurentCOLL1/Fabulaxiom",
-  "last_confirmed_main_before_handoff": "63e1e09915c45d74592ce37fa9572a91d64027f1",
-  "last_confirmed_merged_pr": 141,
-  "last_verified_pr_head": "8e5726f984b3335d1977405cfdfadc1ece9077e7",
+  "last_confirmed_main_before_handoff": "98216aa5f5045d6faa4202b76709507b61027534",
+  "last_confirmed_merged_pr": 142,
+  "last_verified_pr_head": "f17a5c62fb6cc5fcb6259138b4f529b8f07bc581",
   "last_verified_ci": {
-    "run_id": 39921099284,
+    "run_id": 39930833733,
     "context": "Windows frontend and Rust checks",
     "conclusion": "SUCCESS",
-    "source": "PR141_EXACT_HEAD"
+    "source": "PR142_FINAL_EXACT_HEAD"
   },
   "recent_changes": [
     "PR_85_EXACT_G2A_TEXT_AST_ONLY",
@@ -119,7 +119,9 @@
     "PR140_MERGED_INDIRECT_TRIGGER_NEGATIVE_9d859cb_CI_39917211662_MAIN_f5a255e",
     "2026_10_23_NEW_SAME_CONNECTION_DATA_VERSION_NEGATIVE_RAM_ONLY_CANDIDATE",
     "PR141_MERGED_63e1e099_EXACT_SHA_WINDOWS_CI_39921099284_SUCCESS",
-    "2026_10_23_SHORT_AND_LONG_RESUME_PROMPTS_EVERY_PR_CI_POLICY_CANDIDATE"
+    "2026_10_23_SHORT_AND_LONG_RESUME_PROMPTS_EVERY_PR_CI_POLICY_CANDIDATE",
+    "PR142_MERGED_SHORT_LONG_RESUME_PROMPTS_98216aa_EXACT_SHA_CI_AND_POSTMAIN_PASS",
+    "2026_10_23_CANDIDATE_PURE_PYTHON_12_NEGATIVE_PR_DIFF_POLICY_MATRIX"
   ],
   "pr35": "OPEN_DRAFT",
   "issues": {
@@ -305,7 +307,7 @@
     "verified_bypass_actors": 0,
     "classic_branch_protection_read": "403_INTEGRATION_RESTRICTED"
   },
-  "next": "NEW_SHORT_LONG_RESUME_PROMPTS_CI_QUALIFICATION_MERGE; PR141_POSTMAIN_TERMINAL_RECHECK; M3_2_REAL_GATES_STOP",
+  "next": "PR142_POSTMAIN_PASS_DOCUMENTED; NEW_RESUME_PR_DIFF_NEGATIVE_MATRIX_EXACT_SHA_CI_AND_PROTECTED_MERGE; REAL_G3_STOP",
   "live_refetch_required": true,
   "hand_off_updated_by_future_pr": true,
   "main_ci_post_merge": {
@@ -2039,6 +2041,60 @@
     "source_only": true,
     "auto_updates_filenames": false,
     "requires_live_refetch": true,
+    "real_g3_authorized": false
+  },
+  "post_pr142_terminal_observation": {
+    "as_of": "2026-10-23",
+    "kind": "DOCUMENTARY_POLICY_MERGED_AND_POSTMAIN_VERIFIED_NO_RUNTIME_AUTHORITY",
+    "pr": 142,
+    "merged": true,
+    "source_sha": "f17a5c62fb6cc5fcb6259138b4f529b8f07bc581",
+    "source_ci": {
+      "run_id": 39930833733,
+      "conclusion": "SUCCESS",
+      "job_steps": 75,
+      "handoff_tests": 77,
+      "rust_tests": 132,
+      "chromium_normal": 53,
+      "chromium_strict_csp": 53,
+      "both_resume_prompts_pr_guard": "PASS"
+    },
+    "obsolete_ci": {
+      "run_id": 39930498356,
+      "status": "FAILURE_OLD_HEAD_NOT_QUALIFICATION"
+    },
+    "merge_sha": "98216aa5f5045d6faa4202b76709507b61027534",
+    "postmain_ci": {
+      "run_id": 39932102283,
+      "conclusion": "SUCCESS",
+      "job_steps": 75,
+      "handoff_tests": 77,
+      "rust_tests": 132,
+      "chromium_normal": 53,
+      "chromium_strict_csp": 53
+    },
+    "real_g3_authorized": false,
+    "source_authentication": "PARTIAL_LOCAL_IDENTITY_ONLY",
+    "writer_absence": "NOT_PROVEN",
+    "g2b": "NOT_ACCEPTED",
+    "g2c": "NOT_AUTHORIZED",
+    "g3": "STOP_UNAVAILABLE",
+    "product": "IN_PROGRESS_NOT_ACCEPTED",
+    "historic": "PENDING_EXTERNAL_ATTESTATION(21/3/2)",
+    "prospective": "NOT_STARTED",
+    "pr35": "OPEN_DRAFT",
+    "original_sqlite_access": "NONE"
+  },
+  "resume_pr_diff_policy_negative_matrix": {
+    "kind": "SOURCE_ONLY_CANDIDATE_NEW_EXACT_SHA_CI_REQUIRED",
+    "code": "tools/m32_resume_pr_diff_policy.py",
+    "tests": "tools/test_m32_resume_pr_diff_policy.py",
+    "doc": "docs/qualification/M3_2_RESUME_PROMPT_DIFF_POLICY_NEGATIVE_MATRIX.md",
+    "test_cases": 12,
+    "guard_uses_changed_filenames_only": true,
+    "both_prompts_every_pr": true,
+    "material_handoffs": true,
+    "no_original_sqlite": true,
     "real_g3_authorized": false
   }
 }
