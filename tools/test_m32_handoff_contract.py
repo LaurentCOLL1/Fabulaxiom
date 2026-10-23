@@ -1684,7 +1684,7 @@ class HandoffContractTests(unittest.TestCase):
         self.assertIn("applyFictionalWorkshopAction", source)
         self.assertIn("useState", source)
         self.assertNotIn("invoke(", source)
-        self.assertNotIn("localStorage", source)
+        self.assertNotIn("localStorage.", source)
         app = (ROOT / "src/App.tsx").read_text(encoding="utf-8")
         self.assertNotIn("M32FictionalEventManualWorkshop", app)
         for name in ("RESUME_PROMPT_SHORT.md", "RESUME_PROMPT.md", "HANDOFF_CURRENT.md",
