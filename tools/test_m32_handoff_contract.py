@@ -1358,11 +1358,11 @@ class HandoffContractTests(unittest.TestCase):
 
     def test_73_pr137_merge_and_all_writer_guard_do_not_promote_real_g3(self):
         x = self.data["post_pr137_normalization"]
-        self.assertEqual(self.data["last_confirmed_merged_pr"], 147)
-        self.assertEqual(self.data["last_confirmed_main_before_handoff"],
-                         "7e67c5daf98821700f176965dadd52bafd0064fa")
-        self.assertEqual(self.data["last_verified_pr_head"],
-                         "472c13344c2d6fe7c75c1812acf05f3236799e65")
+        # Historical PR #147 evidence is stable even as the living handoff advances.
+        self.assertGreaterEqual(self.data["last_confirmed_merged_pr"], 147)
+        historic = self.data["post_pr147_terminal_observation"]
+        self.assertEqual(historic["merge_sha"], "7e67c5daf98821700f176965dadd52bafd0064fa")
+        self.assertEqual(historic["source_sha"], "472c13344c2d6fe7c75c1812acf05f3236799e65")
         self.assertEqual(x["merged_pr"], 137)
         self.assertEqual(x["merge_sha"], "4d5a2bcb68dd439fac1846d354f3f808138457f1")
         self.assertEqual(x["pr_head_sha"], "892a42e9ea0c84ab9af9fb45536d502d99252155")
@@ -1530,7 +1530,7 @@ class HandoffContractTests(unittest.TestCase):
         self.assertIn("HANDOFF_CURRENT.md", short)
         self.assertIn("HANDOFF_CURRENT.json", short)
         self.assertIn("ROADMAP_STATUS_CURRENT.md", short)
-        self.assertIn("main=7e67c5daf98821700f176965dadd52bafd0064fa", short)
+        self.assertIn("main=" + self.data["last_confirmed_main_before_handoff"], short)
         self.assertIn("IN_PROGRESS_AT_CHECKPOINT", detailed)
         for status in ("IN_PROGRESS_NOT_ACCEPTED", "NOT_PROVEN", "STOP_UNAVAILABLE",
                        "PENDING_EXTERNAL_ATTESTATION(21/3/2)", "expected_head_sha"):
@@ -1761,9 +1761,10 @@ class HandoffContractTests(unittest.TestCase):
         self.assertNotIn("invoke(", source)
         tests = (ROOT / q["tests"]).read_text(encoding="utf-8")
         self.assertIn("27 rejects unexplained audit", tests)
-        for name in ("RESUME_PROMPT_SHORT.md", "RESUME_PROMPT.md",
-                     "HANDOFF_CURRENT.md", "HANDOFF_HISTORY.md", "NEXT.md",
-                     "STATE.md", "M3_2_GATE_DECISION_CURRENT.md"):
+        # The short prompt contains only the latest checkpoint, unlike the long/history.
+        for name in ("RESUME_PROMPT.md", "HANDOFF_CURRENT.md",
+                     "HANDOFF_HISTORY.md", "NEXT.md", "STATE.md",
+                     "M3_2_GATE_DECISION_CURRENT.md"):
             body = (DIRECTORY / name).read_text(encoding="utf-8")
             self.assertIn("39981173101", body, name)
             self.assertIn("IN_PROGRESS_NOT_ACCEPTED", body, name)
