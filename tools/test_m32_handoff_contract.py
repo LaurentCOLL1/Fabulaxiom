@@ -1358,11 +1358,11 @@ class HandoffContractTests(unittest.TestCase):
 
     def test_73_pr137_merge_and_all_writer_guard_do_not_promote_real_g3(self):
         x = self.data["post_pr137_normalization"]
-        self.assertEqual(self.data["last_confirmed_merged_pr"], 140)
+        self.assertEqual(self.data["last_confirmed_merged_pr"], 141)
         self.assertEqual(self.data["last_confirmed_main_before_handoff"],
-                         "f5a255e6687c68c1e6095d8e3a8c20277415741c")
+                         "63e1e09915c45d74592ce37fa9572a91d64027f1")
         self.assertEqual(self.data["last_verified_pr_head"],
-                         "9d859cb5b61f87782cede0db1c9e59a3a113948d")
+                         "8e5726f984b3335d1977405cfdfadc1ece9077e7")
         self.assertEqual(x["merged_pr"], 137)
         self.assertEqual(x["merge_sha"], "4d5a2bcb68dd439fac1846d354f3f808138457f1")
         self.assertEqual(x["pr_head_sha"], "892a42e9ea0c84ab9af9fb45536d502d99252155")
