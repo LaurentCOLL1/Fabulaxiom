@@ -8,7 +8,7 @@ Reprends immédiatement et méthodiquement Fabulaxiom depuis son GitHub vivant :
 
 Avant toute action, re-fetch `main`, PR, issues, CI et ruleset `Protect main`. Lis **d'abord le prompt détaillé** `docs/continuity/RESUME_PROMPT.md`, puis `HANDOFF_CURRENT.md`, `HANDOFF_CURRENT.json`, `HANDOFF_PROTOCOL.md`, `HANDOFF_HISTORY.md`, `STATE.md`, `NEXT.md`, `M3_2_GATE_DECISION_CURRENT.md` et `docs/roadmap/ROADMAP_STATUS_CURRENT.md` / `FABULAXIOM_ROADMAP_V1.md`. Ces fichiers GitHub sont l'autorité documentaire ; l'état GitHub actuel prime sur tous les SHA historiques.
 
-**Checkpoint du 23 octobre 2026 :** PR #143 **MERGED** sur `main=cf90661173e9e6ed8d29caa181557b04e2d6fb63`, CI source #39935643729 **SUCCESS** et CI post-main #39936839961 **SUCCESS**. Prochaine tranche : qualification GitHub d'une PR candidate de tests sur deux Univers fictifs et deux Romans chacun, puis suivi de la roadmap M3.2. Tout nouveau SHA doit avoir sa propre CI ; les anciens états `IN_PROGRESS_AT_CHECKPOINT` sont historiques.
+**Checkpoint du 23 octobre 2026 :** PR #144 **MERGED** sur `main=c969f2c29e168e99e24d675c25a3217e789c9e2d`, CI source #39940937603 **SUCCESS** et CI post-main #39942208143 **SUCCESS**. Nouvelle tranche en qualification : CRUD manuel d'événements sur données fictives et versions immuables. Re-fetch sa PR et sa CI avant toute fusion ; ne jamais réutiliser une CI d'un ancien SHA.
 
 **STOP réels :** M3.2 `IN_PROGRESS_NOT_ACCEPTED` ; G2B `NOT_ACCEPTED` ; écrivain `NOT_PROVEN` ; G2C `NOT_AUTHORIZED` ; G3 `STOP_UNAVAILABLE` ; historique `PENDING_EXTERNAL_ATTESTATION(21/3/2)` ; prospective `NOT_STARTED` ; PR #35 OPEN/DRAFT. Ne pas toucher aux SQLite originales v6/v7, backups, ACL, journaux, marqueur, migration 007 ou IPC writer sans autorisation distincte.
 
