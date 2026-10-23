@@ -838,8 +838,111 @@ async function run() {
       assert.ok((await alert.innerText()).includes("Historique de corrections refusé"));
       assert.equal(await page.getByText("fiction-chain-2", { exact: true }).count(), 0);
     });
-    assert.equal(cases.length, 53);
-    console.log("M32_BROWSER_REAL_CHROMIUM_PASS 53/53");
+    const eventForm = () => page.getByRole("form", { name: "Formulaire d'événement fictif" });
+    const eventRegion = () => page.getByRole("region", {
+      name: "Atelier manuel fictif d'événements M3.2",
+    });
+    async function openEventForm() {
+      await page.getByRole("button", { name: "Ouvrir le carnet d'événements fictifs" }).click();
+      assert.equal(await eventRegion().count(), 1);
+    }
+    async function createInventedEvent(title = "Rencontre fictive") {
+      await eventForm().getByRole("textbox", { name: "Titre de l'événement (obligatoire)" })
+        .fill(title);
+      await eventForm().getByRole("button", { name: "Créer en mémoire" }).click();
+    }
+    await caseRun("54-fictional-event-form-empty-safe", async () => {
+      await openEventForm();
+      assert.ok((await eventRegion().innerText()).includes("Aucun enregistrement"));
+      assert.ok((await eventRegion().innerText()).includes("Événements courants (0)"));
+      assert.equal(await eventRegion().getByRole("listitem").count(), 0);
+    });
+    await caseRun("55-fictional-event-human-create-no-inferred-time", async () => {
+      await openEventForm();
+      await createInventedEvent();
+      assert.equal(await eventRegion().getByRole("listitem").count(), 1);
+      assert.ok((await eventRegion().innerText()).includes("Rencontre fictive"));
+      assert.ok((await eventRegion().innerText()).includes("1 versions"));
+      assert.ok((await eventRegion().getByRole("status").innerText()).includes("Aucune sauvegarde"));
+    });
+    await caseRun("56-fictional-event-human-amend-retains-version", async () => {
+      await openEventForm();
+      await createInventedEvent();
+      await eventRegion().getByRole("button", { name: /Corriger ou retirer/ }).click();
+      await eventForm().getByRole("textbox", { name: "Titre de l'événement (obligatoire)" })
+        .fill("Rencontre amendée");
+      await eventForm().getByRole("textbox", {
+        name: "Justification de correction ou de retrait",
+      }).fill("Rédaction historique");
+      await eventForm().getByRole("button", { name: "Enregistrer une nouvelle version" }).click();
+      assert.ok((await eventRegion().innerText()).includes("Rencontre amendée"));
+      assert.ok((await eventRegion().innerText()).includes("version 2"));
+      assert.ok((await eventRegion().innerText()).includes("2 versions"));
+    });
+    await caseRun("57-fictional-event-human-withdraw-tombstone", async () => {
+      await openEventForm();
+      await createInventedEvent();
+      await eventRegion().getByRole("button", { name: /Corriger ou retirer/ }).click();
+      await eventForm().getByRole("textbox", {
+        name: "Justification de correction ou de retrait",
+      }).fill("Retrait humain explicite");
+      await eventForm().getByRole("button", {
+        name: "Retirer en conservant l'historique",
+      }).click();
+      assert.ok((await eventRegion().innerText()).includes("Événements courants (0)"));
+      assert.ok((await eventRegion().innerText()).includes("2 versions"));
+      assert.equal(await eventRegion().getByRole("listitem").count(), 0);
+    });
+    await caseRun("58-fictional-event-explicit-historical-revision", async () => {
+      await openEventForm();
+      await eventForm().getByRole("textbox", { name: "Titre de l'événement (obligatoire)" })
+        .fill("Révision liée");
+      await eventForm().getByRole("combobox", {
+        name: "Ancre temporelle explicitement choisie",
+      }).selectOption("A");
+      await eventForm().getByRole("combobox", {
+        name: "Révision historique explicitement choisie",
+      }).selectOption("invented-rev-A");
+      await eventForm().getByRole("button", { name: "Créer en mémoire" }).click();
+      assert.ok((await eventRegion().innerText()).includes("Événements courants (1)"));
+      assert.ok((await eventRegion().innerText()).includes("Révision liée"));
+    });
+    await caseRun("59-fictional-event-refuses-ambiguous-source", async () => {
+      await openEventForm();
+      await eventForm().getByRole("textbox", { name: "Titre de l'événement (obligatoire)" })
+        .fill("Révision non prouvée");
+      await eventForm().getByRole("combobox", {
+        name: "Ancre temporelle explicitement choisie",
+      }).selectOption("A");
+      await eventForm().getByRole("button", { name: "Créer en mémoire" }).click();
+      assert.equal(await eventRegion().getByRole("alert").count(), 1);
+      assert.ok((await eventRegion().innerText()).includes("Événements courants (0)"));
+    });
+    await caseRun("60-fictional-event-world-switch-clears-previous", async () => {
+      await openEventForm();
+      await createInventedEvent("Secret du premier univers");
+      await page.getByRole("button", { name: "Charger un autre univers fictif" }).click();
+      assert.ok((await eventRegion().innerText()).includes("fiction-world-two"));
+      assert.ok((await eventRegion().innerText()).includes("Événements courants (0)"));
+      assert.ok(!(await eventRegion().innerText()).includes("Secret du premier univers"));
+    });
+    await caseRun("61-fictional-event-inert-hostile-label", async () => {
+      await openEventForm();
+      await createInventedEvent("<script>window.__fictionInjected=1</script>");
+      assert.equal(await eventRegion().locator("script").count(), 0);
+      assert.equal(await page.evaluate(() => Boolean(window.__fictionInjected)), false);
+      assert.ok((await eventRegion().innerText()).includes("<script>"));
+    });
+    await caseRun("62-fictional-event-cycle-is-rejected", async () => {
+      await page.getByRole("button", { name: "Charger un cycle fictif invalide" }).click();
+      await page.getByRole("button", { name: "Ouvrir le carnet d'événements fictifs" }).click();
+      assert.equal(await page.getByRole("alert", { name: "" }).count(), 1);
+      assert.ok((await page.getByRole("alert").innerText()).includes("Cycle fictif refusé"));
+      assert.equal(await eventRegion().count(), 0);
+    });
+    assert.equal(cases.length, 62);
+    console.log("M32_BROWSER_REAL_CHROMIUM_PASS 62/62");
+
     // Actual Chromium enforced-CSP veto, separate from the 36
     // fictional interaction cases. Never make an off-loopback network call.
     const cspVeto = await page.evaluate(async () => {
@@ -870,9 +973,9 @@ async function run() {
       });
       assert.equal(scriptVeto, false, "STOP: inline JS executed under strict CSP");
       console.log("M32_CI_PRECOMPILED_INLINE_SCRIPT_DENIED_PASS");
-      console.log("M32_CI_PRECOMPILED_STRICT_CSP_BROWSER_PASS: 50/50");
+      console.log("M32_CI_PRECOMPILED_STRICT_CSP_BROWSER_PASS: 62/62");
     }
-    console.log("M32_CI_FIXTURE_ONLY_BROWSER_PASS: 50/50; no normal source pages");
+    console.log("M32_CI_FIXTURE_ONLY_BROWSER_PASS: 62/62; no normal source pages");
   } finally {
     if (browser) await browser.close();
     server.kill();

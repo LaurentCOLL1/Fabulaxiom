@@ -949,7 +949,7 @@ class HandoffContractTests(unittest.TestCase):
         self.assertNotIn("fetch(", source)
         self.assertNotIn("<button", source)
         runner = (ROOT / "tools/m32_browser_interaction.cjs").read_text(encoding="utf-8")
-        self.assertIn("M32_BROWSER_REAL_CHROMIUM_PASS 53/53", runner)
+        self.assertIn("M32_BROWSER_REAL_CHROMIUM_PASS 62/62", runner)
         self.assertEqual(self.data["g2a"]["absence_of_sqlite_writer"], "NOT_PROVEN")
 
 
@@ -1091,7 +1091,7 @@ class HandoffContractTests(unittest.TestCase):
         self.assertNotIn("fetch(", src)
         self.assertNotIn("localStorage", src)
         self.assertIn("Corrige explicitement fiction-successor", browser)
-        self.assertIn("M32_BROWSER_REAL_CHROMIUM_PASS 53/53", browser)
+        self.assertIn("M32_BROWSER_REAL_CHROMIUM_PASS 62/62", browser)
         self.assertIn("PR #130", self.doc)
 
     def test_66_pr131_fictional_predecessor_merge_does_not_accept_real_m32(self):
@@ -1358,11 +1358,11 @@ class HandoffContractTests(unittest.TestCase):
 
     def test_73_pr137_merge_and_all_writer_guard_do_not_promote_real_g3(self):
         x = self.data["post_pr137_normalization"]
-        self.assertEqual(self.data["last_confirmed_merged_pr"], 145)
+        self.assertEqual(self.data["last_confirmed_merged_pr"], 146)
         self.assertEqual(self.data["last_confirmed_main_before_handoff"],
-                         "26987ffaf6ec7c1a02bca8c288243a3da2092469")
+                         "c451cc0b09e24242ecb1ea7cf5c488d1217b51ca")
         self.assertEqual(self.data["last_verified_pr_head"],
-                         "8151f1720c0e657fe66a191c21dafc084449486a")
+                         "5959ca0fe3d4cfd29ec3b558c55c1e64c620594e")
         self.assertEqual(x["merged_pr"], 137)
         self.assertEqual(x["merge_sha"], "4d5a2bcb68dd439fac1846d354f3f808138457f1")
         self.assertEqual(x["pr_head_sha"], "892a42e9ea0c84ab9af9fb45536d502d99252155")
@@ -1530,7 +1530,7 @@ class HandoffContractTests(unittest.TestCase):
         self.assertIn("HANDOFF_CURRENT.md", short)
         self.assertIn("HANDOFF_CURRENT.json", short)
         self.assertIn("ROADMAP_STATUS_CURRENT.md", short)
-        self.assertIn("main=26987ffaf6ec7c1a02bca8c288243a3da2092469", short)
+        self.assertIn("main=c451cc0b09e24242ecb1ea7cf5c488d1217b51ca", short)
         self.assertIn("IN_PROGRESS_AT_CHECKPOINT", detailed)
         for status in ("IN_PROGRESS_NOT_ACCEPTED", "NOT_PROVEN", "STOP_UNAVAILABLE",
                        "PENDING_EXTERNAL_ATTESTATION(21/3/2)", "expected_head_sha"):
@@ -1687,7 +1687,7 @@ class HandoffContractTests(unittest.TestCase):
         self.assertNotIn("localStorage.", source)
         app = (ROOT / "src/App.tsx").read_text(encoding="utf-8")
         self.assertNotIn("M32FictionalEventManualWorkshop", app)
-        for name in ("RESUME_PROMPT_SHORT.md", "RESUME_PROMPT.md", "HANDOFF_CURRENT.md",
+        for name in ("RESUME_PROMPT.md", "HANDOFF_CURRENT.md",
                      "HANDOFF_HISTORY.md", "NEXT.md", "STATE.md",
                      "M3_2_GATE_DECISION_CURRENT.md"):
             content = (DIRECTORY / name).read_text(encoding="utf-8")
@@ -1695,6 +1695,42 @@ class HandoffContractTests(unittest.TestCase):
             self.assertIn("IN_PROGRESS_NOT_ACCEPTED", content, name)
         self.assertIn("39946911406",
                       (ROOT / "docs/roadmap/ROADMAP_STATUS_CURRENT.md").read_text(encoding="utf-8"))
+
+    def test_82_pr146_terminal_and_new_chromium_form_fictional_only(self):
+        p = self.data["post_pr146_terminal_observation"]
+        self.assertTrue(p["merged"])
+        self.assertEqual(p["pr"], 146)
+        self.assertEqual(p["source_sha"], "5959ca0fe3d4cfd29ec3b558c55c1e64c620594e")
+        self.assertEqual(p["source_ci"]["run_id"], 39965156053)
+        self.assertEqual(p["source_ci"]["conclusion"], "SUCCESS")
+        self.assertEqual(p["merge_sha"], "c451cc0b09e24242ecb1ea7cf5c488d1217b51ca")
+        self.assertEqual(p["postmain_ci"]["run_id"], 39966405809)
+        self.assertEqual(p["postmain_ci"]["conclusion"], "SUCCESS")
+        self.assertEqual(p["m3_2"], "IN_PROGRESS_NOT_ACCEPTED")
+        self.assertEqual(p["real_g3"], "STOP_UNAVAILABLE")
+        t = self.data["m3_2_product_progress"]["fictional_event_real_chromium_candidate"]
+        self.assertEqual(t["added_browser_scenarios"], 9)
+        self.assertEqual(t["browser_scenarios_per_mode"], 62)
+        self.assertFalse(t["mounted_in_app"])
+        self.assertFalse(t["windows_operator_acceptance"])
+        for k in ("documentation", "browser", "fixture_stage"):
+            self.assertTrue((ROOT / t[k]).is_file(), k)
+        browser = (ROOT / t["browser"]).read_text(encoding="utf-8")
+        self.assertIn("62-fictional-event-cycle-is-rejected", browser)
+        self.assertIn("M32_BROWSER_REAL_CHROMIUM_PASS 62/62", browser)
+        stage = (ROOT / t["fixture_stage"]).read_text(encoding="utf-8")
+        self.assertIn('"src/M32FictionalEventManualWorkshop.tsx"', stage)
+        self.assertIn('"src/m32FictionalEventNotebook.ts"', stage)
+        app = (ROOT / "src/App.tsx").read_text(encoding="utf-8")
+        self.assertNotIn("M32FictionalEventManualWorkshop", app)
+        for name in ("RESUME_PROMPT_SHORT.md", "RESUME_PROMPT.md", "HANDOFF_CURRENT.md",
+                     "HANDOFF_HISTORY.md", "NEXT.md", "STATE.md",
+                     "M3_2_GATE_DECISION_CURRENT.md"):
+            current = (DIRECTORY / name).read_text(encoding="utf-8")
+            self.assertIn("39966405809", current, name)
+            self.assertIn("IN_PROGRESS_NOT_ACCEPTED", current, name)
+        roadmap = (ROOT / "docs/roadmap/ROADMAP_STATUS_CURRENT.md").read_text(encoding="utf-8")
+        self.assertIn("39966405809", roadmap)
 
     def test_24_policy_requires_refetch_and_same_pr_handoff(self):
         for clause in ("Re-fetch", "HANDOFF_CURRENT.md", "HANDOFF_CURRENT.json",

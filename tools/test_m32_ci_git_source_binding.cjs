@@ -38,7 +38,7 @@ test("01 exact SHA and eleven Git blobs match fictional-only sources", () => {
   const f = fixture();
   const evidence = bindSourcesToCheckout(f.root, f.head, MANIFEST);
   assert.equal(evidence.gitHead, f.head);
-  assert.equal(evidence.inventory.length, 11);
+  assert.equal(evidence.inventory.length, 13);
   assert.match(evidence.inventorySha, /^[a-f0-9]{64}$/);
   for (const item of evidence.inventory) {
     assert.equal(item.sha256,
