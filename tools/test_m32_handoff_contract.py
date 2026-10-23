@@ -1278,22 +1278,15 @@ class HandoffContractTests(unittest.TestCase):
 
     def test_71_pr135_merge_terminal_and_resume_prompt_no_real_authority(self):
         x = self.data["post_pr135_normalization"]
-        self.assertEqual(self.data["last_confirmed_merged_pr"], 135)
-        self.assertEqual(self.data["last_confirmed_main_before_handoff"],
-                         "b54f4111eed020c80a70f91bd3e15b544f842545")
-        self.assertEqual(self.data["last_verified_pr_head"],
-                         "acb901bd1844d93ea0562415a7438a4b21e7f4b8")
         self.assertEqual(x["merged_pr"], 135)
-        self.assertEqual(x["merge_sha"], self.data["last_confirmed_main_before_handoff"])
-        self.assertEqual(x["pr_head_sha"], self.data["last_verified_pr_head"])
+        self.assertEqual(x["merge_sha"], "b54f4111eed020c80a70f91bd3e15b544f842545")
+        self.assertEqual(x["pr_head_sha"], "acb901bd1844d93ea0562415a7438a4b21e7f4b8")
         self.assertEqual(x["pr_ci"], {"run_id": 39841578935, "conclusion": "SUCCESS",
                                        "job_steps": 75, "handoff_tests": 70,
                                        "rust_tests": 132, "chromium_normal": 53,
                                        "chromium_strict_csp": 53})
         self.assertEqual(x["main_ci"], {"run_id": 39843166291, "conclusion": "SUCCESS",
                                          "job_steps": 75})
-        self.assertEqual(self.data["main_ci_post_merge"]["sha"], x["merge_sha"])
-        self.assertEqual(self.data["main_ci_post_merge"]["conclusion"], "SUCCESS")
         self.assertEqual(self.data["post_pr134_normalization"]["main_ci"]["conclusion"], "SUCCESS")
         self.assertTrue(x["historic_snapshots_preserved"])
         self.assertEqual(x["product_status"], "IN_PROGRESS_NOT_ACCEPTED")
@@ -1315,6 +1308,60 @@ class HandoffContractTests(unittest.TestCase):
                        "ne jamais", "parallèle"):
             self.assertIn(phrase, prompt)
         self.assertIn("PR #135", self.doc)
+
+    def test_72_pr136_terminal_and_stale_lease_toy_never_authorizes_originals(self):
+        x = self.data["post_pr136_normalization"]
+        self.assertEqual(self.data["last_confirmed_merged_pr"], 136)
+        self.assertEqual(self.data["last_confirmed_main_before_handoff"],
+                         "d4837f1b292f37ec4b87926bc79a7c1c999d1fbe")
+        self.assertEqual(self.data["last_verified_pr_head"],
+                         "ea94377a80001fbd701ec06c7a84b7cba5b95036")
+        self.assertEqual(x["merged_pr"], 136)
+        self.assertEqual(x["merge_sha"], self.data["last_confirmed_main_before_handoff"])
+        self.assertEqual(x["pr_head_sha"], self.data["last_verified_pr_head"])
+        self.assertEqual(x["pr_ci"], {"run_id": 39848398829, "conclusion": "SUCCESS",
+                                       "job_steps": 75, "handoff_tests": 71,
+                                       "rust_tests": 132, "chromium_normal": 53,
+                                       "chromium_strict_csp": 53})
+        self.assertEqual(x["main_ci"], {"run_id": 39849940959, "conclusion": "SUCCESS",
+                                         "job_steps": 75})
+        self.assertEqual(self.data["main_ci_post_merge"]["sha"], x["merge_sha"])
+        self.assertEqual(self.data["main_ci_post_merge"]["conclusion"], "SUCCESS")
+        self.assertEqual(self.data["post_pr135_normalization"]["main_ci"]["conclusion"], "SUCCESS")
+        self.assertTrue(x["historic_snapshots_preserved"])
+        self.assertEqual(x["product_status"], "IN_PROGRESS_NOT_ACCEPTED")
+        self.assertEqual(x["writer_absence"], "NOT_PROVEN")
+        self.assertEqual(x["g2b_global"], "NOT_ACCEPTED")
+        self.assertEqual(x["g2c"], "NOT_AUTHORIZED")
+        self.assertEqual(x["real_g3"], "STOP_UNAVAILABLE")
+        self.assertEqual(x["historical"], "PENDING_EXTERNAL_ATTESTATION(21/3/2)")
+        self.assertEqual(x["prospective"], "NOT_STARTED")
+        self.assertEqual(x["operator_execution"], "NONE")
+        self.assertEqual(x["original_sqlite_access"], "NONE")
+        self.assertEqual(x["pr35_state"], "OPEN_DRAFT")
+
+        toy = self.data["m3_2_product_progress"]["test_only_unmediated_writer_negative_witness"]
+        self.assertEqual(toy["status"], "SOURCE_CANDIDATE_NEW_EXACT_HEAD_CI_REQUIRED")
+        self.assertEqual(toy["fixture"], "INVENTED_SQLITE_RAM_ONLY_NO_OPERATOR_FILE")
+        self.assertFalse(toy["owner_token_proves_writer_exclusion"])
+        self.assertFalse(toy["online_backup_proves_source_authentication"])
+        self.assertEqual(toy["real_sqlite_access"], "NONE")
+        self.assertEqual(toy["g2c"], "NOT_AUTHORIZED")
+        self.assertEqual(toy["real_g3"], "STOP_UNAVAILABLE")
+        self.assertEqual(toy["product_status"], "IN_PROGRESS_NOT_ACCEPTED")
+        for name in ("document", "rust"):
+            self.assertTrue((ROOT / toy[name]).is_file())
+        rust = (ROOT / toy["rust"]).read_text(encoding="utf-8")
+        self.assertIn("fn " + toy["test_name"] + "()", rust)
+        self.assertIn('["Unmediated invented write"]', rust)
+        self.assertIn("assert_eq!(owner.lease()?, old);", rust)
+        self.assertIn("Connection::open_in_memory()", rust)
+        self.assertNotIn("Connection::open(path)", rust)
+        self.assertNotIn("#[tauri::command]", rust)
+        prompt = (ROOT / "docs/continuity/RESUME_PROMPT.md").read_text(encoding="utf-8")
+        for phrase in ("PR #136", "39849940959", "PR #137", "STOP_UNAVAILABLE"):
+            self.assertIn(phrase, prompt)
+        self.assertIn("PR #136", self.doc)
 
     def test_24_policy_requires_refetch_and_same_pr_handoff(self):
         for clause in ("Re-fetch", "HANDOFF_CURRENT.md", "HANDOFF_CURRENT.json",

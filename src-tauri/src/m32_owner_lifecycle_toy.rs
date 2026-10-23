@@ -357,6 +357,35 @@ fn m32_owner_lifecycle_attached_source_poison() -> Result<()> {
     Ok(())
 }
 
+
+#[test]
+fn m32_owner_lifecycle_unmediated_valid_write_does_not_revoke_old_ticket_negative_witness() -> Result<()> {
+    // NEGATIVE WITNESS ON INVENTED IN-MEMORY SOURCE ONLY.
+    // The internal revision changes only through edit_fixture(). Direct valid
+    // SQLite writes that bypass that method leave the ticket unchanged.
+    // This demonstrates that a token alone is NOT writer exclusion.
+    let mut owner = OwnerSlot::new_invented(6)?;
+    let old = owner.lease()?;
+    let before = owner.capture(old, MAX_TOY_BYTES)?;
+    assert_eq!(toy_detail(&before)?, "Before");
+
+    let source = owner.source.as_ref().ok_or(Error::InvalidQuery)?;
+    source.execute(
+        "UPDATE invented_facts SET detail=?1 WHERE id=1",
+        ["Unmediated invented write"],
+    )?;
+
+    assert_eq!(owner.lease()?, old);
+    let after = owner.capture(old, MAX_TOY_BYTES)?;
+    assert_eq!(toy_detail(&before)?, "Before");
+    assert_eq!(toy_detail(&after)?, "Unmediated invented write");
+    assert_eq!(owner.state, ToyState::Ready);
+    assert!(memory_only(&after)?);
+    // An ordinary SQLite Online Backup is consistent, but does not attest
+    // that all writers used OwnerSlot::edit_fixture() to advance revision.
+    Ok(())
+}
+
 #[test]
 fn m32_owner_lifecycle_mutex_serializes_test_threads() -> Result<()> {
     let shared = Arc::new(Mutex::new(OwnerSlot::new_invented(6)?));
