@@ -434,3 +434,73 @@ describe("M3.2 invented read-only event history: versions and human explanations
     expect(currentFictionalEvents(b)).toHaveLength(0);
   });
 });
+
+describe("M3.2 invented-only event history content differences", () => {
+  function starting() {
+    return createFictionalEvent(fixture("fiction-alpha"), plain);
+  }
+  it("50 reports no content changes for the initial creation", () => {
+    const a = starting();
+    expect(auditedFictionalEventHistory(a, a.events[0].event_id)[0].changed_fields).toEqual([]);
+  });
+  it("51 reports title-only changes without marking unchanged note or links", () => {
+    const a = starting();
+    const b = amendFictionalEvent(a, a.events[0].event_id,
+      { ...plain, title: "Titre révisé" }, "Motif humain");
+    expect(auditedFictionalEventHistory(b, a.events[0].event_id)[1].changed_fields)
+      .toEqual(["title"]);
+  });
+  it("52 reports note-only changes even when title is unchanged", () => {
+    const a = starting();
+    const b = amendFictionalEvent(a, a.events[0].event_id,
+      { ...plain, note: "Nouvelle note" }, "Motif humain");
+    expect(auditedFictionalEventHistory(b, a.events[0].event_id)[1].changed_fields)
+      .toEqual(["note"]);
+  });
+  it("53 reports explicit anchor and revision changes together", () => {
+    const a = starting();
+    const b = amendFictionalEvent(a, a.events[0].event_id, linked, "Ancrage explicite");
+    expect(auditedFictionalEventHistory(b, a.events[0].event_id)[1].changed_fields)
+      .toEqual(["anchor_id", "source_revision_id"]);
+  });
+  it("54 does not report invented content changes for a withdrawal tombstone", () => {
+    const a = createFictionalEvent(fixture("fiction-alpha"), linked);
+    const b = withdrawFictionalEvent(a, a.events[0].event_id, "Choix humain");
+    const last = auditedFictionalEventHistory(b, a.events[0].event_id)[1];
+    expect(last.audit.action).toBe("withdrawn");
+    expect(last.changed_fields).toEqual([]);
+  });
+  it("55 compares interleaved amendments against the same event, not a neighbor", () => {
+    let a = starting();
+    const originalId = a.events[0].event_id;
+    a = createFictionalEvent(a, { ...plain, title: "Autre personnage" });
+    const secondId = a.events[1].event_id;
+    a = amendFictionalEvent(a, secondId,
+      { ...plain, title: "Autre personnage modifié" }, "Correction deuxième");
+    a = amendFictionalEvent(a, originalId, { ...plain, note: "Première note" }, "Correction première");
+    expect(auditedFictionalEventHistory(a, originalId)[1].changed_fields).toEqual(["note"]);
+    expect(auditedFictionalEventHistory(a, secondId)[1].changed_fields).toEqual(["title"]);
+  });
+  it("56 freezes difference arrays as detached display-only values", () => {
+    const a = starting();
+    const b = amendFictionalEvent(a, a.events[0].event_id,
+      { ...plain, title: "Correction" }, "Justification");
+    const history = auditedFictionalEventHistory(b, a.events[0].event_id);
+    expect(Object.isFrozen(history[1].changed_fields)).toBe(true);
+    expect(Object.isFrozen(history[1])).toBe(true);
+    expect(b.events[1].title).toBe("Correction");
+  });
+  it("57 renders accessible version differences with escaped invented input", () => {
+    const a = starting();
+    const b = amendFictionalEvent(a, a.events[0].event_id,
+      { ...plain, title: "<b>événement</b>", note: "Une note" }, "Correction");
+    const html = renderToStaticMarkup(createElement(M32FictionalEventNotebookPreview,
+      { notebook: b }));
+    expect(html).toContain("modifications de contenu : titre, note");
+    expect(html).toContain("modifications de contenu : aucune");
+    expect(html).toContain("&lt;b&gt;événement&lt;/b&gt;");
+    expect(html).not.toContain("<b>événement</b>");
+    expect(html).toContain("<details>");
+    expect(html).not.toContain("open=");
+  });
+});

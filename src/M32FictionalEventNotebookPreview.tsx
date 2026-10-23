@@ -32,9 +32,15 @@ export default function M32FictionalEventNotebookPreview({ notebook }: {
           <details>
             <summary>{latest.title} — {latest.status === "withdrawn" ? "retiré" : "courant"}
               {" — " + history.length + " version(s)"}</summary>
-            <ol>{history.map(({ event, audit }) => <li key={event.version}>
+            <ol>{history.map(({ event, audit, changed_fields }) => <li key={event.version}>
               Version {event.version} — {audit.action} — {event.status}
               {" ; justification : " + audit.explanation}
+              {" ; modifications de contenu : " + (changed_fields.length
+                ? changed_fields.map(field => ({
+                  title: "titre", note: "note", anchor_id: "ancre",
+                  source_revision_id: "révision",
+                }[field])).join(", ")
+                : "aucune")}
               {" ; titre : " + event.title}
               {event.note ? " ; note : " + event.note : ""}
               {event.anchor_id === null ? " ; sans date liée" :
