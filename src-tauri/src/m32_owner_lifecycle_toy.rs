@@ -416,6 +416,32 @@ fn m32_owner_lifecycle_indirect_trigger_unmediated_write_leaves_lease_stale_nega
 }
 
 #[test]
+fn m32_owner_lifecycle_data_version_same_connection_write_not_revision_guard_negative_witness() -> Result<()> {
+    // An invented RAM-only SQLite database; never open an original file or IPC.
+    // SQLite data_version is NOT advanced by a commit on the same connection.
+    let mut owner = OwnerSlot::new_invented(6)?;
+    let stale = owner.lease()?;
+    let before = owner.capture(stale, MAX_TOY_BYTES)?;
+    let source = owner.source.as_ref().ok_or(Error::InvalidQuery)?;
+    let old_version: i64 = source.query_row("PRAGMA data_version", [], |r| r.get(0))?;
+    source.execute(
+        "UPDATE invented_facts SET detail=?1 WHERE id=1",
+        ["Changed without revision or data_version"],
+    )?;
+    assert!(source.is_autocommit());
+    let new_version: i64 = source.query_row("PRAGMA data_version", [], |r| r.get(0))?;
+    assert_eq!(old_version, new_version);
+    // Both signals are stale despite a committed toy mutation.
+    assert_eq!(owner.lease()?, stale);
+    let after = owner.capture(stale, MAX_TOY_BYTES)?;
+    assert_eq!(toy_detail(&before)?, "Before");
+    assert_eq!(toy_detail(&after)?, "Changed without revision or data_version");
+    assert_eq!(owner.state, ToyState::Ready);
+    qualified_snapshot(&after, 6)?;
+    Ok(())
+}
+
+#[test]
 fn m32_owner_lifecycle_mutex_serializes_test_threads() -> Result<()> {
     let shared = Arc::new(Mutex::new(OwnerSlot::new_invented(6)?));
     let ticket = shared.lock().map_err(|_| Error::InvalidQuery)?.lease()?;
