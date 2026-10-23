@@ -1798,14 +1798,47 @@ class HandoffContractTests(unittest.TestCase):
         self.assertIn("pierre tombale modifiant la version précédente", source)
         tests = (ROOT / q["tests"]).read_text(encoding="utf-8")
         self.assertIn("32 accepts legitimate amend then withdraw", tests)
-        for name in ("RESUME_PROMPT_SHORT.md", "RESUME_PROMPT.md",
-                     "HANDOFF_CURRENT.md", "HANDOFF_HISTORY.md", "NEXT.md",
-                     "STATE.md", "M3_2_GATE_DECISION_CURRENT.md"):
+        # Short prompt is intentionally current-only; long/history retain PR148 CI.
+        for name in ("RESUME_PROMPT.md", "HANDOFF_CURRENT.md",
+                     "HANDOFF_HISTORY.md", "NEXT.md", "STATE.md",
+                     "M3_2_GATE_DECISION_CURRENT.md"):
             body = (DIRECTORY / name).read_text(encoding="utf-8")
             self.assertIn("39987313809", body, name)
             self.assertIn("IN_PROGRESS_NOT_ACCEPTED", body, name)
         roadmap = (ROOT / "docs/roadmap/ROADMAP_STATUS_CURRENT.md").read_text(encoding="utf-8")
         self.assertIn("39987313809", roadmap)
+
+    def test_85_pr149_terminal_and_fictional_runtime_shape_denials(self):
+        p = self.data["post_pr149_terminal_observation"]
+        self.assertTrue(p["merged"])
+        self.assertEqual(p["pr"], 149)
+        self.assertEqual(p["source_sha"], "6c040d264035bf1c92d256b58459382b5d7faa10")
+        self.assertEqual(p["source_ci"], {"run_id": 39994596525, "conclusion": "SUCCESS"})
+        self.assertEqual(p["merge_sha"], "77e253193cae3d29ae164875c65be1bf3186f4ad")
+        self.assertEqual(p["postmain_ci"], {"run_id": 39996127567, "conclusion": "SUCCESS"})
+        self.assertEqual(p["m3_2"], "IN_PROGRESS_NOT_ACCEPTED")
+        self.assertEqual(p["real_g3"], "STOP_UNAVAILABLE")
+        self.assertFalse(p["operator_windows_validation"])
+        self.assertFalse(p["original_sqlite_touched"])
+        self.assertEqual(self.data["last_confirmed_merged_pr"], 149)
+        q = self.data["m3_2_product_progress"]["fictional_runtime_shape_denial_candidate"]
+        self.assertEqual(q["new_tests"], 9)
+        self.assertFalse(q["real_g3_authorized"])
+        for key in ("model", "tests", "documentation"):
+            self.assertTrue((ROOT / q[key]).is_file(), key)
+        model = (ROOT / q["model"]).read_text(encoding="utf-8")
+        self.assertIn('typeof event.event_id !== "string"', model)
+        self.assertIn('Array.isArray(audit)', model)
+        tests = (ROOT / q["tests"]).read_text(encoding="utf-8")
+        self.assertIn("41 preserves legitimate interleaved", tests)
+        for name in ("RESUME_PROMPT_SHORT.md", "RESUME_PROMPT.md",
+                     "HANDOFF_CURRENT.md", "HANDOFF_HISTORY.md", "NEXT.md",
+                     "STATE.md", "M3_2_GATE_DECISION_CURRENT.md"):
+            data = (DIRECTORY / name).read_text(encoding="utf-8")
+            self.assertIn("39996127567", data, name)
+            self.assertIn("IN_PROGRESS_NOT_ACCEPTED", data, name)
+        self.assertIn("39996127567",
+                      (ROOT / "docs/roadmap/ROADMAP_STATUS_CURRENT.md").read_text(encoding="utf-8"))
 
 if __name__ == "__main__":
     unittest.main()
