@@ -1577,8 +1577,10 @@ class HandoffContractTests(unittest.TestCase):
         self.assertFalse(q["real_g3_authorized"])
         for key in ("code", "tests", "doc"):
             self.assertTrue((ROOT / q[key]).is_file(), q[key])
-        short = (DIRECTORY / "RESUME_PROMPT_SHORT.md").read_text(encoding="utf-8")
-        self.assertIn("39932102283", short)
+        # The short resume MUST stay focused on the latest verified checkpoint;
+        # historical PR #142 CI belongs to the long resume and history, not the short.
+        detailed = (DIRECTORY / "RESUME_PROMPT.md").read_text(encoding="utf-8")
+        self.assertIn("39932102283", detailed)
         for filename in ("HANDOFF_CURRENT.md", "HANDOFF_HISTORY.md", "NEXT.md",
                          "STATE.md", "M3_2_GATE_DECISION_CURRENT.md",
                          "RESUME_PROMPT.md", "README.md"):
