@@ -1358,14 +1358,14 @@ class HandoffContractTests(unittest.TestCase):
 
     def test_73_pr137_merge_and_all_writer_guard_do_not_promote_real_g3(self):
         x = self.data["post_pr137_normalization"]
-        self.assertEqual(self.data["last_confirmed_merged_pr"], 137)
+        self.assertEqual(self.data["last_confirmed_merged_pr"], 138)
         self.assertEqual(self.data["last_confirmed_main_before_handoff"],
-                         "4d5a2bcb68dd439fac1846d354f3f808138457f1")
+                         "78050c11b882ec852d8f211cedf3980166f30e9a")
         self.assertEqual(self.data["last_verified_pr_head"],
-                         "892a42e9ea0c84ab9af9fb45536d502d99252155")
+                         "29e662e2b27307bdae0a0107e02a6f1ae1fc59b7")
         self.assertEqual(x["merged_pr"], 137)
-        self.assertEqual(x["merge_sha"], self.data["last_confirmed_main_before_handoff"])
-        self.assertEqual(x["pr_head_sha"], self.data["last_verified_pr_head"])
+        self.assertEqual(x["merge_sha"], "4d5a2bcb68dd439fac1846d354f3f808138457f1")
+        self.assertEqual(x["pr_head_sha"], "892a42e9ea0c84ab9af9fb45536d502d99252155")
         self.assertEqual(x["pr_ci"], {"run_id": 39876891920, "conclusion": "SUCCESS",
                                        "job_steps": 75, "handoff_tests": 72,
                                        "rust_tests": 132, "chromium_normal": 53,
@@ -1412,6 +1412,38 @@ class HandoffContractTests(unittest.TestCase):
         for phrase in ("PR #137", "PR #138", "39900039763",
                        "IN_PROGRESS_NOT_ACCEPTED", "STOP_UNAVAILABLE"):
             self.assertIn(phrase, prompt)
+
+    def test_74_pr138_terminal_is_separate_from_historic_checkpoints(self):
+        current = self.data["post_pr138_terminal_observation"]
+        self.assertEqual(current["pr"], 138)
+        self.assertTrue(current["merged"])
+        self.assertEqual(current["source_sha"], "29e662e2b27307bdae0a0107e02a6f1ae1fc59b7")
+        self.assertEqual(current["source_ci"]["run_id"], 39900743598)
+        self.assertEqual(current["source_ci"]["conclusion"], "SUCCESS")
+        self.assertEqual(current["merge_sha"], "78050c11b882ec852d8f211cedf3980166f30e9a")
+        self.assertEqual(current["postmain_ci"]["run_id"], 39902762331)
+        self.assertEqual(current["postmain_ci"]["conclusion"], "SUCCESS")
+        self.assertEqual(current["obsolete_run"]["qualification_for_final_head"], "INVALID")
+        self.assertFalse(current["all_mutation_entrypoints_mediated_default"])
+        self.assertFalse(current["real_writer_inventory_proven"])
+        self.assertFalse(current["real_g3_authorized"])
+        self.assertEqual(current["real_g3"], "STOP_UNAVAILABLE")
+        self.assertEqual(current["m3_2"], "IN_PROGRESS_NOT_ACCEPTED")
+        self.assertEqual(current["historical"], "PENDING_EXTERNAL_ATTESTATION(21/3/2)")
+        self.assertEqual(self.data["post_pr137_normalization"]["main_ci"]["conclusion"],
+                         "IN_PROGRESS_AT_CHECKPOINT")
+        self.assertEqual(self.data["main_ci_post_merge"]["conclusion"],
+                         "IN_PROGRESS_AT_CHECKPOINT")
+        self.assertEqual(self.data["post_pr137_postmain_terminal_observation"]["conclusion"],
+                         "SUCCESS")
+        for path in ("HANDOFF_CURRENT.md", "HANDOFF_HISTORY.md", "NEXT.md", "STATE.md",
+                     "M3_2_GATE_DECISION_CURRENT.md", "RESUME_PROMPT.md", "README.md"):
+            doc = (DIRECTORY / path).read_text(encoding="utf-8")
+            self.assertIn("39902762331", doc, path)
+            self.assertIn("IN_PROGRESS_NOT_ACCEPTED", doc, path)
+        roadmap = (ROOT / "docs/roadmap/ROADMAP_STATUS_CURRENT.md").read_text(encoding="utf-8")
+        self.assertIn("39902762331", roadmap)
+        self.assertIn("IN_PROGRESS_NOT_ACCEPTED", roadmap)
 
     def test_24_policy_requires_refetch_and_same_pr_handoff(self):
         for clause in ("Re-fetch", "HANDOFF_CURRENT.md", "HANDOFF_CURRENT.json",
