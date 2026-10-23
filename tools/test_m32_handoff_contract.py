@@ -1869,9 +1869,10 @@ class HandoffContractTests(unittest.TestCase):
         self.assertNotIn("invoke(", model + preview)
         tests = (ROOT / q["tests"]).read_text(encoding="utf-8")
         self.assertIn("49 renders a withdrawn event", tests)
-        for name in ("RESUME_PROMPT_SHORT.md", "RESUME_PROMPT.md",
-                     "HANDOFF_CURRENT.md", "HANDOFF_HISTORY.md", "NEXT.md",
-                     "STATE.md", "M3_2_GATE_DECISION_CURRENT.md"):
+        # The short prompt is intentionally current-only; PR150 remains in full history.
+        for name in ("RESUME_PROMPT.md", "HANDOFF_CURRENT.md",
+                     "HANDOFF_HISTORY.md", "NEXT.md", "STATE.md",
+                     "M3_2_GATE_DECISION_CURRENT.md"):
             body = (DIRECTORY / name).read_text(encoding="utf-8")
             self.assertIn("40007837202", body, name)
             self.assertIn("IN_PROGRESS_NOT_ACCEPTED", body, name)
