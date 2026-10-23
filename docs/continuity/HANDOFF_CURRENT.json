@@ -3,14 +3,14 @@
   "as_of": "2026-10-23",
   "status_kind": "DATED_PUBLIC_SOURCE_HANDOFF_ONLY",
   "repository": "LaurentCOLL1/Fabulaxiom",
-  "last_confirmed_main_before_handoff": "f5a255e6687c68c1e6095d8e3a8c20277415741c",
-  "last_confirmed_merged_pr": 140,
-  "last_verified_pr_head": "9d859cb5b61f87782cede0db1c9e59a3a113948d",
+  "last_confirmed_main_before_handoff": "63e1e09915c45d74592ce37fa9572a91d64027f1",
+  "last_confirmed_merged_pr": 141,
+  "last_verified_pr_head": "8e5726f984b3335d1977405cfdfadc1ece9077e7",
   "last_verified_ci": {
-    "run_id": 39917211662,
+    "run_id": 39921099284,
     "context": "Windows frontend and Rust checks",
     "conclusion": "SUCCESS",
-    "source": "PR140_EXACT_HEAD"
+    "source": "PR141_EXACT_HEAD"
   },
   "recent_changes": [
     "PR_85_EXACT_G2A_TEXT_AST_ONLY",
@@ -117,7 +117,9 @@
     "PR139_MERGED_26e533c_DOC_TERMINAL_NORMALIZATION_75_WINDOWS_STEPS",
     "2026_10_23_NEW_SYNTHETIC_RAM_TRIGGER_UNMEDIATED_MUTATION_CANDIDATE",
     "PR140_MERGED_INDIRECT_TRIGGER_NEGATIVE_9d859cb_CI_39917211662_MAIN_f5a255e",
-    "2026_10_23_NEW_SAME_CONNECTION_DATA_VERSION_NEGATIVE_RAM_ONLY_CANDIDATE"
+    "2026_10_23_NEW_SAME_CONNECTION_DATA_VERSION_NEGATIVE_RAM_ONLY_CANDIDATE",
+    "PR141_MERGED_63e1e099_EXACT_SHA_WINDOWS_CI_39921099284_SUCCESS",
+    "2026_10_23_SHORT_AND_LONG_RESUME_PROMPTS_EVERY_PR_CI_POLICY_CANDIDATE"
   ],
   "pr35": "OPEN_DRAFT",
   "issues": {
@@ -303,7 +305,7 @@
     "verified_bypass_actors": 0,
     "classic_branch_protection_read": "403_INTEGRATION_RESTRICTED"
   },
-  "next": "SAME_OWNER_DATA_VERSION_NEGATIVE_RAM_WITNESS_EXACT_SHA_CI_REQUIRED; PR140_POSTMAIN_TERMINAL_RECHECK; G2B_G2C_G3_REAL_STOP",
+  "next": "NEW_SHORT_LONG_RESUME_PROMPTS_CI_QUALIFICATION_MERGE; PR141_POSTMAIN_TERMINAL_RECHECK; M3_2_REAL_GATES_STOP",
   "live_refetch_required": true,
   "hand_off_updated_by_future_pr": true,
   "main_ci_post_merge": {
@@ -1990,5 +1992,53 @@
     "historic": "PENDING_EXTERNAL_ATTESTATION(21/3/2)",
     "prospective": "NOT_STARTED",
     "pr35": "OPEN_DRAFT"
+  },
+  "post_pr141_terminal_observation": {
+    "as_of": "2026-10-23",
+    "kind": "SOURCE_ONLY_PRAGMA_DATA_VERSION_NEGATIVE_MERGED_NO_REAL_G3_AUTHORITY",
+    "pr": 141,
+    "merged": true,
+    "source_sha": "8e5726f984b3335d1977405cfdfadc1ece9077e7",
+    "source_ci": {
+      "run_id": 39921099284,
+      "conclusion": "SUCCESS",
+      "job_steps": 75,
+      "handoff_tests": 76,
+      "rust_baseline_tests": 132,
+      "chromium_normal": 53,
+      "chromium_strict_csp": 53,
+      "data_version_negative": "PASS"
+    },
+    "merge_sha": "63e1e09915c45d74592ce37fa9572a91d64027f1",
+    "postmain_ci": {
+      "run_id": 39929901931,
+      "conclusion": "IN_PROGRESS_AT_CHECKPOINT"
+    },
+    "m3_2": "IN_PROGRESS_NOT_ACCEPTED",
+    "source": "PARTIAL_LOCAL_IDENTITY_ONLY",
+    "writer_absence": "NOT_PROVEN",
+    "g2b": "NOT_ACCEPTED",
+    "g2c": "NOT_AUTHORIZED",
+    "real_g3": "STOP_UNAVAILABLE",
+    "historic": "PENDING_EXTERNAL_ATTESTATION(21/3/2)",
+    "prospective": "NOT_STARTED",
+    "pr35": "OPEN_DRAFT",
+    "real_sqlite_access": "NONE"
+  },
+  "resume_prompts_policy": {
+    "as_of": "2026-10-23",
+    "kind": "PENDING_OWN_EXACT_SHA_CI_AND_PROTECTED_MERGE",
+    "short_path": "docs/continuity/RESUME_PROMPT_SHORT.md",
+    "long_path": "docs/continuity/RESUME_PROMPT.md",
+    "short_contains_copyable_block": true,
+    "short_links_to_long": true,
+    "update_required": "BOTH_FILES_IN_EVERY_FUTURE_PR",
+    "diff_guard": ".github/workflows/m0-ci.yml",
+    "diff_scope": "ALL_PULL_REQUESTS",
+    "ci_context": "Windows frontend and Rust checks",
+    "source_only": true,
+    "auto_updates_filenames": false,
+    "requires_live_refetch": true,
+    "real_g3_authorized": false
   }
 }

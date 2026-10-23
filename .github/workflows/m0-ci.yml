@@ -142,7 +142,7 @@ jobs:
       - name: M3.2 living handoff source-only contract checks
         run: python -m unittest discover -s tools -p "test_m32_handoff_contract.py" -v
 
-      - name: M3.2 require handoff refresh for material pull request changes
+      - name: M3.2 require both resume prompts on every pull request
         if: github.event_name == 'pull_request'
         shell: pwsh
         run: |
@@ -154,6 +154,14 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw 'STOP cannot fetch exact base' }
           $modified = @(git diff --name-only $baseSha HEAD)
           if ($LASTEXITCODE -ne 0) { throw 'STOP cannot inspect PR diff' }
+          # Every PR must carry both copy-ready resume levels, even docs-only.
+          foreach ($path in @('docs/continuity/RESUME_PROMPT_SHORT.md',
+                               'docs/continuity/RESUME_PROMPT.md')) {
+            if ($modified -notcontains $path) {
+              throw "STOP missing required resume prompt in this PR: $path"
+            }
+          }
+          Write-Output 'M32_BOTH_RESUME_PROMPTS_EVERY_PR_PASS'
           $material = @($modified | Where-Object {
             $_ -match '^(src/|src-tauri/src/|src-tauri/capabilities/|tools/|docs/qualification/|[.]github/workflows/)'
           })

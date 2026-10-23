@@ -1517,6 +1517,40 @@ class HandoffContractTests(unittest.TestCase):
         roadmap = (ROOT / "docs/roadmap/ROADMAP_STATUS_CURRENT.md").read_text(encoding="utf-8")
         self.assertIn("39917211662", roadmap)
 
+    def test_77_short_and_long_resume_policy_is_copy_ready_and_mandatory(self):
+        short_file = DIRECTORY / "RESUME_PROMPT_SHORT.md"
+        long_file = DIRECTORY / "RESUME_PROMPT.md"
+        self.assertTrue(short_file.is_file())
+        self.assertTrue(long_file.is_file())
+        short = short_file.read_text(encoding="utf-8")
+        detailed = long_file.read_text(encoding="utf-8")
+        self.assertLess(len(short), 4200, "Short resume must remain copy-friendly")
+        self.assertGreater(len(detailed), len(short))
+        self.assertIn("RESUME_PROMPT.md", short)
+        self.assertIn("HANDOFF_CURRENT.md", short)
+        self.assertIn("HANDOFF_CURRENT.json", short)
+        self.assertIn("ROADMAP_STATUS_CURRENT.md", short)
+        self.assertIn("main=63e1e09915c45d74592ce37fa9572a91d64027f1", short)
+        self.assertIn("IN_PROGRESS_AT_CHECKPOINT", short)
+        for status in ("IN_PROGRESS_NOT_ACCEPTED", "NOT_PROVEN", "STOP_UNAVAILABLE",
+                       "PENDING_EXTERNAL_ATTESTATION(21/3/2)", "expected_head_sha"):
+            self.assertIn(status, short)
+            self.assertIn(status, detailed)
+        for filename in ("RESUME_PROMPT_SHORT.md", "RESUME_PROMPT.md"):
+            self.assertIn(filename, self.policy)
+            self.assertIn(filename, self.index)
+        policy = self.data["resume_prompts_policy"]
+        self.assertEqual(policy["short_path"], "docs/continuity/RESUME_PROMPT_SHORT.md")
+        self.assertEqual(policy["long_path"], "docs/continuity/RESUME_PROMPT.md")
+        self.assertEqual(policy["update_required"], "BOTH_FILES_IN_EVERY_FUTURE_PR")
+        self.assertFalse(policy["real_g3_authorized"])
+        ci = (ROOT / policy["diff_guard"]).read_text(encoding="utf-8")
+        self.assertIn("M32_BOTH_RESUME_PROMPTS_EVERY_PR_PASS", ci)
+        self.assertIn("STOP missing required resume prompt in this PR", ci)
+        self.assertIn("'docs/continuity/RESUME_PROMPT_SHORT.md'", ci)
+        self.assertIn("'docs/continuity/RESUME_PROMPT.md'", ci)
+        self.assertIn("if: github.event_name == 'pull_request'", ci)
+
     def test_24_policy_requires_refetch_and_same_pr_handoff(self):
         for clause in ("Re-fetch", "HANDOFF_CURRENT.md", "HANDOFF_CURRENT.json",
                        "expected_head_sha", "autorisation"):
