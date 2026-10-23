@@ -1531,7 +1531,7 @@ class HandoffContractTests(unittest.TestCase):
         self.assertIn("HANDOFF_CURRENT.json", short)
         self.assertIn("ROADMAP_STATUS_CURRENT.md", short)
         self.assertIn("main=c969f2c29e168e99e24d675c25a3217e789c9e2d", short)
-        self.assertIn("IN_PROGRESS_AT_CHECKPOINT", short)
+        self.assertIn("IN_PROGRESS_AT_CHECKPOINT", detailed)
         for status in ("IN_PROGRESS_NOT_ACCEPTED", "NOT_PROVEN", "STOP_UNAVAILABLE",
                        "PENDING_EXTERNAL_ATTESTATION(21/3/2)", "expected_head_sha"):
             self.assertIn(status, short)
