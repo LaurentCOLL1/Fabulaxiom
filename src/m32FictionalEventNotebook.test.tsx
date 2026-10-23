@@ -504,3 +504,75 @@ describe("M3.2 invented-only event history content differences", () => {
     expect(html).not.toContain("open=");
   });
 });
+
+describe("M3.2 fictional event exact before-after display differences", () => {
+  function created() {
+    return createFictionalEvent(fixture("fiction-alpha"), plain);
+  }
+  it("58 initial creation has no before-after pair", () => {
+    const a = created();
+    expect(auditedFictionalEventHistory(a, a.events[0].event_id)[0].field_differences)
+      .toEqual([]);
+  });
+  it("59 title correction retains exact before and after invented text", () => {
+    const a = created();
+    const b = amendFictionalEvent(a, a.events[0].event_id,
+      { ...plain, title: "Rencontre ajustée" }, "Motif explicite");
+    expect(auditedFictionalEventHistory(b, a.events[0].event_id)[1].field_differences)
+      .toEqual([{ field: "title", before: "Première rencontre", after: "Rencontre ajustée" }]);
+  });
+  it("60 empty and nonempty notes remain distinguishable in history", () => {
+    const a = createFictionalEvent(fixture("fiction-alpha"), { ...plain, note: "" });
+    const b = amendFictionalEvent(a, a.events[0].event_id,
+      { ...plain, note: "Note ajoutée" }, "Précision");
+    expect(auditedFictionalEventHistory(b, a.events[0].event_id)[1].field_differences)
+      .toEqual([{ field: "note", before: "", after: "Note ajoutée" }]);
+  });
+  it("61 explicit anchor and exact revision link show null to bound identifiers", () => {
+    const a = created();
+    const b = amendFictionalEvent(a, a.events[0].event_id, linked, "Lien humain");
+    expect(auditedFictionalEventHistory(b, a.events[0].event_id)[1].field_differences)
+      .toEqual([
+        { field: "anchor_id", before: null, after: "A" },
+        { field: "source_revision_id", before: null, after: "fiction-alpha-revision-1" },
+      ]);
+  });
+  it("62 removed temporal link shows exact explicit values to null", () => {
+    const a = createFictionalEvent(fixture("fiction-alpha"), linked);
+    const b = amendFictionalEvent(a, a.events[0].event_id, plain, "Délier manuellement");
+    expect(auditedFictionalEventHistory(b, a.events[0].event_id)[1].field_differences)
+      .toEqual([
+        { field: "anchor_id", before: "A", after: null },
+        { field: "source_revision_id", before: "fiction-alpha-revision-1", after: null },
+      ]);
+  });
+  it("63 withdrawal creates no invented before-after content change", () => {
+    const a = createFictionalEvent(fixture("fiction-alpha"), linked);
+    const b = withdrawFictionalEvent(a, a.events[0].event_id, "Retrait humain");
+    expect(auditedFictionalEventHistory(b, a.events[0].event_id)[1].field_differences)
+      .toEqual([]);
+  });
+  it("64 freezes each detached before-after entry without altering the historical notebook", () => {
+    const a = created();
+    const b = amendFictionalEvent(a, a.events[0].event_id,
+      { ...plain, title: "Titre corrigé" }, "Motif");
+    const x = auditedFictionalEventHistory(b, a.events[0].event_id);
+    expect(Object.isFrozen(x[1].field_differences)).toBe(true);
+    expect(Object.isFrozen(x[1].field_differences[0])).toBe(true);
+    expect(x[1].field_differences[0].before).toBe(a.events[0].title);
+    expect(b.events[0].title).toBe("Première rencontre");
+  });
+  it("65 renders explicit before-after labels and React-escapes malicious invented text", () => {
+    const a = created();
+    const b = amendFictionalEvent(a, a.events[0].event_id,
+      { ...plain, title: "<script>mauvais</script>" }, "Motif");
+    const html = renderToStaticMarkup(createElement(M32FictionalEventNotebookPreview,
+      { notebook: b }));
+    expect(html).toContain("Valeurs avant et après fictives");
+    expect(html).toContain("avant = Première rencontre");
+    expect(html).toContain("après = &lt;script&gt;mauvais&lt;/script&gt;");
+    expect(html).not.toContain("<script>");
+    expect(html).toContain("<details>");
+    expect(html).not.toContain("open=");
+  });
+});

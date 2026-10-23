@@ -32,7 +32,7 @@ export default function M32FictionalEventNotebookPreview({ notebook }: {
           <details>
             <summary>{latest.title} — {latest.status === "withdrawn" ? "retiré" : "courant"}
               {" — " + history.length + " version(s)"}</summary>
-            <ol>{history.map(({ event, audit, changed_fields }) => <li key={event.version}>
+            <ol>{history.map(({ event, audit, changed_fields, field_differences }) => <li key={event.version}>
               Version {event.version} — {audit.action} — {event.status}
               {" ; justification : " + audit.explanation}
               {" ; modifications de contenu : " + (changed_fields.length
@@ -47,6 +47,18 @@ export default function M32FictionalEventNotebookPreview({ notebook }: {
                 " ; ancre explicite : " + event.anchor_id}
               {event.source_revision_id === null ? "" :
                 " ; révision source exacte : " + event.source_revision_id}
+              {field_differences.length > 0 && <ul aria-label="Valeurs avant et après fictives">
+                {field_differences.map(diff => <li key={diff.field}>
+                  {({
+                    title: "titre", note: "note", anchor_id: "ancre",
+                    source_revision_id: "révision",
+                  }[diff.field])}
+                  {" : avant = " + (diff.before === null ? "(non lié)" :
+                    diff.before === "" ? "(vide)" : diff.before)}
+                  {" ; après = " + (diff.after === null ? "(non lié)" :
+                    diff.after === "" ? "(vide)" : diff.after)}
+                </li>)}
+              </ul>}
             </li>)}</ol>
           </details>
         </li>;
