@@ -155,3 +155,84 @@ describe("M3.2 invented-only manual event CRUD and immutable revision history", 
     expect(a.audit).toHaveLength(1);
   });
 });
+
+describe("M3.2 fictional event audit lineage adversarial checks", () => {
+  function two() {
+    const first = createFictionalEvent(fixture("fiction-alpha"), plain);
+    return createFictionalEvent(first, { ...plain, title: "Deuxième rencontre" });
+  }
+  it("16 rejects missing audit for a valid created event", () => {
+    const a = createFictionalEvent(fixture("fiction-alpha"), plain);
+    expect(() => inspectFictionalEventNotebook({ ...a, audit: [] })).toThrow();
+  });
+  it("17 rejects extra duplicate audit for a single event", () => {
+    const a = createFictionalEvent(fixture("fiction-alpha"), plain);
+    expect(() => inspectFictionalEventNotebook({ ...a, audit: [...a.audit, a.audit[0]] })).toThrow();
+  });
+  it("18 rejects a fabricated audit action without changing versions", () => {
+    const a = createFictionalEvent(fixture("fiction-alpha"), plain);
+    expect(() => inspectFictionalEventNotebook({
+      ...a, audit: [{ ...a.audit[0], action: "amended" }],
+    })).toThrow();
+  });
+  it("19 rejects a changed audit version number even when event is valid", () => {
+    const a = createFictionalEvent(fixture("fiction-alpha"), plain);
+    expect(() => inspectFictionalEventNotebook({
+      ...a, audit: [{ ...a.audit[0], version: 2 }],
+    })).toThrow();
+  });
+  it("20 rejects an audit entry assigned to a different event ID", () => {
+    const a = two();
+    expect(() => inspectFictionalEventNotebook({
+      ...a, audit: [{ ...a.audit[0], event_id: a.events[1].event_id }, a.audit[1]],
+    })).toThrow();
+  });
+  it("21 rejects swapped audit entries between different created events", () => {
+    const a = two();
+    expect(() => inspectFictionalEventNotebook({
+      ...a, audit: [a.audit[1], a.audit[0]],
+    })).toThrow();
+  });
+  it("22 rejects a fabricated creator ID even when the prefix matches", () => {
+    const a = createFictionalEvent(fixture("fiction-alpha"), plain);
+    expect(() => inspectFictionalEventNotebook({
+      ...a, events: [{ ...a.events[0], event_id: "fiction-alpha-event-0042" }],
+      audit: [{ ...a.audit[0], event_id: "fiction-alpha-event-0042" }],
+    })).toThrow();
+  });
+  it("23 rejects a forged nextId higher or lower than the creation count", () => {
+    const a = two();
+    expect(() => inspectFictionalEventNotebook({ ...a, nextId: 4 })).toThrow();
+    expect(() => inspectFictionalEventNotebook({ ...a, nextId: 2 })).toThrow();
+  });
+  it("24 rejects creation history recorded in reversed event order", () => {
+    const a = two();
+    expect(() => inspectFictionalEventNotebook({
+      ...a, events: [a.events[1], a.events[0]],
+      audit: [a.audit[1], a.audit[0]],
+    })).toThrow();
+  });
+  it("25 rejects a withdrawn tombstone mislabeled as an amendment", () => {
+    const a = createFictionalEvent(fixture("fiction-alpha"), plain);
+    const b = withdrawFictionalEvent(a, a.events[0].event_id, "Retrait explicite");
+    expect(() => inspectFictionalEventNotebook({
+      ...b, audit: [b.audit[0], { ...b.audit[1], action: "amended" }],
+    })).toThrow();
+  });
+  it("26 accepts interleaved creation, amendment and withdrawal as audited lineage", () => {
+    let a = two();
+    a = amendFictionalEvent(a, a.events[0].event_id, { ...plain, title: "Nouvelle version" },
+      "Raison humaine");
+    a = withdrawFictionalEvent(a, a.events[1].event_id, "Retrait humain");
+    expect(inspectFictionalEventNotebook(a)).toBe(a);
+    expect(a.events.map(e => e.version)).toEqual([1, 1, 2, 2]);
+    expect(a.audit.map(e => e.action)).toEqual(["created", "created", "amended", "withdrawn"]);
+    expect(a.nextId).toBe(3);
+  });
+  it("27 rejects unexplained audit in otherwise coherent lineage", () => {
+    const a = createFictionalEvent(fixture("fiction-alpha"), plain);
+    expect(() => inspectFictionalEventNotebook({
+      ...a, audit: [{ ...a.audit[0], explanation: " " }],
+    })).toThrow();
+  });
+});

@@ -1358,11 +1358,11 @@ class HandoffContractTests(unittest.TestCase):
 
     def test_73_pr137_merge_and_all_writer_guard_do_not_promote_real_g3(self):
         x = self.data["post_pr137_normalization"]
-        self.assertEqual(self.data["last_confirmed_merged_pr"], 146)
+        self.assertEqual(self.data["last_confirmed_merged_pr"], 147)
         self.assertEqual(self.data["last_confirmed_main_before_handoff"],
-                         "c451cc0b09e24242ecb1ea7cf5c488d1217b51ca")
+                         "7e67c5daf98821700f176965dadd52bafd0064fa")
         self.assertEqual(self.data["last_verified_pr_head"],
-                         "5959ca0fe3d4cfd29ec3b558c55c1e64c620594e")
+                         "472c13344c2d6fe7c75c1812acf05f3236799e65")
         self.assertEqual(x["merged_pr"], 137)
         self.assertEqual(x["merge_sha"], "4d5a2bcb68dd439fac1846d354f3f808138457f1")
         self.assertEqual(x["pr_head_sha"], "892a42e9ea0c84ab9af9fb45536d502d99252155")
@@ -1530,7 +1530,7 @@ class HandoffContractTests(unittest.TestCase):
         self.assertIn("HANDOFF_CURRENT.md", short)
         self.assertIn("HANDOFF_CURRENT.json", short)
         self.assertIn("ROADMAP_STATUS_CURRENT.md", short)
-        self.assertIn("main=c451cc0b09e24242ecb1ea7cf5c488d1217b51ca", short)
+        self.assertIn("main=7e67c5daf98821700f176965dadd52bafd0064fa", short)
         self.assertIn("IN_PROGRESS_AT_CHECKPOINT", detailed)
         for status in ("IN_PROGRESS_NOT_ACCEPTED", "NOT_PROVEN", "STOP_UNAVAILABLE",
                        "PENDING_EXTERNAL_ATTESTATION(21/3/2)", "expected_head_sha"):
@@ -1723,7 +1723,7 @@ class HandoffContractTests(unittest.TestCase):
         self.assertIn('"src/m32FictionalEventNotebook.ts"', stage)
         app = (ROOT / "src/App.tsx").read_text(encoding="utf-8")
         self.assertNotIn("M32FictionalEventManualWorkshop", app)
-        for name in ("RESUME_PROMPT_SHORT.md", "RESUME_PROMPT.md", "HANDOFF_CURRENT.md",
+        for name in ("RESUME_PROMPT.md", "HANDOFF_CURRENT.md",
                      "HANDOFF_HISTORY.md", "NEXT.md", "STATE.md",
                      "M3_2_GATE_DECISION_CURRENT.md"):
             current = (DIRECTORY / name).read_text(encoding="utf-8")
@@ -1731,6 +1731,44 @@ class HandoffContractTests(unittest.TestCase):
             self.assertIn("IN_PROGRESS_NOT_ACCEPTED", current, name)
         roadmap = (ROOT / "docs/roadmap/ROADMAP_STATUS_CURRENT.md").read_text(encoding="utf-8")
         self.assertIn("39966405809", roadmap)
+
+    def test_83_pr147_terminal_and_structural_event_audit_candidate_no_real_g3(self):
+        p = self.data["post_pr147_terminal_observation"]
+        self.assertEqual(p["pr"], 147)
+        self.assertTrue(p["merged"])
+        self.assertEqual(p["source_sha"], "472c13344c2d6fe7c75c1812acf05f3236799e65")
+        self.assertEqual(p["source_ci"]["run_id"], 39979848160)
+        self.assertEqual(p["source_ci"]["conclusion"], "SUCCESS")
+        self.assertEqual(p["merge_sha"], "7e67c5daf98821700f176965dadd52bafd0064fa")
+        self.assertEqual(p["postmain_ci"]["run_id"], 39981173101)
+        self.assertEqual(p["postmain_ci"]["conclusion"], "SUCCESS")
+        self.assertEqual(p["source_ci"]["chromium_normal"], 62)
+        self.assertEqual(p["postmain_ci"]["chromium_strict_csp"], 62)
+        self.assertFalse(p["operator_windows_validation"])
+        self.assertFalse(p["protected_sqlite_touched"])
+        self.assertEqual(p["m3_2"], "IN_PROGRESS_NOT_ACCEPTED")
+        self.assertEqual(p["real_g3"], "STOP_UNAVAILABLE")
+        q = self.data["m3_2_product_progress"]["fictional_event_audit_lineage_candidate"]
+        self.assertEqual(q["added_cases"], 12)
+        self.assertTrue(q["structural_only"])
+        self.assertTrue(q["does_not_authenticate_history"])
+        self.assertFalse(q["real_g3_authorized"])
+        for name in ("model", "tests", "documentation"):
+            self.assertTrue((ROOT / q[name]).is_file(), q[name])
+        source = (ROOT / q["model"]).read_text(encoding="utf-8")
+        self.assertIn("audit incomplet ou surnuméraire", source)
+        self.assertIn("audit fictif absent, désordonné ou incompatible", source)
+        self.assertNotIn("invoke(", source)
+        tests = (ROOT / q["tests"]).read_text(encoding="utf-8")
+        self.assertIn("27 rejects unexplained audit", tests)
+        for name in ("RESUME_PROMPT_SHORT.md", "RESUME_PROMPT.md",
+                     "HANDOFF_CURRENT.md", "HANDOFF_HISTORY.md", "NEXT.md",
+                     "STATE.md", "M3_2_GATE_DECISION_CURRENT.md"):
+            body = (DIRECTORY / name).read_text(encoding="utf-8")
+            self.assertIn("39981173101", body, name)
+            self.assertIn("IN_PROGRESS_NOT_ACCEPTED", body, name)
+        self.assertIn("39981173101",
+            (ROOT / "docs/roadmap/ROADMAP_STATUS_CURRENT.md").read_text(encoding="utf-8"))
 
     def test_24_policy_requires_refetch_and_same_pr_handoff(self):
         for clause in ("Re-fetch", "HANDOFF_CURRENT.md", "HANDOFF_CURRENT.json",
