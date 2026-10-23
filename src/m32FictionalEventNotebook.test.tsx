@@ -236,3 +236,48 @@ describe("M3.2 fictional event audit lineage adversarial checks", () => {
     })).toThrow();
   });
 });
+
+
+describe("M3.2 fictional event withdrawal tombstone integrity negative cases", () => {
+  it("28 rejects a version-one withdrawn event despite a matching created audit", () => {
+    const a = createFictionalEvent(fixture("fiction-alpha"), plain);
+    expect(() => inspectFictionalEventNotebook({
+      ...a, events: [{ ...a.events[0], status: "withdrawn" }],
+    })).toThrow("retrait sans version précédente");
+  });
+  it("29 rejects rewriting the title inside a withdrawal tombstone", () => {
+    const a = createFictionalEvent(fixture("fiction-alpha"), plain);
+    const b = withdrawFictionalEvent(a, a.events[0].event_id, "Retrait humain");
+    expect(() => inspectFictionalEventNotebook({
+      ...b, events: [b.events[0], { ...b.events[1], title: "Titre clandestin" }],
+    })).toThrow("pierre tombale modifiant la version précédente");
+  });
+  it("30 rejects rewriting the note inside a withdrawal tombstone", () => {
+    const a = createFictionalEvent(fixture("fiction-alpha"), plain);
+    const b = withdrawFictionalEvent(a, a.events[0].event_id, "Retrait humain");
+    expect(() => inspectFictionalEventNotebook({
+      ...b, events: [b.events[0], { ...b.events[1], note: "Note clandestine" }],
+    })).toThrow("pierre tombale modifiant la version précédente");
+  });
+  it("31 rejects silently removing an anchor and its exact revision at withdrawal", () => {
+    const a = createFictionalEvent(fixture("fiction-alpha"), linked);
+    const b = withdrawFictionalEvent(a, a.events[0].event_id, "Retrait humain");
+    expect(() => inspectFictionalEventNotebook({
+      ...b, events: [b.events[0], { ...b.events[1],
+        anchor_id: null, source_revision_id: null }],
+    })).toThrow("pierre tombale modifiant la version précédente");
+  });
+  it("32 accepts legitimate amend then withdraw retaining the complete last payload", () => {
+    const a = createFictionalEvent(fixture("fiction-alpha"), linked);
+    const b = amendFictionalEvent(a, a.events[0].event_id,
+      { ...linked, title: "Version ajustée", note: "Précision humaine" }, "Motif humain");
+    const c = withdrawFictionalEvent(b, a.events[0].event_id, "Retrait motivé");
+    expect(inspectFictionalEventNotebook(c)).toBe(c);
+    expect(c.events.map(e => e.status)).toEqual(["superseded", "superseded", "withdrawn"]);
+    expect(c.events[2].title).toBe(c.events[1].title);
+    expect(c.events[2].note).toBe(c.events[1].note);
+    expect(c.events[2].anchor_id).toBe(c.events[1].anchor_id);
+    expect(c.events[2].source_revision_id).toBe(c.events[1].source_revision_id);
+    expect(c.audit.map(audit => audit.action)).toEqual(["created", "amended", "withdrawn"]);
+  });
+});

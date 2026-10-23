@@ -83,6 +83,20 @@ export function inspectFictionalEventNotebook(book: FictionalEventNotebook): Fic
         return stop("historique de correction non monotone");
     }
   }
+  // A human withdrawal must follow an earlier version, and its tombstone cannot
+  // rewrite the title, note, anchor, or exact source revision of that version.
+  // This is a structural check of invented in-memory data, NOT real provenance.
+  for (const versions of grouped.values()) {
+    const last = versions[versions.length - 1];
+    if (last.status === "withdrawn") {
+      if (versions.length < 2) return stop("retrait sans version précédente");
+      const previous = versions[versions.length - 2];
+      if (last.title !== previous.title || last.note !== previous.note ||
+          last.anchor_id !== previous.anchor_id ||
+          last.source_revision_id !== previous.source_revision_id)
+        return stop("pierre tombale modifiant la version précédente");
+    }
+  }
   // One appended version per human operation: preserve exact audit alignment.
   // This is a structural sanity check, not an authentication of historical bytes.
   if (book.audit.length !== book.events.length)
