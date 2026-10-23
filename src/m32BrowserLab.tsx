@@ -5,7 +5,9 @@ import { M32SyntheticConsultationLab } from "./M32ChronologyConsultation";
 import M32SyntheticEventExplorer from "./M32SyntheticEventExplorer";
 import M32ManualChronologyLab from "./M32ManualChronologyLab";
 import type { M32ChronologyProjection } from "./M32ChronologyPreview";
-import type { FictionalRevision } from "./m32FictionalManualChronology";
+import { startFictionalDraft, type FictionalRevision } from "./m32FictionalManualChronology";
+import { startFictionalEventNotebook } from "./m32FictionalEventNotebook";
+import M32FictionalEventManualWorkshop from "./M32FictionalEventManualWorkshop";
 import M32FictionalCorrectionHistory, { type M32FictionalCorrectionRow } from "./M32FictionalCorrectionHistory";
 
 /** DISPOSABLE FICTITIOUS BROWSER TEST PAGE. NOT an App.tsx import or Tauri route.
@@ -120,7 +122,7 @@ const invalidCorrectionCycle: readonly M32FictionalCorrectionRow[] = [
 type Scenario = "one" | "two" | "cyclic";
 function BrowserFixture() {
   const [scenario, setScenario] = useState<Scenario>("one");
-  const [mode, setMode] = useState<"consultation" | "explorer" | "editor" | "history">("consultation");
+  const [mode, setMode] = useState<"consultation" | "explorer" | "editor" | "history" | "event-form">("consultation");
   const snapshot = scenario === "two" ? second : scenario === "cyclic" ? cyclic : first;
   return <main aria-label="Laboratoire navigateur M3.2 exclusivement fictif">
     <h1>Tests navigateur — données imaginaires exclusivement</h1>
@@ -148,8 +150,16 @@ function BrowserFixture() {
       <button type="button" onClick={() => setMode("history")}>
         Afficher l'historique fictif des corrections
       </button>
+      <button type="button" onClick={() => setMode("event-form")}>
+        Ouvrir le carnet d'événements fictifs
+      </button>
     </section>
-    {mode === "history"
+    {mode === "event-form" ? scenario === "cyclic"
+      ? <p role="alert">Cycle fictif refusé pour le carnet manuel.</p>
+      : <M32FictionalEventManualWorkshop key={scenario}
+          initial={startFictionalEventNotebook(startFictionalDraft(snapshot,
+            scenario === "two" ? [] : fictionalRevisions))} />
+      : mode === "history"
       ? <M32FictionalCorrectionHistory expectedUniverseId={snapshot.universe_id}
           records={scenario === "two" ? [] : scenario === "cyclic"
             ? invalidCorrectionCycle : inventedCorrections} />
