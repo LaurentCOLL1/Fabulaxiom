@@ -1,6 +1,7 @@
 import type { ReactElement } from "react";
 import {
-  auditedFictionalEventHistory, currentFictionalEvents, inspectFictionalEventNotebook,
+  auditedFictionalEventHistory, compareFictionalEventVersions,
+  currentFictionalEvents, inspectFictionalEventNotebook,
   type FictionalEventNotebook,
 } from "./m32FictionalEventNotebook";
 
@@ -28,6 +29,9 @@ export default function M32FictionalEventNotebookPreview({ notebook }: {
       <ul>{notebook.events.filter(e => e.version === 1).map(created => {
         const history = auditedFictionalEventHistory(notebook, created.event_id);
         const latest = history[history.length - 1].event;
+        const cumulative = history.length > 1
+          ? compareFictionalEventVersions(notebook, created.event_id, 1, latest.version)
+          : null;
         return <li key={created.event_id}>
           <details>
             <summary>{latest.title} — {latest.status === "withdrawn" ? "retiré" : "courant"}
@@ -60,6 +64,21 @@ export default function M32FictionalEventNotebookPreview({ notebook }: {
                 </li>)}
               </ul>}
             </li>)}</ol>
+            {cumulative && <section aria-label="Comparaison cumulative des versions fictives">
+              <h4>Comparaison manuelle, version {cumulative.from_version} vers version {cumulative.to_version}</h4>
+              <p>État final de la version : {cumulative.to_status} ;
+                aucun ordre temporel mondial inféré.</p>
+              {cumulative.field_differences.length === 0
+                ? <p>Aucune modification cumulée de contenu fictif.</p>
+                : <ul>{cumulative.field_differences.map(diff => <li key={diff.field}>
+                  {({ title: "titre", note: "note", anchor_id: "ancre",
+                    source_revision_id: "révision" }[diff.field])}
+                  {" : avant = " + (diff.before === null ? "(non lié)" :
+                    diff.before === "" ? "(vide)" : diff.before)}
+                  {" ; après = " + (diff.after === null ? "(non lié)" :
+                    diff.after === "" ? "(vide)" : diff.after)}
+                </li>)}</ul>}
+            </section>}
           </details>
         </li>;
       })}</ul>

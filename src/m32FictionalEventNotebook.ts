@@ -172,6 +172,40 @@ export function auditedFictionalEventHistory(
   }));
 }
 
+/** Explicit two-version, same-event comparison of invented in-memory content only.
+ * No world-time ordering, persistence or authentication of original records.
+ */
+export type FictionalEventVersionComparison = Readonly<{
+  event_id: string;
+  from_version: number;
+  to_version: number;
+  to_status: FictionalEventVersion["status"];
+  field_differences: readonly FictionalEventFieldDifference[];
+}>;
+export function compareFictionalEventVersions(
+  book: FictionalEventNotebook, eventId: string,
+  fromVersion: number, toVersion: number,
+): FictionalEventVersionComparison {
+  inspectFictionalEventNotebook(book);
+  if (!Number.isSafeInteger(fromVersion) || !Number.isSafeInteger(toVersion) ||
+      fromVersion < 1 || toVersion <= fromVersion)
+    return stop("comparaison de versions fictives non croissante");
+  const history = auditedFictionalEventHistory(book, eventId);
+  const from = history.find(entry => entry.event.version === fromVersion);
+  const to = history.find(entry => entry.event.version === toVersion);
+  if (!from || !to) return stop("version fictive absente ou étrangère");
+  const differences = contentFields.flatMap(field => {
+    const before = from.event[field], after = to.event[field];
+    return before === after ? [] : [
+      Object.freeze({ field, before, after }),
+    ];
+  });
+  return Object.freeze({
+    event_id: eventId, from_version: fromVersion, to_version: toVersion,
+    to_status: to.event.status, field_differences: Object.freeze(differences),
+  });
+}
+
 export function startFictionalEventNotebook(draft: FictionalDraft): FictionalEventNotebook {
   inspectFictionalDraft(draft);
   return inspectFictionalEventNotebook({
