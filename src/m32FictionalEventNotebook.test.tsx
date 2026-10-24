@@ -828,7 +828,7 @@ describe("M3.2 fictional historical draft preparation is explicitly non-mutating
     expect(prior).toEqual(plain);
     expect(Object.isFrozen(prior)).toBe(true);
     expect(book.events).toHaveLength(3);
-    expect(book.events.at(-1)?.title).toBe("Troisième version inventée");
+    expect(book.events[book.events.length - 1]?.title).toBe("Troisième version inventée");
     expect(book.audit).toHaveLength(3);
   });
   it("92 permits human resubmission only as an additional audited version", () => {
@@ -836,10 +836,10 @@ describe("M3.2 fictional historical draft preparation is explicitly non-mutating
     const prior = prepareFictionalEventHistoricalDraft(book,id,1);
     const updated = amendFictionalEvent(book,id,prior,"Retour manuel expliqué");
     expect(updated.events).toHaveLength(4);
-    expect(updated.events.at(-1)).toMatchObject({
+    expect(updated.events[updated.events.length - 1]).toMatchObject({
       title: plain.title, version: 4, status: "current", event_id: id,
     });
-    expect(updated.audit.at(-1)).toMatchObject({
+    expect(updated.audit[updated.audit.length - 1]).toMatchObject({
       action: "amended", version: 4, explanation: "Retour manuel expliqué",
     });
     expect(book.events).toHaveLength(3);
