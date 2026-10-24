@@ -24,6 +24,17 @@ jobs:
           node-version: "24"
           cache: npm
 
+      # TEMPORARY draft-only dependency lock regeneration. MUST BE REMOVED before merge.
+      - name: TEMPORARY generate authenticated npm lock on GitHub runner (draft only)
+        if: github.event_name == 'pull_request' && github.head_ref == 'chore/security-vite-lock-regen-20261024'
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          npm install --package-lock-only --save-dev --save-exact vite@8.1.6 --ignore-scripts --no-audit --no-fund
+          if ($LASTEXITCODE -ne 0) { throw 'STOP: npm resolution failed' }
+          node -e "const fs=require('node:fs');const d=JSON.parse(fs.readFileSync('package-lock.json','utf8')); if(d.packages['node_modules/vite']?.version!=='8.1.6') process.exit(2); console.log('FABULAXIOM_LOCK_JSON='+JSON.stringify(fs.readFileSync('package-lock.json','utf8')))"
+          if ($LASTEXITCODE -ne 0) { throw 'STOP: wrong resolved Vite version' }
+          throw 'EXPECTED_TEMPORARY_STOP: retrieve resolved lock from CI log; no temporary workflow may merge'
       - name: Setup Rust stable
         uses: dtolnay/rust-toolchain@stable
 
