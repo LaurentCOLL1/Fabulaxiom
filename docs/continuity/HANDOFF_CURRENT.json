@@ -3,14 +3,14 @@
   "as_of": "2026-10-24",
   "status_kind": "DATED_PUBLIC_SOURCE_HANDOFF_ONLY",
   "repository": "LaurentCOLL1/Fabulaxiom",
-  "last_confirmed_main_before_handoff": "c1fee9638c343c51e2e0bdab6ac8fccf2340104b",
-  "last_confirmed_merged_pr": 166,
-  "last_verified_pr_head": "fac5a230c5998eda30b6593068abca5e36d73a39",
+  "last_confirmed_main_before_handoff": "533bdb27480a2b6dbed630b148501eeaf3c34b1e",
+  "last_confirmed_merged_pr": 167,
+  "last_verified_pr_head": "819dbb0a1d80a07e9c19b3e7eacff761dce8dc9b",
   "last_verified_ci": {
-    "run_id": 40107790950,
+    "run_id": 40115530223,
     "context": "Windows frontend and Rust checks",
     "conclusion": "SUCCESS",
-    "source": "PR166_EXACT_HEAD"
+    "source": "PR167_EXACT_HEAD"
   },
   "recent_changes": [
     "PR_85_EXACT_G2A_TEXT_AST_ONLY",
@@ -149,7 +149,8 @@
     "PR163_LINUX_GLIB_GRAPH_MERGED_MAIN_7E429516_SOURCE_40094464488_POSTMAIN_40095354727_SUCCESS",
     "PR164_DOC_PR163_NORMALIZATION_MERGED_MAIN_AC7C61F7_SOURCE_40101820083_POSTMAIN_40103615181_SUCCESS",
     "PR165_MERGED_EXACT_MAIN_E1FAACC_POSTMAIN_40106296690_SUCCESS_THEN_FICTIONAL_NOTICE_DEDUP_CANDIDATE",
-    "PR166_MERGED_MAIN_C1FEE963_POSTMAIN_40108674282_SUCCESS_PRIVATE_SIX_COPIES_RECONCILIATION_NO_PROMOTION"
+    "PR166_MERGED_MAIN_C1FEE963_POSTMAIN_40108674282_SUCCESS_PRIVATE_SIX_COPIES_RECONCILIATION_NO_PROMOTION",
+    "PR167_MERGED_MAIN_533BDB27_POSTMAIN_40116658246_SUCCESS_DETACHED_RAM_M25_VALIDATED_NON_HISTORIC_G2_SOLO_PLAN"
   ],
   "pr35": "OPEN_DRAFT",
   "issues": {
@@ -335,7 +336,7 @@
     "verified_bypass_actors": 0,
     "classic_branch_protection_read": "403_INTEGRATION_RESTRICTED"
   },
-  "next": "SIX_PRIVATE_COPIES_OBSERVED; FIVE_HISTORIC_WITNESSES_STILL_UNAUTHENTICATED; HISTORIC_OR_PROSPECTIVE_SEPARATE_GATE; NO_ORIGINALS_ACCESS",
+  "next": "G2_SOLO_EXACT_OPERATOR_APPROVAL_PLANNING_ONLY; DETACHED_COPY_INTEGRITY_VERIFIED; HISTORICAL_0_OF_5; REAL_G3_STOP",
   "live_refetch_required": true,
   "hand_off_updated_by_future_pr": true,
   "main_ci_post_merge": {
@@ -3237,5 +3238,73 @@
     "historical": "PENDING_EXTERNAL_ATTESTATION(21/3/2)",
     "original_sqlite_access": false,
     "independent_historical_attestations_verified": 0
+  },
+  "post_pr167_terminal_observation": {
+    "as_of": "2026-10-24",
+    "pr": 167,
+    "merged": true,
+    "source_sha": "819dbb0a1d80a07e9c19b3e7eacff761dce8dc9b",
+    "source_ci": {
+      "run_id": 40115530223,
+      "conclusion": "SUCCESS"
+    },
+    "merge_sha": "533bdb27480a2b6dbed630b148501eeaf3c34b1e",
+    "postmain_ci": {
+      "run_id": 40116658246,
+      "conclusion": "SUCCESS"
+    },
+    "source_job_steps": 79,
+    "postmain_job_steps": 79,
+    "handoff_tests": 101,
+    "fictional_vitest_tests": 96,
+    "chromium_normal": 82,
+    "chromium_strict_csp": 82,
+    "rust_tests": 132,
+    "g2b": "NOT_ACCEPTED",
+    "real_g3": "STOP_UNAVAILABLE",
+    "historical": "PENDING_EXTERNAL_ATTESTATION(21/3/2)",
+    "operator_windows_access": false,
+    "private_sqlite_digest_exposed": false
+  },
+  "detached_m25_ram_validation_observation": {
+    "as_of": "2026-10-24",
+    "scope": "DETACHED_CHAT_UPLOAD_ONLY",
+    "sqlite_ram_deserialize_only": true,
+    "integrity_check": "ok",
+    "foreign_key_violations": 0,
+    "schema_migrations": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+    ],
+    "application_tables": 14,
+    "structural_counts": {
+      "universes": 2,
+      "novels": 2,
+      "chapters": 2,
+      "scenes": 2,
+      "scene_text_revisions": 3,
+      "scene_revision_heads": 2,
+      "narrative_entities": 3,
+      "narrative_facts": 3,
+      "fact_sources": 2,
+      "fact_review_events": 11,
+      "series": 0,
+      "entity_aliases": 0
+    },
+    "matches_historic_m25_report_structural_counts": true,
+    "private_candidate_digest_in_github": false,
+    "historical_m25_identity_proven": false,
+    "original_sqlite_integrity_qualified": false,
+    "operator_files_opened": false,
+    "historical_attestations_verified": 0,
+    "writer_absence": "NOT_PROVEN",
+    "g2b": "NOT_ACCEPTED",
+    "real_g3": "STOP_UNAVAILABLE",
+    "prospective": "NOT_STARTED",
+    "public_qualification": "docs/qualification/M3_2_G2_RECOVERED_COPIES_SOLO_APPROVAL_SCOPE_20261024.md"
   }
 }

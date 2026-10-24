@@ -3,6 +3,12 @@
 **STATUT : OBSERVATION PRIVÉE, LECTURE SEULE, SANS ATTESTATION EXTERNE.** Marqueur : `DONNEES_PRIVEES_NON_PUBLIEES`.
 Aucun octet des pièces, aucune base SQLite, aucune ACL, aucun chemin privé, aucun SID, aucune empreinte de la base SQLite isolée **nouvellement calculée**, et aucun contenu d’artefact utilisateur ne sont publiés ici. Le rapport détaillé intégral et ses empreintes existent uniquement dans un dossier privé téléchargeable depuis la conversation, pas dans ce dépôt public.
 
+## Complément ultérieur — validation réelle de la copie détachée en RAM (sans promotion)
+
+La copie `fabulaxiom.sqlite3` reçue en privé a été chargée **en mémoire** avec SQLite `deserialize()`, sans ouverture SQL du fichier original Windows et sans écriture sur l'upload. Les contrôles `integrity_check=ok`, `foreign_key_check=0` et migrations applicatives **1 à 6** sont **effectivement réussis**. **14 tables** ; 2 univers, 2 romans, 2 chapitres, 2 scènes, 3 entités, 3 révisions, 2 têtes, 3 faits, 2 sources et 11 événements de revue ; concordance des effectifs centraux avec [le rapport M2.5](M2_5_POST_MERGE_NORMALIZATION.md). Aucun contenu narratif, chemin privé, SID, ACL ni nouveau SHA de cette copie n'est publié. Le protocole opérateur précis est préparé sans commandes dans [le plan G2 SOLO](M3_2_G2_RECOVERED_COPIES_SOLO_APPROVAL_SCOPE_20261024.md).
+
+**Cette validation ne démontre ni l'identité du fichier isolé original M2.5, ni la présence/absence de writer ou journaux au moment historique, ni la chaîne de garde indépendante.** `m25/isolated_v6` demeure `UNANCHORED_OBSERVED`. Les autres cinq rôles demeurent dans leur classification de l'[issue #36](https://github.com/LaurentCOLL1/Fabulaxiom/issues/36) ; aucune attestation historique externe n'est créée.
+
 ## Portée concrète de la comparaison
 
 Le propriétaire a retrouvé puis transmis **six copies détachées** : les **cinq rôles** de l'[issue #36](https://github.com/LaurentCOLL1/Fabulaxiom/issues/36) ainsi qu’un **deuxième manifeste M2.4** attendu et historiquement distinct.
@@ -13,11 +19,11 @@ Le propriétaire a retrouvé puis transmis **six copies détachées** : les **ci
 | `acl/original_acls` | Copie d'export ACL : SHA-256 égal à l'empreinte publique observée, structure cohérente avec une sauvegarde, sans restauration | `OBSERVED_SHA256`, non authentifié |
 | `acl/pre_repair_json` | Copie du JSON : SHA-256 égal à l'observation publique ; document interne référant 11 objets déclarés, non relus | `OBSERVED_SHA256`, non authentifié |
 | `production/activation_marker` | Copie du marqueur : contenu cohérent avec le nom de base restaurée M1.5 ; SHA égal au champ du JSON pré-réparation fourni | `UNANCHORED_OBSERVED`, pas de témoin indépendant |
-| `m25/isolated_v6` | Copie candidate `fabulaxiom.sqlite3` : en-tête brut SQLite cohérent ; provenance M2.5 et schéma logique non vérifiés | `UNANCHORED_OBSERVED`, pas de preuve d'identité historique |
+| `m25/isolated_v6` | Copie candidate `fabulaxiom.sqlite3` : en-tête et contrôles logiques dans une base RAM cohérents ; origine historique M2.5 non authentifiée | `UNANCHORED_OBSERVED`, pas de preuve d'identité historique |
 
 Le **deuxième** manifeste M2.4 (ultérieur) a un SHA correspondant au rôle historique distinct **`production/pre_m24_manifest` déjà `PINNED_SHA256`**. Les deux JSON déclarent deux chemins de sauvegarde v5 distincts, à deux heures auto-déclarées, avec le **même SHA de contenu de sauvegarde** et le même tableau de vérification logique. Les sauvegardes SQLite compagnons ne font PAS partie des pièces reçues : leur empreinte ni leur intégrité ne sont qualifiées par ce constat. Ne pas dédupliquer les sauvegardes ou supprimer le manifeste ancien.
 
-Le champ de SHA du marqueur dans le JSON fournit un **lien documentaire auto-rapporté**, pas une attestation cryptographique tierce historiquement antérieure. La base isolée transmise est une **copie détachée**, pas la démonstration d'une identité Win32, de l'absence de writer, de la situation des journaux ou d'un lien authentifié avec le conteneur local M2.5. L'en-tête SQLite de 100 octets n'atteste ni la version de migration Fabulaxiom, ni l'intégrité de pages, ni le contenu des tables.
+Le champ de SHA du marqueur dans le JSON fournit un **lien documentaire auto-rapporté**, pas une attestation cryptographique tierce historiquement antérieure. La base isolée transmise est une **copie détachée**, malgré la validation de son intégrité en RAM ; ce n'est pas la démonstration d'une identité Win32, de l'absence de writer, de la situation des journaux ou d'un lien authentifié avec le conteneur local M2.5. Le contrôle récent en mémoire qualifie l'intégrité logique de la copie et ses migrations 1 à 6 ; il ne prouve jamais l'identité du fichier local original ni la quiescence à sa date.
 
 ## Distinctions impératives
 

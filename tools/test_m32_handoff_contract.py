@@ -2588,7 +2588,7 @@ class HandoffContractTests(unittest.TestCase):
 
     def test_101_pr166_terminal_and_private_recovery_sanitization(self):
         p = self.data["post_pr166_terminal_observation"]
-        self.assertEqual(self.data["last_confirmed_merged_pr"], 166)
+        self.assertGreaterEqual(self.data["last_confirmed_merged_pr"], 166)
         self.assertEqual(p["source_sha"], "fac5a230c5998eda30b6593068abca5e36d73a39")
         self.assertEqual(p["source_ci"], {"run_id": 40107790950, "conclusion": "SUCCESS"})
         self.assertEqual(p["merge_sha"], "c1fee9638c343c51e2e0bdab6ac8fccf2340104b")
@@ -2617,6 +2617,46 @@ class HandoffContractTests(unittest.TestCase):
                      "HANDOFF_HISTORY.md", "STATE.md", "NEXT.md", "M3_2_GATE_DECISION_CURRENT.md", "README.md"):
             self.assertIn("40108674282", (DIRECTORY / name).read_text(encoding="utf-8"), name)
         self.assertIn("40108674282",
+            (ROOT / "docs/roadmap/ROADMAP_STATUS_CURRENT.md").read_text(encoding="utf-8"))
+
+    def test_102_pr167_terminal_detached_ram_only_and_solo_g2_plan(self):
+        p = self.data["post_pr167_terminal_observation"]
+        self.assertEqual(self.data["last_confirmed_merged_pr"], 167)
+        self.assertEqual(p["source_sha"], "819dbb0a1d80a07e9c19b3e7eacff761dce8dc9b")
+        self.assertEqual(p["source_ci"], {"run_id": 40115530223, "conclusion": "SUCCESS"})
+        self.assertEqual(p["merge_sha"], "533bdb27480a2b6dbed630b148501eeaf3c34b1e")
+        self.assertEqual(p["postmain_ci"], {"run_id": 40116658246, "conclusion": "SUCCESS"})
+        self.assertEqual((p["source_job_steps"], p["postmain_job_steps"]), (79, 79))
+        self.assertEqual((p["handoff_tests"], p["fictional_vitest_tests"]), (101, 96))
+        self.assertEqual((p["chromium_normal"], p["chromium_strict_csp"], p["rust_tests"]), (82, 82, 132))
+        self.assertEqual(p["g2b"], "NOT_ACCEPTED")
+        self.assertEqual(p["real_g3"], "STOP_UNAVAILABLE")
+        self.assertEqual(p["historical"], "PENDING_EXTERNAL_ATTESTATION(21/3/2)")
+        self.assertFalse(p["operator_windows_access"])
+        q = self.data["detached_m25_ram_validation_observation"]
+        self.assertTrue(q["sqlite_ram_deserialize_only"])
+        self.assertEqual(q["integrity_check"], "ok")
+        self.assertEqual(q["foreign_key_violations"], 0)
+        self.assertEqual(q["schema_migrations"], [1, 2, 3, 4, 5, 6])
+        self.assertEqual(q["application_tables"], 14)
+        self.assertFalse(q["private_candidate_digest_in_github"])
+        self.assertFalse(q["historical_m25_identity_proven"])
+        self.assertFalse(q["operator_files_opened"])
+        self.assertEqual(q["historical_attestations_verified"], 0)
+        doc = (ROOT / "docs/qualification/M3_2_RECOVERED_COPIES_RECONCILIATION_20261024.md").read_text(encoding="utf-8")
+        plan = (ROOT / "docs/qualification/M3_2_G2_RECOVERED_COPIES_SOLO_APPROVAL_SCOPE_20261024.md").read_text(encoding="utf-8")
+        for content in (doc, plan):
+            for required in ("integrity_check", "foreign_key_check", "M2.5",
+                             "NOT_ACCEPTED", "STOP_UNAVAILABLE"):
+                self.assertIn(required, content)
+            for forbidden in ("C:\\Users\\", "S-1-5-21-", "M:\\"):
+                self.assertNotIn(forbidden, content)
+            import re
+            self.assertIsNone(re.search(r"(?<![A-Za-z0-9])[a-f0-9]{64}(?![A-Za-z0-9])", content))
+        for name in ("RESUME_PROMPT_SHORT.md", "RESUME_PROMPT.md", "HANDOFF_CURRENT.md",
+                     "HANDOFF_HISTORY.md", "STATE.md", "NEXT.md", "M3_2_GATE_DECISION_CURRENT.md", "README.md"):
+            self.assertIn("40116658246", (DIRECTORY / name).read_text(encoding="utf-8"), name)
+        self.assertIn("40116658246",
             (ROOT / "docs/roadmap/ROADMAP_STATUS_CURRENT.md").read_text(encoding="utf-8"))
 
 if __name__ == "__main__":
