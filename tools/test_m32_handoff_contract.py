@@ -2359,7 +2359,7 @@ class HandoffContractTests(unittest.TestCase):
 
     def test_97_pr162_terminal_and_linux_selected_gtk_glib_advisory_audit_candidate(self):
         from m32_glib_linux_target_audit import (
-            CMD, TRIPLE, ADVISORY, EXPECTED, assess_linux_graph,
+            CMD, FETCH_CMD, TRIPLE, ADVISORY, EXPECTED, assess_linux_graph,
         )
         p = self.data["post_pr162_terminal_observation"]
         self.assertEqual(p["pr"], 162)
@@ -2391,6 +2391,11 @@ class HandoffContractTests(unittest.TestCase):
         self.assertIn("--locked", CMD)
         self.assertIn(TRIPLE, CMD)
         self.assertNotIn("--all-features", CMD)
+        self.assertEqual(FETCH_CMD[:2], ("cargo", "fetch"))
+        self.assertIn("--locked", FETCH_CMD)
+        self.assertIn(TRIPLE, FETCH_CMD)
+        self.assertNotIn("--offline", FETCH_CMD)
+        self.assertNotIn("--all-features", FETCH_CMD)
         self.assertEqual(EXPECTED, {
             "glib": "0.18.5", "gtk": "0.18.2", "webkit2gtk": "2.0.2",
         })

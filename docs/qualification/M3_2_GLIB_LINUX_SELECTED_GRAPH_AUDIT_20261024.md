@@ -1,5 +1,8 @@
 # M3.2 — Audit d'exposition GLib/GTK dans le graphe Cargo sélectionné pour Linux
 
+**Précision runner CI :** le runner Windows ne dispose pas initialement de l'archive du crate Linux `atk 0.18.2`. Un `cargo fetch --locked --target x86_64-unknown-linux-gnu` est donc requis **sur le runner GitHub seulement**, avant `cargo tree --locked --offline` : téléchargement de sources avec checksums de `Cargo.lock`, **sans compilation, sans script, sans écriture d'un nouveau verrou ni contact avec le Windows de l'opérateur**. Le premier run de cette candidate a STOP par absence d'archives offline ; aucun résultat antérieur n'est réutilisable.
+
+
 **Candidat source-only du 24 octobre 2026.** Ni correction Rust, ni revue de runtime Linux, ni accès Windows de l'opérateur.
 
 ## Autorité antérieure revalidée
