@@ -1,5 +1,7 @@
 # Fabulaxiom — Point d'entrée pour reprendre les discussions ChatGPT
 
+**24 octobre 2026 — PR #159 terminale ; correctifs de dépendances sans accès opérateur :** [qualification Vite 8.1.6 et traitement des alertes](../qualification/M3_2_DEPENDABOT_VITE_816_20261024.md), [issue sécurité #160](https://github.com/LaurentCOLL1/Fabulaxiom/issues/160). Cinq alertes npm ciblées ; glib Rust séparée et non corrigée. CI source PR #159 #40067055296 et postmain #40067824098 SUCCESS.
+
 **24 octobre 2026 — PR #158 fusionnée ; précontrôle CI TypeScript source-only :** [qualification du déplacement de détection d'erreur](../qualification/M3_2_CI_EARLY_TYPESCRIPT_FAIL_FAST_20261024.md), sans changement des gates M3.2 ni activation d'un cache Cargo. CI source #40063511352 et postmain #40064299969 sont terminalement SUCCESS.
 
 **24 octobre 2026 — PR #157 terminale, stratégie accélérée et nouvelle candidate fictive :** [version historique préremplie sans écriture](../qualification/M3_2_FICTIONAL_HISTORICAL_DRAFT_COPY.md) ; [convergence vers le déblocage réel et les cinq preuves manquantes](../qualification/M3_2_ACCELERATED_CONVERGENCE_DECISION_20261024.md). Source CI #40061031363 et postmain #40061815168 SUCCESS sur leurs SHA exacts ; la candidate nécessite sa nouvelle CI, M3.2 non acceptée.

@@ -2195,7 +2195,7 @@ class HandoffContractTests(unittest.TestCase):
         self.assertEqual(p["chromium_normal"], 82)
         self.assertEqual(p["chromium_strict_csp"], 82)
         self.assertEqual(p["rust_tests"], 132)
-        self.assertEqual(self.data["last_confirmed_merged_pr"], 158)
+        self.assertGreaterEqual(self.data["last_confirmed_merged_pr"], 158)
         self.assertFalse(p["original_sqlite_touched"])
         self.assertEqual(p["m3_2"], "IN_PROGRESS_NOT_ACCEPTED")
         self.assertEqual(p["writer_absence"], "NOT_PROVEN")
@@ -2225,12 +2225,67 @@ class HandoffContractTests(unittest.TestCase):
         self.assertIn("contents: read", workflow)
         self.assertNotIn("Swatinem/rust-cache", workflow)
         self.assertNotIn("actions/cache@", workflow)
-        for name in ("RESUME_PROMPT_SHORT.md", "RESUME_PROMPT.md",
+        for name in ("RESUME_PROMPT.md",
                      "HANDOFF_CURRENT.md", "HANDOFF_HISTORY.md", "NEXT.md",
                      "STATE.md", "M3_2_GATE_DECISION_CURRENT.md"):
             self.assertIn("40064299969",
                 (DIRECTORY / name).read_text(encoding="utf-8"), name)
         self.assertIn("40064299969",
+            (ROOT / "docs/roadmap/ROADMAP_STATUS_CURRENT.md").read_text(encoding="utf-8"))
+
+    def test_95_pr159_terminal_and_real_vite_dependabot_security_lockfix_candidate(self):
+        p = self.data["post_pr159_terminal_observation"]
+        self.assertEqual(p["pr"], 159)
+        self.assertTrue(p["merged"])
+        self.assertEqual(p["source_sha"], "4ed2e34426474b5baf945fbcbe42bc842d955eb8")
+        self.assertEqual(p["source_ci"], {"run_id": 40067055296, "conclusion": "SUCCESS"})
+        self.assertEqual(p["merge_sha"], "3cbe793e4c6d7779802a2cba55640419599df1b3")
+        self.assertEqual(p["postmain_ci"], {"run_id": 40067824098, "conclusion": "SUCCESS"})
+        self.assertEqual(p["handoff_tests"], 94)
+        self.assertEqual(p["event_tests"], 96)
+        self.assertEqual(p["chromium_normal"], 82)
+        self.assertEqual(p["chromium_strict_csp"], 82)
+        self.assertEqual(p["rust_tests"], 132)
+        self.assertEqual(self.data["last_confirmed_merged_pr"], 159)
+        self.assertFalse(p["original_sqlite_touched"])
+        self.assertEqual(p["m3_2"], "IN_PROGRESS_NOT_ACCEPTED")
+        q = self.data["m3_2_product_progress"]["npm_vite_dependabot_candidate"]
+        self.assertTrue(q["source_only"] and q["no_persistence"])
+        self.assertFalse(q["real_g3_authorized"])
+        self.assertEqual(q["intended_fixed_npm_alerts"], 5)
+        self.assertEqual(q["unresolved_rust_alerts"], 1)
+        self.assertEqual(q["vulnerable_vite_version"], "8.0.16")
+        self.assertEqual(q["patched_vite_version"], "8.1.6")
+        for field in ("manifest", "lock", "cargo_lock", "qualification"):
+            self.assertTrue((ROOT / q[field]).is_file(), field)
+        pkg = json.loads((ROOT / q["manifest"]).read_text(encoding="utf-8"))
+        npm_lock = json.loads((ROOT / q["lock"]).read_text(encoding="utf-8"))
+        self.assertEqual(pkg["devDependencies"]["vite"], "8.1.6")
+        self.assertEqual(npm_lock["packages"][""]["devDependencies"]["vite"], "8.1.6")
+        self.assertEqual(npm_lock["packages"]["node_modules/vite"]["version"], "8.1.6")
+        self.assertTrue(npm_lock["packages"]["node_modules/vite"]["integrity"].startswith("sha512-"))
+        self.assertEqual(pkg["devDependencies"]["vitest"], "5.0.3")
+        self.assertEqual(pkg["devDependencies"]["@tauri-apps/cli"], "2.12.1")
+        self.assertNotIn("node_modules/launch-editor", npm_lock["packages"])
+        workflow = (ROOT / ".github/workflows/m0-ci.yml").read_text(encoding="utf-8")
+        self.assertNotIn("TEMPORARY generate authenticated npm lock", workflow)
+        self.assertNotIn("FABULAXIOM_LOCK_JSON", workflow)
+        self.assertIn("run: npm ci", workflow)
+        self.assertIn("npx tsc --noEmit --pretty false", workflow)
+        self.assertIn("run: npm run build", workflow)
+        self.assertIn("cargo test --manifest-path", workflow)
+        self.assertIn("M3.2 real Chromium synthetic-only UI interaction", workflow)
+        self.assertIn("Verify dependency locks are unchanged", workflow)
+        cargo = (ROOT / q["cargo_lock"]).read_text(encoding="utf-8")
+        self.assertIn('name = "glib"' + chr(10) + 'version = "0.18.5"', cargo)
+        self.assertIn("GHSA-wrw7-89jp-8q8g",
+            (ROOT / q["qualification"]).read_text(encoding="utf-8"))
+        for name in ("RESUME_PROMPT_SHORT.md", "RESUME_PROMPT.md",
+                     "HANDOFF_CURRENT.md", "HANDOFF_HISTORY.md", "NEXT.md",
+                     "STATE.md", "M3_2_GATE_DECISION_CURRENT.md"):
+            self.assertIn("40067824098",
+                (DIRECTORY / name).read_text(encoding="utf-8"), name)
+        self.assertIn("40067824098",
             (ROOT / "docs/roadmap/ROADMAP_STATUS_CURRENT.md").read_text(encoding="utf-8"))
 
 if __name__ == "__main__":
