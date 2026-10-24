@@ -1,5 +1,7 @@
 # Fabulaxiom — Point d'entrée pour reprendre les discussions ChatGPT
 
+**24 octobre 2026 — PR #157 terminale, stratégie accélérée et nouvelle candidate fictive :** [version historique préremplie sans écriture](../qualification/M3_2_FICTIONAL_HISTORICAL_DRAFT_COPY.md) ; [convergence vers le déblocage réel et les cinq preuves manquantes](../qualification/M3_2_ACCELERATED_CONVERGENCE_DECISION_20261024.md). Source CI #40061031363 et postmain #40061815168 SUCCESS sur leurs SHA exacts ; la candidate nécessite sa nouvelle CI, M3.2 non acceptée.
+
 **24 octobre 2026 — PR #156 source/postmain terminales SUCCESS :** [qualification du comparateur de versions fictives en direct](../qualification/M3_2_FICTIONAL_LIVE_WORKSHOP_VERSION_COMPARISON.md) — 3 Vitest + 6 Chromium supplémentaires par mode attendus dans la nouvelle candidate. L'application réelle et les gates restent inchangés.
 
 **24 octobre 2026 — candidate fictive browser-only :** [sélecteur contrôlé de versions](../qualification/M3_2_FICTIONAL_VERSION_PAIR_PICKER_LAB.md), après [PR #155](https://github.com/LaurentCOLL1/Fabulaxiom/pull/155) (CI source #40029859356 et postmain #40030841723 SUCCESS). Aucun changement des gates réels.

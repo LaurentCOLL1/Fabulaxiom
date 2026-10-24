@@ -3,14 +3,14 @@
   "as_of": "2026-10-24",
   "status_kind": "DATED_PUBLIC_SOURCE_HANDOFF_ONLY",
   "repository": "LaurentCOLL1/Fabulaxiom",
-  "last_confirmed_main_before_handoff": "4de256f4666500e4fc9a9482e52c8116869a35ca",
-  "last_confirmed_merged_pr": 156,
-  "last_verified_pr_head": "cb65a8c902146a7252e3682cf1f5f08f54e7f190",
+  "last_confirmed_main_before_handoff": "645b50f438d12165d0eae46f1c3d586f07819480",
+  "last_confirmed_merged_pr": 157,
+  "last_verified_pr_head": "956154c4be0645536d356a48c6d75d0bf92bdc37",
   "last_verified_ci": {
-    "run_id": 40059088846,
+    "run_id": 40061031363,
     "context": "Windows frontend and Rust checks",
     "conclusion": "SUCCESS",
-    "source": "PR156_EXACT_HEAD"
+    "source": "PR157_EXACT_HEAD"
   },
   "recent_changes": [
     "PR_85_EXACT_G2A_TEXT_AST_ONLY",
@@ -140,7 +140,8 @@
     "PR153_EXACT_INVENTED_BEFORE_AFTER_MERGED_MAIN_C581CEB5_SOURCE_40020544737_POSTMAIN_40021898423_SUCCESS",
     "PR154_SELECTED_FICTIONAL_VERSION_COMPARE_MERGED_MAIN_391CC397_SOURCE_40025773741_POSTMAIN_40027154468_SUCCESS",
     "PR155_CONTROLLED_FICTIONAL_VERSION_PREVIEW_MERGED_MAIN_CCF5BA31_SOURCE_40029859356_POSTMAIN_40030841723_SUCCESS",
-    "PR156_FICTIONAL_VERSION_PAIR_PICKER_MERGED_MAIN_4DE256F4_SOURCE_40059088846_POSTMAIN_40059860336_SUCCESS"
+    "PR156_FICTIONAL_VERSION_PAIR_PICKER_MERGED_MAIN_4DE256F4_SOURCE_40059088846_POSTMAIN_40059860336_SUCCESS",
+    "PR157_LIVE_FICTIONAL_WORKSHOP_COMPARISON_MERGED_MAIN_645B50F4_SOURCE_40061031363_POSTMAIN_40061815168_SUCCESS"
   ],
   "pr35": "OPEN_DRAFT",
   "issues": {
@@ -326,7 +327,7 @@
     "verified_bypass_actors": 0,
     "classic_branch_protection_read": "403_INTEGRATION_RESTRICTED"
   },
-  "next": "PR156_SOURCE_POSTMAIN_TERMINAL_SUCCESS; FICTIONAL_LIVE_WORKSHOP_VERSION_COMPARISON_NEW_EXACT_HEAD_CI; REAL_G3_STOP",
+  "next": "PR157_SOURCE_POSTMAIN_TERMINAL_SUCCESS; ACCELERATED_FICTIONAL_HISTORICAL_DRAFT_COPY_NEW_EXACT_HEAD_CI; FIVE_HISTORICAL_ATTESTATIONS_UNRESOLVED; REAL_G3_STOP",
   "live_refetch_required": true,
   "hand_off_updated_by_future_pr": true,
   "main_ci_post_merge": {
@@ -1054,6 +1055,23 @@
       "mounted_in_application": false,
       "real_g3_authorized": false,
       "operator_windows_validation": false
+    },
+    "fictional_historical_draft_copy_candidate": {
+      "kind": "FICTIONAL_HISTORICAL_DRAFT_REAPPLICATION_AND_GATE_CONVERGENCE",
+      "model": "src/m32FictionalEventNotebook.ts",
+      "workshop": "src/M32FictionalEventManualWorkshop.tsx",
+      "tests": "src/m32FictionalEventNotebook.test.tsx",
+      "browser": "tools/m32_browser_interaction.cjs",
+      "qualification": "docs/qualification/M3_2_FICTIONAL_HISTORICAL_DRAFT_COPY.md",
+      "acceleration": "docs/qualification/M3_2_ACCELERATED_CONVERGENCE_DECISION_20261024.md",
+      "added_event_tests": 6,
+      "added_browser_cases_per_mode": 6,
+      "source_only": true,
+      "no_persistence": true,
+      "mounted_in_application": false,
+      "real_g3_authorized": false,
+      "operator_windows_validation": false,
+      "source_only_workstreams_batched": 2
     }
   },
   "post_pr100_normalization": {
@@ -2787,6 +2805,43 @@
     "previous_failed_ci_run_ids": [
       40058887933,
       40058958176
+    ],
+    "m3_2": "IN_PROGRESS_NOT_ACCEPTED",
+    "g2b": "NOT_ACCEPTED",
+    "source_identity": "PARTIAL_LOCAL_IDENTITY_ONLY",
+    "writer_absence": "NOT_PROVEN",
+    "g2c": "NOT_AUTHORIZED",
+    "real_g3": "STOP_UNAVAILABLE",
+    "historical": "PENDING_EXTERNAL_ATTESTATION(21/3/2)",
+    "prospective": "NOT_STARTED",
+    "pr35": "OPEN_DRAFT",
+    "operator_windows_validation": false,
+    "original_sqlite_touched": false
+  },
+  "post_pr157_terminal_observation": {
+    "as_of": "2026-10-24",
+    "pr": 157,
+    "merged": true,
+    "source_sha": "956154c4be0645536d356a48c6d75d0bf92bdc37",
+    "source_ci": {
+      "run_id": 40061031363,
+      "conclusion": "SUCCESS"
+    },
+    "merge_sha": "645b50f438d12165d0eae46f1c3d586f07819480",
+    "postmain_ci": {
+      "run_id": 40061815168,
+      "conclusion": "SUCCESS"
+    },
+    "source_job_steps": 76,
+    "postmain_job_steps": 76,
+    "handoff_tests": 92,
+    "event_tests": 90,
+    "chromium_normal": 76,
+    "chromium_strict_csp": 76,
+    "rust_tests": 132,
+    "failed_preceding_ci_runs": [
+      40060942982,
+      40061018445
     ],
     "m3_2": "IN_PROGRESS_NOT_ACCEPTED",
     "g2b": "NOT_ACCEPTED",

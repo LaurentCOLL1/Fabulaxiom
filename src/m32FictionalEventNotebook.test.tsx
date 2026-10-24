@@ -9,6 +9,7 @@ import {
   startFictionalEventNotebook, createFictionalEvent, amendFictionalEvent,
   withdrawFictionalEvent, inspectFictionalEventNotebook, currentFictionalEvents,
   auditedFictionalEventHistory, compareFictionalEventVersions,
+  prepareFictionalEventHistoricalDraft,
 } from "./m32FictionalEventNotebook";
 import M32FictionalEventNotebookPreview from "./M32FictionalEventNotebookPreview";
 import M32FictionalEventVersionPairLab from "./M32FictionalEventVersionPairLab";
@@ -806,5 +807,66 @@ describe("M3.2 live invented workshop compares only its own in-memory event vers
     const book = fixture("fiction-alpha");
     expect(() => html({ ...book, data_origin: "real_sqlite" } as unknown as typeof book))
       .toThrow("Carnet M3.2 fictif refusé");
+  });
+});
+
+describe("M3.2 fictional historical draft preparation is explicitly non-mutating", () => {
+  function three() {
+    let book = createFictionalEvent(fixture("fiction-alpha"), plain);
+    const id = book.events[0].event_id;
+    book = amendFictionalEvent(book, id,
+      { ...plain, title: "Deuxième version inventée", note: "Deuxième note" },
+      "Correction humaine inventée");
+    book = amendFictionalEvent(book, id,
+      { ...plain, title: "Troisième version inventée", note: "Troisième note" },
+      "Correction humaine inventée");
+    return {book,id};
+  }
+  it("91 prepares an exact earlier version as detached immutable input", () => {
+    const {book,id} = three();
+    const prior = prepareFictionalEventHistoricalDraft(book,id,1);
+    expect(prior).toEqual(plain);
+    expect(Object.isFrozen(prior)).toBe(true);
+    expect(book.events).toHaveLength(3);
+    expect(book.events[book.events.length - 1]?.title).toBe("Troisième version inventée");
+    expect(book.audit).toHaveLength(3);
+  });
+  it("92 permits human resubmission only as an additional audited version", () => {
+    const {book,id} = three();
+    const prior = prepareFictionalEventHistoricalDraft(book,id,1);
+    const updated = amendFictionalEvent(book,id,prior,"Retour manuel expliqué");
+    expect(updated.events).toHaveLength(4);
+    expect(updated.events[updated.events.length - 1]).toMatchObject({
+      title: plain.title, version: 4, status: "current", event_id: id,
+    });
+    expect(updated.audit[updated.audit.length - 1]).toMatchObject({
+      action: "amended", version: 4, explanation: "Retour manuel expliqué",
+    });
+    expect(book.events).toHaveLength(3);
+  });
+  it("93 rejects nonexistent, current, reversed and fractional historical versions", () => {
+    const {book,id} = three();
+    for(const version of [-1,0,3,4,1.5,Infinity,NaN]) {
+      expect(() => prepareFictionalEventHistoricalDraft(book,id,version)).toThrow();
+    }
+  });
+  it("94 refuses foreign events, including another universe, without fallback", () => {
+    const {book} = three();
+    for(const foreign of ["fiction-beta-event-0001","fiction-alpha-event-9999",""]) {
+      expect(() => prepareFictionalEventHistoricalDraft(book,foreign,1)).toThrow();
+    }
+  });
+  it("95 refuses withdrawn events even when history remains readable", () => {
+    const {book,id} = three();
+    const withdrawn = withdrawFictionalEvent(book,id,"Retrait humain");
+    expect(auditedFictionalEventHistory(withdrawn,id)).toHaveLength(4);
+    expect(() => prepareFictionalEventHistoricalDraft(withdrawn,id,1)).toThrow();
+    expect(currentFictionalEvents(withdrawn)).toHaveLength(0);
+  });
+  it("96 rejects a forged SQLite-origin notebook before any historical lookup", () => {
+    const {book,id} = three();
+    expect(() => prepareFictionalEventHistoricalDraft(
+      {...book,data_origin:"real_sqlite"} as unknown as typeof book,id,1,
+    )).toThrow("Carnet M3.2 fictif refusé");
   });
 });

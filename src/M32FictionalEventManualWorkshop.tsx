@@ -1,7 +1,8 @@
 import { useState, type FormEvent, type ReactElement } from "react";
 import {
   amendFictionalEvent, createFictionalEvent, currentFictionalEvents,
-  inspectFictionalEventNotebook, withdrawFictionalEvent,
+  inspectFictionalEventNotebook, prepareFictionalEventHistoricalDraft,
+  auditedFictionalEventHistory, withdrawFictionalEvent,
   type FictionalEventInput, type FictionalEventNotebook,
 } from "./m32FictionalEventNotebook";
 import M32FictionalEventVersionPairLab from "./M32FictionalEventVersionPairLab";
@@ -41,12 +42,18 @@ export default function M32FictionalEventManualWorkshop({ initial }: {
   const [feedback, setFeedback] = useState("");
   const [isError, setIsError] = useState(false);
   const [compareOpen, setCompareOpen] = useState(false);
+  const [historicalVersion, setHistoricalVersion] = useState("");
 
   const activeAnchors = book.draft.snapshot.anchors.filter(a => a.status === "current");
   const currentEvents = currentFictionalEvents(book);
+  const editableEvent = currentEvents.find(e => e.event_id === selectedId);
+  const olderVersions = editableEvent && editableEvent.version > 1
+    ? auditedFictionalEventHistory(book, selectedId).filter(
+      entry => entry.event.version < editableEvent.version)
+    : [];
   function clearSelection() {
     setSelectedId(""); setTitle(""); setNote("");
-    setAnchor(""); setRevision(""); setReason("");
+    setAnchor(""); setRevision(""); setReason(""); setHistoricalVersion("");
   }
   function apply(action: FictionalWorkshopAction) {
     try {
@@ -81,7 +88,23 @@ export default function M32FictionalEventManualWorkshop({ initial }: {
     setAnchor(selected.anchor_id ?? "");
     setRevision(selected.source_revision_id ?? "");
     setReason("");
+    setHistoricalVersion("");
     setFeedback("");
+  }
+  function prepareOlderVersion() {
+    try {
+      const data = prepareFictionalEventHistoricalDraft(book, selectedId,
+        Number(historicalVersion));
+      setTitle(data.title); setNote(data.note);
+      setAnchor(data.anchor_id ?? ""); setRevision(data.source_revision_id ?? "");
+      setReason("");
+      setIsError(false);
+      setFeedback("Version historique copiée dans le formulaire seulement : " +
+        "la correction attend votre justification et votre validation explicite.");
+    } catch (error) {
+      setIsError(true);
+      setFeedback(error instanceof Error ? error.message : "Copie fictive refusée.");
+    }
   }
   return <section aria-label="Atelier manuel fictif d'événements M3.2">
     <h2>Atelier fictif — événements de {book.draft.snapshot.universe_id}</h2>
@@ -117,6 +140,26 @@ export default function M32FictionalEventManualWorkshop({ initial }: {
         <input value={reason} onChange={e => setReason(e.target.value)}
           maxLength={240} required={Boolean(selectedId)} />
       </label>
+      {selectedId && olderVersions.length > 0 && <fieldset>
+        <legend>Reprendre manuellement le texte d'une version historique fictive</legend>
+        <label>Version passée à reprendre
+          <select value={historicalVersion}
+            onChange={e => setHistoricalVersion(e.target.value)}>
+            <option value="">Choisir une ancienne version</option>
+            {olderVersions.map(entry =>
+              <option key={entry.event.version} value={String(entry.event.version)}>
+                Version {entry.event.version}
+              </option>)}
+          </select>
+        </label>
+        <button type="button" disabled={!historicalVersion}
+          onClick={prepareOlderVersion}>
+          Préparer la correction depuis cette version
+        </button>
+        <p role="note">Copie seulement les champs dans le formulaire :
+          aucune modification enregistrée avant justification et validation.
+          Aucun événement retiré ne peut être réactivé ainsi.</p>
+      </fieldset>}
       <button type="submit">{selectedId ? "Enregistrer une nouvelle version" :
         "Créer en mémoire"}</button>
       {selectedId && <button type="button" onClick={() =>
