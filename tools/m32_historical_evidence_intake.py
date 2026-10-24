@@ -30,12 +30,16 @@ MISSING_STATUS = "MISSING_INDEPENDENT_WITNESS"
 def triage_fictional_custody_claims(claims: object) -> dict[str, object]:
     """Classify invented metadata only; NEVER claim real G2B acceptance.
 
-    Unknown or duplicate roles, payload fields and non-mapping entries veto.
+    Unknown or duplicate roles, recycled symbolic notices, payload fields and non-mapping entries veto.
     The function deliberately does not open even a caller-named path.
     """
     if not isinstance(claims, list) or len(claims) > len(ROLES):
         raise ValueError("STOP: fictional metadata list of at most five claims required")
     result = {role: MISSING_STATUS for role in ROLES}
+    # Purely syntactic and conservative: a recycled invented notice must
+    # never be counted as several apparently independent witnesses.
+    seen_notice_refs: set[str] = set()
+    seen_notice_digests: set[str] = set()
     for claim in claims:
         if not isinstance(claim, dict):
             raise ValueError("STOP: not an invented metadata object")
@@ -57,6 +61,18 @@ def triage_fictional_custody_claims(claims: object) -> dict[str, object]:
             and claim["preexisting_record"] is True
             and claim["role_bound"] is True
         )
+        # Each syntactically valid notice must use its own invented token and
+        # digest. Distinct metadata still NEVER authenticates real provenance.
+        ref = claim["proof_ref"]
+        digest = claim["proof_sha256"]
+        if isinstance(ref, str) and SAFE_REF.fullmatch(ref):
+            if ref in seen_notice_refs:
+                raise ValueError("STOP: recycled fictional external notice reference")
+            seen_notice_refs.add(ref)
+        if isinstance(digest, str) and SAFE_HASH.fullmatch(digest):
+            if digest in seen_notice_digests:
+                raise ValueError("STOP: recycled fictional external notice digest")
+            seen_notice_digests.add(digest)
         result[role] = CANDIDATE_STATUS if safe else REJECTED_STATUS
     return {
         "roles": result,

@@ -2473,7 +2473,7 @@ class HandoffContractTests(unittest.TestCase):
             MISSING_STATUS, triage_fictional_custody_claims,
         )
         p = self.data["post_pr164_terminal_observation"]
-        self.assertEqual(self.data["last_confirmed_merged_pr"], 164)
+        self.assertGreaterEqual(self.data["last_confirmed_merged_pr"], 164)
         self.assertEqual(p["source_sha"], "62868e8ac4103ecaa65d129e6e5551ff3124a99f")
         self.assertEqual(p["source_ci"], {"run_id": 40101820083, "conclusion": "SUCCESS"})
         self.assertEqual(p["merge_sha"], "ac7c61f779c0981d418d8b5b7bb1d4a8a725cdbe")
@@ -2522,7 +2522,9 @@ class HandoffContractTests(unittest.TestCase):
                 with self.assertRaises(ValueError):
                     triage_fictional_custody_claims(claims)
         all_plausible = triage_fictional_custody_claims([
-            {**safe, "role": role} for role in ROLES
+            {**safe, "role": role, "proof_ref": "EXT-INVENTED" + str(index + 1).zfill(4),
+             "proof_sha256": format(index + 1, "064x")}
+            for index, role in enumerate(ROLES)
         ])
         self.assertEqual(set(all_plausible["roles"].values()), {CANDIDATE_STATUS})
         for report in (empty, one, all_plausible):
@@ -2536,6 +2538,52 @@ class HandoffContractTests(unittest.TestCase):
                      "HANDOFF_HISTORY.md", "STATE.md", "NEXT.md", "M3_2_GATE_DECISION_CURRENT.md", "README.md"):
             self.assertIn("40103615181", (DIRECTORY / name).read_text(encoding="utf-8"), name)
         self.assertIn("40103615181",
+                      (ROOT / "docs/roadmap/ROADMAP_STATUS_CURRENT.md").read_text(encoding="utf-8"))
+
+    def test_100_pr165_terminal_and_no_reused_external_notice_tokens(self):
+        from m32_historical_evidence_intake import (
+            ROLES, CANDIDATE_STATUS, triage_fictional_custody_claims,
+        )
+        p = self.data["post_pr165_terminal_observation"]
+        self.assertEqual(self.data["last_confirmed_merged_pr"], 165)
+        self.assertEqual(p["source_sha"], "1c592c76c48feba3ef3f5e11fca37bb0efaba03f")
+        self.assertEqual(p["source_ci"], {"run_id": 40105412509, "conclusion": "SUCCESS"})
+        self.assertEqual(p["merge_sha"], "e1faacc909d4c8a693e2552e64dda57b6927473f")
+        self.assertEqual(p["postmain_ci"], {"run_id": 40106296690, "conclusion": "SUCCESS"})
+        self.assertEqual((p["source_job_steps"], p["postmain_job_steps"]), (79, 79))
+        self.assertEqual((p["handoff_tests"], p["event_tests"]), (99, 96))
+        self.assertEqual((p["chromium_normal"], p["chromium_strict_csp"], p["rust_tests"]),
+                         (82, 82, 132))
+        self.assertEqual(p["historical"], "PENDING_EXTERNAL_ATTESTATION(21/3/2)")
+        self.assertEqual(p["g2b"], "NOT_ACCEPTED")
+        self.assertEqual(p["real_g3"], "STOP_UNAVAILABLE")
+        one = dict(role=ROLES[0], origin="independent_external_record",
+                   proof_ref="EXT-INVENTED0001", proof_sha256="a" * 64,
+                   custodian_id="ext-archive-fictional",
+                   preexisting_record=True, role_bound=True)
+        reused_ref = {**one, "role": ROLES[1], "proof_sha256": "b" * 64}
+        reused_sha = {**one, "role": ROLES[1], "proof_ref": "EXT-INVENTED0002"}
+        for second in (reused_ref, reused_sha):
+            with self.subTest(second=second):
+                with self.assertRaises(ValueError):
+                    triage_fictional_custody_claims([one, second])
+                with self.assertRaises(ValueError):
+                    triage_fictional_custody_claims([second, one])
+        distinct = {**one, "role": ROLES[1],
+                    "proof_ref": "EXT-INVENTED0002", "proof_sha256": "b" * 64}
+        result = triage_fictional_custody_claims([one, distinct])
+        self.assertEqual(set(result["roles"][role] for role in ROLES[:2]),
+                         {CANDIDATE_STATUS})
+        self.assertEqual(result["g2b"], "NOT_ACCEPTED")
+        self.assertEqual(result["real_g3"], "STOP_UNAVAILABLE")
+        self.assertFalse(result["evidence_authenticated"])
+        self.assertFalse(result["operator_access"])
+        for name in ("RESUME_PROMPT_SHORT.md", "RESUME_PROMPT.md", "HANDOFF_CURRENT.md",
+                     "HANDOFF_HISTORY.md", "STATE.md", "NEXT.md",
+                     "M3_2_GATE_DECISION_CURRENT.md", "README.md"):
+            self.assertIn("40106296690",
+                          (DIRECTORY / name).read_text(encoding="utf-8"), name)
+        self.assertIn("40106296690",
                       (ROOT / "docs/roadmap/ROADMAP_STATUS_CURRENT.md").read_text(encoding="utf-8"))
 
 if __name__ == "__main__":

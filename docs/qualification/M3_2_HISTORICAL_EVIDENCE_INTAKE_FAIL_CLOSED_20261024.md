@@ -10,6 +10,12 @@ Le module Python `tools/m32_historical_evidence_intake.py` reçoit **uniquement 
 
 Même si tous les champs d'un candidat inventé semblent satisfaisants, son attestation reste non vérifiée : un drapeau déclaratif de custodian externe, un digest inventé ou un identifiant symbolique ne prouvent pas la création antérieure, la garde, la liaison de rôle, la signature ni le contenu. Le programme ne vérifie **aucune cryptographie** et n'a pas d'interface de collecte ni de CLI opérateur. Toute véritable décision demanderait un dossier distinct, vérifié indépendamment et autorisé séparément hors des données privées GitHub.
 
+## Durcissement documentaire candidat après PR #165
+
+Une même **référence symbolique** (`EXT-...`) ou le même **SHA de notice fictive** présenté pour plusieurs rôles doit conduire à `STOP`, afin de ne pas simuler l'indépendance par cinq lignes copiées. Le même custodian inventé peut être associé à plusieurs notices **distinctes**, sans authentifier pour autant son indépendance. C'est une règle conservatrice du tri **fictif**, pas une règle juridique de preuve réelle : un dossier historique unique et indépendamment authentifié pourrait légitimement documenter plusieurs rôles, mais cet outil ne sait ni le lire ni le valider. Un contre-exemple inventé avec même token, un autre avec même digest et un scénario avec deux notices distinctes sont couverts par le contrat #100.
+
+**Base vérifiée :** PR #165 source #40105412509 SUCCESS, squash `main=e1faacc909d4c8a693e2552e64dda57b6927473f`, postmain #40106296690 SUCCESS à ce SHA, 79 étapes Windows / 99 contrats / 96 Vitest fictifs / Chromium 82/82 chaque mode / Rust 132. Nouvelle CI de la candidate encore **à qualifier**.
+
 ## Qualification source-only
 
 Un nouveau contrat handoff #99 exécute douze contre-exemples inventés, notamment liste vide, candidat synthétique complet, auto-attestation, rôle étranger, doublon, charge utile interdite, hash incorrect, identifiant de custodian insuffisant, fausse chronologie, liaison déclarée absente, réf. dangereuse et trop d'entrées. Il impose en toutes circonstances `G2B=NOT_ACCEPTED`, `writer_absence=NOT_PROVEN`, `G3=STOP_UNAVAILABLE`, `PENDING_EXTERNAL_ATTESTATION(21/3/2)`, `operator_access=False`, `evidence_authenticated=False`. Aucune dépendance supplémentaire ni nouvelle étape workflow ; le test s'exécute dans le contrôle handoff existant (99 contrats attendus, **non encore observés au nouveau HEAD**).

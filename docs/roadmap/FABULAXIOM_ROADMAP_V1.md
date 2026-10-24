@@ -1,5 +1,7 @@
 # Fabulaxiom — V1 Roadmap
 
+> **Checkpoint ultérieur 24 octobre 2026 :** PR #165 MERGED, `main=e1faacc909d4c8a693e2552e64dda57b6927473f`, CI source #40105412509 + postmain #40106296690 SUCCESS indépendamment ; 79 étapes, 99 contrats, 96 Vitest fictifs, 82/82 Chromium par mode, 132 Rust. Candidate suivante : refuser doublons de notices externes **fictives**, sans attester un des cinq rôles historiques. **M3.2 IN_PROGRESS_NOT_ACCEPTED ; G2B NOT_ACCEPTED ; G3 STOP_UNAVAILABLE.** Checkpoints #164 et antérieurs ci-dessous conservés.
+
 > **Checkpoint ultérieur 24 octobre 2026 :** PR #164 MERGED, `main=ac7c61f779c0981d418d8b5b7bb1d4a8a725cdbe`, CI source #40101820083 et postmain #40103615181 SUCCESS au SHA exact. Nouvelle candidate : classement fictif de recevabilité des cinq preuves historiques manquantes, **aucune attestation réelle ni levée de G2B/G3**, M3.2 toujours NON ACCEPTÉE. Les checkpoints #163 ci-dessous restent historiques.
 
 > **Mise à jour vérifiée :** PR #163 fusionnée, `main=7e4295160b927416d21e69e64f01fd6247d09e92` ; CI source #40094464488 et postmain #40095354727 SUCCESS indépendamment. Risque GLib Linux identifié, non corrigé ; M3.2 NON ACCEPTÉE, G2B–G6 inchangés. Le checkpoint #162 suivant est historique.
