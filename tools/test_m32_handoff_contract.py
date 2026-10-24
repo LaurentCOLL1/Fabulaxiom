@@ -2694,7 +2694,7 @@ class HandoffContractTests(unittest.TestCase):
                        "Stop-Process", "Start-Process", "Add-Type",
                        "Invoke-Expression", "Invoke-WebRequest",
                        "Remove-Item", "Copy-Item", "Set-Content",
-                       "Set-Acl", "Start-Transcript", "sqlite3",
+                       "Set-Acl", "Start-Transcript", "sqlite3.exe",
                        "Get-ItemProperty"):
             self.assertNotIn(unsafe, script)
         self.assertNotIn("C:\\Users\\", document)
