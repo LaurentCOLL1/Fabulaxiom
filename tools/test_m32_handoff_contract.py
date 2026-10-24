@@ -2030,13 +2030,11 @@ class HandoffContractTests(unittest.TestCase):
         self.assertNotIn("invoke(", preview)
         tests = (ROOT / q["tests"]).read_text(encoding="utf-8")
         self.assertIn("83 compares a withdrawn tombstone", tests)
-        for name in ("RESUME_PROMPT_SHORT.md", "RESUME_PROMPT.md",
-                     "HANDOFF_CURRENT.md", "HANDOFF_HISTORY.md", "NEXT.md",
-                     "STATE.md", "M3_2_GATE_DECISION_CURRENT.md"):
+        for name in ("RESUME_PROMPT.md", "HANDOFF_CURRENT.md", "HANDOFF_HISTORY.md",
+                     "NEXT.md", "STATE.md", "M3_2_GATE_DECISION_CURRENT.md"):
             body = (DIRECTORY / name).read_text(encoding="utf-8")
-            # The short prompt follows the newest verified checkpoint, unlike the immutable history.
-            self.assertIn("40030841723" if name == "RESUME_PROMPT_SHORT.md"
-                          else "40027154468", body, name)
+            # Historical source evidence belongs to the long handoff, not the current-only short prompt.
+            self.assertIn("40027154468", body, name)
             self.assertIn("IN_PROGRESS_NOT_ACCEPTED", body, name)
         self.assertIn("40027154468",
                       (ROOT / "docs/roadmap/ROADMAP_STATUS_CURRENT.md").read_text(encoding="utf-8"))
@@ -2074,11 +2072,56 @@ class HandoffContractTests(unittest.TestCase):
         self.assertIn('"src/M32FictionalEventNotebookPreview.tsx"', stage)
         ts = (ROOT / q["tests"]).read_text(encoding="utf-8")
         self.assertIn("87 escapes hostile-looking event labels", ts)
-        for name in ("RESUME_PROMPT_SHORT.md", "RESUME_PROMPT.md", "HANDOFF_CURRENT.md",
+        for name in ("RESUME_PROMPT.md", "HANDOFF_CURRENT.md",
                      "HANDOFF_HISTORY.md", "NEXT.md", "STATE.md",
                      "M3_2_GATE_DECISION_CURRENT.md"):
             self.assertIn("40030841723", (DIRECTORY / name).read_text(encoding="utf-8"))
         self.assertIn("40030841723",
+            (ROOT / "docs/roadmap/ROADMAP_STATUS_CURRENT.md").read_text(encoding="utf-8"))
+
+    def test_92_pr156_terminal_and_live_fictional_workshop_comparison_candidate(self):
+        p = self.data["post_pr156_terminal_observation"]
+        self.assertEqual(p["pr"], 156)
+        self.assertTrue(p["merged"])
+        self.assertEqual(p["source_sha"], "cb65a8c902146a7252e3682cf1f5f08f54e7f190")
+        self.assertEqual(p["source_ci"], {"run_id": 40059088846, "conclusion": "SUCCESS"})
+        self.assertEqual(p["merge_sha"], "4de256f4666500e4fc9a9482e52c8116869a35ca")
+        self.assertEqual(p["postmain_ci"], {"run_id": 40059860336, "conclusion": "SUCCESS"})
+        self.assertEqual(p["handoff_tests"], 91)
+        self.assertEqual(p["event_tests"], 87)
+        self.assertEqual(p["chromium_normal"], 70)
+        self.assertEqual(p["chromium_strict_csp"], 70)
+        self.assertEqual(p["rust_tests"], 132)
+        self.assertEqual(self.data["last_confirmed_merged_pr"], 156)
+        self.assertEqual(p["m3_2"], "IN_PROGRESS_NOT_ACCEPTED")
+        self.assertEqual(p["writer_absence"], "NOT_PROVEN")
+        self.assertEqual(p["real_g3"], "STOP_UNAVAILABLE")
+        self.assertFalse(p["original_sqlite_touched"])
+        q = self.data["m3_2_product_progress"]["fictional_live_workshop_comparison_candidate"]
+        self.assertTrue(q["source_only"] and q["no_persistence"])
+        self.assertEqual(q["added_event_tests"], 3)
+        self.assertEqual(q["added_browser_cases_per_mode"], 6)
+        self.assertFalse(q["mounted_in_application"])
+        self.assertFalse(q["real_g3_authorized"])
+        for field in ("workshop", "selector", "tests", "browser", "qualification"):
+            self.assertTrue((ROOT / q[field]).is_file(), field)
+        workshop = (ROOT / q["workshop"]).read_text(encoding="utf-8")
+        app = (ROOT / "src/App.tsx").read_text(encoding="utf-8")
+        self.assertIn("M32FictionalEventVersionPairLab notebook={book}", workshop)
+        self.assertIn("aria-expanded={compareOpen}", workshop)
+        self.assertNotIn("M32FictionalEventManualWorkshop", app)
+        for unsafe in ("invoke(", "localStorage", "fetch(", "@tauri-apps"):
+            self.assertNotIn(unsafe, workshop)
+        browser = (ROOT / q["browser"]).read_text(encoding="utf-8")
+        self.assertIn("76-live-workshop-comparison-escapes-user-looking-script", browser)
+        self.assertIn("M32_BROWSER_REAL_CHROMIUM_PASS 76/76", browser)
+        tests = (ROOT / q["tests"]).read_text(encoding="utf-8")
+        self.assertIn("90 refuses forged origin", tests)
+        for name in ("RESUME_PROMPT_SHORT.md", "RESUME_PROMPT.md",
+                     "HANDOFF_CURRENT.md", "HANDOFF_HISTORY.md", "NEXT.md",
+                     "STATE.md", "M3_2_GATE_DECISION_CURRENT.md"):
+            self.assertIn("40059860336", (DIRECTORY / name).read_text(encoding="utf-8"))
+        self.assertIn("40059860336",
             (ROOT / "docs/roadmap/ROADMAP_STATUS_CURRENT.md").read_text(encoding="utf-8"))
 
 if __name__ == "__main__":

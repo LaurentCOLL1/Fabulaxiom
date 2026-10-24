@@ -1,5 +1,7 @@
 # Fabulaxiom — Point d'entrée pour reprendre les discussions ChatGPT
 
+**24 octobre 2026 — PR #156 source/postmain terminales SUCCESS :** [qualification du comparateur de versions fictives en direct](../qualification/M3_2_FICTIONAL_LIVE_WORKSHOP_VERSION_COMPARISON.md) — 3 Vitest + 6 Chromium supplémentaires par mode attendus dans la nouvelle candidate. L'application réelle et les gates restent inchangés.
+
 **24 octobre 2026 — candidate fictive browser-only :** [sélecteur contrôlé de versions](../qualification/M3_2_FICTIONAL_VERSION_PAIR_PICKER_LAB.md), après [PR #155](https://github.com/LaurentCOLL1/Fabulaxiom/pull/155) (CI source #40029859356 et postmain #40030841723 SUCCESS). Aucun changement des gates réels.
 
 **23 octobre 2026 — PR #154 MERGED, CI source/postmain terminales SUCCESS ; nouvelle candidate de vue fictive à sélection de versions contrôlée.** [PR #154](https://github.com/LaurentCOLL1/Fabulaxiom/pull/154) source finale `5d91e198e455c33a2782804310377f19ec746bee`, [CI source #40025773741](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/40025773741) **SUCCESS**, fusion protégée `main=391cc3972c87b7f3ae0fda033b55971f268d7fbe`, [postmain #40027154468](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/40027154468) **SUCCESS** au SHA exact, indépendamment vérifiée. Chaque CI : 76 étapes Windows, 89 contrats continuité, 74 tests du carnet fictif, Chromium 62/62 dans chacun des deux modes (normal/CSP strict), 132 tests Rust principaux. Checkpoints antérieurs historiques, aucune CI réutilisée pour un HEAD nouveau.

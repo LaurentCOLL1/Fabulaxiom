@@ -12,6 +12,7 @@ import {
 } from "./m32FictionalEventNotebook";
 import M32FictionalEventNotebookPreview from "./M32FictionalEventNotebookPreview";
 import M32FictionalEventVersionPairLab from "./M32FictionalEventVersionPairLab";
+import M32FictionalEventManualWorkshop from "./M32FictionalEventManualWorkshop";
 
 function fixture(universe: "fiction-alpha" | "fiction-beta") {
   const snapshot: M32ChronologyProjection = {
@@ -773,5 +774,37 @@ describe("M3.2 browser-only fictional version pair selectors", () => {
     const markup = renderToStaticMarkup(createElement(M32FictionalEventVersionPairLab, { notebook: book }));
     expect(markup).toContain("&lt;script&gt;not-executable&lt;/script&gt;");
     expect(markup).not.toContain("<script>");
+  });
+});
+
+describe("M3.2 live invented workshop compares only its own in-memory event versions", () => {
+  function html(book = fixture("fiction-alpha")) {
+    return renderToStaticMarkup(createElement(M32FictionalEventManualWorkshop,
+      { initial: book }));
+  }
+  it("88 starts with live comparator unmounted and does not alter empty event counts", () => {
+    const markup = html();
+    expect(markup).toContain("Comparer les versions créées dans cet atelier fictif");
+    expect(markup).toContain("Événements courants (0)");
+    expect(markup).not.toContain('aria-label="Laboratoire de sélection de versions fictives"');
+    expect(markup).toContain('aria-expanded="false"');
+  });
+  it("89 preserves the original create/amend/withdraw controller without persistence", () => {
+    let book = fixture("fiction-alpha");
+    book = createFictionalEvent(book, plain);
+    const id = book.events[0].event_id;
+    book = amendFictionalEvent(book, id, { ...plain, title: "Révision fictive B" },
+      "Correction explicite");
+    book = withdrawFictionalEvent(book, id, "Retrait motivé");
+    const markup = html(book);
+    expect(markup).toContain("Événements courants (0)");
+    expect(markup).toContain("Historique préservé : ");
+    expect(markup).toContain("3 versions");
+    expect(markup).not.toContain('aria-label="Laboratoire de sélection de versions fictives"');
+  });
+  it("90 refuses forged origin before mounting the live workshop or comparing", () => {
+    const book = fixture("fiction-alpha");
+    expect(() => html({ ...book, data_origin: "real_sqlite" } as unknown as typeof book))
+      .toThrow("Carnet M3.2 fictif refusé");
   });
 });

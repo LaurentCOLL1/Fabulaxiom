@@ -3,14 +3,14 @@
   "as_of": "2026-10-24",
   "status_kind": "DATED_PUBLIC_SOURCE_HANDOFF_ONLY",
   "repository": "LaurentCOLL1/Fabulaxiom",
-  "last_confirmed_main_before_handoff": "ccf5ba31b35c57b5ea572109e64015fdc1ca35cd",
-  "last_confirmed_merged_pr": 155,
-  "last_verified_pr_head": "45b5febd3dbd594e28eab51bea62806ff3e43017",
+  "last_confirmed_main_before_handoff": "4de256f4666500e4fc9a9482e52c8116869a35ca",
+  "last_confirmed_merged_pr": 156,
+  "last_verified_pr_head": "cb65a8c902146a7252e3682cf1f5f08f54e7f190",
   "last_verified_ci": {
-    "run_id": 40029859356,
+    "run_id": 40059088846,
     "context": "Windows frontend and Rust checks",
     "conclusion": "SUCCESS",
-    "source": "PR155_EXACT_HEAD"
+    "source": "PR156_EXACT_HEAD"
   },
   "recent_changes": [
     "PR_85_EXACT_G2A_TEXT_AST_ONLY",
@@ -139,7 +139,8 @@
     "PR152_FICTIONAL_VERSION_FIELDS_MERGED_MAIN_5346DDB7_SOURCE_40014823165_POSTMAIN_40016058394_SUCCESS",
     "PR153_EXACT_INVENTED_BEFORE_AFTER_MERGED_MAIN_C581CEB5_SOURCE_40020544737_POSTMAIN_40021898423_SUCCESS",
     "PR154_SELECTED_FICTIONAL_VERSION_COMPARE_MERGED_MAIN_391CC397_SOURCE_40025773741_POSTMAIN_40027154468_SUCCESS",
-    "PR155_CONTROLLED_FICTIONAL_VERSION_PREVIEW_MERGED_MAIN_CCF5BA31_SOURCE_40029859356_POSTMAIN_40030841723_SUCCESS"
+    "PR155_CONTROLLED_FICTIONAL_VERSION_PREVIEW_MERGED_MAIN_CCF5BA31_SOURCE_40029859356_POSTMAIN_40030841723_SUCCESS",
+    "PR156_FICTIONAL_VERSION_PAIR_PICKER_MERGED_MAIN_4DE256F4_SOURCE_40059088846_POSTMAIN_40059860336_SUCCESS"
   ],
   "pr35": "OPEN_DRAFT",
   "issues": {
@@ -325,7 +326,7 @@
     "verified_bypass_actors": 0,
     "classic_branch_protection_read": "403_INTEGRATION_RESTRICTED"
   },
-  "next": "PR155_SOURCE_POSTMAIN_TERMINAL_SUCCESS; FICTIONAL_VERSION_PAIR_PICKER_BROWSER_ONLY_NEW_EXACT_HEAD_CI; REAL_G3_STOP",
+  "next": "PR156_SOURCE_POSTMAIN_TERMINAL_SUCCESS; FICTIONAL_LIVE_WORKSHOP_VERSION_COMPARISON_NEW_EXACT_HEAD_CI; REAL_G3_STOP",
   "live_refetch_required": true,
   "hand_off_updated_by_future_pr": true,
   "main_ci_post_merge": {
@@ -1033,6 +1034,21 @@
       "qualification": "docs/qualification/M3_2_FICTIONAL_VERSION_PAIR_PICKER_LAB.md",
       "added_event_tests": 4,
       "added_browser_cases_per_mode": 8,
+      "source_only": true,
+      "no_persistence": true,
+      "mounted_in_application": false,
+      "real_g3_authorized": false,
+      "operator_windows_validation": false
+    },
+    "fictional_live_workshop_comparison_candidate": {
+      "kind": "FICTIONAL_MANUAL_WORKSHOP_LIVE_VERSION_COMPARISON",
+      "workshop": "src/M32FictionalEventManualWorkshop.tsx",
+      "selector": "src/M32FictionalEventVersionPairLab.tsx",
+      "tests": "src/m32FictionalEventNotebook.test.tsx",
+      "browser": "tools/m32_browser_interaction.cjs",
+      "qualification": "docs/qualification/M3_2_FICTIONAL_LIVE_WORKSHOP_VERSION_COMPARISON.md",
+      "added_event_tests": 3,
+      "added_browser_cases_per_mode": 6,
       "source_only": true,
       "no_persistence": true,
       "mounted_in_application": false,
@@ -2735,6 +2751,43 @@
     "chromium_normal": 62,
     "chromium_strict_csp": 62,
     "rust_tests": 132,
+    "m3_2": "IN_PROGRESS_NOT_ACCEPTED",
+    "g2b": "NOT_ACCEPTED",
+    "source_identity": "PARTIAL_LOCAL_IDENTITY_ONLY",
+    "writer_absence": "NOT_PROVEN",
+    "g2c": "NOT_AUTHORIZED",
+    "real_g3": "STOP_UNAVAILABLE",
+    "historical": "PENDING_EXTERNAL_ATTESTATION(21/3/2)",
+    "prospective": "NOT_STARTED",
+    "pr35": "OPEN_DRAFT",
+    "operator_windows_validation": false,
+    "original_sqlite_touched": false
+  },
+  "post_pr156_terminal_observation": {
+    "as_of": "2026-10-24",
+    "pr": 156,
+    "merged": true,
+    "source_sha": "cb65a8c902146a7252e3682cf1f5f08f54e7f190",
+    "source_ci": {
+      "run_id": 40059088846,
+      "conclusion": "SUCCESS"
+    },
+    "merge_sha": "4de256f4666500e4fc9a9482e52c8116869a35ca",
+    "postmain_ci": {
+      "run_id": 40059860336,
+      "conclusion": "SUCCESS"
+    },
+    "source_job_steps": 76,
+    "postmain_job_steps": 76,
+    "handoff_tests": 91,
+    "event_tests": 87,
+    "chromium_normal": 70,
+    "chromium_strict_csp": 70,
+    "rust_tests": 132,
+    "previous_failed_ci_run_ids": [
+      40058887933,
+      40058958176
+    ],
     "m3_2": "IN_PROGRESS_NOT_ACCEPTED",
     "g2b": "NOT_ACCEPTED",
     "source_identity": "PARTIAL_LOCAL_IDENTITY_ONLY",

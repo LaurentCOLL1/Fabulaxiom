@@ -4,6 +4,7 @@ import {
   inspectFictionalEventNotebook, withdrawFictionalEvent,
   type FictionalEventInput, type FictionalEventNotebook,
 } from "./m32FictionalEventNotebook";
+import M32FictionalEventVersionPairLab from "./M32FictionalEventVersionPairLab";
 
 /** One action, one invented in-memory state transition; never persisted. */
 export type FictionalWorkshopAction =
@@ -39,6 +40,7 @@ export default function M32FictionalEventManualWorkshop({ initial }: {
   const [reason, setReason] = useState("");
   const [feedback, setFeedback] = useState("");
   const [isError, setIsError] = useState(false);
+  const [compareOpen, setCompareOpen] = useState(false);
 
   const activeAnchors = book.draft.snapshot.anchors.filter(a => a.status === "current");
   const currentEvents = currentFictionalEvents(book);
@@ -131,6 +133,15 @@ export default function M32FictionalEventManualWorkshop({ initial }: {
         Corriger ou retirer {e.event_id}
       </button>
     </li>)}</ul>
+    <button type="button" aria-expanded={compareOpen}
+      aria-controls="m32-fictional-live-comparison"
+      onClick={() => setCompareOpen(open => !open)}>
+      {compareOpen ? "Masquer la comparaison des versions fictives" :
+        "Comparer les versions créées dans cet atelier fictif"}
+    </button>
+    {compareOpen && <div id="m32-fictional-live-comparison">
+      <M32FictionalEventVersionPairLab notebook={book} />
+    </div>}
     <p>Historique préservé : {book.events.length} versions ;
       {book.audit.length} opérations fictives.</p>
   </section>;
