@@ -1,5 +1,7 @@
 # Fabulaxiom — V1 Roadmap
 
+> **Mise à jour vérifiée :** PR #163 fusionnée, `main=7e4295160b927416d21e69e64f01fd6247d09e92` ; CI source #40094464488 et postmain #40095354727 SUCCESS indépendamment. Risque GLib Linux identifié, non corrigé ; M3.2 NON ACCEPTÉE, G2B–G6 inchangés. Le checkpoint #162 suivant est historique.
+
 > **État revérifié le 24 octobre 2026 (source GitHub seulement, PR #162 terminale) :** voir [le tableau de suivi actuel](ROADMAP_STATUS_CURRENT.md). M0, M1 et M2 sont terminés et normalisés ; M3.1 a été implémentée (PR #33) et normalisée (PR #34) ; **M3.2 est en cours mais NON ACCEPTÉE**, avec PR #35 en brouillon et barrières G2-B–G6 fermées. M3.3–M3.6, M4–M9 et ComfyUI ne sont pas autorisés. Les commentaires ci-dessous « planning PR #31 merged; normalization pending » sont des **checkpoints historiques**, pas le statut actuel. La production conserve SQLite v6 sans migration 007 implicite.
 
 The V1 is the complete first product target. It is intentionally larger than the first technical milestone.
