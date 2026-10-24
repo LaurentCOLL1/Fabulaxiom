@@ -2545,7 +2545,7 @@ class HandoffContractTests(unittest.TestCase):
             ROLES, CANDIDATE_STATUS, triage_fictional_custody_claims,
         )
         p = self.data["post_pr165_terminal_observation"]
-        self.assertEqual(self.data["last_confirmed_merged_pr"], 165)
+        self.assertGreaterEqual(self.data["last_confirmed_merged_pr"], 165)
         self.assertEqual(p["source_sha"], "1c592c76c48feba3ef3f5e11fca37bb0efaba03f")
         self.assertEqual(p["source_ci"], {"run_id": 40105412509, "conclusion": "SUCCESS"})
         self.assertEqual(p["merge_sha"], "e1faacc909d4c8a693e2552e64dda57b6927473f")
@@ -2585,6 +2585,39 @@ class HandoffContractTests(unittest.TestCase):
                           (DIRECTORY / name).read_text(encoding="utf-8"), name)
         self.assertIn("40106296690",
                       (ROOT / "docs/roadmap/ROADMAP_STATUS_CURRENT.md").read_text(encoding="utf-8"))
+
+    def test_101_pr166_terminal_and_private_recovery_sanitization(self):
+        p = self.data["post_pr166_terminal_observation"]
+        self.assertEqual(self.data["last_confirmed_merged_pr"], 166)
+        self.assertEqual(p["source_sha"], "fac5a230c5998eda30b6593068abca5e36d73a39")
+        self.assertEqual(p["source_ci"], {"run_id": 40107790950, "conclusion": "SUCCESS"})
+        self.assertEqual(p["merge_sha"], "c1fee9638c343c51e2e0bdab6ac8fccf2340104b")
+        self.assertEqual(p["postmain_ci"], {"run_id": 40108674282, "conclusion": "SUCCESS"})
+        self.assertEqual((p["source_job_steps"], p["postmain_job_steps"]), (79, 79))
+        self.assertEqual((p["handoff_tests"], p["fictional_vitest_tests"]), (100, 96))
+        self.assertEqual((p["chromium_normal"], p["chromium_strict_csp"], p["rust_tests"]), (82, 82, 132))
+        self.assertEqual(p["real_g3"], "STOP_UNAVAILABLE")
+        self.assertEqual(p["g2b"], "NOT_ACCEPTED")
+        self.assertEqual(p["historical"], "PENDING_EXTERNAL_ATTESTATION(21/3/2)")
+        self.assertFalse(p["original_sqlite_access"])
+        doc = (ROOT / "docs/qualification/M3_2_RECOVERED_COPIES_RECONCILIATION_20261024.md").read_text(encoding="utf-8")
+        for role in ("pre_m24_early_manifest", "original_acls", "pre_repair_json",
+                     "activation_marker", "isolated_v6"):
+            self.assertIn(role, doc)
+        for required in ("0/5", "PENDING_EXTERNAL_ATTESTATION(21/3/2)",
+                         "DONNEES_PRIVEES_NON_PUBLIEES", "STOP_UNAVAILABLE"):
+            self.assertIn(required, doc)
+        # Only the three historically published observed hashes are recognized;
+        # the current private SQLite candidate and original files are excluded.
+        self.assertNotIn("C:\\Users\\", doc)
+        self.assertNotIn("S-1-5-21-", doc)
+        self.assertNotIn("M:\\", doc)
+        self.assertNotIn("SQLite format 3", doc)  # no binary artifact bytes
+        for name in ("RESUME_PROMPT_SHORT.md", "RESUME_PROMPT.md", "HANDOFF_CURRENT.md",
+                     "HANDOFF_HISTORY.md", "STATE.md", "NEXT.md", "M3_2_GATE_DECISION_CURRENT.md", "README.md"):
+            self.assertIn("40108674282", (DIRECTORY / name).read_text(encoding="utf-8"), name)
+        self.assertIn("40108674282",
+            (ROOT / "docs/roadmap/ROADMAP_STATUS_CURRENT.md").read_text(encoding="utf-8"))
 
 if __name__ == "__main__":
     unittest.main()

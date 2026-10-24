@@ -3,14 +3,14 @@
   "as_of": "2026-10-24",
   "status_kind": "DATED_PUBLIC_SOURCE_HANDOFF_ONLY",
   "repository": "LaurentCOLL1/Fabulaxiom",
-  "last_confirmed_main_before_handoff": "e1faacc909d4c8a693e2552e64dda57b6927473f",
-  "last_confirmed_merged_pr": 165,
-  "last_verified_pr_head": "1c592c76c48feba3ef3f5e11fca37bb0efaba03f",
+  "last_confirmed_main_before_handoff": "c1fee9638c343c51e2e0bdab6ac8fccf2340104b",
+  "last_confirmed_merged_pr": 166,
+  "last_verified_pr_head": "fac5a230c5998eda30b6593068abca5e36d73a39",
   "last_verified_ci": {
-    "run_id": 40105412509,
+    "run_id": 40107790950,
     "context": "Windows frontend and Rust checks",
     "conclusion": "SUCCESS",
-    "source": "PR165_EXACT_HEAD"
+    "source": "PR166_EXACT_HEAD"
   },
   "recent_changes": [
     "PR_85_EXACT_G2A_TEXT_AST_ONLY",
@@ -148,7 +148,8 @@
     "PR162_WINDOWS_GLIB_TARGET_AUDIT_MERGED_MAIN_B5D97648_SOURCE_40085001106_POSTMAIN_40085871815_SUCCESS",
     "PR163_LINUX_GLIB_GRAPH_MERGED_MAIN_7E429516_SOURCE_40094464488_POSTMAIN_40095354727_SUCCESS",
     "PR164_DOC_PR163_NORMALIZATION_MERGED_MAIN_AC7C61F7_SOURCE_40101820083_POSTMAIN_40103615181_SUCCESS",
-    "PR165_MERGED_EXACT_MAIN_E1FAACC_POSTMAIN_40106296690_SUCCESS_THEN_FICTIONAL_NOTICE_DEDUP_CANDIDATE"
+    "PR165_MERGED_EXACT_MAIN_E1FAACC_POSTMAIN_40106296690_SUCCESS_THEN_FICTIONAL_NOTICE_DEDUP_CANDIDATE",
+    "PR166_MERGED_MAIN_C1FEE963_POSTMAIN_40108674282_SUCCESS_PRIVATE_SIX_COPIES_RECONCILIATION_NO_PROMOTION"
   ],
   "pr35": "OPEN_DRAFT",
   "issues": {
@@ -334,7 +335,7 @@
     "verified_bypass_actors": 0,
     "classic_branch_protection_read": "403_INTEGRATION_RESTRICTED"
   },
-  "next": "PR165_TERMINAL_SUCCESS; FIVE_HISTORICAL_WITNESSES_UNPROVEN; SOURCE_ONLY_NOTICE_TOKEN_DEDUP; G2B_G3_STOPS",
+  "next": "SIX_PRIVATE_COPIES_OBSERVED; FIVE_HISTORIC_WITNESSES_STILL_UNAUTHENTICATED; HISTORIC_OR_PROSPECTIVE_SEPARATE_GATE; NO_ORIGINALS_ACCESS",
   "live_refetch_required": true,
   "hand_off_updated_by_future_pr": true,
   "main_ci_post_merge": {
@@ -1162,6 +1163,23 @@
       "notice_sha_uniqueness": "reject_reuse",
       "real_g3_authorized": false,
       "g2b": "NOT_ACCEPTED"
+    },
+    "owner_private_recovered_copies_reconciliation_20261024": {
+      "private_copies_received": 6,
+      "distinct_blocked_roles_represented": 5,
+      "previously_observed_sha256_copies_matching": 3,
+      "additional_pinned_m24_late_manifest_matching": true,
+      "activation_marker_sha_matches_self_reported_pre_repair_json": true,
+      "m25_candidate_sqlite_header_only": true,
+      "private_database_sha256_published": false,
+      "original_sqlite_opened": false,
+      "sqlite_sql_executed": false,
+      "operator_windows_access": false,
+      "independent_historical_attestation_verified": 0,
+      "g2b": "NOT_ACCEPTED",
+      "real_g3": "STOP_UNAVAILABLE",
+      "public_sanitized_doc": "docs/qualification/M3_2_RECOVERED_COPIES_RECONCILIATION_20261024.md",
+      "full_evidence_location": "PRIVATE_CHAT_ARTIFACT_ONLY_NOT_GITHUB"
     }
   },
   "post_pr100_normalization": {
@@ -3190,5 +3208,34 @@
     "real_g3": "STOP_UNAVAILABLE",
     "operator_windows_access": false,
     "original_sqlite_touched": false
+  },
+  "post_pr166_terminal_observation": {
+    "as_of": "2026-10-24",
+    "pr": 166,
+    "merged": true,
+    "source_sha": "fac5a230c5998eda30b6593068abca5e36d73a39",
+    "source_ci": {
+      "run_id": 40107790950,
+      "conclusion": "SUCCESS"
+    },
+    "merge_sha": "c1fee9638c343c51e2e0bdab6ac8fccf2340104b",
+    "postmain_ci": {
+      "run_id": 40108674282,
+      "conclusion": "SUCCESS"
+    },
+    "source_job_steps": 79,
+    "postmain_job_steps": 79,
+    "handoff_tests": 100,
+    "fictional_vitest_tests": 96,
+    "chromium_normal": 82,
+    "chromium_strict_csp": 82,
+    "rust_tests": 132,
+    "glib_linux_alert": "OPEN_NOT_REMEDIATED",
+    "g2b": "NOT_ACCEPTED",
+    "real_g3": "STOP_UNAVAILABLE",
+    "writer_absence": "NOT_PROVEN",
+    "historical": "PENDING_EXTERNAL_ATTESTATION(21/3/2)",
+    "original_sqlite_access": false,
+    "independent_historical_attestations_verified": 0
   }
 }
