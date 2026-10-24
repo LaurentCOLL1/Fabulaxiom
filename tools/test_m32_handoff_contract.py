@@ -2621,7 +2621,7 @@ class HandoffContractTests(unittest.TestCase):
 
     def test_102_pr167_terminal_detached_ram_only_and_solo_g2_plan(self):
         p = self.data["post_pr167_terminal_observation"]
-        self.assertEqual(self.data["last_confirmed_merged_pr"], 167)
+        self.assertGreaterEqual(self.data["last_confirmed_merged_pr"], 167)
         self.assertEqual(p["source_sha"], "819dbb0a1d80a07e9c19b3e7eacff761dce8dc9b")
         self.assertEqual(p["source_ci"], {"run_id": 40115530223, "conclusion": "SUCCESS"})
         self.assertEqual(p["merge_sha"], "533bdb27480a2b6dbed630b148501eeaf3c34b1e")
@@ -2657,6 +2657,55 @@ class HandoffContractTests(unittest.TestCase):
                      "HANDOFF_HISTORY.md", "STATE.md", "NEXT.md", "M3_2_GATE_DECISION_CURRENT.md", "README.md"):
             self.assertIn("40116658246", (DIRECTORY / name).read_text(encoding="utf-8"), name)
         self.assertIn("40116658246",
+            (ROOT / "docs/roadmap/ROADMAP_STATUS_CURRENT.md").read_text(encoding="utf-8"))
+
+    def test_103_pr168_terminal_g2b0_unexecuted_text_only(self):
+        p = self.data["post_pr168_terminal_observation"]
+        self.assertEqual(self.data["last_confirmed_merged_pr"], 168)
+        self.assertEqual(p["source_sha"], "d1f6db636a09112ace772b734c1a33e81d63d168")
+        self.assertEqual(p["source_ci"], {"run_id": 40117705107, "conclusion": "SUCCESS"})
+        self.assertEqual(p["merge_sha"], "a03cc5dad68aaf4cb78c39520de130960dc565f8")
+        self.assertEqual(p["postmain_ci"], {"run_id": 40122346098, "conclusion": "SUCCESS"})
+        self.assertEqual((p["source_steps"], p["postmain_steps"]), (79, 79))
+        self.assertEqual((p["handoff_tests"], p["vitest_tests"],
+                          p["chromium_normal"], p["chromium_strict_csp"],
+                          p["rust_tests"]), (102, 96, 82, 82, 132))
+        self.assertFalse(p["operator_windows_access"])
+        self.assertEqual(p["real_g3"], "STOP_UNAVAILABLE")
+        path = ROOT / "docs/qualification/M3_2_G2B0_METADATA_ONLY_OPERATOR_REVIEW_20261024.md"
+        document = path.read_text(encoding="utf-8")
+        import re
+        blocks = re.findall(r"(?ms)^`{3}powershell\s*\n(.*?)^`{3}\s*$", document)
+        self.assertEqual(len(blocks), 1)
+        script = blocks[0]
+        self.assertTrue(script.startswith("& {\n"))
+        self.assertTrue(script.rstrip().endswith("}"))
+        for required in (
+            "Get-Process -ErrorAction Stop", "Get-Item -LiteralPath",
+            "Get-ChildItem -LiteralPath", "REPARSE_ANCESTOR",
+            "SQLITE_SIDECAR_SEEN", "OBSERVED_PARTIAL_ONLY",
+            "M31_V7_AND_OTHER_ROLES: NOT_ASSESSED",
+            "G2B_SOURCE_IDENTITY: PARTIAL_LOCAL_IDENTITY_ONLY",
+            "SQLITE_WRITER_ABSENCE: NOT_PROVEN",
+            "G2C_G2D_G3_G4_G5_G6: NOT_AUTHORIZED",
+        ):
+            self.assertIn(required, script)
+        for unsafe in ("Get-FileHash", "Get-Acl", "Get-Content",
+                       "Stop-Process", "Start-Process", "Add-Type",
+                       "Invoke-Expression", "Invoke-WebRequest",
+                       "Remove-Item", "Copy-Item", "Set-Content",
+                       "Set-Acl", "Start-Transcript", "sqlite3.exe",
+                       "Get-ItemProperty"):
+            self.assertNotIn(unsafe, script)
+        self.assertNotIn("C:\\Users\\", document)
+        self.assertNotIn("S-1-5-21-", document)
+        self.assertIn("PREPARED_NOT_EXECUTED", document)
+        self.assertIn("STOP_UNAVAILABLE", document)
+        for f in ("RESUME_PROMPT_SHORT.md", "RESUME_PROMPT.md",
+                  "HANDOFF_CURRENT.md", "HANDOFF_HISTORY.md", "STATE.md",
+                  "NEXT.md", "M3_2_GATE_DECISION_CURRENT.md", "README.md"):
+            self.assertIn("40122346098", (DIRECTORY / f).read_text(encoding="utf-8"))
+        self.assertIn("40122346098",
             (ROOT / "docs/roadmap/ROADMAP_STATUS_CURRENT.md").read_text(encoding="utf-8"))
 
 if __name__ == "__main__":

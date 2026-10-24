@@ -3,14 +3,14 @@
   "as_of": "2026-10-24",
   "status_kind": "DATED_PUBLIC_SOURCE_HANDOFF_ONLY",
   "repository": "LaurentCOLL1/Fabulaxiom",
-  "last_confirmed_main_before_handoff": "533bdb27480a2b6dbed630b148501eeaf3c34b1e",
-  "last_confirmed_merged_pr": 167,
-  "last_verified_pr_head": "819dbb0a1d80a07e9c19b3e7eacff761dce8dc9b",
+  "last_confirmed_main_before_handoff": "a03cc5dad68aaf4cb78c39520de130960dc565f8",
+  "last_confirmed_merged_pr": 168,
+  "last_verified_pr_head": "d1f6db636a09112ace772b734c1a33e81d63d168",
   "last_verified_ci": {
-    "run_id": 40115530223,
+    "run_id": 40117705107,
     "context": "Windows frontend and Rust checks",
     "conclusion": "SUCCESS",
-    "source": "PR167_EXACT_HEAD"
+    "source": "PR168_EXACT_HEAD"
   },
   "recent_changes": [
     "PR_85_EXACT_G2A_TEXT_AST_ONLY",
@@ -150,7 +150,8 @@
     "PR164_DOC_PR163_NORMALIZATION_MERGED_MAIN_AC7C61F7_SOURCE_40101820083_POSTMAIN_40103615181_SUCCESS",
     "PR165_MERGED_EXACT_MAIN_E1FAACC_POSTMAIN_40106296690_SUCCESS_THEN_FICTIONAL_NOTICE_DEDUP_CANDIDATE",
     "PR166_MERGED_MAIN_C1FEE963_POSTMAIN_40108674282_SUCCESS_PRIVATE_SIX_COPIES_RECONCILIATION_NO_PROMOTION",
-    "PR167_MERGED_MAIN_533BDB27_POSTMAIN_40116658246_SUCCESS_DETACHED_RAM_M25_VALIDATED_NON_HISTORIC_G2_SOLO_PLAN"
+    "PR167_MERGED_MAIN_533BDB27_POSTMAIN_40116658246_SUCCESS_DETACHED_RAM_M25_VALIDATED_NON_HISTORIC_G2_SOLO_PLAN",
+    "PR168_MERGED_MAIN_A03CC5D_POSTMAIN_40122346098_SUCCESS_G2B0_METADATA_ONLY_REVIEW_NOT_EXECUTED"
   ],
   "pr35": "OPEN_DRAFT",
   "issues": {
@@ -336,7 +337,7 @@
     "verified_bypass_actors": 0,
     "classic_branch_protection_read": "403_INTEGRATION_RESTRICTED"
   },
-  "next": "G2_SOLO_EXACT_OPERATOR_APPROVAL_PLANNING_ONLY; DETACHED_COPY_INTEGRITY_VERIFIED; HISTORICAL_0_OF_5; REAL_G3_STOP",
+  "next": "G2B0_EXACT_SOURCE_REVIEW_CANDIDATE; NEED_NEW_OWNER_APPROVAL_BEFORE_WINDOWS_EXECUTION; NO_CUSTODY_PROMOTION",
   "live_refetch_required": true,
   "hand_off_updated_by_future_pr": true,
   "main_ci_post_merge": {
@@ -1181,6 +1182,17 @@
       "real_g3": "STOP_UNAVAILABLE",
       "public_sanitized_doc": "docs/qualification/M3_2_RECOVERED_COPIES_RECONCILIATION_20261024.md",
       "full_evidence_location": "PRIVATE_CHAT_ARTIFACT_ONLY_NOT_GITHUB"
+    },
+    "g2b0_metadata_only_operator_review_candidate": {
+      "status": "PREPARED_NOT_EXECUTED",
+      "source_only": true,
+      "powershell_operator_execution": false,
+      "operator_approval": "NEW_EXPLICIT_APPROVAL_REQUIRED",
+      "scope": "TWO_FABULAXIOM_APPDATA_DATABASE_DIRECTORIES_ONLY",
+      "g2b": "NOT_ACCEPTED",
+      "writer_absence": "NOT_PROVEN",
+      "real_g3": "STOP_UNAVAILABLE",
+      "doc": "docs/qualification/M3_2_G2B0_METADATA_ONLY_OPERATOR_REVIEW_20261024.md"
     }
   },
   "post_pr100_normalization": {
@@ -3306,5 +3318,30 @@
     "real_g3": "STOP_UNAVAILABLE",
     "prospective": "NOT_STARTED",
     "public_qualification": "docs/qualification/M3_2_G2_RECOVERED_COPIES_SOLO_APPROVAL_SCOPE_20261024.md"
+  },
+  "post_pr168_terminal_observation": {
+    "as_of": "2026-10-24",
+    "pr": 168,
+    "merged": true,
+    "source_sha": "d1f6db636a09112ace772b734c1a33e81d63d168",
+    "source_ci": {
+      "run_id": 40117705107,
+      "conclusion": "SUCCESS"
+    },
+    "merge_sha": "a03cc5dad68aaf4cb78c39520de130960dc565f8",
+    "postmain_ci": {
+      "run_id": 40122346098,
+      "conclusion": "SUCCESS"
+    },
+    "source_steps": 79,
+    "postmain_steps": 79,
+    "handoff_tests": 102,
+    "vitest_tests": 96,
+    "chromium_normal": 82,
+    "chromium_strict_csp": 82,
+    "rust_tests": 132,
+    "operator_windows_access": false,
+    "real_g3": "STOP_UNAVAILABLE",
+    "historical": "PENDING_EXTERNAL_ATTESTATION(21/3/2)"
   }
 }
