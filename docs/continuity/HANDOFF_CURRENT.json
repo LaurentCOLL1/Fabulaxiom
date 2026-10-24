@@ -3,14 +3,14 @@
   "as_of": "2026-10-24",
   "status_kind": "DATED_PUBLIC_SOURCE_HANDOFF_ONLY",
   "repository": "LaurentCOLL1/Fabulaxiom",
-  "last_confirmed_main_before_handoff": "6cf1dd175431f19cde7a347a44d1d53f29ffecb2",
-  "last_confirmed_merged_pr": 161,
-  "last_verified_pr_head": "956c5a2cfa4239759e175429af34cab9753960a8",
+  "last_confirmed_main_before_handoff": "b5d97648cc18597b23f9fece67fd78b094743abb",
+  "last_confirmed_merged_pr": 162,
+  "last_verified_pr_head": "3d7c517561457add580d33151fc0bd10db3e519b",
   "last_verified_ci": {
-    "run_id": 40071869911,
+    "run_id": 40085001106,
     "context": "Windows frontend and Rust checks",
     "conclusion": "SUCCESS",
-    "source": "PR161_EXACT_HEAD"
+    "source": "PR162_EXACT_HEAD"
   },
   "recent_changes": [
     "PR_85_EXACT_G2A_TEXT_AST_ONLY",
@@ -144,7 +144,8 @@
     "PR157_LIVE_FICTIONAL_WORKSHOP_COMPARISON_MERGED_MAIN_645B50F4_SOURCE_40061031363_POSTMAIN_40061815168_SUCCESS",
     "PR158_EARLY_HISTORICAL_DRAFT_AND_CONVERGENCE_MERGED_MAIN_FDAE74EF_SOURCE_40063511352_POSTMAIN_40064299969_SUCCESS",
     "PR159_CI_TYPESCRIPT_EARLY_FAIL_FAST_MERGED_MAIN_3CBE793E_SOURCE_40067055296_POSTMAIN_40067824098_SUCCESS",
-    "PR161_NPM_VITE816_SECURITY_MERGED_MAIN_6CF1DD17_SOURCE_40071869911_POSTMAIN_40072779652_SUCCESS"
+    "PR161_NPM_VITE816_SECURITY_MERGED_MAIN_6CF1DD17_SOURCE_40071869911_POSTMAIN_40072779652_SUCCESS",
+    "PR162_WINDOWS_GLIB_TARGET_AUDIT_MERGED_MAIN_B5D97648_SOURCE_40085001106_POSTMAIN_40085871815_SUCCESS"
   ],
   "pr35": "OPEN_DRAFT",
   "issues": {
@@ -330,7 +331,7 @@
     "verified_bypass_actors": 0,
     "classic_branch_protection_read": "403_INTEGRATION_RESTRICTED"
   },
-  "next": "PR161_TERMINAL_SUCCESS; GLIB_WINDOWS_TARGET_GRAPH_AUDIT_CANDIDATE_NEW_EXACT_HEAD_CI; RUST_GLIB_ADVISORY_OPEN_NOT_REMEDIATED; REAL_G3_STOP",
+  "next": "PR162_SOURCE_POSTMAIN_TERMINAL_SUCCESS; LINUX_GLIB_TARGET_EXPOSURE_AUDIT_EXACT_HEAD_CI; DEPENDABOT_GLIB_OPEN_NOT_REMEDIATED; REAL_G3_STOP",
   "live_refetch_required": true,
   "hand_off_updated_by_future_pr": true,
   "main_ci_post_merge": {
@@ -1123,6 +1124,22 @@
       "dismiss_dependabot": false,
       "glib_cargo_lock_changed": false,
       "windows_target_only": true
+    },
+    "glib_linux_selected_graph_candidate": {
+      "kind": "CI_SOURCE_ONLY_LINUX_SELECTED_GLIB_GTK_ADVISORY_EXPOSURE",
+      "advisory": "GHSA-wrw7-89jp-8q8g",
+      "tool": "tools/m32_glib_linux_target_audit.py",
+      "qualification": "docs/qualification/M3_2_GLIB_LINUX_SELECTED_GRAPH_AUDIT_20261024.md",
+      "workflow": ".github/workflows/m0-ci.yml",
+      "windows_steps_added": 1,
+      "linux_alert": "OPEN_NOT_REMEDIATED",
+      "source_only": true,
+      "no_persistence": true,
+      "real_g3_authorized": false,
+      "dismiss_dependabot": false,
+      "changes_cargo_lock": false,
+      "linux_build": false,
+      "operator_windows_validation": false
     }
   },
   "post_pr100_normalization": {
@@ -3001,6 +3018,41 @@
     "glib": "0.18.5",
     "rust_glib_alert_closed": false,
     "npm_alerts_ui_rechecked": false,
+    "original_sqlite_touched": false,
+    "m3_2": "IN_PROGRESS_NOT_ACCEPTED",
+    "g2b": "NOT_ACCEPTED",
+    "source_identity": "PARTIAL_LOCAL_IDENTITY_ONLY",
+    "writer_absence": "NOT_PROVEN",
+    "g2c": "NOT_AUTHORIZED",
+    "real_g3": "STOP_UNAVAILABLE",
+    "historical": "PENDING_EXTERNAL_ATTESTATION(21/3/2)",
+    "prospective": "NOT_STARTED",
+    "pr35": "OPEN_DRAFT"
+  },
+  "post_pr162_terminal_observation": {
+    "as_of": "2026-10-24",
+    "pr": 162,
+    "merged": true,
+    "source_sha": "3d7c517561457add580d33151fc0bd10db3e519b",
+    "source_ci": {
+      "run_id": 40085001106,
+      "conclusion": "SUCCESS"
+    },
+    "merge_sha": "b5d97648cc18597b23f9fece67fd78b094743abb",
+    "postmain_ci": {
+      "run_id": 40085871815,
+      "conclusion": "SUCCESS"
+    },
+    "handoff_tests": 96,
+    "event_tests": 96,
+    "chromium_normal": 82,
+    "chromium_strict_csp": 82,
+    "rust_tests": 132,
+    "source_job_steps": 78,
+    "postmain_job_steps": 78,
+    "selected_windows_graph_packages": 247,
+    "glib_in_selected_windows_graph": false,
+    "glib_linux_alert": "OPEN_NOT_REMEDIATED",
     "original_sqlite_touched": false,
     "m3_2": "IN_PROGRESS_NOT_ACCEPTED",
     "g2b": "NOT_ACCEPTED",

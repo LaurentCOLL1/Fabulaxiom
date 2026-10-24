@@ -2304,7 +2304,7 @@ class HandoffContractTests(unittest.TestCase):
         self.assertEqual(p["chromium_normal"], 82)
         self.assertEqual(p["chromium_strict_csp"], 82)
         self.assertEqual(p["rust_tests"], 132)
-        self.assertEqual(self.data["last_confirmed_merged_pr"], 161)
+        self.assertGreaterEqual(self.data["last_confirmed_merged_pr"], 161)
         self.assertFalse(p["original_sqlite_touched"])
         self.assertEqual(p["m3_2"], "IN_PROGRESS_NOT_ACCEPTED")
         q = self.data["m3_2_product_progress"]["glib_windows_target_graph_candidate"]
@@ -2349,12 +2349,88 @@ class HandoffContractTests(unittest.TestCase):
                          "run: npm run build", "M3.2 real Chromium synthetic-only UI interaction",
                          "Verify dependency locks are unchanged"):
             self.assertIn(required, workflow)
-        for name in ("RESUME_PROMPT_SHORT.md", "RESUME_PROMPT.md",
+        for name in ("RESUME_PROMPT.md",
                      "HANDOFF_CURRENT.md", "HANDOFF_HISTORY.md", "NEXT.md",
                      "STATE.md", "M3_2_GATE_DECISION_CURRENT.md"):
             self.assertIn("40072779652",
                 (DIRECTORY / name).read_text(encoding="utf-8"), name)
         self.assertIn("40072779652",
+            (ROOT / "docs/roadmap/ROADMAP_STATUS_CURRENT.md").read_text(encoding="utf-8"))
+
+    def test_97_pr162_terminal_and_linux_selected_gtk_glib_advisory_audit_candidate(self):
+        from m32_glib_linux_target_audit import (
+            CMD, TRIPLE, ADVISORY, EXPECTED, assess_linux_graph,
+        )
+        p = self.data["post_pr162_terminal_observation"]
+        self.assertEqual(p["pr"], 162)
+        self.assertTrue(p["merged"])
+        self.assertEqual(p["source_sha"], "3d7c517561457add580d33151fc0bd10db3e519b")
+        self.assertEqual(p["source_ci"], {"run_id": 40085001106, "conclusion": "SUCCESS"})
+        self.assertEqual(p["merge_sha"], "b5d97648cc18597b23f9fece67fd78b094743abb")
+        self.assertEqual(p["postmain_ci"], {"run_id": 40085871815, "conclusion": "SUCCESS"})
+        self.assertEqual(p["handoff_tests"], 96)
+        self.assertEqual(p["event_tests"], 96)
+        self.assertEqual(p["chromium_normal"], 82)
+        self.assertEqual(p["chromium_strict_csp"], 82)
+        self.assertEqual(p["rust_tests"], 132)
+        self.assertEqual(self.data["last_confirmed_merged_pr"], 162)
+        self.assertFalse(p["original_sqlite_touched"])
+        self.assertEqual(p["m3_2"], "IN_PROGRESS_NOT_ACCEPTED")
+        self.assertEqual(p["real_g3"], "STOP_UNAVAILABLE")
+        q = self.data["m3_2_product_progress"]["glib_linux_selected_graph_candidate"]
+        self.assertTrue(q["source_only"] and q["no_persistence"])
+        self.assertFalse(q["real_g3_authorized"])
+        self.assertFalse(q["dismiss_dependabot"])
+        self.assertEqual(q["linux_alert"], "OPEN_NOT_REMEDIATED")
+        self.assertEqual(q["advisory"], ADVISORY)
+        self.assertEqual(q["windows_steps_added"], 1)
+        for field in ("tool", "qualification", "workflow"):
+            self.assertTrue((ROOT / q[field]).is_file(), field)
+        self.assertEqual(TRIPLE, "x86_64-unknown-linux-gnu")
+        self.assertIn("--offline", CMD)
+        self.assertIn("--locked", CMD)
+        self.assertIn(TRIPLE, CMD)
+        self.assertNotIn("--all-features", CMD)
+        self.assertEqual(EXPECTED, {
+            "glib": "0.18.5", "gtk": "0.18.2", "webkit2gtk": "2.0.2",
+        })
+        sample = ("fabulaxiom v0.1.0\\n" +
+                  "".join(f"fictional{i} v1.0.{i}\\n" for i in range(28)) +
+                  "glib v0.18.5\\ngtk v0.18.2\\nwebkit2gtk v2.0.2\\n")
+        passed = assess_linux_graph(sample)
+        self.assertEqual(passed["linux_risk_status"], "OPEN_NOT_REMEDIATED")
+        self.assertEqual(passed["selected_glib"], "0.18.5")
+        self.assertFalse(passed["operator_windows_access"])
+        with self.assertRaisesRegex(ValueError, "STOP"):
+            assess_linux_graph(sample.replace("glib v0.18.5\\n", ""))
+        with self.assertRaisesRegex(ValueError, "STOP"):
+            assess_linux_graph(sample.replace("glib v0.18.5\\n", "glib v0.20.0\\n"))
+        with self.assertRaisesRegex(ValueError, "STOP"):
+            assess_linux_graph(sample.replace("gtk v0.18.2\\n", ""))
+        with self.assertRaisesRegex(ValueError, "STOP"):
+            assess_linux_graph(sample.replace("webkit2gtk v2.0.2\\n", ""))
+        with self.assertRaisesRegex(ValueError, "incomplete"):
+            assess_linux_graph("fabulaxiom v0.1.0\\n")
+        workflow = (ROOT / q["workflow"]).read_text(encoding="utf-8")
+        name = "M3.2 Linux Rust selected GLib/GTK advisory exposure audit (no Linux build)"
+        winname = "M3.2 Windows Rust target GLib/GTK graph audit (no app launch)"
+        self.assertEqual(workflow.count(name), 1)
+        self.assertEqual(workflow.count("run: python tools/m32_glib_linux_target_audit.py"), 1)
+        self.assertTrue(workflow.index(winname) < workflow.index(name) <
+                        workflow.index("Rust check from lockfile"))
+        for old in ("run: npm ci", "npx tsc --noEmit --pretty false",
+                    "run: npm run build", "cargo test --manifest-path",
+                    "M3.2 real Chromium synthetic-only UI interaction",
+                    "Verify dependency locks are unchanged"):
+            self.assertIn(old, workflow)
+        self.assertIn("40085871815",
+            (DIRECTORY / "RESUME_PROMPT_SHORT.md").read_text(encoding="utf-8"))
+        for name in ("RESUME_PROMPT.md", "HANDOFF_CURRENT.md",
+                     "HANDOFF_HISTORY.md", "NEXT.md", "STATE.md",
+                     "M3_2_GATE_DECISION_CURRENT.md"):
+            self.assertIn("40085871815",
+                (DIRECTORY / name).read_text(encoding="utf-8"), name)
+        self.assertIn("40085871815",
             (ROOT / "docs/roadmap/ROADMAP_STATUS_CURRENT.md").read_text(encoding="utf-8"))
 
 if __name__ == "__main__":
