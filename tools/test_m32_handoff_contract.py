@@ -2443,7 +2443,7 @@ class HandoffContractTests(unittest.TestCase):
 
     def test_98_pr163_terminal_linux_advisory_handoff(self):
         p = self.data["post_pr163_terminal_observation"]
-        self.assertEqual(self.data["last_confirmed_merged_pr"], 163)
+        self.assertGreaterEqual(self.data["last_confirmed_merged_pr"], 163)
         self.assertTrue(p["merged"])
         self.assertEqual(p["source_sha"], "46225e2843e7df2394ec2b647d4dbca20dfb6da4")
         self.assertEqual(p["source_ci"], {"run_id": 40094464488, "conclusion": "SUCCESS"})
@@ -2466,6 +2466,77 @@ class HandoffContractTests(unittest.TestCase):
             self.assertIn("40095354727", content, name)
         roadmap = (ROOT / "docs/roadmap/ROADMAP_STATUS_CURRENT.md").read_text(encoding="utf-8")
         self.assertIn("40095354727", roadmap)
+
+    def test_99_pr164_terminal_and_fictional_historical_claim_intake(self):
+        from m32_historical_evidence_intake import (
+            ROLES, ALLOWED_FIELDS, CANDIDATE_STATUS, REJECTED_STATUS,
+            MISSING_STATUS, triage_fictional_custody_claims,
+        )
+        p = self.data["post_pr164_terminal_observation"]
+        self.assertEqual(self.data["last_confirmed_merged_pr"], 164)
+        self.assertEqual(p["source_sha"], "62868e8ac4103ecaa65d129e6e5551ff3124a99f")
+        self.assertEqual(p["source_ci"], {"run_id": 40101820083, "conclusion": "SUCCESS"})
+        self.assertEqual(p["merge_sha"], "ac7c61f779c0981d418d8b5b7bb1d4a8a725cdbe")
+        self.assertEqual(p["postmain_ci"], {"run_id": 40103615181, "conclusion": "SUCCESS"})
+        self.assertEqual(p["handoff_tests"], 98)
+        self.assertEqual(p["source_job_steps"], 79)
+        self.assertEqual((p["event_tests"], p["chromium_normal"],
+                          p["chromium_strict_csp"], p["rust_tests"]), (96, 82, 82, 132))
+        self.assertFalse(p["real_g3_authorized"])
+        self.assertEqual(len(ROLES), 5)
+        self.assertTrue((ROOT / "docs/qualification/M3_2_HISTORICAL_EVIDENCE_INTAKE_FAIL_CLOSED_20261024.md").is_file())
+        empty = triage_fictional_custody_claims([])
+        self.assertEqual(set(empty["roles"]), set(ROLES))
+        self.assertEqual(set(empty["roles"].values()), {MISSING_STATUS})
+        safe = dict(role=ROLES[0], origin="independent_external_record",
+                    proof_ref="EXT-ABCDEF12", proof_sha256="a" * 64,
+                    custodian_id="ext-separate-archive",
+                    preexisting_record=True, role_bound=True)
+        self.assertEqual(set(safe), ALLOWED_FIELDS)
+        one = triage_fictional_custody_claims([safe])
+        self.assertEqual(one["roles"][ROLES[0]], CANDIDATE_STATUS)
+        self.assertFalse(one["evidence_authenticated"])
+        self.assertTrue(one["external_review_required"])
+        variants = [
+            {**safe, "origin": "owner_self_report"},
+            {**safe, "proof_sha256": "not-a-digest"},
+            {**safe, "custodian_id": "owner"},
+            {**safe, "preexisting_record": False},
+            {**safe, "role_bound": False},
+            {**safe, "proof_ref": "../private/db.sqlite"},
+        ]
+        for claim in variants:
+            with self.subTest(claim=claim):
+                self.assertEqual(triage_fictional_custody_claims([claim])["roles"][ROLES[0]],
+                                 REJECTED_STATUS)
+        invalid = [
+            [{**safe, "role": "production/unlisted"}],
+            [safe, safe],
+            [{**safe, "payload": "private"}],
+            [safe] * 6,
+            ["not-metadata"],
+            "not-a-list",
+        ]
+        for claims in invalid:
+            with self.subTest(claims=str(claims)[:24]):
+                with self.assertRaises(ValueError):
+                    triage_fictional_custody_claims(claims)
+        all_plausible = triage_fictional_custody_claims([
+            {**safe, "role": role} for role in ROLES
+        ])
+        self.assertEqual(set(all_plausible["roles"].values()), {CANDIDATE_STATUS})
+        for report in (empty, one, all_plausible):
+            self.assertEqual(report["historical"], "PENDING_EXTERNAL_ATTESTATION(21/3/2)")
+            self.assertEqual(report["g2b"], "NOT_ACCEPTED")
+            self.assertEqual(report["writer_absence"], "NOT_PROVEN")
+            self.assertEqual(report["real_g3"], "STOP_UNAVAILABLE")
+            self.assertFalse(report["operator_access"])
+            self.assertFalse(report["evidence_authenticated"])
+        for name in ("RESUME_PROMPT_SHORT.md", "RESUME_PROMPT.md", "HANDOFF_CURRENT.md",
+                     "HANDOFF_HISTORY.md", "STATE.md", "NEXT.md", "M3_2_GATE_DECISION_CURRENT.md", "README.md"):
+            self.assertIn("40103615181", (DIRECTORY / name).read_text(encoding="utf-8"), name)
+        self.assertIn("40103615181",
+                      (ROOT / "docs/roadmap/ROADMAP_STATUS_CURRENT.md").read_text(encoding="utf-8"))
 
 if __name__ == "__main__":
     unittest.main()
