@@ -2167,8 +2167,8 @@ class HandoffContractTests(unittest.TestCase):
         self.assertIn("M32_BROWSER_REAL_CHROMIUM_PASS 82/82", browser)
         self.assertNotIn("M32FictionalEventManualWorkshop", app)
         for source in (model, ui):
-            self.assertNotRegex(source, r"\\b(?:localStorage|sessionStorage)\\s*(?:\\.|\\[)")
-            self.assertNotRegex(source, r"\\b(?:fetch|invoke)\\s*\\(")
+            self.assertNotRegex(source, r"\b(?:localStorage|sessionStorage)\s*(?:\.|\[)")
+            self.assertNotRegex(source, r"\b(?:fetch|invoke)\s*\(")
             self.assertNotIn("@tauri-apps", source)
         decision = (ROOT / q["acceleration"]).read_text(encoding="utf-8")
         for term in ("pre_m24_early_manifest", "original_acls", "pre_repair_json",
