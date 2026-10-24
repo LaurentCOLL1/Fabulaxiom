@@ -2034,7 +2034,9 @@ class HandoffContractTests(unittest.TestCase):
                      "HANDOFF_CURRENT.md", "HANDOFF_HISTORY.md", "NEXT.md",
                      "STATE.md", "M3_2_GATE_DECISION_CURRENT.md"):
             body = (DIRECTORY / name).read_text(encoding="utf-8")
-            self.assertIn("40027154468", body, name)
+            # The short prompt follows the newest verified checkpoint, unlike the immutable history.
+            self.assertIn("40030841723" if name == "RESUME_PROMPT_SHORT.md"
+                          else "40027154468", body, name)
             self.assertIn("IN_PROGRESS_NOT_ACCEPTED", body, name)
         self.assertIn("40027154468",
                       (ROOT / "docs/roadmap/ROADMAP_STATUS_CURRENT.md").read_text(encoding="utf-8"))
