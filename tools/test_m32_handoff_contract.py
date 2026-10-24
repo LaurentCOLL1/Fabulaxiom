@@ -2277,7 +2277,7 @@ class HandoffContractTests(unittest.TestCase):
         self.assertIn("M3.2 real Chromium synthetic-only UI interaction", workflow)
         self.assertIn("Verify dependency locks are unchanged", workflow)
         cargo = (ROOT / q["cargo_lock"]).read_text(encoding="utf-8")
-        self.assertRegex(cargo, r'(?m)^name = "glib"\\nversion = "0\\.18\\.5"')
+        self.assertIn('name = "glib"' + chr(10) + 'version = "0.18.5"', cargo)
         self.assertIn("GHSA-wrw7-89jp-8q8g",
             (ROOT / q["qualification"]).read_text(encoding="utf-8"))
         for name in ("RESUME_PROMPT_SHORT.md", "RESUME_PROMPT.md",
