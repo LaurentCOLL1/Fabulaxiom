@@ -3,14 +3,14 @@
   "as_of": "2026-10-24",
   "status_kind": "DATED_PUBLIC_SOURCE_HANDOFF_ONLY",
   "repository": "LaurentCOLL1/Fabulaxiom",
-  "last_confirmed_main_before_handoff": "b5d97648cc18597b23f9fece67fd78b094743abb",
-  "last_confirmed_merged_pr": 162,
-  "last_verified_pr_head": "3d7c517561457add580d33151fc0bd10db3e519b",
+  "last_confirmed_main_before_handoff": "7e4295160b927416d21e69e64f01fd6247d09e92",
+  "last_confirmed_merged_pr": 163,
+  "last_verified_pr_head": "46225e2843e7df2394ec2b647d4dbca20dfb6da4",
   "last_verified_ci": {
-    "run_id": 40085001106,
+    "run_id": 40094464488,
     "context": "Windows frontend and Rust checks",
     "conclusion": "SUCCESS",
-    "source": "PR162_EXACT_HEAD"
+    "source": "PR163_EXACT_HEAD"
   },
   "recent_changes": [
     "PR_85_EXACT_G2A_TEXT_AST_ONLY",
@@ -145,7 +145,8 @@
     "PR158_EARLY_HISTORICAL_DRAFT_AND_CONVERGENCE_MERGED_MAIN_FDAE74EF_SOURCE_40063511352_POSTMAIN_40064299969_SUCCESS",
     "PR159_CI_TYPESCRIPT_EARLY_FAIL_FAST_MERGED_MAIN_3CBE793E_SOURCE_40067055296_POSTMAIN_40067824098_SUCCESS",
     "PR161_NPM_VITE816_SECURITY_MERGED_MAIN_6CF1DD17_SOURCE_40071869911_POSTMAIN_40072779652_SUCCESS",
-    "PR162_WINDOWS_GLIB_TARGET_AUDIT_MERGED_MAIN_B5D97648_SOURCE_40085001106_POSTMAIN_40085871815_SUCCESS"
+    "PR162_WINDOWS_GLIB_TARGET_AUDIT_MERGED_MAIN_B5D97648_SOURCE_40085001106_POSTMAIN_40085871815_SUCCESS",
+    "PR163_LINUX_GLIB_GRAPH_MERGED_MAIN_7E429516_SOURCE_40094464488_POSTMAIN_40095354727_SUCCESS"
   ],
   "pr35": "OPEN_DRAFT",
   "issues": {
@@ -331,7 +332,7 @@
     "verified_bypass_actors": 0,
     "classic_branch_protection_read": "403_INTEGRATION_RESTRICTED"
   },
-  "next": "PR162_SOURCE_POSTMAIN_TERMINAL_SUCCESS; LINUX_GLIB_TARGET_EXPOSURE_AUDIT_EXACT_HEAD_CI; DEPENDABOT_GLIB_OPEN_NOT_REMEDIATED; REAL_G3_STOP",
+  "next": "PR163_TERMINAL_SUCCESS; G2B_G3_STOPS; DEPENDABOT_NPM_CLOSURE_UNVERIFIED; DOC_PR_FRESH_CI_REQUIRED",
   "live_refetch_required": true,
   "hand_off_updated_by_future_pr": true,
   "main_ci_post_merge": {
@@ -3053,6 +3054,45 @@
     "selected_windows_graph_packages": 247,
     "glib_in_selected_windows_graph": false,
     "glib_linux_alert": "OPEN_NOT_REMEDIATED",
+    "original_sqlite_touched": false,
+    "m3_2": "IN_PROGRESS_NOT_ACCEPTED",
+    "g2b": "NOT_ACCEPTED",
+    "source_identity": "PARTIAL_LOCAL_IDENTITY_ONLY",
+    "writer_absence": "NOT_PROVEN",
+    "g2c": "NOT_AUTHORIZED",
+    "real_g3": "STOP_UNAVAILABLE",
+    "historical": "PENDING_EXTERNAL_ATTESTATION(21/3/2)",
+    "prospective": "NOT_STARTED",
+    "pr35": "OPEN_DRAFT"
+  },
+  "post_pr163_terminal_observation": {
+    "as_of": "2026-10-24",
+    "pr": 163,
+    "merged": true,
+    "source_sha": "46225e2843e7df2394ec2b647d4dbca20dfb6da4",
+    "source_ci": {
+      "run_id": 40094464488,
+      "conclusion": "SUCCESS"
+    },
+    "merge_sha": "7e4295160b927416d21e69e64f01fd6247d09e92",
+    "postmain_ci": {
+      "run_id": 40095354727,
+      "conclusion": "SUCCESS"
+    },
+    "handoff_tests": 97,
+    "event_tests": 96,
+    "chromium_normal": 82,
+    "chromium_strict_csp": 82,
+    "rust_tests": 132,
+    "source_job_steps": 79,
+    "postmain_job_steps": 79,
+    "selected_windows_graph_packages": 247,
+    "selected_linux_graph_packages": 277,
+    "glib_linux_version": "0.18.5",
+    "gtk_linux_version": "0.18.2",
+    "webkit2gtk_linux_version": "2.0.2",
+    "glib_linux_alert": "OPEN_NOT_REMEDIATED",
+    "dependabot_npm_closure_verified": false,
     "original_sqlite_touched": false,
     "m3_2": "IN_PROGRESS_NOT_ACCEPTED",
     "g2b": "NOT_ACCEPTED",

@@ -2373,7 +2373,7 @@ class HandoffContractTests(unittest.TestCase):
         self.assertEqual(p["chromium_normal"], 82)
         self.assertEqual(p["chromium_strict_csp"], 82)
         self.assertEqual(p["rust_tests"], 132)
-        self.assertEqual(self.data["last_confirmed_merged_pr"], 162)
+        self.assertGreaterEqual(self.data["last_confirmed_merged_pr"], 162)
         self.assertFalse(p["original_sqlite_touched"])
         self.assertEqual(p["m3_2"], "IN_PROGRESS_NOT_ACCEPTED")
         self.assertEqual(p["real_g3"], "STOP_UNAVAILABLE")
@@ -2440,6 +2440,32 @@ class HandoffContractTests(unittest.TestCase):
                 (DIRECTORY / name).read_text(encoding="utf-8"), name)
         self.assertIn("40085871815",
             (ROOT / "docs/roadmap/ROADMAP_STATUS_CURRENT.md").read_text(encoding="utf-8"))
+
+    def test_98_pr163_terminal_linux_advisory_handoff(self):
+        p = self.data["post_pr163_terminal_observation"]
+        self.assertEqual(self.data["last_confirmed_merged_pr"], 163)
+        self.assertTrue(p["merged"])
+        self.assertEqual(p["source_sha"], "46225e2843e7df2394ec2b647d4dbca20dfb6da4")
+        self.assertEqual(p["source_ci"], {"run_id": 40094464488, "conclusion": "SUCCESS"})
+        self.assertEqual(p["merge_sha"], "7e4295160b927416d21e69e64f01fd6247d09e92")
+        self.assertEqual(p["postmain_ci"], {"run_id": 40095354727, "conclusion": "SUCCESS"})
+        self.assertEqual((p["source_job_steps"], p["postmain_job_steps"]), (79, 79))
+        self.assertEqual((p["handoff_tests"], p["event_tests"]), (97, 96))
+        self.assertEqual((p["chromium_normal"], p["chromium_strict_csp"], p["rust_tests"]), (82, 82, 132))
+        self.assertEqual((p["selected_windows_graph_packages"], p["selected_linux_graph_packages"]), (247, 277))
+        self.assertEqual((p["glib_linux_version"], p["gtk_linux_version"], p["webkit2gtk_linux_version"]), ("0.18.5", "0.18.2", "2.0.2"))
+        self.assertEqual(p["glib_linux_alert"], "OPEN_NOT_REMEDIATED")
+        self.assertFalse(p["dependabot_npm_closure_verified"])
+        self.assertFalse(p["original_sqlite_touched"])
+        self.assertEqual((p["m3_2"], p["g2b"], p["writer_absence"], p["g2c"], p["real_g3"]),
+                         ("IN_PROGRESS_NOT_ACCEPTED", "NOT_ACCEPTED", "NOT_PROVEN", "NOT_AUTHORIZED", "STOP_UNAVAILABLE"))
+        for name in ("RESUME_PROMPT_SHORT.md", "RESUME_PROMPT.md", "HANDOFF_CURRENT.md",
+                     "HANDOFF_HISTORY.md", "STATE.md", "NEXT.md", "M3_2_GATE_DECISION_CURRENT.md", "README.md"):
+            content = (DIRECTORY / name).read_text(encoding="utf-8")
+            self.assertIn("40094464488", content, name)
+            self.assertIn("40095354727", content, name)
+        roadmap = (ROOT / "docs/roadmap/ROADMAP_STATUS_CURRENT.md").read_text(encoding="utf-8")
+        self.assertIn("40095354727", roadmap)
 
 if __name__ == "__main__":
     unittest.main()
