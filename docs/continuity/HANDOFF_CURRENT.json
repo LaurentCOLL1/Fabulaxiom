@@ -3,14 +3,14 @@
   "as_of": "2026-10-24",
   "status_kind": "DATED_PUBLIC_SOURCE_HANDOFF_ONLY",
   "repository": "LaurentCOLL1/Fabulaxiom",
-  "last_confirmed_main_before_handoff": "3cbe793e4c6d7779802a2cba55640419599df1b3",
-  "last_confirmed_merged_pr": 159,
-  "last_verified_pr_head": "4ed2e34426474b5baf945fbcbe42bc842d955eb8",
+  "last_confirmed_main_before_handoff": "6cf1dd175431f19cde7a347a44d1d53f29ffecb2",
+  "last_confirmed_merged_pr": 161,
+  "last_verified_pr_head": "956c5a2cfa4239759e175429af34cab9753960a8",
   "last_verified_ci": {
-    "run_id": 40067055296,
+    "run_id": 40071869911,
     "context": "Windows frontend and Rust checks",
     "conclusion": "SUCCESS",
-    "source": "PR159_EXACT_HEAD"
+    "source": "PR161_EXACT_HEAD"
   },
   "recent_changes": [
     "PR_85_EXACT_G2A_TEXT_AST_ONLY",
@@ -143,7 +143,8 @@
     "PR156_FICTIONAL_VERSION_PAIR_PICKER_MERGED_MAIN_4DE256F4_SOURCE_40059088846_POSTMAIN_40059860336_SUCCESS",
     "PR157_LIVE_FICTIONAL_WORKSHOP_COMPARISON_MERGED_MAIN_645B50F4_SOURCE_40061031363_POSTMAIN_40061815168_SUCCESS",
     "PR158_EARLY_HISTORICAL_DRAFT_AND_CONVERGENCE_MERGED_MAIN_FDAE74EF_SOURCE_40063511352_POSTMAIN_40064299969_SUCCESS",
-    "PR159_CI_TYPESCRIPT_EARLY_FAIL_FAST_MERGED_MAIN_3CBE793E_SOURCE_40067055296_POSTMAIN_40067824098_SUCCESS"
+    "PR159_CI_TYPESCRIPT_EARLY_FAIL_FAST_MERGED_MAIN_3CBE793E_SOURCE_40067055296_POSTMAIN_40067824098_SUCCESS",
+    "PR161_NPM_VITE816_SECURITY_MERGED_MAIN_6CF1DD17_SOURCE_40071869911_POSTMAIN_40072779652_SUCCESS"
   ],
   "pr35": "OPEN_DRAFT",
   "issues": {
@@ -329,7 +330,7 @@
     "verified_bypass_actors": 0,
     "classic_branch_protection_read": "403_INTEGRATION_RESTRICTED"
   },
-  "next": "PR159_SOURCE_POSTMAIN_TERMINAL_SUCCESS; PR161_NPM_VITE_816_PATCH_CANDIDATE_FINAL_EXACT_HEAD_CI; RUST_GLIB_0185_STILL_OPEN; REAL_G3_STOP",
+  "next": "PR161_TERMINAL_SUCCESS; GLIB_WINDOWS_TARGET_GRAPH_AUDIT_CANDIDATE_NEW_EXACT_HEAD_CI; RUST_GLIB_ADVISORY_OPEN_NOT_REMEDIATED; REAL_G3_STOP",
   "live_refetch_required": true,
   "hand_off_updated_by_future_pr": true,
   "main_ci_post_merge": {
@@ -1106,6 +1107,22 @@
       "real_g3_authorized": false,
       "changes_protect_main": false,
       "production_db_touched": false
+    },
+    "glib_windows_target_graph_candidate": {
+      "kind": "WIN32_RUST_SELECTED_CARGO_GRAPH_GLIB_0185_EXCLUSION_AUDIT",
+      "tool": "tools/m32_glib_target_audit.py",
+      "qualification": "docs/qualification/M3_2_GLIB_WINDOWS_TARGET_AUDIT_20261024.md",
+      "workflow": ".github/workflows/m0-ci.yml",
+      "source_issue": 160,
+      "advisory": "GHSA-wrw7-89jp-8q8g",
+      "linux_alert": "OPEN_NOT_REMEDIATED",
+      "added_windows_steps": 1,
+      "source_only": true,
+      "no_persistence": true,
+      "real_g3_authorized": false,
+      "dismiss_dependabot": false,
+      "glib_cargo_lock_changed": false,
+      "windows_target_only": true
     }
   },
   "post_pr100_normalization": {
@@ -2946,6 +2963,44 @@
     "rust_tests": 132,
     "source_job_steps": 77,
     "postmain_job_steps": 77,
+    "original_sqlite_touched": false,
+    "m3_2": "IN_PROGRESS_NOT_ACCEPTED",
+    "g2b": "NOT_ACCEPTED",
+    "source_identity": "PARTIAL_LOCAL_IDENTITY_ONLY",
+    "writer_absence": "NOT_PROVEN",
+    "g2c": "NOT_AUTHORIZED",
+    "real_g3": "STOP_UNAVAILABLE",
+    "historical": "PENDING_EXTERNAL_ATTESTATION(21/3/2)",
+    "prospective": "NOT_STARTED",
+    "pr35": "OPEN_DRAFT"
+  },
+  "post_pr161_terminal_observation": {
+    "as_of": "2026-10-24",
+    "pr": 161,
+    "merged": true,
+    "source_sha": "956c5a2cfa4239759e175429af34cab9753960a8",
+    "source_ci": {
+      "run_id": 40071869911,
+      "conclusion": "SUCCESS"
+    },
+    "merge_sha": "6cf1dd175431f19cde7a347a44d1d53f29ffecb2",
+    "postmain_ci": {
+      "run_id": 40072779652,
+      "conclusion": "SUCCESS"
+    },
+    "source_job_steps": 77,
+    "postmain_job_steps": 77,
+    "handoff_tests": 95,
+    "event_tests": 96,
+    "chromium_normal": 82,
+    "chromium_strict_csp": 82,
+    "rust_tests": 132,
+    "temporary_generation_run": 40071348881,
+    "failed_intermediate_run": 40071760771,
+    "vite": "8.1.6",
+    "glib": "0.18.5",
+    "rust_glib_alert_closed": false,
+    "npm_alerts_ui_rechecked": false,
     "original_sqlite_touched": false,
     "m3_2": "IN_PROGRESS_NOT_ACCEPTED",
     "g2b": "NOT_ACCEPTED",

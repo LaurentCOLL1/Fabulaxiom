@@ -250,6 +250,11 @@ jobs:
       - name: Rust tests from lockfile
         run: cargo test --manifest-path src-tauri/Cargo.toml --all-targets --locked
 
+      # Audits the selected Windows target graph; Linux GLib advisory remains OPEN.
+      # Locked/offline/read-only Cargo inspection; no application or database launch.
+      - name: M3.2 Windows Rust target GLib/GTK graph audit (no app launch)
+        run: python tools/m32_glib_target_audit.py
+
       - name: Rust check from lockfile
         run: cargo check --manifest-path src-tauri/Cargo.toml --locked
 
