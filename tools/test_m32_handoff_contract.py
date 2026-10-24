@@ -2394,23 +2394,23 @@ class HandoffContractTests(unittest.TestCase):
         self.assertEqual(EXPECTED, {
             "glib": "0.18.5", "gtk": "0.18.2", "webkit2gtk": "2.0.2",
         })
-        sample = ("fabulaxiom v0.1.0\\n" +
-                  "".join(f"fictional{i} v1.0.{i}\\n" for i in range(28)) +
-                  "glib v0.18.5\\ngtk v0.18.2\\nwebkit2gtk v2.0.2\\n")
+        sample = ("fabulaxiom v0.1.0\n" +
+                  "".join(f"fictional{i} v1.0.{i}\n" for i in range(28)) +
+                  "glib v0.18.5\ngtk v0.18.2\nwebkit2gtk v2.0.2\n")
         passed = assess_linux_graph(sample)
         self.assertEqual(passed["linux_risk_status"], "OPEN_NOT_REMEDIATED")
         self.assertEqual(passed["selected_glib"], "0.18.5")
         self.assertFalse(passed["operator_windows_access"])
         with self.assertRaisesRegex(ValueError, "STOP"):
-            assess_linux_graph(sample.replace("glib v0.18.5\\n", ""))
+            assess_linux_graph(sample.replace("glib v0.18.5\n", ""))
         with self.assertRaisesRegex(ValueError, "STOP"):
-            assess_linux_graph(sample.replace("glib v0.18.5\\n", "glib v0.20.0\\n"))
+            assess_linux_graph(sample.replace("glib v0.18.5\n", "glib v0.20.0\n"))
         with self.assertRaisesRegex(ValueError, "STOP"):
-            assess_linux_graph(sample.replace("gtk v0.18.2\\n", ""))
+            assess_linux_graph(sample.replace("gtk v0.18.2\n", ""))
         with self.assertRaisesRegex(ValueError, "STOP"):
-            assess_linux_graph(sample.replace("webkit2gtk v2.0.2\\n", ""))
+            assess_linux_graph(sample.replace("webkit2gtk v2.0.2\n", ""))
         with self.assertRaisesRegex(ValueError, "incomplete"):
-            assess_linux_graph("fabulaxiom v0.1.0\\n")
+            assess_linux_graph("fabulaxiom v0.1.0\n")
         workflow = (ROOT / q["workflow"]).read_text(encoding="utf-8")
         name = "M3.2 Linux Rust selected GLib/GTK advisory exposure audit (no Linux build)"
         winname = "M3.2 Windows Rust target GLib/GTK graph audit (no app launch)"
