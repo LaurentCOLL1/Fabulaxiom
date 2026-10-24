@@ -206,6 +206,29 @@ export function compareFictionalEventVersions(
   });
 }
 
+/** Prepare an earlier INVENTED version as editable text; no change to the notebook.
+ * Only a currently active event can be amended, after an explicit human submit.
+ * A withdrawn event is never resurrected by browsing a historical version.
+ */
+export function prepareFictionalEventHistoricalDraft(
+  book: FictionalEventNotebook, eventId: string, version: number,
+): FictionalEventInput {
+  inspectFictionalEventNotebook(book);
+  const current = book.events.find(e => e.event_id === eventId && e.status === "current");
+  if (!current) return stop("correction historique d'événement absent ou retiré");
+  if (!Number.isSafeInteger(version) || version < 1 || version >= current.version)
+    return stop("version historique fictive invalide ou non antérieure");
+  const entry = auditedFictionalEventHistory(book, eventId)
+    .find(item => item.event.version === version);
+  if (!entry || entry.event.status !== "superseded")
+    return stop("version antérieure fictive absente ou étrangère");
+  return Object.freeze({
+    title: entry.event.title, note: entry.event.note,
+    anchor_id: entry.event.anchor_id,
+    source_revision_id: entry.event.source_revision_id,
+  });
+}
+
 export function startFictionalEventNotebook(draft: FictionalDraft): FictionalEventNotebook {
   inspectFictionalDraft(draft);
   return inspectFictionalEventNotebook({

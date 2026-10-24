@@ -1132,10 +1132,107 @@ async function run() {
         name: "Comparaison fictive demandée explicitement",
       }).innerText()).includes("<script>window.__fictionInjected=1</script>"));
     });
-    assert.equal(cases.length, 76);
+    const oldVersionSelect = () => eventForm().getByRole("combobox", {
+      name: "Version passée à reprendre",
+    });
+    const copyOldVersion = () => eventForm().getByRole("button", {
+      name: "Préparer la correction depuis cette version",
+    });
+    await caseRun("77-historical-copy-not-offered-for-never-amended-event", async () => {
+      await openEventForm();
+      await createInventedEvent("Première version");
+      await eventRegion().getByRole("button", { name: /Corriger ou retirer/ }).click();
+      assert.equal(await oldVersionSelect().count(), 0);
+      assert.equal(await copyOldVersion().count(), 0);
+    });
+    await caseRun("78-historical-copy-prefills-only-without-saving", async () => {
+      await openEventForm();
+      await createInventedEvent("Version A inventée");
+      await amendLive("Version B inventée");
+      await eventRegion().getByRole("button", { name: /Corriger ou retirer/ }).click();
+      assert.equal(await oldVersionSelect().inputValue(), "");
+      await oldVersionSelect().selectOption("1");
+      await copyOldVersion().click();
+      assert.equal(await eventForm().getByRole("textbox", {
+        name: "Titre de l'événement (obligatoire)",
+      }).inputValue(), "Version A inventée");
+      assert.equal(await eventForm().getByRole("textbox", {
+        name: "Justification de correction ou de retrait",
+      }).inputValue(), "");
+      assert.ok((await eventRegion().innerText()).includes("2 versions"));
+      assert.ok((await eventRegion().getByRole("status").innerText()).includes(
+        "validation explicite"));
+    });
+    await caseRun("79-historical-copy-needs-explicit-human-reason-and-new-version", async () => {
+      await openEventForm();
+      await createInventedEvent("Version A inventée");
+      await amendLive("Version B inventée");
+      await eventRegion().getByRole("button", { name: /Corriger ou retirer/ }).click();
+      await oldVersionSelect().selectOption("1");
+      await copyOldVersion().click();
+      assert.equal(await eventForm().getByRole("textbox", {
+        name: "Justification de correction ou de retrait",
+      }).getAttribute("required") !== null, true);
+      await eventForm().getByRole("textbox", {
+        name: "Justification de correction ou de retrait",
+      }).fill("Retour manuel explicite à la version 1");
+      await eventForm().getByRole("button", { name: "Enregistrer une nouvelle version" }).click();
+      assert.ok((await eventRegion().innerText()).includes("version 3"));
+      assert.ok((await eventRegion().innerText()).includes("3 versions"));
+      await liveComparisonButton().click();
+      await liveEvent().selectOption("fiction-world-one-event-0001");
+      await liveFrom().selectOption("2");
+      await liveTo().selectOption("3");
+      assert.ok((await livePicker().getByRole("region", {
+        name: "Comparaison fictive demandée explicitement",
+      }).innerText()).includes("après = Version A inventée"));
+    });
+    await caseRun("80-historical-copy-reset-when-selecting-another-event", async () => {
+      await openEventForm();
+      await createInventedEvent("Version A inventée");
+      await amendLive("Version B inventée");
+      await createInventedEvent("Autre événement");
+      await eventRegion().getByRole("button", { name: /Corriger ou retirer fiction-world-one-event-0001/ }).click();
+      await oldVersionSelect().selectOption("1");
+      await eventRegion().getByRole("button", { name: /Corriger ou retirer fiction-world-one-event-0002/ }).click();
+      assert.equal(await oldVersionSelect().count(), 0);
+      assert.equal(await eventForm().getByRole("textbox", {
+        name: "Titre de l'événement (obligatoire)",
+      }).inputValue(), "Autre événement");
+    });
+    await caseRun("81-withdrawn-event-cannot-be-restored-by-historical-copy", async () => {
+      await openEventForm();
+      await createInventedEvent("Version A inventée");
+      await amendLive("Version B inventée");
+      await eventRegion().getByRole("button", { name: /Corriger ou retirer/ }).click();
+      await eventForm().getByRole("textbox", {
+        name: "Justification de correction ou de retrait",
+      }).fill("Retrait humain");
+      await eventForm().getByRole("button", {
+        name: "Retirer en conservant l'historique",
+      }).click();
+      assert.equal(await oldVersionSelect().count(), 0);
+      assert.ok((await eventRegion().innerText()).includes("Événements courants (0)"));
+      assert.ok((await eventRegion().innerText()).includes("3 versions"));
+    });
+    await caseRun("82-historical-copy-renders-script-shaped-title-inert", async () => {
+      await openEventForm();
+      await createInventedEvent("<script>window.__fictionInjected=1</script>");
+      await amendLive("Texte de correction sûr");
+      await eventRegion().getByRole("button", { name: /Corriger ou retirer/ }).click();
+      await oldVersionSelect().selectOption("1");
+      await copyOldVersion().click();
+      assert.equal(await eventForm().getByRole("textbox", {
+        name: "Titre de l'événement (obligatoire)",
+      }).inputValue(), "<script>window.__fictionInjected=1</script>");
+      assert.equal(await eventRegion().locator("script").count(), 0);
+      assert.equal(await page.evaluate(() => Boolean(window.__fictionInjected)), false);
+    });
+    assert.equal(cases.length, 82);
     // Historical PR #146 source marker: M32_BROWSER_REAL_CHROMIUM_PASS 62/62
     // Previous PR #156 marker retained: M32_BROWSER_REAL_CHROMIUM_PASS 70/70
-    console.log("M32_BROWSER_REAL_CHROMIUM_PASS 76/76");
+    // PR #157 historical marker: M32_BROWSER_REAL_CHROMIUM_PASS 76/76
+    console.log("M32_BROWSER_REAL_CHROMIUM_PASS 82/82");
 
     // Actual Chromium enforced-CSP veto, separate from the 36
     // fictional interaction cases. Never make an off-loopback network call.
@@ -1167,9 +1264,9 @@ async function run() {
       });
       assert.equal(scriptVeto, false, "STOP: inline JS executed under strict CSP");
       console.log("M32_CI_PRECOMPILED_INLINE_SCRIPT_DENIED_PASS");
-      console.log("M32_CI_PRECOMPILED_STRICT_CSP_BROWSER_PASS: 76/76");
+      console.log("M32_CI_PRECOMPILED_STRICT_CSP_BROWSER_PASS: 82/82");
     }
-    console.log("M32_CI_FIXTURE_ONLY_BROWSER_PASS: 76/76; no normal source pages");
+    console.log("M32_CI_FIXTURE_ONLY_BROWSER_PASS: 82/82; no normal source pages");
   } finally {
     if (browser) await browser.close();
     server.kill();

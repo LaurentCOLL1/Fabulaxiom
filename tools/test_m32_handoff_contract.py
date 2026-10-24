@@ -2092,7 +2092,7 @@ class HandoffContractTests(unittest.TestCase):
         self.assertEqual(p["chromium_normal"], 70)
         self.assertEqual(p["chromium_strict_csp"], 70)
         self.assertEqual(p["rust_tests"], 132)
-        self.assertEqual(self.data["last_confirmed_merged_pr"], 156)
+        self.assertGreaterEqual(self.data["last_confirmed_merged_pr"], 156)
         self.assertEqual(p["m3_2"], "IN_PROGRESS_NOT_ACCEPTED")
         self.assertEqual(p["writer_absence"], "NOT_PROVEN")
         self.assertEqual(p["real_g3"], "STOP_UNAVAILABLE")
@@ -2119,11 +2119,67 @@ class HandoffContractTests(unittest.TestCase):
         self.assertIn("M32_BROWSER_REAL_CHROMIUM_PASS 76/76", browser)
         tests = (ROOT / q["tests"]).read_text(encoding="utf-8")
         self.assertIn("90 refuses forged origin", tests)
-        for name in ("RESUME_PROMPT_SHORT.md", "RESUME_PROMPT.md",
+        # Historical evidence persists in long documents; the short prompt tracks latest main.
+        for name in ("RESUME_PROMPT.md",
                      "HANDOFF_CURRENT.md", "HANDOFF_HISTORY.md", "NEXT.md",
                      "STATE.md", "M3_2_GATE_DECISION_CURRENT.md"):
             self.assertIn("40059860336", (DIRECTORY / name).read_text(encoding="utf-8"))
         self.assertIn("40059860336",
+            (ROOT / "docs/roadmap/ROADMAP_STATUS_CURRENT.md").read_text(encoding="utf-8"))
+
+    def test_93_pr157_terminal_accelerated_historical_copy_and_gate_choice(self):
+        p = self.data["post_pr157_terminal_observation"]
+        self.assertEqual(p["pr"], 157)
+        self.assertTrue(p["merged"])
+        self.assertEqual(p["source_sha"], "956154c4be0645536d356a48c6d75d0bf92bdc37")
+        self.assertEqual(p["source_ci"], {"run_id": 40061031363, "conclusion": "SUCCESS"})
+        self.assertEqual(p["merge_sha"], "645b50f438d12165d0eae46f1c3d586f07819480")
+        self.assertEqual(p["postmain_ci"], {"run_id": 40061815168, "conclusion": "SUCCESS"})
+        self.assertEqual(p["handoff_tests"], 92)
+        self.assertEqual(p["event_tests"], 90)
+        self.assertEqual(p["chromium_normal"], 76)
+        self.assertEqual(p["chromium_strict_csp"], 76)
+        self.assertEqual(p["rust_tests"], 132)
+        self.assertEqual(self.data["last_confirmed_merged_pr"], 157)
+        self.assertFalse(p["original_sqlite_touched"])
+        self.assertEqual(p["m3_2"], "IN_PROGRESS_NOT_ACCEPTED")
+        self.assertEqual(p["writer_absence"], "NOT_PROVEN")
+        self.assertEqual(p["real_g3"], "STOP_UNAVAILABLE")
+        q = self.data["m3_2_product_progress"]["fictional_historical_draft_copy_candidate"]
+        self.assertTrue(q["source_only"] and q["no_persistence"])
+        self.assertEqual(q["added_event_tests"], 6)
+        self.assertEqual(q["added_browser_cases_per_mode"], 6)
+        self.assertFalse(q["mounted_in_application"])
+        self.assertFalse(q["real_g3_authorized"])
+        for key in ("model", "workshop", "tests", "browser", "qualification", "acceleration"):
+            self.assertTrue((ROOT / q[key]).is_file(), key)
+        model = (ROOT / q["model"]).read_text(encoding="utf-8")
+        ui = (ROOT / q["workshop"]).read_text(encoding="utf-8")
+        tests = (ROOT / q["tests"]).read_text(encoding="utf-8")
+        browser = (ROOT / q["browser"]).read_text(encoding="utf-8")
+        app = (ROOT / "src/App.tsx").read_text(encoding="utf-8")
+        self.assertIn("prepareFictionalEventHistoricalDraft(", model)
+        self.assertIn("Object.freeze({", model)
+        self.assertIn("setReason(\"\");", ui)
+        self.assertIn("Préparer la correction depuis cette version", ui)
+        self.assertIn("96 rejects a forged SQLite-origin notebook", tests)
+        self.assertIn("82-historical-copy-renders-script-shaped-title-inert", browser)
+        self.assertIn("M32_BROWSER_REAL_CHROMIUM_PASS 82/82", browser)
+        self.assertNotIn("M32FictionalEventManualWorkshop", app)
+        for source in (model, ui):
+            self.assertNotRegex(source, r"\\b(?:localStorage|sessionStorage)\\s*(?:\\.|\\[)")
+            self.assertNotRegex(source, r"\\b(?:fetch|invoke)\\s*\\(")
+            self.assertNotIn("@tauri-apps", source)
+        decision = (ROOT / q["acceleration"]).read_text(encoding="utf-8")
+        for term in ("pre_m24_early_manifest", "original_acls", "pre_repair_json",
+                     "activation_marker", "isolated_v6", "PENDING_EXTERNAL_ATTESTATION",
+                     "NOT_STARTED", "STOP_UNAVAILABLE", "AUCUNE AUTORISATION"):
+            self.assertIn(term, decision)
+        for name in ("RESUME_PROMPT_SHORT.md", "RESUME_PROMPT.md",
+                     "HANDOFF_CURRENT.md", "HANDOFF_HISTORY.md", "NEXT.md",
+                     "STATE.md", "M3_2_GATE_DECISION_CURRENT.md"):
+            self.assertIn("40061815168", (DIRECTORY / name).read_text(encoding="utf-8"))
+        self.assertIn("40061815168",
             (ROOT / "docs/roadmap/ROADMAP_STATUS_CURRENT.md").read_text(encoding="utf-8"))
 
 if __name__ == "__main__":
