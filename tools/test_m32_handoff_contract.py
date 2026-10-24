@@ -2675,10 +2675,10 @@ class HandoffContractTests(unittest.TestCase):
         path = ROOT / "docs/qualification/M3_2_G2B0_METADATA_ONLY_OPERATOR_REVIEW_20261024.md"
         document = path.read_text(encoding="utf-8")
         import re
-        blocks = re.findall(r"(?ms)^\\x60{3}powershell\\s*\\n(.*?)^\\x60{3}\\s*$", document)
+        blocks = re.findall(r"(?ms)^`{3}powershell\s*\n(.*?)^`{3}\s*$", document)
         self.assertEqual(len(blocks), 1)
         script = blocks[0]
-        self.assertTrue(script.startswith("& {\\n"))
+        self.assertTrue(script.startswith("& {\n"))
         self.assertTrue(script.rstrip().endswith("}"))
         for required in (
             "Get-Process -ErrorAction Stop", "Get-Item -LiteralPath",
