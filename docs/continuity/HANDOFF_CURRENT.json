@@ -3,14 +3,14 @@
   "as_of": "2026-10-24",
   "status_kind": "DATED_PUBLIC_SOURCE_HANDOFF_ONLY",
   "repository": "LaurentCOLL1/Fabulaxiom",
-  "last_confirmed_main_before_handoff": "fdae74efac90b35ffdc06110c6c9b4e14ce95b10",
-  "last_confirmed_merged_pr": 158,
-  "last_verified_pr_head": "2543315b0b8ab9a17f3ac49b5d68c76717b0317f",
+  "last_confirmed_main_before_handoff": "3cbe793e4c6d7779802a2cba55640419599df1b3",
+  "last_confirmed_merged_pr": 159,
+  "last_verified_pr_head": "4ed2e34426474b5baf945fbcbe42bc842d955eb8",
   "last_verified_ci": {
-    "run_id": 40063511352,
+    "run_id": 40067055296,
     "context": "Windows frontend and Rust checks",
     "conclusion": "SUCCESS",
-    "source": "PR158_EXACT_HEAD"
+    "source": "PR159_EXACT_HEAD"
   },
   "recent_changes": [
     "PR_85_EXACT_G2A_TEXT_AST_ONLY",
@@ -142,7 +142,8 @@
     "PR155_CONTROLLED_FICTIONAL_VERSION_PREVIEW_MERGED_MAIN_CCF5BA31_SOURCE_40029859356_POSTMAIN_40030841723_SUCCESS",
     "PR156_FICTIONAL_VERSION_PAIR_PICKER_MERGED_MAIN_4DE256F4_SOURCE_40059088846_POSTMAIN_40059860336_SUCCESS",
     "PR157_LIVE_FICTIONAL_WORKSHOP_COMPARISON_MERGED_MAIN_645B50F4_SOURCE_40061031363_POSTMAIN_40061815168_SUCCESS",
-    "PR158_EARLY_HISTORICAL_DRAFT_AND_CONVERGENCE_MERGED_MAIN_FDAE74EF_SOURCE_40063511352_POSTMAIN_40064299969_SUCCESS"
+    "PR158_EARLY_HISTORICAL_DRAFT_AND_CONVERGENCE_MERGED_MAIN_FDAE74EF_SOURCE_40063511352_POSTMAIN_40064299969_SUCCESS",
+    "PR159_CI_TYPESCRIPT_EARLY_FAIL_FAST_MERGED_MAIN_3CBE793E_SOURCE_40067055296_POSTMAIN_40067824098_SUCCESS"
   ],
   "pr35": "OPEN_DRAFT",
   "issues": {
@@ -328,7 +329,7 @@
     "verified_bypass_actors": 0,
     "classic_branch_protection_read": "403_INTEGRATION_RESTRICTED"
   },
-  "next": "PR158_TERMINAL_SOURCE_POSTMAIN_SUCCESS; EARLY_TSC_NONEMIT_CI_CANDIDATE_EXACT_HEAD; HISTORICAL_ATTESTATION_21_3_2_UNCHANGED; REAL_G3_STOP",
+  "next": "PR159_SOURCE_POSTMAIN_TERMINAL_SUCCESS; PR161_NPM_VITE_816_PATCH_CANDIDATE_FINAL_EXACT_HEAD_CI; RUST_GLIB_0185_STILL_OPEN; REAL_G3_STOP",
   "live_refetch_required": true,
   "hand_off_updated_by_future_pr": true,
   "main_ci_post_merge": {
@@ -1085,6 +1086,26 @@
       "real_g3_authorized": false,
       "changes_protect_main": false,
       "new_cargo_cache": false
+    },
+    "npm_vite_dependabot_candidate": {
+      "kind": "SECURITY_VITE_PATCH_LOCK_REGENERATED_BY_NPM_ON_GITHUB_RUNNER",
+      "manifest": "package.json",
+      "lock": "package-lock.json",
+      "cargo_lock": "src-tauri/Cargo.lock",
+      "qualification": "docs/qualification/M3_2_DEPENDABOT_VITE_816_20261024.md",
+      "source_issue": 160,
+      "source_pr": 161,
+      "vulnerable_vite_version": "8.0.16",
+      "patched_vite_version": "8.1.6",
+      "intended_fixed_npm_alerts": 5,
+      "unresolved_rust_alerts": 1,
+      "npm_lock_generated_in_ci_run": 40071348881,
+      "temporary_ci_run_intentional_failure": true,
+      "source_only": true,
+      "no_persistence": true,
+      "real_g3_authorized": false,
+      "changes_protect_main": false,
+      "production_db_touched": false
     }
   },
   "post_pr100_normalization": {
@@ -2893,6 +2914,38 @@
       40063231758,
       40063282786
     ],
+    "original_sqlite_touched": false,
+    "m3_2": "IN_PROGRESS_NOT_ACCEPTED",
+    "g2b": "NOT_ACCEPTED",
+    "source_identity": "PARTIAL_LOCAL_IDENTITY_ONLY",
+    "writer_absence": "NOT_PROVEN",
+    "g2c": "NOT_AUTHORIZED",
+    "real_g3": "STOP_UNAVAILABLE",
+    "historical": "PENDING_EXTERNAL_ATTESTATION(21/3/2)",
+    "prospective": "NOT_STARTED",
+    "pr35": "OPEN_DRAFT"
+  },
+  "post_pr159_terminal_observation": {
+    "as_of": "2026-10-24",
+    "pr": 159,
+    "merged": true,
+    "source_sha": "4ed2e34426474b5baf945fbcbe42bc842d955eb8",
+    "source_ci": {
+      "run_id": 40067055296,
+      "conclusion": "SUCCESS"
+    },
+    "merge_sha": "3cbe793e4c6d7779802a2cba55640419599df1b3",
+    "postmain_ci": {
+      "run_id": 40067824098,
+      "conclusion": "SUCCESS"
+    },
+    "handoff_tests": 94,
+    "event_tests": 96,
+    "chromium_normal": 82,
+    "chromium_strict_csp": 82,
+    "rust_tests": 132,
+    "source_job_steps": 77,
+    "postmain_job_steps": 77,
     "original_sqlite_touched": false,
     "m3_2": "IN_PROGRESS_NOT_ACCEPTED",
     "g2b": "NOT_ACCEPTED",
