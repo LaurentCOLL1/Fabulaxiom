@@ -1,5 +1,8 @@
 # M3.2 — Audit d'exposition GLib/GTK dans le graphe Cargo sélectionné pour Linux
 
+**Mise au point runner CI :** les runs #40093042527 et #40093216352 ont échoué **après** un `cargo fetch --locked --target x86_64-unknown-linux-gnu`, faute de `winapi 0.3.9` lors du `cargo tree --offline`. Le premier téléchargement restreint Linux était insuffisant pour toutes les métadonnées Cargo de ce graphe multiplateforme. Le [manuel Cargo](https://doc.rust-lang.org/cargo/commands/cargo-fetch.html) précise que `cargo fetch` **sans `--target`** récupère les dépendances de toutes les architectures. La correction candidate exécute donc `cargo fetch --manifest-path src-tauri/Cargo.toml --locked` uniquement sur le runner CI jetable, puis conserve intégralement le `cargo tree --locked --offline --target x86_64-unknown-linux-gnu` et ses refus de dérive. Ni compilation Linux, ni mise à jour `Cargo.lock`, ni accès à l'opérateur. Ces runs historiques sont des échecs non qualifiants ; une nouvelle CI terminale du HEAD corrigé est exigée.
+
+
 **Précision runner CI :** le runner Windows ne dispose pas initialement de l'archive du crate Linux `atk 0.18.2`. Un `cargo fetch --locked --target x86_64-unknown-linux-gnu` est donc requis **sur le runner GitHub seulement**, avant `cargo tree --locked --offline` : téléchargement de sources avec checksums de `Cargo.lock`, **sans compilation, sans script, sans écriture d'un nouveau verrou ni contact avec le Windows de l'opérateur**. Le premier run de cette candidate a STOP par absence d'archives offline ; aucun résultat antérieur n'est réutilisable.
 
 

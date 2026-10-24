@@ -2393,7 +2393,10 @@ class HandoffContractTests(unittest.TestCase):
         self.assertNotIn("--all-features", CMD)
         self.assertEqual(FETCH_CMD[:2], ("cargo", "fetch"))
         self.assertIn("--locked", FETCH_CMD)
-        self.assertIn(TRIPLE, FETCH_CMD)
+        # Cargo fetch without --target downloads the whole pinned cross-platform graph;
+        # cargo tree itself is still strictly offline and Linux-selected.
+        self.assertNotIn("--target", FETCH_CMD)
+        self.assertNotIn(TRIPLE, FETCH_CMD)
         self.assertNotIn("--offline", FETCH_CMD)
         self.assertNotIn("--all-features", FETCH_CMD)
         self.assertEqual(EXPECTED, {

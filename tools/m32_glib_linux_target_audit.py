@@ -19,12 +19,13 @@ CMD = (
     "--locked", "--offline", "--target", TRIPLE,
     "--edges", "normal,build", "--prefix", "none", "--format", "{p}",
 )
-# A clean Windows runner lacks Linux-only crate archives (e.g. atk 0.18.2).
-# Download LOCKED source archives into disposable CI Cargo cache; no build/scripts.
-# The subsequent target-selected graph check remains strictly --offline.
+# A cross-target Cargo graph can request Windows and Linux crates even when
+# --target selects Linux. Fetch *all* locked sources to disposable runner cache.
+# Cargo's documented default with no --target is all architectures; no builds.
+# The subsequent Linux-selected graph check remains strictly --offline.
 FETCH_CMD = (
     "cargo", "fetch", "--manifest-path", "src-tauri/Cargo.toml",
-    "--locked", "--target", TRIPLE,
+    "--locked",
 )
 
 EXPECTED = {
