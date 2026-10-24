@@ -2246,7 +2246,7 @@ class HandoffContractTests(unittest.TestCase):
         self.assertEqual(p["chromium_normal"], 82)
         self.assertEqual(p["chromium_strict_csp"], 82)
         self.assertEqual(p["rust_tests"], 132)
-        self.assertEqual(self.data["last_confirmed_merged_pr"], 159)
+        self.assertGreaterEqual(self.data["last_confirmed_merged_pr"], 159)
         self.assertFalse(p["original_sqlite_touched"])
         self.assertEqual(p["m3_2"], "IN_PROGRESS_NOT_ACCEPTED")
         q = self.data["m3_2_product_progress"]["npm_vite_dependabot_candidate"]
@@ -2280,12 +2280,81 @@ class HandoffContractTests(unittest.TestCase):
         self.assertIn('name = "glib"' + chr(10) + 'version = "0.18.5"', cargo)
         self.assertIn("GHSA-wrw7-89jp-8q8g",
             (ROOT / q["qualification"]).read_text(encoding="utf-8"))
-        for name in ("RESUME_PROMPT_SHORT.md", "RESUME_PROMPT.md",
-                     "HANDOFF_CURRENT.md", "HANDOFF_HISTORY.md", "NEXT.md",
-                     "STATE.md", "M3_2_GATE_DECISION_CURRENT.md"):
+        for name in ("RESUME_PROMPT.md", "HANDOFF_CURRENT.md",
+                     "HANDOFF_HISTORY.md", "NEXT.md", "STATE.md",
+                     "M3_2_GATE_DECISION_CURRENT.md"):
             self.assertIn("40067824098",
                 (DIRECTORY / name).read_text(encoding="utf-8"), name)
         self.assertIn("40067824098",
+            (ROOT / "docs/roadmap/ROADMAP_STATUS_CURRENT.md").read_text(encoding="utf-8"))
+
+    def test_96_pr161_terminal_and_linux_glib_open_windows_target_audit_candidate(self):
+        from m32_glib_target_audit import (CMD, GTK_PACKAGES, TRIPLE,
+                                           graph_packages, assess_windows_graph,
+                                           lock_glib_versions)
+        p = self.data["post_pr161_terminal_observation"]
+        self.assertEqual(p["pr"], 161)
+        self.assertTrue(p["merged"])
+        self.assertEqual(p["source_sha"], "956c5a2cfa4239759e175429af34cab9753960a8")
+        self.assertEqual(p["source_ci"], {"run_id": 40071869911, "conclusion": "SUCCESS"})
+        self.assertEqual(p["merge_sha"], "6cf1dd175431f19cde7a347a44d1d53f29ffecb2")
+        self.assertEqual(p["postmain_ci"], {"run_id": 40072779652, "conclusion": "SUCCESS"})
+        self.assertEqual(p["handoff_tests"], 95)
+        self.assertEqual(p["event_tests"], 96)
+        self.assertEqual(p["chromium_normal"], 82)
+        self.assertEqual(p["chromium_strict_csp"], 82)
+        self.assertEqual(p["rust_tests"], 132)
+        self.assertEqual(self.data["last_confirmed_merged_pr"], 161)
+        self.assertFalse(p["original_sqlite_touched"])
+        self.assertEqual(p["m3_2"], "IN_PROGRESS_NOT_ACCEPTED")
+        q = self.data["m3_2_product_progress"]["glib_windows_target_graph_candidate"]
+        self.assertTrue(q["source_only"] and q["no_persistence"])
+        self.assertEqual(q["advisory"], "GHSA-wrw7-89jp-8q8g")
+        self.assertEqual(q["linux_alert"], "OPEN_NOT_REMEDIATED")
+        self.assertFalse(q["real_g3_authorized"])
+        self.assertFalse(q["dismiss_dependabot"])
+        for path in (q["tool"], q["qualification"], q["workflow"]):
+            self.assertTrue((ROOT / path).is_file(), path)
+        lock = (ROOT / "src-tauri/Cargo.lock").read_text(encoding="utf-8")
+        self.assertEqual(lock_glib_versions(lock), ("0.18.5",))
+        self.assertIn("glib", GTK_PACKAGES)
+        self.assertIn("gtk", GTK_PACKAGES)
+        self.assertIn("--offline", CMD)
+        self.assertIn("--locked", CMD)
+        self.assertIn(TRIPLE, CMD)
+        self.assertEqual(CMD[0], "cargo")
+        self.assertEqual(TRIPLE, "x86_64-pc-windows-msvc")
+        self.assertEqual(graph_packages("glib v0.18.5\nother v1.2.3\n"),
+                         {"glib": {"0.18.5"}, "other": {"1.2.3"}})
+        mock = ("fabulaxiom v0.1.0\n" +
+                "".join(f"crate{i} v1.0.{i}\n" for i in range(23)))
+        passed = assess_windows_graph(mock)
+        self.assertFalse(passed["glib_in_selected_windows_target_graph"])
+        self.assertEqual(passed["historical_linux_cargo_lock_advisory"],
+                         "STILL_OPEN_NOT_REMEDIATED")
+        with self.assertRaisesRegex(ValueError, "STOP"):
+            assess_windows_graph(mock + "glib v0.18.5\n")
+        with self.assertRaisesRegex(ValueError, "STOP"):
+            assess_windows_graph(mock + "gtk v0.18.2\n")
+        with self.assertRaisesRegex(ValueError, "incomplete"):
+            assess_windows_graph("fabulaxiom v0.1.0\n")
+        workflow = (ROOT / q["workflow"]).read_text(encoding="utf-8")
+        name = "      - name: M3.2 Windows Rust target GLib/GTK graph audit (no app launch)"
+        self.assertEqual(workflow.count(name), 1)
+        self.assertEqual(workflow.count("run: python tools/m32_glib_target_audit.py"), 1)
+        self.assertTrue(workflow.index("Rust tests from lockfile") <
+                        workflow.index(name) <
+                        workflow.index("Rust check from lockfile"))
+        for required in ("run: npm ci", "npx tsc --noEmit --pretty false",
+                         "run: npm run build", "M3.2 real Chromium synthetic-only UI interaction",
+                         "Verify dependency locks are unchanged"):
+            self.assertIn(required, workflow)
+        for name in ("RESUME_PROMPT_SHORT.md", "RESUME_PROMPT.md",
+                     "HANDOFF_CURRENT.md", "HANDOFF_HISTORY.md", "NEXT.md",
+                     "STATE.md", "M3_2_GATE_DECISION_CURRENT.md"):
+            self.assertIn("40072779652",
+                (DIRECTORY / name).read_text(encoding="utf-8"), name)
+        self.assertIn("40072779652",
             (ROOT / "docs/roadmap/ROADMAP_STATUS_CURRENT.md").read_text(encoding="utf-8"))
 
 if __name__ == "__main__":
