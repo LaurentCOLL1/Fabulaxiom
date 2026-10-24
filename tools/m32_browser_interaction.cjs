@@ -1023,9 +1023,119 @@ async function run() {
       assert.equal(await page.evaluate(() => Boolean(window.__fictionInjected)), false);
       assert.ok((await picker().innerText()).includes("<script>fiction-inerte</script>"));
     });
-    assert.equal(cases.length, 70);
+    const liveComparisonButton = () => eventRegion().getByRole("button", {
+      name: "Comparer les versions créées dans cet atelier fictif",
+    });
+    const livePicker = () => eventRegion().getByRole("region", {
+      name: "Laboratoire de sélection de versions fictives",
+    });
+    const liveEvent = () => livePicker().getByRole("combobox", {
+      name: "Événement fictif à comparer",
+    });
+    const liveFrom = () => livePicker().getByRole("combobox", {
+      name: "Version fictive de départ",
+    });
+    const liveTo = () => livePicker().getByRole("combobox", {
+      name: "Version fictive d'arrivée",
+    });
+    async function amendLive(title) {
+      await eventRegion().getByRole("button", { name: /Corriger ou retirer/ }).click();
+      await eventForm().getByRole("textbox", { name: "Titre de l'événement (obligatoire)" })
+        .fill(title);
+      await eventForm().getByRole("textbox", {
+        name: "Justification de correction ou de retrait",
+      }).fill("Correction humaine inventée");
+      await eventForm().getByRole("button", { name: "Enregistrer une nouvelle version" }).click();
+    }
+    await caseRun("71-live-workshop-comparison-hidden-until-author-requests", async () => {
+      await openEventForm();
+      assert.equal(await liveComparisonButton().getAttribute("aria-expanded"), "false");
+      assert.equal(await livePicker().count(), 0);
+      await liveComparisonButton().click();
+      assert.equal(await livePicker().count(), 1);
+      assert.equal(await liveEvent().inputValue(), "");
+      assert.equal(await liveFrom().isDisabled(), true);
+      assert.equal(await liveTo().isDisabled(), true);
+    });
+    await caseRun("72-live-workshop-create-amend-compare-exact-own-versions", async () => {
+      await openEventForm();
+      await createInventedEvent("Version A inventée");
+      await amendLive("Version B inventée");
+      await liveComparisonButton().click();
+      await liveEvent().selectOption("fiction-world-one-event-0001");
+      await liveFrom().selectOption("1");
+      await liveTo().selectOption("2");
+      const diff = livePicker().getByRole("region", { name: "Comparaison fictive demandée explicitement" });
+      assert.ok((await diff.innerText()).includes("avant = Version A inventée"));
+      assert.ok((await diff.innerText()).includes("après = Version B inventée"));
+    });
+    await caseRun("73-live-workshop-new-amendment-updates-available-version-pair", async () => {
+      await openEventForm();
+      await createInventedEvent("Version A inventée");
+      await amendLive("Version B inventée");
+      await liveComparisonButton().click();
+      await liveEvent().selectOption("fiction-world-one-event-0001");
+      await liveFrom().selectOption("1");
+      await liveTo().selectOption("2");
+      await amendLive("Version C inventée");
+      assert.equal(await liveFrom().inputValue(), "1");
+      assert.equal(await liveTo().inputValue(), "2");
+      await liveFrom().selectOption("2");
+      assert.equal(await liveTo().inputValue(), "");
+      await liveTo().selectOption("3");
+      const diff = livePicker().getByRole("region", { name: "Comparaison fictive demandée explicitement" });
+      assert.ok((await diff.innerText()).includes("avant = Version B inventée"));
+      assert.ok((await diff.innerText()).includes("après = Version C inventée"));
+    });
+    await caseRun("74-live-workshop-withdrawal-keeps-historical-comparison", async () => {
+      await openEventForm();
+      await createInventedEvent("Retrait fictif");
+      await eventRegion().getByRole("button", { name: /Corriger ou retirer/ }).click();
+      await eventForm().getByRole("textbox", {
+        name: "Justification de correction ou de retrait",
+      }).fill("Motif de retrait inventé");
+      await eventForm().getByRole("button", {
+        name: "Retirer en conservant l'historique",
+      }).click();
+      await liveComparisonButton().click();
+      await liveEvent().selectOption("fiction-world-one-event-0001");
+      await liveFrom().selectOption("1");
+      await liveTo().selectOption("2");
+      assert.ok((await livePicker().innerText()).includes("Aucun écart de contenu"));
+      assert.ok((await livePicker().innerText()).includes("withdrawn"));
+      assert.ok((await eventRegion().innerText()).includes("Événements courants (0)"));
+    });
+    await caseRun("75-live-workshop-world-switch-remounts-without-stale-data", async () => {
+      await openEventForm();
+      await createInventedEvent("Secret du premier univers");
+      await liveComparisonButton().click();
+      await liveEvent().selectOption("fiction-world-one-event-0001");
+      await page.getByRole("button", { name: "Charger un autre univers fictif" }).click();
+      assert.ok((await eventRegion().innerText()).includes("fiction-world-two"));
+      assert.equal(await livePicker().count(), 0);
+      assert.ok(!(await eventRegion().innerText()).includes("Secret du premier univers"));
+      await liveComparisonButton().click();
+      assert.equal(await liveEvent().inputValue(), "");
+      assert.equal(await liveEvent().locator("option[value^='fiction-world-one']").count(), 0);
+    });
+    await caseRun("76-live-workshop-comparison-escapes-user-looking-script", async () => {
+      await openEventForm();
+      await createInventedEvent("Départ inventé");
+      await amendLive("<script>window.__fictionInjected=1</script>");
+      await liveComparisonButton().click();
+      await liveEvent().selectOption("fiction-world-one-event-0001");
+      await liveFrom().selectOption("1");
+      await liveTo().selectOption("2");
+      assert.equal(await livePicker().locator("script").count(), 0);
+      assert.equal(await page.evaluate(() => Boolean(window.__fictionInjected)), false);
+      assert.ok((await livePicker().getByRole("region", {
+        name: "Comparaison fictive demandée explicitement",
+      }).innerText()).includes("<script>window.__fictionInjected=1</script>"));
+    });
+    assert.equal(cases.length, 76);
     // Historical PR #146 source marker: M32_BROWSER_REAL_CHROMIUM_PASS 62/62
-    console.log("M32_BROWSER_REAL_CHROMIUM_PASS 70/70");
+    // Previous PR #156 marker retained: M32_BROWSER_REAL_CHROMIUM_PASS 70/70
+    console.log("M32_BROWSER_REAL_CHROMIUM_PASS 76/76");
 
     // Actual Chromium enforced-CSP veto, separate from the 36
     // fictional interaction cases. Never make an off-loopback network call.
@@ -1057,9 +1167,9 @@ async function run() {
       });
       assert.equal(scriptVeto, false, "STOP: inline JS executed under strict CSP");
       console.log("M32_CI_PRECOMPILED_INLINE_SCRIPT_DENIED_PASS");
-      console.log("M32_CI_PRECOMPILED_STRICT_CSP_BROWSER_PASS: 70/70");
+      console.log("M32_CI_PRECOMPILED_STRICT_CSP_BROWSER_PASS: 76/76");
     }
-    console.log("M32_CI_FIXTURE_ONLY_BROWSER_PASS: 70/70; no normal source pages");
+    console.log("M32_CI_FIXTURE_ONLY_BROWSER_PASS: 76/76; no normal source pages");
   } finally {
     if (browser) await browser.close();
     server.kill();
