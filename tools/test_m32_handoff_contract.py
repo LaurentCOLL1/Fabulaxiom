@@ -2039,5 +2039,45 @@ class HandoffContractTests(unittest.TestCase):
         self.assertIn("40027154468",
                       (ROOT / "docs/roadmap/ROADMAP_STATUS_CURRENT.md").read_text(encoding="utf-8"))
 
+    def test_91_pr155_terminal_and_browser_only_version_pair_picker(self):
+        p = self.data["post_pr155_terminal_observation"]
+        self.assertEqual(p["pr"], 155)
+        self.assertTrue(p["merged"])
+        self.assertEqual(p["source_sha"], "45b5febd3dbd594e28eab51bea62806ff3e43017")
+        self.assertEqual(p["source_ci"], {"run_id": 40029859356, "conclusion": "SUCCESS"})
+        self.assertEqual(p["merge_sha"], "ccf5ba31b35c57b5ea572109e64015fdc1ca35cd")
+        self.assertEqual(p["postmain_ci"], {"run_id": 40030841723, "conclusion": "SUCCESS"})
+        self.assertEqual(p["event_tests"], 83)
+        self.assertEqual(p["handoff_tests"], 90)
+        self.assertFalse(p["original_sqlite_touched"])
+        self.assertEqual(p["m3_2"], "IN_PROGRESS_NOT_ACCEPTED")
+        q = self.data["m3_2_product_progress"]["fictional_version_pair_picker_candidate"]
+        self.assertTrue(q["source_only"] and q["no_persistence"])
+        self.assertEqual(q["added_event_tests"], 4)
+        self.assertEqual(q["added_browser_cases_per_mode"], 8)
+        for key in ("component", "browser_lab", "tests", "qualification"):
+            self.assertTrue((ROOT / q[key]).is_file(), key)
+        src = (ROOT / q["component"]).read_text(encoding="utf-8")
+        app = (ROOT / "src/App.tsx").read_text(encoding="utf-8")
+        self.assertIn("M32FictionalEventNotebookPreview", src)
+        self.assertIn("auditedFictionalEventHistory", src)
+        self.assertNotIn("M32FictionalEventVersionPairLab", app)
+        for term in ("invoke(", "localStorage", "fetch(", "@tauri-apps"):
+            self.assertNotIn(term, src)
+        b = (ROOT / "tools/m32_browser_interaction.cjs").read_text(encoding="utf-8")
+        self.assertIn("70-pair-picker-script-looking-label-inert", b)
+        self.assertIn("M32_BROWSER_REAL_CHROMIUM_PASS 70/70", b)
+        stage = (ROOT / "tools/m32_ci_fixture_stage.cjs").read_text(encoding="utf-8")
+        self.assertIn('"src/M32FictionalEventVersionPairLab.tsx"', stage)
+        self.assertIn('"src/M32FictionalEventNotebookPreview.tsx"', stage)
+        ts = (ROOT / q["tests"]).read_text(encoding="utf-8")
+        self.assertIn("87 escapes hostile-looking event labels", ts)
+        for name in ("RESUME_PROMPT_SHORT.md", "RESUME_PROMPT.md", "HANDOFF_CURRENT.md",
+                     "HANDOFF_HISTORY.md", "NEXT.md", "STATE.md",
+                     "M3_2_GATE_DECISION_CURRENT.md"):
+            self.assertIn("40030841723", (DIRECTORY / name).read_text(encoding="utf-8"))
+        self.assertIn("40030841723",
+            (ROOT / "docs/roadmap/ROADMAP_STATUS_CURRENT.md").read_text(encoding="utf-8"))
+
 if __name__ == "__main__":
     unittest.main()

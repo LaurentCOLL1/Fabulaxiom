@@ -6,7 +6,8 @@ import M32SyntheticEventExplorer from "./M32SyntheticEventExplorer";
 import M32ManualChronologyLab from "./M32ManualChronologyLab";
 import type { M32ChronologyProjection } from "./M32ChronologyPreview";
 import { startFictionalDraft, type FictionalRevision } from "./m32FictionalManualChronology";
-import { startFictionalEventNotebook } from "./m32FictionalEventNotebook";
+import { startFictionalEventNotebook, createFictionalEvent, amendFictionalEvent, withdrawFictionalEvent } from "./m32FictionalEventNotebook";
+import M32FictionalEventVersionPairLab from "./M32FictionalEventVersionPairLab";
 import M32FictionalEventManualWorkshop from "./M32FictionalEventManualWorkshop";
 import M32FictionalCorrectionHistory, { type M32FictionalCorrectionRow } from "./M32FictionalCorrectionHistory";
 
@@ -119,10 +120,26 @@ const invalidCorrectionCycle: readonly M32FictionalCorrectionRow[] = [
   inventedCorrections[2],
 ];
 
+/** Completely invented sample, with withdrawal and hostile-looking text. */
+function fictionalPairFixture(snapshot: M32ChronologyProjection, revisions: readonly FictionalRevision[]) {
+  let book = startFictionalEventNotebook(startFictionalDraft(snapshot, revisions));
+  const first = { title: "Première version inventée", note: "Note A", anchor_id: null,
+    source_revision_id: null };
+  book = createFictionalEvent(book, first);
+  const id = book.events[0].event_id;
+  book = amendFictionalEvent(book, id, { ...first, title: "Deuxième version inventée" },
+    "Modification humaine inventée");
+  book = amendFictionalEvent(book, id, { ...first, title: "<script>fiction-inerte</script>" },
+    "Nouvelle correction inventée");
+  book = createFictionalEvent(book, { ...first, title: "Événement retiré inventé" });
+  const secondId = book.events.find(e => e.version === 1 && e.event_id !== id)!.event_id;
+  return withdrawFictionalEvent(book, secondId, "Retrait manuel inventé");
+}
+
 type Scenario = "one" | "two" | "cyclic";
 function BrowserFixture() {
   const [scenario, setScenario] = useState<Scenario>("one");
-  const [mode, setMode] = useState<"consultation" | "explorer" | "editor" | "history" | "event-form">("consultation");
+  const [mode, setMode] = useState<"consultation" | "explorer" | "editor" | "history" | "event-form" | "version-compare">("consultation");
   const snapshot = scenario === "two" ? second : scenario === "cyclic" ? cyclic : first;
   return <main aria-label="Laboratoire navigateur M3.2 exclusivement fictif">
     <h1>Tests navigateur — données imaginaires exclusivement</h1>
@@ -150,11 +167,19 @@ function BrowserFixture() {
       <button type="button" onClick={() => setMode("history")}>
         Afficher l'historique fictif des corrections
       </button>
+      <button type="button" onClick={() => setMode("version-compare")}>
+        Comparer deux versions fictives (laboratoire)
+      </button>
       <button type="button" onClick={() => setMode("event-form")}>
         Ouvrir le carnet d'événements fictifs
       </button>
     </section>
-    {mode === "event-form" ? scenario === "cyclic"
+    {mode === "version-compare" ? scenario === "cyclic"
+      ? <p role="alert">Cycle fictif refusé pour la comparaison de versions.</p>
+      : <M32FictionalEventVersionPairLab key={scenario}
+          notebook={fictionalPairFixture(snapshot,
+            scenario === "two" ? [] : fictionalRevisions)} />
+      : mode === "event-form" ? scenario === "cyclic"
       ? <p role="alert">Cycle fictif refusé pour le carnet manuel.</p>
       : <M32FictionalEventManualWorkshop key={scenario}
           initial={startFictionalEventNotebook(startFictionalDraft(snapshot,
