@@ -2111,8 +2111,8 @@ class HandoffContractTests(unittest.TestCase):
         self.assertIn("aria-expanded={compareOpen}", workshop)
         self.assertNotIn("M32FictionalEventManualWorkshop", app)
         # Reject executable persistent/network/IPC API use, not truthful comment text.
-        self.assertNotRegex(workshop, r"\\b(?:localStorage|sessionStorage)\\s*(?:\\.|\\[)")
-        self.assertNotRegex(workshop, r"\\b(?:fetch|invoke)\\s*\\(")
+        self.assertNotRegex(workshop, r"\b(?:localStorage|sessionStorage)\s*(?:\.|\[)")
+        self.assertNotRegex(workshop, r"\b(?:fetch|invoke)\s*\(")
         self.assertNotIn("@tauri-apps", workshop)
         browser = (ROOT / q["browser"]).read_text(encoding="utf-8")
         self.assertIn("76-live-workshop-comparison-escapes-user-looking-script", browser)
