@@ -940,8 +940,92 @@ async function run() {
       assert.ok((await page.getByRole("alert").innerText()).includes("Cycle fictif refusé"));
       assert.equal(await eventRegion().count(), 0);
     });
-    assert.equal(cases.length, 62);
-    console.log("M32_BROWSER_REAL_CHROMIUM_PASS 62/62");
+    const picker = () => page.getByRole("region", {
+      name: "Laboratoire de sélection de versions fictives",
+    });
+    const eventSelect = () => picker().getByRole("combobox", { name: "Événement fictif à comparer" });
+    const fromSelect = () => picker().getByRole("combobox", { name: "Version fictive de départ" });
+    const toSelect = () => picker().getByRole("combobox", { name: "Version fictive d'arrivée" });
+    async function openPicker() {
+      await page.getByRole("button", { name: "Comparer deux versions fictives (laboratoire)" }).click();
+      assert.equal(await picker().count(), 1);
+    }
+    await caseRun("63-pair-picker-starts-empty", async () => {
+      await openPicker();
+      assert.equal(await eventSelect().inputValue(), "");
+      assert.equal(await fromSelect().isDisabled(), true);
+      assert.equal(await toSelect().isDisabled(), true);
+      assert.equal(await picker().getByRole("region", { name: "Comparaison fictive demandée explicitement" }).count(), 0);
+    });
+    await caseRun("64-pair-picker-middle-to-final-exact", async () => {
+      await openPicker();
+      await eventSelect().selectOption("fiction-world-one-event-0001");
+      await fromSelect().selectOption("2");
+      await toSelect().selectOption("3");
+      const result = picker().getByRole("region", { name: "Comparaison fictive demandée explicitement" });
+      assert.ok((await result.innerText()).includes("version 2 vers version 3"));
+      assert.ok((await result.innerText()).includes("avant = Deuxième version inventée"));
+      assert.ok((await result.innerText()).includes("après = <script>fiction-inerte</script>"));
+    });
+    await caseRun("65-pair-picker-refuses-inverted-and-resets-stale-target", async () => {
+      await openPicker();
+      await eventSelect().selectOption("fiction-world-one-event-0001");
+      await fromSelect().selectOption("1");
+      await toSelect().selectOption("2");
+      assert.equal(await picker().getByRole("region", { name: "Comparaison fictive demandée explicitement" }).count(), 1);
+      await fromSelect().selectOption("2");
+      assert.equal(await toSelect().inputValue(), "");
+      assert.equal(await toSelect().locator('option[value="1"]').count(), 0);
+      assert.equal(await toSelect().locator('option[value="2"]').count(), 0);
+      assert.equal(await picker().getByRole("region", { name: "Comparaison fictive demandée explicitement" }).count(), 0);
+    });
+    await caseRun("66-pair-picker-withdrawal-preserves-history", async () => {
+      await openPicker();
+      await eventSelect().selectOption("fiction-world-one-event-0002");
+      await fromSelect().selectOption("1");
+      await toSelect().selectOption("2");
+      const result = picker().getByRole("region", { name: "Comparaison fictive demandée explicitement" });
+      assert.ok((await result.innerText()).includes("Aucun écart de contenu"));
+      assert.ok((await result.innerText()).includes("withdrawn"));
+    });
+    await caseRun("67-pair-picker-changing-event-clears-both-versions", async () => {
+      await openPicker();
+      await eventSelect().selectOption("fiction-world-one-event-0001");
+      await fromSelect().selectOption("1");
+      await toSelect().selectOption("3");
+      await eventSelect().selectOption("fiction-world-one-event-0002");
+      assert.equal(await fromSelect().inputValue(), "");
+      assert.equal(await toSelect().inputValue(), "");
+      assert.equal(await picker().getByRole("region", { name: "Comparaison fictive demandée explicitement" }).count(), 0);
+    });
+    await caseRun("68-pair-picker-switch-world-restarts-isolated-selection", async () => {
+      await openPicker();
+      await eventSelect().selectOption("fiction-world-one-event-0001");
+      await fromSelect().selectOption("1");
+      await toSelect().selectOption("3");
+      await page.getByRole("button", { name: "Charger un autre univers fictif" }).click();
+      assert.equal(await eventSelect().inputValue(), "");
+      assert.ok((await picker().innerText()).includes("fiction-world-two"));
+      assert.ok(!(await picker().innerText()).includes("fiction-world-one-event"));
+    });
+    await caseRun("69-pair-picker-cycle-fails-closed", async () => {
+      await page.getByRole("button", { name: "Charger un cycle fictif invalide" }).click();
+      await page.getByRole("button", { name: "Comparer deux versions fictives (laboratoire)" }).click();
+      assert.equal(await picker().count(), 0);
+      assert.ok((await page.getByRole("alert").innerText()).includes("Cycle fictif refusé"));
+    });
+    await caseRun("70-pair-picker-script-looking-label-inert", async () => {
+      await openPicker();
+      await eventSelect().selectOption("fiction-world-one-event-0001");
+      await fromSelect().selectOption("2");
+      await toSelect().selectOption("3");
+      assert.equal(await picker().locator("script").count(), 0);
+      assert.equal(await page.evaluate(() => Boolean(window.__fictionInjected)), false);
+      assert.ok((await picker().innerText()).includes("<script>fiction-inerte</script>"));
+    });
+    assert.equal(cases.length, 70);
+    // Historical PR #146 source marker: M32_BROWSER_REAL_CHROMIUM_PASS 62/62
+    console.log("M32_BROWSER_REAL_CHROMIUM_PASS 70/70");
 
     // Actual Chromium enforced-CSP veto, separate from the 36
     // fictional interaction cases. Never make an off-loopback network call.
@@ -973,9 +1057,9 @@ async function run() {
       });
       assert.equal(scriptVeto, false, "STOP: inline JS executed under strict CSP");
       console.log("M32_CI_PRECOMPILED_INLINE_SCRIPT_DENIED_PASS");
-      console.log("M32_CI_PRECOMPILED_STRICT_CSP_BROWSER_PASS: 62/62");
+      console.log("M32_CI_PRECOMPILED_STRICT_CSP_BROWSER_PASS: 70/70");
     }
-    console.log("M32_CI_FIXTURE_ONLY_BROWSER_PASS: 62/62; no normal source pages");
+    console.log("M32_CI_FIXTURE_ONLY_BROWSER_PASS: 70/70; no normal source pages");
   } finally {
     if (browser) await browser.close();
     server.kill();

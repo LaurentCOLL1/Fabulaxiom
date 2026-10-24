@@ -11,6 +11,7 @@ import {
   auditedFictionalEventHistory, compareFictionalEventVersions,
 } from "./m32FictionalEventNotebook";
 import M32FictionalEventNotebookPreview from "./M32FictionalEventNotebookPreview";
+import M32FictionalEventVersionPairLab from "./M32FictionalEventVersionPairLab";
 
 function fixture(universe: "fiction-alpha" | "fiction-beta") {
   const snapshot: M32ChronologyProjection = {
@@ -742,5 +743,35 @@ describe("M3.2 controlled read-only selected-version fictional preview", () => {
     expect(markup).toContain("Aucun écart de contenu entre ces deux versions fictives.");
     expect(markup).toContain("withdrawn");
     expect(currentFictionalEvents(b)).toHaveLength(0);
+  });
+});
+
+describe("M3.2 browser-only fictional version pair selectors", () => {
+  it("84 starts with no selected version or implicit comparison", () => {
+    const book = createFictionalEvent(fixture("fiction-alpha"), plain);
+    const markup = renderToStaticMarkup(createElement(M32FictionalEventVersionPairLab, { notebook: book }));
+    expect(markup).toContain("Laboratoire de sélection de versions fictives");
+    expect(markup).toContain("Choisir un événement inventé");
+    expect(markup).not.toContain('aria-label="Comparaison fictive demandée explicitement"');
+  });
+  it("85 keeps stable event identity even with a withdrawn historical version", () => {
+    const first = createFictionalEvent(fixture("fiction-alpha"), plain);
+    const last = withdrawFictionalEvent(first, first.events[0].event_id, "Retrait motivé");
+    const markup = renderToStaticMarkup(createElement(M32FictionalEventVersionPairLab, { notebook: last }));
+    expect(markup).toContain(first.events[0].event_id);
+    expect(markup).toContain("Première rencontre");
+    expect(markup).toContain("Historique manuel des versions");
+  });
+  it("86 fails closed before rendering a forged real SQLite notebook", () => {
+    const book = createFictionalEvent(fixture("fiction-alpha"), plain);
+    expect(() => renderToStaticMarkup(createElement(M32FictionalEventVersionPairLab,
+      { notebook: { ...book, data_origin: "real_sqlite" } as unknown as typeof book }))).toThrow();
+  });
+  it("87 escapes hostile-looking event labels within a selector option", () => {
+    const book = createFictionalEvent(fixture("fiction-alpha"),
+      { ...plain, title: "<script>not-executable</script>" });
+    const markup = renderToStaticMarkup(createElement(M32FictionalEventVersionPairLab, { notebook: book }));
+    expect(markup).toContain("&lt;script&gt;not-executable&lt;/script&gt;");
+    expect(markup).not.toContain("<script>");
   });
 });

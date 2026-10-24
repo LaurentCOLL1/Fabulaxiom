@@ -34,11 +34,11 @@ function fixture() {
   return { root, head: git(root, "rev-parse", "HEAD") };
 }
 
-test("01 exact SHA and eleven Git blobs match fictional-only sources", () => {
+test("01 exact SHA and fifteen Git blobs match fictional-only sources", () => {
   const f = fixture();
   const evidence = bindSourcesToCheckout(f.root, f.head, MANIFEST);
   assert.equal(evidence.gitHead, f.head);
-  assert.equal(evidence.inventory.length, 13);
+  assert.equal(evidence.inventory.length, 15);
   assert.match(evidence.inventorySha, /^[a-f0-9]{64}$/);
   for (const item of evidence.inventory) {
     assert.equal(item.sha256,
