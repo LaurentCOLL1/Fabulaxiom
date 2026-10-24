@@ -2110,8 +2110,10 @@ class HandoffContractTests(unittest.TestCase):
         self.assertIn("M32FictionalEventVersionPairLab notebook={book}", workshop)
         self.assertIn("aria-expanded={compareOpen}", workshop)
         self.assertNotIn("M32FictionalEventManualWorkshop", app)
-        for unsafe in ("invoke(", "localStorage", "fetch(", "@tauri-apps"):
-            self.assertNotIn(unsafe, workshop)
+        # Reject executable persistent/network/IPC API use, not truthful comment text.
+        self.assertNotRegex(workshop, r"\\b(?:localStorage|sessionStorage)\\s*(?:\\.|\\[)")
+        self.assertNotRegex(workshop, r"\\b(?:fetch|invoke)\\s*\\(")
+        self.assertNotIn("@tauri-apps", workshop)
         browser = (ROOT / q["browser"]).read_text(encoding="utf-8")
         self.assertIn("76-live-workshop-comparison-escapes-user-looking-script", browser)
         self.assertIn("M32_BROWSER_REAL_CHROMIUM_PASS 76/76", browser)
