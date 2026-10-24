@@ -1,5 +1,7 @@
 # Fabulaxiom — Point d'entrée pour reprendre les discussions ChatGPT
 
+**24 octobre 2026 — PR #158 fusionnée ; précontrôle CI TypeScript source-only :** [qualification du déplacement de détection d'erreur](../qualification/M3_2_CI_EARLY_TYPESCRIPT_FAIL_FAST_20261024.md), sans changement des gates M3.2 ni activation d'un cache Cargo. CI source #40063511352 et postmain #40064299969 sont terminalement SUCCESS.
+
 **24 octobre 2026 — PR #157 terminale, stratégie accélérée et nouvelle candidate fictive :** [version historique préremplie sans écriture](../qualification/M3_2_FICTIONAL_HISTORICAL_DRAFT_COPY.md) ; [convergence vers le déblocage réel et les cinq preuves manquantes](../qualification/M3_2_ACCELERATED_CONVERGENCE_DECISION_20261024.md). Source CI #40061031363 et postmain #40061815168 SUCCESS sur leurs SHA exacts ; la candidate nécessite sa nouvelle CI, M3.2 non acceptée.
 
 **24 octobre 2026 — PR #156 source/postmain terminales SUCCESS :** [qualification du comparateur de versions fictives en direct](../qualification/M3_2_FICTIONAL_LIVE_WORKSHOP_VERSION_COMPARISON.md) — 3 Vitest + 6 Chromium supplémentaires par mode attendus dans la nouvelle candidate. L'application réelle et les gates restent inchangés.
