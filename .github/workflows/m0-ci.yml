@@ -255,6 +255,10 @@ jobs:
       - name: M3.2 Windows Rust target GLib/GTK graph audit (no app launch)
         run: python tools/m32_glib_target_audit.py
 
+      # Linux graph is observed ONLY: GTK3 glib 0.18.5 remains vulnerable.
+      - name: M3.2 Linux Rust selected GLib/GTK advisory exposure audit (no Linux build)
+        run: python tools/m32_glib_linux_target_audit.py
+
       - name: Rust check from lockfile
         run: cargo check --manifest-path src-tauri/Cargo.toml --locked
 

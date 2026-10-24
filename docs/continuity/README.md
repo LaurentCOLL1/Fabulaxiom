@@ -1,5 +1,10 @@
 # Fabulaxiom — Point d'entrée pour reprendre les discussions ChatGPT
 
+**Précision runner CI :** le runner Windows ne dispose pas initialement de l'archive du crate Linux `atk 0.18.2`. Un `cargo fetch --locked --target x86_64-unknown-linux-gnu` est donc requis **sur le runner GitHub seulement**, avant `cargo tree --locked --offline` : téléchargement de sources avec checksums de `Cargo.lock`, **sans compilation, sans script, sans écriture d'un nouveau verrou ni contact avec le Windows de l'opérateur**. Le premier run de cette candidate a STOP par absence d'archives offline ; aucun résultat antérieur n'est réutilisable.
+
+
+**24 octobre 2026 — PR #162 source et postmain terminales SUCCESS :** [audit explicite du risque GLib Linux sélectionné](../qualification/M3_2_GLIB_LINUX_SELECTED_GRAPH_AUDIT_20261024.md). Ne ferme ni l'alerte `glib`, ni un gate réel ; 5 alertes npm Vite corrigées par version mais compteur Dependabot à confirmer via l'interface.
+
 **24 octobre 2026 — PR #161 terminale, qualification Windows du risque glib encore ouvert :** [audit du graphe Cargo par cible](../qualification/M3_2_GLIB_WINDOWS_TARGET_AUDIT_20261024.md), issue sécurité [#160](https://github.com/LaurentCOLL1/Fabulaxiom/issues/160). 5 advisories npm traitées côté verrou Vite 8.1.6 ; compteur d'alertes non revérifié ; glib Rust non corrigée. CI #40071869911/#40072779652 SUCCESS, non réutilisables au prochain HEAD.
 
 **24 octobre 2026 — PR #159 terminale ; correctifs de dépendances sans accès opérateur :** [qualification Vite 8.1.6 et traitement des alertes](../qualification/M3_2_DEPENDABOT_VITE_816_20261024.md), [issue sécurité #160](https://github.com/LaurentCOLL1/Fabulaxiom/issues/160). Cinq alertes npm ciblées ; glib Rust séparée et non corrigée. CI source PR #159 #40067055296 et postmain #40067824098 SUCCESS.
