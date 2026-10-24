@@ -1,7 +1,7 @@
 "use strict";
 
 /** M3.2 fictional-only CI source binding.
- * Compares exactly thirteen explicitly approved fictional tracked files with immutable blobs from the CHECKED
+ * Compares exactly fifteen explicitly approved fictional tracked files with immutable blobs from the CHECKED
  * OUT Git commit. This is a local CI consistency check, NOT an authenticated
  * external provenance, signature, independent GitHub attestation, or G3 proof.
  */
@@ -23,6 +23,8 @@ const EXPECTED = Object.freeze([
   "src/m32FictionalManualChronology.ts",
   "src/m32FictionalEventNotebook.ts",
   "src/M32FictionalEventManualWorkshop.tsx",
+  "src/M32FictionalEventNotebookPreview.tsx",
+  "src/M32FictionalEventVersionPairLab.tsx",
   "src/m32FictionalRevocationImpact.ts",
   "src/M32ManualChronologyLab.tsx",
   "src/M32FictionalCorrectionHistory.tsx",
