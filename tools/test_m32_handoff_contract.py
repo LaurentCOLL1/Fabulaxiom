@@ -2140,7 +2140,7 @@ class HandoffContractTests(unittest.TestCase):
         self.assertEqual(p["chromium_normal"], 76)
         self.assertEqual(p["chromium_strict_csp"], 76)
         self.assertEqual(p["rust_tests"], 132)
-        self.assertEqual(self.data["last_confirmed_merged_pr"], 157)
+        self.assertGreaterEqual(self.data["last_confirmed_merged_pr"], 157)
         self.assertFalse(p["original_sqlite_touched"])
         self.assertEqual(p["m3_2"], "IN_PROGRESS_NOT_ACCEPTED")
         self.assertEqual(p["writer_absence"], "NOT_PROVEN")
@@ -2175,11 +2175,62 @@ class HandoffContractTests(unittest.TestCase):
                      "activation_marker", "isolated_v6", "PENDING_EXTERNAL_ATTESTATION",
                      "NOT_STARTED", "STOP_UNAVAILABLE", "AUCUNE AUTORISATION"):
             self.assertIn(term, decision)
-        for name in ("RESUME_PROMPT_SHORT.md", "RESUME_PROMPT.md",
+        for name in ("RESUME_PROMPT.md",
                      "HANDOFF_CURRENT.md", "HANDOFF_HISTORY.md", "NEXT.md",
                      "STATE.md", "M3_2_GATE_DECISION_CURRENT.md"):
             self.assertIn("40061815168", (DIRECTORY / name).read_text(encoding="utf-8"))
         self.assertIn("40061815168",
+            (ROOT / "docs/roadmap/ROADMAP_STATUS_CURRENT.md").read_text(encoding="utf-8"))
+
+    def test_94_pr158_terminal_and_early_typecheck_acceleration_candidate(self):
+        p = self.data["post_pr158_terminal_observation"]
+        self.assertEqual(p["pr"], 158)
+        self.assertTrue(p["merged"])
+        self.assertEqual(p["source_sha"], "2543315b0b8ab9a17f3ac49b5d68c76717b0317f")
+        self.assertEqual(p["source_ci"], {"run_id": 40063511352, "conclusion": "SUCCESS"})
+        self.assertEqual(p["merge_sha"], "fdae74efac90b35ffdc06110c6c9b4e14ce95b10")
+        self.assertEqual(p["postmain_ci"], {"run_id": 40064299969, "conclusion": "SUCCESS"})
+        self.assertEqual(p["handoff_tests"], 93)
+        self.assertEqual(p["event_tests"], 96)
+        self.assertEqual(p["chromium_normal"], 82)
+        self.assertEqual(p["chromium_strict_csp"], 82)
+        self.assertEqual(p["rust_tests"], 132)
+        self.assertEqual(self.data["last_confirmed_merged_pr"], 158)
+        self.assertFalse(p["original_sqlite_touched"])
+        self.assertEqual(p["m3_2"], "IN_PROGRESS_NOT_ACCEPTED")
+        self.assertEqual(p["writer_absence"], "NOT_PROVEN")
+        self.assertEqual(p["real_g3"], "STOP_UNAVAILABLE")
+        q = self.data["m3_2_product_progress"]["ci_early_typecheck_candidate"]
+        self.assertTrue(q["source_only"] and q["no_persistence"])
+        self.assertFalse(q["real_g3_authorized"])
+        self.assertFalse(q["changes_protect_main"])
+        self.assertEqual(q["extra_windows_steps"], 1)
+        for key in ("workflow", "qualification", "test"):
+            self.assertTrue((ROOT / q[key]).is_file(), key)
+        workflow = (ROOT / q["workflow"]).read_text(encoding="utf-8")
+        self.assertEqual(workflow.count("npx tsc --noEmit --pretty false"), 1)
+        install = workflow.index("      - name: Install frontend dependencies from lockfile")
+        early = workflow.index("      - name: Early frontend TypeScript typecheck (no emission)")
+        chromium = workflow.index("      - name: M3.2 real Chromium synthetic-only UI interaction")
+        build = workflow.index("      - name: Frontend production build")
+        rust = workflow.index("      - name: Rust tests from lockfile")
+        self.assertTrue(install < early < chromium < build < rust)
+        for required in ("run: npm ci", "run: npm run test:ci",
+                         "run: npm run build", "cargo test --manifest-path",
+                         "M3.2 living handoff source-only contract checks",
+                         "M3.2 require both resume prompts on every pull request",
+                         "node tools/m32_browser_interaction.cjs",
+                         "M3.2 G3 source identity SQLite Win32 shortcut refusal"):
+            self.assertIn(required, workflow)
+        self.assertIn("contents: read", workflow)
+        self.assertNotIn("Swatinem/rust-cache", workflow)
+        self.assertNotIn("actions/cache@", workflow)
+        for name in ("RESUME_PROMPT_SHORT.md", "RESUME_PROMPT.md",
+                     "HANDOFF_CURRENT.md", "HANDOFF_HISTORY.md", "NEXT.md",
+                     "STATE.md", "M3_2_GATE_DECISION_CURRENT.md"):
+            self.assertIn("40064299969",
+                (DIRECTORY / name).read_text(encoding="utf-8"), name)
+        self.assertIn("40064299969",
             (ROOT / "docs/roadmap/ROADMAP_STATUS_CURRENT.md").read_text(encoding="utf-8"))
 
 if __name__ == "__main__":
