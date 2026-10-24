@@ -19,6 +19,14 @@ CMD = (
     "--locked", "--offline", "--target", TRIPLE,
     "--edges", "normal,build", "--prefix", "none", "--format", "{p}",
 )
+# A clean Windows runner lacks Linux-only crate archives (e.g. atk 0.18.2).
+# Download LOCKED source archives into disposable CI Cargo cache; no build/scripts.
+# The subsequent target-selected graph check remains strictly --offline.
+FETCH_CMD = (
+    "cargo", "fetch", "--manifest-path", "src-tauri/Cargo.toml",
+    "--locked", "--target", TRIPLE,
+)
+
 EXPECTED = {
     "glib": "0.18.5",
     "gtk": "0.18.2",
@@ -57,6 +65,13 @@ def run_ci_audit() -> dict[str, object]:
     versions = lock_glib_versions(lock)
     if versions != ("0.18.5",):
         raise ValueError("STOP: source GLib versions changed; fresh security review required " + repr(versions))
+    fetched = subprocess.run(
+        FETCH_CMD, cwd=ROOT, capture_output=True, text=True,
+        timeout=300, check=False, shell=False,
+    )
+    if fetched.returncode:
+        raise RuntimeError("STOP: locked Linux crate archive prefetch failed: " +
+                           fetched.stderr[-1200:])
     result = subprocess.run(
         CMD, cwd=ROOT, capture_output=True, text=True,
         timeout=180, check=False, shell=False,
