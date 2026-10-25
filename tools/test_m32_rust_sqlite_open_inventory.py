@@ -114,5 +114,24 @@ class RustSqliteOpenInventoryTests(unittest.TestCase):
         self.assertEqual(audit_inventory(self.src)["review"],"EXACT_KNOWN_TEXT_COUNTS_MATCH_NOT_EXHAUSTIVE")
         self.assertEqual(audit_inventory(self.src)["real_g3"],"STOP_UNAVAILABLE")
 
+
+    def test_22_only_reviewed_invented_uri_ram_opens_added(self):
+        p = "src-tauri/src/m32_preopened_query_only_toy.rs"
+        source = self.src[p]
+        self.assertEqual(EXPECTED[p], (3, 0, 0, 0, 5, 0, 0))
+        self.assertIn("mode=memory&cache=shared", source)
+        self.assertIn("NEXT_INVENTED_RAM.fetch_add", source)
+        self.assertEqual(source.count("Connection::open_with_flags(&uri, flags)?"), 2)
+        self.assertIn("SQLITE_OPEN_URI", source)
+        self.assertNotIn("std::fs::", source)
+        self.assertNotIn("#[tauri::command]", source)
+        self.assertNotIn("Connection::open(user_path)", source)
+        self.assertEqual(audit_inventory(self.src)["writer_absence"], "NOT_PROVEN")
+        self.assertFalse(audit_inventory(self.src)["real_g3_authorized"])
+
+    def test_23_future_unreviewed_disk_open_in_toy_still_vetoed(self):
+        self.veto("src-tauri/src/m32_preopened_query_only_toy.rs",
+                  "Connection::open(operator_path)?;")
+
 if __name__ == "__main__":
     unittest.main()
