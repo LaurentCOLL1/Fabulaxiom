@@ -512,3 +512,60 @@ fn toy_23_read_uncommitted_does_not_hold_shared_ram_table_read_lock() -> Result<
     reader.execute_batch("ROLLBACK;")?;
     Ok(())
 }
+
+
+#[test]
+fn toy_24_read_uncommitted_sees_uncommitted_value_then_rollback() -> Result<()> {
+    let (reader, writer) = invented_shared_ram_pair(6)?;
+    reader.execute_batch("PRAGMA read_uncommitted=ON;")?;
+    let initial_version = local_data_version(&reader)?;
+    let original: String = reader.query_row(
+        "SELECT description FROM imaginary_events WHERE id=1", [], |r| r.get(0),
+    )?;
+    assert_eq!(original, "fictitious initial event");
+    // ONLY an invented shared-cache RAM connection can see this dirty value.
+    writer.execute_batch(
+        "BEGIN IMMEDIATE TRANSACTION;
+         UPDATE imaginary_events SET description='invented dirty transient value' WHERE id=1;",
+    )?;
+    let dirty: String = reader.query_row(
+        "SELECT description FROM imaginary_events WHERE id=1", [], |r| r.get(0),
+    )?;
+    assert_eq!(dirty, "invented dirty transient value");
+    assert_eq!(local_data_version(&reader)?, initial_version);
+    writer.execute_batch("ROLLBACK;")?;
+    let restored: String = reader.query_row(
+        "SELECT description FROM imaginary_events WHERE id=1", [], |r| r.get(0),
+    )?;
+    assert_eq!(restored, original);
+    assert_eq!(local_data_version(&reader)?, initial_version);
+    Ok(())
+}
+
+#[test]
+fn toy_25_read_uncommitted_observes_rolled_back_cardinality() -> Result<()> {
+    let (reader, writer) = invented_shared_ram_pair(7)?;
+    reader.execute_batch("PRAGMA read_uncommitted=ON;")?;
+    let initial_version = local_data_version(&reader)?;
+    let initial_count: i64 = reader.query_row(
+        "SELECT count(*) FROM imaginary_events", [], |r| r.get(0),
+    )?;
+    assert_eq!(initial_count, 1);
+    // A dirty, never-committed insert is visible only in this disposable RAM lab.
+    writer.execute_batch(
+        "BEGIN IMMEDIATE TRANSACTION;
+         INSERT INTO imaginary_events VALUES (2, 'invented rolled-back row');",
+    )?;
+    let uncommitted_count: i64 = reader.query_row(
+        "SELECT count(*) FROM imaginary_events", [], |r| r.get(0),
+    )?;
+    assert_eq!(uncommitted_count, 2);
+    assert_eq!(local_data_version(&reader)?, initial_version);
+    writer.execute_batch("ROLLBACK;")?;
+    let after_rollback: i64 = reader.query_row(
+        "SELECT count(*) FROM imaginary_events", [], |r| r.get(0),
+    )?;
+    assert_eq!(after_rollback, 1);
+    assert_eq!(local_data_version(&reader)?, initial_version);
+    Ok(())
+}
