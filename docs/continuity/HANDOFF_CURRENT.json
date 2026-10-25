@@ -3,14 +3,14 @@
   "as_of": "2026-10-25",
   "status_kind": "DATED_PUBLIC_SOURCE_HANDOFF_ONLY",
   "repository": "LaurentCOLL1/Fabulaxiom",
-  "last_confirmed_main_before_handoff": "93eba0ae4801e5a0a73121fef305dc9212e52761",
-  "last_confirmed_merged_pr": 170,
-  "last_verified_pr_head": "458f58ad6960b72b81fbfbe588f90168e36c3975",
+  "last_confirmed_main_before_handoff": "a33600120f78f20477f4680737e87cb9fabf818b",
+  "last_confirmed_merged_pr": 171,
+  "last_verified_pr_head": "6912ba98ebbd558ac86a5669a497f757df990db2",
   "last_verified_ci": {
-    "run_id": 40155313316,
+    "run_id": 40166867332,
     "context": "Windows frontend and Rust checks",
     "conclusion": "SUCCESS",
-    "source": "PR170_EXACT_HEAD"
+    "source": "PR171_EXACT_HEAD"
   },
   "recent_changes": [
     "PR_85_EXACT_G2A_TEXT_AST_ONLY",
@@ -156,7 +156,10 @@
     "2026_10_25_G2B0_AST_STATIC_REVIEW_SOURCE_ONLY_CANDIDATE_NOT_QUALIFIED",
     "PR170_MERGED_MAIN_93EBA0A_POSTMAIN_40156277835_SUCCESS_80_STEPS_104_CONTRACTS",
     "G2B0_OWNER_REPORTED_OBSERVED_PARTIAL_ONLY_M15_FOUR_M25_ONE",
-    "G2B1_MARKER_SELECTOR_EXACT_CANDIDATE_PREPARED_NOT_EXECUTED"
+    "G2B1_MARKER_SELECTOR_EXACT_CANDIDATE_PREPARED_NOT_EXECUTED",
+    "PR171_MERGED_MAIN_A336001_POSTMAIN_40169967245_TERMINAL_SUCCESS_81_STEPS",
+    "G2B1_OWNER_REPORTED_RESTORED_MARKER_ONE_FILENAME_PARTIAL_ONLY",
+    "2026_10_25_AFTER_B1_SOURCE_CUSTODY_ROUTE_DECISION_ONLY_NO_NEW_WINDOWS_ACTIONS"
   ],
   "pr35": "OPEN_DRAFT",
   "issues": {
@@ -3412,11 +3415,61 @@
     "independent_attestation": false
   },
   "g2b1_selector_review": {
-    "status": "PREPARED_NOT_EXECUTED",
-    "scope": "ONE_SMALL_M15_ACTIVATION_MARKER_CONTENT_READ_ONLY_AFTER_EXACT_SPECIFIC_REVIEW",
+    "status": "OBSERVED_PARTIAL_ONLY_OWNER_REPORTED",
+    "scope": "M15_ACTIVATION_MARKER_CONTENT_READ_ONCE_OWNER_REPORTED",
     "no_original_sqlite_read": true,
     "real_writer_absence": "NOT_PROVEN",
     "g2b": "NOT_ACCEPTED",
-    "ci_candidate_only": true
+    "ci_candidate_only": false
+  },
+  "post_pr171_terminal_observation": {
+    "as_of": "2026-10-25",
+    "source_sha": "6912ba98ebbd558ac86a5669a497f757df990db2",
+    "source_ci": {
+      "run_id": 40166867332,
+      "conclusion": "SUCCESS"
+    },
+    "merged_pr": 171,
+    "merge_sha": "a33600120f78f20477f4680737e87cb9fabf818b",
+    "postmain_ci": {
+      "run_id": 40169967245,
+      "conclusion": "SUCCESS"
+    },
+    "source_steps": 81,
+    "postmain_steps": 81,
+    "handoff_tests": 105,
+    "fictional_vitest_tests": 96,
+    "chromium_normal": 82,
+    "chromium_strict_csp": 82,
+    "rust_tests": 132,
+    "g2b1_ast_negative_tests": 10,
+    "operator_windows_access": false
+  },
+  "g2b1_operator_report_20261025": {
+    "operator_local_run_reported": true,
+    "independently_attested": false,
+    "status": "OBSERVED_PARTIAL_ONLY_OWNER_REPORTED",
+    "production_m15_sqlite_filename_count": 4,
+    "accepted_activation_marker_count": 1,
+    "selector_kind": "RESTORED",
+    "selected_filename_match": "ONE_OBSERVED",
+    "source_identity": "PARTIAL_LOCAL_IDENTITY_ONLY",
+    "writer_absence": "NOT_PROVEN",
+    "m25_m31_v7_other_roles": "NOT_ASSESSED",
+    "g2c": "NOT_AUTHORIZED",
+    "g3": "STOP_UNAVAILABLE",
+    "historical": "PENDING_EXTERNAL_ATTESTATION(21/3/2)",
+    "prospective": "NOT_STARTED"
+  },
+  "next_source_custody_route_decision_20261025": {
+    "document": "docs/qualification/M3_2_POST_G2B1_CUSTODY_ROUTE_DECISION_20261025.md",
+    "route_a_preopened_owner": "UNAVAILABLE_NOT_PROVEN",
+    "route_b_cold_quiescence": "NOT_PROVEN",
+    "route_c_greenfield": "DEVELOPMENT_ONLY",
+    "g2b": "NOT_ACCEPTED",
+    "real_g3": "STOP_UNAVAILABLE",
+    "windows_operator_new_procedure": "NOT_PROPOSED",
+    "historic": "PENDING_EXTERNAL_ATTESTATION(21/3/2)",
+    "prospective": "NOT_STARTED"
   }
 }
