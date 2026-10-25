@@ -2850,7 +2850,7 @@ class HandoffContractTests(unittest.TestCase):
 
 
     def test_107_pr172_terminal_and_invented_shared_ram_writer_counterexample(self):
-        self.assertEqual(self.data["last_confirmed_merged_pr"], 172)
+        self.assertGreaterEqual(self.data["last_confirmed_merged_pr"], 172)
         q = self.data["post_pr172_terminal_observation"]
         self.assertEqual(q["source_sha"], "dd652e7be13e73b3612e663284afc4da5d785f4f")
         self.assertEqual(q["source_ci"], {"run_id": 40178558404, "conclusion": "SUCCESS"})
@@ -2892,6 +2892,50 @@ class HandoffContractTests(unittest.TestCase):
             self.assertIn("40179336243", (DIRECTORY / name).read_text(encoding="utf-8"), name)
         for name in ("ROADMAP_STATUS_CURRENT.md", "FABULAXIOM_ROADMAP_V1.md"):
             self.assertIn("40179336243", (ROOT / "docs/roadmap" / name).read_text(encoding="utf-8"))
+
+
+    def test_108_post_pr173_terminal_and_data_version_invented_ram_guard(self):
+        self.assertEqual(self.data["last_confirmed_merged_pr"], 173)
+        last = self.data["post_pr173_terminal_observation"]
+        self.assertEqual(last["source_sha"], "a44e9b946f1f420c44f1403f412fb59ccca9a284")
+        self.assertEqual(last["source_ci"], {"run_id": 40189597795, "conclusion": "SUCCESS"})
+        self.assertEqual(last["merge_sha"], "63faae23c63ae0012f74c63aad730d93f95ce1c2")
+        self.assertEqual(last["postmain_ci"], {"run_id": 40190429389, "conclusion": "SUCCESS"})
+        self.assertEqual((last["steps_source"], last["steps_postmain"], last["handoff_tests"]),
+                         (81, 81, 107))
+        self.assertEqual((last["fictional_vitest_tests"], last["chromium_normal"],
+                          last["chromium_strict_csp"], last["rust_tests"]), (96, 82, 82, 132))
+        self.assertFalse(last["operator_windows_access"])
+        self.assertEqual(last["real_g3"], "STOP_UNAVAILABLE")
+        planned = self.data["next_data_version_synthetic_cross_connection_guard_20261025"]
+        self.assertEqual(planned["status"], "CANDIDATE_SYNTHETIC_TEST_ONLY")
+        self.assertEqual(planned["new_rust_test_count"], 4)
+        self.assertEqual(planned["comparison"], "SAME_CONNECTION_ONLY")
+        self.assertEqual(planned["global_writer_absence"], "NOT_PROVEN")
+        self.assertEqual(planned["source_provenance"], "NOT_PROVEN")
+        self.assertEqual(planned["real_g3"], "STOP_UNAVAILABLE")
+        self.assertFalse(planned["operator_windows_actions"])
+        rust = (ROOT / "src-tauri/src/m32_preopened_query_only_toy.rs").read_text(encoding="utf-8")
+        doc = (ROOT / planned["document"]).read_text(encoding="utf-8")
+        for name in planned["test_names"]:
+            self.assertIn("fn " + name, rust)
+        for snippet in ("struct VersionedFictionalReader", "PRAGMA data_version",
+                        "local_data_version(self.old_guard.source)?",
+                        "PreopenedFictionalReader::new", "mode=memory&cache=shared",
+                        "fn toy_14_query_only_and_total_changes_do_not_exclude_independent_writer"):
+            self.assertIn(snippet, rust)
+        for forbidden in ("Connection::open(operator_path)", "database::open_database(",
+                          "std::fs::", "#[tauri::command]", "VACUUM INTO"):
+            self.assertNotIn(forbidden, rust)
+        for snippet in ("SYNTHÉTIQUES UNIQUEMENT", "NOT_PROVEN",
+                        "STOP_UNAVAILABLE", "40190429389", "PRAGMA data_version"):
+            self.assertIn(snippet, doc)
+        for name in ("RESUME_PROMPT_SHORT.md", "RESUME_PROMPT.md", "HANDOFF_CURRENT.md",
+                     "HANDOFF_HISTORY.md", "HANDOFF_PROTOCOL.md", "STATE.md",
+                     "NEXT.md", "M3_2_GATE_DECISION_CURRENT.md", "README.md"):
+            self.assertIn("40190429389", (DIRECTORY / name).read_text(encoding="utf-8"), name)
+        for name in ("ROADMAP_STATUS_CURRENT.md", "FABULAXIOM_ROADMAP_V1.md"):
+            self.assertIn("40190429389", (ROOT / "docs/roadmap" / name).read_text(encoding="utf-8"), name)
 
 if __name__ == "__main__":
     unittest.main()
