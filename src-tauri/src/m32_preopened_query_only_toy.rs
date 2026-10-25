@@ -221,3 +221,69 @@ fn toy_13_late_attached_ram_schema_invalidates_existing_borrow() -> Result<()> {
     assert!(r.read_again().is_err());
     Ok(())
 }
+
+#[cfg(test)]
+fn invented_shared_ram_pair(version: i64) -> Result<(Connection, Connection)> {
+    use std::sync::atomic::{AtomicU64, Ordering};
+    static NEXT_INVENTED_RAM: AtomicU64 = AtomicU64::new(1);
+    let id = NEXT_INVENTED_RAM.fetch_add(1, Ordering::Relaxed);
+    // SQLite URI mode=memory keeps both connections OFF DISK. Distinct ID for
+    // parallel tests. Never substitute a protected original path or Tauri opener.
+    let uri = format!("file:m32-invented-foreign-writer-{id}?mode=memory&cache=shared");
+    let flags = rusqlite::OpenFlags::SQLITE_OPEN_READ_WRITE
+        | rusqlite::OpenFlags::SQLITE_OPEN_CREATE
+        | rusqlite::OpenFlags::SQLITE_OPEN_URI;
+    let reader = Connection::open_with_flags(&uri, flags)?;
+    reader.execute_batch(
+        "CREATE TABLE schema_migrations(version INTEGER PRIMARY KEY);
+         CREATE TABLE imaginary_events(id INTEGER PRIMARY KEY, description TEXT NOT NULL);
+         INSERT INTO imaginary_events VALUES (1, 'fictitious initial event');",
+    )?;
+    for n in 1..=version {
+        reader.execute("INSERT INTO schema_migrations VALUES (?1)", params![n])?;
+    }
+    let other_writer = Connection::open_with_flags(&uri, flags)?;
+    reader.execute_batch("PRAGMA query_only=ON;")?;
+    Ok((reader, other_writer))
+}
+
+#[test]
+fn toy_14_query_only_and_total_changes_do_not_exclude_independent_writer() -> Result<()> {
+    let (reader, other_writer) = invented_shared_ram_pair(6)?;
+    let lease = PreopenedFictionalReader::new(&reader, 6)?;
+    let initial_changes = total_changes(&reader)?;
+    let initial_value: String = reader.query_row(
+        "SELECT description FROM imaginary_events WHERE id=1", [], |row| row.get(0),
+    )?;
+    assert_eq!(initial_value, "fictitious initial event");
+
+    // This independently opened connection updates the same invented RAM DB.
+    // query_only is connection-scoped; total_changes is also connection-local.
+    other_writer.execute(
+        "UPDATE imaginary_events SET description='fictitious external rewrite' WHERE id=1", [],
+    )?;
+    assert_eq!(total_changes(&reader)?, initial_changes);
+    assert_eq!(
+        lease.read_again()?,
+        FictionalReading { version: 6, invented_event_count: 1 },
+    );
+    let after: String = reader.query_row(
+        "SELECT description FROM imaginary_events WHERE id=1", [], |row| row.get(0),
+    )?;
+    assert_eq!(after, "fictitious external rewrite");
+    assert_ne!(after, initial_value);
+    // TEST PASSES by reproducing a SECURITY GAP. This is NOT a real owner,
+    // writer absence certificate, protected SQLite inspection or G3 permit.
+    Ok(())
+}
+
+#[test]
+fn toy_15_query_only_guard_can_detect_count_drift_but_not_all_foreign_writes() -> Result<()> {
+    let (reader, other_writer) = invented_shared_ram_pair(7)?;
+    let lease = PreopenedFictionalReader::new(&reader, 7)?;
+    other_writer.execute("DELETE FROM imaginary_events WHERE id=1", [])?;
+    assert_eq!(total_changes(&reader)?, 8); // 1 invented event + 7 migration rows
+    assert!(lease.read_again().is_err()); // Detects this count drift, not all writes.
+    assert_eq!(reader.query_row("PRAGMA query_only", [], |r| r.get::<_, i64>(0))?, 1);
+    Ok(())
+}
