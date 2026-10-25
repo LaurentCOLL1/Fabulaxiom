@@ -569,3 +569,43 @@ fn toy_25_read_uncommitted_observes_rolled_back_cardinality() -> Result<()> {
     assert_eq!(local_data_version(&reader)?, initial_version);
     Ok(())
 }
+
+
+#[test]
+fn toy_26_repeated_dirty_read_stable_guards_do_not_prove_commit() -> Result<()> {
+    let (reader, writer) = invented_shared_ram_pair(6)?;
+    // The invented reader remains read-only; read_uncommitted changes visibility,
+    // NOT writer exclusion or the commit status of another RAM connection.
+    reader.execute_batch("PRAGMA read_uncommitted=ON;")?;
+    let query_only: i64 = reader.query_row("PRAGMA query_only", [], |r| r.get(0))?;
+    assert_eq!(query_only, 1);
+    let initial_version = local_data_version(&reader)?;
+    let initial_changes = total_changes(&reader)?;
+    let original: String = reader.query_row(
+        "SELECT description FROM imaginary_events WHERE id=1", [], |r| r.get(0),
+    )?;
+    assert_eq!(original, "fictitious initial event");
+
+    writer.execute_batch(
+        "BEGIN IMMEDIATE TRANSACTION;
+         UPDATE imaginary_events SET description='invented twice-observed dirty value' WHERE id=1;",
+    )?;
+    // Two identical source reads and unchanged reader-local metadata still
+    // do NOT establish a committed SQLite state or quiescence on real Windows.
+    for _sample in 0..2 {
+        let observed: String = reader.query_row(
+            "SELECT description FROM imaginary_events WHERE id=1", [], |r| r.get(0),
+        )?;
+        assert_eq!(observed, "invented twice-observed dirty value");
+        assert_eq!(local_data_version(&reader)?, initial_version);
+        assert_eq!(total_changes(&reader)?, initial_changes);
+    }
+    writer.execute_batch("ROLLBACK;")?;
+    let restored: String = reader.query_row(
+        "SELECT description FROM imaginary_events WHERE id=1", [], |r| r.get(0),
+    )?;
+    assert_eq!(restored, original);
+    assert_eq!(local_data_version(&reader)?, initial_version);
+    assert_eq!(total_changes(&reader)?, initial_changes);
+    Ok(())
+}

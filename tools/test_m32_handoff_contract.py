@@ -3078,5 +3078,54 @@ class HandoffContractTests(unittest.TestCase):
         for name in ("ROADMAP_STATUS_CURRENT.md", "FABULAXIOM_ROADMAP_V1.md"):
             self.assertIn("40213790809", (ROOT / "docs/roadmap" / name).read_text(encoding="utf-8"), name)
 
+    def test_112_pr177_terminal_and_repeated_dirty_read_negative_candidate(self):
+        self.assertGreaterEqual(self.data["last_confirmed_merged_pr"], 177)
+        terminal = self.data["post_pr177_terminal_observation"]
+        self.assertEqual(terminal["source_sha"], "32093f7f31f26c98e7b91bc9d25930ee4f973d27")
+        self.assertEqual(terminal["source_ci"], {"run_id": 40219228723, "conclusion": "SUCCESS"})
+        self.assertEqual(terminal["merge_sha"], "c1868256739247810ecf6b606e051b53b8c0d529")
+        self.assertEqual(terminal["postmain_ci"], {"run_id": 40220215000, "conclusion": "SUCCESS"})
+        self.assertEqual((terminal["source_steps"], terminal["postmain_passed_steps"],
+                          terminal["postmain_skipped_steps"], terminal["handoff_tests"]),
+                         (81, 80, 1, 111))
+        self.assertEqual((terminal["fictional_vitest_tests"], terminal["chromium_normal"],
+                          terminal["chromium_strict_csp"], terminal["rust_tests"]),
+                         (96, 82, 82, 132))
+        self.assertFalse(terminal["operator_windows_access"])
+        self.assertEqual(terminal["real_g3"], "STOP_UNAVAILABLE")
+        case = self.data["next_shared_ram_double_sample_dirty_read_20261025"]
+        self.assertEqual(case["scope"], "SYNTHETIC_TEST_ONLY")
+        self.assertEqual(case["new_rust_tests"], 1)
+        self.assertFalse(case["two_equal_samples_prove_committed"])
+        self.assertFalse(case["local_total_changes_detects_peer_writer"])
+        self.assertFalse(case["data_version_detects_rollback"])
+        self.assertFalse(case["query_only_prevents_dirty_read"])
+        self.assertEqual(case["global_writer_absence"], "NOT_PROVEN")
+        self.assertEqual(case["g2b"], "NOT_ACCEPTED")
+        self.assertEqual(case["real_g3"], "STOP_UNAVAILABLE")
+        self.assertFalse(case["operator_windows_actions"])
+        rust = (ROOT / "src-tauri/src/m32_preopened_query_only_toy.rs").read_text(encoding="utf-8")
+        doc = (ROOT / case["document"]).read_text(encoding="utf-8")
+        self.assertIn("fn " + case["test_name"] + "(", rust)
+        for expected in ("mode=memory&cache=shared", "PRAGMA read_uncommitted=ON",
+                         "PRAGMA query_only", "invented twice-observed dirty value",
+                         "for _sample in 0..2", "total_changes(&reader)?",
+                         "local_data_version(&reader)?",
+                         'writer.execute_batch("ROLLBACK;")?'):
+            self.assertIn(expected, rust)
+        for forbidden in ("database::open_database(", "std::fs::", "OpenOptions",
+                          "std::process::Command", "VACUUM INTO", "#[tauri::command]"):
+            self.assertNotIn(forbidden, rust)
+        for expected in ("40219228723", "40220215000", "SYNTHETIC_TEST_ONLY",
+                         "NOT_PROVEN", "STOP_UNAVAILABLE", "toy_26"):
+            self.assertIn(expected, doc)
+        for name in ("RESUME_PROMPT_SHORT.md", "RESUME_PROMPT.md",
+                     "HANDOFF_CURRENT.md", "HANDOFF_HISTORY.md", "STATE.md",
+                     "NEXT.md", "M3_2_GATE_DECISION_CURRENT.md", "README.md",
+                     "HANDOFF_PROTOCOL.md"):
+            self.assertIn("40220215000", (DIRECTORY / name).read_text(encoding="utf-8"), name)
+        for name in ("ROADMAP_STATUS_CURRENT.md", "FABULAXIOM_ROADMAP_V1.md"):
+            self.assertIn("40220215000", (ROOT / "docs/roadmap" / name).read_text(encoding="utf-8"), name)
+
 if __name__ == "__main__":
     unittest.main()
