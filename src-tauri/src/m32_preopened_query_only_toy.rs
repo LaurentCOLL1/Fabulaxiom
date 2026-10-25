@@ -452,3 +452,63 @@ fn toy_21_shared_ram_read_transaction_holds_lock_only_until_release() -> Result<
     assert_ne!(local_data_version(&reader)?, initial_version);
     Ok(())
 }
+
+
+#[test]
+fn toy_22_shared_ram_read_lock_is_table_scoped_not_database_wide() -> Result<()> {
+    let (reader, writer) = invented_shared_ram_pair(6)?;
+    // This extra table exists ONLY in a disposable, invented shared RAM cache.
+    writer.execute_batch(
+        "CREATE TABLE imaginary_other_events(id INTEGER PRIMARY KEY, description TEXT NOT NULL);
+         INSERT INTO imaginary_other_events VALUES (1, 'invented separate table');",
+    )?;
+    reader.execute_batch("BEGIN DEFERRED TRANSACTION;")?;
+    let observed: String = reader.query_row(
+        "SELECT description FROM imaginary_events WHERE id=1", [], |r| r.get(0),
+    )?;
+    assert_eq!(observed, "fictitious initial event");
+    // The reader locked imaginary_events, not every table in the shared cache.
+    assert_eq!(writer.execute(
+        "UPDATE imaginary_other_events SET description='invented other-table write' WHERE id=1",
+        [],
+    )?, 1);
+    let updated_other: String = writer.query_row(
+        "SELECT description FROM imaginary_other_events WHERE id=1", [], |r| r.get(0),
+    )?;
+    assert_eq!(updated_other, "invented other-table write");
+    let blocked = writer.execute(
+        "UPDATE imaginary_events SET description='invented locked-table write' WHERE id=1", [],
+    ).expect_err("read-locked table must reject concurrent UPDATE in shared cache");
+    match blocked {
+        Error::SqliteFailure(code, _) => {
+            assert_eq!(code.code, rusqlite::ErrorCode::DatabaseLocked);
+        }
+        other => panic!("expected SQLite table-lock failure, got {other:?}"),
+    }
+    reader.execute_batch("ROLLBACK;")?;
+    Ok(())
+}
+
+#[test]
+fn toy_23_read_uncommitted_does_not_hold_shared_ram_table_read_lock() -> Result<()> {
+    let (reader, writer) = invented_shared_ram_pair(7)?;
+    reader.execute_batch("PRAGMA read_uncommitted=ON; BEGIN DEFERRED TRANSACTION;")?;
+    let enabled: i64 = reader.query_row("PRAGMA read_uncommitted", [], |r| r.get(0))?;
+    assert_eq!(enabled, 1);
+    let original: String = reader.query_row(
+        "SELECT description FROM imaginary_events WHERE id=1", [], |r| r.get(0),
+    )?;
+    assert_eq!(original, "fictitious initial event");
+    // Unlike toy_21's default isolation, read_uncommitted bypasses the
+    // shared-cache table read-lock. This says NOTHING about real Windows files.
+    assert_eq!(writer.execute(
+        "UPDATE imaginary_events SET description='invented uncommitted-mode write' WHERE id=1",
+        [],
+    )?, 1);
+    let changed: String = reader.query_row(
+        "SELECT description FROM imaginary_events WHERE id=1", [], |r| r.get(0),
+    )?;
+    assert_eq!(changed, "invented uncommitted-mode write");
+    reader.execute_batch("ROLLBACK;")?;
+    Ok(())
+}

@@ -3,14 +3,14 @@
   "as_of": "2026-10-25",
   "status_kind": "DATED_PUBLIC_SOURCE_HANDOFF_ONLY",
   "repository": "LaurentCOLL1/Fabulaxiom",
-  "last_confirmed_main_before_handoff": "0c1aee574832a3f48571546b345ebaad9228c163",
-  "last_confirmed_merged_pr": 174,
-  "last_verified_pr_head": "a9a031e3f7322e39475c70c2a1111fdc0c37f047",
+  "last_confirmed_main_before_handoff": "c7d93dd2844bdd3cb17c5ffb5cc600902f9ba18f",
+  "last_confirmed_merged_pr": 175,
+  "last_verified_pr_head": "bd5e8ef35b80d653530f1f36d288724c1642f2ea",
   "last_verified_ci": {
-    "run_id": 40199121197,
+    "run_id": 40209991293,
     "context": "Windows frontend and Rust checks",
     "conclusion": "SUCCESS",
-    "source": "PR174_EXACT_HEAD"
+    "source": "PR175_EXACT_HEAD"
   },
   "recent_changes": [
     "PR_85_EXACT_G2A_TEXT_AST_ONLY",
@@ -165,7 +165,9 @@
     "PR173_SOURCE_40189597795_POSTMAIN_40190429389_TERMINAL_SUCCESS_MAIN_63FAAE2",
     "2026_10_25_DATA_VERSION_INVENTED_RAM_GUARD_FOUR_CANDIDATE_TESTS_NO_REAL_WRITER_PROOF",
     "PR174_SOURCE_40199121197_POSTMAIN_40200127549_SUCCESS_ON_0C1AEE5",
-    "2026_10_25_SYNTHETIC_RAM_POSTFLIGHT_AND_TRANSACTION_LOCK_LIFETIME_TESTS_CANDIDATE"
+    "2026_10_25_SYNTHETIC_RAM_POSTFLIGHT_AND_TRANSACTION_LOCK_LIFETIME_TESTS_CANDIDATE",
+    "PR175_SOURCE_40209991293_POSTMAIN_40210737724_TERMINAL_SUCCESS_MAIN_C7D93DD2",
+    "2026_10_25_SHARED_RAM_TABLE_LOCK_SCOPE_AND_READ_UNCOMMITTED_CANDIDATE"
   ],
   "pr35": "OPEN_DRAFT",
   "issues": {
@@ -3600,6 +3602,39 @@
     "postflight_is_lock": false,
     "transaction_mode": "INVENTED_RAM_SHARED_CACHE_ONLY",
     "generalized_writer_absence": "NOT_PROVEN",
+    "g2b": "NOT_ACCEPTED",
+    "real_g3": "STOP_UNAVAILABLE",
+    "operator_windows_actions": false
+  },
+  "post_pr175_terminal_observation": {
+    "pr": 175,
+    "source_sha": "bd5e8ef35b80d653530f1f36d288724c1642f2ea",
+    "source_ci": {"run_id": 40209991293, "conclusion": "SUCCESS"},
+    "merge_sha": "c7d93dd2844bdd3cb17c5ffb5cc600902f9ba18f",
+    "postmain_ci": {"run_id": 40210737724, "conclusion": "SUCCESS"},
+    "source_steps": 81,
+    "postmain_passed_steps": 80,
+    "postmain_skipped_steps": 1,
+    "handoff_tests": 109,
+    "fictional_vitest_tests": 96,
+    "chromium_normal": 82,
+    "chromium_strict_csp": 82,
+    "rust_tests": 132,
+    "feature_test_names": ["toy_20", "toy_21"],
+    "operator_windows_access": false,
+    "real_g3": "STOP_UNAVAILABLE"
+  },
+  "next_shared_ram_table_scope_and_isolation_negative_20261025": {
+    "scope": "SYNTHETIC_TEST_ONLY",
+    "document": "docs/qualification/M3_2_SHARED_RAM_TABLE_SCOPE_AND_READ_UNCOMMITTED_NEGATIVE_20261025.md",
+    "test_names": [
+      "toy_22_shared_ram_read_lock_is_table_scoped_not_database_wide",
+      "toy_23_read_uncommitted_does_not_hold_shared_ram_table_read_lock"
+    ],
+    "new_rust_tests": 2,
+    "database_wide_writer_exclusion": false,
+    "isolation": "SHARED_CACHE_READ_UNCOMMITTED_ONLY",
+    "global_writer_absence": "NOT_PROVEN",
     "g2b": "NOT_ACCEPTED",
     "real_g3": "STOP_UNAVAILABLE",
     "operator_windows_actions": false
