@@ -2711,7 +2711,7 @@ class HandoffContractTests(unittest.TestCase):
 
     def test_104_pr169_terminal_and_g2b0_ast_static_only(self):
         p = self.data["post_pr169_terminal_observation"]
-        self.assertEqual(self.data["last_confirmed_merged_pr"], 169)
+        self.assertGreaterEqual(self.data["last_confirmed_merged_pr"], 169)
         self.assertEqual(p["source_sha"], "67e2b400510fe4bade797a9fd73997f892ded1ad")
         self.assertEqual(p["source_ci"], {"run_id": 40127450956, "conclusion": "SUCCESS"})
         self.assertEqual(p["merge_sha"], "4ea2c5f9ad380863c5634dae65faac9831b1cec3")
@@ -2745,6 +2745,58 @@ class HandoffContractTests(unittest.TestCase):
             self.assertIn("40128407418", doc, name)
         for path in ("ROADMAP_STATUS_CURRENT.md", "FABULAXIOM_ROADMAP_V1.md"):
             self.assertIn("40128407418", (ROOT / "docs/roadmap" / path).read_text(encoding="utf-8"))
+
+
+    def test_105_pr170_postmain_b0_owner_report_and_b1_candidate(self):
+        record = self.data["post_pr170_terminal_observation"]
+        self.assertEqual(self.data["last_confirmed_merged_pr"], 170)
+        self.assertEqual(record["source_sha"], "458f58ad6960b72b81fbfbe588f90168e36c3975")
+        self.assertEqual(record["source_ci"], {"run_id": 40155313316, "conclusion": "SUCCESS"})
+        self.assertEqual(record["merge_sha"], "93eba0ae4801e5a0a73121fef305dc9212e52761")
+        self.assertEqual(record["postmain_ci"], {"run_id": 40156277835, "conclusion": "SUCCESS"})
+        self.assertEqual((record["source_steps"], record["postmain_steps"], record["handoff_tests"]),
+                         (80, 80, 104))
+        self.assertEqual((record["fictional_vitest_tests"], record["chromium_normal"],
+                          record["chromium_strict_csp"], record["rust_tests"]),
+                         (96, 82, 82, 132))
+        self.assertFalse(record["operator_windows_access"])
+        self.assertEqual(record["real_g3"], "STOP_UNAVAILABLE")
+        owner = self.data["g2b0_operator_report_20261025"]
+        self.assertEqual(owner["observation"], "OBSERVED_PARTIAL_ONLY_OWNER_REPORTED")
+        self.assertEqual((owner["production_m15_sqlite_filename_count"],
+                          owner["isolated_m25_sqlite_filename_count"]), (4, 1))
+        self.assertTrue(owner["operator_local_run_reported"])
+        self.assertFalse(owner["independent_attestation"])
+        self.assertEqual(owner["writer_absence"], "NOT_PROVEN")
+        self.assertEqual(owner["g2c"], "NOT_AUTHORIZED")
+        b1 = self.data["g2b1_selector_review"]
+        self.assertEqual(b1["status"], "PREPARED_NOT_EXECUTED")
+        self.assertEqual(b1["g2b"], "NOT_ACCEPTED")
+        self.assertTrue(b1["no_original_sqlite_read"])
+        doc = (ROOT / "docs/qualification/M3_2_G2B1_ACTIVATION_SELECTOR_REVIEW_20261025.md").read_text(encoding="utf-8")
+        guard = (ROOT / "tools/m32_g2b1_ast_static_review.ps1").read_text(encoding="utf-8")
+        workflow = (ROOT / ".github/workflows/m0-ci.yml").read_text(encoding="utf-8")
+        import re
+        blocks = re.findall(r"(?ms)^`{3}powershell\s*\n(.*?)^`{3}\s*$", doc)
+        self.assertEqual(len(blocks), 1)
+        script = blocks[0]
+        for snippet in ("[IO.File]::ReadAllText", "MARKER_SIZE",
+                        "if ($sqlite.Count -ne 4)", "SQLITE_WRITER_ABSENCE: NOT_PROVEN",
+                        "G2B1_SELECTOR_OBSERVATION: OBSERVED_PARTIAL_ONLY",
+                        "G2C_G2D_G3_G4_G5_G6: NOT_AUTHORIZED"):
+            self.assertIn(snippet, script)
+        for snippet in ("Get-FileHash", "Get-Acl", "Stop-Process", "Set-Content",
+                        "Copy-Item", "Remove-Item", "sqlite3.exe", "Invoke-Expression"):
+            self.assertNotIn(snippet, script)
+        self.assertIn("Parser]::ParseInput", guard)
+        self.assertIn("fakeChanges", guard)
+        self.assertIn("run: ./tools/m32_g2b1_ast_static_review.ps1", workflow)
+        for name in ("RESUME_PROMPT_SHORT.md", "RESUME_PROMPT.md",
+                     "HANDOFF_CURRENT.md", "HANDOFF_HISTORY.md", "STATE.md",
+                     "NEXT.md", "M3_2_GATE_DECISION_CURRENT.md", "README.md"):
+            self.assertIn("40156277835", (DIRECTORY / name).read_text(encoding="utf-8"), name)
+        for name in ("ROADMAP_STATUS_CURRENT.md", "FABULAXIOM_ROADMAP_V1.md"):
+            self.assertIn("40156277835", (ROOT / "docs/roadmap" / name).read_text(encoding="utf-8"), name)
 
 if __name__ == "__main__":
     unittest.main()
