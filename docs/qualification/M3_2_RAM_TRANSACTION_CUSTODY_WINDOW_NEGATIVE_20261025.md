@@ -1,6 +1,6 @@
 # M3.2 — Fenêtre transactionnelle RAM vs contrôle rétrospectif, 25 octobre 2026
 
-**Seulement deux tests Rust de laboratoire sur base `mode=memory` inventée ; jamais une procédure opérateur, jamais un original, jamais un G3 réel.**
+**SYNTHETIC_TEST_ONLY.** Seulement deux tests Rust de laboratoire sur base `mode=memory` inventée ; jamais une procédure opérateur, jamais un original, jamais un G3 réel.**
 
 ## Checkpoint GitHub exact et preuve déjà acquise
 
