@@ -118,7 +118,7 @@ class RustSqliteOpenInventoryTests(unittest.TestCase):
     def test_22_only_reviewed_invented_uri_ram_opens_added(self):
         p = "src-tauri/src/m32_preopened_query_only_toy.rs"
         source = self.src[p]
-        self.assertEqual(EXPECTED[p], (3, 0, 0, 0, 5, 0, 0))
+        self.assertEqual(EXPECTED[p], (3, 0, 0, 0, 2, 3, 0))
         self.assertIn("mode=memory&cache=shared", source)
         self.assertIn("NEXT_INVENTED_RAM.fetch_add", source)
         self.assertEqual(source.count("Connection::open_with_flags(&uri, flags)?"), 2)
