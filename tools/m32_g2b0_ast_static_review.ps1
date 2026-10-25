@@ -45,11 +45,21 @@ function Test-G2B0SourceAstShape([string]$source) {
   $calls = @($ast.FindAll({
     param($n) $n -is [System.Management.Automation.Language.InvokeMemberExpressionAst]
   }, $true))
-  $allowedMethods = @('IsNullOrWhiteSpace', 'Combine', 'IsPathRooted',
-                      'GetFullPath', 'GetParent')
+  $allowedReceivers = @{
+    IsNullOrWhiteSpace = '[string]'
+    Combine = '[IO.Path]'
+    IsPathRooted = '[IO.Path]'
+    GetFullPath = '[IO.Path]'
+    GetParent = '[IO.Directory]'
+  }
   foreach ($call in $calls) {
-    if ($call.Member -isnot [System.Management.Automation.Language.StringConstantExpressionAst] -or
-        $allowedMethods -cnotcontains $call.Member.Value) {
+    if ($call.Member -isnot [System.Management.Automation.Language.StringConstantExpressionAst]) {
+      return $false
+    }
+    $methodName = $call.Member.Value
+    if (-not $call.Static -or
+        -not $allowedReceivers.ContainsKey($methodName) -or
+        $call.Expression.Extent.Text -cne $allowedReceivers[$methodName]) {
       return $false
     }
   }
@@ -79,13 +89,13 @@ if (-not (Test-G2B0SourceAstShape $candidate)) {
 # All negatives are fictional strings, NEVER evaluated. No Windows operator I/O.
 $mutations = @(
   $candidate.Replace('Get-Process -ErrorAction Stop', 'Stop-Process -ErrorAction Stop'),
-  $candidate.Replace('Get-Item -LiteralPath', 'Set-Item -LiteralPath'),
+  $candidate.Replace('[IO.Path]::Combine', '[IO.File]::Combine'),
   $candidate.Replace('Get-ChildItem -LiteralPath', 'Remove-Item -LiteralPath'),
   $candidate.Replace('Get-Process -ErrorAction Stop', 'Invoke-Expression -ErrorAction Stop'),
-  ($candidate + "`n[IO.File]::WriteAllText('invented.txt', 'invented')"),
-  ($candidate + "`n& ([scriptblock]::Create('Write-Output invented'))"),
+  $candidate.Replace("Write-Output 'PROSPECTIVE: NOT_STARTED'", "[IO.File]::WriteAllText('invented.txt', 'invented'); Write-Output 'PROSPECTIVE: NOT_STARTED'"),
+  $candidate.Replace("Write-Output 'PROSPECTIVE: NOT_STARTED'", "& ([scriptblock]::Create('Write-Output invented')); Write-Output 'PROSPECTIVE: NOT_STARTED'"),
   ($candidate + "`nWrite-Output 'unterminated"),
-  ($candidate + "`nWrite-Output invented > invented.txt"),
+  $candidate.Replace("Write-Output 'PROSPECTIVE: NOT_STARTED'", "Write-Output 'PROSPECTIVE: NOT_STARTED' > invented.txt"),
   $candidate.Replace('SQLITE_SIDECAR_SEEN', 'SIDE_CAR_IGNORED'),
   $candidate.Replace('SQLITE_WRITER_ABSENCE: NOT_PROVEN', 'SQLITE_WRITER_ABSENCE: PROVEN')
 )
