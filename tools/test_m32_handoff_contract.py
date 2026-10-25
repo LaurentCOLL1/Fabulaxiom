@@ -3127,5 +3127,54 @@ class HandoffContractTests(unittest.TestCase):
         for name in ("ROADMAP_STATUS_CURRENT.md", "FABULAXIOM_ROADMAP_V1.md"):
             self.assertIn("40220215000", (ROOT / "docs/roadmap" / name).read_text(encoding="utf-8"), name)
 
+    def test_113_pr178_terminal_and_source_only_evidence_ceiling(self):
+        self.assertGreaterEqual(self.data["last_confirmed_merged_pr"], 178)
+        terminal = self.data["post_pr178_terminal_observation"]
+        self.assertEqual(terminal["source_sha"], "c13a166f07c4850258628db5279594699b5ccfe8")
+        self.assertEqual(terminal["source_ci"], {"run_id": 40229362824, "conclusion": "SUCCESS"})
+        self.assertEqual(terminal["merge_sha"], "dd5e6f17c6a4d71f4ac19ba0da4821a362f2af7d")
+        self.assertEqual(terminal["postmain_ci"], {"run_id": 40230066592, "conclusion": "SUCCESS"})
+        self.assertEqual((terminal["source_steps"], terminal["postmain_passed_steps"],
+                          terminal["postmain_skipped_steps"], terminal["handoff_tests"]),
+                         (81, 80, 1, 112))
+        self.assertEqual((terminal["fictional_vitest_tests"], terminal["chromium_normal"],
+                          terminal["chromium_strict_csp"], terminal["rust_tests"]),
+                         (96, 82, 82, 132))
+        self.assertFalse(terminal["operator_windows_access"])
+        self.assertEqual(terminal["real_g3"], "STOP_UNAVAILABLE")
+        ceiling = self.data["next_g2b_g3_source_only_evidence_ceiling_20261025"]
+        self.assertEqual(ceiling["scope"], "SOURCE_ONLY_CLASSIFICATION_NOT_OPERATOR_ATTESTATION")
+        self.assertEqual(ceiling["new_rust_tests"], 0)
+        for key in ("new_operator_evidence", "owner_report_is_independent_attestation",
+                    "synthetic_ci_proves_real_quiescence", "source_audit_is_live_custody",
+                    "operator_windows_actions"):
+            self.assertFalse(ceiling[key], key)
+        self.assertEqual((ceiling["route_a"], ceiling["route_b"], ceiling["route_c"]),
+                         ("UNAVAILABLE_NOT_PROVEN", "NOT_PROVEN", "DEVELOPMENT_ONLY"))
+        self.assertEqual(ceiling["global_writer_absence"], "NOT_PROVEN")
+        self.assertEqual(ceiling["g2b"], "NOT_ACCEPTED")
+        self.assertEqual(ceiling["g2c"], "NOT_AUTHORIZED")
+        self.assertEqual(ceiling["real_g3"], "STOP_UNAVAILABLE")
+        self.assertEqual(ceiling["historical"], "PENDING_EXTERNAL_ATTESTATION(21/3/2)")
+        self.assertEqual(ceiling["prospective"], "NOT_STARTED")
+        self.assertEqual(self.data["governance"]["historic"], ceiling["historical"])
+        self.assertEqual(self.data["governance"]["prospective"], ceiling["prospective"])
+        doc = (ROOT / ceiling["document"]).read_text(encoding="utf-8")
+        for expected in ("40229362824", "40230066592", "NO_ELIGIBLE_REAL_G3_STRATEGY_STOP",
+                         "OWNER_REPORTED", "SOURCE-ONLY", "UNAVAILABLE_NOT_PROVEN",
+                         "DEVELOPMENT_ONLY", "NOT_PROVEN", "STOP_UNAVAILABLE",
+                         "PENDING_EXTERNAL_ATTESTATION(21/3/2)", "PR #35",
+                         "M3_2_G3_TAURI_OWNER_INTEGRATION_AUDIT.md",
+                         "M3_2_POST_G2B1_CUSTODY_ROUTE_DECISION_20261025.md",
+                         "FILE_SHARE_WRITE", "read_uncommitted"):
+            self.assertIn(expected, doc)
+        for name in ("RESUME_PROMPT_SHORT.md", "RESUME_PROMPT.md",
+                     "HANDOFF_CURRENT.md", "HANDOFF_HISTORY.md", "STATE.md",
+                     "NEXT.md", "M3_2_GATE_DECISION_CURRENT.md", "README.md",
+                     "HANDOFF_PROTOCOL.md"):
+            self.assertIn("40230066592", (DIRECTORY / name).read_text(encoding="utf-8"), name)
+        for name in ("ROADMAP_STATUS_CURRENT.md", "FABULAXIOM_ROADMAP_V1.md"):
+            self.assertIn("40230066592", (ROOT / "docs/roadmap" / name).read_text(encoding="utf-8"), name)
+
 if __name__ == "__main__":
     unittest.main()
