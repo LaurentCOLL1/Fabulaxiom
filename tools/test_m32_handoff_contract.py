@@ -2749,7 +2749,7 @@ class HandoffContractTests(unittest.TestCase):
 
     def test_105_pr170_postmain_b0_owner_report_and_b1_candidate(self):
         record = self.data["post_pr170_terminal_observation"]
-        self.assertEqual(self.data["last_confirmed_merged_pr"], 170)
+        self.assertGreaterEqual(self.data["last_confirmed_merged_pr"], 170)
         self.assertEqual(record["source_sha"], "458f58ad6960b72b81fbfbe588f90168e36c3975")
         self.assertEqual(record["source_ci"], {"run_id": 40155313316, "conclusion": "SUCCESS"})
         self.assertEqual(record["merge_sha"], "93eba0ae4801e5a0a73121fef305dc9212e52761")
@@ -2770,7 +2770,7 @@ class HandoffContractTests(unittest.TestCase):
         self.assertEqual(owner["writer_absence"], "NOT_PROVEN")
         self.assertEqual(owner["g2c"], "NOT_AUTHORIZED")
         b1 = self.data["g2b1_selector_review"]
-        self.assertEqual(b1["status"], "PREPARED_NOT_EXECUTED")
+        self.assertEqual(b1["status"], "OBSERVED_PARTIAL_ONLY_OWNER_REPORTED")
         self.assertEqual(b1["g2b"], "NOT_ACCEPTED")
         self.assertTrue(b1["no_original_sqlite_read"])
         doc = (ROOT / "docs/qualification/M3_2_G2B1_ACTIVATION_SELECTOR_REVIEW_20261025.md").read_text(encoding="utf-8")
@@ -2797,6 +2797,56 @@ class HandoffContractTests(unittest.TestCase):
             self.assertIn("40156277835", (DIRECTORY / name).read_text(encoding="utf-8"), name)
         for name in ("ROADMAP_STATUS_CURRENT.md", "FABULAXIOM_ROADMAP_V1.md"):
             self.assertIn("40156277835", (ROOT / "docs/roadmap" / name).read_text(encoding="utf-8"), name)
+
+
+    def test_106_pr171_terminal_b1_owner_result_and_custody_route_stop(self):
+        self.assertEqual(self.data["last_confirmed_merged_pr"], 171)
+        p = self.data["post_pr171_terminal_observation"]
+        self.assertEqual(p["source_sha"], "6912ba98ebbd558ac86a5669a497f757df990db2")
+        self.assertEqual(p["source_ci"], {"run_id": 40166867332, "conclusion": "SUCCESS"})
+        self.assertEqual(p["merge_sha"], "a33600120f78f20477f4680737e87cb9fabf818b")
+        self.assertEqual(p["postmain_ci"], {"run_id": 40169967245, "conclusion": "SUCCESS"})
+        self.assertEqual((p["source_steps"], p["postmain_steps"], p["handoff_tests"]),
+                         (81, 81, 105))
+        self.assertEqual((p["fictional_vitest_tests"], p["chromium_normal"],
+                          p["chromium_strict_csp"], p["rust_tests"]), (96, 82, 82, 132))
+        self.assertFalse(p["operator_windows_access"])
+        owner = self.data["g2b1_operator_report_20261025"]
+        self.assertTrue(owner["operator_local_run_reported"])
+        self.assertFalse(owner["independently_attested"])
+        self.assertEqual(owner["status"], "OBSERVED_PARTIAL_ONLY_OWNER_REPORTED")
+        self.assertEqual(owner["production_m15_sqlite_filename_count"], 4)
+        self.assertEqual(owner["accepted_activation_marker_count"], 1)
+        self.assertEqual(owner["selector_kind"], "RESTORED")
+        self.assertEqual(owner["selected_filename_match"], "ONE_OBSERVED")
+        self.assertEqual(owner["source_identity"], "PARTIAL_LOCAL_IDENTITY_ONLY")
+        self.assertEqual(owner["writer_absence"], "NOT_PROVEN")
+        self.assertEqual(owner["g2c"], "NOT_AUTHORIZED")
+        self.assertEqual(owner["g3"], "STOP_UNAVAILABLE")
+        self.assertEqual(owner["historical"], "PENDING_EXTERNAL_ATTESTATION(21/3/2)")
+        self.assertEqual(owner["prospective"], "NOT_STARTED")
+        decision = self.data["next_source_custody_route_decision_20261025"]
+        self.assertEqual(decision["route_a_preopened_owner"], "UNAVAILABLE_NOT_PROVEN")
+        self.assertEqual(decision["route_b_cold_quiescence"], "NOT_PROVEN")
+        self.assertEqual(decision["route_c_greenfield"], "DEVELOPMENT_ONLY")
+        self.assertEqual(decision["g2b"], "NOT_ACCEPTED")
+        self.assertEqual(decision["real_g3"], "STOP_UNAVAILABLE")
+        self.assertEqual(decision["windows_operator_new_procedure"], "NOT_PROPOSED")
+        path = ROOT / decision["document"]
+        document = path.read_text(encoding="utf-8")
+        for required in ("PR #171", "40169967245", "OBSERVED_PARTIAL_ONLY",
+                         "UNAVAILABLE_NOT_PROVEN", "DEVELOPMENT_ONLY",
+                         "NOT_ACCEPTED", "NOT_PROVEN", "STOP_UNAVAILABLE",
+                         "PENDING_EXTERNAL_ATTESTATION(21/3/2)", "NOT_STARTED",
+                         "No automatic escalation"):
+            self.assertIn(required, document)
+        for name in ("RESUME_PROMPT_SHORT.md", "RESUME_PROMPT.md",
+                     "HANDOFF_CURRENT.md", "HANDOFF_HISTORY.md", "STATE.md",
+                     "NEXT.md", "M3_2_GATE_DECISION_CURRENT.md", "README.md",
+                     "HANDOFF_PROTOCOL.md"):
+            self.assertIn("40169967245", (DIRECTORY / name).read_text(encoding="utf-8"), name)
+        for name in ("ROADMAP_STATUS_CURRENT.md", "FABULAXIOM_ROADMAP_V1.md"):
+            self.assertIn("40169967245", (ROOT / "docs/roadmap" / name).read_text(encoding="utf-8"), name)
 
 if __name__ == "__main__":
     unittest.main()
