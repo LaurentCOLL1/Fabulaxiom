@@ -1,6 +1,6 @@
 # M3.2 — Fenêtre transactionnelle RAM vs contrôle rétrospectif, 25 octobre 2026
 
-**SYNTHETIC_TEST_ONLY.** Seulement deux tests Rust de laboratoire sur base `mode=memory` inventée ; jamais une procédure opérateur, jamais un original, jamais un G3 réel.**
+**SYNTHETIC_TEST_ONLY.** Seulement deux tests Rust de laboratoire sur base `mode=memory` inventée ; jamais une procédure opérateur, jamais un original, jamais un G3 réel.
 
 ## Checkpoint GitHub exact et preuve déjà acquise
 
@@ -11,7 +11,7 @@ Après la [PR #174](https://github.com/LaurentCOLL1/Fabulaxiom/pull/174), source
 Uniquement `#[cfg(test)]`, feature `m32-g3-owned-ram-toy`, au sein de `src-tauri/src/m32_preopened_query_only_toy.rs`. Les deux connexions réutilisent la fabrique existante `invented_shared_ram_pair` et une URI `file:m32-invented-foreign-writer-<id>?mode=memory&cache=shared`, distincte par test et sans fichier disque ni identité privée.
 
 - **`toy_20_data_version_postflight_is_not_a_future_write_barrier`** : après un `VersionedFictionalReader::read_again()` accepté, un écrivain fictif distinct effectue volontairement un `UPDATE` **après le dernier contrôle**. Le résultat déjà rendu ne peut pas être transformé rétroactivement en verrou ou attestation ; une lecture suivante voit la variation de `data_version` et rejette. Le scénario est déterministe, sans temporisation ni race aléatoire.
-- **`toy_21_shared_ram_read_transaction_holds_lock_only_until_release`** : le lecteur ouvre `BEGIN DEFERRED TRANSACTION` et exécute un `SELECT`, tenant un verrou de table **dans ce mode SQLite shared-cache en mémoire seulement**. Le second handle tente un `UPDATE` et reçoit un refus ; le lecteur observe encore l'ancienne valeur. Après `ROLLBACK` **uniquement de la transaction RAM inventée**, l'UPDATE tierce réussit. Ce verrou cesse à la libération ; aucune absence continue d'écrivain ou garantie de conservation d'une base réelle n'en découle.
+- **`toy_21_shared_ram_read_transaction_holds_lock_only_until_release`** : le lecteur ouvre `BEGIN DEFERRED TRANSACTION` et exécute un `SELECT`, tenant un verrou de table **dans ce mode SQLite shared-cache en mémoire seulement**. Le second handle tente un `UPDATE` et reçoit explicitement `SQLITE_LOCKED` (verrou de table) ; le lecteur observe encore l'ancienne valeur. Après `ROLLBACK` **uniquement de la transaction RAM inventée**, l'UPDATE tierce réussit. Ce verrou cesse à la libération ; aucune absence continue d'écrivain ou garantie de conservation d'une base réelle n'en découle.
 
 Ces scénarios ne remplacent pas la vraie voie G3 : authenticité et provenance source, identifiants Windows et ancêtres conservés, journaux WAL/rollback/hot journal, OS/IPC, écriture par d'autres processus, isolation d'une acquisition ni préservation du support réel restent inconnus. `PRAGMA data_version` est un signal d'invalidation postérieure, pas un verrou ; la transaction en cache partagé ne généralise pas un protocole de verrouillage fiable sous d'autres modes SQLite.
 

@@ -428,9 +428,15 @@ fn toy_21_shared_ram_read_transaction_holds_lock_only_until_release() -> Result<
         "SELECT description FROM imaginary_events WHERE id=1", [], |r| r.get(0),
     )?;
     assert_eq!(original, "fictitious initial event");
-    assert!(writer.execute(
+    let blocked = writer.execute(
         "UPDATE imaginary_events SET description='invented concurrent write' WHERE id=1", [],
-    ).is_err());
+    ).expect_err("shared-cache read table lock must reject the writer");
+    match blocked {
+        Error::SqliteFailure(code, _) => {
+            assert_eq!(code.code, rusqlite::ErrorCode::DatabaseLocked);
+        }
+        other => panic!("expected SQLite table-lock failure, got {other:?}"),
+    }
     let still_original: String = reader.query_row(
         "SELECT description FROM imaginary_events WHERE id=1", [], |r| r.get(0),
     )?;

@@ -2966,7 +2966,7 @@ class HandoffContractTests(unittest.TestCase):
         for expected in ("mode=memory&cache=shared", "BEGIN DEFERRED TRANSACTION",
                          "invented concurrent write", "invented after-release write",
                          "invented postflight write", "reader.execute_batch(\"ROLLBACK;\")?",
-                         "local_data_version(&reader)?"):
+                         "local_data_version(&reader)?", "rusqlite::ErrorCode::DatabaseLocked"):
             self.assertIn(expected, rust)
         for forbidden in ("database::open_database(", "std::fs::", "OpenOptions",
                           "std::process::Command", "VACUUM INTO", "#[tauri::command]"):
