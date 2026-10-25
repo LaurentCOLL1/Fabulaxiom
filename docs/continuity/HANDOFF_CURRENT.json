@@ -3,14 +3,14 @@
   "as_of": "2026-10-24",
   "status_kind": "DATED_PUBLIC_SOURCE_HANDOFF_ONLY",
   "repository": "LaurentCOLL1/Fabulaxiom",
-  "last_confirmed_main_before_handoff": "a03cc5dad68aaf4cb78c39520de130960dc565f8",
-  "last_confirmed_merged_pr": 168,
-  "last_verified_pr_head": "d1f6db636a09112ace772b734c1a33e81d63d168",
+  "last_confirmed_main_before_handoff": "4ea2c5f9ad380863c5634dae65faac9831b1cec3",
+  "last_confirmed_merged_pr": 169,
+  "last_verified_pr_head": "67e2b400510fe4bade797a9fd73997f892ded1ad",
   "last_verified_ci": {
-    "run_id": 40117705107,
+    "run_id": 40127450956,
     "context": "Windows frontend and Rust checks",
     "conclusion": "SUCCESS",
-    "source": "PR168_EXACT_HEAD"
+    "source": "PR169_EXACT_HEAD"
   },
   "recent_changes": [
     "PR_85_EXACT_G2A_TEXT_AST_ONLY",
@@ -151,7 +151,9 @@
     "PR165_MERGED_EXACT_MAIN_E1FAACC_POSTMAIN_40106296690_SUCCESS_THEN_FICTIONAL_NOTICE_DEDUP_CANDIDATE",
     "PR166_MERGED_MAIN_C1FEE963_POSTMAIN_40108674282_SUCCESS_PRIVATE_SIX_COPIES_RECONCILIATION_NO_PROMOTION",
     "PR167_MERGED_MAIN_533BDB27_POSTMAIN_40116658246_SUCCESS_DETACHED_RAM_M25_VALIDATED_NON_HISTORIC_G2_SOLO_PLAN",
-    "PR168_MERGED_MAIN_A03CC5D_POSTMAIN_40122346098_SUCCESS_G2B0_METADATA_ONLY_REVIEW_NOT_EXECUTED"
+    "PR168_MERGED_MAIN_A03CC5D_POSTMAIN_40122346098_SUCCESS_G2B0_METADATA_ONLY_REVIEW_NOT_EXECUTED",
+    "PR169_MERGED_MAIN_4EA2C5F_POSTMAIN_40128407418_TERMINAL_SUCCESS_G2B0_UNEXECUTED",
+    "2026_10_25_G2B0_AST_STATIC_REVIEW_SOURCE_ONLY_CANDIDATE_NOT_QUALIFIED"
   ],
   "pr35": "OPEN_DRAFT",
   "issues": {
@@ -3341,6 +3343,29 @@
     "chromium_strict_csp": 82,
     "rust_tests": 132,
     "operator_windows_access": false,
+    "real_g3": "STOP_UNAVAILABLE",
+    "historical": "PENDING_EXTERNAL_ATTESTATION(21/3/2)"
+  },
+  "post_pr169_terminal_observation": {
+    "as_of": "2026-10-25",
+    "pr": 169,
+    "merged": true,
+    "source_sha": "67e2b400510fe4bade797a9fd73997f892ded1ad",
+    "source_ci": {
+      "run_id": 40127450956,
+      "conclusion": "SUCCESS"
+    },
+    "merge_sha": "4ea2c5f9ad380863c5634dae65faac9831b1cec3",
+    "postmain_ci": {
+      "run_id": 40128407418,
+      "conclusion": "SUCCESS"
+    },
+    "postmain_job_steps": 79,
+    "g2b0_executed": false,
+    "operator_approved": false,
+    "operator_windows_access": false,
+    "m32": "IN_PROGRESS_NOT_ACCEPTED",
+    "g2b": "NOT_ACCEPTED",
     "real_g3": "STOP_UNAVAILABLE",
     "historical": "PENDING_EXTERNAL_ATTESTATION(21/3/2)"
   }
