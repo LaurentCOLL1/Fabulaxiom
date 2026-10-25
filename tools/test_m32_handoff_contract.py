@@ -2661,7 +2661,7 @@ class HandoffContractTests(unittest.TestCase):
 
     def test_103_pr168_terminal_g2b0_unexecuted_text_only(self):
         p = self.data["post_pr168_terminal_observation"]
-        self.assertEqual(self.data["last_confirmed_merged_pr"], 168)
+        self.assertGreaterEqual(self.data["last_confirmed_merged_pr"], 168)
         self.assertEqual(p["source_sha"], "d1f6db636a09112ace772b734c1a33e81d63d168")
         self.assertEqual(p["source_ci"], {"run_id": 40117705107, "conclusion": "SUCCESS"})
         self.assertEqual(p["merge_sha"], "a03cc5dad68aaf4cb78c39520de130960dc565f8")
@@ -2707,6 +2707,44 @@ class HandoffContractTests(unittest.TestCase):
             self.assertIn("40122346098", (DIRECTORY / f).read_text(encoding="utf-8"))
         self.assertIn("40122346098",
             (ROOT / "docs/roadmap/ROADMAP_STATUS_CURRENT.md").read_text(encoding="utf-8"))
+
+
+    def test_104_pr169_terminal_and_g2b0_ast_static_only(self):
+        p = self.data["post_pr169_terminal_observation"]
+        self.assertEqual(self.data["last_confirmed_merged_pr"], 169)
+        self.assertEqual(p["source_sha"], "67e2b400510fe4bade797a9fd73997f892ded1ad")
+        self.assertEqual(p["source_ci"], {"run_id": 40127450956, "conclusion": "SUCCESS"})
+        self.assertEqual(p["merge_sha"], "4ea2c5f9ad380863c5634dae65faac9831b1cec3")
+        self.assertEqual(p["postmain_ci"], {"run_id": 40128407418, "conclusion": "SUCCESS"})
+        self.assertEqual(p["postmain_job_steps"], 79)
+        self.assertFalse(p["g2b0_executed"])
+        self.assertFalse(p["operator_approved"])
+        self.assertFalse(p["operator_windows_access"])
+        self.assertEqual(p["m32"], "IN_PROGRESS_NOT_ACCEPTED")
+        self.assertEqual(p["g2b"], "NOT_ACCEPTED")
+        self.assertEqual(p["real_g3"], "STOP_UNAVAILABLE")
+        self.assertEqual(p["historical"], "PENDING_EXTERNAL_ATTESTATION(21/3/2)")
+        guard = (ROOT / "tools/m32_g2b0_ast_static_review.ps1").read_text(encoding="utf-8")
+        workflow = (ROOT / ".github/workflows/m0-ci.yml").read_text(encoding="utf-8")
+        for required in ("Parser]::ParseInput", "Test-G2B0SourceAstShape",
+                         "InvokeMemberExpressionAst", "RedirectionAst",
+                         "STOP_G2B0", "M32_G2B0_AST_STATIC_REVIEW_PASS",
+                         "M32_G2B0_OPERATOR_AUTHORIZATION: NOT_GRANTED",
+                         "M32_G2B0_WINDOWS_OS_SAFETY: NOT_CERTIFIED",
+                         "Remove-Item", "WriteAllText"):
+            self.assertIn(required, guard)
+        self.assertIn("run: ./tools/m32_g2b0_ast_static_review.ps1", workflow)
+        self.assertIn("no candidate execution", workflow)
+        self.assertNotIn("Invoke-Expression $candidate", guard)
+        proposal = (ROOT / "docs/qualification/M3_2_G2B0_METADATA_ONLY_OPERATOR_REVIEW_20261024.md").read_text(encoding="utf-8")
+        self.assertIn("PREPARED_NOT_EXECUTED", proposal)
+        for name in ("RESUME_PROMPT_SHORT.md", "RESUME_PROMPT.md",
+                     "HANDOFF_CURRENT.md", "HANDOFF_HISTORY.md", "STATE.md",
+                     "NEXT.md", "M3_2_GATE_DECISION_CURRENT.md", "README.md"):
+            doc = (DIRECTORY / name).read_text(encoding="utf-8")
+            self.assertIn("40128407418", doc, name)
+        for path in ("ROADMAP_STATUS_CURRENT.md", "FABULAXIOM_ROADMAP_V1.md"):
+            self.assertIn("40128407418", (ROOT / "docs/roadmap" / path).read_text(encoding="utf-8"))
 
 if __name__ == "__main__":
     unittest.main()

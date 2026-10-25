@@ -86,6 +86,11 @@ jobs:
           if ($dynamic.Count -gt 4) { throw 'STOP: excessive dynamic invocation shape' }
           Write-Output 'M32_G2A_AST_PARSE_ONLY_PASS: no candidate run; no owner approval'
 
+      # Parse-only source review: do NOT execute the exact G2-B0 operator candidate.
+      - name: M3.2 G2-B0 PowerShell AST source review only, no candidate execution
+        shell: pwsh
+        run: ./tools/m32_g2b0_ast_static_review.ps1
+
       - name: M3.2 PID-zero G2-A candidate exact source-only diff guard
         run: python -m unittest discover -s tools -p "test_m32_g2a_pid_zero_candidate_source.py" -v
 

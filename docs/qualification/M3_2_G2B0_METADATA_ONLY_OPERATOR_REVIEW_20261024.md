@@ -2,6 +2,14 @@
 
 **NON EXÉCUTÉ — NE PAS COLLER CE BLOC SANS AUTORISATION SPÉCIFIQUE DE L'OPÉRATEUR.** C'est du texte dans un document GitHub. Les tests de dépôt n'exécutent jamais ce code. Le but est de préparer la **première observation B0** de deux racines connues et non de qualifier la totalité de G2-B.
 
+## Requalification source-only — 25 octobre 2026
+
+**25 octobre 2026 — checkpoint vérifié après PR #169 :** source `67e2b400510fe4bade797a9fd73997f892ded1ad` et CI [#40127450956](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/40127450956) SUCCESS ; `main=4ea2c5f9ad380863c5634dae65faac9831b1cec3` et CI postmain indépendante [#40128407418](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/40128407418) SUCCESS au SHA exact, 79 étapes Windows, voir [issue #38](https://github.com/LaurentCOLL1/Fabulaxiom/issues/38#issuecomment-6392307076). G2-B0 demeure `PREPARED_NOT_EXECUTED`, sans consentement nouveau.
+
+**Candidat nouveau source-only :** garde AST PowerShell `tools/m32_g2b0_ast_static_review.ps1` sur runner CI jetable : uniquement `Parser.ParseInput`, analyse de forme et 10 refus fictifs, JAMAIS exécution du bloc opérateur. Contrat #104, seuils non encore prouvés : 80 étapes Windows, 104 contrats, 96 Vitest fictifs, Chromium 82/82 deux modes, 132 Rust. Pas une certification de sûreté OS/TOCTOU/absence d'écrivain. Re-fetch main/PR/CI/diff/reviews/threads/ruleset, `expected_head_sha` après CI terminale exacte, puis postmain indépendante.
+
+**STOP inchangés :** M3.2 `IN_PROGRESS_NOT_ACCEPTED`, G2B `NOT_ACCEPTED`, écrivain `NOT_PROVEN`, origine `PARTIAL_LOCAL_IDENTITY_ONLY`, G2C `NOT_AUTHORIZED`, G3 `STOP_UNAVAILABLE`, historique `PENDING_EXTERNAL_ATTESTATION(21/3/2)`, prospective `NOT_STARTED`, PR #35 OPEN/DRAFT. Deux racines M1.5/M2.5 seulement, M3.1 v7 non évalué, aucun accès SQLite originale/backups/ACL/journaux/marker/migration 007/IPC writer ou Windows opérateur.
+
 ## Base de décision
 
 - GitHub prérequis : PR #168 source `d1f6db636a09112ace772b734c1a33e81d63d168` et [CI #40117705107](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/40117705107) SUCCESS, protected `main=a03cc5dad68aaf4cb78c39520de130960dc565f8`, [postmain #40122346098](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/40122346098) SUCCESS indépendamment (79/79 Windows, 102 handoff, 96 Vitest, Chromium 82/82 chacun, 132 Rust). Aucun de ces tests ne qualifie le poste de l'opérateur.
