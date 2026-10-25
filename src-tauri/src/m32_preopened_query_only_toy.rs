@@ -287,3 +287,112 @@ fn toy_15_query_only_guard_can_detect_count_drift_but_not_all_foreign_writes() -
     assert_eq!(reader.query_row("PRAGMA query_only", [], |r| r.get::<_, i64>(0))?, 1);
     Ok(())
 }
+
+
+/// TEST-ONLY retrospective invalidation signal for cross-connection commits.
+/// This is not an atomic snapshot, writer exclusion, source provenance, or
+/// a connection to an operator filesystem. It preserves the original weaker
+/// PreopenedFictionalReader for the explicit counterexample in toy_14.
+struct VersionedFictionalReader<'a> {
+    old_guard: PreopenedFictionalReader<'a>,
+    observed_data_version: i64,
+}
+
+fn local_data_version(source: &Connection) -> Result<i64> {
+    source.query_row("PRAGMA data_version", [], |r| r.get(0))
+}
+
+impl<'a> VersionedFictionalReader<'a> {
+    fn new(source: &'a Connection, version: i64) -> Result<Self> {
+        let before = local_data_version(source)?;
+        let old_guard = PreopenedFictionalReader::new(source, version)?;
+        // A commit that raced with initialization must not quietly become
+        // the trusted initial observation for this test-only guard.
+        if local_data_version(source)? != before {
+            return Err(Error::InvalidQuery);
+        }
+        Ok(Self { old_guard, observed_data_version: before })
+    }
+
+    fn read_again(&self) -> Result<FictionalReading> {
+        // Comparing PRAGMA data_version only from the SAME connection matters.
+        if local_data_version(self.old_guard.source)? != self.observed_data_version {
+            return Err(Error::InvalidQuery);
+        }
+        let value = self.old_guard.read_again()?;
+        if local_data_version(self.old_guard.source)? != self.observed_data_version {
+            return Err(Error::InvalidQuery);
+        }
+        Ok(value)
+    }
+}
+
+#[test]
+fn toy_16_data_version_rejects_foreign_same_count_rewrite() -> Result<()> {
+    let (reader, writer) = invented_shared_ram_pair(6)?;
+    let weak = PreopenedFictionalReader::new(&reader, 6)?;
+    let stronger = VersionedFictionalReader::new(&reader, 6)?;
+    let initial_data_version = local_data_version(&reader)?;
+    let initial_changes = total_changes(&reader)?;
+    writer.execute("UPDATE imaginary_events SET description='other invented words' WHERE id=1", [])?;
+
+    assert_eq!(total_changes(&reader)?, initial_changes);
+    assert_ne!(local_data_version(&reader)?, initial_data_version);
+    assert!(weak.read_again().is_ok()); // Historical false negative preserved.
+    assert!(stronger.read_again().is_err()); // Catches THIS completed commit.
+    Ok(())
+}
+
+#[test]
+fn toy_17_data_version_detects_fictional_rewrite_and_restore() -> Result<()> {
+    let (reader, writer) = invented_shared_ram_pair(7)?;
+    let weak = PreopenedFictionalReader::new(&reader, 7)?;
+    let stronger = VersionedFictionalReader::new(&reader, 7)?;
+    let original: String = reader.query_row(
+        "SELECT description FROM imaginary_events WHERE id=1", [], |r| r.get(0)
+    )?;
+    let version_before = local_data_version(&reader)?;
+    writer.execute(
+        "UPDATE imaginary_events SET description='ephemeral invented value' WHERE id=1", [],
+    )?;
+    writer.execute(
+        "UPDATE imaginary_events SET description=?1 WHERE id=1", [&original],
+    )?;
+    let restored: String = reader.query_row(
+        "SELECT description FROM imaginary_events WHERE id=1", [], |r| r.get(0)
+    )?;
+
+    assert_eq!(restored, original);
+    assert!(weak.read_again().is_ok());
+    assert_ne!(local_data_version(&reader)?, version_before);
+    assert!(stronger.read_again().is_err());
+    Ok(())
+}
+
+#[test]
+fn toy_18_data_version_accepts_unchanged_invented_snapshot() -> Result<()> {
+    let (reader, _writer) = invented_shared_ram_pair(6)?;
+    let stronger = VersionedFictionalReader::new(&reader, 6)?;
+    assert_eq!(
+        stronger.read_again()?,
+        FictionalReading { version: 6, invented_event_count: 1 },
+    );
+    assert!(stronger.read_again().is_ok());
+    Ok(())
+}
+
+#[test]
+fn toy_19_data_version_alone_ignores_same_connection_mutation() -> Result<()> {
+    let (reader, _writer) = invented_shared_ram_pair(6)?;
+    let stronger = VersionedFictionalReader::new(&reader, 6)?;
+    let version_before = local_data_version(&reader)?;
+    reader.execute_batch(
+        "PRAGMA query_only=OFF;
+         UPDATE imaginary_events SET description='same connection invented mutation' WHERE id=1;
+         PRAGMA query_only=ON;",
+    )?;
+    assert_eq!(local_data_version(&reader)?, version_before);
+    // The older local total_changes guard still rejects this write.
+    assert!(stronger.read_again().is_err());
+    Ok(())
+}
