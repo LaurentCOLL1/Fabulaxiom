@@ -3,14 +3,14 @@
   "as_of": "2026-10-25",
   "status_kind": "DATED_PUBLIC_SOURCE_HANDOFF_ONLY",
   "repository": "LaurentCOLL1/Fabulaxiom",
-  "last_confirmed_main_before_handoff": "c1868256739247810ecf6b606e051b53b8c0d529",
-  "last_confirmed_merged_pr": 177,
-  "last_verified_pr_head": "32093f7f31f26c98e7b91bc9d25930ee4f973d27",
+  "last_confirmed_main_before_handoff": "dd5e6f17c6a4d71f4ac19ba0da4821a362f2af7d",
+  "last_confirmed_merged_pr": 178,
+  "last_verified_pr_head": "c13a166f07c4850258628db5279594699b5ccfe8",
   "last_verified_ci": {
-    "run_id": 40219228723,
+    "run_id": 40229362824,
     "context": "Windows frontend and Rust checks",
     "conclusion": "SUCCESS",
-    "source": "PR177_EXACT_HEAD"
+    "source": "PR178_EXACT_HEAD"
   },
   "recent_changes": [
     "PR_85_EXACT_G2A_TEXT_AST_ONLY",
@@ -171,7 +171,9 @@
     "PR176_SOURCE_40212798456_POSTMAIN_40213790809_TERMINAL_SUCCESS_MAIN_25438433",
     "2026_10_25_SHARED_RAM_DIRTY_READ_ROLLBACK_DATA_VERSION_CANDIDATE",
     "PR177_SOURCE_40219228723_POSTMAIN_40220215000_TERMINAL_SUCCESS_MAIN_C1868256",
-    "2026_10_25_SHARED_RAM_DOUBLE_SAMPLE_DIRTY_READ_NEGATIVE_CANDIDATE"
+    "2026_10_25_SHARED_RAM_DOUBLE_SAMPLE_DIRTY_READ_NEGATIVE_CANDIDATE",
+    "PR178_SOURCE_40229362824_POSTMAIN_40230066592_TERMINAL_SUCCESS_MAIN_DD5E6F17",
+    "2026_10_25_G2B_G3_SOURCE_ONLY_EVIDENCE_CEILING_AND_NON_PROMOTION_CONTRACT_CANDIDATE"
   ],
   "pr35": "OPEN_DRAFT",
   "issues": {
@@ -3707,6 +3709,43 @@
     "global_writer_absence": "NOT_PROVEN",
     "g2b": "NOT_ACCEPTED",
     "real_g3": "STOP_UNAVAILABLE",
+    "operator_windows_actions": false
+  },
+  "post_pr178_terminal_observation": {
+    "pr": 178,
+    "source_sha": "c13a166f07c4850258628db5279594699b5ccfe8",
+    "source_ci": {"run_id": 40229362824, "conclusion": "SUCCESS"},
+    "merge_sha": "dd5e6f17c6a4d71f4ac19ba0da4821a362f2af7d",
+    "postmain_ci": {"run_id": 40230066592, "conclusion": "SUCCESS"},
+    "source_steps": 81,
+    "postmain_passed_steps": 80,
+    "postmain_skipped_steps": 1,
+    "handoff_tests": 112,
+    "fictional_vitest_tests": 96,
+    "chromium_normal": 82,
+    "chromium_strict_csp": 82,
+    "rust_tests": 132,
+    "feature_test_names": ["toy_26"],
+    "operator_windows_access": false,
+    "real_g3": "STOP_UNAVAILABLE"
+  },
+  "next_g2b_g3_source_only_evidence_ceiling_20261025": {
+    "scope": "SOURCE_ONLY_CLASSIFICATION_NOT_OPERATOR_ATTESTATION",
+    "document": "docs/qualification/M3_2_G2B_G3_SOURCE_ONLY_EVIDENCE_CEILING_20261025.md",
+    "new_rust_tests": 0,
+    "new_operator_evidence": false,
+    "owner_report_is_independent_attestation": false,
+    "synthetic_ci_proves_real_quiescence": false,
+    "source_audit_is_live_custody": false,
+    "route_a": "UNAVAILABLE_NOT_PROVEN",
+    "route_b": "NOT_PROVEN",
+    "route_c": "DEVELOPMENT_ONLY",
+    "global_writer_absence": "NOT_PROVEN",
+    "g2b": "NOT_ACCEPTED",
+    "g2c": "NOT_AUTHORIZED",
+    "real_g3": "STOP_UNAVAILABLE",
+    "historical": "PENDING_EXTERNAL_ATTESTATION(21/3/2)",
+    "prospective": "NOT_STARTED",
     "operator_windows_actions": false
   }
 }
