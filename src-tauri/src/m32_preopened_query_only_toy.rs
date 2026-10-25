@@ -396,3 +396,59 @@ fn toy_19_data_version_alone_ignores_same_connection_mutation() -> Result<()> {
     assert!(stronger.read_again().is_err());
     Ok(())
 }
+
+
+#[test]
+fn toy_20_data_version_postflight_is_not_a_future_write_barrier() -> Result<()> {
+    let (reader, writer) = invented_shared_ram_pair(6)?;
+    let checked = VersionedFictionalReader::new(&reader, 6)?;
+    let report = checked.read_again()?;
+    assert_eq!(report, FictionalReading { version: 6, invented_event_count: 1 });
+    let before = local_data_version(&reader)?;
+    // Deterministically commit AFTER the last guard check: no timer or race.
+    writer.execute(
+        "UPDATE imaginary_events SET description='invented postflight write' WHERE id=1", [],
+    )?;
+    assert_ne!(local_data_version(&reader)?, before);
+    assert!(checked.read_again().is_err());
+    // The previously accepted report was not a lease, lock or immutable snapshot.
+    assert_eq!(report.invented_event_count, 1);
+    Ok(())
+}
+
+#[test]
+fn toy_21_shared_ram_read_transaction_holds_lock_only_until_release() -> Result<()> {
+    let (reader, writer) = invented_shared_ram_pair(7)?;
+    let initial_version = local_data_version(&reader)?;
+    // In SQLite shared-cache mode a SELECT in this transaction obtains a
+    // table read lock. This toy says NOTHING about a general Windows writer
+    // exclusion or an actual protected original's journal/OS lock state.
+    reader.execute_batch("BEGIN DEFERRED TRANSACTION;")?;
+    let original: String = reader.query_row(
+        "SELECT description FROM imaginary_events WHERE id=1", [], |r| r.get(0),
+    )?;
+    assert_eq!(original, "fictitious initial event");
+    let blocked = writer.execute(
+        "UPDATE imaginary_events SET description='invented concurrent write' WHERE id=1", [],
+    ).expect_err("shared-cache read table lock must reject the writer");
+    match blocked {
+        Error::SqliteFailure(code, _) => {
+            assert_eq!(code.code, rusqlite::ErrorCode::DatabaseLocked);
+        }
+        other => panic!("expected SQLite table-lock failure, got {other:?}"),
+    }
+    let still_original: String = reader.query_row(
+        "SELECT description FROM imaginary_events WHERE id=1", [], |r| r.get(0),
+    )?;
+    assert_eq!(still_original, original);
+    reader.execute_batch("ROLLBACK;")?; // only the invented read transaction
+    assert_eq!(writer.execute(
+        "UPDATE imaginary_events SET description='invented after-release write' WHERE id=1", [],
+    )?, 1);
+    let changed: String = reader.query_row(
+        "SELECT description FROM imaginary_events WHERE id=1", [], |r| r.get(0),
+    )?;
+    assert_eq!(changed, "invented after-release write");
+    assert_ne!(local_data_version(&reader)?, initial_version);
+    Ok(())
+}
