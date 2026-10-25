@@ -2939,7 +2939,7 @@ class HandoffContractTests(unittest.TestCase):
 
 
     def test_109_pr174_postmain_and_ram_transaction_custody_boundary(self):
-        self.assertEqual(self.data["last_confirmed_merged_pr"], 174)
+        self.assertGreaterEqual(self.data["last_confirmed_merged_pr"], 174)
         state = self.data["post_pr174_terminal_observation"]
         self.assertEqual(state["source_sha"], "a9a031e3f7322e39475c70c2a1111fdc0c37f047")
         self.assertEqual(state["source_ci"], {"run_id": 40199121197, "conclusion": "SUCCESS"})
@@ -2982,6 +2982,55 @@ class HandoffContractTests(unittest.TestCase):
             self.assertIn("40200127549", (DIRECTORY / name).read_text(encoding="utf-8"), name)
         for name in ("ROADMAP_STATUS_CURRENT.md", "FABULAXIOM_ROADMAP_V1.md"):
             self.assertIn("40200127549", (ROOT / "docs/roadmap" / name).read_text(encoding="utf-8"), name)
+
+
+
+    def test_110_pr175_terminal_and_shared_ram_table_scope_isolation_candidates(self):
+        self.assertEqual(self.data["last_confirmed_merged_pr"], 175)
+        terminal = self.data["post_pr175_terminal_observation"]
+        self.assertEqual(terminal["source_sha"], "bd5e8ef35b80d653530f1f36d288724c1642f2ea")
+        self.assertEqual(terminal["source_ci"], {"run_id": 40209991293, "conclusion": "SUCCESS"})
+        self.assertEqual(terminal["merge_sha"], "c7d93dd2844bdd3cb17c5ffb5cc600902f9ba18f")
+        self.assertEqual(terminal["postmain_ci"], {"run_id": 40210737724, "conclusion": "SUCCESS"})
+        self.assertEqual((terminal["source_steps"], terminal["postmain_passed_steps"],
+                          terminal["postmain_skipped_steps"], terminal["handoff_tests"]),
+                         (81, 80, 1, 109))
+        self.assertEqual((terminal["fictional_vitest_tests"], terminal["chromium_normal"],
+                          terminal["chromium_strict_csp"], terminal["rust_tests"]),
+                         (96, 82, 82, 132))
+        self.assertFalse(terminal["operator_windows_access"])
+        self.assertEqual(terminal["real_g3"], "STOP_UNAVAILABLE")
+        case = self.data["next_shared_ram_table_scope_and_isolation_negative_20261025"]
+        self.assertEqual(case["scope"], "SYNTHETIC_TEST_ONLY")
+        self.assertEqual(case["new_rust_tests"], 2)
+        self.assertFalse(case["database_wide_writer_exclusion"])
+        self.assertEqual(case["isolation"], "SHARED_CACHE_READ_UNCOMMITTED_ONLY")
+        self.assertEqual(case["global_writer_absence"], "NOT_PROVEN")
+        self.assertEqual(case["g2b"], "NOT_ACCEPTED")
+        self.assertEqual(case["real_g3"], "STOP_UNAVAILABLE")
+        self.assertFalse(case["operator_windows_actions"])
+        rust = (ROOT / "src-tauri/src/m32_preopened_query_only_toy.rs").read_text(encoding="utf-8")
+        doc = (ROOT / case["document"]).read_text(encoding="utf-8")
+        for name in case["test_names"]:
+            self.assertIn("fn " + name + "(", rust)
+        for expected in ("imaginary_other_events", "invented other-table write",
+                         "invented locked-table write", "rusqlite::ErrorCode::DatabaseLocked",
+                         "PRAGMA read_uncommitted=ON", "invented uncommitted-mode write",
+                         "reader.execute_batch(\"ROLLBACK;\")?"):
+            self.assertIn(expected, rust)
+        for forbidden in ("database::open_database(", "std::fs::", "OpenOptions",
+                          "std::process::Command", "VACUUM INTO", "#[tauri::command]"):
+            self.assertNotIn(forbidden, rust)
+        for expected in ("40209991293", "40210737724", "SYNTHETIC_TEST_ONLY",
+                         "NOT_PROVEN", "STOP_UNAVAILABLE", "toy_22", "toy_23"):
+            self.assertIn(expected, doc)
+        for name in ("RESUME_PROMPT_SHORT.md", "RESUME_PROMPT.md",
+                     "HANDOFF_CURRENT.md", "HANDOFF_HISTORY.md", "STATE.md",
+                     "NEXT.md", "M3_2_GATE_DECISION_CURRENT.md", "README.md",
+                     "HANDOFF_PROTOCOL.md"):
+            self.assertIn("40210737724", (DIRECTORY / name).read_text(encoding="utf-8"), name)
+        for name in ("ROADMAP_STATUS_CURRENT.md", "FABULAXIOM_ROADMAP_V1.md"):
+            self.assertIn("40210737724", (ROOT / "docs/roadmap" / name).read_text(encoding="utf-8"), name)
 
 if __name__ == "__main__":
     unittest.main()
