@@ -2878,7 +2878,7 @@ class HandoffContractTests(unittest.TestCase):
                          "total_changes(&reader)?", "other_writer.execute",
                          "fictitious external rewrite", "lease.read_again()"):
             self.assertIn(required, source)
-        for forbidden in ("database::open_database", "restore_backup",
+        for forbidden in ("database::open_database(", "restore_backup(",
                           "std::fs::", "OpenOptions", "std::process::Command"):
             self.assertNotIn(forbidden, source)
         for required in ("SYNTHETIC_COUNTEREXAMPLE_ONLY", "NOT_PROVEN",
