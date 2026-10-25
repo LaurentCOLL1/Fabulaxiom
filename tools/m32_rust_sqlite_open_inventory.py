@@ -19,6 +19,9 @@ PATTERNS = {
 }
 # Exact known *textual occurrences*: 2026-10-20 main baseline plus 2026-10-21
 # independent human-readable review of the PR116 new #[cfg(test)] RAM module.
+# 2026-10-25 PR173: explicitly reviewed +2 Connection::open_with_flags URI
+# calls and +3 SQLITE_OPEN flags in cfg(test) toy shared mode=memory.
+# Source CI #40189324812 correctly FAILED on the unreviewed old counts.
 # New counts are checked-in text patterns ONLY, never claims of runtime safety.
 EXPECTED = {
     "src-tauri/src/backup.rs": (10, 13, 0, 4, 0, 10, 0),
@@ -33,7 +36,7 @@ EXPECTED = {
     "src-tauri/src/m31_readonly_preview.rs": (1, 2, 0, 0, 0, 1, 0),
     "src-tauri/src/m32_manual_chronology.rs": (1, 0, 1, 0, 0, 0, 0),
     "src-tauri/src/m32_owned_backup_toy.rs": (14, 0, 0, 0, 2, 0, 0),
-    "src-tauri/src/m32_preopened_query_only_toy.rs": (1, 0, 0, 0, 2, 0, 0),
+    "src-tauri/src/m32_preopened_query_only_toy.rs": (3, 0, 0, 0, 5, 0, 0),
     "src-tauri/src/m32_owner_handoff_actor_toy.rs": (2, 0, 0, 0, 1, 0, 0),
     "src-tauri/src/m32_owner_lifecycle_toy.rs": (4, 0, 0, 0, 1, 0, 0),
     "src-tauri/src/review_commands.rs": (0, 1, 0, 0, 0, 0, 0),
