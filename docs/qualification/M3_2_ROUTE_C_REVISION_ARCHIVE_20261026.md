@@ -1,5 +1,7 @@
 # Voie C — archivage réversible des révisions de scène (26 octobre 2026)
 
+**Observation post-implémentation du 26 octobre 2026 :** [PR #183](https://github.com/LaurentCOLL1/Fabulaxiom/pull/183) source `7879f2b052944d68ca367537809b0af8e05bca04`, CI #40309445029 SUCCESS, `main=39725a020a8656b8d0488628bc208fcf104c058c`, CI postmain #40310982760 SUCCESS. L'opérateur Windows confirme explicitement les **cinq points** (archiver/masquer une ancienne, afficher l'archive avec texte intact, désarchiver, persistance après fermeture/réouverture, révision courante toujours visible/non archivable) : `OWNER_REPORTED_GREENFIELD_REVISION_ARCHIVE_5_OF_5_PASS`, **pas d'attestation indépendante**, [issue #38](https://github.com/LaurentCOLL1/Fabulaxiom/issues/38#issuecomment-6417653782). Chemins de développement et de base Greenfield [documentés avec limites](../continuity/WINDOWS_OPERATOR_PATHS_ROUTE_C_20261026.md). Cette observation ne change aucune interdiction historique ni M3.2/G3.
+
 **Portée : uniquement le profil Tauri de développement `com.fabulaxiom.greenfield.v1`, projets neufs.** Aucun original M1.5 v6 / M3.1 v7, backup historique, marqueur, ACL, journal, writer IPC, migration 007 ou gate M3.2/G3 n'est qualifié ni sollicité par cette évolution.
 
 ## Besoin opérateur
