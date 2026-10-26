@@ -3176,5 +3176,55 @@ class HandoffContractTests(unittest.TestCase):
         for name in ("ROADMAP_STATUS_CURRENT.md", "FABULAXIOM_ROADMAP_V1.md"):
             self.assertIn("40230066592", (ROOT / "docs/roadmap" / name).read_text(encoding="utf-8"), name)
 
+    def test_114_pr183_operator_archive_five_of_five_and_windows_path_handoff(self):
+        """An owner report is useful product feedback, never historic attestation."""
+        observation = self.data["post_pr183_terminal_observation"]
+        self.assertEqual(self.data["last_confirmed_merged_pr"], 183)
+        self.assertEqual(self.data["last_confirmed_main_before_handoff"],
+                         "39725a020a8656b8d0488628bc208fcf104c058c")
+        self.assertEqual(self.data["last_verified_pr_head"], observation["source_sha"])
+        self.assertEqual(observation["source_ci"], {"run_id": 40309445029, "conclusion": "SUCCESS"})
+        self.assertEqual(observation["postmain_ci"], {"run_id": 40310982760, "conclusion": "SUCCESS"})
+        self.assertEqual(observation["operator_archive_result"],
+                         "OWNER_REPORTED_GREENFIELD_REVISION_ARCHIVE_5_OF_5_PASS")
+        self.assertEqual(observation["issue38_operator_archive_five_of_five_comment"], 6417653782)
+        for key in ("independent_operator_attestation", "release_qualified", "m3_2_accepted",
+                    "original_sqlite_access", "migration_007_invoked"):
+            self.assertFalse(observation[key], key)
+        locations = self.data["operator_windows_route_c_paths_20261026"]
+        self.assertEqual(locations["source_clone_owner_reported"], r"M:\Fabulaxiom")
+        self.assertEqual(locations["profile"], "com.fabulaxiom.greenfield.v1")
+        self.assertEqual(locations["greenfield_database_owner_reported"],
+                         r"%LOCALAPPDATA%\com.fabulaxiom.greenfield.v1\database\fabulaxiom.sqlite3")
+        self.assertTrue(locations["greenfield_database_is_outside_git"])
+        self.assertEqual(locations["historical_sqlite_locations"],
+                         "INTENTIONALLY_NOT_PUBLISHED_OR_PROBED")
+        self.assertEqual(locations["windows_powershell_command_encapsulation"], "& { ... }")
+        self.assertFalse(locations["backup_restore_on_existing_operator_profile_authorized"])
+        self.assertFalse(locations["historical_storage_access_authorized"])
+        self.assertFalse(locations["operator_report_is_independent_attestation"])
+        memo = ROOT / locations["document"]
+        self.assertTrue(memo.is_file())
+        doc = memo.read_text(encoding="utf-8")
+        for required in (r"M:\Fabulaxiom", r"M:\Fabulaxiom\src-tauri",
+                         "RESUME_PROMPT_SHORT.md", "RESUME_PROMPT.md",
+                         "OWNER_REPORTED_GREENFIELD_REVISION_ARCHIVE_5_OF_5_PASS",
+                         "6417653782", "IN_PROGRESS_NOT_ACCEPTED"):
+            self.assertIn(required, doc)
+        self.assertNotIn(r"C:\Users\lauco", doc)
+        for filename in ("RESUME_PROMPT_SHORT.md", "RESUME_PROMPT.md", "HANDOFF_CURRENT.md",
+                         "HANDOFF_HISTORY.md", "HANDOFF_PROTOCOL.md", "NEXT.md", "STATE.md",
+                         "M3_2_GATE_DECISION_CURRENT.md", "README.md"):
+            s = (DIRECTORY / filename).read_text(encoding="utf-8")
+            self.assertIn("WINDOWS_OPERATOR_PATHS_ROUTE_C_20261026.md", s, filename)
+            self.assertIn("40310982760", s, filename)
+        for filename in ("ROADMAP_STATUS_CURRENT.md", "FABULAXIOM_ROADMAP_V1.md"):
+            s = (ROOT / "docs/roadmap" / filename).read_text(encoding="utf-8")
+            self.assertIn("WINDOWS_OPERATOR_PATHS_ROUTE_C_20261026.md", s, filename)
+            self.assertIn("40310982760", s, filename)
+        self.assertIn("M:\\Fabulaxiom", (DIRECTORY / "RESUME_PROMPT_SHORT.md").read_text(encoding="utf-8"))
+        self.assertEqual(self.data["governance"]["historic"], "PENDING_EXTERNAL_ATTESTATION(21/3/2)")
+        self.assertEqual(self.data["governance"]["prospective"], "NOT_STARTED")
+
 if __name__ == "__main__":
     unittest.main()
