@@ -3,16 +3,18 @@
   "as_of": "2026-10-26",
   "status_kind": "DATED_PUBLIC_SOURCE_HANDOFF_ONLY",
   "repository": "LaurentCOLL1/Fabulaxiom",
-  "last_confirmed_main_before_handoff": "3f68b5e1b5efb1c830b67722bd5ae47015155547",
-  "last_confirmed_merged_pr": 179,
-  "last_verified_pr_head": "50d123fd96d9301510769573cd7bfb93f0d1aca2",
+  "last_confirmed_main_before_handoff": "06d6c3cd1e775988d0d36dc740068d90dda44053",
+  "last_confirmed_merged_pr": 180,
+  "last_verified_pr_head": "33a8fc0462a56e5ca263fc4da341edbb318a832d",
   "last_verified_ci": {
-    "run_id": 40234733572,
+    "run_id": 40263927654,
     "context": "Windows frontend and Rust checks",
     "conclusion": "SUCCESS",
-    "source": "PR179_EXACT_HEAD"
+    "source": "PR180_EXACT_HEAD"
   },
   "recent_changes": [
+    "POST_PR180_MAIN_06D6C3CD_CI_40264714264_SUCCESS_GREENFIELD_IDENTITY_SOURCE_ONLY",
+    "2026_10_26_ROUTE_C_NEW_ONLY_RUNNER_CI_M1_M2_LIFECYCLE_SMOKE_CANDIDATE",
     "PR_85_EXACT_G2A_TEXT_AST_ONLY",
     "PR_86_SEARCHHOST_WEBVIEW2_LINEAGE_SOURCE_ONLY",
     "PR_87_LIVING_HANDOFF_AND_CI_FRESHNESS",
@@ -3775,5 +3777,31 @@
     "m3_2_gate": "IN_PROGRESS_NOT_ACCEPTED",
     "historical": "PENDING_EXTERNAL_ATTESTATION(21/3/2)",
     "requires": "separate exact Windows operator procedure, destination identity and explicit consent"
+  },
+  "post_pr180_terminal_observation": {
+    "pr": 180,
+    "source_sha": "33a8fc0462a56e5ca263fc4da341edbb318a832d",
+    "source_ci": {"run_id": 40263927654, "conclusion": "SUCCESS"},
+    "merged_main": "06d6c3cd1e775988d0d36dc740068d90dda44053",
+    "postmain_ci": {"run_id": 40264714264, "conclusion": "SUCCESS"},
+    "greenfield_source_contract_tests": 10,
+    "handoff_tests": 113,
+    "rust_base_tests": 132,
+    "issue38_comment": 6407754866,
+    "operator_windows_execution": false,
+    "m3_2_accepted": false
+  },
+  "next_route_c_ci_runner_new_data_smoke_20261026": {
+    "scope": "GENERATED_TEMP_FILES_ON_THROWAWAY_CI_RUNNER_ONLY",
+    "test_path": "src-tauri/src/greenfield_smoke_tests.rs",
+    "test_count_new": 1,
+    "source_profile": "com.fabulaxiom.greenfield.v1",
+    "first_launch_schema": 6,
+    "workflow": "new hierarchy, revisions, sourced fact, fictional human review, restart, backup, separate-root restore",
+    "operator_windows_execution": "NOT_AUTHORIZED",
+    "historical_storage_access": false,
+    "real_windows_ui_qualification": "NOT_STARTED",
+    "real_g3": "STOP_UNAVAILABLE",
+    "m3_2": "IN_PROGRESS_NOT_ACCEPTED"
   }
 }

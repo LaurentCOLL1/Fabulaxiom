@@ -30,6 +30,9 @@ EXPECTED = {
     "src-tauri/src/entity_commands.rs": (0, 1, 0, 0, 0, 0, 0),
     "src-tauri/src/fact_commands.rs": (0, 1, 0, 0, 0, 0, 0),
     "src-tauri/src/facts.rs": (1, 0, 1, 0, 0, 0, 0),
+    # Route C / PR181: three checked-in app-opening calls confined to the
+    # generated-file smoke module; never an operator path or a G2B/G3 permit.
+    "src-tauri/src/greenfield_smoke_tests.rs": (0, 3, 0, 0, 0, 0, 0),
     "src-tauri/src/hierarchy.rs": (1, 0, 1, 0, 0, 0, 0),
     "src-tauri/src/hierarchy_commands.rs": (0, 1, 0, 0, 0, 0, 0),
     "src-tauri/src/lib.rs": (0, 1, 0, 0, 0, 0, 0),

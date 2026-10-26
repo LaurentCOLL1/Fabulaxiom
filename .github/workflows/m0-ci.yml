@@ -262,6 +262,10 @@ jobs:
       - name: Rust tests from lockfile
         run: cargo test --manifest-path src-tauri/Cargo.toml --all-targets --locked
 
+      # Runs only on GitHub's disposable Windows runner: generated new-data temp roots.
+      - name: Route C M1 M2 greenfield fresh-file lifecycle CI smoke (no operator Tauri)
+        run: cargo test --manifest-path src-tauri/Cargo.toml --locked --lib greenfield_ci_m1_m2_lifecycle_and_separate_destination_restore -- --nocapture
+
       # Audits the selected Windows target graph; Linux GLib advisory remains OPEN.
       # Locked/offline/read-only Cargo inspection; no application or database launch.
       - name: M3.2 Windows Rust target GLib/GTK graph audit (no app launch)
