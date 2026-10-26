@@ -154,7 +154,8 @@ class FictionalTauriCapabilityBoundary(unittest.TestCase):
         merged_greenfield = model_merge(self.normal, greenfield)
         self.assertEqual(merged_greenfield["build"], self.normal["build"])
         self.assertEqual(merged_greenfield["identifier"], "com.fabulaxiom.greenfield.v1")
-        self.assertEqual(merged_greenfield["bundle"], {"active": False})
+        self.assertEqual(merged_greenfield["bundle"], self.normal["bundle"])
+        self.assertFalse(merged_greenfield["bundle"]["active"])
 
     def test_04_source_model_replaces_production_window_and_dev_url(self):
         merged = self.safe()
