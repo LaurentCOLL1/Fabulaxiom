@@ -8,15 +8,15 @@ Reprends immédiatement et méthodiquement Fabulaxiom depuis son GitHub vivant :
 
 Avant toute action, re-fetch `main`, PR, issues, CI et ruleset `Protect main`. Lis **d'abord le prompt détaillé** `docs/continuity/RESUME_PROMPT.md`, puis `HANDOFF_CURRENT.md`, `HANDOFF_CURRENT.json`, `HANDOFF_PROTOCOL.md`, `HANDOFF_HISTORY.md`, `STATE.md`, `NEXT.md`, `M3_2_GATE_DECISION_CURRENT.md` et `docs/roadmap/ROADMAP_STATUS_CURRENT.md` / `FABULAXIOM_ROADMAP_V1.md`. Ces fichiers GitHub sont l'autorité documentaire ; l'état GitHub actuel prime sur tous les SHA historiques.
 
-**26 octobre — PR183 MERGED :** source `7879f2b052944d68ca367537809b0af8e05bca04` CI #40309445029 SUCCESS ; squash `main=39725a020a8656b8d0488628bc208fcf104c058c`, postmain #40310982760 SUCCESS indépendante. **Voie C projets neufs uniquement :** Windows Tauri dev `com.fabulaxiom.greenfield.v1` lancé, archivage de révisions **5/5 OWNER_REPORTED_PASS** (masquer, afficher/texte intact, désarchiver, persister après relance, protéger courante), sans preuve indépendante : [issue #38](https://github.com/LaurentCOLL1/Fabulaxiom/issues/38#issuecomment-6417653782). Préférences `app_metadata` v6, aucune suppression de texte ; CI anciennes non transférables.
+**26 octobre — PR184 MERGED :** source `fa82e4e7d566d3deb0f7f84d35c10375b44fb944` CI #40336276164 SUCCESS ; squash `main=810a31b22dabb0507d43d83dd1b5b374916bf13b`, postmain #40338104050 SUCCESS indépendante ; issue #38 commentaire 6418543539. **PR183 historique** : #40309445029/#40310982760 SUCCESS. **Voie C projets neufs :** Windows Tauri dev `com.fabulaxiom.greenfield.v1`, archivage 5/5 `OWNER_REPORTED_PASS` non indépendant (issue #38 commentaire 6417653782). Préférences `app_metadata` v6, textes immuables.
 
 **Dossiers Windows :** `M:\Fabulaxiom` Git/code ; `M:\Fabulaxiom\src` React ; `M:\Fabulaxiom\src-tauri` Rust/Tauri ; `M:\Fabulaxiom\tools` scripts ; `M:\Fabulaxiom\docs\continuity` prompts ; `M:\Fabulaxiom\docs\roadmap` ; `M:\Fabulaxiom\.github\workflows` CI ; `M:\Fabulaxiom\src-tauri\target\debug` exécutable dev. **Hors Git :** `%LOCALAPPDATA%\com.fabulaxiom.greenfield.v1\database\fabulaxiom.sqlite3` (neuve). Carte : `docs/continuity/WINDOWS_OPERATOR_PATHS_ROUTE_C_20261026.md`. Historiques : emplacements privés non publiés.
 
-**Suite :** sauvegarde/restauration sûre des **nouveaux projets** en fixtures/CI d'abord ; ne rien écraser sur le poste. Toute commande PowerShell doit être entièrement encapsulée dans `& { ... }`.
+**Suite candidate :** `docs/qualification/M3_2_ROUTE_C_GREENFIELD_BACKUP_RESTORE_20261026.md` : fixtures/CI seulement, backup+archive conservés, backup corrompu refusé, contre-exemple restauration en racine occupée change l'activation. `EXISTING_PROFILE_RESTORE_BLOCKED` décisionnel, **pas de garde runtime acquise**. Rien écraser sur le poste, aucune restauration opérateur. PowerShell entier dans `& { ... }`.
 
 **25 octobre (historique) :** PR169–177 postmain 40128407418, 40156277835, 40169967245, 40179336243, 40190429389, 40200127549, 40210737724, 40213790809, 40220215000 SUCCESS ; PR178 #40229362824/#40230066592 SUCCESS. `toy_26` double lecture sale ≠ commit. B0 M1.5=4 noms/M2.5=1, B1 RESTORED vers un nom, déclarés par le propriétaire seulement ; consentements consommés. A `UNAVAILABLE_NOT_PROVEN`, B `NOT_PROVEN`, C `DEVELOPMENT_ONLY`.
 
-**24 octobre :** PR168 CI #40117705107/#40122346098 SUCCESS ; observations G2A/B0/B1 et six copies ≠ attestation indépendante.
+**24 octobre :** PR168 #40117705107/#40122346098 SUCCESS ; G2A/B0/B1 et six copies ≠ attestation.
 
 **CI historiques à préserver :** #40085871815, #40094464488, #40095354727, #40103615181, #40106296690, #40108674282, #40116658246. Anciennes CI non transférables au HEAD nouveau.
 

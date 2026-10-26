@@ -44,6 +44,9 @@ jobs:
       - name: Route C reversible scene revision archive non-destructive source guards (7)
         run: python -m unittest discover -s tools -p "test_m32_greenfield_revision_archive.py" -v
 
+      - name: Route C backup restore new-only fixture safety boundary source guards (5)
+        run: python -m unittest discover -s tools -p "test_m32_greenfield_backup_restore.py" -v
+
       # Metadata only, confined to unique RUNNER_TEMP fixture. Never run on an operator PC.
       - name: Route C Windows metadata preflight disposable runner positive and STOP negatives
         shell: pwsh
@@ -288,8 +291,8 @@ jobs:
         run: cargo test --manifest-path src-tauri/Cargo.toml --all-targets --locked
 
       # Runs only on GitHub's disposable Windows runner: generated new-data temp roots.
-      - name: Route C M1 M2 greenfield fresh-file lifecycle CI smoke (no operator Tauri)
-        run: cargo test --manifest-path src-tauri/Cargo.toml --locked --lib greenfield_ci_m1_m2_lifecycle_and_separate_destination_restore -- --nocapture
+      - name: Route C greenfield fresh-file backup restore and refusal fixtures (no operator Tauri)
+        run: cargo test --manifest-path src-tauri/Cargo.toml --locked --lib greenfield_ci_ -- --nocapture
 
       # Audits the selected Windows target graph; Linux GLib advisory remains OPEN.
       # Locked/offline/read-only Cargo inspection; no application or database launch.

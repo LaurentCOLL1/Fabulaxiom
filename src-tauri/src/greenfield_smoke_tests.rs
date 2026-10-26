@@ -114,9 +114,29 @@ fn greenfield_ci_m1_m2_lifecycle_and_separate_destination_restore() {
     let current = revisions::scene_revision_history(&reopened, "scene-new").unwrap();
     assert_eq!(current.current_revision_id.as_deref(), Some("rev-2"));
     assert_eq!(current.revisions.len(), 2);
+    assert_eq!(current.revisions[0].content, "Ariane traverse la porte.");
+    assert_eq!(current.revisions[1].content, "Une porte.");
     assert_eq!(hierarchy::snapshot(&reopened).unwrap().novels.len(), 1);
     assert_eq!(review::state(&reopened, "fact-new", "u-new").unwrap().status, "canon");
     drop(reopened);
+
+    // The Greenfield UI archives visibility preferences, not revision texts.
+    // Prove these preferences survive the actual v6 file backup and restore.
+    {
+        let mut db = database::open_database(&source_db).unwrap();
+        assert_eq!(
+            revisions::set_scene_revision_archived(
+                &mut db,
+                revisions::SetSceneRevisionArchivedInput {
+                    scene_id: "scene-new".into(),
+                    revision_id: "rev-1".into(),
+                    archived: true,
+                },
+            ).unwrap(),
+            vec!["rev-1"]
+        );
+        assert_eq!(database::current_schema_version(&db).unwrap(), 6);
+    }
 
     let saved = backup::create_backup(&source).expect("create new-data-only backup");
     assert_eq!(saved.schema_version, 6);
@@ -150,7 +170,13 @@ fn greenfield_ci_m1_m2_lifecycle_and_separate_destination_restore() {
     );
     let isolated = database::open_database(&PathBuf::from(restored.active_database_path.as_str()))
         .expect("open activated copy under fresh destination");
-    assert_eq!(revisions::scene_revision_history(&isolated, "scene-new").unwrap().revisions.len(), 2);
+    let restored_history = revisions::scene_revision_history(&isolated, "scene-new").unwrap();
+    assert_eq!(restored_history.revisions.len(), 2);
+    assert_eq!(restored_history.current_revision_id.as_deref(), Some("rev-2"));
+    assert_eq!(restored_history.revisions[0].content, "Ariane traverse la porte.");
+    assert_eq!(restored_history.revisions[1].content, "Une porte.");
+    assert_eq!(revisions::scene_archived_revision_ids(&isolated, "scene-new").unwrap(), vec!["rev-1"]);
+    assert_eq!(database::current_schema_version(&isolated).unwrap(), 6);
     assert_eq!(review::state(&isolated, "fact-new", "u-new").unwrap().status, "canon");
     drop(isolated);
 
@@ -162,4 +188,83 @@ fn greenfield_ci_m1_m2_lifecycle_and_separate_destination_restore() {
     // These exact two roots were created exclusively by this test invocation.
     fs::remove_dir_all(&restored_root).expect("remove only owned restore fixture");
     fs::remove_dir_all(&source).expect("remove only owned authoring fixture");
+}
+
+#[test]
+fn greenfield_ci_corrupt_backup_cannot_activate_a_fresh_restore_root() {
+    let source = new_ci_only_root("corrupt-source");
+    let destination = new_ci_only_root("corrupt-destination");
+    let source_db = backup::resolve_active_database_path(&source).unwrap();
+    {
+        let mut db = database::open_database(&source_db).unwrap();
+        hierarchy::create_universe(
+            &mut db,
+            hierarchy::CreateUniverseInput { id: "u-corrupt".into(), name: "Fiction".into() },
+        ).unwrap();
+    }
+    let saved = backup::create_backup(&source).unwrap();
+    let source_before = fs::read(&source_db).unwrap();
+    let backup_before = fs::read(&saved.backup.path).unwrap();
+
+    fs::create_dir(destination.join("backups")).unwrap();
+    let copied = destination.join("backups").join(&saved.backup.file_name);
+    fs::write(&copied, b"not a SQLite database - runner fixture only").unwrap();
+    assert!(backup::restore_backup(&destination, &saved.backup.file_name).is_err());
+    assert!(!destination.join("database").exists());
+    assert_eq!(backup::resolve_active_database_path(&destination).unwrap(),
+               destination.join("database").join(database::DATABASE_FILENAME));
+    assert_eq!(fs::read(&copied).unwrap(), b"not a SQLite database - runner fixture only");
+    assert_eq!(fs::read(&source_db).unwrap(), source_before);
+    assert_eq!(fs::read(&saved.backup.path).unwrap(), backup_before);
+
+    fs::remove_dir_all(destination).unwrap();
+    fs::remove_dir_all(source).unwrap();
+}
+
+#[test]
+fn greenfield_ci_occupied_restore_root_switches_selection_so_operator_use_is_blocked() {
+    // Negative qualification evidence: the existing M1.5 restore API does NOT
+    // require an empty root. It preserves bytes, but switches the active marker.
+    // Never use it as an operator Greenfield restore procedure without a new guard.
+    let source = new_ci_only_root("occupied-source");
+    let destination = new_ci_only_root("occupied-destination");
+    let source_db = backup::resolve_active_database_path(&source).unwrap();
+    let old_destination_db = backup::resolve_active_database_path(&destination).unwrap();
+    {
+        let mut db = database::open_database(&source_db).unwrap();
+        hierarchy::create_universe(
+            &mut db,
+            hierarchy::CreateUniverseInput { id: "imported".into(), name: "Import".into() },
+        ).unwrap();
+    }
+    {
+        let mut db = database::open_database(&old_destination_db).unwrap();
+        hierarchy::create_universe(
+            &mut db,
+            hierarchy::CreateUniverseInput { id: "existing".into(), name: "Existing".into() },
+        ).unwrap();
+    }
+    let existing_bytes = fs::read(&old_destination_db).unwrap();
+    let saved = backup::create_backup(&source).unwrap();
+    let backup_bytes = fs::read(&saved.backup.path).unwrap();
+    fs::create_dir(destination.join("backups")).unwrap();
+    let copied = destination.join("backups").join(&saved.backup.file_name);
+    fs::copy(&saved.backup.path, &copied).unwrap();
+
+    let result = backup::restore_backup(&destination, &saved.backup.file_name).unwrap();
+    assert_eq!(result.previous_database_path, old_destination_db.to_string_lossy());
+    assert_ne!(result.active_database_path, result.previous_database_path);
+    assert_eq!(backup::resolve_active_database_path(&destination).unwrap(),
+               PathBuf::from(&result.active_database_path));
+    assert_eq!(fs::read(&old_destination_db).unwrap(), existing_bytes);
+    assert_eq!(fs::read(&copied).unwrap(), backup_bytes);
+    assert_eq!(fs::read(&saved.backup.path).unwrap(), backup_bytes);
+    let new_active = database::open_database(&PathBuf::from(&result.active_database_path)).unwrap();
+    let snapshot = hierarchy::snapshot(&new_active).unwrap();
+    assert_eq!(snapshot.universes.len(), 1);
+    assert_eq!(snapshot.universes[0].id, "imported");
+    drop(new_active);
+
+    fs::remove_dir_all(destination).unwrap();
+    fs::remove_dir_all(source).unwrap();
 }
