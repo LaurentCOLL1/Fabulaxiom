@@ -133,5 +133,28 @@ class RustSqliteOpenInventoryTests(unittest.TestCase):
         self.veto("src-tauri/src/m32_preopened_query_only_toy.rs",
                   "Connection::open(operator_path)?;")
 
+
+    def test_24_greenfield_new_data_only_calls_are_reviewed_and_test_scoped(self):
+        p = "src-tauri/src/greenfield_smoke_tests.rs"
+        source = self.src[p]
+        self.assertEqual(EXPECTED[p], (0, 3, 0, 0, 0, 0, 0))
+        self.assertEqual(source.count("database::open_database("), 3)
+        self.assertIn("std::env::temp_dir()", source)
+        self.assertIn("fs::create_dir(&root)", source)
+        self.assertIn("fabulaxiom-ci-greenfield-", source)
+        self.assertIn("let restored_root = new_ci_only_root(", source)
+        self.assertIn("backup::restore_backup(&restored_root,", source)
+        for forbidden in ("#[tauri::command]", "Connection::open(",
+                          "Connection::open_with_flags(", "SQLITE_OPEN_CREATE",
+                          "app_local_data_dir()", "std::env::var("):
+            self.assertNotIn(forbidden, source)
+        lib = self.src["src-tauri/src/lib.rs"]
+        self.assertIn("#[cfg(test)]" + chr(10) + "mod greenfield_smoke_tests;", lib)
+        self.assertEqual(audit_inventory(self.src)["writer_absence"], "NOT_PROVEN")
+
+    def test_25_unreviewed_fourth_greenfield_open_requires_reaudit(self):
+        self.veto("src-tauri/src/greenfield_smoke_tests.rs",
+                  "database::open_database(operator_path)?;")
+
 if __name__ == "__main__":
     unittest.main()
