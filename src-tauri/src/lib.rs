@@ -22,6 +22,10 @@ mod hierarchy_commands;
 mod revision_commands;
 mod revisions;
 
+// Route C: generated disposable CI runner files only; never operator storage.
+#[cfg(test)]
+mod greenfield_smoke_tests;
+
 // PR #35 safe first-stage port: *only* compiled in Rust unit tests; never Tauri IPC.
 #[cfg(test)]
 mod m32_manual_chronology;
