@@ -3179,10 +3179,9 @@ class HandoffContractTests(unittest.TestCase):
     def test_114_pr183_operator_archive_five_of_five_and_windows_path_handoff(self):
         """An owner report is useful product feedback, never historic attestation."""
         observation = self.data["post_pr183_terminal_observation"]
-        self.assertEqual(self.data["last_confirmed_merged_pr"], 183)
-        self.assertEqual(self.data["last_confirmed_main_before_handoff"],
+        self.assertGreaterEqual(self.data["last_confirmed_merged_pr"], 183)
+        self.assertEqual(observation["merge_sha"],
                          "39725a020a8656b8d0488628bc208fcf104c058c")
-        self.assertEqual(self.data["last_verified_pr_head"], observation["source_sha"])
         self.assertEqual(observation["source_ci"], {"run_id": 40309445029, "conclusion": "SUCCESS"})
         self.assertEqual(observation["postmain_ci"], {"run_id": 40310982760, "conclusion": "SUCCESS"})
         self.assertEqual(observation["operator_archive_result"],
@@ -3225,6 +3224,47 @@ class HandoffContractTests(unittest.TestCase):
         self.assertIn("M:\\Fabulaxiom", (DIRECTORY / "RESUME_PROMPT_SHORT.md").read_text(encoding="utf-8"))
         self.assertEqual(self.data["governance"]["historic"], "PENDING_EXTERNAL_ATTESTATION(21/3/2)")
         self.assertEqual(self.data["governance"]["prospective"], "NOT_STARTED")
+
+    def test_115_pr184_terminal_and_unqualified_new_only_backup_restore(self):
+        terminal = self.data["post_pr184_terminal_observation"]
+        self.assertEqual(self.data["last_confirmed_merged_pr"], 184)
+        self.assertEqual(self.data["last_verified_pr_head"], terminal["source_sha"])
+        self.assertEqual(self.data["last_confirmed_main_before_handoff"], terminal["merge_sha"])
+        self.assertEqual(terminal["source_ci"], {"run_id": 40336276164, "conclusion": "SUCCESS"})
+        self.assertEqual(terminal["postmain_ci"], {"run_id": 40338104050, "conclusion": "SUCCESS"})
+        self.assertEqual(terminal["handoff_tests"], 114)
+        self.assertEqual(terminal["issue38_terminal_comment"], 6418543539)
+        self.assertFalse(terminal["operator_restore_performed"])
+        self.assertFalse(terminal["m3_2_accepted"])
+        candidate = self.data["next_route_c_new_only_backup_restore_fixtures_20261026"]
+        self.assertEqual(candidate["scope"], "RUNNER_ONLY")
+        self.assertEqual(candidate["decision"], "EXISTING_PROFILE_RESTORE_BLOCKED")
+        self.assertEqual(candidate["operator_execution"], "NO_OPERATOR_EXECUTION")
+        self.assertEqual((candidate["greenfield_ci_cases_expected"],
+                          candidate["source_guard_cases_expected"]), (3, 5))
+        self.assertTrue(candidate["preserves_archived_revision_text_and_metadata"])
+        self.assertTrue(candidate["demonstrates_occupied_root_changes_active_selection"])
+        for key in ("has_production_fresh_destination_guard", "operator_backup_or_restore_qualified",
+                    "original_sqlite_access"):
+            self.assertFalse(candidate[key], key)
+        self.assertEqual(candidate["historical"], "PENDING_EXTERNAL_ATTESTATION(21/3/2)")
+        self.assertEqual((candidate["m3_2"], candidate["g2b"], candidate["writer"],
+                          candidate["g2c"], candidate["real_g3"]),
+                         ("IN_PROGRESS_NOT_ACCEPTED", "NOT_ACCEPTED", "NOT_PROVEN",
+                          "NOT_AUTHORIZED", "STOP_UNAVAILABLE"))
+        for path in (candidate["qualification"], candidate["rust_fixture"],
+                     candidate["source_tests"]):
+            self.assertTrue((ROOT / path).is_file())
+        for filename in ("RESUME_PROMPT_SHORT.md", "RESUME_PROMPT.md", "HANDOFF_CURRENT.md",
+                         "HANDOFF_HISTORY.md", "HANDOFF_PROTOCOL.md", "NEXT.md", "STATE.md",
+                         "M3_2_GATE_DECISION_CURRENT.md", "README.md"):
+            doc = (DIRECTORY / filename).read_text(encoding="utf-8")
+            self.assertIn("40338104050", doc, filename)
+            self.assertIn("M3_2_ROUTE_C_GREENFIELD_BACKUP_RESTORE_20261026.md", doc, filename)
+        for filename in ("ROADMAP_STATUS_CURRENT.md", "FABULAXIOM_ROADMAP_V1.md"):
+            doc = (ROOT / "docs/roadmap" / filename).read_text(encoding="utf-8")
+            self.assertIn("40338104050", doc, filename)
+            self.assertIn("M3_2_ROUTE_C_GREENFIELD_BACKUP_RESTORE_20261026.md", doc, filename)
 
 if __name__ == "__main__":
     unittest.main()
