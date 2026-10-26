@@ -3211,7 +3211,7 @@ class HandoffContractTests(unittest.TestCase):
                          "OWNER_REPORTED_GREENFIELD_REVISION_ARCHIVE_5_OF_5_PASS",
                          "6417653782", "IN_PROGRESS_NOT_ACCEPTED"):
             self.assertIn(required, doc)
-        self.assertNotIn(r"C:\Users\lauco", doc)
+        self.assertNotIn("C:\\Users\\", doc)
         for filename in ("RESUME_PROMPT_SHORT.md", "RESUME_PROMPT.md", "HANDOFF_CURRENT.md",
                          "HANDOFF_HISTORY.md", "HANDOFF_PROTOCOL.md", "NEXT.md", "STATE.md",
                          "M3_2_GATE_DECISION_CURRENT.md", "README.md"):
