@@ -1,0 +1,20 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "Fabulaxiom Greenfield — Projets neufs (DEV)",
+  "identifier": "com.fabulaxiom.greenfield.v1",
+  "app": {
+    "windows": [
+      {
+        "label": "main",
+        "title": "Fabulaxiom — PROJETS NEUFS (développement seulement)",
+        "width": 1100,
+        "height": 720,
+        "minWidth": 800,
+        "minHeight": 560
+      }
+    ]
+  },
+  "bundle": {
+    "active": false
+  }
+}
