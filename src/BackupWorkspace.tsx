@@ -68,9 +68,11 @@ export default function BackupWorkspace() {
 
     const confirmed = window.confirm(
       "Restaurer la sauvegarde " + selected.file_name + " ?\n\n" +
-      "L'application créera une NOUVELLE base et l'activera. " +
+      "Le profil de l'application restera le même. " +
+      "Un NOUVEAU fichier SQLite sera créé et activé dans ce profil. " +
       "La base actuelle et les anciens fichiers de sauvegarde seront conservés. " +
-      "Les changements réalisés depuis cette sauvegarde ne seront pas présents dans la base restaurée.",
+      "Les changements réalisés depuis cette sauvegarde resteront dans l'ancien fichier, " +
+      "mais ne seront pas affichés dans la base restaurée.",
     );
     if (!confirmed) return;
 
@@ -108,8 +110,8 @@ export default function BackupWorkspace() {
           <h2 id="backup-title">Protection de la base Fabulaxiom</h2>
           <p>
             Les sauvegardes sont des instantanés SQLite vérifiés. Une restauration
-            crée un nouveau fichier et change la base active seulement après validation,
-            sans écraser la précédente.
+            conserve le même profil, crée un nouveau fichier et change la base active
+            seulement après validation, sans écraser la précédente.
           </p>
         </div>
         <button className="secondary" type="button" disabled={busy}
@@ -139,7 +141,8 @@ export default function BackupWorkspace() {
         <div className="backup-pane">
           <h3>Restaurer une sauvegarde</h3>
           <p>Choisissez une sauvegarde créée par l'application.
-            Une confirmation explicite est nécessaire ; la base actuellement active est conservée.</p>
+            Deux confirmations explicites sont nécessaires ; l'ancienne base est conservée
+            dans ce même profil.</p>
           <label className="backup-label" htmlFor="backup-choice">Sauvegarde disponible</label>
           <select id="backup-choice" value={selectedBackup}
             onChange={(event) => setSelectedBackup(event.currentTarget.value)}
