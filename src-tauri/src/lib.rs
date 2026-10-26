@@ -72,7 +72,8 @@ use hierarchy_commands::{
     reorder_scene, reorder_series, set_novel_series,
 };
 use revision_commands::{
-    create_scene_text_revision, scene_revision_history, set_current_scene_revision,
+    create_scene_text_revision, greenfield_revision_archive_enabled, scene_archived_revision_ids,
+    scene_revision_history, set_current_scene_revision, set_scene_revision_archived,
 };
 use reqwest::{redirect::Policy, Client};
 use serde::{Deserialize, Serialize};
@@ -292,6 +293,9 @@ pub fn run() {
             scene_revision_history,
             create_scene_text_revision,
             set_current_scene_revision,
+            greenfield_revision_archive_enabled,
+            scene_archived_revision_ids,
+            set_scene_revision_archived,
             entity_snapshot,
             create_narrative_entity,
             rename_narrative_entity,

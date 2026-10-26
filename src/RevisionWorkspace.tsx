@@ -4,7 +4,9 @@ import { formatHierarchyError, newHierarchyId } from "./hierarchy";
 import {announceWorkspaceChange,WORKSPACE_REVISION_CHANGED} from "./workspaceSync";
 import {
   currentSceneRevision,
+  hiddenSceneRevisionCount,
   revisionSummary,
+  visibleSceneRevisions,
   type SceneRevisionHistory,
   type SceneTextRevision,
 } from "./revisions";
@@ -29,13 +31,31 @@ export default function RevisionWorkspace({
   const [draft, setDraft] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [archiveEnabled, setArchiveEnabled] = useState<boolean | null>(null);
+  const [archivedIds, setArchivedIds] = useState<string[]>([]);
+  const [showArchived, setShowArchived] = useState(false);
+
+  useEffect(() => {
+    let active = true;
+    // The identity-only command does not open any database.
+    void invoke<boolean>("greenfield_revision_archive_enabled")
+      .then((enabled) => { if (active) setArchiveEnabled(enabled); })
+      .catch(() => { if (active) setArchiveEnabled(false); });
+    return () => { active = false; };
+  }, []);
 
   async function loadHistory(sceneId: string) {
     const result = await invoke<SceneRevisionHistory>(
       "scene_revision_history",
       { input: { scene_id: sceneId } },
     );
+    const archived = archiveEnabled
+      ? await invoke<string[]>("scene_archived_revision_ids", {
+          input: { scene_id: sceneId },
+        })
+      : [];
     setHistory(result);
+    setArchivedIds(archived);
     const current = currentSceneRevision(result);
     setDraft(current?.content ?? "");
     return result;
@@ -45,12 +65,19 @@ export default function RevisionWorkspace({
     if (!scene) {
       setHistory(EMPTY_HISTORY);
       setDraft("");
+      setArchivedIds([]);
+      setShowArchived(false);
       setError(null);
       return;
     }
 
+    if (archiveEnabled === null) return;
+
     void (async () => {
       setBusy(true);
+      setHistory(EMPTY_HISTORY);
+      setArchivedIds([]);
+      setShowArchived(false);
       setError(null);
       try {
         await loadHistory(scene.id);
@@ -60,7 +87,7 @@ export default function RevisionWorkspace({
         setBusy(false);
       }
     })();
-  }, [scene?.id]);
+  }, [scene?.id, archiveEnabled]);
 
   async function saveRevision() {
     if (!scene) return;
@@ -105,7 +132,25 @@ export default function RevisionWorkspace({
     }
   }
 
+  async function setArchived(revision: SceneTextRevision, archived: boolean) {
+    if (!scene || !archiveEnabled || busy) return;
+    setBusy(true);
+    setError(null);
+    try {
+      const ids = await invoke<string[]>("set_scene_revision_archived", {
+        input: { scene_id: scene.id, revision_id: revision.id, archived },
+      });
+      setArchivedIds(ids);
+    } catch (reason) {
+      setError(formatHierarchyError(reason));
+    } finally {
+      setBusy(false);
+    }
+  }
+
   const current = currentSceneRevision(history);
+  const visibleRevisions = visibleSceneRevisions(history, archivedIds, showArchived);
+  const hiddenCount = hiddenSceneRevisionCount(history, archivedIds);
 
   return (
     <section className="revision-workspace" aria-labelledby="revision-title">
@@ -168,14 +213,32 @@ export default function RevisionWorkspace({
 
           <div className="revision-history">
             <h4>Historique</h4>
+            {archiveEnabled && (
+              <div className="revision-editor-actions">
+                <span className="context-line">{hiddenCount} révision(s) archivée(s)</span>
+                <button
+                  type="button"
+                  className="secondary"
+                  disabled={busy}
+                  aria-pressed={showArchived}
+                  onClick={() => setShowArchived((value) => !value)}
+                >
+                  {showArchived ? "Masquer les archivées" : "Afficher les archivées"}
+                </button>
+              </div>
+            )}
             {history.revisions.length === 0 && (
               <p className="empty-state">
                 L'historique est vide. La première sauvegarde créera v1.
               </p>
             )}
 
-            {history.revisions.map((revision) => {
+            {history.revisions.length > 0 && visibleRevisions.length === 0 && (
+              <p className="empty-state">Toutes les révisions non courantes sont archivées.</p>
+            )}
+            {visibleRevisions.map((revision) => {
               const isCurrent = revision.id === history.current_revision_id;
+              const isArchived = archivedIds.includes(revision.id);
               return (
                 <article
                   key={revision.id}
@@ -187,6 +250,7 @@ export default function RevisionWorkspace({
                     <strong>
                       v{revision.revision_number}
                       {isCurrent ? " · COURANTE" : ""}
+                      {isArchived ? " · ARCHIVÉE" : ""}
                     </strong>
                     <p>{revisionSummary(revision)}</p>
                     <code>{revision.id}</code>
@@ -197,7 +261,7 @@ export default function RevisionWorkspace({
                       : revision.content || "(texte vide)"}
                   </p>
                   <div className="entity-actions">
-                    {!isCurrent && (
+                    {!isCurrent && !isArchived && (
                       <button
                         type="button"
                         className="secondary"
@@ -215,6 +279,16 @@ export default function RevisionWorkspace({
                     >
                       Charger dans l'éditeur
                     </button>
+                    {archiveEnabled && (!isCurrent || isArchived) && (
+                      <button
+                        type="button"
+                        className="secondary"
+                        disabled={busy}
+                        onClick={() => void setArchived(revision, !isArchived)}
+                      >
+                        {isArchived ? "Désarchiver" : "Archiver (masquer)"}
+                      </button>
+                    )}
                   </div>
                 </article>
               );
@@ -230,6 +304,10 @@ export default function RevisionWorkspace({
       <p className="workspace-note">
         Chaque sauvegarde crée une révision immuable. Restaurer une ancienne
         version ne supprime aucune révision : seul le pointeur courant change.
+        {archiveEnabled && (
+          <> L'archivage Greenfield masque seulement l'affichage et peut être annulé ;
+          le texte, les citations et la provenance restent dans la base v6.</>
+        )}
       </p>
     </section>
   );

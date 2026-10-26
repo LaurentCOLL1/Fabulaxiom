@@ -13,6 +13,27 @@ export type SceneRevisionHistory = {
   revisions: SceneTextRevision[];
 };
 
+/** A view filter only: every immutable revision remains in history and in SQLite. */
+export function visibleSceneRevisions(
+  history: SceneRevisionHistory,
+  archivedIds: readonly string[],
+  showArchived: boolean,
+): SceneTextRevision[] {
+  if (showArchived) return history.revisions;
+  const archived = new Set(archivedIds);
+  return history.revisions.filter(
+    (revision) =>
+      revision.id === history.current_revision_id || !archived.has(revision.id),
+  );
+}
+
+export function hiddenSceneRevisionCount(
+  history: SceneRevisionHistory,
+  archivedIds: readonly string[],
+): number {
+  return history.revisions.length - visibleSceneRevisions(history, archivedIds, false).length;
+}
+
 export function currentSceneRevision(
   history: SceneRevisionHistory,
 ): SceneTextRevision | null {
