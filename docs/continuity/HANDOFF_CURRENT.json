@@ -1,16 +1,16 @@
 {
   "schema": 1,
-  "as_of": "2026-10-25",
+  "as_of": "2026-10-26",
   "status_kind": "DATED_PUBLIC_SOURCE_HANDOFF_ONLY",
   "repository": "LaurentCOLL1/Fabulaxiom",
-  "last_confirmed_main_before_handoff": "dd5e6f17c6a4d71f4ac19ba0da4821a362f2af7d",
-  "last_confirmed_merged_pr": 178,
-  "last_verified_pr_head": "c13a166f07c4850258628db5279594699b5ccfe8",
+  "last_confirmed_main_before_handoff": "3f68b5e1b5efb1c830b67722bd5ae47015155547",
+  "last_confirmed_merged_pr": 179,
+  "last_verified_pr_head": "50d123fd96d9301510769573cd7bfb93f0d1aca2",
   "last_verified_ci": {
-    "run_id": 40229362824,
+    "run_id": 40234733572,
     "context": "Windows frontend and Rust checks",
     "conclusion": "SUCCESS",
-    "source": "PR178_EXACT_HEAD"
+    "source": "PR179_EXACT_HEAD"
   },
   "recent_changes": [
     "PR_85_EXACT_G2A_TEXT_AST_ONLY",
@@ -173,7 +173,9 @@
     "PR177_SOURCE_40219228723_POSTMAIN_40220215000_TERMINAL_SUCCESS_MAIN_C1868256",
     "2026_10_25_SHARED_RAM_DOUBLE_SAMPLE_DIRTY_READ_NEGATIVE_CANDIDATE",
     "PR178_SOURCE_40229362824_POSTMAIN_40230066592_TERMINAL_SUCCESS_MAIN_DD5E6F17",
-    "2026_10_25_G2B_G3_SOURCE_ONLY_EVIDENCE_CEILING_AND_NON_PROMOTION_CONTRACT_CANDIDATE"
+    "2026_10_25_G2B_G3_SOURCE_ONLY_EVIDENCE_CEILING_AND_NON_PROMOTION_CONTRACT_CANDIDATE",
+    "PR179_SOURCE_40234733572_POSTMAIN_40235622381_TERMINAL_SUCCESS_MAIN_3F68B5E1",
+    "2026_10_26_ROUTE_C_GREENFIELD_NEW_PROJECT_PROFILE_SOURCE_ONLY_CANDIDATE"
   ],
   "pr35": "OPEN_DRAFT",
   "issues": {
@@ -3747,5 +3749,31 @@
     "historical": "PENDING_EXTERNAL_ATTESTATION(21/3/2)",
     "prospective": "NOT_STARTED",
     "operator_windows_actions": false
+  },
+  "post_pr179_terminal_observation": {
+    "pr": 179,
+    "pr_source_head": "50d123fd96d9301510769573cd7bfb93f0d1aca2",
+    "source_ci": 40234733572,
+    "source_conclusion": "SUCCESS",
+    "merged_main": "3f68b5e1b5efb1c830b67722bd5ae47015155547",
+    "postmain_ci": 40235622381,
+    "postmain_conclusion": "SUCCESS",
+    "issue38_comment": 6403647803,
+    "scope": "evidence ceiling only; no real G2B/G3 qualification"
+  },
+  "next_route_c_greenfield_profile_20261026": {
+    "kind": "SOURCE_ONLY_CANDIDATE_NOT_EXECUTED",
+    "route": "C_NEW_DATA_ONLY",
+    "config_path": "src-tauri/tauri.greenfield.conf.json",
+    "candidate_identifier": "com.fabulaxiom.greenfield.v1",
+    "default_identifier": "com.fabulaxiom.desktop",
+    "qualification_doc": "docs/qualification/M3_2_ROUTE_C_GREENFIELD_PRODUCT_PROFILE_20261026.md",
+    "tests": "tools/test_m32_greenfield_profile_contract.py",
+    "operator_windows_execution": "NOT_AUTHORIZED",
+    "new_local_database": "NOT_CREATED",
+    "prospective_historical_baseline": "NOT_STARTED",
+    "m3_2_gate": "IN_PROGRESS_NOT_ACCEPTED",
+    "historical": "PENDING_EXTERNAL_ATTESTATION(21/3/2)",
+    "requires": "separate exact Windows operator procedure, destination identity and explicit consent"
   }
 }

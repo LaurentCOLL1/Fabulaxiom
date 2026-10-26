@@ -130,8 +130,32 @@ class FictionalTauriCapabilityBoundary(unittest.TestCase):
         # just the JSON defaults. Every new override requires fresh review.
         self.assertEqual(
             {p for p in files if p.lower().startswith("tauri.")},
-            {"tauri.conf.json", "tauri.m32-synthetic-preview.conf.json"},
+            {
+                "tauri.conf.json",
+                "tauri.m32-synthetic-preview.conf.json",
+                "tauri.greenfield.conf.json",
+            },
         )
+        # The new source-only profile is a separately named, new-data ONLY
+        # development identity, not an extra override for the fictional M3.2
+        # preview. Audit its complete merge shape before allowlisting it.
+        greenfield = load("src-tauri/tauri.greenfield.conf.json")
+        self.assertEqual(
+            set(greenfield),
+            {"$schema", "productName", "identifier", "app", "bundle"},
+        )
+        self.assertEqual(greenfield["identifier"], "com.fabulaxiom.greenfield.v1")
+        self.assertNotEqual(greenfield["identifier"], self.normal["identifier"])
+        self.assertEqual(set(greenfield["app"]), {"windows"})
+        self.assertEqual([w.get("label") for w in greenfield["app"]["windows"]], ["main"])
+        self.assertEqual(greenfield["bundle"], {"active": False})
+        self.assertNotIn("appDirectoriesOverride", self.normal["app"])
+        self.assertNotIn("appDirectoriesOverride", greenfield["app"])
+        merged_greenfield = model_merge(self.normal, greenfield)
+        self.assertEqual(merged_greenfield["build"], self.normal["build"])
+        self.assertEqual(merged_greenfield["identifier"], "com.fabulaxiom.greenfield.v1")
+        self.assertEqual(merged_greenfield["bundle"], self.normal["bundle"])
+        self.assertFalse(merged_greenfield["bundle"]["active"])
 
     def test_04_source_model_replaces_production_window_and_dev_url(self):
         merged = self.safe()
