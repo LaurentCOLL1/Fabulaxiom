@@ -56,6 +56,8 @@ jobs:
           [IO.Directory]::CreateDirectory((Join-Path $fixture 'com.fabulaxiom.greenfield.v1')) | Out-Null
           & pwsh -NoProfile -File tools/greenfield_first_launch_preflight.ps1 -ExpectedHead $sha -CiFixtureRoot $fixture
           if ($LASTEXITCODE -ne 2) { throw 'STOP: pre-existing target root was not refused' }
+          # The last expected refusal exits 2; return cleanly from the CI wrapper.
+          $global:LASTEXITCODE = 0
           Write-Output 'GREENFIELD_CI_METADATA_PREFLIGHT_FIXTURE_PASS: no Tauri app or operator storage touched'
 
       - name: M3.2 dated authority boundary and five historical witness source-only tests
