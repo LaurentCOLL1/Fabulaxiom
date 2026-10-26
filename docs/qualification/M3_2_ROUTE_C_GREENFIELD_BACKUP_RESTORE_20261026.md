@@ -1,5 +1,7 @@
 # Voie C — qualification de sauvegarde/restauration des projets neufs (26 octobre 2026)
 
+**Addendum daté après PR #185 :** à la demande de Laurent, il est confirmé qu'**aucun nouveau profil Tauri** n'est nécessaire. L'interdiction `EXISTING_PROFILE_RESTORE_BLOCKED` ci-dessous était une décision conservatoire **d'exécution opérateur non qualifiée au checkpoint PR185**, pas un veto à la fonction M1.5 ni une preuve qu'elle écrase un fichier. L'API existante crée déjà un nouveau fichier sous le même profil, préserve physiquement l'ancien et change volontairement l'activation après confirmation. Nouvelle qualification sur ce vrai parcours, **fixtures seulement** : [M3_2_ROUTE_C_SAME_PROFILE_RESTORE_20261026.md](M3_2_ROUTE_C_SAME_PROFILE_RESTORE_20261026.md). Aucun geste Windows ne découle de cet addendum.
+
 **Statut : `RUNNER_ONLY` / `EXISTING_PROFILE_RESTORE_BLOCKED` / `NO_OPERATOR_EXECUTION`.**
 Cette tranche source/fixtures ne constitue ni une procédure Windows, ni une sauvegarde réelle du poste, ni une qualification de distribution. Base de départ vérifiée avant travail : PR #184 MERGED, `main=810a31b22dabb0507d43d83dd1b5b374916bf13b`, CI postmain #40338104050 `SUCCESS`. Ces SHA sont des preuves datées, pas le futur HEAD de la présente PR.
 

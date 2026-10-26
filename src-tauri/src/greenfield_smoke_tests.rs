@@ -268,3 +268,111 @@ fn greenfield_ci_occupied_restore_root_switches_selection_so_operator_use_is_blo
     fs::remove_dir_all(destination).unwrap();
     fs::remove_dir_all(source).unwrap();
 }
+
+#[test]
+fn greenfield_ci_same_profile_restore_keeps_previous_database_and_archives() {
+    // The application profile is deliberately the SAME test-owned root before
+    // and after restore. Only the active SQLite file changes after confirmation
+    // (the Tauri UI confirmation is separately source-guarded, not invoked here).
+    let profile = new_ci_only_root("same-profile-restore");
+    let original = backup::resolve_active_database_path(&profile).unwrap();
+    {
+        let mut db = database::open_database(&original).unwrap();
+        hierarchy::create_universe(
+            &mut db,
+            hierarchy::CreateUniverseInput { id: "u-same".into(), name: "Univers neuf".into() },
+        ).unwrap();
+        hierarchy::create_novel(
+            &mut db,
+            hierarchy::CreateNovelInput {
+                id: "n-same".into(), universe_id: "u-same".into(),
+                series_id: None, title: "Roman neuf".into(),
+            },
+        ).unwrap();
+        hierarchy::create_chapter(
+            &mut db,
+            hierarchy::CreateChapterInput { id: "c-same".into(), novel_id: "n-same".into(), title: "Chapitre".into() },
+        ).unwrap();
+        hierarchy::create_scene(
+            &mut db,
+            hierarchy::CreateSceneInput { id: "s-same".into(), chapter_id: "c-same".into(), title: "Scène".into() },
+        ).unwrap();
+        for (id, content) in [("rev-same-1", "Première version intacte."),
+                              ("rev-same-2", "Deuxième version active.")] {
+            revisions::create_scene_revision(
+                &mut db,
+                revisions::CreateSceneRevisionInput {
+                    id: id.into(), scene_id: "s-same".into(), content: content.into(),
+                },
+            ).unwrap();
+        }
+        revisions::set_scene_revision_archived(
+            &mut db,
+            revisions::SetSceneRevisionArchivedInput {
+                scene_id: "s-same".into(), revision_id: "rev-same-1".into(), archived: true,
+            },
+        ).unwrap();
+        assert_eq!(database::current_schema_version(&db).unwrap(), 6);
+    }
+
+    let saved = backup::create_backup(&profile).unwrap();
+    let saved_bytes = fs::read(&saved.backup.path).unwrap();
+    assert_eq!(saved.counts.revisions, 2);
+    // The owner continues working AFTER the selected backup was created.
+    {
+        let mut db = database::open_database(&original).unwrap();
+        revisions::create_scene_revision(
+            &mut db,
+            revisions::CreateSceneRevisionInput {
+                id: "rev-same-3".into(), scene_id: "s-same".into(),
+                content: "Travail ultérieur conservé dans l'ancienne base.".into(),
+            },
+        ).unwrap();
+        revisions::set_scene_revision_archived(
+            &mut db,
+            revisions::SetSceneRevisionArchivedInput {
+                scene_id: "s-same".into(), revision_id: "rev-same-1".into(), archived: false,
+            },
+        ).unwrap();
+    }
+    let changed_original_bytes = fs::read(&original).unwrap();
+    assert_eq!(backup::resolve_active_database_path(&profile).unwrap(), original);
+
+    // This operation is intentionally *within* the pre-existing test profile.
+    let restored = backup::restore_backup(&profile, &saved.backup.file_name).unwrap();
+    let selected = backup::resolve_active_database_path(&profile).unwrap();
+    assert_eq!(restored.previous_database_path, original.to_string_lossy().to_string());
+    assert_eq!(selected, PathBuf::from(&restored.active_database_path));
+    assert_ne!(selected, original);
+    assert_eq!(fs::read(&original).unwrap(), changed_original_bytes);
+    assert_eq!(fs::read(&saved.backup.path).unwrap(), saved_bytes);
+    assert_eq!(restored.counts, saved.counts);
+
+    // Simulate the UI reload: new connections resolve the active marker.
+    {
+        let restored_db = database::open_database(&selected).unwrap();
+        let history = revisions::scene_revision_history(&restored_db, "s-same").unwrap();
+        assert_eq!(history.current_revision_id.as_deref(), Some("rev-same-2"));
+        assert_eq!(history.revisions.len(), 2);
+        assert_eq!(history.revisions[1].content, "Première version intacte.");
+        assert_eq!(revisions::scene_archived_revision_ids(&restored_db, "s-same").unwrap(),
+                   vec!["rev-same-1"]);
+        assert_eq!(database::current_schema_version(&restored_db).unwrap(), 6);
+    }
+    {
+        let old_db = database::open_database(&original).unwrap();
+        let history = revisions::scene_revision_history(&old_db, "s-same").unwrap();
+        assert_eq!(history.current_revision_id.as_deref(), Some("rev-same-3"));
+        assert_eq!(history.revisions.len(), 3);
+        assert_eq!(history.revisions[0].content,
+                   "Travail ultérieur conservé dans l'ancienne base.");
+        assert!(revisions::scene_archived_revision_ids(&old_db, "s-same").unwrap().is_empty());
+    }
+
+    // A further backup stays inside this same profile and gets a fresh name.
+    let after_restore_backup = backup::create_backup(&profile).unwrap();
+    assert_ne!(after_restore_backup.backup.file_name, saved.backup.file_name);
+    assert_eq!(after_restore_backup.counts.revisions, 2);
+    assert_eq!(fs::read(&saved.backup.path).unwrap(), saved_bytes);
+    fs::remove_dir_all(profile).unwrap();
+}

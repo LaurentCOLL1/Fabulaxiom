@@ -35,7 +35,8 @@ class GreenfieldBackupRestoreSourceContract(unittest.TestCase):
     def test_03_archived_text_and_preexisting_destination_negative_matrix(self):
         for name in ("greenfield_ci_m1_m2_lifecycle_and_separate_destination_restore",
                      "greenfield_ci_corrupt_backup_cannot_activate_a_fresh_restore_root",
-                     "greenfield_ci_occupied_restore_root_switches_selection_so_operator_use_is_blocked"):
+                     "greenfield_ci_occupied_restore_root_switches_selection_so_operator_use_is_blocked",
+                     "greenfield_ci_same_profile_restore_keeps_previous_database_and_archives"):
             self.assertIn("fn " + name + "()", self.rust)
         for important in ("SetSceneRevisionArchivedInput", "scene_archived_revision_ids",
                           "current_schema_version", "source_bytes_before_restore",
@@ -54,6 +55,18 @@ class GreenfieldBackupRestoreSourceContract(unittest.TestCase):
                          "VACUUM INTO", "app_metadata", "activation"):
             self.assertIn(expected, self.qualification)
         self.assertNotIn("OWNER_REPORTED_BACKUP_RESTORE_PASS", self.qualification)
+
+    def test_06_existing_profile_ui_requires_two_confirmations_and_reload(self):
+        ui = (ROOT / "src/BackupWorkspace.tsx").read_text(encoding="utf-8")
+        commands = (ROOT / "src-tauri/src/backup_commands.rs").read_text(encoding="utf-8")
+        self.assertIn("Le profil de l'application restera le même", ui)
+        self.assertIn("Un NOUVEAU fichier SQLite sera créé et activé dans ce profil", ui)
+        self.assertIn("window.confirm(", ui)
+        self.assertIn("window.prompt(", ui)
+        self.assertIn('if (phrase !== "RESTAURER") return;', ui)
+        self.assertIn("window.location.reload()", ui)
+        self.assertIn('if input.confirmation != "RESTAURER"', commands)
+        self.assertIn("backup::restore_backup(&root, &input.file_name)", commands)
 
 
 if __name__ == "__main__":

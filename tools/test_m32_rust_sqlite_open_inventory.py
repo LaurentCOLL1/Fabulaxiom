@@ -137,8 +137,8 @@ class RustSqliteOpenInventoryTests(unittest.TestCase):
     def test_24_greenfield_new_data_only_calls_are_reviewed_and_test_scoped(self):
         p = "src-tauri/src/greenfield_smoke_tests.rs"
         source = self.src[p]
-        self.assertEqual(EXPECTED[p], (0, 8, 0, 0, 0, 0, 0))
-        self.assertEqual(source.count("database::open_database("), 8)
+        self.assertEqual(EXPECTED[p], (0, 12, 0, 0, 0, 0, 0))
+        self.assertEqual(source.count("database::open_database("), 12)
         self.assertIn("std::env::temp_dir()", source)
         self.assertIn("fs::create_dir(&root)", source)
         self.assertIn("fabulaxiom-ci-greenfield-", source)
@@ -152,7 +152,7 @@ class RustSqliteOpenInventoryTests(unittest.TestCase):
         self.assertIn("#[cfg(test)]" + chr(10) + "mod greenfield_smoke_tests;", lib)
         self.assertEqual(audit_inventory(self.src)["writer_absence"], "NOT_PROVEN")
 
-    def test_25_unreviewed_ninth_greenfield_open_requires_reaudit(self):
+    def test_25_unreviewed_thirteenth_greenfield_open_requires_reaudit(self):
         self.veto("src-tauri/src/greenfield_smoke_tests.rs",
                   "database::open_database(operator_path)?;")
 
