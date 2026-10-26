@@ -3,16 +3,18 @@
   "as_of": "2026-10-26",
   "status_kind": "DATED_PUBLIC_SOURCE_HANDOFF_ONLY",
   "repository": "LaurentCOLL1/Fabulaxiom",
-  "last_confirmed_main_before_handoff": "06d6c3cd1e775988d0d36dc740068d90dda44053",
-  "last_confirmed_merged_pr": 180,
-  "last_verified_pr_head": "33a8fc0462a56e5ca263fc4da341edbb318a832d",
+  "last_confirmed_main_before_handoff": "06452e2ae7e442272a6c1429b1454f56f2266d57",
+  "last_confirmed_merged_pr": 181,
+  "last_verified_pr_head": "4ff36463205727b9481fbf216a5f623305b33cfd",
   "last_verified_ci": {
-    "run_id": 40263927654,
+    "run_id": 40277924539,
     "context": "Windows frontend and Rust checks",
     "conclusion": "SUCCESS",
-    "source": "PR180_EXACT_HEAD"
+    "source": "PR181_EXACT_HEAD"
   },
   "recent_changes": [
+    "POST_PR181_MAIN_06452E2A_CI_40278919705_SUCCESS_GREENFIELD_M1_M2_RUNNER_SMOKE",
+    "2026_10_26_ROUTE_C_FIRST_WINDOWS_OPERATOR_PREFLIGHT_METADATA_ONLY_CANDIDATE",
     "POST_PR180_MAIN_06D6C3CD_CI_40264714264_SUCCESS_GREENFIELD_IDENTITY_SOURCE_ONLY",
     "2026_10_26_ROUTE_C_NEW_ONLY_RUNNER_CI_M1_M2_LIFECYCLE_SMOKE_CANDIDATE",
     "PR_85_EXACT_G2A_TEXT_AST_ONLY",
@@ -3801,6 +3803,35 @@
     "operator_windows_execution": "NOT_AUTHORIZED",
     "historical_storage_access": false,
     "real_windows_ui_qualification": "NOT_STARTED",
+    "real_g3": "STOP_UNAVAILABLE",
+    "m3_2": "IN_PROGRESS_NOT_ACCEPTED"
+  },
+  "post_pr181_terminal_observation": {
+    "pr": 181,
+    "source_sha": "4ff36463205727b9481fbf216a5f623305b33cfd",
+    "source_ci": {"run_id": 40277924539, "conclusion": "SUCCESS"},
+    "old_ci_failed_only_on_old_sha": {"run_id": 40277632492, "head": "4bb12c75a0cef1c3f5a408e7f904c9e8a8bd8cb2", "conclusion": "FAILURE"},
+    "merged_main": "06452e2ae7e442272a6c1429b1454f56f2266d57",
+    "postmain_ci": {"run_id": 40278919705, "conclusion": "SUCCESS"},
+    "handoff_tests": 113,
+    "rust_inventory_tests": 25,
+    "rust_base_tests": 133,
+    "greenfield_disposable_windows_runner_lifecycle_pass": true,
+    "issue38_comment": 6409730574,
+    "operator_windows_execution": false,
+    "m3_2_accepted": false
+  },
+  "next_route_c_windows_first_launch_metadata_preflight_20261026": {
+    "scope": "PREPARED_NOT_EXECUTED_ON_OPERATOR_WINDOWS",
+    "runbook": "docs/qualification/M3_2_ROUTE_C_WINDOWS_FIRST_LAUNCH_RUNBOOK_20261026.md",
+    "preflight": "tools/greenfield_first_launch_preflight.ps1",
+    "source_tests": "tools/test_m32_greenfield_first_launch_preflight.py",
+    "profile": "com.fabulaxiom.greenfield.v1",
+    "historical_storage_access": false,
+    "creates_operator_sqlite": false,
+    "auth_scope": "route C new projects only, no blanket access to historical roles",
+    "native_atomic_identity_proof": "NOT_PROVEN",
+    "operator_windows_execution": "NOT_EXECUTED",
     "real_g3": "STOP_UNAVAILABLE",
     "m3_2": "IN_PROGRESS_NOT_ACCEPTED"
   }
