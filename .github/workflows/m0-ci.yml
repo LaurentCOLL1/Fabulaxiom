@@ -38,6 +38,28 @@ jobs:
       - name: M3.2 route C greenfield identity source contract (no runtime)
         run: python -m unittest discover -s tools -p "test_m32_greenfield_profile_contract.py" -v
 
+      - name: Route C Windows first-launch metadata preflight source contract (10 negatives)
+        run: python -m unittest discover -s tools -p "test_m32_greenfield_first_launch_preflight.py" -v
+
+      # Metadata only, confined to unique RUNNER_TEMP fixture. Never run on an operator PC.
+      - name: Route C Windows metadata preflight disposable runner positive and STOP negatives
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $sha = (git rev-parse HEAD).Trim()
+          $fixture = Join-Path $env:RUNNER_TEMP ("fabulaxiom-ci-greenfield-preflight-" + $env:GITHUB_RUN_ID + "-" + $env:GITHUB_RUN_ATTEMPT)
+          [IO.Directory]::CreateDirectory($fixture) | Out-Null
+          & pwsh -NoProfile -File tools/greenfield_first_launch_preflight.ps1 -ExpectedHead $sha -CiFixtureRoot $fixture
+          if ($LASTEXITCODE -ne 0) { throw 'STOP: owned empty fixture preflight must pass' }
+          & pwsh -NoProfile -File tools/greenfield_first_launch_preflight.ps1 -ExpectedHead ('0' * 40) -CiFixtureRoot $fixture
+          if ($LASTEXITCODE -ne 2) { throw 'STOP: wrong checkout SHA was not refused' }
+          [IO.Directory]::CreateDirectory((Join-Path $fixture 'com.fabulaxiom.greenfield.v1')) | Out-Null
+          & pwsh -NoProfile -File tools/greenfield_first_launch_preflight.ps1 -ExpectedHead $sha -CiFixtureRoot $fixture
+          if ($LASTEXITCODE -ne 2) { throw 'STOP: pre-existing target root was not refused' }
+          # The last expected refusal exits 2; return cleanly from the CI wrapper.
+          $global:LASTEXITCODE = 0
+          Write-Output 'GREENFIELD_CI_METADATA_PREFLIGHT_FIXTURE_PASS: no Tauri app or operator storage touched'
+
       - name: M3.2 dated authority boundary and five historical witness source-only tests
         run: python -m unittest discover -s tools -p "test_m32_gate_snapshot.py" -v
 
