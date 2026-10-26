@@ -1,7 +1,9 @@
 import { describe, expect, it } from "vitest";
 import {
   currentSceneRevision,
+  hiddenSceneRevisionCount,
   revisionSummary,
+  visibleSceneRevisions,
   type SceneRevisionHistory,
 } from "./revisions";
 
@@ -40,5 +42,21 @@ describe("revision helpers", () => {
       "parent revision-1",
     );
     expect(revisionSummary(history.revisions[1])).toContain("origine");
+  });
+
+  it("hides archived non-current rows without mutating immutable history", () => {
+    const original = structuredClone(history);
+    expect(visibleSceneRevisions(history, ["revision-2"], false).map((r) => r.id))
+      .toEqual(["revision-1"]);
+    expect(hiddenSceneRevisionCount(history, ["revision-2"])).toBe(1);
+    expect(visibleSceneRevisions(history, ["revision-2"], true)).toEqual(history.revisions);
+    expect(history).toEqual(original);
+  });
+
+  it("never hides the current revision even with stale archive metadata", () => {
+    expect(visibleSceneRevisions(history, ["revision-1", "revision-2"], false)
+      .map((r) => r.id)).toEqual(["revision-1"]);
+    expect(hiddenSceneRevisionCount(history, ["revision-1", "revision-2"])).toBe(1);
+    expect(visibleSceneRevisions(history, [], false)).toHaveLength(2);
   });
 });

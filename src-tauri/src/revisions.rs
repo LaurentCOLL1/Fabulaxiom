@@ -32,6 +32,16 @@ pub struct SetCurrentSceneRevisionInput {
     pub revision_id: String,
 }
 
+#[derive(Debug, Clone, Deserialize, PartialEq, Eq)]
+pub struct SetSceneRevisionArchivedInput {
+    pub scene_id: String,
+    pub revision_id: String,
+    pub archived: bool,
+}
+
+// Stored in the existing v1 metadata table. Never modify or delete a revision.
+const ARCHIVE_KEY_PREFIX: &str = "greenfield_revision_archive:";
+
 #[derive(Debug, Clone, Serialize, PartialEq, Eq)]
 pub struct RevisionErrorPayload {
     pub code: &'static str,
@@ -43,6 +53,7 @@ pub enum RevisionError {
     NotFound(&'static str),
     Validation(String),
     CrossSceneRevision,
+    GreenfieldOnly,
     Database(String),
 }
 
@@ -60,6 +71,10 @@ impl RevisionError {
             Self::CrossSceneRevision => RevisionErrorPayload {
                 code: "cross_scene_revision",
                 message: "La révision sélectionnée appartient à une autre scène.".to_string(),
+            },
+            Self::GreenfieldOnly => RevisionErrorPayload {
+                code: "greenfield_only",
+                message: "L'archivage est réservé au profil PROJETS NEUFS.".to_string(),
             },
             Self::Database(_) => RevisionErrorPayload {
                 code: "database",
@@ -326,6 +341,69 @@ pub fn set_current_scene_revision(
     })
 }
 
+/// Return only visibility preferences for this scene. The revision history remains complete.
+pub fn scene_archived_revision_ids(
+    connection: &Connection,
+    scene_id: &str,
+) -> Result<Vec<String>, RevisionError> {
+    ensure_scene(connection, scene_id)?;
+    let mut statement = connection
+        .prepare(
+            "SELECT r.id FROM scene_text_revisions r
+             JOIN app_metadata m ON m.key = ?2 || r.id AND m.value = '1'
+             WHERE r.scene_id = ?1 ORDER BY r.revision_number DESC",
+        )
+        .map_err(database_error)?;
+    let rows = statement
+        .query_map(params![scene_id, ARCHIVE_KEY_PREFIX], |row| row.get(0))
+        .map_err(database_error)?;
+    let archived = rows
+        .collect::<rusqlite::Result<Vec<String>>>()
+        .map_err(database_error)?;
+    Ok(archived)
+}
+
+/// Hide/unhide a *non-current* revision by changing only the existing metadata table.
+/// The immutable text, provenance, review and source anchors are never changed.
+pub fn set_scene_revision_archived(
+    connection: &mut Connection,
+    input: SetSceneRevisionArchivedInput,
+) -> Result<Vec<String>, RevisionError> {
+    let scene_id = required_id(input.scene_id, "La scène")?;
+    let revision_id = required_id(input.revision_id, "La révision")?;
+    with_revision_transaction(connection, |transaction| {
+        ensure_scene(transaction, &scene_id)?;
+        let revision = get_revision(transaction, &revision_id)?;
+        if revision.scene_id != scene_id {
+            return Err(RevisionError::CrossSceneRevision);
+        }
+        if input.archived
+            && current_revision_id(transaction, &scene_id)?.as_deref()
+                == Some(revision_id.as_str())
+        {
+            return Err(RevisionError::Validation(
+                "La révision courante ne peut pas être archivée.".to_string(),
+            ));
+        }
+
+        let key = format!("{ARCHIVE_KEY_PREFIX}{revision_id}");
+        if input.archived {
+            transaction
+                .execute(
+                    "INSERT INTO app_metadata(key, value) VALUES (?1, '1')
+                     ON CONFLICT(key) DO UPDATE SET value = '1', updated_at_utc = CURRENT_TIMESTAMP",
+                    params![key],
+                )
+                .map_err(database_error)?;
+        } else {
+            transaction
+                .execute("DELETE FROM app_metadata WHERE key = ?1", params![key])
+                .map_err(database_error)?;
+        }
+        scene_archived_revision_ids(transaction, &scene_id)
+    })
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -517,5 +595,91 @@ END;
             json["message"],
             "La révision sélectionnée appartient à une autre scène."
         );
+    }
+
+    fn archive_input(scene_id: &str, revision_id: &str, archived: bool) -> SetSceneRevisionArchivedInput {
+        SetSceneRevisionArchivedInput {
+            scene_id: scene_id.to_string(),
+            revision_id: revision_id.to_string(),
+            archived,
+        }
+    }
+
+    #[test]
+    fn greenfield_archive_is_reversible_and_never_changes_revision_history() {
+        let mut db = connection();
+        create_scene_revision(&mut db, input("r1", "sc1", "Keep exact source text"))
+            .expect("old revision");
+        create_scene_revision(&mut db, input("r2", "sc1", "Current text"))
+            .expect("current revision");
+        let original = scene_revision_history(&db, "sc1").expect("before archive");
+
+        assert_eq!(
+            set_scene_revision_archived(&mut db, archive_input("sc1", "r1", true))
+                .expect("archive"),
+            vec!["r1"]
+        );
+        // Repeating the same request cannot add duplicates or touch immutable rows.
+        assert_eq!(
+            set_scene_revision_archived(&mut db, archive_input("sc1", "r1", true))
+                .expect("idempotent archive"),
+            vec!["r1"]
+        );
+        assert_eq!(scene_revision_history(&db, "sc1").unwrap(), original);
+        assert_eq!(
+            db.query_row("SELECT COUNT(*) FROM schema_migrations", [], |r| r.get::<_, i64>(0))
+                .unwrap(),
+            6,
+            "archive must not add or run a migration"
+        );
+        assert_eq!(
+            set_scene_revision_archived(&mut db, archive_input("sc1", "r1", false))
+                .expect("unarchive"),
+            Vec::<String>::new()
+        );
+        assert_eq!(scene_revision_history(&db, "sc1").unwrap(), original);
+    }
+
+    #[test]
+    fn archiving_current_cross_scene_or_missing_revision_fails_without_side_effects() {
+        let mut db = connection();
+        create_scene_revision(&mut db, input("r1", "sc1", "Scene one"))
+            .expect("first");
+        create_scene_revision(&mut db, input("r2", "sc2", "Scene two"))
+            .expect("second");
+
+        let current = set_scene_revision_archived(&mut db, archive_input("sc1", "r1", true));
+        assert!(matches!(current, Err(RevisionError::Validation(_))));
+        let cross = set_scene_revision_archived(&mut db, archive_input("sc1", "r2", true));
+        assert_eq!(cross, Err(RevisionError::CrossSceneRevision));
+        let missing = set_scene_revision_archived(&mut db, archive_input("sc1", "absent", true));
+        assert!(matches!(missing, Err(RevisionError::NotFound("Révision"))));
+        assert!(scene_archived_revision_ids(&db, "sc1").unwrap().is_empty());
+        assert!(scene_archived_revision_ids(&db, "sc2").unwrap().is_empty());
+    }
+
+    #[test]
+    fn archiving_preserves_lineage_and_does_not_remove_archived_revisions_from_queries() {
+        let mut db = connection();
+        create_scene_revision(&mut db, input("r1", "sc1", "Fact source text"))
+            .expect("first");
+        create_scene_revision(&mut db, input("r2", "sc1", "Second"))
+            .expect("second");
+        create_scene_revision(&mut db, input("r3", "sc1", "Third"))
+            .expect("third");
+        set_scene_revision_archived(&mut db, archive_input("sc1", "r1", true))
+            .expect("archive ancestor");
+        set_scene_revision_archived(&mut db, archive_input("sc1", "r2", true))
+            .expect("archive middle");
+        assert_eq!(scene_archived_revision_ids(&db, "sc1").unwrap(), vec!["r2", "r1"]);
+
+        let history = scene_revision_history(&db, "sc1").unwrap();
+        assert_eq!(history.revisions.len(), 3);
+        assert_eq!(history.current_revision_id.as_deref(), Some("r3"));
+        assert_eq!(get_revision(&db, "r1").unwrap().content, "Fact source text");
+        assert_eq!(get_revision(&db, "r3").unwrap().parent_revision_id.as_deref(), Some("r2"));
+
+        let deleted = db.execute("DELETE FROM scene_text_revisions WHERE id='r1'", []);
+        assert!(deleted.is_err(), "database-level append-only guard remains active");
     }
 }
