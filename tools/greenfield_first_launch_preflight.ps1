@@ -118,7 +118,7 @@ try {
                              [StringComparison]::OrdinalIgnoreCase)) {
             break
         }
-        $parent = Split-Path -LiteralPath $cursor -Parent
+        $parent = [IO.Directory]::GetParent($cursor).FullName
         if ([string]::IsNullOrEmpty($parent) -or
             [string]::Equals($parent, $cursor, [StringComparison]::OrdinalIgnoreCase)) {
             break
@@ -151,5 +151,5 @@ try {
     Write-Output 'GREENFIELD_NEXT: manual WebView2/Build Tools review and separately controlled launch'
 }
 catch {
-    Stop-Greenfield ("inspection error: " + $_.Exception.GetType().Name)
+    Stop-Greenfield ("inspection error line " + $_.InvocationInfo.ScriptLineNumber + ": " + $_.Exception.GetType().Name + " / " + $_.Exception.Message)
 }
