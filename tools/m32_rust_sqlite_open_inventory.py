@@ -45,7 +45,9 @@ EXPECTED = {
     "src-tauri/src/m32_preopened_query_only_toy.rs": (3, 0, 0, 0, 2, 3, 0),
     # Registered explicitly named VFS on disposable Windows test paths only.
     # The default VFS is never replaced; no operator opener is exposed.
-    "src-tauri/src/m32_sqlite_vfs_preopen_tests.rs": (3, 0, 0, 0, 0, 4, 0),
+    # +3 explicit RW opens for Windows fixture-only 128-bit FileId
+    # predelegation positive/stale refusal/controlled postcheck swap witness.
+    "src-tauri/src/m32_sqlite_vfs_preopen_tests.rs": (6, 0, 0, 0, 0, 7, 0),
     "src-tauri/src/m32_owner_handoff_actor_toy.rs": (2, 0, 0, 0, 1, 0, 0),
     "src-tauri/src/m32_owner_lifecycle_toy.rs": (4, 0, 0, 0, 1, 0, 0),
     "src-tauri/src/review_commands.rs": (0, 1, 0, 0, 0, 0, 0),
