@@ -156,5 +156,31 @@ class RustSqliteOpenInventoryTests(unittest.TestCase):
         self.veto("src-tauri/src/greenfield_smoke_tests.rs",
                   "database::open_database(operator_path)?;")
 
+    def test_26_new_only_os_exclusive_claim_remains_test_scoped(self):
+        p = "src-tauri/src/world_time_file_migration_tests.rs"
+        source = self.src[p]
+        self.assertEqual(EXPECTED[p], (18, 4, 3, 2, 0, 6, 0))
+        self.assertIn("fn open_new_only_disposable_file(path: &Path)", source)
+        self.assertIn(".write(true).create_new(true).open(path)", source)
+        self.assertIn("OpenFlags::SQLITE_OPEN_READ_WRITE", source)
+        self.assertNotIn("OpenFlags::SQLITE_OPEN_CREATE", source)
+        self.assertNotIn("#[tauri::command]", source)
+        self.assertIn("std::env::temp_dir()", source)
+        self.assertIn("mod world_time_file_migration_tests;", self.src["src-tauri/src/lib.rs"])
+
+    def test_27_new_only_refusal_matrix_keeps_sidecars_and_prior_v6(self):
+        source = self.src["src-tauri/src/world_time_file_migration_tests.rs"]
+        for signal in ("symlink_metadata", "ErrorKind::NotFound", "-wal", "-shm", "-journal",
+                       "m32_new_only_claim_refuses_existing_file_directory_and_orphan_sidecars",
+                       "m32_exclusive_new_file_claim_builds_test_only_v7_and_reopen_cannot_reclaim_it",
+                       "m32_exclusive_claim_two_concurrent_creators_only_one_wins",
+                       "assert_eq!(fs::read(&previous).unwrap(), previous_bytes",
+                       "assert!(!root.file(\"activation\").exists())"):
+            self.assertIn(signal, source)
+
+    def test_28_other_unreviewed_creation_flag_remains_vetoed(self):
+        self.veto("src-tauri/src/world_time_file_migration_tests.rs",
+                  "Connection::open_with_flags(operator_path, OpenFlags::SQLITE_OPEN_CREATE)?;")
+
 if __name__ == "__main__":
     unittest.main()

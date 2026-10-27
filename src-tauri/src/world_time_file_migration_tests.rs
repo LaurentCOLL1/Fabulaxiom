@@ -7,8 +7,11 @@ use rusqlite::{params, types::ValueRef, Connection, OpenFlags};
 use std::{
     collections::BTreeMap,
     fs,
+    io::ErrorKind,
     path::{Path, PathBuf},
     process,
+    sync::{Arc, Barrier},
+    thread,
     time::{SystemTime, UNIX_EPOCH},
 };
 
@@ -33,6 +36,39 @@ impl Drop for DisposableRoot {
         // Only the disposable directory created by this test is removed.
         fs::remove_dir_all(&self.0).expect("cleanup test fixture");
     }
+}
+
+// Next Gate C test-only building block. SQLite's CREATE flag may reopen an
+// existing database; OS create_new is the exclusive namespace claim instead.
+// This is NOT a production v7 opener: no operator root/activation proof, no
+// persistent handle identity across this handoff, and no Tauri IPC is exposed.
+// The caller supplies only a name within its freshly owned disposable root.
+fn open_new_only_disposable_file(path: &Path) -> Result<Connection, String> {
+    if !path.parent().is_some_and(Path::is_dir) {
+        return Err("STOP: no pre-existing owned fixture parent".to_owned());
+    }
+    // SQLite may inspect a sibling WAL, SHM or rollback journal as soon as it
+    // opens the file. Reject all such occupied names before claiming the DB.
+    // Any error other than NotFound also stops: unknown is not absent.
+    for suffix in ["-wal", "-shm", "-journal"] {
+        let mut name = path.as_os_str().to_os_string();
+        name.push(suffix);
+        match fs::symlink_metadata(Path::new(&name)) {
+            Ok(_) => return Err(format!("STOP: occupied SQLite sidecar {suffix}")),
+            Err(error) if error.kind() == ErrorKind::NotFound => {},
+            Err(error) => return Err(format!("STOP: cannot verify sidecar {suffix}: {error}")),
+        }
+    }
+    let claim = fs::OpenOptions::new().write(true).create_new(true).open(path)
+        .map_err(|error| format!("STOP: destination is not exclusively new: {error}"))?;
+    // Releasing the temporary OS handle lets SQLite open it on Windows. That
+    // handoff is not proven race-free on adversarial paths; runner-owned only.
+    drop(claim);
+    let connection = Connection::open_with_flags(path, OpenFlags::SQLITE_OPEN_READ_WRITE)
+        .map_err(|error| format!("STOP: newly claimed file cannot open: {error}"))?;
+    database::configure_connection(&connection)
+        .map_err(|error| format!("STOP: foreign keys unavailable: {error}"))?;
+    Ok(connection)
 }
 
 fn create_closed_populated_v6(path: &Path) {
@@ -368,6 +404,120 @@ fn m32_new_only_disposable_v7_chronology_survives_reopen_without_touching_prior_
     assert_eq!(fs::read(&prior_v6).unwrap(), prior_bytes,
                "separate earlier v6 fixture bytes must never change");
     assert!(!root.file("activation").exists(), "no activation marker switched");
+}
+
+#[test]
+fn m32_new_only_claim_refuses_existing_file_directory_and_orphan_sidecars() {
+    let root = DisposableRoot::new("m32-exclusive-refusals");
+    let earlier = root.file("preexisting-v6.sqlite3");
+    create_closed_populated_v6(&earlier);
+    let earlier_bytes = fs::read(&earlier).unwrap();
+    let marker = root.file("activation");
+    fs::write(&marker, b"do-not-change-existing-activation").unwrap();
+    let marker_bytes = fs::read(&marker).unwrap();
+
+    assert!(open_new_only_disposable_file(&earlier).is_err(),
+            "a healthy existing v6 project is still an occupied destination");
+    let arbitrary = root.file("occupied-unspecified.sqlite3");
+    fs::write(&arbitrary, b"not SQLite and not ours to replace").unwrap();
+    let arbitrary_bytes = fs::read(&arbitrary).unwrap();
+    assert!(open_new_only_disposable_file(&arbitrary).is_err(),
+            "a non-SQLite file must also refuse exclusive creation");
+    let directory = root.file("directory.sqlite3");
+    fs::create_dir(&directory).unwrap();
+    assert!(open_new_only_disposable_file(&directory).is_err());
+    assert!(directory.is_dir());
+    let absent_parent = root.file("uncreated-parent").join("new.sqlite3");
+    assert!(open_new_only_disposable_file(&absent_parent).is_err(),
+            "never silently construct a caller-selected parent directory");
+    assert!(!absent_parent.parent().unwrap().exists());
+
+    for suffix in ["-wal", "-shm", "-journal"] {
+        let destination = root.file(&format!("separate-{suffix}.sqlite3"));
+        let mut sidecar_name = destination.as_os_str().to_os_string();
+        sidecar_name.push(suffix);
+        let sidecar = PathBuf::from(sidecar_name);
+        fs::write(&sidecar, b"existing sidecar must never be replayed").unwrap();
+        let sidecar_bytes = fs::read(&sidecar).unwrap();
+        assert!(open_new_only_disposable_file(&destination).is_err(),
+                "orphan WAL/SHM/journal must block new-file ownership claim");
+        assert!(!destination.exists(), "refusal must not even create a DB placeholder");
+        assert_eq!(fs::read(&sidecar).unwrap(), sidecar_bytes);
+    }
+    assert_eq!(fs::read(&earlier).unwrap(), earlier_bytes);
+    assert_eq!(fs::read(&arbitrary).unwrap(), arbitrary_bytes);
+    assert_eq!(fs::read(&marker).unwrap(), marker_bytes);
+}
+
+#[test]
+fn m32_exclusive_new_file_claim_builds_test_only_v7_and_reopen_cannot_reclaim_it() {
+    let root = DisposableRoot::new("m32-exclusive-v7-initialization");
+    let previous = root.file("other-prior-v6.sqlite3");
+    create_closed_populated_v6(&previous);
+    let previous_bytes = fs::read(&previous).unwrap();
+    let destination = root.file("never-before-used.sqlite3");
+
+    let mut db = open_new_only_disposable_file(&destination)
+        .expect("claim a genuinely absent test-only filename");
+    assert_eq!(database::run_migrations(&mut db).unwrap(), 6,
+               "normal migrations stop at v6, on this newly owned file only");
+    {
+        let tx = db.transaction().unwrap();
+        tx.execute_batch(CANDIDATE_SQL).unwrap();
+        tx.execute_batch(M32_DECISIONS_SQL).unwrap();
+        tx.execute("INSERT INTO schema_migrations(version,name)
+                    VALUES(7,'007_create_world_time_foundation')", []).unwrap();
+        tx.commit().unwrap();
+    }
+    db.execute("INSERT INTO universes(id,name) VALUES('new-only-u','Owned fiction')", [])
+        .unwrap();
+    chronology::create_anchor(&db, chronology::AnchorDraft {
+        id: "owned-unknown", universe_id: "new-only-u", time_kind: "unknown",
+        calendar_id: None, event_entity_id: None, source_revision_id: None,
+        exact_label: None, window_start_text: None, window_end_text: None,
+        precision_text: None,
+    }).unwrap();
+    integrity(&db);
+    drop(db);
+
+    let new_bytes = fs::read(&destination).unwrap();
+    assert!(open_new_only_disposable_file(&destination).is_err(),
+            "the exclusive *creation* gate must never double as an existing-v7 opener");
+    assert_eq!(fs::read(&destination).unwrap(), new_bytes);
+    let reopened = Connection::open_with_flags(&destination, OpenFlags::SQLITE_OPEN_READ_WRITE)
+        .expect("explicit known-owned test fixture readback, not exclusive create");
+    database::configure_connection(&reopened).unwrap();
+    assert_eq!(database::current_schema_version(&reopened).unwrap(), 7);
+    assert_eq!(chronology::list_current_anchor_ids(&reopened, "new-only-u").unwrap(),
+               vec!["owned-unknown"]);
+    integrity(&reopened);
+    drop(reopened);
+    assert_eq!(fs::read(&previous).unwrap(), previous_bytes,
+               "previous independent v6 fixture must remain byte-identical");
+    assert!(!root.file("activation").exists());
+}
+
+#[test]
+fn m32_exclusive_claim_two_concurrent_creators_only_one_wins() {
+    let root = DisposableRoot::new("m32-exclusive-creator-race");
+    let destination = root.file("atomic-claim.sqlite3");
+    let start = Arc::new(Barrier::new(3));
+    let contenders: Vec<_> = (0..2).map(|_| {
+        let barrier = Arc::clone(&start);
+        let path = destination.clone();
+        thread::spawn(move || {
+            barrier.wait();
+            open_new_only_disposable_file(&path).is_ok()
+        })
+    }).collect();
+    start.wait();
+    let accepted = contenders.into_iter()
+        .map(|worker| worker.join().expect("no panic in owned race"))
+        .filter(|won| *won)
+        .count();
+    assert_eq!(accepted, 1, "OS create_new must reject one of two simultaneous claims");
+    assert!(destination.exists());
+    assert!(!root.file("activation").exists());
 }
 
 
