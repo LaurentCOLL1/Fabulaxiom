@@ -3410,9 +3410,8 @@ class HandoffContractTests(unittest.TestCase):
     def test_119_pr188_terminal_and_wrong_schema_restore_refusal_candidate(self):
         terminal = self.data["post_pr188_terminal_observation"]
         self.assertEqual(self.data["as_of"], "2026-10-27")
-        self.assertEqual(self.data["last_confirmed_merged_pr"], 188)
-        self.assertEqual(self.data["last_verified_pr_head"], terminal["source_sha"])
-        self.assertEqual(self.data["last_confirmed_main_before_handoff"], terminal["merge_sha"])
+        # Historical terminal witness; the live handoff may advance beyond #188.
+        self.assertGreaterEqual(self.data["last_confirmed_merged_pr"], 188)
         self.assertEqual(terminal["source_sha"], "9ca23c1b78c5fb2e3f49c2c3728024be374caeba")
         self.assertEqual(terminal["merge_sha"], "e4cd6ba8151f2d6cbab8723d2fb200d3ac3ffebc")
         self.assertEqual(terminal["source_ci"], {"run_id": 40450684268, "conclusion": "SUCCESS"})
@@ -3457,6 +3456,63 @@ class HandoffContractTests(unittest.TestCase):
             s = (ROOT / "docs/roadmap" / name).read_text(encoding="utf-8")
             self.assertIn("40451602743", s, name)
             self.assertIn("M3_2_ROUTE_C_SAME_PROFILE_FOREIGN_SCHEMA_REFUSAL_20261027.md", s, name)
+
+    def test_120_pr189_terminal_pr35_living_audit_and_prospective_boundary(self):
+        terminal = self.data["post_pr189_terminal_observation"]
+        audit = self.data["pr35_live_audit_prospective_fast_track_candidate_20261027"]
+        self.assertEqual(self.data["as_of"], "2026-10-27")
+        self.assertEqual(self.data["last_confirmed_merged_pr"], 189)
+        self.assertEqual(self.data["last_verified_pr_head"], terminal["source_sha"])
+        self.assertEqual(self.data["last_confirmed_main_before_handoff"], terminal["merge_sha"])
+        self.assertEqual(terminal["source_sha"], "546cdee207e1cec049d7d0c2113696f3ce0461dd")
+        self.assertEqual(terminal["merge_sha"], "009fa1723b3fc9a574e867a28759adff42e255d0")
+        self.assertEqual(terminal["source_ci"], {"run_id": 40455683237, "conclusion": "SUCCESS"})
+        self.assertEqual(terminal["postmain_ci"], {"run_id": 40456835489, "conclusion": "SUCCESS"})
+        self.assertEqual(terminal["issue38_terminal_comment"], 6434867348)
+        self.assertEqual((terminal["rust_base_tests"], terminal["greenfield_runner_tests"],
+                          terminal["handoff_tests"]), (143, 7, 119))
+        for flag in ("operator_backup_restore_executed", "new_operator_profile_required",
+                     "m3_2_accepted"):
+            self.assertFalse(terminal[flag])
+        self.assertEqual(audit["scope"], "SOURCE_ONLY_PR35_AUDIT_AND_FUTURE_PROSPECTIVE_SOLO_ROUTE")
+        self.assertEqual(audit["main_sha_observed"], terminal["merge_sha"])
+        self.assertEqual(audit["pr35_head_sha"], "41ce7b915e76d22785d53d7fffe288d113dd0bf5")
+        self.assertEqual(audit["pr35_state"], "OPEN_DRAFT_DIRTY_NOT_MERGEABLE")
+        self.assertEqual((audit["pr35_commits_ahead"], audit["pr35_commits_behind"],
+                          audit["pr35_changed_paths"]), (47, 645, 84))
+        self.assertEqual((audit["pr35_identical_sql_paths"],
+                          audit["pr35_different_existing_paths"],
+                          audit["pr35_missing_in_main_paths"]), (6, 10, 68))
+        self.assertTrue(audit["already_ported_rust_test_only"])
+        self.assertEqual(audit["preferred_product_route"],
+                         "M3_2_GREENFIELD_NEW_PROJECTS_ONLY_CANDIDATE_NOT_FORMALLY_ACCEPTED")
+        self.assertFalse(audit["prospective_unblocks_m3_2_guaranteed"])
+        self.assertEqual(audit["prospective_policy"],
+                         "SOLO_OPERATOR_COMPENSATING_CONTROLS_POLICY_ONLY")
+        self.assertEqual(audit["prospective_baseline"], "NOT_STARTED")
+        self.assertEqual(audit["historical"], "PENDING_EXTERNAL_ATTESTATION(21/3/2)")
+        self.assertEqual(audit["operator_execution"], "NO_OPERATOR_EXECUTION")
+        self.assertEqual(audit["profile_identifier"], "com.fabulaxiom.greenfield.v1")
+        for flag in ("profile_recreation_required", "pr35_merge_authorized",
+                     "migration_007_authorized", "writer_ipc_authorized"):
+            self.assertFalse(audit[flag])
+        for key, expected in (("m3_2", "IN_PROGRESS_NOT_ACCEPTED"),
+                              ("g2b", "NOT_ACCEPTED"), ("writer", "NOT_PROVEN"),
+                              ("g2c", "NOT_AUTHORIZED"), ("real_g3", "STOP_UNAVAILABLE")):
+            self.assertEqual(audit[key], expected)
+        qualification = ROOT / audit["qualification"]
+        self.assertTrue(qualification.is_file())
+        self.assertIn("645 behind", qualification.read_text(encoding="utf-8"))
+        for name in ("RESUME_PROMPT_SHORT.md", "RESUME_PROMPT.md", "HANDOFF_CURRENT.md",
+                     "HANDOFF_PROTOCOL.md", "HANDOFF_HISTORY.md", "NEXT.md", "STATE.md",
+                     "M3_2_GATE_DECISION_CURRENT.md"):
+            doc = (DIRECTORY / name).read_text(encoding="utf-8")
+            self.assertIn("40456835489", doc, name)
+            self.assertIn("M3_2_PR35_LIVE_AUDIT_PROSPECTIVE_FAST_TRACK_20261027.md", doc, name)
+        for name in ("ROADMAP_STATUS_CURRENT.md", "FABULAXIOM_ROADMAP_V1.md"):
+            doc = (ROOT / "docs/roadmap" / name).read_text(encoding="utf-8")
+            self.assertIn("40456835489", doc, name)
+            self.assertIn("M3_2_PR35_LIVE_AUDIT_PROSPECTIVE_FAST_TRACK_20261027.md", doc, name)
 
 if __name__ == "__main__":
     unittest.main()
