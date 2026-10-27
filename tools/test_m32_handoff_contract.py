@@ -3360,9 +3360,7 @@ class HandoffContractTests(unittest.TestCase):
     def test_118_pr187_terminal_and_logical_foreign_key_restore_refusal_candidate(self):
         terminal = self.data["post_pr187_terminal_observation"]
         self.assertEqual(self.data["as_of"], "2026-10-27")
-        self.assertEqual(self.data["last_confirmed_merged_pr"], 187)
-        self.assertEqual(self.data["last_verified_pr_head"], terminal["source_sha"])
-        self.assertEqual(self.data["last_confirmed_main_before_handoff"], terminal["merge_sha"])
+        self.assertGreaterEqual(self.data["last_confirmed_merged_pr"], 187)
         self.assertEqual(terminal["source_sha"], "3029bf61d526a243a431bf2c151de0ebeaf50818")
         self.assertEqual(terminal["merge_sha"], "0b0964a723340fd832134691fdd93563c1afe9c0")
         self.assertEqual(terminal["source_ci"], {"run_id": 40444374426, "conclusion": "SUCCESS"})
@@ -3408,6 +3406,57 @@ class HandoffContractTests(unittest.TestCase):
             s = (ROOT / "docs/roadmap" / name).read_text(encoding="utf-8")
             self.assertIn("40445392523", s, name)
             self.assertIn("M3_2_ROUTE_C_SAME_PROFILE_FOREIGN_KEY_RESTORE_REFUSAL_20261027.md", s, name)
+
+    def test_119_pr188_terminal_and_wrong_schema_restore_refusal_candidate(self):
+        terminal = self.data["post_pr188_terminal_observation"]
+        self.assertEqual(self.data["as_of"], "2026-10-27")
+        self.assertEqual(self.data["last_confirmed_merged_pr"], 188)
+        self.assertEqual(self.data["last_verified_pr_head"], terminal["source_sha"])
+        self.assertEqual(self.data["last_confirmed_main_before_handoff"], terminal["merge_sha"])
+        self.assertEqual(terminal["source_sha"], "9ca23c1b78c5fb2e3f49c2c3728024be374caeba")
+        self.assertEqual(terminal["merge_sha"], "e4cd6ba8151f2d6cbab8723d2fb200d3ac3ffebc")
+        self.assertEqual(terminal["source_ci"], {"run_id": 40450684268, "conclusion": "SUCCESS"})
+        self.assertEqual(terminal["postmain_ci"], {"run_id": 40451602743, "conclusion": "SUCCESS"})
+        self.assertEqual(terminal["issue38_terminal_comment"], 6434133177)
+        self.assertEqual((terminal["rust_base_tests"], terminal["greenfield_runner_tests"],
+                          terminal["handoff_tests"]), (142, 6, 118))
+        for flag in ("new_operator_profile_required", "operator_backup_restore_executed",
+                     "m3_2_accepted"):
+            self.assertFalse(terminal[flag])
+        candidate = self.data["next_route_c_same_profile_foreign_schema_refusal_20261027"]
+        self.assertEqual(candidate["scope"], "SAME_PROFILE_WRONG_OWNER_AND_FORGED_MIGRATION_LINEAGE_RUNNER_ONLY")
+        self.assertEqual(candidate["profile_identifier"], "com.fabulaxiom.greenfield.v1")
+        self.assertFalse(candidate["profile_recreation_required"])
+        self.assertEqual(candidate["operator_execution"], "NO_OPERATOR_EXECUTION")
+        self.assertEqual((candidate["greenfield_ci_cases_expected"],
+                          candidate["source_guard_cases_expected"],
+                          candidate["handoff_tests_expected"],
+                          candidate["sqlite_test_open_occurrences_expected"]), (7, 9, 119, 27))
+        for key in ("foreign_schema_owner_rejected", "forged_migration_lineage_rejected",
+                    "previous_sqlite_file_preserved_on_refusal",
+                    "active_sqlite_file_preserved_on_refusal",
+                    "activation_marker_preserved_on_refusal"):
+            self.assertTrue(candidate[key])
+        for key in ("independent_operator_attestation", "operator_backup_restore_qualified",
+                    "original_sqlite_access"):
+            self.assertFalse(candidate[key])
+        for key, expected in (("m3_2", "IN_PROGRESS_NOT_ACCEPTED"),
+                              ("g2b", "NOT_ACCEPTED"), ("writer", "NOT_PROVEN"),
+                              ("g2c", "NOT_AUTHORIZED"), ("real_g3", "STOP_UNAVAILABLE"),
+                              ("historical", "PENDING_EXTERNAL_ATTESTATION(21/3/2)")):
+            self.assertEqual(candidate[key], expected)
+        for path in (candidate["qualification"], candidate["rust_fixture"], candidate["source_tests"]):
+            self.assertTrue((ROOT / path).is_file())
+        for name in ("RESUME_PROMPT_SHORT.md", "RESUME_PROMPT.md", "HANDOFF_CURRENT.md",
+                     "HANDOFF_HISTORY.md", "HANDOFF_PROTOCOL.md", "NEXT.md", "STATE.md",
+                     "M3_2_GATE_DECISION_CURRENT.md", "README.md"):
+            s = (DIRECTORY / name).read_text(encoding="utf-8")
+            self.assertIn("40451602743", s, name)
+            self.assertIn("M3_2_ROUTE_C_SAME_PROFILE_FOREIGN_SCHEMA_REFUSAL_20261027.md", s, name)
+        for name in ("ROADMAP_STATUS_CURRENT.md", "FABULAXIOM_ROADMAP_V1.md"):
+            s = (ROOT / "docs/roadmap" / name).read_text(encoding="utf-8")
+            self.assertIn("40451602743", s, name)
+            self.assertIn("M3_2_ROUTE_C_SAME_PROFILE_FOREIGN_SCHEMA_REFUSAL_20261027.md", s, name)
 
 if __name__ == "__main__":
     unittest.main()

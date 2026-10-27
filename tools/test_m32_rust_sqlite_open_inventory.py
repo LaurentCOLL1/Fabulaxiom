@@ -137,8 +137,8 @@ class RustSqliteOpenInventoryTests(unittest.TestCase):
     def test_24_greenfield_new_data_only_calls_are_reviewed_and_test_scoped(self):
         p = "src-tauri/src/greenfield_smoke_tests.rs"
         source = self.src[p]
-        self.assertEqual(EXPECTED[p], (0, 21, 0, 0, 0, 0, 0))
-        self.assertEqual(source.count("database::open_database("), 21)
+        self.assertEqual(EXPECTED[p], (0, 27, 0, 0, 0, 0, 0))
+        self.assertEqual(source.count("database::open_database("), 27)
         self.assertIn("std::env::temp_dir()", source)
         self.assertIn("fs::create_dir(&root)", source)
         self.assertIn("fabulaxiom-ci-greenfield-", source)
