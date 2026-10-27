@@ -209,9 +209,13 @@ fn pin_checked_fixture_chain(root: &Path, destination: &Path)
     const FILE_ATTRIBUTE_REPARSE_POINT: u32 = 0x0000_0400;
     const FILE_FLAG_BACKUP_SEMANTICS: u32 = 0x0200_0000;
     const FILE_FLAG_OPEN_REPARSE_POINT: u32 = 0x0020_0000;
+    const FILE_READ_ATTRIBUTES: u32 = 0x0000_0080;
     let open_dir = |path: &Path| {
         fs::OpenOptions::new()
-            .access_mode(0)
+            // A metadata-only zero-access handle did NOT veto rename of an
+            // empty leaf on Windows Server 2025 CI (#40499869627). Request
+            // explicit attribute-read access, still never DELETE access.
+            .access_mode(FILE_READ_ATTRIBUTES)
             .share_mode(0x0000_0001 | 0x0000_0002)
             .custom_flags(FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OPEN_REPARSE_POINT)
             .open(path)

@@ -217,6 +217,8 @@ class RustSqliteOpenInventoryTests(unittest.TestCase):
         source = self.src["src-tauri/src/world_time_file_migration_tests.rs"]
         for signal in ("fn pin_checked_fixture_chain(root: &Path, destination: &Path)",
                        "FILE_FLAG_OPEN_REPARSE_POINT", "FILE_ATTRIBUTE_REPARSE_POINT",
+                       "const FILE_READ_ATTRIBUTES: u32 = 0x0000_0080",
+                       ".access_mode(FILE_READ_ATTRIBUTES)",
                        "unsafe extern \"system\"", "GetFileInformationByHandle",
                        "handle_identity(&before_handle)", "handle_identity(&pin)",
                        "handle_identity(&after_handle)", "pin.metadata()",
