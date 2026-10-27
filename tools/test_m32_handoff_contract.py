@@ -3682,10 +3682,10 @@ class HandoffContractTests(unittest.TestCase):
         candidate = self.data["next_m32_greenfield_v7_owned_fixture_directory_chain_candidate_20261027"]
         self.assertGreaterEqual(self.data["last_confirmed_merged_pr"], 193)
         self.assertEqual(self.data["last_verified_pr_head"],
-                         self.data["post_pr196_terminal_observation"]["source_sha"])
+                         self.data["post_pr197_terminal_observation"]["source_sha"])
         self.assertEqual(self.data["last_confirmed_main_before_handoff"],
-                         self.data["post_pr196_terminal_observation"]["merge_sha"])
-        self.assertEqual(self.data["last_verified_ci"]["run_id"], 40523209147)
+                         self.data["post_pr197_terminal_observation"]["merge_sha"])
+        self.assertEqual(self.data["last_verified_ci"]["run_id"], 40556607820)
         self.assertEqual(terminal["pr"], 193)
         self.assertEqual(terminal["source_sha"], "38540a4602c5c5e4f9d9b3bdb6b8bf155e0ed256")
         self.assertEqual(terminal["source_ci"], {"run_id": 40485043798, "conclusion": "SUCCESS"})
@@ -3953,6 +3953,72 @@ class HandoffContractTests(unittest.TestCase):
             doc = (ROOT / "docs/roadmap" / filename).read_text(encoding="utf-8")
             self.assertIn("40525427034", doc, filename)
             self.assertIn("M3_2_SINGLE_USER_WINDOWS_HELLO_SENSITIVE_CONSENT_POLICY_20261027.md", doc, filename)
+
+    def test_129_pr197_terminal_hello_policy_and_live_continuity_refresh(self):
+        terminal = self.data["post_pr197_terminal_observation"]
+        self.assertEqual(terminal["pr"], 197)
+        self.assertEqual(terminal["source_sha"], "ab55f506f767f36659ffdd50c2970d9c703e0f0b")
+        self.assertEqual(terminal["source_ci"], {"run_id": 40556607820, "conclusion": "SUCCESS"})
+        self.assertEqual(terminal["merge_sha"], "dde962a50e3a063753fb77e9a5bcee014f406d30")
+        self.assertEqual(terminal["postmain_ci"], {"run_id": 40558476584, "conclusion": "SUCCESS"})
+        self.assertEqual((terminal["rust_base_tests"], terminal["greenfield_runner_tests"],
+                          terminal["sqlite_inventory_tests"], terminal["handoff_tests"]),
+                         (165, 7, 36, 128))
+        self.assertEqual(terminal["issue38_terminal_comment"], 6450320382)
+        self.assertTrue(terminal["github_required_check_success"])
+        self.assertTrue(terminal["single_windows_user_hello_only_product_decision"])
+        self.assertTrue(terminal["one_shot_sensitive_consent_policy_rust_cfg_test_only"])
+        for flag in ("native_windows_hello_userconsent_implemented", "windows_hello_dialog_run",
+                     "app_pin_or_password_collected", "new_app_accounts_implemented",
+                     "production_sensitive_action_guard_implemented", "atomic_sqlite_pre_xopen_proven",
+                     "writer_absence_proven", "m3_2_accepted"):
+            self.assertFalse(terminal[flag], flag)
+        self.assertEqual(terminal["operator_execution"], "NO_OPERATOR_EXECUTION")
+        self.assertEqual(self.data["last_confirmed_merged_pr"], 197)
+        self.assertEqual(self.data["last_verified_pr_head"], terminal["source_sha"])
+        self.assertEqual(self.data["last_confirmed_main_before_handoff"], terminal["merge_sha"])
+        self.assertEqual(self.data["last_verified_ci"], {
+            "run_id": 40556607820,
+            "context": "Windows frontend and Rust checks",
+            "conclusion": "SUCCESS", "source": "PR197_EXACT_HEAD"})
+
+        followup = self.data["next_m32_pr197_terminal_continuity_sync_candidate_20261027"]
+        self.assertEqual(followup["base_main_sha"], terminal["merge_sha"])
+        self.assertEqual((followup["rust_base_tests_expected_unchanged"],
+                          followup["greenfield_runner_tests_expected_unchanged"],
+                          followup["sqlite_inventory_tests_expected_unchanged"],
+                          followup["handoff_tests_expected"]), (165, 7, 36, 129))
+        self.assertEqual(followup["scope"],
+                         "DOCUMENTATION_ONLY_PR197_TERMINAL_REVALIDATION_NO_RUNTIME_OR_OPERATOR_ACTION")
+        for flag in ("new_candidate_source_ci_qualified", "native_windows_hello_implemented",
+                     "operator_access", "new_operator_profile_required", "migration_007_authorized",
+                     "writer_ipc_authorized", "pr35_merge_authorized"):
+            self.assertFalse(followup[flag], flag)
+        self.assertEqual(followup["profile_identifier"], "com.fabulaxiom.greenfield.v1")
+        for key, expected in (("m3_2", "IN_PROGRESS_NOT_ACCEPTED"),
+                              ("g2b", "NOT_ACCEPTED"), ("writer", "NOT_PROVEN"),
+                              ("g2c", "NOT_AUTHORIZED"), ("real_g3", "STOP_UNAVAILABLE"),
+                              ("historical", "PENDING_EXTERNAL_ATTESTATION(21/3/2)"),
+                              ("prospective", "NOT_STARTED")):
+            self.assertEqual(followup[key], expected)
+
+        for file in ("RESUME_PROMPT_SHORT.md", "RESUME_PROMPT.md", "HANDOFF_CURRENT.md",
+                     "HANDOFF_PROTOCOL.md", "HANDOFF_HISTORY.md", "NEXT.md", "STATE.md",
+                     "M3_2_GATE_DECISION_CURRENT.md", "README.md"):
+            source = (DIRECTORY / file).read_text(encoding="utf-8")
+            self.assertIn("40558476584", source, file)
+            self.assertIn("dde962a50e3a063753fb77e9a5bcee014f406d30", source, file)
+            self.assertIn("M3_2_SINGLE_USER_WINDOWS_HELLO_SENSITIVE_CONSENT_POLICY_20261027.md",
+                          source, file)
+        for file in ("ROADMAP_STATUS_CURRENT.md", "FABULAXIOM_ROADMAP_V1.md"):
+            source = (ROOT / "docs/roadmap" / file).read_text(encoding="utf-8")
+            self.assertIn("40558476584", source, file)
+            self.assertIn("dde962a50e3a063753fb77e9a5bcee014f406d30", source, file)
+        short_bytes = (DIRECTORY / "RESUME_PROMPT_SHORT.md").read_bytes()
+        self.assertLess(len(short_bytes), 4200)
+        # A Windows checkout may use CRLF: reserve one extra byte per line.
+        self.assertLess(len(short_bytes.replace(b"\r\n", b"\n")) +
+                        short_bytes.count(b"\n"), 4200)
 
 if __name__ == "__main__":
     unittest.main()
