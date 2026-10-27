@@ -30,12 +30,12 @@ EXPECTED = {
     "src-tauri/src/entity_commands.rs": (0, 1, 0, 0, 0, 0, 0),
     "src-tauri/src/fact_commands.rs": (0, 1, 0, 0, 0, 0, 0),
     "src-tauri/src/facts.rs": (1, 0, 1, 0, 0, 0, 0),
-    # Route C / same-profile refusal fixtures: twenty-one reviewed calls,
+    # Route C / same-profile refusal fixtures: twenty-seven reviewed calls,
     # exclusively in #[cfg(test)] and rooted under runner-created temp dirs.
-    # Latest +5 cover structurally healthy but FK-invalid backup refusal.
+    # Latest +6 cover wrong owner and forged schema lineage refusal.
     # No operator path,
     # production SQLite open, or historical G2B/G3 authorization.
-    "src-tauri/src/greenfield_smoke_tests.rs": (0, 21, 0, 0, 0, 0, 0),
+    "src-tauri/src/greenfield_smoke_tests.rs": (0, 27, 0, 0, 0, 0, 0),
     "src-tauri/src/hierarchy.rs": (1, 0, 1, 0, 0, 0, 0),
     "src-tauri/src/hierarchy_commands.rs": (0, 1, 0, 0, 0, 0, 0),
     "src-tauri/src/lib.rs": (0, 1, 0, 0, 0, 0, 0),

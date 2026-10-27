@@ -38,7 +38,8 @@ class GreenfieldBackupRestoreSourceContract(unittest.TestCase):
                      "greenfield_ci_occupied_restore_root_switches_selection_so_operator_use_is_blocked",
                      "greenfield_ci_same_profile_restore_keeps_previous_database_and_archives",
                      "greenfield_ci_same_profile_corrupt_restore_refusal_keeps_current_work",
-                     "greenfield_ci_same_profile_foreign_key_invalid_backup_cannot_replace_active_work"):
+                     "greenfield_ci_same_profile_foreign_key_invalid_backup_cannot_replace_active_work",
+                     "greenfield_ci_same_profile_foreign_owner_and_lineage_backup_refusals"):
             self.assertIn("fn " + name + "()", self.rust)
         for important in ("SetSceneRevisionArchivedInput", "scene_archived_revision_ids",
                           "current_schema_version", "source_bytes_before_restore",
@@ -89,6 +90,17 @@ class GreenfieldBackupRestoreSourceContract(unittest.TestCase):
                          'assert_eq!(names(&activation_dir), markers_before)',
                          'assert_eq!(fs::read(&selected).unwrap(), selected_bytes)',
                          'assert_eq!(fs::read(&original).unwrap(), original_bytes)'):
+            self.assertIn(required, self.rust)
+
+    def test_09_foreign_schema_owner_and_lineage_are_refused_without_activation(self):
+        self.assertIn("fn greenfield_ci_same_profile_foreign_owner_and_lineage_backup_refusals()", self.rust)
+        for required in ("other_application", "006_forged_review_log", "schema_owner",
+                         "schema_migrations", 'assert_eq!(owner_error.payload().code, "integrity")',
+                         'assert_eq!(lineage_error.payload().code, "integrity")',
+                         'assert_eq!(names(&activation_dir), markers_before)',
+                         'assert_eq!(fs::read(&selected).unwrap(), selected_bytes)',
+                         'assert_eq!(fs::read(&original).unwrap(), original_bytes)',
+                         "wrong_owner_bytes", "wrong_lineage_bytes"):
             self.assertIn(required, self.rust)
 
 

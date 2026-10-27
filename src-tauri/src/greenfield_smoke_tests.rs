@@ -536,3 +536,94 @@ fn greenfield_ci_same_profile_foreign_key_invalid_backup_cannot_replace_active_w
     }
     fs::remove_dir_all(profile).unwrap();
 }
+
+#[test]
+fn greenfield_ci_same_profile_foreign_owner_and_lineage_backup_refusals() {
+    // Only brand-new SQLite files under this exclusive temporary CI fixture.
+    // A structurally healthy but unrelated/tampered backup must not be activated.
+    let profile = new_ci_only_root("same-profile-foreign-schema-refusal");
+    let original = backup::resolve_active_database_path(&profile).unwrap();
+    {
+        let mut db = database::open_database(&original).unwrap();
+        hierarchy::create_universe(
+            &mut db,
+            hierarchy::CreateUniverseInput { id: "u-snapshot".into(), name: "Avant sauvegarde".into() },
+        ).unwrap();
+    }
+    let healthy = backup::create_backup(&profile).unwrap();
+    let healthy_bytes = fs::read(&healthy.backup.path).unwrap();
+    {
+        let mut db = database::open_database(&original).unwrap();
+        hierarchy::create_universe(
+            &mut db,
+            hierarchy::CreateUniverseInput { id: "u-later".into(), name: "Travail ultérieur".into() },
+        ).unwrap();
+    }
+    let original_bytes = fs::read(&original).unwrap();
+    let restored = backup::restore_backup(&profile, &healthy.backup.file_name).unwrap();
+    let selected = PathBuf::from(&restored.active_database_path);
+    assert_ne!(selected, original);
+    let selected_bytes = fs::read(&selected).unwrap();
+    let activation_dir = profile.join("database").join("activations");
+    let names = |dir: &std::path::Path| {
+        let mut result = fs::read_dir(dir).unwrap()
+            .map(|entry| entry.unwrap().file_name().into_string().unwrap())
+            .collect::<Vec<_>>();
+        result.sort();
+        result
+    };
+    let markers_before = names(&activation_dir);
+    assert_eq!(markers_before.len(), 1);
+    let marker_bytes = fs::read(activation_dir.join(&markers_before[0])).unwrap();
+    let files_before = names(&profile.join("database"));
+
+    let wrong_owner = backup::create_backup(&profile).unwrap();
+    {
+        let db = database::open_database(&PathBuf::from(&wrong_owner.backup.path)).unwrap();
+        db.execute(
+            "UPDATE app_metadata SET value='other_application' WHERE key='schema_owner'",
+            [],
+        ).unwrap();
+        let integrity: String = db.query_row("PRAGMA integrity_check", [], |row| row.get(0)).unwrap();
+        assert_eq!(integrity, "ok");
+    }
+    let wrong_owner_bytes = fs::read(&wrong_owner.backup.path).unwrap();
+    let owner_error = backup::restore_backup(&profile, &wrong_owner.backup.file_name)
+        .expect_err("a database claiming another owner must not replace active work");
+    assert_eq!(owner_error.payload().code, "integrity");
+    assert_eq!(backup::resolve_active_database_path(&profile).unwrap(), selected);
+
+    let wrong_lineage = backup::create_backup(&profile).unwrap();
+    {
+        let db = database::open_database(&PathBuf::from(&wrong_lineage.backup.path)).unwrap();
+        db.execute(
+            "UPDATE schema_migrations SET name='006_forged_review_log' WHERE version=6",
+            [],
+        ).unwrap();
+        let integrity: String = db.query_row("PRAGMA integrity_check", [], |row| row.get(0)).unwrap();
+        assert_eq!(integrity, "ok");
+    }
+    let wrong_lineage_bytes = fs::read(&wrong_lineage.backup.path).unwrap();
+    let lineage_error = backup::restore_backup(&profile, &wrong_lineage.backup.file_name)
+        .expect_err("a forged migration lineage must not replace active work");
+    assert_eq!(lineage_error.payload().code, "integrity");
+
+    assert_eq!(backup::resolve_active_database_path(&profile).unwrap(), selected);
+    assert_eq!(names(&activation_dir), markers_before);
+    assert_eq!(fs::read(activation_dir.join(&markers_before[0])).unwrap(), marker_bytes);
+    assert_eq!(names(&profile.join("database")), files_before);
+    assert_eq!(fs::read(&selected).unwrap(), selected_bytes);
+    assert_eq!(fs::read(&original).unwrap(), original_bytes);
+    assert_eq!(fs::read(&healthy.backup.path).unwrap(), healthy_bytes);
+    assert_eq!(fs::read(&wrong_owner.backup.path).unwrap(), wrong_owner_bytes);
+    assert_eq!(fs::read(&wrong_lineage.backup.path).unwrap(), wrong_lineage_bytes);
+    {
+        let active = database::open_database(&selected).unwrap();
+        assert_eq!(hierarchy::snapshot(&active).unwrap().universes.len(), 1);
+    }
+    {
+        let old = database::open_database(&original).unwrap();
+        assert_eq!(hierarchy::snapshot(&old).unwrap().universes.len(), 2);
+    }
+    fs::remove_dir_all(profile).unwrap();
+}
