@@ -8,7 +8,7 @@ use std::{
     collections::BTreeMap,
     fs,
     io::ErrorKind,
-    path::{Path, PathBuf},
+    path::{Component, Path, PathBuf},
     process,
     sync::{Arc, Barrier},
     thread,
@@ -105,6 +105,109 @@ fn open_new_only_disposable_file(path: &Path) -> Result<Connection, String> {
     let _parent_pin = pin_disposable_parent(path)?;
     let claim = claim_new_only_disposable_file(path)?;
     connect_claimed_disposable_file(path, claim)
+}
+
+// Experimental *fixture* boundary: relative components must stay lexically
+// beneath the exact disposable root created by this test. This says nothing
+// about the ownership of the OS temp directory or an operator profile root.
+fn checked_fixture_parent_chain(root: &Path, destination: &Path)
+    -> Result<Vec<PathBuf>, String>
+{
+    fn forbidden_device_name(name: &str) -> bool {
+        let upper = name.to_ascii_uppercase();
+        matches!(upper.as_str(), "CON" | "PRN" | "AUX" | "NUL")
+            || (upper.len() == 4
+                && (upper.starts_with("COM") || upper.starts_with("LPT"))
+                && matches!(upper.as_bytes()[3], b'1'..=b'9'))
+    }
+    if !root.is_absolute() || !destination.is_absolute() {
+        return Err("STOP: fixture paths must be absolute".to_owned());
+    }
+    let relative = destination.strip_prefix(root)
+        .map_err(|_| "STOP: destination is outside the disposable fixture root")?;
+    let mut names = Vec::new();
+    for component in relative.components() {
+        let Component::Normal(name) = component else {
+            return Err("STOP: non-normal destination component".to_owned());
+        };
+        let text = name.to_str().ok_or("STOP: non-UTF8 fixture component")?;
+        if text.is_empty() {
+            return Err("STOP: empty fixture component".to_owned());
+        }
+        names.push(text.to_owned());
+    }
+    if names.len() < 2 {
+        return Err("STOP: destination needs a fixture-owned subdirectory".to_owned());
+    }
+    let filename = names.pop().expect("at least two validated components");
+    let stem = filename.strip_suffix(".sqlite3")
+        .ok_or("STOP: only SQLite fixture filenames allowed")?;
+    if stem.is_empty() || forbidden_device_name(stem)
+        || !stem.bytes().all(|byte| byte.is_ascii_alphanumeric() || byte == b'-' || byte == b'_')
+        || names.iter().any(|part| {
+            forbidden_device_name(part)
+                || !part.bytes().all(|byte| byte.is_ascii_alphanumeric() || byte == b'-' || byte == b'_')
+        })
+    {
+        return Err("STOP: unsafe fixture component".to_owned());
+    }
+    let mut chain = vec![root.to_path_buf()];
+    let mut cursor = root.to_path_buf();
+    for name in names {
+        cursor.push(name);
+        chain.push(cursor.clone());
+    }
+    Ok(chain)
+}
+
+// Win32-only disposable exercise: pin every directory BELOW AND INCLUDING the
+// freshly created test root. Reject reparse attributes and unavailable file
+// identities; compare volume/FileIndex from the held handle against two path
+// observations. This is a negative/positive fixture test, NOT production
+// custody: the absolute ancestors *above* root and SQLite's VFS handle are
+// still outside the proven boundary.
+#[cfg(windows)]
+fn pin_checked_fixture_chain(root: &Path, destination: &Path)
+    -> Result<Vec<fs::File>, String>
+{
+    use std::os::windows::fs::{MetadataExt, OpenOptionsExt};
+    const FILE_ATTRIBUTE_REPARSE_POINT: u32 = 0x0000_0400;
+    const FILE_FLAG_BACKUP_SEMANTICS: u32 = 0x0200_0000;
+    const FILE_FLAG_OPEN_REPARSE_POINT: u32 = 0x0020_0000;
+    let paths = checked_fixture_parent_chain(root, destination)?;
+    let mut pins = Vec::with_capacity(paths.len());
+    for parent in paths {
+        let before = fs::symlink_metadata(&parent)
+            .map_err(|e| format!("STOP: cannot inspect fixture ancestor: {e}"))?;
+        if !before.is_dir() || before.file_attributes() & FILE_ATTRIBUTE_REPARSE_POINT != 0 {
+            return Err("STOP: non-directory or reparse fixture ancestor".to_owned());
+        }
+        let pin = fs::OpenOptions::new()
+            .access_mode(0)
+            .share_mode(0x0000_0001 | 0x0000_0002)
+            .custom_flags(FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OPEN_REPARSE_POINT)
+            .open(&parent)
+            .map_err(|e| format!("STOP: cannot pin fixture ancestor: {e}"))?;
+        let held = pin.metadata()
+            .map_err(|e| format!("STOP: held ancestor metadata unavailable: {e}"))?;
+        let after = fs::symlink_metadata(&parent)
+            .map_err(|e| format!("STOP: ancestor changed after pin: {e}"))?;
+        let identity = |m: &fs::Metadata| {
+            Some((m.volume_serial_number()?, m.file_index()?))
+        };
+        let stable_id = identity(&held).ok_or("STOP: missing held FileIndex/volume")?;
+        if !held.is_dir()
+            || held.file_attributes() & FILE_ATTRIBUTE_REPARSE_POINT != 0
+            || before.file_attributes() & FILE_ATTRIBUTE_REPARSE_POINT != 0
+            || after.file_attributes() & FILE_ATTRIBUTE_REPARSE_POINT != 0
+            || identity(&before) != Some(stable_id)
+            || identity(&after) != Some(stable_id)
+        {
+            return Err("STOP: fixture ancestor identity or reparse mismatch".to_owned());
+        }
+        pins.push(pin);
+    }
+    Ok(pins)
 }
 
 fn create_closed_populated_v6(path: &Path) {
@@ -604,6 +707,54 @@ fn m32_windows_pinned_fixture_parent_and_claim_refuse_rename_during_open() {
     assert!(destination.exists());
     assert!(!parent.join("substituted.sqlite3").exists());
     assert!(!root.file("redirected-parent").exists());
+}
+
+#[test]
+fn m32_owned_fixture_path_guard_refuses_escape_and_unsafe_components() {
+    let root = DisposableRoot::new("m32-owned-path-lexical-guard");
+    let nested = root.file("project_new");
+    fs::create_dir(&nested).unwrap();
+    let destination = nested.join("new_v7.sqlite3");
+    assert_eq!(checked_fixture_parent_chain(&root.0, &destination).unwrap(),
+               vec![root.0.clone(), nested.clone()]);
+    let parent_escape = nested.join("..").join("outside.sqlite3");
+    assert!(checked_fixture_parent_chain(&root.0, &parent_escape).is_err(),
+            "an internal .. segment must veto before OS creation");
+    assert!(checked_fixture_parent_chain(&root.0, &root.file("root-only.sqlite3")).is_err());
+    assert!(checked_fixture_parent_chain(&root.0, &nested.join("stream:ads.sqlite3")).is_err());
+    assert!(checked_fixture_parent_chain(&root.0, &nested.join("CON.sqlite3")).is_err());
+    assert!(checked_fixture_parent_chain(&root.0, &nested.join("wrong.db")).is_err());
+    assert!(checked_fixture_parent_chain(
+        &root.0, &std::env::temp_dir().join("outside-fixture.sqlite3")
+    ).is_err());
+    assert!(!destination.exists());
+    assert!(!root.file("outside.sqlite3").exists());
+}
+
+#[cfg(windows)]
+#[test]
+fn m32_windows_pinned_owned_fixture_chain_refuses_ancestor_rename() {
+    let root = DisposableRoot::new("m32-owned-chain-fileid");
+    let first = root.file("project_new");
+    let second = first.join("nested");
+    fs::create_dir(&first).unwrap();
+    fs::create_dir(&second).unwrap();
+    let destination = second.join("new_v7.sqlite3");
+    let pins = pin_checked_fixture_chain(&root.0, &destination)
+        .expect("all fixture-owned ancestors expose stable Windows FileIndex");
+    assert_eq!(pins.len(), 3);
+    assert!(fs::rename(&root.0, root.0.with_extension("moved")).is_err());
+    assert!(fs::rename(&first, root.file("replaced_project")).is_err());
+    assert!(fs::rename(&second, first.join("replaced_nested")).is_err());
+    let claim = claim_new_only_disposable_file(&destination).unwrap();
+    let db = connect_claimed_disposable_file(&destination, claim)
+        .expect("SQLite may open the new fixture while all ancestors are pinned");
+    assert_eq!(database::current_schema_version(&db).unwrap_or(0), 0);
+    drop(db);
+    drop(pins);
+    assert!(destination.exists());
+    assert!(!root.file("replaced_project").exists());
+    assert!(!first.join("replaced_nested").exists());
 }
 
 

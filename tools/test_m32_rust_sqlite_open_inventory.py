@@ -201,5 +201,29 @@ class RustSqliteOpenInventoryTests(unittest.TestCase):
         self.assertNotIn("#[tauri::command]", source)
         self.assertEqual(audit_inventory(self.src)["real_g3"], "STOP_UNAVAILABLE")
 
+    def test_31_disposable_root_lexical_child_guard_refuses_escape_and_devices(self):
+        source = self.src["src-tauri/src/world_time_file_migration_tests.rs"]
+        for signal in ("fn checked_fixture_parent_chain(root: &Path, destination: &Path)",
+                       "destination.strip_prefix(root)", "Component::Normal",
+                       "non-normal destination component", "forbidden_device_name",
+                       "CON", "COM", "LPT", "stream:ads.sqlite3",
+                       "m32_owned_fixture_path_guard_refuses_escape_and_unsafe_components"):
+            self.assertIn(signal, source)
+        self.assertNotIn("app_local_data_dir()", source)
+        self.assertEqual(EXPECTED["src-tauri/src/world_time_file_migration_tests.rs"],
+                         (18, 4, 3, 2, 0, 6, 0))
+
+    def test_32_windows_fixture_chain_uses_held_file_identity_and_reparse_veto(self):
+        source = self.src["src-tauri/src/world_time_file_migration_tests.rs"]
+        for signal in ("fn pin_checked_fixture_chain(root: &Path, destination: &Path)",
+                       "FILE_FLAG_OPEN_REPARSE_POINT", "FILE_ATTRIBUTE_REPARSE_POINT",
+                       "volume_serial_number()", "file_index()", "pin.metadata()",
+                       "identity(&before) != Some(stable_id)",
+                       "identity(&after) != Some(stable_id)",
+                       "m32_windows_pinned_owned_fixture_chain_refuses_ancestor_rename"):
+            self.assertIn(signal, source)
+        self.assertNotIn("#[tauri::command]", source)
+        self.assertEqual(audit_inventory(self.src)["writer_absence"], "NOT_PROVEN")
+
 if __name__ == "__main__":
     unittest.main()

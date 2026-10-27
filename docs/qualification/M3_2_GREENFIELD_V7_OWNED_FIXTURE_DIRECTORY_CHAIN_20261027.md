@@ -1,0 +1,28 @@
+# M3.2 — chaîne de répertoires d'une fixture v7 neuve, garde de chemin et identité Win32
+
+**CANDIDATE STRICTEMENT TEST-ONLY, NON QUALIFIÉE avant CI GitHub à son propre SHA.** Base fraîche : [PR #193](https://github.com/LaurentCOLL1/Fabulaxiom/pull/193) MERGED, source `38540a4602c5c5e4f9d9b3bdb6b8bf155e0ed256`, [CI source #40485043798](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/40485043798) SUCCESS (149 Rust, 30 gardes, 123 contrats), squash protégé `main=8d034d66c3de76735c356c6f79e436c0b9965dec`, [postmain #40486676658](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/40486676658) SUCCESS indépendante, [terminal issue #38](https://github.com/LaurentCOLL1/Fabulaxiom/issues/38#issuecomment-6439378032). Les CI de #193 ne qualifient **pas** les nouveaux tests.
+
+## Frontière précise
+
+PR #193 retient le handle de fichier `create_new(true)` et le parent **immédiat** durant la seconde ouverture SQLite RW sur une fixture neuve. Il reste nécessaire de distinguer une chaîne de *noms* de l'identité stable de chaque répertoire. Cette tranche ajoute un laboratoire de garde d'ancêtres **en dessous et y compris la racine jetable créée par le test**, sans introduire de chemin utilisateur ni d'ouvreur Tauri :
+
+1. `checked_fixture_parent_chain` impose `destination.strip_prefix(root)`, des composants normaux sans `..`, des noms ASCII restreints, un nom `.sqlite3` dans un sous-répertoire déjà choisi et le refus de noms Windows réservés (CON/PRN/AUX/NUL/COM1–9/LPT1–9) ou de flux alternatifs `:`. Ce contrôle lexical ne crée et n'ouvre **aucun** fichier.
+2. Sous `#[cfg(windows)]`, `pin_checked_fixture_chain` parcourt chaque répertoire de fixture depuis la racine détenue jusqu'au parent de destination. Avant/après ouverture, `symlink_metadata` refuse `FILE_ATTRIBUTE_REPARSE_POINT`. Un handle sans partage `DELETE`, avec `FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OPEN_REPARSE_POINT`, est conservé ; métadonnées du handle et chemins sont confrontées pour **volume serial + FileIndex**. Les métadonnées indisponibles ou différentes imposent STOP.
+3. Nouveau test Windows : trois répertoires de fixture épinglés ; tentatives de renommer la racine, son enfant et le parent final doivent échouer ; revendication de fichier exclusive et ouverture SQLite en présence des handles ; relâchement après fermeture. Nouveau test portable : chemins échappant à la racine, `..`, nom direct à la racine, `CON.sqlite3`, flux ADS et extension erronée sont refusés sans créer une destination.
+
+Le test Unix ne revendique aucune sémantique Win32 ; le test Windows attend le résultat du runner réel. **Cibles (PAS des PASS à ce SHA)** : 151 Rust, 7 Greenfield (inchangées), 32 gardes d'inventaire, 124 contrats de reprise. Les occurrences textuelles SQLite du module restent `(18,4,3,2,0,6,0)` ; pas d'ajout de `Connection::open`, migration, commande Tauri ou dépendance.
+
+## Limites incontournables
+
+- La racine `DisposableRoot` est créée par le **test** dans `std::env::temp_dir()`. Ses **ancêtres absolus au-dessus d'elle**, l'ACL Windows, le compte opérateur et le vrai `%LOCALAPPDATA%` ne sont **pas** authentifiés. Ce n'est pas un mécanisme utilisable tel quel pour `com.fabulaxiom.greenfield.v1`.
+- FileIndex 64 bits et numéro de volume sont des observations de handles dans un laboratoire Win32, **pas** une garantie pérenne pour tout système de fichiers/partage, ReFS/FileId 128 bits, alias, disque distant ou réutilisation d'identité. Le modèle d'adversaire, les ACL et les racines opérateur doivent être revus séparément.
+- Vérifier avant/après le chemin vers un handle de répertoire ne relie **toujours pas** atomiquement le handle de SQLite VFS à la revendication OS. Sidecars concurrents, liens d'ancêtres au-dessus de la racine, interruptions, réouverture, activation et reprise ne sont pas qualifiés. Si le passage n'est pas prouvable sous la menace retenue, le runtime devra refuser.
+- Aucun CRUD/UX chronologique v7 réel, migration 007 de production, writer IPC, nouveau profil Tauri, restauration/backup Windows opérateur, attestation indépendante, G2B/G3 ni release.
+
+Références primaires : [Rust MetadataExt Windows](https://doc.rust-lang.org/std/os/windows/fs/trait.MetadataExt.html), [Win32 reparse points](https://learn.microsoft.com/en-us/windows/win32/fileio/reparse-point-operations), [Win32 FileId et volume](https://learn.microsoft.com/en-us/windows/win32/api/fileapi/ns-fileapi-by_handle_file_information), [SQLite VFS xOpen](https://www.sqlite.org/c3ref/vfs.html).
+
+## CI / gouvernance
+
+À vérifier exclusivement au nouveau HEAD : CI Windows terminale, 151 Rust/32 gardes/124 contrats, diff exact/reviews/threads, ruleset actif `Protect main` avec `Windows frontend and Rust checks`. Fusion seulement squash avec `expected_head_sha`, re-fetch `main` puis CI `push` indépendante et issue #38 append-only. Une CI verte **ne promeut aucun gate**.
+
+M3.2 `IN_PROGRESS_NOT_ACCEPTED`, G2B `NOT_ACCEPTED`, writer `NOT_PROVEN`, G2C `NOT_AUTHORIZED`, G3 réel `STOP_UNAVAILABLE`, historique `PENDING_EXTERNAL_ATTESTATION(21/3/2)`, prospective `NOT_STARTED`, PR #35 `OPEN/DRAFT`. Aucune SQLite v6/v7 opérateur, backup/ACL/journaux/marqueur ou migration 007/IPC writer touché. Profil unique `com.fabulaxiom.greenfield.v1` conservé ; aucun nouveau consentement Windows demandé ou consommé. Tout éventuel bloc PowerShell destiné à Laurent doit rester intégralement dans `& { ... }` et exige une autorisation distincte.
