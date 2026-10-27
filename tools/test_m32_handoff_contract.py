@@ -4131,7 +4131,9 @@ class HandoffContractTests(unittest.TestCase):
         for keyword in ("NON QUALIFIÉE", "xOpen", "avant délégation", "174 Rust",
                         "131 contrats", "PAS un ouvreur v7 atomique", "writer"):
             self.assertIn(keyword, doc)
-        self.assertEqual(fixture.count("#[test]"), 3)
+        # The PR200 baseline had three tests; subsequent fixture-only witnesses
+        # may extend this module without changing the prior terminal result.
+        self.assertGreaterEqual(fixture.count("#[test]"), 3)
         self.assertIn("sqlite3_vfs_register", fixture)
         self.assertIn("sqlite3_vfs_unregister", fixture)
         self.assertIn("SQLITE_OPEN_MAIN_JOURNAL", fixture)
@@ -4148,6 +4150,64 @@ class HandoffContractTests(unittest.TestCase):
             body = (ROOT / "docs/roadmap" / filename).read_text(encoding="utf-8")
             self.assertIn("40578342548", body, filename)
             self.assertIn("M3_2_SQLITE_VFS_PREDELEGATION_REFUSAL_FIXTURE_20261027.md", body, filename)
+
+    def test_132_pr200_terminal_and_vfs_fileid128_callback_toctou_candidate(self):
+        terminal = self.data["post_pr200_terminal_observation"]
+        self.assertEqual(terminal["pr"], 200)
+        self.assertEqual(terminal["source_sha"], "6b9ff6351ab5e74661a65fa5b8d895237fc6d4bc")
+        self.assertEqual(terminal["source_ci"], {"run_id": 40584565021, "conclusion": "SUCCESS"})
+        self.assertEqual(terminal["merge_sha"], "beda84001ebe6ee2769cb9377017848e52319e70")
+        self.assertEqual(terminal["postmain_ci"], {"run_id": 40586436340, "conclusion": "SUCCESS"})
+        self.assertEqual((terminal["rust_base_tests"], terminal["greenfield_runner_tests"],
+                          terminal["sqlite_inventory_tests"], terminal["handoff_tests"]),
+                         (174, 7, 37, 131))
+        self.assertEqual((terminal["issue38_source_comment"], terminal["issue38_terminal_comment"]),
+                         (6453910958, 6454165007))
+        self.assertTrue(terminal["protect_main_active_strict"])
+        self.assertEqual(terminal["operator_execution"], "NO_OPERATOR_EXECUTION")
+
+        candidate = self.data["next_m32_vfs_fileid128_predelegate_toctou_candidate_20261027"]
+        self.assertEqual(candidate["base_main_sha"], terminal["merge_sha"])
+        self.assertEqual((candidate["rust_base_tests_expected"], candidate["greenfield_runner_tests_expected"],
+                          candidate["sqlite_inventory_tests_expected"], candidate["handoff_tests_expected"]),
+                         (177, 7, 38, 132))
+        self.assertTrue(candidate["fileid128_precheck_inside_vfs_callback"])
+        self.assertTrue(candidate["deliberate_post_precheck_swap_counterexample"])
+        for key in ("candidate_ci_qualified", "production_v7_opener_implemented",
+                    "atomic_sqlite_pre_xopen_proven", "writer_absence_proven", "native_hello_authorized",
+                    "operator_sqlite_access", "new_operator_profile_required", "migration_007_authorized",
+                    "writer_ipc_authorized", "independent_operator_attestation"):
+            self.assertFalse(candidate[key], key)
+        self.assertEqual(candidate["operator_execution"], "NO_OPERATOR_EXECUTION")
+        self.assertEqual(candidate["profile_identifier"], "com.fabulaxiom.greenfield.v1")
+        for key, value in (("m3_2", "IN_PROGRESS_NOT_ACCEPTED"), ("g2b", "NOT_ACCEPTED"),
+                           ("writer", "NOT_PROVEN"), ("g2c", "NOT_AUTHORIZED"),
+                           ("real_g3", "STOP_UNAVAILABLE"),
+                           ("historical", "PENDING_EXTERNAL_ATTESTATION(21/3/2)"),
+                           ("prospective", "NOT_STARTED")):
+            self.assertEqual(candidate[key], value)
+        doc = (ROOT / candidate["qualification"]).read_text(encoding="utf-8")
+        fixture = (ROOT / candidate["rust_fixture"]).read_text(encoding="utf-8")
+        for keyword in ("NON QUALIFIÉE", "FileId128", "xOpen", "177 tests Rust",
+                        "132 contrats", "fenêtre", "writer"):
+            self.assertIn(keyword, doc)
+        self.assertEqual(fixture.count("#[test]"), 6)
+        for signal in ("GetFileInformationByHandleEx", "SQLITE_FCNTL_WIN32_GET_HANDLE",
+                       "FileIdPrecheckPlan", "swaps_after_precheck",
+                       "m32_vfs_fixture_fileid128_precheck_accepts_stable_disposable_identity",
+                       "m32_vfs_fixture_fileid128_precheck_refuses_already_replaced_name",
+                       "m32_vfs_fixture_fileid128_precheck_then_internal_name_swap_is_not_atomic"):
+            self.assertIn(signal, fixture)
+        for filename in ("RESUME_PROMPT_SHORT.md", "RESUME_PROMPT.md", "HANDOFF_CURRENT.md",
+                         "HANDOFF_PROTOCOL.md", "HANDOFF_HISTORY.md", "NEXT.md", "STATE.md",
+                         "M3_2_GATE_DECISION_CURRENT.md", "README.md"):
+            body = (DIRECTORY / filename).read_text(encoding="utf-8")
+            self.assertIn("40586436340", body, filename)
+            self.assertIn("M3_2_SQLITE_VFS_FILEID128_PREDISPATCH_TOCTOU_20261027.md", body, filename)
+        for filename in ("ROADMAP_STATUS_CURRENT.md", "FABULAXIOM_ROADMAP_V1.md"):
+            body = (ROOT / "docs/roadmap" / filename).read_text(encoding="utf-8")
+            self.assertIn("40586436340", body, filename)
+            self.assertIn("M3_2_SQLITE_VFS_FILEID128_PREDISPATCH_TOCTOU_20261027.md", body, filename)
 
 if __name__ == "__main__":
     unittest.main()
