@@ -36,7 +36,8 @@ class GreenfieldBackupRestoreSourceContract(unittest.TestCase):
         for name in ("greenfield_ci_m1_m2_lifecycle_and_separate_destination_restore",
                      "greenfield_ci_corrupt_backup_cannot_activate_a_fresh_restore_root",
                      "greenfield_ci_occupied_restore_root_switches_selection_so_operator_use_is_blocked",
-                     "greenfield_ci_same_profile_restore_keeps_previous_database_and_archives"):
+                     "greenfield_ci_same_profile_restore_keeps_previous_database_and_archives",
+                     "greenfield_ci_same_profile_corrupt_restore_refusal_keeps_current_work"):
             self.assertIn("fn " + name + "()", self.rust)
         for important in ("SetSceneRevisionArchivedInput", "scene_archived_revision_ids",
                           "current_schema_version", "source_bytes_before_restore",
@@ -67,6 +68,16 @@ class GreenfieldBackupRestoreSourceContract(unittest.TestCase):
         self.assertIn("window.location.reload()", ui)
         self.assertIn('if input.confirmation != "RESTAURER"', commands)
         self.assertIn("backup::restore_backup(&root, &input.file_name)", commands)
+
+    def test_07_same_profile_corrupt_backup_refusal_does_not_switch_active_file(self):
+        self.assertIn("fn greenfield_ci_same_profile_corrupt_restore_refusal_keeps_current_work()", self.rust)
+        for required in ("activation_dir", "markers_before", "database_names_before",
+                         "healthy_bytes", "original_bytes", "selected_bytes",
+                         "not a SQLite database - disposable same-profile fixture",
+                         '"../not-a-backup.sqlite3"', "resolve_active_database_path"):
+            self.assertIn(required, self.rust)
+        self.assertIn("assert!(backup::restore_backup(&profile, &corrupt.backup.file_name).is_err())", self.rust)
+        self.assertIn("assert_eq!(fs::read(&selected).unwrap(), selected_bytes)", self.rust)
 
 
 if __name__ == "__main__":
