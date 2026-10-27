@@ -43,6 +43,10 @@ mod world_time_file_migration_tests;
 // Tauri command, production consent token, SQLite opener or writer is exposed.
 #[cfg(test)]
 mod m32_sensitive_action_consent_tests;
+// M3.2 desktop HWND eligibility rehearsal: plain synthetic values only.
+// No WinRT activation, HWND lookup, Tauri command or operator I/O.
+#[cfg(test)]
+mod m32_desktop_hello_boundary_tests;
 
 // Never compile this feature into a Tauri runtime, even debug builds.
 #[cfg(all(feature = "m32-g3-owned-ram-toy", not(test)))]

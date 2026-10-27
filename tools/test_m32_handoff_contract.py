@@ -4020,5 +4020,75 @@ class HandoffContractTests(unittest.TestCase):
         self.assertLess(len(short_bytes.replace(b"\r\n", b"\n")) +
                         short_bytes.count(b"\n"), 4200)
 
+    def test_130_pr198_terminal_desktop_hello_hwnd_source_only_candidate(self):
+        terminal = self.data["post_pr198_terminal_observation"]
+        self.assertEqual(terminal["pr"], 198)
+        self.assertEqual(terminal["source_sha"], "9b4b4049c461986c8427620f649a4e2113078800")
+        self.assertEqual(terminal["source_ci"], {"run_id": 40569850503, "conclusion": "SUCCESS"})
+        self.assertEqual(terminal["merge_sha"], "34b4174dd79d7c133b3700d72a705236f7623640")
+        self.assertEqual(terminal["postmain_ci"], {"run_id": 40571697037, "conclusion": "SUCCESS"})
+        self.assertEqual((terminal["rust_base_tests"], terminal["greenfield_runner_tests"],
+                          terminal["sqlite_inventory_tests"], terminal["handoff_tests"]),
+                         (165, 7, 36, 129))
+        self.assertEqual(terminal["issue38_terminal_comment"], 6452075388)
+        self.assertTrue(terminal["protect_main_active_strict"])
+        self.assertEqual(terminal["operator_execution"], "NO_OPERATOR_EXECUTION")
+
+        candidate = self.data["next_m32_desktop_hello_hwnd_source_candidate_20261027"]
+        self.assertEqual(candidate["base_main_sha"], terminal["merge_sha"])
+        self.assertEqual((candidate["rust_base_tests_expected"],
+                          candidate["greenfield_runner_tests_expected"],
+                          candidate["sqlite_inventory_tests_expected"],
+                          candidate["handoff_tests_expected"]), (171, 7, 36, 130))
+        self.assertEqual(candidate["desktop_interop_min_windows_build"], 22000)
+        self.assertTrue(candidate["synthetic_windows10_no_uwp_fallback"])
+        self.assertTrue(candidate["synthetic_hwnd_ownership_and_window_swap_refusals"])
+        for key in ("candidate_ci_qualified", "native_windows_hello_implemented",
+                    "native_hwnd_validation_proven", "trusted_backend_sensitive_action_guard_implemented",
+                    "app_pin_or_password_collected", "new_app_accounts_implemented",
+                    "atomic_sqlite_pre_xopen_proven", "writer_absence_proven", "operator_sqlite_access",
+                    "production_v7_opener_authorized", "new_operator_profile_required",
+                    "migration_007_authorized", "writer_ipc_authorized",
+                    "independent_operator_attestation"):
+            self.assertFalse(candidate[key], key)
+        self.assertEqual(candidate["profile_identifier"], "com.fabulaxiom.greenfield.v1")
+        self.assertEqual(candidate["operator_execution"], "NO_OPERATOR_EXECUTION")
+        for key, value in (("m3_2", "IN_PROGRESS_NOT_ACCEPTED"), ("g2b", "NOT_ACCEPTED"),
+                           ("writer", "NOT_PROVEN"), ("g2c", "NOT_AUTHORIZED"),
+                           ("real_g3", "STOP_UNAVAILABLE"),
+                           ("historical", "PENDING_EXTERNAL_ATTESTATION(21/3/2)"),
+                           ("prospective", "NOT_STARTED")):
+            self.assertEqual(candidate[key], value)
+
+        doc = (ROOT / candidate["qualification"]).read_text(encoding="utf-8")
+        for signal in ("Windows build 22000", "Windows 10", "RequestVerificationForWindowAsync",
+                       "backend", "xOpen", "NON QUALIFIÉ", "171 Rust", "130 contrats"):
+            self.assertIn(signal, doc)
+        rust = (ROOT / candidate["rust_fixture"]).read_text(encoding="utf-8")
+        lib = (ROOT / "src-tauri/src/lib.rs").read_text(encoding="utf-8")
+        self.assertIn("#[cfg(test)]\nmod m32_desktop_hello_boundary_tests;", lib)
+        self.assertEqual(rust.count("    #[test]"), 6)
+        for test_name in ("m32_desktop_hello_fixture_windows_10_never_falls_back_to_uwp",
+                          "m32_desktop_hello_fixture_22000_is_only_a_call_candidate",
+                          "m32_desktop_hello_fixture_gate_must_precede_even_eligibility",
+                          "m32_desktop_hello_fixture_missing_foreign_or_inactive_window_refused",
+                          "m32_desktop_hello_fixture_all_unavailable_states_refused",
+                          "m32_desktop_hello_fixture_snapshot_swap_and_stale_completion_refused"):
+            self.assertIn("fn " + test_name, rust)
+        for forbidden in ("#[tauri::command]", "Connection::open", "unsafe {",
+                          "windows::", "winapi::", "RequestVerificationForWindowAsync(",
+                          "tauri::", "std::fs::"):
+            self.assertNotIn(forbidden, rust, forbidden)
+        for filename in ("RESUME_PROMPT_SHORT.md", "RESUME_PROMPT.md", "HANDOFF_CURRENT.md",
+                         "HANDOFF_PROTOCOL.md", "HANDOFF_HISTORY.md", "NEXT.md", "STATE.md",
+                         "M3_2_GATE_DECISION_CURRENT.md", "README.md"):
+            body = (DIRECTORY / filename).read_text(encoding="utf-8")
+            self.assertIn("40571697037", body, filename)
+            self.assertIn("M3_2_WINDOWS_HELLO_DESKTOP_HWND_BACKEND_BOUNDARY_20261027.md", body, filename)
+        for filename in ("ROADMAP_STATUS_CURRENT.md", "FABULAXIOM_ROADMAP_V1.md"):
+            body = (ROOT / "docs/roadmap" / filename).read_text(encoding="utf-8")
+            self.assertIn("40571697037", body, filename)
+            self.assertIn("M3_2_WINDOWS_HELLO_DESKTOP_HWND_BACKEND_BOUNDARY_20261027.md", body, filename)
+
 if __name__ == "__main__":
     unittest.main()
