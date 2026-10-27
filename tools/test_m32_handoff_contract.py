@@ -3738,5 +3738,40 @@ class HandoffContractTests(unittest.TestCase):
             self.assertIn("40486676658", doc, name)
             self.assertIn("M3_2_GREENFIELD_V7_OWNED_FIXTURE_DIRECTORY_CHAIN_20261027.md", doc, name)
 
+    def test_125_pr194_negative_win32_runs_and_bounded_revalidation_candidate(self):
+        event = self.data["pr194_windows_negative_and_revalidation_candidate_20261027"]
+        self.assertEqual(event["pr"], 194)
+        self.assertEqual(event["state_at_checkpoint"], "OPEN_NOT_MERGED")
+        self.assertEqual(event["base_main_sha"], "8d034d66c3de76735c356c6f79e436c0b9965dec")
+        attempts = event["source_attempts"]
+        self.assertEqual([a["run_id"] for a in attempts],
+                         [40498356467, 40499869627, 40501278786])
+        self.assertTrue(all(a["conclusion"] == "FAILURE" for a in attempts))
+        self.assertEqual([(a["rust_passed"], a["rust_failed"]) for a in attempts[1:]],
+                         [(150, 1), (150, 1)])
+        self.assertEqual(event["issue38_terminal_stop_comment"], 6441614257)
+        self.assertEqual((event["rust_tests_expected"], event["inventory_guards_expected"],
+                          event["continuity_contracts_expected"]), (151, 32, 125))
+        self.assertTrue(event["windows_same_name_substitution_refusal_test_only"])
+        self.assertTrue(event["independent_pristine_new_only_sqlite_fixture_test_only"])
+        for field in ("new_candidate_source_ci_qualified", "directory_rename_prevention_proven",
+                      "post_revalidation_race_eliminated", "operator_root_and_above_ancestors_proven",
+                      "sqlite_vfs_os_handle_binding_proven", "m3_2_accepted"):
+            self.assertFalse(event[field], field)
+        self.assertEqual(event["operator_execution"], "NO_OPERATOR_EXECUTION")
+        self.assertEqual(event["profile_identifier"], "com.fabulaxiom.greenfield.v1")
+        src = (ROOT / event["rust_fixture"]).read_text(encoding="utf-8")
+        self.assertIn("fn revalidate_checked_fixture_chain", src)
+        self.assertIn("m32_windows_owned_fixture_chain_rechecks_substitution_before_sqlite", src)
+        self.assertIn("fs::create_dir(&second)", src)
+        for name in ("RESUME_PROMPT_SHORT.md", "RESUME_PROMPT.md", "HANDOFF_CURRENT.md",
+                     "HANDOFF_PROTOCOL.md", "HANDOFF_HISTORY.md", "NEXT.md", "STATE.md",
+                     "M3_2_GATE_DECISION_CURRENT.md", "README.md"):
+            doc = (DIRECTORY / name).read_text(encoding="utf-8")
+            self.assertIn("40501278786", doc, name)
+            self.assertIn("NON QUALIFI", doc, name)
+        for name in ("ROADMAP_STATUS_CURRENT.md", "FABULAXIOM_ROADMAP_V1.md"):
+            self.assertIn("40501278786", (ROOT / "docs/roadmap" / name).read_text(encoding="utf-8"))
+
 if __name__ == "__main__":
     unittest.main()

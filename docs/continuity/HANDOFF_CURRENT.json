@@ -13,6 +13,8 @@
     "source": "PR193_EXACT_HEAD"
   },
   "recent_changes": [
+    "PR194_WINDOWS_NEGATIVE_40501278786_150_OF_151_RUST_LEAF_RENAMED_NO_DELETE_SHARE_NOT_PROVEN",
+    "2026_10_27_PR194_TEST_ONLY_HELD_FILEINDEX_REVALIDATION_AFTER_CONTROLLED_DIRECTORY_NAME_REPLACEMENT_CANDIDATE_NOT_YET_CI",
     "POST_PR193_MAIN_8D034D66_CI_40486676658_SUCCESS_PINNED_WINDOWS_TEST_ONLY_HANDOFF_NO_OPERATOR_ACCESS",
     "2026_10_27_M32_DISPOSABLE_FIXTURE_DIRECTORY_CHAIN_VOLUME_FILEINDEX_REPARSE_AND_LEXICAL_VETO_TEST_ONLY_CANDIDATE",
     "POST_PR192_MAIN_0584291D_CI_40476232974_SUCCESS_TEST_ONLY_EXCLUSIVE_NEW_FILE_NO_OPERATOR_ACCESS",
@@ -4122,6 +4124,34 @@
     "sqlite_vfs_os_handle_binding_proven": false,
     "operator_execution": "NO_OPERATOR_EXECUTION",
     "m3_2_accepted": false
+  },
+  "pr194_windows_negative_and_revalidation_candidate_20261027": {
+    "pr": 194,
+    "state_at_checkpoint": "OPEN_NOT_MERGED",
+    "base_main_sha": "8d034d66c3de76735c356c6f79e436c0b9965dec",
+    "source_attempts": [
+      {"head": "de080fa87322892ce05ada47b9cb330d97296a20", "run_id": 40498356467, "conclusion": "FAILURE", "cause": "RUST_E0658_UNSTABLE_WINDOWS_BY_HANDLE_BEFORE_TESTS"},
+      {"head": "36dee613ffe66dac5a8d7c869d88cf3db9f9240a", "run_id": 40499869627, "conclusion": "FAILURE", "rust_passed": 150, "rust_failed": 1, "cause": "WINDOWS_EMPTY_LEAF_RENAMABLE_WITH_METADATA_ONLY_HANDLE"},
+      {"head": "884d8515e43d71433fab221cb891817ac8c76334", "run_id": 40501278786, "conclusion": "FAILURE", "rust_passed": 150, "rust_failed": 1, "cause": "WINDOWS_EMPTY_LEAF_RENAMABLE_WITH_FILE_READ_ATTRIBUTES_HANDLE"}
+    ],
+    "issue38_terminal_stop_comment": 6441614257,
+    "current_candidate": "TEST_ONLY_WINDOWS_REVALIDATE_ORIGINAL_HELD_DIRECTORY_IDS_AFTER_CONTROLLED_SAME_NAME_SUBSTITUTION",
+    "qualification": "docs/qualification/M3_2_GREENFIELD_V7_OWNED_FIXTURE_DIRECTORY_CHAIN_20261027.md",
+    "rust_fixture": "src-tauri/src/world_time_file_migration_tests.rs",
+    "rust_tests_expected": 151,
+    "greenfield_runner_tests_expected": 7,
+    "inventory_guards_expected": 32,
+    "continuity_contracts_expected": 125,
+    "new_candidate_source_ci_qualified": false,
+    "windows_same_name_substitution_refusal_test_only": true,
+    "independent_pristine_new_only_sqlite_fixture_test_only": true,
+    "directory_rename_prevention_proven": false,
+    "post_revalidation_race_eliminated": false,
+    "operator_root_and_above_ancestors_proven": false,
+    "sqlite_vfs_os_handle_binding_proven": false,
+    "m3_2_accepted": false,
+    "profile_identifier": "com.fabulaxiom.greenfield.v1",
+    "operator_execution": "NO_OPERATOR_EXECUTION"
   },
   "next_m32_greenfield_v7_owned_fixture_directory_chain_candidate_20261027": {
     "scope": "TEST_ONLY_DISPOSABLE_ROOT_LEXICAL_GUARD_AND_WINDOWS_PINNED_DIRECTORY_FILEINDEX",

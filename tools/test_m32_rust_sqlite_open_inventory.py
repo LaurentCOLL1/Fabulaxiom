@@ -216,14 +216,18 @@ class RustSqliteOpenInventoryTests(unittest.TestCase):
     def test_32_windows_fixture_chain_uses_held_file_identity_and_reparse_veto(self):
         source = self.src["src-tauri/src/world_time_file_migration_tests.rs"]
         for signal in ("fn pin_checked_fixture_chain(root: &Path, destination: &Path)",
+                       "fn revalidate_checked_fixture_chain(root: &Path, destination: &Path, pins: &[fs::File])",
                        "FILE_FLAG_OPEN_REPARSE_POINT", "FILE_ATTRIBUTE_REPARSE_POINT",
                        "const FILE_READ_ATTRIBUTES: u32 = 0x0000_0080",
                        ".access_mode(FILE_READ_ATTRIBUTES)",
                        "unsafe extern \"system\"", "GetFileInformationByHandle",
-                       "handle_identity(&before_handle)", "handle_identity(&pin)",
-                       "handle_identity(&after_handle)", "pin.metadata()",
+                       "windows_fixture_handle_identity(&before_handle)",
+                       "windows_fixture_handle_identity(&pin)",
+                       "windows_fixture_handle_identity(&after_handle)", "pin.metadata()",
                        "before_id != held_id", "after_id != held_id",
-                       "m32_windows_pinned_owned_fixture_chain_refuses_ancestor_rename"):
+                       "m32_windows_owned_fixture_chain_rechecks_substitution_before_sqlite",
+                       "revalidate_checked_fixture_chain(&root.0, &destination, &pins).is_err()",
+                       "fs::create_dir(&second).expect(\"disposable replacement leaf only\")"):
             self.assertIn(signal, source)
         self.assertNotIn("m.volume_serial_number()?", source)
         self.assertNotIn("m.file_index()?", source)

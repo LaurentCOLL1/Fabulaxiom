@@ -160,17 +160,11 @@ fn checked_fixture_parent_chain(root: &Path, destination: &Path)
     Ok(chain)
 }
 
-// Win32-only disposable exercise: pin every directory BELOW AND INCLUDING the
-// freshly created test root. Reject reparse attributes and unavailable file
-// identities; compare volume/FileIndex from the held handle against two path
-// observations. This is a negative/positive fixture test, NOT production
-// custody: the absolute ancestors *above* root and SQLite's VFS handle are
-// still outside the proven boundary.
+// Windows fixture identity helpers use only stable Rust + test-only Win32 FFI.
+// A retained handle is NOT assumed to prevent directory renaming: Windows
+// Server 2025 CI twice renamed an empty leaf despite omitted DELETE sharing.
 #[cfg(windows)]
-fn pin_checked_fixture_chain(root: &Path, destination: &Path)
-    -> Result<Vec<fs::File>, String>
-{
-    use std::os::windows::fs::{MetadataExt, OpenOptionsExt};
+fn windows_fixture_handle_identity(handle: &fs::File) -> Result<(u32, u64), String> {
     use std::os::windows::io::AsRawHandle;
     use std::ffi::c_void;
 
@@ -197,30 +191,37 @@ fn pin_checked_fixture_chain(root: &Path, destination: &Path)
     unsafe extern "system" {
         fn GetFileInformationByHandle(handle: *mut c_void, info: *mut WinHandleFileInfo) -> i32;
     }
-    fn handle_identity(handle: &fs::File) -> Result<(u32, u64), String> {
-        let mut info = std::mem::MaybeUninit::<WinHandleFileInfo>::uninit();
-        let result = unsafe { GetFileInformationByHandle(handle.as_raw_handle(), info.as_mut_ptr()) };
-        if result == 0 {
-            return Err(format!("STOP: GetFileInformationByHandle failed: {}", std::io::Error::last_os_error()));
-        }
-        let info = unsafe { info.assume_init() };
-        Ok((info.volume, (u64::from(info.index_high) << 32) | u64::from(info.index_low)))
+    let mut info = std::mem::MaybeUninit::<WinHandleFileInfo>::uninit();
+    let result = unsafe { GetFileInformationByHandle(handle.as_raw_handle(), info.as_mut_ptr()) };
+    if result == 0 {
+        return Err(format!("STOP: GetFileInformationByHandle failed: {}", std::io::Error::last_os_error()));
     }
-    const FILE_ATTRIBUTE_REPARSE_POINT: u32 = 0x0000_0400;
+    let info = unsafe { info.assume_init() };
+    Ok((info.volume, (u64::from(info.index_high) << 32) | u64::from(info.index_low)))
+}
+
+#[cfg(windows)]
+fn open_windows_fixture_directory(path: &Path) -> Result<fs::File, String> {
+    use std::os::windows::fs::OpenOptionsExt;
     const FILE_FLAG_BACKUP_SEMANTICS: u32 = 0x0200_0000;
     const FILE_FLAG_OPEN_REPARSE_POINT: u32 = 0x0020_0000;
     const FILE_READ_ATTRIBUTES: u32 = 0x0000_0080;
-    let open_dir = |path: &Path| {
-        fs::OpenOptions::new()
-            // A metadata-only zero-access handle did NOT veto rename of an
-            // empty leaf on Windows Server 2025 CI (#40499869627). Request
-            // explicit attribute-read access, still never DELETE access.
-            .access_mode(FILE_READ_ATTRIBUTES)
-            .share_mode(0x0000_0001 | 0x0000_0002)
-            .custom_flags(FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OPEN_REPARSE_POINT)
-            .open(path)
-            .map_err(|e| format!("STOP: cannot pin fixture ancestor: {e}"))
-    };
+    fs::OpenOptions::new()
+        .access_mode(FILE_READ_ATTRIBUTES)
+        .share_mode(0x0000_0001 | 0x0000_0002)
+        .custom_flags(FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OPEN_REPARSE_POINT)
+        .open(path)
+        .map_err(|e| format!("STOP: cannot inspect fixture ancestor: {e}"))
+}
+
+// Pin only test-owned root-to-parent handles, with no claim that handles freeze
+// the directory *name*. Every later admission must revalidate against them.
+#[cfg(windows)]
+fn pin_checked_fixture_chain(root: &Path, destination: &Path)
+    -> Result<Vec<fs::File>, String>
+{
+    use std::os::windows::fs::MetadataExt;
+    const FILE_ATTRIBUTE_REPARSE_POINT: u32 = 0x0000_0400;
     let paths = checked_fixture_parent_chain(root, destination)?;
     let mut pins = Vec::with_capacity(paths.len());
     for parent in paths {
@@ -229,15 +230,15 @@ fn pin_checked_fixture_chain(root: &Path, destination: &Path)
         if !before.is_dir() || before.file_attributes() & FILE_ATTRIBUTE_REPARSE_POINT != 0 {
             return Err("STOP: non-directory or reparse fixture ancestor".to_owned());
         }
-        let before_handle = open_dir(&parent)?;
-        let before_id = handle_identity(&before_handle)?;
+        let before_handle = open_windows_fixture_directory(&parent)?;
+        let before_id = windows_fixture_handle_identity(&before_handle)?;
         drop(before_handle);
-        let pin = open_dir(&parent)?;
-        let held_id = handle_identity(&pin)?;
+        let pin = open_windows_fixture_directory(&parent)?;
+        let held_id = windows_fixture_handle_identity(&pin)?;
         let held = pin.metadata()
             .map_err(|e| format!("STOP: held ancestor metadata unavailable: {e}"))?;
-        let after_handle = open_dir(&parent)?;
-        let after_id = handle_identity(&after_handle)?;
+        let after_handle = open_windows_fixture_directory(&parent)?;
+        let after_id = windows_fixture_handle_identity(&after_handle)?;
         drop(after_handle);
         let after = fs::symlink_metadata(&parent)
             .map_err(|e| format!("STOP: ancestor changed after pin: {e}"))?;
@@ -253,6 +254,33 @@ fn pin_checked_fixture_chain(root: &Path, destination: &Path)
         pins.push(pin);
     }
     Ok(pins)
+}
+
+// Fail closed on a *controlled prior* rename/replacement even if Win32 allowed
+// the name to move while our directory handle stayed valid. NOT an atomic
+// guarantee between this check and SQLite's separate path-based VFS xOpen.
+#[cfg(windows)]
+fn revalidate_checked_fixture_chain(root: &Path, destination: &Path, pins: &[fs::File])
+    -> Result<(), String>
+{
+    use std::os::windows::fs::MetadataExt;
+    const FILE_ATTRIBUTE_REPARSE_POINT: u32 = 0x0000_0400;
+    let paths = checked_fixture_parent_chain(root, destination)?;
+    if paths.len() != pins.len() {
+        return Err("STOP: fixture ancestor handle count changed".to_owned());
+    }
+    for (parent, held_handle) in paths.iter().zip(pins.iter()) {
+        let metadata = fs::symlink_metadata(parent)
+            .map_err(|e| format!("STOP: held ancestor path vanished: {e}"))?;
+        if !metadata.is_dir() || metadata.file_attributes() & FILE_ATTRIBUTE_REPARSE_POINT != 0 {
+            return Err("STOP: replaced or reparse fixture ancestor".to_owned());
+        }
+        let reopened = open_windows_fixture_directory(parent)?;
+        if windows_fixture_handle_identity(&reopened)? != windows_fixture_handle_identity(held_handle)? {
+            return Err("STOP: fixture ancestor name now resolves to another FileIndex".to_owned());
+        }
+    }
+    Ok(())
 }
 
 fn create_closed_populated_v6(path: &Path) {
@@ -778,7 +806,7 @@ fn m32_owned_fixture_path_guard_refuses_escape_and_unsafe_components() {
 
 #[cfg(windows)]
 #[test]
-fn m32_windows_pinned_owned_fixture_chain_refuses_ancestor_rename() {
+fn m32_windows_owned_fixture_chain_rechecks_substitution_before_sqlite() {
     let root = DisposableRoot::new("m32-owned-chain-fileid");
     let first = root.file("project_new");
     let second = first.join("nested");
@@ -788,18 +816,50 @@ fn m32_windows_pinned_owned_fixture_chain_refuses_ancestor_rename() {
     let pins = pin_checked_fixture_chain(&root.0, &destination)
         .expect("all fixture-owned ancestors expose stable Windows FileIndex");
     assert_eq!(pins.len(), 3);
-    assert!(fs::rename(&root.0, root.0.with_extension("moved")).is_err());
-    assert!(fs::rename(&first, root.file("replaced_project")).is_err());
-    assert!(fs::rename(&second, first.join("replaced_nested")).is_err());
-    let claim = claim_new_only_disposable_file(&destination).unwrap();
-    let db = connect_claimed_disposable_file(&destination, claim)
-        .expect("SQLite may open the new fixture while all ancestors are pinned");
-    assert_eq!(database::current_schema_version(&db).unwrap_or(0), 0);
-    drop(db);
+    revalidate_checked_fixture_chain(&root.0, &destination, &pins)
+        .expect("clean fixture still resolves to its held ancestors");
+    let renamed_leaf = first.join("replaced_nested");
+    // The empty leaf was actually movable despite a held no-DELETE-share
+    // handle on Windows Server 2025 (#40499869627, #40501278786). If this
+    // runner permits it, restore the SAME NAME with a DIFFERENT directory and
+    // demand a STOP rather than claiming the handles prevented substitution.
+    let was_renamed = fs::rename(&second, &renamed_leaf).is_ok();
+    if was_renamed {
+        fs::create_dir(&second).expect("disposable replacement leaf only");
+        assert_ne!(
+            windows_fixture_handle_identity(&pins[2]).unwrap(),
+            windows_fixture_handle_identity(&open_windows_fixture_directory(&second).unwrap()).unwrap(),
+            "a newly created directory must not inherit the held leaf identity"
+        );
+        assert!(revalidate_checked_fixture_chain(&root.0, &destination, &pins).is_err(),
+                "rename plus replacement MUST cause refusal before SQLite xOpen");
+        assert!(!destination.exists());
+        assert!(!renamed_leaf.join("new_v7.sqlite3").exists());
+    } else {
+        assert!(revalidate_checked_fixture_chain(&root.0, &destination, &pins).is_ok(),
+                "if the OS vetoes rename, the original chain must remain intact");
+    }
     drop(pins);
-    assert!(destination.exists());
-    assert!(!root.file("replaced_project").exists());
-    assert!(!first.join("replaced_nested").exists());
+
+    // Independent positive witness, with a pristine new-only disposable root:
+    // revalidation is a separate check, NOT an atomic SQLite VFS admission.
+    let clean = DisposableRoot::new("m32-owned-chain-pristine-v7");
+    let clean_first = clean.file("project_new");
+    let clean_second = clean_first.join("nested");
+    fs::create_dir(&clean_first).unwrap();
+    fs::create_dir(&clean_second).unwrap();
+    let clean_destination = clean_second.join("new_v7.sqlite3");
+    let clean_pins = pin_checked_fixture_chain(&clean.0, &clean_destination).unwrap();
+    revalidate_checked_fixture_chain(&clean.0, &clean_destination, &clean_pins).unwrap();
+    let claim = claim_new_only_disposable_file(&clean_destination).unwrap();
+    let db = connect_claimed_disposable_file(&clean_destination, claim)
+        .expect("SQLite may open a separate pristine disposable fixture");
+    assert_eq!(database::current_schema_version(&db).unwrap_or(0), 0);
+    revalidate_checked_fixture_chain(&clean.0, &clean_destination, &clean_pins).unwrap();
+    drop(db);
+    drop(clean_pins);
+    assert!(clean_destination.exists());
+    assert!(!destination.exists());
 }
 
 
