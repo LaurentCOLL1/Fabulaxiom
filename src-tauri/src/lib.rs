@@ -39,6 +39,10 @@ mod world_time_preflight;
 // Only disposable closed-file v6->v7 candidate copy rehearsals.
 #[cfg(test)]
 mod world_time_file_migration_tests;
+// M3.2 single-user Windows Hello decision policy rehearsal only. No OS prompt,
+// Tauri command, production consent token, SQLite opener or writer is exposed.
+#[cfg(test)]
+mod m32_sensitive_action_consent_tests;
 
 // Never compile this feature into a Tauri runtime, even debug builds.
 #[cfg(all(feature = "m32-g3-owned-ram-toy", not(test)))]
