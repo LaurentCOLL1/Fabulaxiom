@@ -171,9 +171,52 @@ fn pin_checked_fixture_chain(root: &Path, destination: &Path)
     -> Result<Vec<fs::File>, String>
 {
     use std::os::windows::fs::{MetadataExt, OpenOptionsExt};
+    use std::os::windows::io::AsRawHandle;
+    use std::ffi::c_void;
+
+    // Stable-Rust test-only Win32 ABI: MetadataExt::file_index and
+    // volume_serial_number currently require unstable `windows_by_handle`.
+    // BY_HANDLE_FILE_INFORMATION preserves their legacy 64-bit FileIndex
+    // boundary without nightly features or an added production dependency.
+    #[repr(C)]
+    struct WinFileTime { low: u32, high: u32 }
+    #[repr(C)]
+    struct WinHandleFileInfo {
+        attributes: u32,
+        created: WinFileTime,
+        accessed: WinFileTime,
+        modified: WinFileTime,
+        volume: u32,
+        size_high: u32,
+        size_low: u32,
+        links: u32,
+        index_high: u32,
+        index_low: u32,
+    }
+    #[link(name = "kernel32")]
+    unsafe extern "system" {
+        fn GetFileInformationByHandle(handle: *mut c_void, info: *mut WinHandleFileInfo) -> i32;
+    }
+    fn handle_identity(handle: &fs::File) -> Result<(u32, u64), String> {
+        let mut info = std::mem::MaybeUninit::<WinHandleFileInfo>::uninit();
+        let result = unsafe { GetFileInformationByHandle(handle.as_raw_handle(), info.as_mut_ptr()) };
+        if result == 0 {
+            return Err(format!("STOP: GetFileInformationByHandle failed: {}", std::io::Error::last_os_error()));
+        }
+        let info = unsafe { info.assume_init() };
+        Ok((info.volume, (u64::from(info.index_high) << 32) | u64::from(info.index_low)))
+    }
     const FILE_ATTRIBUTE_REPARSE_POINT: u32 = 0x0000_0400;
     const FILE_FLAG_BACKUP_SEMANTICS: u32 = 0x0200_0000;
     const FILE_FLAG_OPEN_REPARSE_POINT: u32 = 0x0020_0000;
+    let open_dir = |path: &Path| {
+        fs::OpenOptions::new()
+            .access_mode(0)
+            .share_mode(0x0000_0001 | 0x0000_0002)
+            .custom_flags(FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OPEN_REPARSE_POINT)
+            .open(path)
+            .map_err(|e| format!("STOP: cannot pin fixture ancestor: {e}"))
+    };
     let paths = checked_fixture_parent_chain(root, destination)?;
     let mut pins = Vec::with_capacity(paths.len());
     for parent in paths {
@@ -182,26 +225,24 @@ fn pin_checked_fixture_chain(root: &Path, destination: &Path)
         if !before.is_dir() || before.file_attributes() & FILE_ATTRIBUTE_REPARSE_POINT != 0 {
             return Err("STOP: non-directory or reparse fixture ancestor".to_owned());
         }
-        let pin = fs::OpenOptions::new()
-            .access_mode(0)
-            .share_mode(0x0000_0001 | 0x0000_0002)
-            .custom_flags(FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OPEN_REPARSE_POINT)
-            .open(&parent)
-            .map_err(|e| format!("STOP: cannot pin fixture ancestor: {e}"))?;
+        let before_handle = open_dir(&parent)?;
+        let before_id = handle_identity(&before_handle)?;
+        drop(before_handle);
+        let pin = open_dir(&parent)?;
+        let held_id = handle_identity(&pin)?;
         let held = pin.metadata()
             .map_err(|e| format!("STOP: held ancestor metadata unavailable: {e}"))?;
+        let after_handle = open_dir(&parent)?;
+        let after_id = handle_identity(&after_handle)?;
+        drop(after_handle);
         let after = fs::symlink_metadata(&parent)
             .map_err(|e| format!("STOP: ancestor changed after pin: {e}"))?;
-        let identity = |m: &fs::Metadata| {
-            Some((m.volume_serial_number()?, m.file_index()?))
-        };
-        let stable_id = identity(&held).ok_or("STOP: missing held FileIndex/volume")?;
         if !held.is_dir()
             || held.file_attributes() & FILE_ATTRIBUTE_REPARSE_POINT != 0
             || before.file_attributes() & FILE_ATTRIBUTE_REPARSE_POINT != 0
             || after.file_attributes() & FILE_ATTRIBUTE_REPARSE_POINT != 0
-            || identity(&before) != Some(stable_id)
-            || identity(&after) != Some(stable_id)
+            || before_id != held_id
+            || after_id != held_id
         {
             return Err("STOP: fixture ancestor identity or reparse mismatch".to_owned());
         }

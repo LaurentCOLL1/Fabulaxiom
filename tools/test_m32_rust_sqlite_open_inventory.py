@@ -217,11 +217,14 @@ class RustSqliteOpenInventoryTests(unittest.TestCase):
         source = self.src["src-tauri/src/world_time_file_migration_tests.rs"]
         for signal in ("fn pin_checked_fixture_chain(root: &Path, destination: &Path)",
                        "FILE_FLAG_OPEN_REPARSE_POINT", "FILE_ATTRIBUTE_REPARSE_POINT",
-                       "volume_serial_number()", "file_index()", "pin.metadata()",
-                       "identity(&before) != Some(stable_id)",
-                       "identity(&after) != Some(stable_id)",
+                       "unsafe extern \"system\"", "GetFileInformationByHandle",
+                       "handle_identity(&before_handle)", "handle_identity(&pin)",
+                       "handle_identity(&after_handle)", "pin.metadata()",
+                       "before_id != held_id", "after_id != held_id",
                        "m32_windows_pinned_owned_fixture_chain_refuses_ancestor_rename"):
             self.assertIn(signal, source)
+        self.assertNotIn("m.volume_serial_number()?", source)
+        self.assertNotIn("m.file_index()?", source)
         self.assertNotIn("#[tauri::command]", source)
         self.assertEqual(audit_inventory(self.src)["writer_absence"], "NOT_PROVEN")
 
