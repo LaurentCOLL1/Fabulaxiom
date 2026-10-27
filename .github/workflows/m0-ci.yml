@@ -44,7 +44,7 @@ jobs:
       - name: Route C reversible scene revision archive non-destructive source guards (7)
         run: python -m unittest discover -s tools -p "test_m32_greenfield_revision_archive.py" -v
 
-      - name: Route C backup restore same-profile and new-only source guards (7)
+      - name: Route C backup restore same-profile and new-only source guards (8)
         run: python -m unittest discover -s tools -p "test_m32_greenfield_backup_restore.py" -v
 
       # Metadata only, confined to unique RUNNER_TEMP fixture. Never run on an operator PC.
