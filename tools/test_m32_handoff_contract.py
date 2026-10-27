@@ -4014,7 +4014,11 @@ class HandoffContractTests(unittest.TestCase):
             source = (ROOT / "docs/roadmap" / file).read_text(encoding="utf-8")
             self.assertIn("40558476584", source, file)
             self.assertIn("dde962a50e3a063753fb77e9a5bcee014f406d30", source, file)
-        self.assertLess(len((DIRECTORY / "RESUME_PROMPT_SHORT.md").read_bytes()), 4200)
+        short_bytes = (DIRECTORY / "RESUME_PROMPT_SHORT.md").read_bytes()
+        self.assertLess(len(short_bytes), 4200)
+        # A Windows checkout may use CRLF: reserve one extra byte per line.
+        self.assertLess(len(short_bytes.replace(b"\r\n", b"\n")) +
+                        short_bytes.count(b"\n"), 4200)
 
 if __name__ == "__main__":
     unittest.main()

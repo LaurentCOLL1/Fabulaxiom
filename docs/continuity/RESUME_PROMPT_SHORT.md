@@ -4,7 +4,7 @@
 
 Dépôt vivant : https://github.com/LaurentCOLL1/Fabulaxiom
 
-Avant toute action, re-fetch `main`, PR, issues, CI et ruleset `Protect main`. Lis **d'abord le prompt détaillé** `docs/continuity/RESUME_PROMPT.md`, puis `HANDOFF_CURRENT.md`, `HANDOFF_CURRENT.json`, `HANDOFF_PROTOCOL.md`, `HANDOFF_HISTORY.md`, `STATE.md`, `NEXT.md`, `M3_2_GATE_DECISION_CURRENT.md` et `docs/roadmap/ROADMAP_STATUS_CURRENT.md` / `FABULAXIOM_ROADMAP_V1.md`. Ces fichiers GitHub sont l'autorité documentaire ; l'état GitHub actuel prime sur tous les SHA historiques.
+Re-fetch `main`, PR, issues, CI et `Protect main`. Lis **d'abord le prompt détaillé** `docs/continuity/RESUME_PROMPT.md`, puis `HANDOFF_CURRENT.md`, `HANDOFF_CURRENT.json`, `HANDOFF_PROTOCOL.md`, `HANDOFF_HISTORY.md`, `STATE.md`, `NEXT.md`, `M3_2_GATE_DECISION_CURRENT.md` et `docs/roadmap/ROADMAP_STATUS_CURRENT.md` / `FABULAXIOM_ROADMAP_V1.md`. Autorité : GitHub vivant avant les SHA historiques.
 
 **27 octobre — PR197 MERGED :** source `ab55f506f767f36659ffdd50c2970d9c703e0f0b`, CI #40556607820 SUCCESS (165 Rust/7 Greenfield/36 gardes/128 contrats), `main=dde962a50e3a063753fb77e9a5bcee014f406d30`, postmain #40558476584 SUCCESS indépendante, issue #38 terminale 6450320382. [Hello mono-utilisateur](../qualification/M3_2_SINGLE_USER_WINDOWS_HELLO_SENSITIVE_CONSENT_POLICY_20261027.md) : 11 tests Rust `#[cfg(test)]` PASS, one-shot/fail-closed ; **AUCUN Windows Hello natif, PIN, compte/mot de passe Fabulaxiom ni IPC/SQLite opérateur**. FileId128 post-`xOpen` NON atomique ; writer NON PROUVÉ. PR196 postmain #40525427034 ; PR195 #40518270685 ; PR194 #40508416842 ; négatifs #40499869627/#40501278786. #35 OPEN/DRAFT.
 
