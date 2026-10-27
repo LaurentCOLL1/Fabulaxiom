@@ -205,11 +205,63 @@ fn windows_fixture_raw_handle_identity(handle: *mut std::ffi::c_void) -> Result<
     Ok((info.volume, (u64::from(info.index_high) << 32) | u64::from(info.index_low)))
 }
 
+// 128-bit FILE_ID_INFO is the Win32 replacement for the legacy 64-bit
+// FileIndex when ReFS can be involved. This remains an observation of a
+// live fixture HANDLE, not a durable name claim or an atomic SQLite opener.
+#[cfg(windows)]
+fn windows_fixture_raw_file_id_128(handle: *mut std::ffi::c_void)
+    -> Result<(u64, [u8; 16]), String>
+{
+    use std::ffi::c_void;
+    const FILE_ID_INFO_CLASS: i32 = 0x12;
+    #[repr(C)]
+    struct WinFileIdInfo {
+        volume_serial_number: u64,
+        file_id: [u8; 16],
+    }
+    #[link(name = "kernel32")]
+    unsafe extern "system" {
+        fn GetFileInformationByHandleEx(
+            handle: *mut c_void,
+            info_class: i32,
+            info: *mut c_void,
+            size: u32,
+        ) -> i32;
+    }
+    let mut info = std::mem::MaybeUninit::<WinFileIdInfo>::uninit();
+    // SAFETY: FileIdInfo (0x12) expects a writable FILE_ID_INFO layout of
+    // 8-byte volume serial + 16-byte identifier; no ownership of HANDLE.
+    let result = unsafe {
+        GetFileInformationByHandleEx(
+            handle,
+            FILE_ID_INFO_CLASS,
+            info.as_mut_ptr().cast::<c_void>(),
+            std::mem::size_of::<WinFileIdInfo>() as u32,
+        )
+    };
+    if result == 0 {
+        return Err(format!("STOP: FileIdInfo 128 unavailable: {}", std::io::Error::last_os_error()));
+    }
+    let info = unsafe { info.assume_init() };
+    Ok((info.volume_serial_number, info.file_id))
+}
+
+#[cfg(windows)]
+fn windows_fixture_file_id_128(handle: &fs::File) -> Result<(u64, [u8; 16]), String> {
+    use std::os::windows::io::AsRawHandle;
+    windows_fixture_raw_file_id_128(handle.as_raw_handle())
+}
+
 // Observe SQLite's *actual* Windows VFS file handle after xOpen. This is a
 // test-only diagnostic, not a pre-open authorization and not a defense against
 // changes to the surrounding namespace or SQLite journal/sidecar paths.
 #[cfg(windows)]
 fn sqlite_windows_fixture_opened_identity(db: &Connection) -> Result<(u32, u64), String> {
+    windows_fixture_raw_handle_identity(sqlite_windows_fixture_native_handle(db)?)
+}
+
+#[cfg(windows)]
+fn sqlite_windows_fixture_native_handle(db: &Connection) -> Result<*mut std::ffi::c_void, String> {
     use std::ffi::{c_char, c_void};
     let mut native_handle: *mut c_void = std::ptr::null_mut();
     // SAFETY: db remains alive during the call; "main" is NUL terminated;
@@ -226,7 +278,14 @@ fn sqlite_windows_fixture_opened_identity(db: &Connection) -> Result<(u32, u64),
     if code != rusqlite::ffi::SQLITE_OK || native_handle.is_null() {
         return Err(format!("STOP: SQLite Windows VFS native handle unavailable: {code}"));
     }
-    windows_fixture_raw_handle_identity(native_handle)
+    Ok(native_handle)
+}
+
+#[cfg(windows)]
+fn sqlite_windows_fixture_opened_file_id_128(db: &Connection)
+    -> Result<(u64, [u8; 16]), String>
+{
+    windows_fixture_raw_file_id_128(sqlite_windows_fixture_native_handle(db)?)
 }
 
 // The caller cannot perform application SQL before this identity comparison.
@@ -961,6 +1020,53 @@ fn m32_windows_sqlite_vfs_native_handle_detects_post_check_name_substitution() {
     assert_eq!(fs::read(&destination).unwrap(), Vec::<u8>::new());
     assert!(!root.file("activation").exists());
     drop(substitute);
+    drop(pins);
+}
+
+#[cfg(windows)]
+#[test]
+fn m32_windows_sqlite_fileid_128_matches_claim_but_cannot_prevent_prior_swap() {
+    let root = DisposableRoot::new("m32-win32-128-fileid-pristine");
+    let parent = root.file("project_new");
+    fs::create_dir(&parent).unwrap();
+    let destination = parent.join("new_v7.sqlite3");
+    let claim = claim_new_only_disposable_file(&destination).unwrap();
+    let id_64 = windows_fixture_handle_identity(&claim).unwrap();
+    let id_128 = windows_fixture_file_id_128(&claim).unwrap();
+    let db = open_windows_fixture_with_post_xopen_identity_check(&destination, id_64).unwrap();
+    assert_eq!(sqlite_windows_fixture_opened_file_id_128(&db).unwrap(), id_128,
+               "held new-only OS claim and native SQLite VFS HANDLE must agree at 128 bits");
+    assert_eq!(db.query_row("SELECT 1", [], |row| row.get::<_, i64>(0)).unwrap(), 1);
+    drop(db);
+    drop(claim);
+
+    // Separate fixture: a successful PRE-xOpen parent check is not an
+    // authenticated file binding. Relinquish the file claim intentionally,
+    // then substitute a distinct same-name file before SQLite xOpen.
+    let swapped = DisposableRoot::new("m32-win32-128-fileid-swapped");
+    let swapped_parent = swapped.file("project_new");
+    fs::create_dir(&swapped_parent).unwrap();
+    let path = swapped_parent.join("new_v7.sqlite3");
+    let moved = swapped_parent.join("old_claimed_file.sqlite3");
+    let pins = pin_checked_fixture_chain(&swapped.0, &path).unwrap();
+    let original = claim_new_only_disposable_file(&path).unwrap();
+    let original_id = windows_fixture_file_id_128(&original).unwrap();
+    revalidate_checked_fixture_chain(&swapped.0, &path, &pins).unwrap();
+    drop(original);
+    fs::rename(&path, &moved).unwrap();
+    let replacement = claim_new_only_disposable_file(&path).unwrap();
+    let replacement_id = windows_fixture_file_id_128(&replacement).unwrap();
+    assert_ne!(original_id, replacement_id);
+    revalidate_checked_fixture_chain(&swapped.0, &path, &pins).unwrap();
+    let followed = Connection::open_with_flags(&path, OpenFlags::SQLITE_OPEN_READ_WRITE).unwrap();
+    assert_eq!(sqlite_windows_fixture_opened_file_id_128(&followed).unwrap(), replacement_id);
+    assert_ne!(sqlite_windows_fixture_opened_file_id_128(&followed).unwrap(), original_id,
+               "128-bit FileId detects the ALREADY OPENED substitution, not a prevented xOpen");
+    drop(followed);
+    assert_eq!(fs::read(&moved).unwrap(), Vec::<u8>::new());
+    assert_eq!(fs::read(&path).unwrap(), Vec::<u8>::new());
+    assert!(!swapped.file("activation").exists());
+    drop(replacement);
     drop(pins);
 }
 

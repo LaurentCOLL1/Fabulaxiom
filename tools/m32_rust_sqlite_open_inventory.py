@@ -63,7 +63,9 @@ EXPECTED = {
     # introduce no additional Connection::open or migration occurrences.
     # One more SQLite RW opening site is restricted to a Windows-only fixture
     # post-xOpen native HANDLE identity probe; NOT atomic authorization.
-    "src-tauri/src/world_time_file_migration_tests.rs": (19, 4, 3, 2, 0, 7, 0),
+    # Win32 test-only FileIdInfo 128-bit observes one further disposable
+    # post-xOpen RW test connection; it never constitutes atomic admission.
+    "src-tauri/src/world_time_file_migration_tests.rs": (20, 4, 3, 2, 0, 8, 0),
     "src-tauri/src/world_time_preflight.rs": (1, 0, 1, 0, 0, 0, 0),
     "src-tauri/src/world_time_schema_tests.rs": (1, 0, 1, 0, 0, 0, 0),
 }
