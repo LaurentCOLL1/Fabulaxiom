@@ -4090,5 +4090,64 @@ class HandoffContractTests(unittest.TestCase):
             self.assertIn("40571697037", body, filename)
             self.assertIn("M3_2_WINDOWS_HELLO_DESKTOP_HWND_BACKEND_BOUNDARY_20261027.md", body, filename)
 
+    def test_131_pr199_terminal_and_windows_vfs_predispatch_refusal_candidate(self):
+        terminal = self.data["post_pr199_terminal_observation"]
+        self.assertEqual(terminal["pr"], 199)
+        self.assertEqual(terminal["source_sha"], "debc6f9cea8ba668f64afd9c815445c282c842c4")
+        self.assertEqual(terminal["source_ci"], {"run_id": 40576413834, "conclusion": "SUCCESS"})
+        self.assertEqual(terminal["merge_sha"], "4e04412b1d4cbdb4ce738b32c8a06c2ab6127b61")
+        self.assertEqual(terminal["postmain_ci"], {"run_id": 40578342548, "conclusion": "SUCCESS"})
+        self.assertEqual((terminal["rust_base_tests"], terminal["greenfield_runner_tests"],
+                          terminal["sqlite_inventory_tests"], terminal["handoff_tests"]),
+                         (171, 7, 36, 130))
+        self.assertEqual(terminal["issue38_terminal_comment"], 6453334855)
+        self.assertTrue(terminal["protect_main_active_strict"])
+        self.assertEqual(terminal["operator_execution"], "NO_OPERATOR_EXECUTION")
+
+        candidate = self.data["next_m32_sqlite_predelegate_vfs_source_candidate_20261027"]
+        self.assertEqual(candidate["base_main_sha"], terminal["merge_sha"])
+        self.assertEqual((candidate["rust_base_tests_expected"], candidate["greenfield_runner_tests_expected"],
+                          candidate["sqlite_inventory_tests_expected"], candidate["handoff_tests_expected"]),
+                         (174, 7, 37, 131))
+        self.assertTrue(candidate["vfs_registration_test_only"])
+        self.assertTrue(candidate["named_vfs_never_default"])
+        self.assertTrue(candidate["main_and_journal_predispatch_refusals_expected"])
+        for key in ("candidate_ci_qualified", "production_v7_opener_implemented",
+                    "atomic_sqlite_pre_xopen_proven", "writer_absence_proven",
+                    "native_hello_authorized", "operator_sqlite_access", "new_operator_profile_required",
+                    "migration_007_authorized", "writer_ipc_authorized",
+                    "independent_operator_attestation"):
+            self.assertFalse(candidate[key], key)
+        self.assertEqual(candidate["operator_execution"], "NO_OPERATOR_EXECUTION")
+        self.assertEqual(candidate["profile_identifier"], "com.fabulaxiom.greenfield.v1")
+        for key, value in (("m3_2", "IN_PROGRESS_NOT_ACCEPTED"), ("g2b", "NOT_ACCEPTED"),
+                           ("writer", "NOT_PROVEN"), ("g2c", "NOT_AUTHORIZED"),
+                           ("real_g3", "STOP_UNAVAILABLE"),
+                           ("historical", "PENDING_EXTERNAL_ATTESTATION(21/3/2)"),
+                           ("prospective", "NOT_STARTED")):
+            self.assertEqual(candidate[key], value)
+        doc = (ROOT / candidate["qualification"]).read_text(encoding="utf-8")
+        fixture = (ROOT / candidate["rust_fixture"]).read_text(encoding="utf-8")
+        for keyword in ("NON QUALIFIÉE", "xOpen", "avant délégation", "174 Rust",
+                        "131 contrats", "PAS un ouvreur v7 atomique", "writer"):
+            self.assertIn(keyword, doc)
+        self.assertEqual(fixture.count("#[test]"), 3)
+        self.assertIn("sqlite3_vfs_register", fixture)
+        self.assertIn("sqlite3_vfs_unregister", fixture)
+        self.assertIn("SQLITE_OPEN_MAIN_JOURNAL", fixture)
+        self.assertIn("SQLITE_OPEN_MAIN_DB", fixture)
+        self.assertIn("#[cfg(all(test, windows))]\nmod m32_sqlite_vfs_preopen_tests;",
+                      (ROOT / "src-tauri/src/lib.rs").read_text(encoding="utf-8"))
+        for filename in ("RESUME_PROMPT_SHORT.md", "RESUME_PROMPT.md", "HANDOFF_CURRENT.md",
+                         "HANDOFF_PROTOCOL.md", "HANDOFF_HISTORY.md", "NEXT.md", "STATE.md",
+                         "M3_2_GATE_DECISION_CURRENT.md", "README.md"):
+            body = (DIRECTORY / filename).read_text(encoding="utf-8")
+            self.assertIn("40578342548", body, filename)
+            self.assertIn("M3_2_SQLITE_VFS_PREDELEGATION_REFUSAL_FIXTURE_20261027.md", body, filename)
+        for filename in ("ROADMAP_STATUS_CURRENT.md", "FABULAXIOM_ROADMAP_V1.md"):
+            body = (ROOT / "docs/roadmap" / filename).read_text(encoding="utf-8")
+            self.assertIn("40578342548", body, filename)
+            self.assertIn("M3_2_SQLITE_VFS_PREDELEGATION_REFUSAL_FIXTURE_20261027.md", body, filename)
+
 if __name__ == "__main__":
     unittest.main()

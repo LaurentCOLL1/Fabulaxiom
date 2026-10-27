@@ -5,7 +5,7 @@ Runs in CI on checked-in Rust text and invented mutations; never opens SQLite.
 import unittest
 from pathlib import Path
 from m32_rust_sqlite_open_inventory import (
-    ROOT, TREE, EXPECTED, ReviewRequired, audit_inventory, repository_inventory,
+    ROOT, TREE, EXPECTED, ReviewRequired, audit_inventory, repository_inventory, counts,
 )
 
 def source_map():
@@ -289,6 +289,23 @@ class RustSqliteOpenInventoryTests(unittest.TestCase):
                           "database::open_database(", "SQLITE_OPEN_CREATE"):
             self.assertNotIn(forbidden, source)
         self.assertEqual(audit_inventory(self.src)["real_g3"], "STOP_UNAVAILABLE")
+
+    def test_37_windows_vfs_predelegation_fixture_is_scoped_and_inventory_reviewed(self):
+        p = "src-tauri/src/m32_sqlite_vfs_preopen_tests.rs"
+        source = self.src[p]
+        self.assertEqual(counts(source), (3, 0, 0, 0, 0, 4, 0))
+        self.assertIn("#[cfg(all(test, windows))]\nmod m32_sqlite_vfs_preopen_tests;",
+                      self.src["src-tauri/src/lib.rs"])
+        for required in ("sqlite3_vfs_register", "sqlite3_vfs_unregister", "fixture_xopen",
+                         "SQLITE_OPEN_MAIN_DB", "SQLITE_OPEN_MAIN_JOURNAL", "makeDflt=0",
+                         "Connection::open_with_flags_and_vfs", "create_new(true)",
+                         "SQLITE_CANTOPEN"):
+            self.assertIn(required, source)
+        for forbidden in ("#[tauri::command]", "database::open_database(",
+                          "com.fabulaxiom.greenfield.v1", "M:\\\\Fabulaxiom",
+                          "run_migrations(", "SQLITE_FCNTL_WIN32_SET_HANDLE"):
+            self.assertNotIn(forbidden, source)
+        self.assertEqual(repository_inventory()["writer_absence"], "NOT_PROVEN")
 
 if __name__ == "__main__":
     unittest.main()
