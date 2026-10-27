@@ -47,6 +47,10 @@ mod m32_sensitive_action_consent_tests;
 // No WinRT activation, HWND lookup, Tauri command or operator I/O.
 #[cfg(test)]
 mod m32_desktop_hello_boundary_tests;
+// Windows SQLite VFS xOpen refusal/delegation *fixture*: never registered in
+// production, never operates on an operator path or proves atomic identity.
+#[cfg(all(test, windows))]
+mod m32_sqlite_vfs_preopen_tests;
 
 // Never compile this feature into a Tauri runtime, even debug builds.
 #[cfg(all(feature = "m32-g3-owned-ram-toy", not(test)))]

@@ -9,7 +9,7 @@ import re
 ROOT = Path(__file__).resolve().parents[1]
 TREE = ROOT / "src-tauri" / "src"
 PATTERNS = {
-    "connection_open": re.compile(r"\bConnection::(?:open|open_with_flags|open_in_memory)\s*\("),
+    "connection_open": re.compile(r"\bConnection::(?:open|open_with_flags|open_with_flags_and_vfs|open_in_memory)\s*\("),
     "app_open_database": re.compile(r"\bdatabase::open_database\s*\("),
     "run_migrations": re.compile(r"\brun_migrations\s*\("),
     "vacuum_into": re.compile(r"\bVACUUM\s+INTO\b", re.IGNORECASE),
@@ -43,6 +43,9 @@ EXPECTED = {
     "src-tauri/src/m32_manual_chronology.rs": (1, 0, 1, 0, 0, 0, 0),
     "src-tauri/src/m32_owned_backup_toy.rs": (14, 0, 0, 0, 2, 0, 0),
     "src-tauri/src/m32_preopened_query_only_toy.rs": (3, 0, 0, 0, 2, 3, 0),
+    # Registered explicitly named VFS on disposable Windows test paths only.
+    # The default VFS is never replaced; no operator opener is exposed.
+    "src-tauri/src/m32_sqlite_vfs_preopen_tests.rs": (3, 0, 0, 0, 0, 4, 0),
     "src-tauri/src/m32_owner_handoff_actor_toy.rs": (2, 0, 0, 0, 1, 0, 0),
     "src-tauri/src/m32_owner_lifecycle_toy.rs": (4, 0, 0, 0, 1, 0, 0),
     "src-tauri/src/review_commands.rs": (0, 1, 0, 0, 0, 0, 0),
