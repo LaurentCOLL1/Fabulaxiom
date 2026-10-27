@@ -1,5 +1,6 @@
 -- M3.2 SECOND-STAGE TEST-ONLY append-only correction decisions.
--- Apply only AFTER the M3.1 v7 candidate in disposable in-memory fixtures.
+-- Apply only AFTER the M3.1 v7 candidate in disposable in-memory fixtures
+-- or freshly created runner-owned file fixtures (never operator SQLite).
 -- Never register as an automatic migration or deploy against operator data.
 -- Decisions preserve old anchors and edges, and are themselves immutable.
 CREATE TABLE world_time_anchor_decisions (

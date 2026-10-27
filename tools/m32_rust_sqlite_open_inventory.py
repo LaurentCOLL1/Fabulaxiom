@@ -49,7 +49,10 @@ EXPECTED = {
     "src-tauri/src/review_tests.rs": (1, 0, 1, 0, 0, 0, 0),
     "src-tauri/src/revision_commands.rs": (0, 1, 0, 0, 0, 0, 0),
     "src-tauri/src/revisions.rs": (1, 0, 1, 0, 0, 0, 0),
-    "src-tauri/src/world_time_file_migration_tests.rs": (14, 4, 2, 2, 0, 2, 0),
+    # 2026-10-27: +2 explicitly scoped open_with_flags RW and +2 READ_WRITE
+    # for close/reopen of a fresh disposable candidate file in #[cfg(test)].
+    # Counts do not attest runtime ownership or operator-side execution.
+    "src-tauri/src/world_time_file_migration_tests.rs": (16, 4, 2, 2, 0, 4, 0),
     "src-tauri/src/world_time_preflight.rs": (1, 0, 1, 0, 0, 0, 0),
     "src-tauri/src/world_time_schema_tests.rs": (1, 0, 1, 0, 0, 0, 0),
 }

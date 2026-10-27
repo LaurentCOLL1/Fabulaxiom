@@ -3461,9 +3461,7 @@ class HandoffContractTests(unittest.TestCase):
         terminal = self.data["post_pr189_terminal_observation"]
         audit = self.data["pr35_live_audit_prospective_fast_track_candidate_20261027"]
         self.assertEqual(self.data["as_of"], "2026-10-27")
-        self.assertEqual(self.data["last_confirmed_merged_pr"], 189)
-        self.assertEqual(self.data["last_verified_pr_head"], terminal["source_sha"])
-        self.assertEqual(self.data["last_confirmed_main_before_handoff"], terminal["merge_sha"])
+        self.assertGreaterEqual(self.data["last_confirmed_merged_pr"], 189)
         self.assertEqual(terminal["source_sha"], "546cdee207e1cec049d7d0c2113696f3ce0461dd")
         self.assertEqual(terminal["merge_sha"], "009fa1723b3fc9a574e867a28759adff42e255d0")
         self.assertEqual(terminal["source_ci"], {"run_id": 40455683237, "conclusion": "SUCCESS"})
@@ -3513,6 +3511,57 @@ class HandoffContractTests(unittest.TestCase):
             doc = (ROOT / "docs/roadmap" / name).read_text(encoding="utf-8")
             self.assertIn("40456835489", doc, name)
             self.assertIn("M3_2_PR35_LIVE_AUDIT_PROSPECTIVE_FAST_TRACK_20261027.md", doc, name)
+
+    def test_121_pr190_terminal_and_new_only_disposable_v7_persistence_candidate(self):
+        terminal = self.data["post_pr190_terminal_observation"]
+        candidate = self.data["next_m32_greenfield_new_only_v7_disposable_persistence_candidate_20261027"]
+        self.assertEqual(self.data["as_of"], "2026-10-27")
+        self.assertEqual(self.data["last_confirmed_merged_pr"], 190)
+        self.assertEqual(self.data["last_verified_pr_head"], terminal["source_sha"])
+        self.assertEqual(self.data["last_confirmed_main_before_handoff"], terminal["merge_sha"])
+        self.assertEqual(terminal["pr"], 190)
+        self.assertEqual(terminal["source_sha"], "d15f58b40a8b6124967f89ffed013dab14497b13")
+        self.assertEqual(terminal["merge_sha"], "7c7e02899784e52e3eb06dfff9d79a613eec95c1")
+        self.assertEqual(terminal["source_ci"], {"run_id": 40461093909, "conclusion": "SUCCESS"})
+        self.assertEqual(terminal["postmain_ci"], {"run_id": 40462274918, "conclusion": "SUCCESS"})
+        self.assertEqual(terminal["issue38_terminal_comment"], 6435633242)
+        self.assertEqual(candidate["base_main_sha"], terminal["merge_sha"])
+        self.assertEqual(candidate["scope"], "TEST_ONLY_DISPOSABLE_SQLITE_V7_NEW_PROJECT_CHRONOLOGY_CLOSE_REOPEN")
+        self.assertEqual(candidate["rust_test_name"],
+                         "m32_new_only_disposable_v7_chronology_survives_reopen_without_touching_prior_v6")
+        self.assertEqual((candidate["rust_base_tests_expected"],
+                          candidate["handoff_tests_expected"],
+                          candidate["sqlite_test_open_occurrences_expected"]), (144, 121, 16))
+        for flag in ("new_disposable_file_reopened", "separate_prior_v6_bytes_preserved",
+                     "sqlite_integrity_and_foreign_keys_checked", "cycle_and_cross_universe_refused",
+                     "immutable_anchor_correction_persisted"):
+            self.assertTrue(candidate[flag], flag)
+        for flag in ("operator_sqlite_access", "production_v7_opener_authorized",
+                     "migration_007_authorized", "writer_ipc_authorized",
+                     "new_operator_profile_required", "independent_operator_attestation"):
+            self.assertFalse(candidate[flag], flag)
+        self.assertEqual(candidate["profile_identifier"], "com.fabulaxiom.greenfield.v1")
+        self.assertEqual(candidate["operator_execution"], "NO_OPERATOR_EXECUTION")
+        for key, expected in (("historical", "PENDING_EXTERNAL_ATTESTATION(21/3/2)"),
+                              ("prospective", "NOT_STARTED"),
+                              ("m3_2", "IN_PROGRESS_NOT_ACCEPTED"),
+                              ("g2b", "NOT_ACCEPTED"), ("writer", "NOT_PROVEN"),
+                              ("g2c", "NOT_AUTHORIZED"), ("real_g3", "STOP_UNAVAILABLE")):
+            self.assertEqual(candidate[key], expected)
+        self.assertIn(candidate["rust_test_name"],
+                      (ROOT / candidate["rust_fixture"]).read_text(encoding="utf-8"))
+        self.assertTrue((ROOT / candidate["qualification"]).is_file())
+        self.assertTrue((ROOT / candidate["sqlite_inventory"]).is_file())
+        for name in ("RESUME_PROMPT_SHORT.md", "RESUME_PROMPT.md", "HANDOFF_CURRENT.md",
+                     "HANDOFF_PROTOCOL.md", "HANDOFF_HISTORY.md", "NEXT.md", "STATE.md",
+                     "M3_2_GATE_DECISION_CURRENT.md"):
+            doc = (DIRECTORY / name).read_text(encoding="utf-8")
+            self.assertIn("40462274918", doc, name)
+            self.assertIn("M3_2_GREENFIELD_NEW_ONLY_DISPOSABLE_V7_CHRONOLOGY_PERSISTENCE_20261027.md", doc, name)
+        for name in ("ROADMAP_STATUS_CURRENT.md", "FABULAXIOM_ROADMAP_V1.md"):
+            doc = (ROOT / "docs/roadmap" / name).read_text(encoding="utf-8")
+            self.assertIn("40462274918", doc, name)
+            self.assertIn("M3_2_GREENFIELD_NEW_ONLY_DISPOSABLE_V7_CHRONOLOGY_PERSISTENCE_20261027.md", doc, name)
 
 if __name__ == "__main__":
     unittest.main()

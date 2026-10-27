@@ -1,7 +1,7 @@
 //! M3.1 controlled-copy migration rehearsal, exclusively disposable test files.
 //! We copy ONLY a closed fixture DB, never a live active operator database.
 //! No production runtime entry point or v7 registry change is exposed here.
-use crate::database;
+use crate::{database, m32_manual_chronology as chronology};
 use crate::world_time_preflight::{inspect_v6, PreflightFailure};
 use rusqlite::{params, types::ValueRef, Connection, OpenFlags};
 use std::{
@@ -13,6 +13,7 @@ use std::{
 };
 
 const CANDIDATE_SQL: &str = include_str!("../sql/m3_1_world_time_v7_candidate.sql");
+const M32_DECISIONS_SQL: &str = include_str!("../sql/m3_2_chronology_decisions_candidate.sql");
 
 struct DisposableRoot(PathBuf);
 impl DisposableRoot {
@@ -263,6 +264,110 @@ fn empty_v6_copy_upgrades_to_three_strict_candidate_tables() {
     drop(db);
     let original = opened_read_only_v6(&source);
     assert_eq!(database::current_schema_version(&original).unwrap(), 6);
+}
+
+// First real-file M3.2 authoring persistence witness, still *only* on two
+// disposable databases freshly created by this Rust test. No Tauri command,
+// no operator/Greenfield profile, no activation and no production migration registration.
+// This does NOT qualify an application v7 opener or writer IPC.
+#[test]
+fn m32_new_only_disposable_v7_chronology_survives_reopen_without_touching_prior_v6() {
+    let root = DisposableRoot::new("m32-new-only-persistence");
+    let prior_v6 = root.file("prior-fresh-v6-untouched.sqlite3");
+    let new_v7 = root.file("m32-new-project-v7-candidate.sqlite3");
+    assert!(!new_v7.exists(), "the chronology candidate requires a new file");
+
+    create_closed_populated_v6(&prior_v6);
+    let prior_bytes = fs::read(&prior_v6).expect("sealed previous new-project fixture");
+
+    // Independently create an entirely NEW store, never copy or migrate the
+    // prior file; v1..v6 first, explicit v7 candidate only in this owned file.
+    create_closed_populated_v6(&new_v7);
+    let mut db = Connection::open_with_flags(&new_v7, OpenFlags::SQLITE_OPEN_READ_WRITE)
+        .expect("open newly owned candidate only");
+    database::configure_connection(&db).expect("foreign keys for new candidate");
+    let original_m2 = checked_m2_snapshot(&db);
+    {
+        let tx = db.transaction().expect("candidate transaction");
+        tx.execute_batch(CANDIDATE_SQL).expect("M3.1 tables only in new disposable file");
+        tx.execute_batch(M32_DECISIONS_SQL)
+            .expect("M3.2 immutable decisions only in new disposable file");
+        tx.execute("INSERT INTO schema_migrations(version,name)
+                    VALUES (7,'007_create_world_time_foundation')", [])
+            .expect("record test-only v7 candidate version in new file");
+        tx.commit().expect("candidate stage commits atomically");
+    }
+    assert_eq!(database::current_schema_version(&db).unwrap(), 7);
+    db.execute("INSERT INTO universes(id,name) VALUES('u2','Second fictional universe')", [])
+        .expect("another brand-new universe");
+    // Baseline the newly authored u2 row too: no subsequent chronology decision
+    // may rewrite even this fixture's established v6-shaped tables.
+    let original_rows = legacy_rows(&db);
+    chronology::create_calendar(&db, "m32-cycle", "u1", "Cycles", "Fiction only")
+        .expect("manual calendar");
+    let exact = chronology::AnchorDraft {
+        id: "m32-exact", universe_id: "u1", time_kind: "exact",
+        calendar_id: Some("m32-cycle"), event_entity_id: Some("e1"),
+        source_revision_id: Some("r1"), exact_label: Some("Cycle XII"),
+        window_start_text: None, window_end_text: None, precision_text: Some("day"),
+    };
+    chronology::create_anchor(&db, exact).expect("manual historical-revision binding");
+    let unknown = chronology::AnchorDraft {
+        id: "m32-unknown", universe_id: "u1", time_kind: "unknown",
+        calendar_id: None, event_entity_id: None, source_revision_id: None,
+        exact_label: None, window_start_text: None, window_end_text: None,
+        precision_text: None,
+    };
+    chronology::create_anchor(&db, unknown).expect("undated event");
+    chronology::create_precedence(
+        &db, "m32-before", "u1", "m32-exact", "m32-unknown",
+        "Author explicitly placed the event before", Some("r1"),
+    ).expect("human before/after constraint");
+    assert!(chronology::create_precedence(
+        &db, "m32-cycle-refused", "u1", "m32-unknown", "m32-exact",
+        "Invalid cycle", Some("r1"),
+    ).is_err(), "a temporal cycle must be rejected in the file, not only RAM");
+    let foreign = chronology::AnchorDraft {
+        id: "m32-u2", universe_id: "u2", time_kind: "relative", ..unknown
+    };
+    chronology::create_anchor(&db, foreign).expect("second universe independent");
+    assert!(chronology::create_precedence(
+        &db, "m32-cross-refused", "u1", "m32-exact", "m32-u2",
+        "Wrong universe", None,
+    ).is_err(), "no cross-universe ordering");
+
+    let replacement = chronology::AnchorDraft {
+        id: "m32-corrected", exact_label: Some("Cycle XIII"), ..exact
+    };
+    chronology::supersede_anchor_atomically(
+        &mut db, replacement, "m32-decision", "m32-exact",
+        "Human correction without editing history", Some("r1"),
+    ).expect("atomic human correction in new file");
+    assert_eq!(chronology::list_current_anchor_ids(&db, "u1").unwrap(),
+               vec!["m32-corrected", "m32-unknown"]);
+    assert_eq!(chronology::list_anchors(&db, "u1").unwrap().len(), 3);
+    assert_eq!(checked_m2_snapshot(&db), original_m2);
+    assert_eq!(legacy_rows(&db), original_rows);
+    integrity(&db);
+    drop(db);
+
+    // Simulated app exit and a new, explicit connection to this known-owned
+    // test file. NEVER call the normal migration-capable app opener on v7.
+    let reopened = Connection::open_with_flags(&new_v7, OpenFlags::SQLITE_OPEN_READ_WRITE)
+        .expect("reopen same candidate path after closing");
+    database::configure_connection(&reopened).expect("new connection FK guard");
+    assert_eq!(database::current_schema_version(&reopened).unwrap(), 7);
+    assert_eq!(chronology::list_precedences(&reopened, "u1").unwrap().len(), 1);
+    assert_eq!(chronology::list_anchor_decisions(&reopened, "u1").unwrap().len(), 1);
+    assert_eq!(chronology::list_current_anchor_ids(&reopened, "u1").unwrap(),
+               vec!["m32-corrected", "m32-unknown"]);
+    assert_eq!(checked_m2_snapshot(&reopened), original_m2);
+    assert_eq!(legacy_rows(&reopened), original_rows);
+    integrity(&reopened);
+    drop(reopened);
+    assert_eq!(fs::read(&prior_v6).unwrap(), prior_bytes,
+               "separate earlier v6 fixture bytes must never change");
+    assert!(!root.file("activation").exists(), "no activation marker switched");
 }
 
 
