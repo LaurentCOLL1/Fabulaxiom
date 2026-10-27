@@ -273,5 +273,22 @@ class RustSqliteOpenInventoryTests(unittest.TestCase):
         self.assertNotIn("#[tauri::command]", source)
         self.assertEqual(audit_inventory(self.src)["real_g3"], "STOP_UNAVAILABLE")
 
+    def test_36_single_user_hello_boundary_is_cfg_test_policy_only(self):
+        module = "src-tauri/src/m32_sensitive_action_consent_tests.rs"
+        source = self.src[module]
+        main = self.src["src-tauri/src/lib.rs"]
+        self.assertIn("#[cfg(test)]\nmod m32_sensitive_action_consent_tests;", main)
+        for signal in ("struct ExactIntent", "enum SensitiveAction", "enum TrustedOsOutcome",
+                       "fn request(", "fn apply_fixture(", "self.pending.take()",
+                       "ConsentExpired", "IntentChanged", "RevalidationFailed",
+                       "m32_hello_fixture_every_nonverified_os_outcome_stops_and_consumes",
+                       "m32_hello_fixture_revision_change_fails_closed"):
+            self.assertIn(signal, source)
+        for forbidden in ("#[tauri::command]", "RequestVerificationForWindowAsync(hwnd,",
+                          "UserConsentVerifier::Request", "Connection::open(",
+                          "database::open_database(", "SQLITE_OPEN_CREATE"):
+            self.assertNotIn(forbidden, source)
+        self.assertEqual(audit_inventory(self.src)["real_g3"], "STOP_UNAVAILABLE")
+
 if __name__ == "__main__":
     unittest.main()
