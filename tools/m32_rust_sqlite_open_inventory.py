@@ -56,6 +56,9 @@ EXPECTED = {
     # claim handoff, one explicit reopen) and +1 v1..v6 migration runner call,
     # strictly after OS create_new in #[cfg(test)] runner-owned fixtures.
     # Still NOT a production v7 opener or proof against path substitution.
+    # Follow-up fixture pins Windows no-delete-share handles over the file
+    # handoff and records a negative parent-namespace replacement witness;
+    # exact SQLite opening-site counts remain unchanged (NO new runtime path).
     "src-tauri/src/world_time_file_migration_tests.rs": (18, 4, 3, 2, 0, 6, 0),
     "src-tauri/src/world_time_preflight.rs": (1, 0, 1, 0, 0, 0, 0),
     "src-tauri/src/world_time_schema_tests.rs": (1, 0, 1, 0, 0, 0, 0),

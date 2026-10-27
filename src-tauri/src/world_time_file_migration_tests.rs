@@ -41,9 +41,9 @@ impl Drop for DisposableRoot {
 // Next Gate C test-only building block. SQLite's CREATE flag may reopen an
 // existing database; OS create_new is the exclusive namespace claim instead.
 // This is NOT a production v7 opener: no operator root/activation proof, no
-// persistent handle identity across this handoff, and no Tauri IPC is exposed.
+// durable ownership of ancestors, and no Tauri IPC is exposed.
 // The caller supplies only a name within its freshly owned disposable root.
-fn open_new_only_disposable_file(path: &Path) -> Result<Connection, String> {
+fn claim_new_only_disposable_file(path: &Path) -> Result<fs::File, String> {
     if !path.parent().is_some_and(Path::is_dir) {
         return Err("STOP: no pre-existing owned fixture parent".to_owned());
     }
@@ -59,16 +59,52 @@ fn open_new_only_disposable_file(path: &Path) -> Result<Connection, String> {
             Err(error) => return Err(format!("STOP: cannot verify sidecar {suffix}: {error}")),
         }
     }
-    let claim = fs::OpenOptions::new().write(true).create_new(true).open(path)
-        .map_err(|error| format!("STOP: destination is not exclusively new: {error}"))?;
-    // Releasing the temporary OS handle lets SQLite open it on Windows. That
-    // handoff is not proven race-free on adversarial paths; runner-owned only.
-    drop(claim);
+    let mut options = fs::OpenOptions::new();
+    options.write(true).create_new(true);
+    #[cfg(windows)] {
+        use std::os::windows::fs::OpenOptionsExt;
+        // FILE_SHARE_READ | FILE_SHARE_WRITE, deliberately WITHOUT
+        // FILE_SHARE_DELETE: SQLite may open RW while a rename of this
+        // newly created file is denied until its claim handle is released.
+        options.share_mode(0x0000_0001 | 0x0000_0002);
+    }
+    options.open(path)
+        .map_err(|error| format!("STOP: destination is not exclusively new: {error}"))
+}
+
+// Pin the *immediate* fixture parent across the test-only SQLite handoff.
+// This does not pin all ancestor directory identities or validate ACL/reparse
+// traversal; neither protection may be assumed for a real Greenfield profile.
+#[cfg(windows)]
+fn pin_disposable_parent(path: &Path) -> Result<fs::File, String> {
+    use std::os::windows::fs::OpenOptionsExt;
+    let parent = path.parent().ok_or("STOP: missing parent")?;
+    // FILE_FLAG_BACKUP_SEMANTICS opens a directory handle. No DELETE share.
+    fs::OpenOptions::new()
+        .access_mode(0)
+        .share_mode(0x0000_0001 | 0x0000_0002)
+        .custom_flags(0x0200_0000)
+        .open(parent)
+        .map_err(|error| format!("STOP: cannot pin fixture parent: {error}"))
+}
+
+fn connect_claimed_disposable_file(path: &Path, claim: fs::File) -> Result<Connection, String> {
+    // Keep the OS claim live WHILE SQLite opens the same path. On Windows its
+    // no-delete share is an observable barrier for this *file*, not a proof
+    // of full rooted identity, hostile ancestors, sidecars or app lifetime.
     let connection = Connection::open_with_flags(path, OpenFlags::SQLITE_OPEN_READ_WRITE)
         .map_err(|error| format!("STOP: newly claimed file cannot open: {error}"))?;
+    drop(claim);
     database::configure_connection(&connection)
         .map_err(|error| format!("STOP: foreign keys unavailable: {error}"))?;
     Ok(connection)
+}
+
+fn open_new_only_disposable_file(path: &Path) -> Result<Connection, String> {
+    #[cfg(windows)]
+    let _parent_pin = pin_disposable_parent(path)?;
+    let claim = claim_new_only_disposable_file(path)?;
+    connect_claimed_disposable_file(path, claim)
 }
 
 fn create_closed_populated_v6(path: &Path) {
@@ -518,6 +554,56 @@ fn m32_exclusive_claim_two_concurrent_creators_only_one_wins() {
     assert_eq!(accepted, 1, "OS create_new must reject one of two simultaneous claims");
     assert!(destination.exists());
     assert!(!root.file("activation").exists());
+}
+
+#[test]
+fn m32_unpinned_parent_name_can_be_replaced_before_new_only_claim() {
+    let root = DisposableRoot::new("m32-parent-namespace-counterexample");
+    let parent = root.file("claimed-parent");
+    let displaced_parent = root.file("displaced-parent");
+    fs::create_dir(&parent).unwrap();
+    let original_token = parent.join("identity-token");
+    fs::write(&original_token, b"original fixture parent").unwrap();
+    let destination = parent.join("new-only-v7.sqlite3");
+    assert!(destination.parent().unwrap().is_dir());
+
+    // Simulate a rename between a caller's parent check and an eventual open.
+    // Both directories remain under this one disposable test root. A path
+    // string is not an authenticated directory identity.
+    fs::rename(&parent, &displaced_parent).unwrap();
+    fs::create_dir(&parent).unwrap();
+    let db = open_new_only_disposable_file(&destination)
+        .expect("the current fixture gate cannot authenticate an earlier parent");
+    drop(db);
+    assert!(destination.exists(), "the different parent received the new file");
+    assert!(!displaced_parent.join("new-only-v7.sqlite3").exists());
+    assert_eq!(fs::read(displaced_parent.join("identity-token")).unwrap(),
+               b"original fixture parent");
+    assert!(!parent.join("identity-token").exists());
+    // NEGATIVE witness: future production admission MUST veto root replacement.
+}
+
+#[cfg(windows)]
+#[test]
+fn m32_windows_pinned_fixture_parent_and_claim_refuse_rename_during_open() {
+    let root = DisposableRoot::new("m32-pinned-windows-handoff");
+    let parent = root.file("owned-test-parent");
+    fs::create_dir(&parent).unwrap();
+    let destination = parent.join("exclusive.sqlite3");
+    let pinned_parent = pin_disposable_parent(&destination).unwrap();
+    let claim = claim_new_only_disposable_file(&destination).unwrap();
+    assert!(fs::rename(&parent, root.file("redirected-parent")).is_err(),
+            "an open no-delete-share parent handle should block its rename");
+    assert!(fs::rename(&destination, parent.join("substituted.sqlite3")).is_err(),
+            "an open no-delete-share file handle should block its rename");
+    let db = connect_claimed_disposable_file(&destination, claim)
+        .expect("SQLite RW must coexist with the no-delete-share claim");
+    assert_eq!(database::current_schema_version(&db).unwrap_or(0), 0);
+    drop(db);
+    drop(pinned_parent);
+    assert!(destination.exists());
+    assert!(!parent.join("substituted.sqlite3").exists());
+    assert!(!root.file("redirected-parent").exists());
 }
 
 

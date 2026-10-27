@@ -161,7 +161,8 @@ class RustSqliteOpenInventoryTests(unittest.TestCase):
         source = self.src[p]
         self.assertEqual(EXPECTED[p], (18, 4, 3, 2, 0, 6, 0))
         self.assertIn("fn open_new_only_disposable_file(path: &Path)", source)
-        self.assertIn(".write(true).create_new(true).open(path)", source)
+        self.assertIn("options.write(true).create_new(true)", source)
+        self.assertIn("options.open(path)", source)
         self.assertIn("OpenFlags::SQLITE_OPEN_READ_WRITE", source)
         self.assertNotIn("OpenFlags::SQLITE_OPEN_CREATE", source)
         self.assertNotIn("#[tauri::command]", source)
@@ -181,6 +182,24 @@ class RustSqliteOpenInventoryTests(unittest.TestCase):
     def test_28_other_unreviewed_creation_flag_remains_vetoed(self):
         self.veto("src-tauri/src/world_time_file_migration_tests.rs",
                   "Connection::open_with_flags(operator_path, OpenFlags::SQLITE_OPEN_CREATE)?;")
+
+    def test_29_windows_handoff_keeps_claim_and_parent_pinned_until_sqlite_open(self):
+        source = self.src["src-tauri/src/world_time_file_migration_tests.rs"]
+        self.assertIn("fn pin_disposable_parent(path: &Path)", source)
+        self.assertIn(".custom_flags(0x0200_0000)", source)
+        self.assertIn("options.share_mode(0x0000_0001 | 0x0000_0002)", source)
+        self.assertIn("fn connect_claimed_disposable_file(path: &Path, claim: fs::File)", source)
+        opened = source.index("let connection = Connection::open_with_flags(path")
+        released = source.index("drop(claim);", opened)
+        self.assertLess(opened, released)
+        self.assertIn("m32_windows_pinned_fixture_parent_and_claim_refuse_rename_during_open", source)
+
+    def test_30_parent_namespace_counterexample_does_not_claim_production_proof(self):
+        source = self.src["src-tauri/src/world_time_file_migration_tests.rs"]
+        self.assertIn("m32_unpinned_parent_name_can_be_replaced_before_new_only_claim", source)
+        self.assertIn("NEGATIVE witness: future production admission MUST veto root replacement", source)
+        self.assertNotIn("#[tauri::command]", source)
+        self.assertEqual(audit_inventory(self.src)["real_g3"], "STOP_UNAVAILABLE")
 
 if __name__ == "__main__":
     unittest.main()
