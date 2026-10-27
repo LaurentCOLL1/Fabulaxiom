@@ -159,7 +159,7 @@ class RustSqliteOpenInventoryTests(unittest.TestCase):
     def test_26_new_only_os_exclusive_claim_remains_test_scoped(self):
         p = "src-tauri/src/world_time_file_migration_tests.rs"
         source = self.src[p]
-        self.assertEqual(EXPECTED[p], (19, 4, 3, 2, 0, 7, 0))
+        self.assertEqual(EXPECTED[p], (20, 4, 3, 2, 0, 8, 0))
         self.assertIn("fn open_new_only_disposable_file(path: &Path)", source)
         self.assertIn("options.write(true).create_new(true)", source)
         self.assertIn("options.open(path)", source)
@@ -211,7 +211,7 @@ class RustSqliteOpenInventoryTests(unittest.TestCase):
             self.assertIn(signal, source)
         self.assertNotIn("app_local_data_dir()", source)
         self.assertEqual(EXPECTED["src-tauri/src/world_time_file_migration_tests.rs"],
-                         (19, 4, 3, 2, 0, 7, 0))
+                         (20, 4, 3, 2, 0, 8, 0))
 
     def test_32_windows_fixture_chain_uses_held_file_identity_and_reparse_veto(self):
         source = self.src["src-tauri/src/world_time_file_migration_tests.rs"]
@@ -256,7 +256,22 @@ class RustSqliteOpenInventoryTests(unittest.TestCase):
                        "SQLite xOpen HAS ALREADY happened"):
             self.assertIn(signal, source)
         self.assertEqual(EXPECTED["src-tauri/src/world_time_file_migration_tests.rs"],
-                         (19, 4, 3, 2, 0, 7, 0))
+                         (20, 4, 3, 2, 0, 8, 0))
+
+    def test_35_win32_fileidinfo_128_is_test_only_not_a_hello_or_atomic_gate(self):
+        source = self.src["src-tauri/src/world_time_file_migration_tests.rs"]
+        for marker in ("fn windows_fixture_raw_file_id_128(handle:",
+                       "GetFileInformationByHandleEx(", "FILE_ID_INFO_CLASS: i32 = 0x12",
+                       "struct WinFileIdInfo", "file_id: [u8; 16]",
+                       "fn sqlite_windows_fixture_opened_file_id_128(db: &Connection)",
+                       "m32_windows_sqlite_fileid_128_matches_claim_but_cannot_prevent_prior_swap",
+                       "assert_ne!(original_id, replacement_id)",
+                       "assert_eq!(sqlite_windows_fixture_opened_file_id_128(&followed).unwrap(), replacement_id)"):
+            self.assertIn(marker, source)
+        self.assertNotIn("UserConsentVerifier", source,
+                         "no Windows Hello runtime authorization is part of this fixture")
+        self.assertNotIn("#[tauri::command]", source)
+        self.assertEqual(audit_inventory(self.src)["real_g3"], "STOP_UNAVAILABLE")
 
 if __name__ == "__main__":
     unittest.main()

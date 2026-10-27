@@ -3682,10 +3682,10 @@ class HandoffContractTests(unittest.TestCase):
         candidate = self.data["next_m32_greenfield_v7_owned_fixture_directory_chain_candidate_20261027"]
         self.assertGreaterEqual(self.data["last_confirmed_merged_pr"], 193)
         self.assertEqual(self.data["last_verified_pr_head"],
-                         self.data["post_pr194_terminal_observation"]["source_sha"])
+                         self.data["post_pr195_terminal_observation"]["source_sha"])
         self.assertEqual(self.data["last_confirmed_main_before_handoff"],
-                         self.data["post_pr194_terminal_observation"]["merge_sha"])
-        self.assertEqual(self.data["last_verified_ci"]["run_id"], 40507105063)
+                         self.data["post_pr195_terminal_observation"]["merge_sha"])
+        self.assertEqual(self.data["last_verified_ci"]["run_id"], 40516204731)
         self.assertEqual(terminal["pr"], 193)
         self.assertEqual(terminal["source_sha"], "38540a4602c5c5e4f9d9b3bdb6b8bf155e0ed256")
         self.assertEqual(terminal["source_ci"], {"run_id": 40485043798, "conclusion": "SUCCESS"})
@@ -3828,6 +3828,69 @@ class HandoffContractTests(unittest.TestCase):
             doc = (ROOT / "docs/roadmap" / name).read_text(encoding="utf-8")
             self.assertIn("40508416842", doc, name)
             self.assertIn("M3_2_GREENFIELD_V7_SQLITE_WIN32_NATIVE_HANDLE_POSTOPEN_20261027.md", doc, name)
+
+    def test_127_pr195_terminal_fileid128_and_hello_auth_boundary_is_separate(self):
+        terminal = self.data["post_pr195_terminal_observation"]
+        self.assertEqual(terminal["pr"], 195)
+        self.assertEqual(terminal["source_sha"], "f84f3035170baa4830879796230675ad8b328a2c")
+        self.assertEqual(terminal["source_ci"], {"run_id": 40516204731, "conclusion": "SUCCESS"})
+        self.assertEqual(terminal["merge_sha"], "1ab320f7834086ac587ce2fdaa8638d7c29d61f5")
+        self.assertEqual(terminal["postmain_ci"], {"run_id": 40518270685, "conclusion": "SUCCESS"})
+        self.assertEqual((terminal["rust_base_tests"], terminal["greenfield_runner_tests"],
+                          terminal["sqlite_inventory_tests"], terminal["handoff_tests"]),
+                         (153, 7, 34, 126))
+        self.assertEqual(terminal["issue38_terminal_comment"], 6444458042)
+        self.assertTrue(terminal["win32_vfs_handle_compare_post_xopen_test_only"])
+        for key in ("atomic_sqlite_vfs_handoff_proven", "pre_xopen_side_effects_ruled_out",
+                    "win32_fileid_128_proven", "production_v7_opener_authorized",
+                    "windows_hello_auth_implemented", "m3_2_accepted"):
+            self.assertFalse(terminal[key], key)
+
+        candidate = self.data["next_m32_win32_fileid128_and_hello_boundary_candidate_20261027"]
+        self.assertEqual(candidate["base_main_sha"], terminal["merge_sha"])
+        self.assertEqual((candidate["rust_base_tests_expected"], candidate["greenfield_runner_tests_expected"],
+                          candidate["sqlite_inventory_tests_expected"], candidate["handoff_tests_expected"]),
+                         (154, 7, 35, 127))
+        self.assertEqual(candidate["sqlite_test_open_occurrences_expected"], 20)
+        for key in ("win32_fileidinfo_128_claim_and_vfs_fixture_test_only",
+                    "win32_fileid128_post_swap_observation_test_only",
+                    "windows_hello_evaluation_document_only"):
+            self.assertTrue(candidate[key], key)
+        for key in ("new_candidate_source_ci_qualified", "windows_hello_userconsent_implemented",
+                    "webauthn_account_implemented", "app_username_password_created",
+                    "pin_collected_or_stored", "atomic_sqlite_vfs_handoff_proven",
+                    "pre_xopen_identity_binding_proven", "same_user_external_writer_absence_proven",
+                    "operator_ancestors_sidecars_acl_proven", "operator_sqlite_access",
+                    "production_v7_opener_authorized", "new_operator_profile_required",
+                    "migration_007_authorized", "writer_ipc_authorized",
+                    "independent_operator_attestation"):
+            self.assertFalse(candidate[key], key)
+        self.assertEqual(candidate["profile_identifier"], "com.fabulaxiom.greenfield.v1")
+        self.assertEqual(candidate["operator_execution"], "NO_OPERATOR_EXECUTION")
+        for key, value in (("m3_2", "IN_PROGRESS_NOT_ACCEPTED"), ("g2b", "NOT_ACCEPTED"),
+                           ("writer", "NOT_PROVEN"), ("g2c", "NOT_AUTHORIZED"),
+                           ("real_g3", "STOP_UNAVAILABLE"),
+                           ("historical", "PENDING_EXTERNAL_ATTESTATION(21/3/2)"),
+                           ("prospective", "NOT_STARTED")):
+            self.assertEqual(candidate[key], value)
+        self.assertTrue((ROOT / candidate["qualification"]).is_file())
+        fixture = (ROOT / candidate["rust_fixture"]).read_text(encoding="utf-8")
+        self.assertIn("GetFileInformationByHandleEx", fixture)
+        self.assertIn("m32_windows_sqlite_fileid_128_matches_claim_but_cannot_prevent_prior_swap", fixture)
+        doc = (ROOT / candidate["qualification"]).read_text(encoding="utf-8")
+        for signal in ("UserConsentVerifier", "RequestVerificationForWindowAsync", "WebAuthn",
+                       "PIN", "NON PROUVÉS", "xOpen"):
+            self.assertIn(signal, doc)
+        for name in ("RESUME_PROMPT_SHORT.md", "RESUME_PROMPT.md", "HANDOFF_CURRENT.md",
+                     "HANDOFF_PROTOCOL.md", "HANDOFF_HISTORY.md", "NEXT.md", "STATE.md",
+                     "M3_2_GATE_DECISION_CURRENT.md", "README.md"):
+            content = (DIRECTORY / name).read_text(encoding="utf-8")
+            self.assertIn("40518270685", content, name)
+            self.assertIn("M3_2_WIN32_FILEID_128_AND_WINDOWS_HELLO_BOUNDARY_20261027.md", content, name)
+        for name in ("ROADMAP_STATUS_CURRENT.md", "FABULAXIOM_ROADMAP_V1.md"):
+            content = (ROOT / "docs/roadmap" / name).read_text(encoding="utf-8")
+            self.assertIn("40518270685", content, name)
+            self.assertIn("M3_2_WIN32_FILEID_128_AND_WINDOWS_HELLO_BOUNDARY_20261027.md", content, name)
 
 if __name__ == "__main__":
     unittest.main()
