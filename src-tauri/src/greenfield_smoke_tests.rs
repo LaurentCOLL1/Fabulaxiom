@@ -376,3 +376,81 @@ fn greenfield_ci_same_profile_restore_keeps_previous_database_and_archives() {
     assert_eq!(fs::read(&saved.backup.path).unwrap(), saved_bytes);
     fs::remove_dir_all(profile).unwrap();
 }
+
+#[test]
+fn greenfield_ci_same_profile_corrupt_restore_refusal_keeps_current_work() {
+    // This is a CI-owned temporary profile, never the operator's existing one.
+    // A failed restore must not change the selected file, marker, or old work.
+    let profile = new_ci_only_root("same-profile-refusal");
+    let original = backup::resolve_active_database_path(&profile).unwrap();
+    {
+        let mut db = database::open_database(&original).unwrap();
+        hierarchy::create_universe(
+            &mut db,
+            hierarchy::CreateUniverseInput { id: "u-before".into(), name: "Avant sauvegarde".into() },
+        ).unwrap();
+    }
+    let healthy = backup::create_backup(&profile).unwrap();
+    let healthy_bytes = fs::read(&healthy.backup.path).unwrap();
+    {
+        let mut db = database::open_database(&original).unwrap();
+        hierarchy::create_universe(
+            &mut db,
+            hierarchy::CreateUniverseInput { id: "u-after".into(), name: "Travail ultérieur".into() },
+        ).unwrap();
+    }
+    let original_bytes = fs::read(&original).unwrap();
+
+    // A first, valid restoration selects a different SQLite *file* in this
+    // same profile. The next refusal must preserve this non-default selection.
+    let successful = backup::restore_backup(&profile, &healthy.backup.file_name).unwrap();
+    let selected = PathBuf::from(&successful.active_database_path);
+    assert_ne!(selected, original);
+    assert_eq!(backup::resolve_active_database_path(&profile).unwrap(), selected);
+    let selected_bytes = fs::read(&selected).unwrap();
+    let activation_dir = profile.join("database").join("activations");
+    let snapshot_names = |directory: &std::path::Path| {
+        let mut names = fs::read_dir(directory).unwrap()
+            .map(|entry| entry.unwrap().file_name().into_string().unwrap())
+            .collect::<Vec<_>>();
+        names.sort();
+        names
+    };
+    let markers_before = snapshot_names(&activation_dir);
+    assert_eq!(markers_before.len(), 1);
+    let marker_bytes = fs::read(activation_dir.join(&markers_before[0])).unwrap();
+    let database_names_before = snapshot_names(&profile.join("database"));
+
+    // Corrupt ONLY a freshly created disposable CI backup. Its syntactically
+    // valid filename reaches integrity validation before any activation.
+    let corrupt = backup::create_backup(&profile).unwrap();
+    assert_ne!(corrupt.backup.file_name, healthy.backup.file_name);
+    let invalid_bytes = b"not a SQLite database - disposable same-profile fixture";
+    fs::write(&corrupt.backup.path, invalid_bytes).unwrap();
+    assert!(backup::restore_backup(&profile, &corrupt.backup.file_name).is_err());
+    // A traversal or unrelated backup name is refused independently, too.
+    assert!(backup::restore_backup(&profile, "../not-a-backup.sqlite3").is_err());
+
+    assert_eq!(backup::resolve_active_database_path(&profile).unwrap(), selected);
+    assert_eq!(snapshot_names(&activation_dir), markers_before);
+    assert_eq!(fs::read(activation_dir.join(&markers_before[0])).unwrap(), marker_bytes);
+    assert_eq!(snapshot_names(&profile.join("database")), database_names_before);
+    assert_eq!(fs::read(&selected).unwrap(), selected_bytes);
+    assert_eq!(fs::read(&original).unwrap(), original_bytes);
+    assert_eq!(fs::read(&healthy.backup.path).unwrap(), healthy_bytes);
+    assert_eq!(fs::read(&corrupt.backup.path).unwrap(), invalid_bytes);
+    {
+        let current = database::open_database(&selected).unwrap();
+        let universes = hierarchy::snapshot(&current).unwrap().universes;
+        assert_eq!(universes.len(), 1);
+        assert_eq!(universes[0].id, "u-before");
+        assert_eq!(database::current_schema_version(&current).unwrap(), 6);
+    }
+    {
+        let old = database::open_database(&original).unwrap();
+        let universes = hierarchy::snapshot(&old).unwrap().universes;
+        assert_eq!(universes.len(), 2);
+        assert!(universes.iter().any(|universe| universe.id == "u-after"));
+    }
+    fs::remove_dir_all(profile).unwrap();
+}
