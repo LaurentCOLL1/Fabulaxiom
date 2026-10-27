@@ -159,7 +159,7 @@ class RustSqliteOpenInventoryTests(unittest.TestCase):
     def test_26_new_only_os_exclusive_claim_remains_test_scoped(self):
         p = "src-tauri/src/world_time_file_migration_tests.rs"
         source = self.src[p]
-        self.assertEqual(EXPECTED[p], (18, 4, 3, 2, 0, 6, 0))
+        self.assertEqual(EXPECTED[p], (19, 4, 3, 2, 0, 7, 0))
         self.assertIn("fn open_new_only_disposable_file(path: &Path)", source)
         self.assertIn("options.write(true).create_new(true)", source)
         self.assertIn("options.open(path)", source)
@@ -211,7 +211,7 @@ class RustSqliteOpenInventoryTests(unittest.TestCase):
             self.assertIn(signal, source)
         self.assertNotIn("app_local_data_dir()", source)
         self.assertEqual(EXPECTED["src-tauri/src/world_time_file_migration_tests.rs"],
-                         (18, 4, 3, 2, 0, 6, 0))
+                         (19, 4, 3, 2, 0, 7, 0))
 
     def test_32_windows_fixture_chain_uses_held_file_identity_and_reparse_veto(self):
         source = self.src["src-tauri/src/world_time_file_migration_tests.rs"]
@@ -233,6 +233,30 @@ class RustSqliteOpenInventoryTests(unittest.TestCase):
         self.assertNotIn("m.file_index()?", source)
         self.assertNotIn("#[tauri::command]", source)
         self.assertEqual(audit_inventory(self.src)["writer_absence"], "NOT_PROVEN")
+
+    def test_33_windows_native_vfs_handle_comparison_is_post_xopen_and_test_only(self):
+        source = self.src["src-tauri/src/world_time_file_migration_tests.rs"]
+        for signal in ("fn sqlite_windows_fixture_opened_identity(db: &Connection)",
+                       "rusqlite::ffi::sqlite3_file_control(",
+                       "rusqlite::ffi::SQLITE_FCNTL_WIN32_GET_HANDLE",
+                       "fn windows_fixture_raw_handle_identity(handle:",
+                       "fn open_windows_fixture_with_post_xopen_identity_check(",
+                       "SQLite VFS opened a different fixture file identity",
+                       "m32_windows_sqlite_vfs_handle_matches_live_exclusive_fixture_claim"):
+            self.assertIn(signal, source)
+        self.assertNotIn("#[tauri::command]", source)
+        self.assertEqual(audit_inventory(self.src)["real_g3"], "STOP_UNAVAILABLE")
+
+    def test_34_postcheck_name_swap_proves_no_atomic_sqlite_handoff(self):
+        source = self.src["src-tauri/src/world_time_file_migration_tests.rs"]
+        for signal in ("m32_windows_sqlite_vfs_native_handle_detects_post_check_name_substitution",
+                       "drop(claim);", "fs::rename(&destination, &displaced)",
+                       "revalidate_checked_fixture_chain(&root.0, &destination, &pins).is_ok()",
+                       "open_windows_fixture_with_post_xopen_identity_check(&destination, original_id).is_err()",
+                       "SQLite xOpen HAS ALREADY happened"):
+            self.assertIn(signal, source)
+        self.assertEqual(EXPECTED["src-tauri/src/world_time_file_migration_tests.rs"],
+                         (19, 4, 3, 2, 0, 7, 0))
 
 if __name__ == "__main__":
     unittest.main()

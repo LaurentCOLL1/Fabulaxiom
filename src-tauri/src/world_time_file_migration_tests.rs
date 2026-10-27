@@ -166,6 +166,11 @@ fn checked_fixture_parent_chain(root: &Path, destination: &Path)
 #[cfg(windows)]
 fn windows_fixture_handle_identity(handle: &fs::File) -> Result<(u32, u64), String> {
     use std::os::windows::io::AsRawHandle;
+    windows_fixture_raw_handle_identity(handle.as_raw_handle())
+}
+
+#[cfg(windows)]
+fn windows_fixture_raw_handle_identity(handle: *mut std::ffi::c_void) -> Result<(u32, u64), String> {
     use std::ffi::c_void;
 
     // Stable-Rust test-only Win32 ABI: MetadataExt::file_index and
@@ -192,12 +197,51 @@ fn windows_fixture_handle_identity(handle: &fs::File) -> Result<(u32, u64), Stri
         fn GetFileInformationByHandle(handle: *mut c_void, info: *mut WinHandleFileInfo) -> i32;
     }
     let mut info = std::mem::MaybeUninit::<WinHandleFileInfo>::uninit();
-    let result = unsafe { GetFileInformationByHandle(handle.as_raw_handle(), info.as_mut_ptr()) };
+    let result = unsafe { GetFileInformationByHandle(handle, info.as_mut_ptr()) };
     if result == 0 {
         return Err(format!("STOP: GetFileInformationByHandle failed: {}", std::io::Error::last_os_error()));
     }
     let info = unsafe { info.assume_init() };
     Ok((info.volume, (u64::from(info.index_high) << 32) | u64::from(info.index_low)))
+}
+
+// Observe SQLite's *actual* Windows VFS file handle after xOpen. This is a
+// test-only diagnostic, not a pre-open authorization and not a defense against
+// changes to the surrounding namespace or SQLite journal/sidecar paths.
+#[cfg(windows)]
+fn sqlite_windows_fixture_opened_identity(db: &Connection) -> Result<(u32, u64), String> {
+    use std::ffi::{c_char, c_void};
+    let mut native_handle: *mut c_void = std::ptr::null_mut();
+    // SAFETY: db remains alive during the call; "main" is NUL terminated;
+    // the Windows VFS fills our pointer-sized native HANDLE, which is borrowed
+    // only for GetFileInformationByHandle before db is dropped. Never close it.
+    let code = unsafe {
+        rusqlite::ffi::sqlite3_file_control(
+            db.handle(),
+            b"main\0".as_ptr().cast::<c_char>(),
+            rusqlite::ffi::SQLITE_FCNTL_WIN32_GET_HANDLE,
+            (&mut native_handle as *mut *mut c_void).cast::<c_void>(),
+        )
+    };
+    if code != rusqlite::ffi::SQLITE_OK || native_handle.is_null() {
+        return Err(format!("STOP: SQLite Windows VFS native handle unavailable: {code}"));
+    }
+    windows_fixture_raw_handle_identity(native_handle)
+}
+
+// The caller cannot perform application SQL before this identity comparison.
+// However, SQLite xOpen HAS ALREADY happened; it may have opened a substituted
+// file. This helper deliberately makes no pre-xOpen or atomicity claim.
+#[cfg(windows)]
+fn open_windows_fixture_with_post_xopen_identity_check(
+    path: &Path, expected: (u32, u64),
+) -> Result<Connection, String> {
+    let db = Connection::open_with_flags(path, OpenFlags::SQLITE_OPEN_READ_WRITE)
+        .map_err(|e| format!("STOP: SQLite could not open test-only file: {e}"))?;
+    if sqlite_windows_fixture_opened_identity(&db)? != expected {
+        return Err("STOP: SQLite VFS opened a different fixture file identity".to_owned());
+    }
+    Ok(db)
 }
 
 #[cfg(windows)]
@@ -860,6 +904,64 @@ fn m32_windows_owned_fixture_chain_rechecks_substitution_before_sqlite() {
     drop(clean_pins);
     assert!(clean_destination.exists());
     assert!(!destination.exists());
+}
+
+#[cfg(windows)]
+#[test]
+fn m32_windows_sqlite_vfs_handle_matches_live_exclusive_fixture_claim() {
+    let root = DisposableRoot::new("m32-sqlite-native-handle-pristine");
+    let parent = root.file("project_new");
+    fs::create_dir(&parent).unwrap();
+    let destination = parent.join("new_v7.sqlite3");
+    let pins = pin_checked_fixture_chain(&root.0, &destination).unwrap();
+    revalidate_checked_fixture_chain(&root.0, &destination, &pins).unwrap();
+    let claim = claim_new_only_disposable_file(&destination).unwrap();
+    let claim_id = windows_fixture_handle_identity(&claim).unwrap();
+    let db = open_windows_fixture_with_post_xopen_identity_check(&destination, claim_id)
+        .expect("native SQLite VFS handle must refer to the claimed fixture file");
+    assert_eq!(sqlite_windows_fixture_opened_identity(&db).unwrap(), claim_id);
+    assert_eq!(db.query_row("SELECT 1", [], |row| row.get::<_, i64>(0)).unwrap(), 1);
+    revalidate_checked_fixture_chain(&root.0, &destination, &pins).unwrap();
+    drop(db);
+    drop(claim);
+    drop(pins);
+    assert!(!root.file("activation").exists());
+    assert!(!parent.join("new_v7.sqlite3-wal").exists());
+    assert!(!parent.join("new_v7.sqlite3-shm").exists());
+}
+
+#[cfg(windows)]
+#[test]
+fn m32_windows_sqlite_vfs_native_handle_detects_post_check_name_substitution() {
+    let root = DisposableRoot::new("m32-sqlite-native-handle-swap");
+    let parent = root.file("project_new");
+    fs::create_dir(&parent).unwrap();
+    let destination = parent.join("new_v7.sqlite3");
+    let displaced = parent.join("old_claimed_file.sqlite3");
+    let pins = pin_checked_fixture_chain(&root.0, &destination).unwrap();
+    let claim = claim_new_only_disposable_file(&destination).unwrap();
+    let original_id = windows_fixture_handle_identity(&claim).unwrap();
+    revalidate_checked_fixture_chain(&root.0, &destination, &pins).unwrap();
+
+    // A controlled synthetic counterexample to the unchecked gap: release
+    // our file-name claim, then move its name and put ANOTHER new file there,
+    // *after* the earlier successful chain revalidation but BEFORE xOpen.
+    // Both files and the replacement are exclusively fixture-owned.
+    drop(claim);
+    fs::rename(&destination, &displaced).unwrap();
+    let substitute = claim_new_only_disposable_file(&destination).unwrap();
+    let substitute_id = windows_fixture_handle_identity(&substitute).unwrap();
+    assert_ne!(original_id, substitute_id, "substitution must be a distinct OS file");
+    assert!(revalidate_checked_fixture_chain(&root.0, &destination, &pins).is_ok(),
+            "unchanged parents alone cannot detect a swapped *file* name");
+    assert!(open_windows_fixture_with_post_xopen_identity_check(&destination, original_id).is_err(),
+            "SQLite xOpen follows the substituted name; native handle comparison must STOP");
+    assert_eq!(windows_fixture_handle_identity(&substitute).unwrap(), substitute_id);
+    assert_eq!(fs::read(&displaced).unwrap(), Vec::<u8>::new());
+    assert_eq!(fs::read(&destination).unwrap(), Vec::<u8>::new());
+    assert!(!root.file("activation").exists());
+    drop(substitute);
+    drop(pins);
 }
 
 
