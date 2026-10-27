@@ -3516,9 +3516,7 @@ class HandoffContractTests(unittest.TestCase):
         terminal = self.data["post_pr190_terminal_observation"]
         candidate = self.data["next_m32_greenfield_new_only_v7_disposable_persistence_candidate_20261027"]
         self.assertEqual(self.data["as_of"], "2026-10-27")
-        self.assertEqual(self.data["last_confirmed_merged_pr"], 190)
-        self.assertEqual(self.data["last_verified_pr_head"], terminal["source_sha"])
-        self.assertEqual(self.data["last_confirmed_main_before_handoff"], terminal["merge_sha"])
+        self.assertGreaterEqual(self.data["last_confirmed_merged_pr"], 190)
         self.assertEqual(terminal["pr"], 190)
         self.assertEqual(terminal["source_sha"], "d15f58b40a8b6124967f89ffed013dab14497b13")
         self.assertEqual(terminal["merge_sha"], "7c7e02899784e52e3eb06dfff9d79a613eec95c1")
@@ -3562,6 +3560,70 @@ class HandoffContractTests(unittest.TestCase):
             doc = (ROOT / "docs/roadmap" / name).read_text(encoding="utf-8")
             self.assertIn("40462274918", doc, name)
             self.assertIn("M3_2_GREENFIELD_NEW_ONLY_DISPOSABLE_V7_CHRONOLOGY_PERSISTENCE_20261027.md", doc, name)
+
+    def test_122_pr191_terminal_and_exclusive_new_only_file_claim_candidate(self):
+        terminal = self.data["post_pr191_terminal_observation"]
+        candidate = self.data["next_m32_greenfield_v7_exclusive_new_file_claim_candidate_20261027"]
+        self.assertEqual(self.data["as_of"], "2026-10-27")
+        self.assertEqual(self.data["last_confirmed_merged_pr"], 191)
+        self.assertEqual(self.data["last_verified_pr_head"], terminal["source_sha"])
+        self.assertEqual(self.data["last_confirmed_main_before_handoff"], terminal["merge_sha"])
+        self.assertEqual(terminal["pr"], 191)
+        self.assertEqual(terminal["source_sha"], "c6b23ae071392c5f68912e53915df5067787605b")
+        self.assertEqual(terminal["source_ci"], {"run_id": 40469481613, "conclusion": "SUCCESS"})
+        self.assertEqual(terminal["merge_sha"], "2b4a7aaa37b2ada590a8e05fc4c5e973949041cc")
+        self.assertEqual(terminal["postmain_ci"], {"run_id": 40470700689, "conclusion": "SUCCESS"})
+        self.assertEqual((terminal["rust_base_tests"], terminal["greenfield_runner_tests"],
+                          terminal["handoff_tests"], terminal["sqlite_inventory_tests"]),
+                         (144, 7, 121, 25))
+        self.assertEqual(terminal["issue38_terminal_comment"], 6436913166)
+        for flag in ("operator_backup_restore_executed", "new_operator_profile_required",
+                     "m3_2_accepted"):
+            self.assertFalse(terminal[flag])
+        self.assertEqual(candidate["base_main_sha"], terminal["merge_sha"])
+        self.assertEqual(candidate["scope"], "TEST_ONLY_DISPOSABLE_EXCLUSIVE_OS_CREATE_NEW_THEN_SQLITE_V7")
+        self.assertEqual((candidate["rust_base_tests_expected"],
+                          candidate["sqlite_inventory_tests_expected"],
+                          candidate["handoff_tests_expected"],
+                          candidate["sqlite_test_open_occurrences_expected"]), (147, 28, 122, 18))
+        for flag in ("os_create_new_exclusive_test_only",
+                     "existing_v6_and_arbitrary_file_bytes_preserved",
+                     "existing_directory_and_uncreated_parent_refused",
+                     "orphan_wal_shm_journal_refused_and_preserved",
+                     "only_one_concurrent_creator_accepted",
+                     "test_only_v7_reopens_without_second_ownership_claim"):
+            self.assertTrue(candidate[flag], flag)
+        for flag in ("operator_sqlite_access", "production_v7_opener_authorized",
+                     "adversarial_path_substitution_proven_resistant",
+                     "migration_007_authorized", "writer_ipc_authorized",
+                     "new_operator_profile_required", "independent_operator_attestation"):
+            self.assertFalse(candidate[flag], flag)
+        self.assertEqual(candidate["profile_identifier"], "com.fabulaxiom.greenfield.v1")
+        self.assertEqual(candidate["operator_execution"], "NO_OPERATOR_EXECUTION")
+        for key, expected in (("historical", "PENDING_EXTERNAL_ATTESTATION(21/3/2)"),
+                              ("prospective", "NOT_STARTED"),
+                              ("m3_2", "IN_PROGRESS_NOT_ACCEPTED"),
+                              ("g2b", "NOT_ACCEPTED"), ("writer", "NOT_PROVEN"),
+                              ("g2c", "NOT_AUTHORIZED"), ("real_g3", "STOP_UNAVAILABLE")):
+            self.assertEqual(candidate[key], expected)
+        self.assertTrue((ROOT / candidate["qualification"]).is_file())
+        self.assertTrue((ROOT / candidate["sqlite_inventory"]).is_file())
+        self.assertTrue((ROOT / candidate["source_tests"]).is_file())
+        source = (ROOT / candidate["rust_fixture"]).read_text(encoding="utf-8")
+        for name in ("open_new_only_disposable_file", "m32_new_only_claim_refuses_existing_file_directory_and_orphan_sidecars",
+                     "m32_exclusive_new_file_claim_builds_test_only_v7_and_reopen_cannot_reclaim_it",
+                     "m32_exclusive_claim_two_concurrent_creators_only_one_wins"):
+            self.assertIn(name, source)
+        for name in ("RESUME_PROMPT_SHORT.md", "RESUME_PROMPT.md", "HANDOFF_CURRENT.md",
+                     "HANDOFF_PROTOCOL.md", "HANDOFF_HISTORY.md", "NEXT.md", "STATE.md",
+                     "M3_2_GATE_DECISION_CURRENT.md", "README.md"):
+            doc = (DIRECTORY / name).read_text(encoding="utf-8")
+            self.assertIn("40470700689", doc, name)
+            self.assertIn("M3_2_GREENFIELD_V7_EXCLUSIVE_NEW_FILE_CLAIM_20261027.md", doc, name)
+        for name in ("ROADMAP_STATUS_CURRENT.md", "FABULAXIOM_ROADMAP_V1.md"):
+            doc = (ROOT / "docs/roadmap" / name).read_text(encoding="utf-8")
+            self.assertIn("40470700689", doc, name)
+            self.assertIn("M3_2_GREENFIELD_V7_EXCLUSIVE_NEW_FILE_CLAIM_20261027.md", doc, name)
 
 if __name__ == "__main__":
     unittest.main()
