@@ -3626,10 +3626,7 @@ class HandoffContractTests(unittest.TestCase):
     def test_123_pr192_terminal_and_pinned_handoff_parent_swap_candidate(self):
         terminal = self.data["post_pr192_terminal_observation"]
         candidate = self.data["next_m32_greenfield_v7_pinned_handoff_parent_namespace_candidate_20261027"]
-        self.assertEqual(self.data["last_confirmed_merged_pr"], 192)
-        self.assertEqual(self.data["last_verified_pr_head"], terminal["source_sha"])
-        self.assertEqual(self.data["last_confirmed_main_before_handoff"], terminal["merge_sha"])
-        self.assertEqual(self.data["last_verified_ci"]["run_id"], 40474849956)
+        self.assertGreaterEqual(self.data["last_confirmed_merged_pr"], 192)
         self.assertEqual(terminal["pr"], 192)
         self.assertEqual(terminal["source_sha"], "a061311a4d8ca54b213d134c2affa34defa3f023")
         self.assertEqual(terminal["source_ci"], {"run_id": 40474849956, "conclusion": "SUCCESS"})
@@ -3679,6 +3676,102 @@ class HandoffContractTests(unittest.TestCase):
             doc = (ROOT / "docs/roadmap" / name).read_text(encoding="utf-8")
             self.assertIn("40476232974", doc, name)
             self.assertIn("M3_2_GREENFIELD_V7_PINNED_HANDOFF_PARENT_NAMESPACE_20261027.md", doc, name)
+
+    def test_124_pr193_terminal_and_owned_fixture_directory_chain_candidate(self):
+        terminal = self.data["post_pr193_terminal_observation"]
+        candidate = self.data["next_m32_greenfield_v7_owned_fixture_directory_chain_candidate_20261027"]
+        self.assertEqual(self.data["last_confirmed_merged_pr"], 193)
+        self.assertEqual(self.data["last_verified_pr_head"], terminal["source_sha"])
+        self.assertEqual(self.data["last_confirmed_main_before_handoff"], terminal["merge_sha"])
+        self.assertEqual(self.data["last_verified_ci"]["run_id"], 40485043798)
+        self.assertEqual(terminal["pr"], 193)
+        self.assertEqual(terminal["source_sha"], "38540a4602c5c5e4f9d9b3bdb6b8bf155e0ed256")
+        self.assertEqual(terminal["source_ci"], {"run_id": 40485043798, "conclusion": "SUCCESS"})
+        self.assertEqual(terminal["merge_sha"], "8d034d66c3de76735c356c6f79e436c0b9965dec")
+        self.assertEqual(terminal["postmain_ci"], {"run_id": 40486676658, "conclusion": "SUCCESS"})
+        self.assertEqual((terminal["rust_base_tests"], terminal["greenfield_runner_tests"],
+                          terminal["handoff_tests"], terminal["sqlite_inventory_tests"]),
+                         (149, 7, 123, 30))
+        self.assertEqual(terminal["issue38_terminal_comment"], 6439378032)
+        for flag in ("production_v7_opener_qualified", "full_ancestor_identity_proven",
+                     "sqlite_vfs_os_handle_binding_proven", "m3_2_accepted"):
+            self.assertFalse(terminal[flag], flag)
+        self.assertEqual(candidate["base_main_sha"], terminal["merge_sha"])
+        self.assertEqual((candidate["rust_base_tests_expected"],
+                          candidate["greenfield_runner_tests_expected"],
+                          candidate["sqlite_inventory_tests_expected"],
+                          candidate["handoff_tests_expected"],
+                          candidate["sqlite_test_open_occurrences_expected"]),
+                         (151, 7, 32, 124, 18))
+        for flag in ("lexical_escape_and_unsafe_filename_refusal_test_only",
+                     "windows_pinned_fixture_directory_chain_test_only",
+                     "windows_fixture_volume_and_fileindex_compared_test_only",
+                     "windows_reparse_attribute_veto_test_only"):
+            self.assertTrue(candidate[flag], flag)
+        for flag in ("all_absolute_ancestors_above_fixture_root_proven",
+                     "operator_profile_root_acl_and_junctions_proven",
+                     "sqlite_vfs_os_handle_binding_proven",
+                     "adversarial_substitution_resistance_proven",
+                     "operator_sqlite_access", "production_v7_opener_authorized",
+                     "new_operator_profile_required", "migration_007_authorized",
+                     "writer_ipc_authorized", "independent_operator_attestation"):
+            self.assertFalse(candidate[flag], flag)
+        self.assertEqual(candidate["profile_identifier"], "com.fabulaxiom.greenfield.v1")
+        self.assertEqual(candidate["operator_execution"], "NO_OPERATOR_EXECUTION")
+        for key, expected in (("historical", "PENDING_EXTERNAL_ATTESTATION(21/3/2)"),
+                              ("prospective", "NOT_STARTED"),
+                              ("m3_2", "IN_PROGRESS_NOT_ACCEPTED"),
+                              ("g2b", "NOT_ACCEPTED"), ("writer", "NOT_PROVEN"),
+                              ("g2c", "NOT_AUTHORIZED"), ("real_g3", "STOP_UNAVAILABLE")):
+            self.assertEqual(candidate[key], expected)
+        self.assertTrue((ROOT / candidate["qualification"]).is_file())
+        self.assertTrue((ROOT / candidate["rust_fixture"]).is_file())
+        self.assertTrue((ROOT / candidate["sqlite_inventory_tests_file"]).is_file())
+        for name in ("RESUME_PROMPT_SHORT.md", "RESUME_PROMPT.md", "HANDOFF_CURRENT.md",
+                     "HANDOFF_PROTOCOL.md", "HANDOFF_HISTORY.md", "NEXT.md", "STATE.md",
+                     "M3_2_GATE_DECISION_CURRENT.md", "README.md"):
+            doc = (DIRECTORY / name).read_text(encoding="utf-8")
+            self.assertIn("40486676658", doc, name)
+            self.assertIn("M3_2_GREENFIELD_V7_OWNED_FIXTURE_DIRECTORY_CHAIN_20261027.md", doc, name)
+        for name in ("ROADMAP_STATUS_CURRENT.md", "FABULAXIOM_ROADMAP_V1.md"):
+            doc = (ROOT / "docs/roadmap" / name).read_text(encoding="utf-8")
+            self.assertIn("40486676658", doc, name)
+            self.assertIn("M3_2_GREENFIELD_V7_OWNED_FIXTURE_DIRECTORY_CHAIN_20261027.md", doc, name)
+
+    def test_125_pr194_negative_win32_runs_and_bounded_revalidation_candidate(self):
+        event = self.data["pr194_windows_negative_and_revalidation_candidate_20261027"]
+        self.assertEqual(event["pr"], 194)
+        self.assertEqual(event["state_at_checkpoint"], "OPEN_NOT_MERGED")
+        self.assertEqual(event["base_main_sha"], "8d034d66c3de76735c356c6f79e436c0b9965dec")
+        attempts = event["source_attempts"]
+        self.assertEqual([a["run_id"] for a in attempts],
+                         [40498356467, 40499869627, 40501278786])
+        self.assertTrue(all(a["conclusion"] == "FAILURE" for a in attempts))
+        self.assertEqual([(a["rust_passed"], a["rust_failed"]) for a in attempts[1:]],
+                         [(150, 1), (150, 1)])
+        self.assertEqual(event["issue38_terminal_stop_comment"], 6441614257)
+        self.assertEqual((event["rust_tests_expected"], event["inventory_guards_expected"],
+                          event["continuity_contracts_expected"]), (151, 32, 125))
+        self.assertTrue(event["windows_same_name_substitution_refusal_test_only"])
+        self.assertTrue(event["independent_pristine_new_only_sqlite_fixture_test_only"])
+        for field in ("new_candidate_source_ci_qualified", "directory_rename_prevention_proven",
+                      "post_revalidation_race_eliminated", "operator_root_and_above_ancestors_proven",
+                      "sqlite_vfs_os_handle_binding_proven", "m3_2_accepted"):
+            self.assertFalse(event[field], field)
+        self.assertEqual(event["operator_execution"], "NO_OPERATOR_EXECUTION")
+        self.assertEqual(event["profile_identifier"], "com.fabulaxiom.greenfield.v1")
+        src = (ROOT / event["rust_fixture"]).read_text(encoding="utf-8")
+        self.assertIn("fn revalidate_checked_fixture_chain", src)
+        self.assertIn("m32_windows_owned_fixture_chain_rechecks_substitution_before_sqlite", src)
+        self.assertIn("fs::create_dir(&second)", src)
+        for name in ("RESUME_PROMPT_SHORT.md", "RESUME_PROMPT.md", "HANDOFF_CURRENT.md",
+                     "HANDOFF_PROTOCOL.md", "HANDOFF_HISTORY.md", "NEXT.md", "STATE.md",
+                     "M3_2_GATE_DECISION_CURRENT.md", "README.md"):
+            doc = (DIRECTORY / name).read_text(encoding="utf-8")
+            self.assertIn("40501278786", doc, name)
+            self.assertIn("NON QUALIFI", doc, name)
+        for name in ("ROADMAP_STATUS_CURRENT.md", "FABULAXIOM_ROADMAP_V1.md"):
+            self.assertIn("40501278786", (ROOT / "docs/roadmap" / name).read_text(encoding="utf-8"))
 
 if __name__ == "__main__":
     unittest.main()
