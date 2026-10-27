@@ -454,3 +454,85 @@ fn greenfield_ci_same_profile_corrupt_restore_refusal_keeps_current_work() {
     }
     fs::remove_dir_all(profile).unwrap();
 }
+
+#[test]
+fn greenfield_ci_same_profile_foreign_key_invalid_backup_cannot_replace_active_work() {
+    // A SQLite file can pass integrity_check while its foreign keys are broken.
+    // Every path below belongs exclusively to this disposable CI-owned profile.
+    let profile = new_ci_only_root("same-profile-foreign-key-refusal");
+    let original = backup::resolve_active_database_path(&profile).unwrap();
+    {
+        let mut db = database::open_database(&original).unwrap();
+        hierarchy::create_universe(
+            &mut db,
+            hierarchy::CreateUniverseInput { id: "u-safe".into(), name: "Travail sauvegardé".into() },
+        ).unwrap();
+    }
+    let healthy = backup::create_backup(&profile).unwrap();
+    let healthy_bytes = fs::read(&healthy.backup.path).unwrap();
+    {
+        let mut db = database::open_database(&original).unwrap();
+        hierarchy::create_universe(
+            &mut db,
+            hierarchy::CreateUniverseInput { id: "u-later".into(), name: "Travail après sauvegarde".into() },
+        ).unwrap();
+    }
+    let original_bytes = fs::read(&original).unwrap();
+
+    // Select another SQLite file within the SAME temporary profile first.
+    let first_restore = backup::restore_backup(&profile, &healthy.backup.file_name).unwrap();
+    let selected = PathBuf::from(&first_restore.active_database_path);
+    let selected_bytes = fs::read(&selected).unwrap();
+    let activation_dir = profile.join("database").join("activations");
+    let names = |dir: &std::path::Path| {
+        let mut result = fs::read_dir(dir).unwrap()
+            .map(|entry| entry.unwrap().file_name().into_string().unwrap())
+            .collect::<Vec<_>>();
+        result.sort();
+        result
+    };
+    let markers_before = names(&activation_dir);
+    assert_eq!(markers_before.len(), 1);
+    let marker_bytes = fs::read(activation_dir.join(&markers_before[0])).unwrap();
+    let files_before = names(&profile.join("database"));
+
+    // Damage a *new, disposable* backup logically, without damaging SQLite pages.
+    let invalid = backup::create_backup(&profile).unwrap();
+    {
+        let db = database::open_database(&PathBuf::from(&invalid.backup.path)).unwrap();
+        db.pragma_update(None, "foreign_keys", "OFF").unwrap();
+        db.execute(
+            "INSERT INTO novels (id, universe_id, title, sort_order)
+             VALUES ('novel-orphan', 'universe-missing', 'Invalid fixture', 0)",
+            [],
+        ).unwrap();
+        let integrity: String = db.query_row("PRAGMA integrity_check", [], |row| row.get(0)).unwrap();
+        assert_eq!(integrity, "ok", "this must be logical, not physical, corruption");
+        let foreign_key_errors = db.prepare("PRAGMA foreign_key_check").unwrap()
+            .query_map([], |_| Ok(())).unwrap()
+            .collect::<rusqlite::Result<Vec<()>>>().unwrap();
+        assert!(!foreign_key_errors.is_empty());
+    }
+    let invalid_bytes = fs::read(&invalid.backup.path).unwrap();
+    let failure = backup::restore_backup(&profile, &invalid.backup.file_name)
+        .expect_err("a structurally valid SQLite backup with broken foreign keys must be refused");
+    assert_eq!(failure.payload().code, "integrity");
+
+    assert_eq!(backup::resolve_active_database_path(&profile).unwrap(), selected);
+    assert_eq!(names(&activation_dir), markers_before);
+    assert_eq!(fs::read(activation_dir.join(&markers_before[0])).unwrap(), marker_bytes);
+    assert_eq!(names(&profile.join("database")), files_before);
+    assert_eq!(fs::read(&selected).unwrap(), selected_bytes);
+    assert_eq!(fs::read(&original).unwrap(), original_bytes);
+    assert_eq!(fs::read(&healthy.backup.path).unwrap(), healthy_bytes);
+    assert_eq!(fs::read(&invalid.backup.path).unwrap(), invalid_bytes);
+    {
+        let active = database::open_database(&selected).unwrap();
+        assert_eq!(hierarchy::snapshot(&active).unwrap().universes.len(), 1);
+    }
+    {
+        let old = database::open_database(&original).unwrap();
+        assert_eq!(hierarchy::snapshot(&old).unwrap().universes.len(), 2);
+    }
+    fs::remove_dir_all(profile).unwrap();
+}

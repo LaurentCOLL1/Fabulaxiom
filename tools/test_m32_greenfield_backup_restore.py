@@ -37,7 +37,8 @@ class GreenfieldBackupRestoreSourceContract(unittest.TestCase):
                      "greenfield_ci_corrupt_backup_cannot_activate_a_fresh_restore_root",
                      "greenfield_ci_occupied_restore_root_switches_selection_so_operator_use_is_blocked",
                      "greenfield_ci_same_profile_restore_keeps_previous_database_and_archives",
-                     "greenfield_ci_same_profile_corrupt_restore_refusal_keeps_current_work"):
+                     "greenfield_ci_same_profile_corrupt_restore_refusal_keeps_current_work",
+                     "greenfield_ci_same_profile_foreign_key_invalid_backup_cannot_replace_active_work"):
             self.assertIn("fn " + name + "()", self.rust)
         for important in ("SetSceneRevisionArchivedInput", "scene_archived_revision_ids",
                           "current_schema_version", "source_bytes_before_restore",
@@ -78,6 +79,17 @@ class GreenfieldBackupRestoreSourceContract(unittest.TestCase):
             self.assertIn(required, self.rust)
         self.assertIn("assert!(backup::restore_backup(&profile, &corrupt.backup.file_name).is_err())", self.rust)
         self.assertIn("assert_eq!(fs::read(&selected).unwrap(), selected_bytes)", self.rust)
+
+    def test_08_foreign_key_invalid_backup_is_refused_after_integrity_check_ok(self):
+        self.assertIn("fn greenfield_ci_same_profile_foreign_key_invalid_backup_cannot_replace_active_work()", self.rust)
+        for required in ('"PRAGMA integrity_check"', '"PRAGMA foreign_key_check"',
+                         '"foreign_keys", "OFF"', "'universe-missing'",
+                         'assert_eq!(integrity, "ok"',
+                         'assert_eq!(failure.payload().code, "integrity")',
+                         'assert_eq!(names(&activation_dir), markers_before)',
+                         'assert_eq!(fs::read(&selected).unwrap(), selected_bytes)',
+                         'assert_eq!(fs::read(&original).unwrap(), original_bytes)'):
+            self.assertIn(required, self.rust)
 
 
 if __name__ == "__main__":
