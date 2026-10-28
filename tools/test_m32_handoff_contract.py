@@ -4548,5 +4548,31 @@ class HandoffContractTests(unittest.TestCase):
         self.assertEqual(next_study["continuity_contracts_expected"], 146)
         self.assertEqual(next_study["external_writer_absence"], "NOT_PROVEN")
 
+    def test_147_owner_p1_trusted_sid_ollama_context_no_runtime_promotion(self):
+        study = (ROOT / "docs/qualification/M3_2_V7_PRODUCTION_WRITER_CUSTODY_DESIGN_STUDY_20261028.md").read_text(encoding="utf-8")
+        roadmap = (ROOT / "docs/roadmap/FABULAXIOM_ROADMAP_V1.md").read_text(encoding="utf-8")
+        decision = self.data["owner_p1_same_sid_ollama_design_decision_20261028"]
+        for key in ("same_sid_processes_trusted", "p1_selected_for_architecture",
+                    "p2_deferred", "ollama_read_only_versioned_context",
+                    "ollama_fiches_and_histories_required"):
+            self.assertTrue(decision[key], key)
+        for key in ("same_sid_bypass_os_prevented", "ollama_model_direct_sqlite_access",
+                    "ollama_implicit_cloud_fallback_authorized", "generated_fact_auto_approve_canon",
+                    "m4_m5_m6_m7_runtime_authorized", "production_writer_authorized",
+                    "candidate_ci_qualified"):
+            self.assertFalse(decision[key], key)
+        self.assertEqual(decision["continuity_contracts_expected"], 147)
+        self.assertEqual(decision["writer"], "NOT_PROVEN")
+        self.assertEqual(decision["a0_existing_profile_cross_process"], "STOP")
+        for term in ("same-SID Windows processes trusted", "P1 selected",
+                     "read-only context broker", "APPROVE_CANON", "reveal",
+                     "Ollama", "GET /api/tags", "POST /api/chat", "POST /api/embed",
+                     "NOT_PROVEN", "A0", "M4", "M5", "M6", "M7"):
+            self.assertIn(term.lower(), study.lower(), term)
+        for term in ("read-only", "fiches", "histories", "canon", "Ollama"):
+            self.assertIn(term.lower(), roadmap.lower(), term)
+        writer = (ROOT / "src-tauri/src/m32_v7_writer_service.rs").read_text(encoding="utf-8")
+        self.assertIn("#[cfg(test)]", writer)
+
 if __name__ == "__main__":
     unittest.main()
