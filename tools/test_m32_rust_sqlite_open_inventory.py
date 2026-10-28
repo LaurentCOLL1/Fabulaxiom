@@ -293,7 +293,7 @@ class RustSqliteOpenInventoryTests(unittest.TestCase):
     def test_37_windows_vfs_predelegation_fixture_is_scoped_and_inventory_reviewed(self):
         p = "src-tauri/src/m32_sqlite_vfs_preopen_tests.rs"
         source = self.src[p]
-        self.assertEqual(counts(source), (8, 0, 0, 0, 0, 9, 0))
+        self.assertEqual(counts(source), (10, 0, 0, 0, 0, 11, 0))
         self.assertIn("#[cfg(all(test, windows))]\nmod m32_sqlite_vfs_preopen_tests;",
                       self.src["src-tauri/src/lib.rs"])
         for required in ("sqlite3_vfs_register", "sqlite3_vfs_unregister", "fixture_xopen",
@@ -317,7 +317,7 @@ class RustSqliteOpenInventoryTests(unittest.TestCase):
                        "m32_vfs_fixture_fileid128_precheck_then_internal_name_swap_is_not_atomic"):
             self.assertIn(signal, source)
         self.assertGreaterEqual(source.count("#[test]"), 6)
-        self.assertEqual(counts(source), (8, 0, 0, 0, 0, 9, 0))
+        self.assertEqual(counts(source), (10, 0, 0, 0, 0, 11, 0))
         self.assertNotIn("#[tauri::command]", source)
         self.assertNotIn("run_migrations(", source)
         self.assertEqual(repository_inventory()["real_g3"], "STOP_UNAVAILABLE")
@@ -329,11 +329,25 @@ class RustSqliteOpenInventoryTests(unittest.TestCase):
                        "m32_vfs_fixture_wal_refusal_precedes_named_default_open",
                        "m32_vfs_fixture_wal_xopen_does_not_cover_shm_mapping"):
             self.assertIn(signal, source)
-        self.assertEqual(source.count("#[test]"), 8)
-        self.assertEqual(counts(source), (8, 0, 0, 0, 0, 9, 0))
+        self.assertGreaterEqual(source.count("#[test]"), 8)
+        self.assertEqual(counts(source), (10, 0, 0, 0, 0, 11, 0))
         for forbidden in ("#[tauri::command]", "run_migrations(", "SQLITE_FCNTL_WIN32_SET_HANDLE"):
             self.assertNotIn(forbidden, source)
         self.assertEqual(repository_inventory()["writer_absence"], "NOT_PROVEN")
+
+    def test_40_shm_io_methods_wrapper_is_disposable_and_fail_closed(self):
+        source = self.src["src-tauri/src/m32_sqlite_vfs_preopen_tests.rs"]
+        for signal in ("FixtureMainFileTail", "wrap_main_shm", "file_tail_offset",
+                       "default_file_size.div_ceil", "fixture_xshm_map", "SQLITE_IOERR_SHMMAP",
+                       "shm_map_refusals", "shm_map_delegations",
+                       "m32_vfs_fixture_wrapped_shm_map_refuses_before_default_mapping",
+                       "m32_vfs_fixture_wrapped_shm_map_delegates_disposable_wal"):
+            self.assertIn(signal, source)
+        self.assertEqual(source.count("#[test]"), 10)
+        self.assertEqual(counts(source), (10, 0, 0, 0, 0, 11, 0))
+        for forbidden in ("#[tauri::command]", "run_migrations(", "SQLITE_FCNTL_WIN32_SET_HANDLE"):
+            self.assertNotIn(forbidden, source)
+        self.assertEqual(repository_inventory()["real_g3"], "STOP_UNAVAILABLE")
 
 if __name__ == "__main__":
     unittest.main()
