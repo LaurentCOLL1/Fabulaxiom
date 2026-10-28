@@ -4293,5 +4293,60 @@ class HandoffContractTests(unittest.TestCase):
             body = (ROOT / "docs/roadmap" / filename).read_text(encoding="utf-8")
             self.assertIn("40611263489", body, filename)
             self.assertIn("M3_2_SQLITE_VFS_SHM_IO_METHODS_WRAPPER_20261028.md", body, filename)
+    def test_135_pr203_terminal_and_unwired_single_owner_writer_candidate(self):
+        terminal = self.data["post_pr203_terminal_observation"]
+        self.assertEqual(terminal["pr"], 203)
+        self.assertEqual(terminal["source_sha"], "9ec042bd57d6633d5aa9df8ca0a4a3530e83c2df")
+        self.assertEqual(terminal["source_ci"], {"run_id": 40646300928, "conclusion": "SUCCESS"})
+        self.assertEqual(terminal["merge_sha"], "17bf8e8456c4f06875141788b30fcaa1d7f4a975")
+        self.assertEqual(terminal["postmain_ci"], {"run_id": 40647564175, "conclusion": "SUCCESS"})
+        self.assertEqual(tuple(terminal[key] for key in ("rust_base_tests", "greenfield_runner_tests",
+                                                    "sqlite_inventory_tests", "handoff_tests")),
+                         (181, 7, 40, 134))
+        self.assertEqual(terminal["issue38_terminal_comment"], 6463052495)
+        self.assertTrue(terminal["protect_main_active_strict"])
+        candidate = self.data["next_m32_v7_single_owner_writer_preparation_candidate_20261028"]
+        self.assertEqual(candidate["base_main_sha"], terminal["merge_sha"])
+        self.assertEqual(tuple(candidate[key] for key in ("rust_base_tests_expected",
+            "greenfield_runner_tests_expected", "sqlite_inventory_tests_expected",
+            "handoff_tests_expected")), (189, 7, 41, 135))
+        self.assertTrue(candidate["prepared_rust_writer_module_in_backend_source"])
+        for key in ("candidate_ci_qualified", "production_v7_opener_implemented",
+            "runtime_admission_token_available", "tauri_state_registered", "writer_ipc_authorized",
+            "atomic_sqlite_pre_xopen_proven", "writer_absence_proven", "operator_sqlite_access",
+            "native_hello_authorized", "migration_007_authorized"):
+            self.assertFalse(candidate[key], key)
+        self.assertEqual(candidate["operator_execution"], "NO_OPERATOR_EXECUTION")
+        self.assertEqual(candidate["profile_identifier"], "com.fabulaxiom.greenfield.v1")
+        for key, value in (("m3_2", "IN_PROGRESS_NOT_ACCEPTED"), ("g2b", "NOT_ACCEPTED"),
+                           ("writer", "NOT_PROVEN"), ("g2c", "NOT_AUTHORIZED"),
+                           ("real_g3", "STOP_UNAVAILABLE"),
+                           ("historical", "PENDING_EXTERNAL_ATTESTATION(21/3/2)"),
+                           ("prospective", "NOT_STARTED")):
+            self.assertEqual(candidate[key], value)
+        doc = (ROOT / candidate["qualification"]).read_text(encoding="utf-8")
+        fixture = (ROOT / candidate["rust_module"]).read_text(encoding="utf-8")
+        for term in ("NON QUALIFIÉE", "189 Rust", "135 contrats", "writer", "Tauri"):
+            self.assertIn(term, doc)
+        self.assertEqual(fixture.count("#[test]"), 8)
+        for term in ("sync_channel(QUEUE_CAPACITY)", "TransactionBehavior::Immediate",
+                     "set_transaction_behavior", "V7WriterAdmission", "#[cfg(test)]",
+                     "fn worker_loop", "WriterError::AdmissionRejected"):
+            self.assertIn(term, fixture)
+        for forbidden in ("#[tauri::command]", "open_database(", "AppHandle", "tauri::State"):
+            self.assertNotIn(forbidden, fixture)
+        self.assertIn("mod m32_v7_writer_service;",
+                      (ROOT / "src-tauri/src/lib.rs").read_text(encoding="utf-8"))
+        for filename in ("RESUME_PROMPT_SHORT.md", "RESUME_PROMPT.md", "HANDOFF_CURRENT.md",
+                         "HANDOFF_PROTOCOL.md", "HANDOFF_HISTORY.md", "NEXT.md", "STATE.md",
+                         "M3_2_GATE_DECISION_CURRENT.md", "README.md"):
+            body = (DIRECTORY / filename).read_text(encoding="utf-8")
+            self.assertIn("40647564175", body, filename)
+            self.assertIn("M3_2_V7_RUST_SINGLE_OWNER_WRITER_PREPARATION_20261028.md", body, filename)
+        for filename in ("ROADMAP_STATUS_CURRENT.md", "FABULAXIOM_ROADMAP_V1.md"):
+            body = (ROOT / "docs/roadmap" / filename).read_text(encoding="utf-8")
+            self.assertIn("40647564175", body, filename)
+            self.assertIn("M3_2_V7_RUST_SINGLE_OWNER_WRITER_PREPARATION_20261028.md", body, filename)
+
 if __name__ == "__main__":
     unittest.main()
