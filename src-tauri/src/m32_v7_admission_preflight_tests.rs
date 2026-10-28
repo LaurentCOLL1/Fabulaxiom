@@ -32,6 +32,14 @@ fn lifecycle_preflight_mode(observed: LifecycleObservation) -> Result<AdmissionM
     }
 }
 
+// Only a successful explicit close of a disposable, already-open test
+// connection can create this *in-process observation*. It is NOT persisted,
+// transferable to a new process, or bound to a later delegated SQLite xOpen.
+fn observe_disposable_explicit_close(connection: Connection) -> Result<LifecycleObservation, Refusal> {
+    connection.close().map_err(|_| Refusal::LifecycleUnproven)?;
+    Ok(LifecycleObservation::CleanlyClosed)
+}
+
 #[derive(Debug, Eq, PartialEq)]
 enum Refusal {
     Missing, AlreadyExists, SidecarPresent, ForeignSchema,
@@ -316,4 +324,33 @@ fn m32_s1_route_a_uncertain_or_foreign_lifecycle_never_grants_a_mode() {
     assert_eq!(owned_namespace_preflight(&owned, &db, AdmissionMode::ExistingProfile), Ok(()));
     assert_eq!(lifecycle_preflight_mode(LifecycleObservation::UncertainAfterCrash),
         Err(Refusal::LifecycleUnproven));
+}
+
+#[test]
+fn m32_s1_route_a_explicit_close_witness_is_inprocess_only() {
+    let owned = Disposable::new(); owned.prepare(); let db = owned.db();
+    let connection = Connection::open(&db).unwrap();
+    connection.execute_batch("CREATE TABLE one_session(id INTEGER PRIMARY KEY);").unwrap();
+    assert_eq!(lifecycle_preflight_mode(LifecycleObservation::Active),
+        Err(Refusal::LifecycleUnproven));
+    let within_process = observe_disposable_explicit_close(connection).unwrap();
+    assert_eq!(within_process, LifecycleObservation::CleanlyClosed);
+    assert_eq!(lifecycle_preflight_mode(within_process), Ok(AdmissionMode::ExistingProfile));
+    assert_eq!(owned_namespace_preflight(&owned, &db, AdmissionMode::ExistingProfile), Ok(()));
+    assert_eq!(deny_unbound_handoff(), Err(Refusal::HandoffNotAtomic));
+}
+
+#[test]
+fn m32_s1_route_a_implicit_drop_cannot_mint_reopen_evidence() {
+    let owned = Disposable::new(); owned.prepare(); let db = owned.db();
+    {
+        let connection = Connection::open(&db).unwrap();
+        connection.execute_batch("CREATE TABLE implicit_close(id INTEGER PRIMARY KEY);").unwrap();
+        // Drop cannot be observed as a successful explicit close by the
+        // decision gate. This test does not simulate a process crash.
+    }
+    assert_eq!(owned_namespace_preflight(&owned, &db, AdmissionMode::ExistingProfile), Ok(()));
+    assert_eq!(lifecycle_preflight_mode(LifecycleObservation::UncertainAfterCrash),
+        Err(Refusal::LifecycleUnproven));
+    assert_eq!(deny_unbound_handoff(), Err(Refusal::HandoffNotAtomic));
 }
