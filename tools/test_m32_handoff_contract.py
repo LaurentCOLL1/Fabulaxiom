@@ -4447,5 +4447,18 @@ class HandoffContractTests(unittest.TestCase):
                        "not atomic", "no operator"):
             self.assertIn(signal, decision)
 
+    def test_140_s1_route_a_lifecycle_model_is_not_runtime_admission(self):
+        src = (ROOT / "src-tauri/src/m32_v7_admission_preflight_tests.rs").read_text(encoding="utf-8")
+        doc = (ROOT / "docs/qualification/M3_2_V7_S1_ROUTE_A_LIFECYCLE_DECISION_20261028.md").read_text(encoding="utf-8")
+        for signal in ("LifecycleObservation", "UncertainAfterCrash", "CleanlyClosed",
+                       "LifecycleUnproven", "m32_s1_route_a_clean_close",
+                       "m32_s1_route_a_uncertain_or_foreign", "HandoffNotAtomic"):
+            self.assertIn(signal, src)
+        self.assertNotIn("V7WriterAdmission {", src)
+        self.assertIn("#[cfg(all(test, windows))]", (ROOT / "src-tauri/src/lib.rs").read_text(encoding="utf-8"))
+        for signal in ("NOT PASS", "NOT_PROVEN", "STOP_UNAVAILABLE", "S3/S4",
+                       "no IPC", "no atomic", "not a trustworthy runtime evidence"):
+            self.assertIn(signal, doc)
+
 if __name__ == "__main__":
     unittest.main()

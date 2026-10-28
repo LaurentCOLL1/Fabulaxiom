@@ -60,7 +60,10 @@ EXPECTED = {
     # additional connections for disposable WAL concurrency) and three open
     # flag names only in #[cfg(all(test, windows))] disposable preflight.
     # This path cannot mint V7WriterAdmission and is NOT a runtime opener.
-    "src-tauri/src/m32_v7_admission_preflight_tests.rs": (5, 0, 0, 0, 0, 3, 0),
+    # S1 lifecycle decision fixture adds one explicitly reviewed SQLite open
+    # inside #[cfg(all(test, windows))], on a newly owned disposable root;
+    # it closes immediately and never constructs an admission runtime token.
+    "src-tauri/src/m32_v7_admission_preflight_tests.rs": (6, 0, 0, 0, 0, 3, 0),
     "src-tauri/src/m32_owner_handoff_actor_toy.rs": (2, 0, 0, 0, 1, 0, 0),
     "src-tauri/src/m32_owner_lifecycle_toy.rs": (4, 0, 0, 0, 1, 0, 0),
     "src-tauri/src/review_commands.rs": (0, 1, 0, 0, 0, 0, 0),
