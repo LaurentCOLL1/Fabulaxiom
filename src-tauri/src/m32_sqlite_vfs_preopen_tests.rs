@@ -4,7 +4,7 @@
 
 use rusqlite::{ffi, Connection, OpenFlags};
 use std::{
-    ffi::{c_char, c_int, c_void, CString},
+    ffi::{c_char, c_int, c_void, CStr, CString},
     fs,
     path::PathBuf,
     process,
@@ -87,8 +87,13 @@ struct FixtureVfs {
     default_vfs: *mut ffi::sqlite3_vfs,
     allow_main_db: AtomicBool,
     deny_journal: AtomicBool,
+    deny_wal: AtomicBool,
     main_refusals: AtomicUsize,
     journal_refusals: AtomicUsize,
+    wal_refusals: AtomicUsize,
+    wal_delegations: AtomicUsize,
+    // The default Windows xShmMap path does not pass through this xOpen hook.
+    shm_named_xopens: AtomicUsize,
     main_delegations: AtomicUsize,
     precheck: Option<FileIdPrecheckPlan>,
     precheck_acceptances: AtomicUsize,
@@ -107,6 +112,12 @@ unsafe extern "C" fn fixture_xopen(
     out_flags: *mut c_int,
 ) -> c_int {
     let gate = unsafe { &*(vfs as *const FixtureVfs) };
+    if !name.is_null() {
+        let bytes = unsafe { CStr::from_ptr(name) }.to_bytes();
+        if bytes.ends_with(b"-shm") {
+            gate.shm_named_xopens.fetch_add(1, Ordering::SeqCst);
+        }
+    }
     if flags & ffi::SQLITE_OPEN_MAIN_DB != 0 && !gate.allow_main_db.load(Ordering::SeqCst) {
         gate.main_refusals.fetch_add(1, Ordering::SeqCst);
         unsafe { (*file).pMethods = ptr::null() };
@@ -116,6 +127,14 @@ unsafe extern "C" fn fixture_xopen(
         gate.journal_refusals.fetch_add(1, Ordering::SeqCst);
         unsafe { (*file).pMethods = ptr::null() };
         return ffi::SQLITE_CANTOPEN;
+    }
+    if flags & ffi::SQLITE_OPEN_WAL != 0 && gate.deny_wal.load(Ordering::SeqCst) {
+        gate.wal_refusals.fetch_add(1, Ordering::SeqCst);
+        unsafe { (*file).pMethods = ptr::null() };
+        return ffi::SQLITE_CANTOPEN;
+    }
+    if flags & ffi::SQLITE_OPEN_WAL != 0 {
+        gate.wal_delegations.fetch_add(1, Ordering::SeqCst);
     }
     if flags & ffi::SQLITE_OPEN_MAIN_DB != 0 {
         if let Some(plan) = &gate.precheck {
@@ -157,11 +176,22 @@ struct RegisteredFixtureVfs {
 }
 impl RegisteredFixtureVfs {
     fn new(allow_main_db: bool, deny_journal: bool) -> Self {
-        Self::with_precheck(allow_main_db, deny_journal, None)
+        Self::with_precheck_and_wal(allow_main_db, deny_journal, false, None)
+    }
+
+    fn with_wal_policy(deny_wal: bool) -> Self {
+        Self::with_precheck_and_wal(true, false, deny_wal, None)
     }
 
     fn with_precheck(
         allow_main_db: bool, deny_journal: bool, precheck: Option<FileIdPrecheckPlan>,
+    ) -> Self {
+        Self::with_precheck_and_wal(allow_main_db, deny_journal, false, precheck)
+    }
+
+    fn with_precheck_and_wal(
+        allow_main_db: bool, deny_journal: bool, deny_wal: bool,
+        precheck: Option<FileIdPrecheckPlan>,
     ) -> Self {
         // Distinct registered names avoid interfering with other parallel
         // SQLite tests, and makeDflt=0 never changes the process default.
@@ -175,8 +205,12 @@ impl RegisteredFixtureVfs {
             default_vfs,
             allow_main_db: AtomicBool::new(allow_main_db),
             deny_journal: AtomicBool::new(deny_journal),
+            deny_wal: AtomicBool::new(deny_wal),
             main_refusals: AtomicUsize::new(0),
             journal_refusals: AtomicUsize::new(0),
+            wal_refusals: AtomicUsize::new(0),
+            wal_delegations: AtomicUsize::new(0),
+            shm_named_xopens: AtomicUsize::new(0),
             main_delegations: AtomicUsize::new(0),
             precheck,
             precheck_acceptances: AtomicUsize::new(0),
@@ -299,5 +333,44 @@ fn m32_vfs_fixture_journal_refusal_blocks_fixture_transaction() {
     assert!(result.is_err(), "journaling must refuse before default xOpen");
     assert!(gate.state.journal_refusals.load(Ordering::SeqCst) >= 1);
     assert!(!path.with_file_name("new.sqlite3-journal").exists());
+    drop(db);
+}
+
+#[test]
+fn m32_vfs_fixture_wal_refusal_precedes_named_default_open() {
+    let owned = DisposableRoot::new();
+    let path = owned.db();
+    fs::OpenOptions::new().write(true).create_new(true).open(&path).unwrap();
+    let gate = RegisteredFixtureVfs::with_wal_policy(true);
+    let db = Connection::open_with_flags_and_vfs(&path, OpenFlags::SQLITE_OPEN_READ_WRITE, gate.name())
+        .expect("only a new owned fixture may be opened");
+    // WAL selection or the first transaction must try to open the -wal file.
+    // No live profile, sidecar or migration participates in this exercise.
+    let switch = db.execute_batch("PRAGMA journal_mode=WAL;");
+    if switch.is_ok() {
+        assert!(db.execute_batch("CREATE TABLE invented(id INTEGER PRIMARY KEY);").is_err());
+    }
+    assert!(gate.state.wal_refusals.load(Ordering::SeqCst) >= 1);
+    assert_eq!(gate.state.wal_delegations.load(Ordering::SeqCst), 0);
+    assert!(!owned.0.join("new.sqlite3-wal").exists());
+    drop(db);
+}
+
+#[test]
+fn m32_vfs_fixture_wal_xopen_does_not_cover_shm_mapping() {
+    let owned = DisposableRoot::new();
+    let path = owned.db();
+    fs::OpenOptions::new().write(true).create_new(true).open(&path).unwrap();
+    let gate = RegisteredFixtureVfs::with_wal_policy(false);
+    let db = Connection::open_with_flags_and_vfs(&path, OpenFlags::SQLITE_OPEN_READ_WRITE, gate.name())
+        .expect("only a new owned fixture may be opened");
+    let journal_mode: String = db.query_row("PRAGMA journal_mode=WAL", [], |row| row.get(0)).unwrap();
+    assert_eq!(journal_mode.to_ascii_lowercase(), "wal");
+    db.execute_batch("CREATE TABLE invented(id INTEGER PRIMARY KEY);").unwrap();
+    assert!(gate.state.wal_delegations.load(Ordering::SeqCst) >= 1);
+    assert!(owned.0.join("new.sqlite3-shm").exists(),
+        "default Windows xShmMap creates the owned WAL index while the connection lives");
+    assert_eq!(gate.state.shm_named_xopens.load(Ordering::SeqCst), 0,
+        "a name-only xOpen policy did not authorize or intercept -shm");
     drop(db);
 }

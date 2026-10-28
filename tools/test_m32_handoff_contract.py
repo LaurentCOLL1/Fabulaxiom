@@ -4191,7 +4191,7 @@ class HandoffContractTests(unittest.TestCase):
         for keyword in ("NON QUALIFIÉE", "FileId128", "xOpen", "177 tests Rust",
                         "132 contrats", "fenêtre", "writer"):
             self.assertIn(keyword, doc)
-        self.assertEqual(fixture.count("#[test]"), 6)
+        self.assertGreaterEqual(fixture.count("#[test]"), 6)
         for signal in ("GetFileInformationByHandleEx", "SQLITE_FCNTL_WIN32_GET_HANDLE",
                        "FileIdPrecheckPlan", "swaps_after_precheck",
                        "m32_vfs_fixture_fileid128_precheck_accepts_stable_disposable_identity",
@@ -4209,5 +4209,47 @@ class HandoffContractTests(unittest.TestCase):
             self.assertIn("40586436340", body, filename)
             self.assertIn("M3_2_SQLITE_VFS_FILEID128_PREDISPATCH_TOCTOU_20261027.md", body, filename)
 
+    def test_133_pr201_terminal_and_wal_shm_split_test_only_candidate(self):
+        terminal = self.data["post_pr201_terminal_observation"]
+        self.assertEqual(terminal["pr"], 201)
+        self.assertEqual(terminal["source_sha"], "c9b8567f6b1a0c4af44a835ec2fe5f39449193e5")
+        self.assertEqual(terminal["source_ci"], {"run_id": 40593808508, "conclusion": "SUCCESS"})
+        self.assertEqual(terminal["merge_sha"], "d235e492c5081734ff226563eec6fdb983e4808d")
+        self.assertEqual(terminal["postmain_ci"], {"run_id": 40595455638, "conclusion": "SUCCESS"})
+        self.assertEqual(tuple(terminal[key] for key in ("rust_base_tests", "greenfield_runner_tests",
+                                                  "sqlite_inventory_tests", "handoff_tests")),
+                         (177, 7, 38, 132))
+        self.assertEqual(terminal["issue38_terminal_comment"], 6455411875)
+        self.assertTrue(terminal["protect_main_active_strict"])
+        candidate = self.data["next_m32_vfs_wal_shm_boundary_candidate_20261028"]
+        self.assertEqual(candidate["base_main_sha"], terminal["merge_sha"])
+        self.assertEqual(tuple(candidate[key] for key in ("rust_base_tests_expected",
+            "greenfield_runner_tests_expected", "sqlite_inventory_tests_expected",
+            "handoff_tests_expected")), (179, 7, 39, 133))
+        for key in ("candidate_ci_qualified", "production_v7_opener_implemented",
+            "atomic_sqlite_pre_xopen_proven", "writer_absence_proven", "operator_sqlite_access",
+            "native_hello_authorized", "migration_007_authorized", "writer_ipc_authorized"):
+            self.assertFalse(candidate[key], key)
+        self.assertEqual(candidate["operator_execution"], "NO_OPERATOR_EXECUTION")
+        self.assertEqual(candidate["profile_identifier"], "com.fabulaxiom.greenfield.v1")
+        self.assertEqual(candidate["real_g3"], "STOP_UNAVAILABLE")
+        doc = (ROOT / candidate["qualification"]).read_text(encoding="utf-8")
+        for signal in ("NON QUALIFIÉE", "SQLITE_OPEN_WAL", "xShmMap", "-shm",
+                       "179 Rust", "133 contrats", "writer"):
+            self.assertIn(signal, doc)
+        fixture = (ROOT / candidate["rust_fixture"]).read_text(encoding="utf-8")
+        self.assertEqual(fixture.count("#[test]"), 8)
+        self.assertIn("SQLITE_OPEN_WAL", fixture)
+        self.assertIn("xShmMap", fixture)
+        for filename in ("RESUME_PROMPT_SHORT.md", "RESUME_PROMPT.md", "HANDOFF_CURRENT.md",
+                         "HANDOFF_PROTOCOL.md", "HANDOFF_HISTORY.md", "NEXT.md", "STATE.md",
+                         "M3_2_GATE_DECISION_CURRENT.md", "README.md"):
+            body = (DIRECTORY / filename).read_text(encoding="utf-8")
+            self.assertIn("40595455638", body, filename)
+            self.assertIn("M3_2_SQLITE_VFS_WAL_SHM_BOUNDARY_20261028.md", body, filename)
+        for filename in ("ROADMAP_STATUS_CURRENT.md", "FABULAXIOM_ROADMAP_V1.md"):
+            body = (ROOT / "docs/roadmap" / filename).read_text(encoding="utf-8")
+            self.assertIn("40595455638", body, filename)
+            self.assertIn("M3_2_SQLITE_VFS_WAL_SHM_BOUNDARY_20261028.md", body, filename)
 if __name__ == "__main__":
     unittest.main()
