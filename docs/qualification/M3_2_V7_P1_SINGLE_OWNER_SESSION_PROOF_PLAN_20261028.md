@@ -2,6 +2,8 @@
 
 **28 October 2026 — ARCHITECTURE / PROOF PLAN ONLY, NO IMPLEMENTATION OR OPERATOR AUTHORITY.** Continuation of [the owner-selected P1 study](M3_2_V7_PRODUCTION_WRITER_CUSTODY_DESIGN_STUDY_20261028.md) in draft PR #215. Laurent accepts cooperative/trusted processes under the same Windows SID. This assumption deliberately excludes malicious same-SID processes; it does not prove operating-system exclusivity. P2 separate-principal broker remains deferred. A0 inter-process EXISTING_PROFILE STOP and writer NOT_PROVEN remain unchanged.
 
+**Authorized follow-on D2:** Laurent separately approved the [integrated Windows disposable mutex + delegated xOpen + WAL/SHM fixture experiment](M3_2_V7_P1_D2_DISPOSABLE_SESSION_VFS_WAL_SHM_EXPERIMENT_20261028.md), confined to existing `cfg(all(test, windows))` code and test-owned temp paths. This does not approve D3, runtime VFS/writer, IPC, operator execution or an existing-profile reopen. Six extra Rust fixture tests and continuity contract #149 are a new candidate, not a PASS before exact source CI.
+
 ## 1. Exact scope and current evidence
 
 - Protected baseline: PR #214 merged to main `90142d8c78dd8a84ee3f0ee1676a753c8521d78e`; independent postmain CI #40715995392 SUCCESS, source CI #40713872679 SUCCESS (210 Rust / 7 Greenfield / 41 SQLite guards / 145 continuity contracts). Prior xOpen delegated-handle fixtures do **not** make CreateFileW atomic or qualify existing-profile writer custody.

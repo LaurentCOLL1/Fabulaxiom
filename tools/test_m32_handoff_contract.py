@@ -4623,5 +4623,64 @@ class HandoffContractTests(unittest.TestCase):
         writer = (ROOT / "src-tauri/src/m32_v7_writer_service.rs").read_text(encoding="utf-8")
         self.assertIn("#[cfg(test)]", writer)
 
+    def test_149_p1_d2_windows_disposable_integrated_session_is_not_runtime(self):
+        candidate = self.data["next_p1_d2_disposable_integrated_session_20261028"]
+        self.assertEqual(candidate["owner_decision"],
+                         "AUTHORIZED_DISPOSABLE_WINDOWS_CI_TEST_ONLY_NOT_OPERATOR_OR_RUNTIME")
+        self.assertEqual(candidate["previous_pr_head_sha"],
+                         "cb033fb27b5cc5a5f873d24b85c7f41864de4870")
+        self.assertEqual(candidate["previous_ci_run"], 40747739565)
+        self.assertEqual(candidate["previous_qualified_counts"]["continuity_contracts"], 148)
+        self.assertEqual(candidate["additional_windows_rust_tests_expected"], 6)
+        self.assertEqual(candidate["rust_tests_expected"], 216)
+        self.assertEqual(candidate["continuity_contracts_expected"], 149)
+        self.assertTrue(candidate["source_only_disposable_windows_fixture_authorized"])
+        for key in ("production_vfs_implemented", "production_mutex_dacl_implemented",
+                    "production_writer_authorized", "operator_sqlite_access",
+                    "r1_r9_production_proven", "wal_shm_full_custody_proven",
+                    "crash_restart_proven", "atomic_os_open_proven",
+                    "m4_m5_m6_m7_runtime_authorized", "ollama_direct_sqlite_access_authorized",
+                    "candidate_ci_qualified", "s3_authorized", "s4_authorized",
+                    "writer_ipc_authorized", "migration_007_authorized",
+                    "hello_native_authorized", "persistent_marker_authorized"):
+            self.assertFalse(candidate[key], key)
+        self.assertEqual(candidate["writer"], "NOT_PROVEN")
+        self.assertEqual(candidate["a0_existing_profile_cross_process"], "STOP")
+        src = (ROOT / candidate["rust_fixture"]).read_text(encoding="utf-8")
+        lib = (ROOT / "src-tauri/src/lib.rs").read_text(encoding="utf-8")
+        self.assertIn("#[cfg(all(test, windows))]\nmod m32_sqlite_vfs_preopen_tests;", lib)
+        self.assertEqual(src.count("#[test]"), 18)
+        for term in ("mod d2_p1_disposable_session", "CreateMutexW", "WaitForSingleObject",
+                     "ReleaseMutex", "WAIT_ABANDONED", "Fabulaxiom-D2-Disposable",
+                     "check_delegated_handle: true", "with_policy", "xShmMap",
+                     "SQLITE_OPEN_READ_WRITE", "create_new(true)",
+                     "m32_d2_child_probe",
+                     "m32_d2_p1_cooperative_owner_delegated_fileid_wal_shm_positive_is_not_admission",
+                     "m32_d2_p1_identity_swap_after_cooperative_claim_vetoes_xopen",
+                     "m32_d2_p1_wal_veto_after_bound_main_handle_stops_before_wal_open",
+                     "m32_d2_p1_shm_veto_after_bound_main_handle_stops_before_mapping",
+                     "m32_d2_p1_abandoned_mutex_refuses_before_sqlite_xopen"):
+            self.assertIn(term, src, term)
+        self.assertNotIn("V7WriterAdmission {", src)
+        docname = "M3_2_V7_P1_D2_DISPOSABLE_SESSION_VFS_WAL_SHM_EXPERIMENT_20261028.md"
+        doc = (ROOT / "docs/qualification" / docname).read_text(encoding="utf-8")
+        for term in ("D2 WINDOWS CI DISPOSABLE FIXTURES ONLY",
+                     "216 Rust", "149 continuity contracts", "NOT QUALIFIED",
+                     "R1", "R2", "R3", "R4", "R5", "R6", "R7", "R8", "R9",
+                     "NOT_PROVEN", "STOP_UNAVAILABLE", "A0", "EXISTING_PROFILE",
+                     "WAL", "xShmMap", "WAIT_ABANDONED", "same-SID", "no operator",
+                     "V7WriterAdmission", "no production", "M4", "Ollama"):
+            self.assertIn(term.lower(), doc.lower(), term)
+        for filename in ("RESUME_PROMPT.md", "HANDOFF_CURRENT.md",
+                         "HANDOFF_PROTOCOL.md", "HANDOFF_HISTORY.md",
+                         "STATE.md", "NEXT.md", "M3_2_GATE_DECISION_CURRENT.md"):
+            content = (DIRECTORY / filename).read_text(encoding="utf-8")
+            self.assertIn(docname, content, filename)
+        short = (DIRECTORY / "RESUME_PROMPT_SHORT.md").read_text(encoding="utf-8")
+        self.assertIn("148 ATTENDUS NON QUALIFIÉS PAS PASS", short)
+        self.assertIn("D2", short)
+        self.assertIn("216/7/41/149 ATTENDUS NON QUALIFIÉS", short)
+        self.assertEqual(candidate["operator_execution"], "NO_OPERATOR_EXECUTION")
+
 if __name__ == "__main__":
     unittest.main()

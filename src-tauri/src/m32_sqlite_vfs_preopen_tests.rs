@@ -579,3 +579,231 @@ fn m32_vfs_fixture_wrapped_shm_map_delegates_disposable_wal() {
         "the io_methods hook, not the xOpen filename hook, mediated WAL mapping");
     drop(db);
 }
+
+
+// D2 P1-0: an INTEGRATED, Windows test-only witness. It deliberately reuses
+// the disposable VFS xOpen/FileId128 and wrapped xShmMap fixture above.
+// Win32 same-SID mutexes coordinate cooperative peers; they cannot exclude
+// an uncooperative same-SID process. No V7WriterAdmission, operator paths,
+// Tauri IPC, production DACL or durable recovery proof is involved.
+mod d2_p1_disposable_session {
+    use super::*;
+    use std::{ffi::{c_void, OsStr}, os::windows::ffi::OsStrExt, path::PathBuf};
+
+    const WAIT_OBJECT_0: u32 = 0;
+    const WAIT_ABANDONED: u32 = 0x80;
+    const WAIT_TIMEOUT: u32 = 0x102;
+    const ERROR_ALREADY_EXISTS: u32 = 183;
+
+    #[link(name = "kernel32")]
+    unsafe extern "system" {
+        fn CreateMutexW(attributes: *mut c_void, initial_owner: i32, name: *const u16) -> *mut c_void;
+        fn WaitForSingleObject(handle: *mut c_void, milliseconds: u32) -> u32;
+        fn ReleaseMutex(handle: *mut c_void) -> i32;
+        fn CloseHandle(handle: *mut c_void) -> i32;
+        fn GetLastError() -> u32;
+    }
+
+    #[derive(Debug, Clone, Copy, PartialEq, Eq)]
+    enum D2Claim { Claimed, Contended, Abandoned }
+
+    struct D2Mutex { handle: *mut c_void, held: bool }
+    impl D2Mutex {
+        fn open(name: &str) -> (Self, bool) {
+            let wide: Vec<u16> = OsStr::new(name).encode_wide().chain(Some(0)).collect();
+            let handle = unsafe { CreateMutexW(ptr::null_mut(), 0, wide.as_ptr()) };
+            assert!(!handle.is_null(), "disposable D2 mutex creation failed");
+            let already_exists = unsafe { GetLastError() } == ERROR_ALREADY_EXISTS;
+            (Self { handle, held: false }, already_exists)
+        }
+        fn try_claim(&mut self) -> D2Claim {
+            match unsafe { WaitForSingleObject(self.handle, 0) } {
+                WAIT_OBJECT_0 => { self.held = true; D2Claim::Claimed }
+                WAIT_ABANDONED => { self.held = true; D2Claim::Abandoned }
+                WAIT_TIMEOUT => D2Claim::Contended,
+                other => panic!("unexpected D2 fixture mutex wait: {other}"),
+            }
+        }
+        fn release(&mut self) {
+            assert!(self.held);
+            assert_ne!(unsafe { ReleaseMutex(self.handle) }, 0);
+            self.held = false;
+        }
+    }
+    impl Drop for D2Mutex {
+        fn drop(&mut self) {
+            if self.held { self.release(); }
+            assert_ne!(unsafe { CloseHandle(self.handle) }, 0);
+        }
+    }
+
+    fn name() -> String {
+        static NEXT: AtomicUsize = AtomicUsize::new(0);
+        let tick = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_nanos();
+        format!("Local\\Fabulaxiom-D2-Disposable-{}-{tick}-{}",
+            process::id(), NEXT.fetch_add(1, Ordering::Relaxed))
+    }
+    fn child(mode: &str, mutex_name: &str) -> bool {
+        std::process::Command::new(std::env::current_exe().unwrap())
+            .arg("--exact")
+            .arg("m32_sqlite_vfs_preopen_tests::d2_p1_disposable_session::m32_d2_child_probe")
+            .arg("--nocapture")
+            .env("FABULAXIOM_D2_CHILD_MODE", mode)
+            .env("FABULAXIOM_D2_CHILD_MUTEX", mutex_name)
+            .status().unwrap().success()
+    }
+
+    // The child never opens SQLite. This is a cooperative second process using
+    // the same Windows user as the parent and a random Local fixture-only name.
+    #[test]
+    fn m32_d2_child_probe() {
+        let Ok(mode) = std::env::var("FABULAXIOM_D2_CHILD_MODE") else { return };
+        let mutex_name = std::env::var("FABULAXIOM_D2_CHILD_MUTEX").unwrap();
+        let (mut claim, preexisting) = D2Mutex::open(&mutex_name);
+        assert!(preexisting, "child must see the parent's exact live mutex");
+        match mode.as_str() {
+            "contended" => assert_eq!(claim.try_claim(), D2Claim::Contended),
+            "free" => {
+                assert_eq!(claim.try_claim(), D2Claim::Claimed);
+                claim.release();
+            }
+            "abandon" => {
+                assert_eq!(claim.try_claim(), D2Claim::Claimed);
+                // Exit this disposable child only. Parent must refuse recovery.
+                process::exit(0);
+            }
+            _ => panic!("unknown D2 child mode"),
+        }
+    }
+
+    fn owned_main() -> (DisposableRoot, PathBuf, (u64, [u8; 16])) {
+        let owned = DisposableRoot::new();
+        let path = owned.db();
+        fs::OpenOptions::new().write(true).create_new(true).open(&path).unwrap();
+        let id = win_file_id_128(&fs::File::open(&path).unwrap()).unwrap();
+        (owned, path, id)
+    }
+
+    fn bound_gate(
+        path: PathBuf, expected: (u64, [u8; 16]),
+        deny_wal: bool, deny_shm: bool, move_original_to: Option<PathBuf>,
+    ) -> RegisteredFixtureVfs {
+        RegisteredFixtureVfs::with_policy(true, false, deny_wal,
+            Some(FileIdPrecheckPlan {
+                path, expected, check_delegated_handle: true, move_original_to,
+            }), Some(deny_shm))
+    }
+
+    #[test]
+    fn m32_d2_p1_cooperative_owner_delegated_fileid_wal_shm_positive_is_not_admission() {
+        let (_owned, path, expected) = owned_main();
+        let mutex_name = name();
+        let (mut mutex, existed) = D2Mutex::open(&mutex_name);
+        assert!(!existed, "unexpected fixture name collision must STOP");
+        assert_eq!(mutex.try_claim(), D2Claim::Claimed);
+        assert!(child("contended", &mutex_name), "cooperative peer must STOP before SQLite");
+        let gate = bound_gate(path.clone(), expected, false, false, None);
+        let connection = Connection::open_with_flags_and_vfs(
+            &path, OpenFlags::SQLITE_OPEN_READ_WRITE, gate.name()).unwrap();
+        assert_eq!(sqlite_opened_file_id_128(&connection).unwrap(), expected);
+        assert_eq!(gate.state.delegated_handle_matches.load(Ordering::SeqCst), 1);
+        let mode: String = connection.query_row("PRAGMA journal_mode=WAL", [], |row| row.get(0)).unwrap();
+        assert_eq!(mode.to_ascii_lowercase(), "wal");
+        connection.execute_batch("CREATE TABLE invented_d2(id INTEGER PRIMARY KEY);").unwrap();
+        assert!(gate.state.wal_delegations.load(Ordering::SeqCst) >= 1);
+        assert!(gate.state.shm_map_delegations.load(Ordering::SeqCst) >= 1);
+        assert_eq!(gate.state.shm_map_refusals.load(Ordering::SeqCst), 0);
+        assert_eq!(gate.state.shm_named_xopens.load(Ordering::SeqCst), 0);
+        assert!(connection.close().is_ok(), "explicit fixture close");
+        drop(gate);
+        mutex.release();
+        assert!(child("free", &mutex_name), "after close only a cooperative peer may claim");
+        // Even successful cooperation + delegated handle + SHM is NOT a runtime
+        // cross-process EXISTING_PROFILE proof or writer admission.
+    }
+
+    #[test]
+    fn m32_d2_p1_identity_swap_after_cooperative_claim_vetoes_xopen() {
+        let (owned, path, expected) = owned_main();
+        let displaced = owned.0.join("d2-original.sqlite3");
+        let mutex_name = name();
+        let (mut mutex, existed) = D2Mutex::open(&mutex_name);
+        assert!(!existed);
+        assert_eq!(mutex.try_claim(), D2Claim::Claimed);
+        let gate = bound_gate(path.clone(), expected, false, false, Some(displaced.clone()));
+        let attempted = Connection::open_with_flags_and_vfs(
+            &path, OpenFlags::SQLITE_OPEN_READ_WRITE, gate.name());
+        assert!(attempted.is_err(), "delegated xOpen handle mismatch must STOP");
+        assert_eq!(gate.state.swaps_after_precheck.load(Ordering::SeqCst), 1);
+        assert_eq!(gate.state.delegated_handle_refusals.load(Ordering::SeqCst), 1);
+        assert_eq!(gate.state.shm_map_delegations.load(Ordering::SeqCst), 0);
+        assert_eq!(gate.state.wal_delegations.load(Ordering::SeqCst), 0);
+        assert_eq!(win_file_id_128(&fs::File::open(&displaced).unwrap()).unwrap(), expected);
+        assert_ne!(win_file_id_128(&fs::File::open(&path).unwrap()).unwrap(), expected);
+        drop(gate);
+        mutex.release();
+    }
+
+    #[test]
+    fn m32_d2_p1_wal_veto_after_bound_main_handle_stops_before_wal_open() {
+        let (owned, path, expected) = owned_main();
+        let (mut mutex, existed) = D2Mutex::open(&name());
+        assert!(!existed);
+        assert_eq!(mutex.try_claim(), D2Claim::Claimed);
+        let gate = bound_gate(path.clone(), expected, true, false, None);
+        let db = Connection::open_with_flags_and_vfs(
+            &path, OpenFlags::SQLITE_OPEN_READ_WRITE, gate.name()).unwrap();
+        assert_eq!(gate.state.delegated_handle_matches.load(Ordering::SeqCst), 1);
+        let switch = db.execute_batch("PRAGMA journal_mode=WAL;");
+        if switch.is_ok() {
+            assert!(db.execute_batch("CREATE TABLE invented_d2(id INTEGER PRIMARY KEY);").is_err());
+        }
+        assert!(gate.state.wal_refusals.load(Ordering::SeqCst) >= 1);
+        assert_eq!(gate.state.wal_delegations.load(Ordering::SeqCst), 0);
+        assert!(!owned.0.join("new.sqlite3-wal").exists());
+        drop(db);
+        drop(gate);
+        mutex.release();
+    }
+
+    #[test]
+    fn m32_d2_p1_shm_veto_after_bound_main_handle_stops_before_mapping() {
+        let (owned, path, expected) = owned_main();
+        let (mut mutex, existed) = D2Mutex::open(&name());
+        assert!(!existed);
+        assert_eq!(mutex.try_claim(), D2Claim::Claimed);
+        let gate = bound_gate(path.clone(), expected, false, true, None);
+        let db = Connection::open_with_flags_and_vfs(
+            &path, OpenFlags::SQLITE_OPEN_READ_WRITE, gate.name()).unwrap();
+        assert_eq!(gate.state.delegated_handle_matches.load(Ordering::SeqCst), 1);
+        let switch = db.execute_batch("PRAGMA journal_mode=WAL;");
+        if switch.is_ok() {
+            assert!(db.execute_batch("CREATE TABLE invented_d2(id INTEGER PRIMARY KEY);").is_err());
+        }
+        assert!(gate.state.shm_map_refusals.load(Ordering::SeqCst) >= 1);
+        assert_eq!(gate.state.shm_map_delegations.load(Ordering::SeqCst), 0);
+        assert!(!owned.0.join("new.sqlite3-shm").exists());
+        drop(db);
+        drop(gate);
+        mutex.release();
+    }
+
+    #[test]
+    fn m32_d2_p1_abandoned_mutex_refuses_before_sqlite_xopen() {
+        let owned = DisposableRoot::new();
+        let path = owned.db();
+        assert!(!path.exists());
+        let mutex_name = name();
+        let (mut mutex, existed) = D2Mutex::open(&mutex_name);
+        assert!(!existed);
+        assert!(child("abandon", &mutex_name), "child abandoned its fixture-only mutex");
+        assert_eq!(mutex.try_claim(), D2Claim::Abandoned);
+        // WAIT_ABANDONED grants ownership to the waiter but NOT a clean-close
+        // attestation. Never try an xOpen, SQL, repair or automatic reopen.
+        let gate = RegisteredFixtureVfs::new(true, false);
+        assert_eq!(gate.state.main_delegations.load(Ordering::SeqCst), 0);
+        assert!(!path.exists(), "uncertain lifecycle never created the fixture database");
+        drop(gate);
+        mutex.release();
+    }
+}
