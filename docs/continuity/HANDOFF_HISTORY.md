@@ -1,5 +1,7 @@
 # M3.2 — Historique condensé des qualifications (référence, pas CI réutilisable)
 
+**28 octobre — #207 TERMINALE, voie A S2 suivante candidate :** #207 source `13a06d9dba3a590387f76f4d489a05228ba5c680`, #40670160771 SUCCESS, `main=14d0975def302f0856eab368026928eef73c547c`, postmain #40671818268 SUCCESS 197/7/41/138, issue #38 6466735059. Choix Laurent de [l'espace de noms contrôlé](../qualification/M3_2_V7_S2_ROUTE_A_OWNED_NAMESPACE_BOUNDARY_20261028.md) après STOP audit #38 6466800502 ; 199/7/41/139 ATTENDUS, PAS PASS. Aucune admission atomique ni writer externe prouvé, gates inchangés.
+
 **28 octobre — PR #206 TERMINALE, S2 suivante NON QUALIFIÉE :** premier SHA #40664955879 FAILURE parent fixture ; source corrigée `2a9fc223a6939ad7dafb68dd6074638d2a17c034` #40665933754 SUCCESS, main protégé `4f998e0cda4fc14897bdc729e9802de51c412004`, postmain #40667613911 SUCCESS, **194/7/41/137 PASS**, #38 terminal 6466081026. [Trois témoins S2 suivants](../qualification/M3_2_V7_S2_NAMESPACE_CONCURRENCY_WAL_20261028.md) 197/7/41/138 ATTENDUS ; aucune admission atomique ni writer externe prouvé. STOP conservés.
 
 **28 octobre — post-PR205, candidate S1/S2 NON QUALIFIÉE :** PR #205 source #40657401464 / postmain #40658931404 SUCCESS, `main=5f2a47f13715de5fb34d838daa869bb108e2ddfe` (189/7/41/136). Nouveau [préflight test-only](../qualification/M3_2_V7_ADMISSION_S1_S2_DISPOSABLE_PREFLIGHT_20261028.md), 194/7/41/137 ATTENDUS, aucune garantie de liaison atomique SQLite ni writer réel. S3/S4 et opérateur STOP ; procédure PR/CI/#38 inchangée.

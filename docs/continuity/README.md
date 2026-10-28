@@ -1,5 +1,7 @@
 # Fabulaxiom — Point d'entrée pour reprendre les discussions ChatGPT
 
+**28 octobre — PR207 terminale** (`main=14d0975def302f0856eab368026928eef73c547c`, #40670160771 / #40671818268 SUCCESS 197/7/41/138) ; Laurent choisit [S2 voie A namespace contrôlé](../qualification/M3_2_V7_S2_ROUTE_A_OWNED_NAMESPACE_BOUNDARY_20261028.md), 199/7/41/139 ATTENDUS NON QUALIFIÉS. Preflight jetable, admission atomique NOT_PROVEN, S3/S4/IPC/opérateur STOP. Deux prompts/handoffs/roadmaps, CI exacte, Protect main, expected_head_sha, postmain, #38 append-only.
+
 **28 octobre — #206 terminale (CI #40665933754 / postmain #40667613911 SUCCESS, main `4f998e0cda4fc14897bdc729e9802de51c412004`, 194/7/41/137) ; prochaine [S2 namespace/concurrence/WAL](../qualification/M3_2_V7_S2_NAMESPACE_CONCURRENCY_WAL_20261028.md) source jetable NON QUALIFIÉE, 197/7/41/138 ATTENDUS. Admission atomique NOT_PROVEN ; S3/S4/IPC/opérateur STOP. Re-fetch GitHub, deux prompts/handoffs/roadmaps, CI exacte, Protect main, postmain, #38 append-only.
 
 **28 octobre — S1/S2 candidate NON QUALIFIÉE :** après PR #205 terminale (`main=5f2a47f13715de5fb34d838daa869bb108e2ddfe`, CI source #40657401464 / postmain #40658931404 SUCCESS), lire [préflight v7 jetable](../qualification/M3_2_V7_ADMISSION_S1_S2_DISPOSABLE_PREFLIGHT_20261028.md). 194/7/41/137 attendus, admission atomique non prouvée, S3/S4 et opérateur interdits ; STOP inchangés. Chaque PR : deux prompts, handoffs, roadmap, #38 append-only et CI exactes.

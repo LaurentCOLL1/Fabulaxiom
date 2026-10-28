@@ -13,6 +13,7 @@ use std::{
 };
 
 use rusqlite::{Connection, OpenFlags};
+use std::os::windows::fs::MetadataExt;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 enum AdmissionMode { NewOnly, ExistingProfile }
@@ -21,10 +22,16 @@ enum AdmissionMode { NewOnly, ExistingProfile }
 enum Refusal {
     Missing, AlreadyExists, SidecarPresent, ForeignSchema,
     ForeignKeyViolation, HandoffNotAtomic,
+    OutsideOwnedRoot, UnsafeOwnedAncestor,
 }
 
 const PROFILE: &str = "com.fabulaxiom.greenfield.v1";
 const SIDECARS: [&str; 3] = ["-wal", "-shm", "-journal"];
+const FILE_ATTRIBUTE_REPARSE_POINT: u32 = 0x400;
+
+fn has_reparse_attribute(attributes: u32) -> bool {
+    attributes & FILE_ATTRIBUTE_REPARSE_POINT != 0
+}
 
 fn sidecars_absent(path: &Path) -> Result<(), Refusal> {
     let name = path.file_name().unwrap().to_string_lossy();
@@ -84,6 +91,32 @@ impl Disposable {
 }
 impl Drop for Disposable {
     fn drop(&mut self) { fs::remove_dir_all(&self.0).expect("remove only fixture-owned root"); }
+}
+
+// Route A is a TEST-ONLY, bounded threat model: the fresh fixture root is
+// controlled by its creator, not an arbitrary path supplied by a caller.
+// Checking reparse attributes does NOT pin ancestors, defeat privileged
+// namespace replacement, or authorize a SQLite xOpen/actor token.
+fn owned_namespace_preflight(root: &Disposable, candidate: &Path, mode: AdmissionMode)
+    -> Result<(), Refusal>
+{
+    if candidate != root.db() { return Err(Refusal::OutsideOwnedRoot); }
+    let profile = root.0.join(PROFILE);
+    let database = profile.join("database");
+    for ancestor in [&root.0, &profile, &database] {
+        let metadata = ancestor.symlink_metadata().map_err(|_| Refusal::UnsafeOwnedAncestor)?;
+        if !metadata.is_dir() || has_reparse_attribute(metadata.file_attributes()) {
+            return Err(Refusal::UnsafeOwnedAncestor);
+        }
+    }
+    match candidate.symlink_metadata() {
+        Ok(metadata) if has_reparse_attribute(metadata.file_attributes()) =>
+            return Err(Refusal::UnsafeOwnedAncestor),
+        Err(error) if error.kind() != io::ErrorKind::NotFound =>
+            return Err(Refusal::UnsafeOwnedAncestor),
+        _ => {}
+    }
+    preflight(candidate, mode)
 }
 
 #[test]
@@ -203,4 +236,37 @@ fn m32_s2_live_wal_and_external_connection_lock_are_not_writer_proof() {
     // A prior BUSY does not establish absence of a writer later.
     assert_eq!(deny_unbound_handoff(), Err(Refusal::HandoffNotAtomic));
     drop(second); drop(first);
+}
+
+#[test]
+fn m32_s2_route_a_owned_namespace_exact_path_and_reparse_refusal() {
+    let owned = Disposable::new(); owned.prepare();
+    let foreign = Disposable::new(); foreign.prepare();
+    assert_eq!(owned_namespace_preflight(&owned, &owned.db(), AdmissionMode::NewOnly), Ok(()));
+    assert_eq!(owned_namespace_preflight(&owned, &foreign.db(), AdmissionMode::NewOnly),
+        Err(Refusal::OutsideOwnedRoot));
+    let escape = owned.0.join("..").join("arbitrary.sqlite3");
+    assert_eq!(owned_namespace_preflight(&owned, &escape, AdmissionMode::NewOnly),
+        Err(Refusal::OutsideOwnedRoot));
+    assert!(!has_reparse_attribute(0));
+    assert!(has_reparse_attribute(FILE_ATTRIBUTE_REPARSE_POINT));
+    assert!(has_reparse_attribute(FILE_ATTRIBUTE_REPARSE_POINT | 0x10));
+    assert_eq!(deny_unbound_handoff(), Err(Refusal::HandoffNotAtomic));
+}
+
+#[test]
+fn m32_s2_route_a_parent_missing_or_replaced_remains_unbound() {
+    let owned = Disposable::new(); owned.prepare(); let db = owned.db();
+    fs::write(&db, b"controlled placeholder").unwrap();
+    assert_eq!(owned_namespace_preflight(&owned, &db, AdmissionMode::ExistingProfile), Ok(()));
+    let parent = db.parent().unwrap();
+    let moved = owned.0.join("owned-database-moved");
+    fs::rename(parent, &moved).unwrap();
+    assert_eq!(owned_namespace_preflight(&owned, &db, AdmissionMode::ExistingProfile),
+        Err(Refusal::UnsafeOwnedAncestor));
+    fs::create_dir(parent).unwrap();
+    fs::write(&db, b"replacement placeholder").unwrap();
+    assert_eq!(owned_namespace_preflight(&owned, &db, AdmissionMode::ExistingProfile), Ok(()));
+    assert_ne!(fs::read(moved.join("fabulaxiom.sqlite3")).unwrap(), fs::read(&db).unwrap());
+    assert_eq!(deny_unbound_handoff(), Err(Refusal::HandoffNotAtomic));
 }
