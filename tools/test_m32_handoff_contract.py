@@ -4404,5 +4404,21 @@ class HandoffContractTests(unittest.TestCase):
             self.assertIn("40653351119", body, filename)
             self.assertIn("M3_2_V7_WRITER_ADMISSION_STRATEGY_20261028.md", body, filename)
 
+    def test_137_s1_s2_preflight_has_no_runtime_token_or_operator_access(self):
+        candidate = (ROOT / "src-tauri/src/m32_v7_admission_preflight_tests.rs").read_text(encoding="utf-8")
+        backend = (ROOT / "src-tauri/src/lib.rs").read_text(encoding="utf-8")
+        writer = (ROOT / "src-tauri/src/m32_v7_writer_service.rs").read_text(encoding="utf-8")
+        scope = (ROOT / "docs/qualification/M3_2_V7_ADMISSION_S1_S2_DISPOSABLE_PREFLIGHT_20261028.md").read_text(encoding="utf-8")
+        self.assertIn("#[cfg(all(test, windows))]", backend)
+        self.assertIn("mod m32_v7_admission_preflight_tests;", backend)
+        self.assertIn("Err(Refusal::HandoffNotAtomic)", candidate)
+        self.assertIn("create_new(true)", candidate)
+        for signal in ("NewOnly", "ExistingProfile", "-wal", "-shm", "-journal", "ForeignSchema", "ForeignKeyViolation"):
+            self.assertIn(signal, candidate)
+        self.assertNotIn("V7WriterAdmission {", candidate)
+        self.assertIn("#[cfg(test)]\nimpl V7WriterAdmission", writer)
+        for stop in ("NOT_PROVEN", "NOT_AUTHORIZED", "STOP_UNAVAILABLE", "S3/S4"):
+            self.assertIn(stop, scope)
+
 if __name__ == "__main__":
     unittest.main()
