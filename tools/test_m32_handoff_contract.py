@@ -4460,5 +4460,19 @@ class HandoffContractTests(unittest.TestCase):
                        "no IPC", "no atomic", "not a trustworthy runtime evidence"):
             self.assertIn(signal, doc)
 
+    def test_141_s1_route_a_explicit_close_observation_is_ephemeral(self):
+        src = (ROOT / "src-tauri/src/m32_v7_admission_preflight_tests.rs").read_text(encoding="utf-8")
+        doc = (ROOT / "docs/qualification/M3_2_V7_S1_ROUTE_A_INPROCESS_CLOSE_OBSERVATION_20261028.md").read_text(encoding="utf-8")
+        for term in ("observe_disposable_explicit_close", "connection.close()",
+                     "m32_s1_route_a_explicit_close_witness_is_inprocess_only",
+                     "m32_s1_route_a_implicit_drop_cannot_mint_reopen_evidence",
+                     "UncertainAfterCrash", "HandoffNotAtomic"):
+            self.assertIn(term, src)
+        self.assertNotIn("V7WriterAdmission {", src)
+        self.assertIn("#[cfg(all(test, windows))]", (ROOT / "src-tauri/src/lib.rs").read_text(encoding="utf-8"))
+        for term in ("NOT PASS", "NOT_PROVEN", "STOP_UNAVAILABLE", "S3/S4",
+                     "not a crash test", "no durable record", "no atomic xOpen"):
+            self.assertIn(term.lower(), doc.lower())
+
 if __name__ == "__main__":
     unittest.main()
