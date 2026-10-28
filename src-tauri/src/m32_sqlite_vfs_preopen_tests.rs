@@ -1,8 +1,8 @@
 //! Disposable Windows SQLite VFS boundary experiment, compiled only as tests.
 //! A refusal at xOpen precedes default-VFS delegation; a post-xOpen FileId
 //! check does not. This does NOT authenticate any Windows operator profile.
-//! A separate disposable xShmMap probe uses extra SQLite-allocated file bytes
-//! and an IO-methods copy; it is NOT a production VFS or an atomic opener.
+//! Disposable D2 xShmMap and D3a xShmLock/xShmBarrier/xShmUnmap/xClose
+//! probes use SQLite-allocated extra bytes; no production VFS or atomic opener.
 
 use rusqlite::{ffi, Connection, OpenFlags};
 use std::{
@@ -111,17 +111,38 @@ struct FixtureVfs {
     swaps_after_precheck: AtomicUsize,
     delegated_handle_matches: AtomicUsize,
     delegated_handle_refusals: AtomicUsize,
+    // D3a only: record the actual delegated Windows -wal handle and the
+    // complete SHM/close callbacks on disposable SQLite files, never runtime.
+    d3a_wal_path: Option<PathBuf>,
+    d3a_wrong_expected_wal_id: Option<(u64, [u8; 16])>,
+    d3a_require_complete_shm: bool,
+    d3a_simulate_missing_shm_lock: bool,
+    d3a_deny_shm_lock: AtomicBool,
+    d3a_wal_identity_matches: AtomicUsize,
+    d3a_wal_identity_refusals: AtomicUsize,
+    d3a_wal_veto_close_calls: AtomicUsize,
+    d3a_method_refusals: AtomicUsize,
+    d3a_shm_lock_refusals: AtomicUsize,
+    d3a_shm_lock_delegations: AtomicUsize,
+    d3a_shm_barrier_delegations: AtomicUsize,
+    d3a_shm_unmap_delegations: AtomicUsize,
+    d3a_shm_unmap_failures: AtomicUsize,
+    d3a_main_close_successes: AtomicUsize,
+    d3a_wal_close_successes: AtomicUsize,
+    d3a_close_failures: AtomicUsize,
 }
 
 // The default Win32 sqlite3_file occupies the first default_vfs.szOsFile bytes.
 // SQLite allocates our larger dispatch.szOsFile; this aligned tail belongs to
-// the *same disposable file object*, not to a process-global map. Its copied
-// method table changes ONLY xShmMap, all other Win32 methods stay delegated.
+// the *same disposable file object*, not to a process-global map. D2 changes
+// only xShmMap; D3a additionally WRAPS lock/barrier/unmap/close with real
+// Win32 delegation. Neither mode changes an operator or default VFS.
 #[repr(C)]
 struct FixtureMainFileTail {
     methods: ffi::sqlite3_io_methods,
     original_methods: *const ffi::sqlite3_io_methods,
     vfs: *const FixtureVfs,
+    is_wal: bool,
 }
 
 unsafe extern "C" fn fixture_xshm_map(
@@ -145,6 +166,75 @@ unsafe extern "C" fn fixture_xshm_map(
         return ffi::SQLITE_IOERR_SHMMAP;
     };
     unsafe { original(file, page, page_size, extend, mapped) }
+}
+
+
+// D3a's copied main-file io_methods table retains the original Win32 methods.
+// xShmLock is an error-returning callback; xShmBarrier is void and therefore
+// cannot express a veto. A missing barrier is refused while installing the
+// D3a wrapper, before any SQLite SQL and before any SHM mapping.
+unsafe extern "C" fn fixture_d3a_xshm_lock(
+    file: *mut ffi::sqlite3_file, offset: c_int, count: c_int, flags: c_int,
+) -> c_int {
+    let tail = unsafe { &*((*file).pMethods as *const FixtureMainFileTail) };
+    let gate = unsafe { &*tail.vfs };
+    if gate.d3a_deny_shm_lock.load(Ordering::SeqCst) {
+        gate.d3a_shm_lock_refusals.fetch_add(1, Ordering::SeqCst);
+        return ffi::SQLITE_IOERR;
+    }
+    let Some(original) = (unsafe { (*tail.original_methods).xShmLock }) else {
+        gate.d3a_shm_lock_refusals.fetch_add(1, Ordering::SeqCst);
+        return ffi::SQLITE_IOERR;
+    };
+    gate.d3a_shm_lock_delegations.fetch_add(1, Ordering::SeqCst);
+    unsafe { original(file, offset, count, flags) }
+}
+
+unsafe extern "C" fn fixture_d3a_xshm_barrier(file: *mut ffi::sqlite3_file) {
+    let tail = unsafe { &*((*file).pMethods as *const FixtureMainFileTail) };
+    let gate = unsafe { &*tail.vfs };
+    gate.d3a_shm_barrier_delegations.fetch_add(1, Ordering::SeqCst);
+    if let Some(original) = unsafe { (*tail.original_methods).xShmBarrier } {
+        unsafe { original(file) };
+    }
+}
+
+unsafe extern "C" fn fixture_d3a_xshm_unmap(
+    file: *mut ffi::sqlite3_file, delete_flag: c_int,
+) -> c_int {
+    let tail = unsafe { &*((*file).pMethods as *const FixtureMainFileTail) };
+    let gate = unsafe { &*tail.vfs };
+    gate.d3a_shm_unmap_delegations.fetch_add(1, Ordering::SeqCst);
+    let Some(original) = (unsafe { (*tail.original_methods).xShmUnmap }) else {
+        gate.d3a_shm_unmap_failures.fetch_add(1, Ordering::SeqCst);
+        return ffi::SQLITE_IOERR;
+    };
+    let result = unsafe { original(file, delete_flag) };
+    if result != ffi::SQLITE_OK {
+        gate.d3a_shm_unmap_failures.fetch_add(1, Ordering::SeqCst);
+    }
+    result
+}
+
+// Capture close outcome on main and WAL separately. The delegated xClose
+// must really run; a Rust Drop or a mutex release is not close attestation.
+unsafe extern "C" fn fixture_d3a_xclose(file: *mut ffi::sqlite3_file) -> c_int {
+    let tail = unsafe { &*((*file).pMethods as *const FixtureMainFileTail) };
+    let gate = unsafe { &*tail.vfs };
+    let result = match unsafe { (*tail.original_methods).xClose } {
+        Some(original) => unsafe { original(file) },
+        None => ffi::SQLITE_IOERR,
+    };
+    if result == ffi::SQLITE_OK {
+        if tail.is_wal {
+            gate.d3a_wal_close_successes.fetch_add(1, Ordering::SeqCst);
+        } else {
+            gate.d3a_main_close_successes.fetch_add(1, Ordering::SeqCst);
+        }
+    } else {
+        gate.d3a_close_failures.fetch_add(1, Ordering::SeqCst);
+    }
+    result
 }
 
 // SAFETY: SQLite invokes xOpen through this C ABI. The pointer was registered
@@ -244,11 +334,74 @@ unsafe extern "C" fn fixture_xopen(
             }
         }
     }
+    // D3a WAL identity is checked on the ACTUAL delegated sqlite3_file,
+    // never only on a pre-xOpen pathname. A second path observation is still
+    // non-atomic; this test cannot establish hostile same-SID exclusion.
+    if result == ffi::SQLITE_OK && flags & ffi::SQLITE_OPEN_WAL != 0 {
+        if let Some(path) = &gate.d3a_wal_path {
+            let original = unsafe { (*file).pMethods };
+            let mut handle: *mut c_void = ptr::null_mut();
+            let control = if original.is_null() {
+                ffi::SQLITE_CANTOPEN
+            } else if let Some(file_control) = unsafe { (*original).xFileControl } {
+                unsafe { file_control(file, ffi::SQLITE_FCNTL_WIN32_GET_HANDLE,
+                    (&mut handle as *mut *mut c_void).cast()) }
+            } else { ffi::SQLITE_CANTOPEN };
+            let actual = if control == ffi::SQLITE_OK && !handle.is_null() {
+                win_raw_file_id_128(handle).ok()
+            } else { None };
+            let observed_owned_name = fs::File::open(path)
+                .ok().and_then(|owned| win_file_id_128(&owned).ok());
+            let named_wal = !name.is_null() && unsafe { CStr::from_ptr(name) }
+                .to_bytes().ends_with(b"new.sqlite3-wal");
+            let expected = gate.d3a_wrong_expected_wal_id.or(observed_owned_name);
+            if !named_wal || actual.is_none() || actual != expected {
+                gate.d3a_wal_identity_refusals.fetch_add(1, Ordering::SeqCst);
+                if !original.is_null() {
+                    if let Some(close) = unsafe { (*original).xClose } {
+                        gate.d3a_wal_veto_close_calls.fetch_add(1, Ordering::SeqCst);
+                        let _ = unsafe { close(file) };
+                    }
+                }
+                unsafe { (*file).pMethods = ptr::null() };
+                return ffi::SQLITE_CANTOPEN;
+            }
+            // The WAL file's own copied xClose is observed separately from
+            // the main handle and is installed only after identity match.
+            if original.is_null() || (unsafe { (*original).xClose }).is_none() {
+                gate.d3a_wal_identity_refusals.fetch_add(1, Ordering::SeqCst);
+                unsafe { (*file).pMethods = ptr::null() };
+                return ffi::SQLITE_CANTOPEN;
+            }
+            let tail = unsafe { (file as *mut u8).add(gate.file_tail_offset) }
+                as *mut FixtureMainFileTail;
+            let mut methods = unsafe { ptr::read(original) };
+            methods.xClose = Some(fixture_d3a_xclose);
+            unsafe {
+                ptr::write(tail, FixtureMainFileTail {
+                    methods, original_methods: original, vfs: gate, is_wal: true,
+                });
+                (*file).pMethods = &(*tail).methods;
+            }
+            gate.d3a_wal_identity_matches.fetch_add(1, Ordering::SeqCst);
+        }
+    }
     if result == ffi::SQLITE_OK && flags & ffi::SQLITE_OPEN_MAIN_DB != 0 && gate.wrap_main_shm {
         let original = unsafe { (*file).pMethods };
+        let d3a_missing = gate.d3a_require_complete_shm && (
+            gate.d3a_simulate_missing_shm_lock
+            || original.is_null()
+            || (unsafe { (*original).xShmLock }).is_none()
+            || (unsafe { (*original).xShmBarrier }).is_none()
+            || (unsafe { (*original).xShmUnmap }).is_none()
+            || (unsafe { (*original).xClose }).is_none()
+        );
         if original.is_null() || unsafe { (*original).iVersion } < 2
-            || (unsafe { (*original).xShmMap }).is_none()
+            || (unsafe { (*original).xShmMap }).is_none() || d3a_missing
         {
+            if gate.d3a_require_complete_shm {
+                gate.d3a_method_refusals.fetch_add(1, Ordering::SeqCst);
+            }
             if !original.is_null() {
                 if let Some(close) = unsafe { (*original).xClose } {
                     let _ = unsafe { close(file) };
@@ -261,9 +414,15 @@ unsafe extern "C" fn fixture_xopen(
             as *mut FixtureMainFileTail;
         let mut methods = unsafe { ptr::read(original) };
         methods.xShmMap = Some(fixture_xshm_map);
+        if gate.d3a_require_complete_shm {
+            methods.xShmLock = Some(fixture_d3a_xshm_lock);
+            methods.xShmBarrier = Some(fixture_d3a_xshm_barrier);
+            methods.xShmUnmap = Some(fixture_d3a_xshm_unmap);
+            methods.xClose = Some(fixture_d3a_xclose);
+        }
         unsafe {
             ptr::write(tail, FixtureMainFileTail {
-                methods, original_methods: original, vfs: gate,
+                methods, original_methods: original, vfs: gate, is_wal: false,
             });
             (*file).pMethods = &(*tail).methods;
         }
@@ -299,6 +458,26 @@ impl RegisteredFixtureVfs {
 
     fn with_shm_policy(deny_shm: bool) -> Self {
         Self::with_policy(true, false, false, None, Some(deny_shm))
+    }
+
+    // Only D3a disposable Windows fixtures can enable the stronger WAL/SHM
+    // observation. No production opener, actor, D3b or operator path.
+    fn with_d3a(
+        main_path: PathBuf, expected_main: (u64, [u8; 16]),
+        wrong_wal_id: Option<(u64, [u8; 16])>,
+        deny_shm_lock: bool, simulate_missing_shm_lock: bool,
+    ) -> Self {
+        let mut gate = Self::with_policy(true, false, false,
+            Some(FileIdPrecheckPlan {
+                path: main_path.clone(), expected: expected_main,
+                check_delegated_handle: true, move_original_to: None,
+            }), Some(false));
+        gate.state.d3a_wal_path = Some(main_path.with_file_name("new.sqlite3-wal"));
+        gate.state.d3a_wrong_expected_wal_id = wrong_wal_id;
+        gate.state.d3a_require_complete_shm = true;
+        gate.state.d3a_simulate_missing_shm_lock = simulate_missing_shm_lock;
+        gate.state.d3a_deny_shm_lock.store(deny_shm_lock, Ordering::SeqCst);
+        gate
     }
 
     fn with_policy(
@@ -340,6 +519,23 @@ impl RegisteredFixtureVfs {
             swaps_after_precheck: AtomicUsize::new(0),
             delegated_handle_matches: AtomicUsize::new(0),
             delegated_handle_refusals: AtomicUsize::new(0),
+            d3a_wal_path: None,
+            d3a_wrong_expected_wal_id: None,
+            d3a_require_complete_shm: false,
+            d3a_simulate_missing_shm_lock: false,
+            d3a_deny_shm_lock: AtomicBool::new(false),
+            d3a_wal_identity_matches: AtomicUsize::new(0),
+            d3a_wal_identity_refusals: AtomicUsize::new(0),
+            d3a_wal_veto_close_calls: AtomicUsize::new(0),
+            d3a_method_refusals: AtomicUsize::new(0),
+            d3a_shm_lock_refusals: AtomicUsize::new(0),
+            d3a_shm_lock_delegations: AtomicUsize::new(0),
+            d3a_shm_barrier_delegations: AtomicUsize::new(0),
+            d3a_shm_unmap_delegations: AtomicUsize::new(0),
+            d3a_shm_unmap_failures: AtomicUsize::new(0),
+            d3a_main_close_successes: AtomicUsize::new(0),
+            d3a_wal_close_successes: AtomicUsize::new(0),
+            d3a_close_failures: AtomicUsize::new(0),
         });
         state.dispatch.pNext = ptr::null_mut();
         state.dispatch.zName = name.as_ptr();
@@ -805,5 +1001,123 @@ mod d2_p1_disposable_session {
         assert!(!path.exists(), "uncertain lifecycle never created the fixture database");
         drop(gate);
         mutex.release();
+    }
+}
+
+
+// D3a: explicit owner-authorized Windows CI-only WAL/SHM handle custody.
+// These four fixtures never access an operator SQLite database or recover a
+// crashed process. They reuse a fresh DisposableRoot and real default Win32
+// VFS dispatch, but no runtime V7WriterAdmission, IPC, P2 or D3b is involved.
+mod d3a_p1_disposable_wal_shm {
+    use super::*;
+
+    fn fresh_main() -> (DisposableRoot, PathBuf, (u64, [u8; 16])) {
+        let owned = DisposableRoot::new();
+        let path = owned.db();
+        fs::OpenOptions::new().write(true).create_new(true)
+            .open(&path).expect("D3a test-only fresh main file");
+        let expected = win_file_id_128(&fs::File::open(&path).unwrap()).unwrap();
+        (owned, path, expected)
+    }
+
+    #[test]
+    fn m32_d3a_wal_real_delegated_fileid_all_shm_callbacks_and_close_positive_not_admission() {
+        let (_owned, path, main_id) = fresh_main();
+        let gate = RegisteredFixtureVfs::with_d3a(
+            path.clone(), main_id, None, false, false);
+        let db = Connection::open_with_flags_and_vfs(
+            &path, OpenFlags::SQLITE_OPEN_READ_WRITE, gate.name())
+            .expect("D3a owned main handle must be bound before WAL");
+        assert_eq!(gate.state.delegated_handle_matches.load(Ordering::SeqCst), 1);
+        let mode: String = db.query_row("PRAGMA journal_mode=WAL", [], |r| r.get(0)).unwrap();
+        assert_eq!(mode.to_ascii_lowercase(), "wal");
+        db.execute_batch(
+            "CREATE TABLE invented_d3a(id INTEGER PRIMARY KEY, note TEXT);
+             INSERT INTO invented_d3a(note) VALUES ('fiction-only');
+             UPDATE invented_d3a SET note='fixture' WHERE id=1;",
+        ).unwrap();
+        assert_eq!(db.query_row("SELECT COUNT(*) FROM invented_d3a", [],
+            |r| r.get::<_, i64>(0)).unwrap(), 1);
+        assert!(gate.state.d3a_wal_identity_matches.load(Ordering::SeqCst) >= 1,
+            "the real delegated WAL HANDLE must match the observed owned -wal FileId128");
+        assert_eq!(gate.state.d3a_wal_identity_refusals.load(Ordering::SeqCst), 0);
+        assert!(gate.state.shm_map_delegations.load(Ordering::SeqCst) >= 1);
+        assert!(gate.state.d3a_shm_lock_delegations.load(Ordering::SeqCst) >= 1);
+        assert!(gate.state.d3a_shm_barrier_delegations.load(Ordering::SeqCst) >= 1);
+        assert_eq!(gate.state.d3a_shm_lock_refusals.load(Ordering::SeqCst), 0);
+        assert!(db.close().is_ok(), "D3a fixture must explicitly close SQLite");
+        assert!(gate.state.d3a_shm_unmap_delegations.load(Ordering::SeqCst) >= 1);
+        assert_eq!(gate.state.d3a_shm_unmap_failures.load(Ordering::SeqCst), 0);
+        assert!(gate.state.d3a_wal_close_successes.load(Ordering::SeqCst) >= 1);
+        assert_eq!(gate.state.d3a_main_close_successes.load(Ordering::SeqCst), 1);
+        assert_eq!(gate.state.d3a_close_failures.load(Ordering::SeqCst), 0);
+        // Exact fixture close proves neither durable successor attestation nor
+        // any cross-process EXISTING_PROFILE authorization.
+    }
+
+    #[test]
+    fn m32_d3a_wrong_expected_wal_fileid_vetoes_after_delegation_and_closes() {
+        let (owned, path, main_id) = fresh_main();
+        let decoy = owned.0.join("wrong-d3a-wal-id.fixture");
+        fs::OpenOptions::new().write(true).create_new(true).open(&decoy).unwrap();
+        let wrong_wal_id = win_file_id_128(&fs::File::open(&decoy).unwrap()).unwrap();
+        let gate = RegisteredFixtureVfs::with_d3a(
+            path.clone(), main_id, Some(wrong_wal_id), false, false);
+        let db = Connection::open_with_flags_and_vfs(
+            &path, OpenFlags::SQLITE_OPEN_READ_WRITE, gate.name())
+            .expect("D3a main only may open; WAL identity is deliberately foreign");
+        let attempt = db.execute_batch("PRAGMA journal_mode=WAL;");
+        if attempt.is_ok() {
+            assert!(db.execute_batch("CREATE TABLE never_admitted_d3a(id INTEGER);").is_err(),
+                "no successful user SQL after the WAL FileId128 mismatch");
+        }
+        assert!(gate.state.d3a_wal_identity_refusals.load(Ordering::SeqCst) >= 1);
+        assert_eq!(gate.state.d3a_wal_identity_matches.load(Ordering::SeqCst), 0);
+        assert!(gate.state.d3a_wal_veto_close_calls.load(Ordering::SeqCst) >= 1,
+            "after delegated xOpen veto must call the original WAL xClose");
+        assert!(gate.state.wal_delegations.load(Ordering::SeqCst) >= 1);
+        assert_eq!(gate.state.shm_map_delegations.load(Ordering::SeqCst), 0);
+        drop(db);
+        assert_eq!(win_file_id_128(&fs::File::open(&decoy).unwrap()).unwrap(),
+            wrong_wal_id);
+        // SQLite may have created a WAL before this veto. Never assert that
+        // rejection is an atomic OS open or manually delete a live sidecar.
+    }
+
+    #[test]
+    fn m32_d3a_shm_lock_veto_after_wal_handle_binding_refuses_sql() {
+        let (_owned, path, main_id) = fresh_main();
+        let gate = RegisteredFixtureVfs::with_d3a(
+            path.clone(), main_id, None, true, false);
+        let db = Connection::open_with_flags_and_vfs(
+            &path, OpenFlags::SQLITE_OPEN_READ_WRITE, gate.name()).unwrap();
+        let attempt = db.execute_batch("PRAGMA journal_mode=WAL;");
+        if attempt.is_ok() {
+            assert!(db.execute_batch("CREATE TABLE never_admitted_d3a(id INTEGER);").is_err());
+        }
+        assert!(gate.state.d3a_wal_identity_matches.load(Ordering::SeqCst) >= 1);
+        assert!(gate.state.d3a_shm_lock_refusals.load(Ordering::SeqCst) >= 1);
+        assert_eq!(gate.state.d3a_shm_lock_delegations.load(Ordering::SeqCst), 0,
+            "the injected veto is before default xShmLock");
+        // Permit only best-effort SQLite fixture teardown after observed STOP,
+        // not any subsequent SQL, WAL repair or process-restart experiment.
+        gate.state.d3a_deny_shm_lock.store(false, Ordering::SeqCst);
+        drop(db);
+    }
+
+    #[test]
+    fn m32_d3a_missing_shm_lock_method_refuses_at_main_xopen_without_wal() {
+        let (_owned, path, main_id) = fresh_main();
+        let gate = RegisteredFixtureVfs::with_d3a(
+            path.clone(), main_id, None, false, true);
+        let attempt = Connection::open_with_flags_and_vfs(
+            &path, OpenFlags::SQLITE_OPEN_READ_WRITE, gate.name());
+        assert!(attempt.is_err(), "missing xShmLock in synthetic method table must STOP");
+        assert_eq!(gate.state.d3a_method_refusals.load(Ordering::SeqCst), 1);
+        assert_eq!(gate.state.main_delegations.load(Ordering::SeqCst), 1);
+        assert_eq!(gate.state.d3a_wal_identity_matches.load(Ordering::SeqCst), 0);
+        assert_eq!(gate.state.shm_map_delegations.load(Ordering::SeqCst), 0);
+        assert!(!path.with_file_name("new.sqlite3-wal").exists());
     }
 }

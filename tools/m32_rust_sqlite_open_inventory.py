@@ -60,7 +60,10 @@ EXPECTED = {
     # Six new Rust tests share one random Local mutex/owned temp directory
     # and existing delegated FileId128 + WAL/xShmMap VFS wrappers. Source-only
     # count is not a production writer/external-writer-absence proof.
-    "src-tauri/src/m32_sqlite_vfs_preopen_tests.rs": (16, 0, 0, 0, 0, 17, 0),
+    # D3a adds exactly four cfg(test,windows) fixture-only SQLite RW opens:
+    # real delegated -wal FileId128 match, wrong expected WAL ID xClose veto,
+    # xShmLock refusal, and synthetic missing-method xOpen STOP. No D3b.
+    "src-tauri/src/m32_sqlite_vfs_preopen_tests.rs": (20, 0, 0, 0, 0, 21, 0),
     # 2026-10-28: an UNWIRED writer core owns an ALREADY admitted connection.
     # Two RAM-only constructors, migration and ATTACH are confined to its
     # #[cfg(test)] fictional fixture; no production path opening is added.
