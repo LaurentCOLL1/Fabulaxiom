@@ -18,11 +18,26 @@ use std::os::windows::fs::MetadataExt;
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 enum AdmissionMode { NewOnly, ExistingProfile }
 
+// S1 is a *decision model*, not a runtime admission state machine.  A clean
+// shutdown can justify rechecking a disposable file, never mint a writer token.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+enum LifecycleObservation { Absent, CleanlyClosed, UncertainAfterCrash, Active, Foreign }
+
+fn lifecycle_preflight_mode(observed: LifecycleObservation) -> Result<AdmissionMode, Refusal> {
+    match observed {
+        LifecycleObservation::Absent => Ok(AdmissionMode::NewOnly),
+        LifecycleObservation::CleanlyClosed => Ok(AdmissionMode::ExistingProfile),
+        LifecycleObservation::UncertainAfterCrash | LifecycleObservation::Active |
+        LifecycleObservation::Foreign => Err(Refusal::LifecycleUnproven),
+    }
+}
+
 #[derive(Debug, Eq, PartialEq)]
 enum Refusal {
     Missing, AlreadyExists, SidecarPresent, ForeignSchema,
     ForeignKeyViolation, HandoffNotAtomic,
     OutsideOwnedRoot, UnsafeOwnedAncestor,
+    LifecycleUnproven,
 }
 
 const PROFILE: &str = "com.fabulaxiom.greenfield.v1";
@@ -269,4 +284,36 @@ fn m32_s2_route_a_parent_missing_or_replaced_remains_unbound() {
     assert_eq!(owned_namespace_preflight(&owned, &db, AdmissionMode::ExistingProfile), Ok(()));
     assert_ne!(fs::read(moved.join("fabulaxiom.sqlite3")).unwrap(), fs::read(&db).unwrap());
     assert_eq!(deny_unbound_handoff(), Err(Refusal::HandoffNotAtomic));
+}
+
+#[test]
+fn m32_s1_route_a_clean_close_is_only_a_reopen_candidate() {
+    let owned = Disposable::new(); owned.prepare(); let db = owned.db();
+    assert_eq!(lifecycle_preflight_mode(LifecycleObservation::Absent), Ok(AdmissionMode::NewOnly));
+    assert_eq!(owned_namespace_preflight(&owned, &db, AdmissionMode::NewOnly), Ok(()));
+    {
+        let connection = Connection::open(&db).unwrap();
+        connection.execute_batch("CREATE TABLE disposable_revision(id INTEGER PRIMARY KEY);").unwrap();
+    }
+    assert_eq!(lifecycle_preflight_mode(LifecycleObservation::CleanlyClosed),
+        Ok(AdmissionMode::ExistingProfile));
+    assert_eq!(owned_namespace_preflight(&owned, &db, AdmissionMode::ExistingProfile), Ok(()));
+    assert_eq!(owned_namespace_preflight(&owned, &db, AdmissionMode::NewOnly), Err(Refusal::AlreadyExists));
+    assert_eq!(deny_unbound_handoff(), Err(Refusal::HandoffNotAtomic));
+}
+
+#[test]
+fn m32_s1_route_a_uncertain_or_foreign_lifecycle_never_grants_a_mode() {
+    for observed in [LifecycleObservation::UncertainAfterCrash, LifecycleObservation::Active,
+                     LifecycleObservation::Foreign] {
+        assert_eq!(lifecycle_preflight_mode(observed), Err(Refusal::LifecycleUnproven));
+        assert_eq!(deny_unbound_handoff(), Err(Refusal::HandoffNotAtomic));
+    }
+    // A path can still pass a lexical/filesystem check while its provenance
+    // or clean shutdown evidence is unknown: it MUST NOT become admission.
+    let owned = Disposable::new(); owned.prepare(); let db = owned.db();
+    fs::write(&db, b"unknown lifecycle").unwrap();
+    assert_eq!(owned_namespace_preflight(&owned, &db, AdmissionMode::ExistingProfile), Ok(()));
+    assert_eq!(lifecycle_preflight_mode(LifecycleObservation::UncertainAfterCrash),
+        Err(Refusal::LifecycleUnproven));
 }
