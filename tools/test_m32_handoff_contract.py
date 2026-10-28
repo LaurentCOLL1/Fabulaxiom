@@ -4433,5 +4433,19 @@ class HandoffContractTests(unittest.TestCase):
         for stop in ("NOT_PROVEN", "STOP_UNAVAILABLE", "S3/S4", "not atomic"):
             self.assertIn(stop, qualification)
 
+    def test_139_s2_route_a_controlled_namespace_is_test_only_and_still_unbound(self):
+        src = (ROOT / "src-tauri/src/m32_v7_admission_preflight_tests.rs").read_text(encoding="utf-8")
+        lib = (ROOT / "src-tauri/src/lib.rs").read_text(encoding="utf-8")
+        decision = (ROOT / "docs/qualification/M3_2_V7_S2_ROUTE_A_OWNED_NAMESPACE_BOUNDARY_20261028.md").read_text(encoding="utf-8")
+        for signal in ("owned_namespace_preflight", "OutsideOwnedRoot", "UnsafeOwnedAncestor",
+                       "FILE_ATTRIBUTE_REPARSE_POINT", "m32_s2_route_a_owned_namespace",
+                       "m32_s2_route_a_parent_missing", "HandoffNotAtomic"):
+            self.assertIn(signal, src, signal)
+        self.assertIn("#[cfg(all(test, windows))]", lib)
+        self.assertNotIn("V7WriterAdmission {", src)
+        for signal in ("controlled namespace", "NOT_PROVEN", "S3/S4", "STOP_UNAVAILABLE",
+                       "not atomic", "no operator"):
+            self.assertIn(signal, decision)
+
 if __name__ == "__main__":
     unittest.main()
