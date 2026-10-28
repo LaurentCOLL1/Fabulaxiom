@@ -4474,5 +4474,16 @@ class HandoffContractTests(unittest.TestCase):
                      "not a crash test", "no durable record", "no atomic xOpen"):
             self.assertIn(term.lower(), doc.lower())
 
+    def test_142_s1_cross_process_provenance_design_keeps_admission_stopped(self):
+        doc = (ROOT / "docs/qualification/M3_2_V7_S1_ROUTE_A_CROSS_PROCESS_PROVENANCE_DESIGN_REVIEW_20261028.md").read_text(encoding="utf-8")
+        for signal in ("A0", "A1", "A2", "A3", "UNAVAILABLE_NOT_PROVEN",
+                       "EXISTING_PROFILE", "NEW_ONLY", "Handoff", "NOT_PROVEN",
+                       "STOP_UNAVAILABLE", "S3/S4", "no code or operator action",
+                       "authorization required", "no persistent marker"):
+            self.assertIn(signal.lower(), doc.lower())
+        self.assertIn("#[cfg(all(test, windows))]", (ROOT / "src-tauri/src/lib.rs").read_text(encoding="utf-8"))
+        writer = (ROOT / "src-tauri/src/m32_v7_writer_service.rs").read_text(encoding="utf-8")
+        self.assertIn("#[cfg(test)]\nimpl V7WriterAdmission", writer)
+
 if __name__ == "__main__":
     unittest.main()
