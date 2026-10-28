@@ -4523,5 +4523,30 @@ class HandoffContractTests(unittest.TestCase):
         rust = (ROOT / "src-tauri/src/m32_v7_writer_service.rs").read_text(encoding="utf-8")
         self.assertIn("#[cfg(test)]\nimpl V7WriterAdmission", rust)
 
+    def test_146_production_writer_custody_design_has_no_runtime_admission(self):
+        doc = (ROOT / "docs/qualification/M3_2_V7_PRODUCTION_WRITER_CUSTODY_DESIGN_STUDY_20261028.md").read_text(encoding="utf-8")
+        for signal in ("DESIGN STUDY ONLY", "A0", "P1", "P2", "same-SID",
+                       "DACL", "xOpen", "xShmMap", "WAL", "FileId128",
+                       "R1", "R2", "R3", "R4", "R5", "R6", "R7", "R8", "R9",
+                       "D0", "D1", "D2", "D3", "EXISTING_PROFILE",
+                       "RECOVERY_REQUIRED_NOT_AUTHORIZED", "NOT_PROVEN",
+                       "STOP_UNAVAILABLE", "S3/S4", "no operator execution",
+                       "no persistent marker", "no runtime writer"):
+            self.assertIn(signal.lower(), doc.lower())
+        writer = (ROOT / "src-tauri/src/m32_v7_writer_service.rs").read_text(encoding="utf-8")
+        self.assertIn("#[cfg(test)]\\nimpl V7WriterAdmission", writer)
+        for filename in ("RESUME_PROMPT.md", "RESUME_PROMPT_SHORT.md",
+                         "HANDOFF_CURRENT.md", "HANDOFF_PROTOCOL.md",
+                         "HANDOFF_HISTORY.md", "STATE.md", "NEXT.md",
+                         "M3_2_GATE_DECISION_CURRENT.md"):
+            content = (ROOT / "docs/continuity" / filename).read_text(encoding="utf-8")
+            self.assertIn("M3_2_V7_PRODUCTION_WRITER_CUSTODY_DESIGN_STUDY_20261028.md", content)
+        handoff = json.loads((ROOT / "docs/continuity/HANDOFF_CURRENT.json").read_text(encoding="utf-8"))
+        next_study = handoff["next_production_writer_custody_design_study_20261028"]
+        self.assertFalse(next_study["candidate_ci_qualified"])
+        self.assertFalse(next_study["production_writer_authorized"])
+        self.assertEqual(next_study["continuity_contracts_expected"], 146)
+        self.assertEqual(next_study["external_writer_absence"], "NOT_PROVEN")
+
 if __name__ == "__main__":
     unittest.main()
