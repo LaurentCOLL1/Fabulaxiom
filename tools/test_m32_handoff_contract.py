@@ -4281,7 +4281,7 @@ class HandoffContractTests(unittest.TestCase):
                        "writer", "szOsFile"):
             self.assertIn(signal, doc)
         fixture = (ROOT / candidate["rust_fixture"]).read_text(encoding="utf-8")
-        self.assertEqual(fixture.count("#[test]"), 10)
+        self.assertEqual(fixture.count("#[test]"), 12)
         self.assertIn("fixture_xshm_map", fixture)
         for filename in ("RESUME_PROMPT_SHORT.md", "RESUME_PROMPT.md", "HANDOFF_CURRENT.md",
                          "HANDOFF_PROTOCOL.md", "HANDOFF_HISTORY.md", "NEXT.md", "STATE.md",
@@ -4484,6 +4484,19 @@ class HandoffContractTests(unittest.TestCase):
         self.assertIn("#[cfg(all(test, windows))]", (ROOT / "src-tauri/src/lib.rs").read_text(encoding="utf-8"))
         writer = (ROOT / "src-tauri/src/m32_v7_writer_service.rs").read_text(encoding="utf-8")
         self.assertIn("#[cfg(test)]\nimpl V7WriterAdmission", writer)
+
+    def test_145_delegated_xopen_native_handle_veto_is_test_only(self):
+        src = (ROOT / "src-tauri/src/m32_sqlite_vfs_preopen_tests.rs").read_text(encoding="utf-8")
+        doc = (ROOT / "docs/qualification/M3_2_V7_SQLITE_XOPEN_DELEGATED_HANDLE_BOUNDARY_DECISION_20261028.md").read_text(encoding="utf-8")
+        for signal in ("check_delegated_handle", "xFileControl", "SQLITE_FCNTL_WIN32_GET_HANDLE",
+                       "delegated_handle_refusals", "xClose", "SQLITE_CANTOPEN",
+                       "m32_vfs_fixture_xopen_delegated_handle_matches",
+                       "m32_vfs_fixture_xopen_delegated_substitution_closes_and_vetoes"):
+            self.assertIn(signal, src)
+        self.assertNotIn("V7WriterAdmission {", src)
+        for signal in ("NOT PASS", "NOT_PROVEN", "STOP_UNAVAILABLE", "A0",
+                       "S3/S4", "no operator", "xOpen", "not atomic", "no IPC"):
+            self.assertIn(signal.lower(), doc.lower())
 
     def test_144_a2_a3_windows_disposable_proof_remains_a_veto(self):
         src = (ROOT / "src-tauri/src/m32_v7_admission_preflight_tests.rs").read_text(encoding="utf-8")

@@ -51,7 +51,10 @@ EXPECTED = {
     # and xShmMap's absence from the xOpen-only interception surface.
     # +2 further RW fixture calls exercise an aligned test-only io_methods
     # xShmMap wrapper, one fail-closed and one controlled delegation.
-    "src-tauri/src/m32_sqlite_vfs_preopen_tests.rs": (10, 0, 0, 0, 0, 11, 0),
+    # 2026-10-28: +2 explicitly reviewed disposable Windows VFS
+    # open_with_flags_and_vfs calls and +2 RW flags for in-xOpen delegated
+    # native handle veto/mismatch witnesses, never a production opener.
+    "src-tauri/src/m32_sqlite_vfs_preopen_tests.rs": (12, 0, 0, 0, 0, 13, 0),
     # 2026-10-28: an UNWIRED writer core owns an ALREADY admitted connection.
     # Two RAM-only constructors, migration and ATTACH are confined to its
     # #[cfg(test)] fictional fixture; no production path opening is added.
