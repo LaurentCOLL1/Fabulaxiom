@@ -52,6 +52,10 @@ EXPECTED = {
     # +2 further RW fixture calls exercise an aligned test-only io_methods
     # xShmMap wrapper, one fail-closed and one controlled delegation.
     "src-tauri/src/m32_sqlite_vfs_preopen_tests.rs": (10, 0, 0, 0, 0, 11, 0),
+    # 2026-10-28: an UNWIRED writer core owns an ALREADY admitted connection.
+    # Two RAM-only constructors, migration and ATTACH are confined to its
+    # #[cfg(test)] fictional fixture; no production path opening is added.
+    "src-tauri/src/m32_v7_writer_service.rs": (2, 0, 1, 0, 1, 0, 0),
     "src-tauri/src/m32_owner_handoff_actor_toy.rs": (2, 0, 0, 0, 1, 0, 0),
     "src-tauri/src/m32_owner_lifecycle_toy.rs": (4, 0, 0, 0, 1, 0, 0),
     "src-tauri/src/review_commands.rs": (0, 1, 0, 0, 0, 0, 0),

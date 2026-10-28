@@ -21,6 +21,9 @@ mod hierarchy;
 mod hierarchy_commands;
 mod revision_commands;
 mod revisions;
+// Prepared real Rust writer core, deliberately UNWIRED: no Tauri State/IPC,
+// no path opener, no production admission token and no operator database I/O.
+mod m32_v7_writer_service;
 
 // Route C: generated disposable CI runner files only; never operator storage.
 #[cfg(test)]

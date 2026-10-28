@@ -349,5 +349,25 @@ class RustSqliteOpenInventoryTests(unittest.TestCase):
             self.assertNotIn(forbidden, source)
         self.assertEqual(repository_inventory()["real_g3"], "STOP_UNAVAILABLE")
 
+    def test_41_v7_writer_preparation_has_no_runtime_admission_or_opener(self):
+        p = "src-tauri/src/m32_v7_writer_service.rs"
+        source = self.src[p]
+        self.assertEqual(counts(source), (2, 0, 1, 0, 1, 0, 0))
+        for signal in ("V7WriterAdmission", "_sealed", "fictional_ram_only",
+                       "PreparedV7Writer", "SyncSender<Command>", "sync_channel(QUEUE_CAPACITY)",
+                       "TransactionBehavior::Immediate", "set_transaction_behavior",
+                       "try_send", "busy_timeout", "fn stop_worker",
+                       "m32_v7_writer_prepared_two_clients_one_connection_ordered",
+                       "m32_v7_writer_prepared_shutdown_revokes_cloned_clients"):
+            self.assertIn(signal, source)
+        for forbidden in ("#[tauri::command]", "Connection::open(",
+                          "Connection::open_with_flags", "database::open_database(",
+                          "SQLITE_FCNTL_WIN32_SET_HANDLE", "migration_007", "&Path"):
+            self.assertNotIn(forbidden, source)
+        lib = self.src["src-tauri/src/lib.rs"]
+        self.assertIn("mod m32_v7_writer_service;", lib)
+        self.assertNotIn("m32_v7_writer_service::", lib)
+        self.assertEqual(repository_inventory()["writer_absence"], "NOT_PROVEN")
+
 if __name__ == "__main__":
     unittest.main()
