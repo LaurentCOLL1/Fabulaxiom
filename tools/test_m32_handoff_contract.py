@@ -4697,5 +4697,64 @@ class HandoffContractTests(unittest.TestCase):
         self.assertIn('self.assertEqual(source.count("#[test]"), 18)', guards)
         self.assertEqual(candidate["operator_execution"], "NO_OPERATOR_EXECUTION")
 
+    def test_150_p1_d3_design_separates_volatile_mutex_wal_shm_crash_from_runtime(self):
+        name = "M3_2_V7_P1_D3_WAL_SHM_LIFECYCLE_CRASH_RESTART_DESIGN_20261028.md"
+        d3 = self.data["next_p1_d3_wal_shm_crash_restart_documentary_20261028"]
+        doc = (ROOT / "docs/qualification" / name).read_text(encoding="utf-8")
+        self.assertEqual(d3["previous_pr_head_sha"], "c42a6f40caca52550fa485851c0131f84859f651")
+        self.assertEqual(d3["previous_ci_run"], 40753334640)
+        self.assertEqual(d3["previous_ci_conclusion"], "SUCCESS")
+        self.assertEqual(d3["previous_ci_counts"], {
+            "rust": 216, "greenfield": 7, "sqlite_guards": 41,
+            "continuity_contracts": 149
+        })
+        self.assertTrue(d3["previous_d2_disposable_source_qualified"])
+        self.assertEqual(d3["continuity_contracts_expected"], 150)
+        self.assertEqual(d3["new_rust_fixture_tests"], 0)
+        for key in ("d3a_wal_shm_disposable_windows_fixture_authorized",
+                    "d3b_crash_restart_disposable_windows_fixture_authorized",
+                    "d3_production_authorized", "candidate_ci_qualified",
+                    "operator_sqlite_access", "named_mutex_is_durable_handoff_proof",
+                    "fresh_mutex_after_last_handle_close_proves_clean_close",
+                    "wait_abandoned_sole_crash_detector",
+                    "manual_wal_shm_deletion_authorized",
+                    "sqlite3_close_v2_ok_proves_immediate_resource_free",
+                    "authenticated_predecessor_restart_proven",
+                    "wal_shm_full_custody_proven", "r1_r9_production_proven",
+                    "production_writer_authorized", "persistent_marker_authorized",
+                    "m4_m5_m6_m7_runtime_authorized",
+                    "ollama_direct_sqlite_access_authorized"):
+            self.assertFalse(d3[key], key)
+        self.assertTrue(d3["wal_file_may_contain_committed_transactions"])
+        self.assertEqual(d3["writer"], "NOT_PROVEN")
+        self.assertEqual(d3["a0_existing_profile_cross_process"], "STOP")
+        self.assertEqual(d3["operator_execution"], "NO_OPERATOR_EXECUTION")
+        self.assertEqual(d3["next_authorization_request"],
+                         "D3A_WINDOWS_CI_DISPOSABLE_WAL_SHM_ONLY_SEPARATE_APPROVAL_REQUIRED")
+        for phrase in ("D3 P1 WAL/SHM", "D3a-1", "D3a-2", "D3b-1",
+                       "D3b-2", "D3b-5", "last handle closes",
+                       "fresh mutex", "WAIT_ABANDONED", "sqlite3_close_v2()",
+                       "SQLITE_BUSY", "xShmMap", "xShmLock", "xShmBarrier",
+                       "xShmUnmap", "checkpoint", "FileId128", "WAL",
+                       "RECOVERY_REQUIRED_NOT_AUTHORIZED", "216/216 Rust",
+                       "149/149 continuity contracts", "NOT_AUTHORIZED",
+                       "A0_STOP", "APPROVE_CANON", "Ollama", "NOT_PROVEN"):
+            self.assertIn(phrase.lower(), doc.lower(), phrase)
+        for filename in ("RESUME_PROMPT.md", "HANDOFF_CURRENT.md",
+                         "HANDOFF_PROTOCOL.md", "HANDOFF_HISTORY.md",
+                         "STATE.md", "NEXT.md", "M3_2_GATE_DECISION_CURRENT.md",
+                         "README.md"):
+            self.assertIn(name, (DIRECTORY / filename).read_text(encoding="utf-8"))
+        for filename in ("ROADMAP_STATUS_CURRENT.md", "FABULAXIOM_ROADMAP_V1.md"):
+            self.assertIn(name, (ROOT / "docs/roadmap" / filename).read_text(encoding="utf-8"))
+        short = (DIRECTORY / "RESUME_PROMPT_SHORT.md").read_text(encoding="utf-8")
+        self.assertLess(len(short), 4200)
+        self.assertIn("40753334640", short)
+        self.assertIn("216/7/41/150 ATTENDUS NON QUALIFIÉS", short)
+        rust = (ROOT / "src-tauri/src/m32_sqlite_vfs_preopen_tests.rs").read_text(encoding="utf-8")
+        self.assertEqual(rust.count("#[test]"), 18)
+        self.assertNotIn("V7WriterAdmission {", rust)
+
+
 if __name__ == "__main__":
     unittest.main()
