@@ -4574,5 +4574,54 @@ class HandoffContractTests(unittest.TestCase):
         writer = (ROOT / "src-tauri/src/m32_v7_writer_service.rs").read_text(encoding="utf-8")
         self.assertIn("#[cfg(test)]", writer)
 
+    def test_148_p1_single_owner_session_proof_plan_is_documentary_only(self):
+        name = "M3_2_V7_P1_SINGLE_OWNER_SESSION_PROOF_PLAN_20261028.md"
+        doc = (ROOT / "docs/qualification" / name).read_text(encoding="utf-8")
+        previous = (ROOT / "docs/qualification/M3_2_V7_PRODUCTION_WRITER_CUSTODY_DESIGN_STUDY_20261028.md").read_text(encoding="utf-8")
+        roadmap = (ROOT / "docs/roadmap/FABULAXIOM_ROADMAP_V1.md").read_text(encoding="utf-8")
+        candidate = self.data["next_p1_single_owner_session_proof_plan_20261028"]
+        self.assertEqual(candidate["previous_pr_head_sha"], "85884e0ffd491066bec862d02bec38cfc79d4ecd")
+        self.assertEqual(candidate["previous_ci_run"], 40744154704)
+        self.assertEqual(candidate["previous_qualified_counts"]["continuity_contracts"], 147)
+        self.assertEqual(candidate["continuity_contracts_expected"], 148)
+        for key in ("single_rust_owned_connection_design",
+                    "ollama_in_memory_versioned_context_design",
+                    "same_sid_processes_trusted", "p1_architecture_selected"):
+            self.assertTrue(candidate[key], key)
+        for key in ("separate_readonly_sqlite_connection_authorized",
+                    "ollama_model_direct_sqlite_access", "wal_shm_custody_proven",
+                    "namespace_open_atomic_proven", "crash_restart_proven",
+                    "r1_r9_production_proven", "windows_disposable_proof_authorized",
+                    "production_writer_authorized", "m4_m5_m6_m7_runtime_authorized",
+                    "candidate_ci_qualified"):
+            self.assertFalse(candidate[key], key)
+        self.assertEqual(candidate["writer"], "NOT_PROVEN")
+        self.assertEqual(candidate["a0_existing_profile_cross_process"], "STOP")
+        for signal in ("NO IMPLEMENTATION OR OPERATOR AUTHORITY",
+                       "same Windows SID", "P1", "P2", "A0_STOP",
+                       "CLAIM_PROVISIONAL", "OPENED_UNVERIFIED",
+                       "SIDECARS_UNVERIFIED", "IDENTITY_BOUND_UNADMITTED",
+                       "SESSION_ADMITTED", "QUIESCING", "CLOSED_ATTESTED",
+                       "RECOVERY_REQUIRED_NOT_AUTHORIZED", "WAIT_ABANDONED",
+                       "xOpen", "xClose", "xShmMap", "xShmLock", "xShmUnmap",
+                       "WAL", "SHM", "FileId128", "R1", "R2", "R3", "R4",
+                       "R5", "R6", "R7", "R8", "R9", "Ollama",
+                       "NarrativeContextPacket", "APPROVE_CANON",
+                       "source", "no second", "separate owner runtime authorization",
+                       "no operator"):
+            self.assertIn(signal.lower(), doc.lower(), signal)
+        self.assertIn(name, previous)
+        self.assertIn("single Rust-owned SQLite session", roadmap)
+        for filename in ("RESUME_PROMPT.md", "HANDOFF_CURRENT.md",
+                         "HANDOFF_PROTOCOL.md", "HANDOFF_HISTORY.md",
+                         "STATE.md", "NEXT.md", "M3_2_GATE_DECISION_CURRENT.md"):
+            content = (DIRECTORY / filename).read_text(encoding="utf-8")
+            self.assertIn(name, content, filename)
+        short = (DIRECTORY / "RESUME_PROMPT_SHORT.md").read_text(encoding="utf-8")
+        self.assertIn("148 ATTENDUS NON QUALIFIÉS PAS PASS", short)
+        self.assertIn("40744154704", short)
+        writer = (ROOT / "src-tauri/src/m32_v7_writer_service.rs").read_text(encoding="utf-8")
+        self.assertIn("#[cfg(test)]", writer)
+
 if __name__ == "__main__":
     unittest.main()

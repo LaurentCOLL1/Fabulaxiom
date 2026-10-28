@@ -2,6 +2,8 @@
 
 **28 October 2026 — DESIGN STUDY ONLY; NOT IMPLEMENTATION AUTHORITY.** Laurent explicitly authorized this next architectural study after terminal PR #214. This document is a proposal to review; it has no executable Win32/SQLite runtime code, operator procedure, durable marker, schema change or writer admission. A source CI run of this document and its drift contract would qualify **documentation only**, not any safety property of a production writer.
 
+**Next documentary artifact:** the [P1 single-owner session proof plan](M3_2_V7_P1_SINGLE_OWNER_SESSION_PROOF_PLAN_20261028.md) narrows the chosen topology to one Rust-owned SQLite connection, proposes an owner-generation state machine and R1–R9 evidence ledger, and avoids any *new* read-only SQLite connection for future Ollama context packets. It is a proposed design slice only; do not infer xOpen/WAL/restart success or production authority from documentary CI.
+
 ## Owner decision — P1 selected; same-SID Windows processes trusted (28 October 2026)
 
 **Laurent's decision:** all other processes belonging to the **same Windows user SID** are considered **trusted/cooperative** for the bounded single-user product threat model. Deliberately hostile same-SID processes are outside that threat model, **not technically prevented** from accessing same-SID-owned files by a mutex or ordinary DACL. Accidentally concurrent processes, crash/restart, cross-principal access, namespace changes, identity mismatch and WAL/SHM still require controls.
