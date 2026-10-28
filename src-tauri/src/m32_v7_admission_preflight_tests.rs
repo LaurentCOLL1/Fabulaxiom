@@ -6,7 +6,7 @@ use std::{
     fs::{self, OpenOptions},
     io,
     path::{Path, PathBuf},
-    process,
+    process::{self, Command},
     sync::{atomic::{AtomicU64, Ordering}, Arc, Barrier},
     thread,
     time::{SystemTime, UNIX_EPOCH},
@@ -43,7 +43,7 @@ fn observe_disposable_explicit_close(connection: Connection) -> Result<Lifecycle
 #[derive(Debug, Eq, PartialEq)]
 enum Refusal {
     Missing, AlreadyExists, SidecarPresent, ForeignSchema,
-    ForeignKeyViolation, HandoffNotAtomic,
+    ForeignKeyViolation, IntegrityFailed, HandoffNotAtomic,
     OutsideOwnedRoot, UnsafeOwnedAncestor,
     LifecycleUnproven,
 }
@@ -95,6 +95,148 @@ fn reject_foreign_fixture(connection: &Connection) -> Result<(), Refusal> {
         .map_err(|_| Refusal::ForeignKeyViolation)?;
     if violations != 0 { return Err(Refusal::ForeignKeyViolation); }
     Ok(())
+}
+
+// A3 is a read-only *veto* on a separately created disposable fixture.
+// No result from these PRAGMAs authenticates lineage or grants a writer token.
+fn a3_disposable_integrity_veto(connection: &Connection) -> Result<(), Refusal> {
+    let integrity: String = connection.query_row("PRAGMA integrity_check", [], |r| r.get(0))
+        .map_err(|_| Refusal::IntegrityFailed)?;
+    if integrity != "ok" { return Err(Refusal::IntegrityFailed); }
+    reject_foreign_fixture(connection)
+}
+
+// A2 uses Win32 kernel objects ONLY in Windows Rust tests. Its random Local
+// name is deliberately not a production name or reviewed security descriptor.
+mod a2_disposable_mutex {
+    use super::*;
+    use std::{ffi::c_void, os::windows::ffi::OsStrExt, ffi::OsStr};
+
+    type Handle = *mut c_void;
+    const WAIT_OBJECT_0: u32 = 0;
+    const WAIT_ABANDONED: u32 = 0x80;
+    const WAIT_TIMEOUT: u32 = 0x102;
+    const ERROR_ALREADY_EXISTS: u32 = 183;
+
+    #[link(name = "kernel32")]
+    unsafe extern "system" {
+        fn CreateMutexW(attributes: *mut c_void, initial_owner: i32, name: *const u16) -> Handle;
+        fn WaitForSingleObject(handle: Handle, milliseconds: u32) -> u32;
+        fn ReleaseMutex(handle: Handle) -> i32;
+        fn CloseHandle(handle: Handle) -> i32;
+        fn GetLastError() -> u32;
+    }
+
+    struct Mutex(Handle);
+    impl Drop for Mutex { fn drop(&mut self) { unsafe { CloseHandle(self.0); } } }
+    fn create(name: &str) -> (Mutex, bool) {
+        let wide: Vec<u16> = OsStr::new(name).encode_wide().chain(Some(0)).collect();
+        let handle = unsafe { CreateMutexW(std::ptr::null_mut(), 0, wide.as_ptr()) };
+        assert!(!handle.is_null(), "fixture-only CreateMutexW failed");
+        let preexisting = unsafe { GetLastError() == ERROR_ALREADY_EXISTS };
+        (Mutex(handle), preexisting)
+    }
+    fn wait(mutex: &Mutex) -> u32 { unsafe { WaitForSingleObject(mutex.0, 0) } }
+    fn release(mutex: &Mutex) { assert_ne!(unsafe { ReleaseMutex(mutex.0) }, 0); }
+    fn name() -> String {
+        let tick = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_nanos();
+        format!("Local\\Fabulaxiom-A2-Disposable-{}-{tick}-{}", process::id(),
+            NEXT_ROOT.fetch_add(1, Ordering::Relaxed))
+    }
+    fn child(mode: &str, name: &str) -> bool {
+        Command::new(std::env::current_exe().unwrap())
+            .arg("--exact")
+            .arg("m32_v7_admission_preflight_tests::m32_a2_child_fixture_only")
+            .arg("--nocapture")
+            .env("FABULAXIOM_A2_CHILD_MODE", mode)
+            .env("FABULAXIOM_A2_CHILD_NAME", name)
+            .status().unwrap().success()
+    }
+
+    pub(super) fn child_probe() {
+        let Ok(mode) = std::env::var("FABULAXIOM_A2_CHILD_MODE") else { return };
+        let name = std::env::var("FABULAXIOM_A2_CHILD_NAME").unwrap();
+        let (mutex, preexisting) = create(&name);
+        assert!(preexisting, "child must see the same live object");
+        match mode.as_str() {
+            "contended" => assert_eq!(wait(&mutex), WAIT_TIMEOUT),
+            "free" => { assert_eq!(wait(&mutex), WAIT_OBJECT_0); release(&mutex); },
+            "abandon" => {
+                assert_eq!(wait(&mutex), WAIT_OBJECT_0);
+                // Intentional abrupt termination of the *child only*; no SQLite involved.
+                process::exit(0);
+            }
+            _ => panic!("unexpected fixture-only child mode"),
+        }
+    }
+
+    pub(super) fn competing_processes() {
+        let name = name();
+        let (mutex, existed) = create(&name);
+        assert!(!existed, "unexpected pre-created object: STOP");
+        assert_eq!(wait(&mutex), WAIT_OBJECT_0);
+        assert!(child("contended", &name));
+        release(&mutex);
+        assert!(child("free", &name));
+        assert_eq!(deny_unbound_handoff(), Err(Refusal::HandoffNotAtomic));
+    }
+
+    pub(super) fn abandoned_and_precreated_stop() {
+        let name = name();
+        let (mutex, existed) = create(&name);
+        assert!(!existed);
+        let (_second, precreated) = create(&name);
+        assert!(precreated, "unexpected existing named object must never imply ownership");
+        assert!(child("abandon", &name));
+        assert_eq!(wait(&mutex), WAIT_ABANDONED);
+        // Ownership after WAIT_ABANDONED is NOT proof of clean shutdown.
+        assert_eq!(lifecycle_preflight_mode(LifecycleObservation::UncertainAfterCrash),
+            Err(Refusal::LifecycleUnproven));
+        release(&mutex);
+        assert_eq!(deny_unbound_handoff(), Err(Refusal::HandoffNotAtomic));
+    }
+}
+
+#[test]
+fn m32_a2_child_fixture_only() { a2_disposable_mutex::child_probe(); }
+
+#[test]
+fn m32_s2_a2_two_cooperating_processes_are_not_writer_admission() {
+    a2_disposable_mutex::competing_processes();
+}
+
+#[test]
+fn m32_s2_a2_abandoned_and_precreated_named_object_stop() {
+    a2_disposable_mutex::abandoned_and_precreated_stop();
+}
+
+#[test]
+fn m32_s2_a3_corrupted_disposable_sqlite_is_vetoed() {
+    let owned = Disposable::new(); owned.prepare(); let db = owned.db();
+    let connection = Connection::open(&db).unwrap();
+    connection.execute_batch("CREATE TABLE imaginary(id INTEGER PRIMARY KEY);").unwrap();
+    observe_disposable_explicit_close(connection).unwrap();
+    // Corrupt only a fresh test-owned file, never a profile or operator file.
+    fs::write(&db, b"not a sqlite database -- invented corruption").unwrap();
+    match Connection::open_with_flags(&db, OpenFlags::SQLITE_OPEN_READ_ONLY) {
+        Ok(read) => assert_eq!(a3_disposable_integrity_veto(&read), Err(Refusal::IntegrityFailed)),
+        Err(_) => {}, // Refusal at open is at least as strict as an integrity veto.
+    }
+    assert_eq!(deny_unbound_handoff(), Err(Refusal::HandoffNotAtomic));
+}
+
+#[test]
+fn m32_s2_a3_wal_sidecar_ambiguity_stops_before_open() {
+    let owned = Disposable::new(); owned.prepare(); let db = owned.db();
+    let connection = Connection::open(&db).unwrap();
+    connection.execute_batch("CREATE TABLE imaginary(id INTEGER PRIMARY KEY);").unwrap();
+    observe_disposable_explicit_close(connection).unwrap();
+    let wal = db.with_file_name("fabulaxiom.sqlite3-wal");
+    fs::write(&wal, b"invented ambiguous recovery record").unwrap();
+    assert_eq!(owned_namespace_preflight(&owned, &db, AdmissionMode::ExistingProfile),
+        Err(Refusal::SidecarPresent));
+    assert_eq!(fs::read(&wal).unwrap(), b"invented ambiguous recovery record");
+    assert_eq!(deny_unbound_handoff(), Err(Refusal::HandoffNotAtomic));
 }
 
 static NEXT_ROOT: AtomicU64 = AtomicU64::new(0);
