@@ -49,7 +49,9 @@ EXPECTED = {
     # predelegation positive/stale refusal/controlled postcheck swap witness.
     # +2 more explicitly claimed disposable RW connections test WAL refusal
     # and xShmMap's absence from the xOpen-only interception surface.
-    "src-tauri/src/m32_sqlite_vfs_preopen_tests.rs": (8, 0, 0, 0, 0, 9, 0),
+    # +2 further RW fixture calls exercise an aligned test-only io_methods
+    # xShmMap wrapper, one fail-closed and one controlled delegation.
+    "src-tauri/src/m32_sqlite_vfs_preopen_tests.rs": (10, 0, 0, 0, 0, 11, 0),
     "src-tauri/src/m32_owner_handoff_actor_toy.rs": (2, 0, 0, 0, 1, 0, 0),
     "src-tauri/src/m32_owner_lifecycle_toy.rs": (4, 0, 0, 0, 1, 0, 0),
     "src-tauri/src/review_commands.rs": (0, 1, 0, 0, 0, 0, 0),

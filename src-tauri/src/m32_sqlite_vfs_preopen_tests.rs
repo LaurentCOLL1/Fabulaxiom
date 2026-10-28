@@ -1,6 +1,8 @@
 //! Disposable Windows SQLite VFS boundary experiment, compiled only as tests.
 //! A refusal at xOpen precedes default-VFS delegation; a post-xOpen FileId
 //! check does not. This does NOT authenticate any Windows operator profile.
+//! A separate disposable xShmMap probe uses extra SQLite-allocated file bytes
+//! and an IO-methods copy; it is NOT a production VFS or an atomic opener.
 
 use rusqlite::{ffi, Connection, OpenFlags};
 use std::{
@@ -85,6 +87,11 @@ impl Drop for DisposableRoot {
 struct FixtureVfs {
     dispatch: ffi::sqlite3_vfs,
     default_vfs: *mut ffi::sqlite3_vfs,
+    file_tail_offset: usize,
+    wrap_main_shm: bool,
+    deny_shm: AtomicBool,
+    shm_map_refusals: AtomicUsize,
+    shm_map_delegations: AtomicUsize,
     allow_main_db: AtomicBool,
     deny_journal: AtomicBool,
     deny_wal: AtomicBool,
@@ -99,6 +106,40 @@ struct FixtureVfs {
     precheck_acceptances: AtomicUsize,
     precheck_refusals: AtomicUsize,
     swaps_after_precheck: AtomicUsize,
+}
+
+// The default Win32 sqlite3_file occupies the first default_vfs.szOsFile bytes.
+// SQLite allocates our larger dispatch.szOsFile; this aligned tail belongs to
+// the *same disposable file object*, not to a process-global map. Its copied
+// method table changes ONLY xShmMap, all other Win32 methods stay delegated.
+#[repr(C)]
+struct FixtureMainFileTail {
+    methods: ffi::sqlite3_io_methods,
+    original_methods: *const ffi::sqlite3_io_methods,
+    vfs: *const FixtureVfs,
+}
+
+unsafe extern "C" fn fixture_xshm_map(
+    file: *mut ffi::sqlite3_file,
+    page: c_int,
+    page_size: c_int,
+    extend: c_int,
+    mapped: *mut *mut c_void,
+) -> c_int {
+    // The copied io_methods table is the FIRST field of our aligned file tail.
+    let tail = unsafe { &*((*file).pMethods as *const FixtureMainFileTail) };
+    let gate = unsafe { &*tail.vfs };
+    if gate.deny_shm.load(Ordering::SeqCst) {
+        gate.shm_map_refusals.fetch_add(1, Ordering::SeqCst);
+        unsafe { *mapped = ptr::null_mut() };
+        return ffi::SQLITE_IOERR_SHMMAP;
+    }
+    gate.shm_map_delegations.fetch_add(1, Ordering::SeqCst);
+    let Some(original) = (unsafe { (*tail.original_methods).xShmMap }) else {
+        unsafe { *mapped = ptr::null_mut() };
+        return ffi::SQLITE_IOERR_SHMMAP;
+    };
+    unsafe { original(file, page, page_size, extend, mapped) }
 }
 
 // SAFETY: SQLite invokes xOpen through this C ABI. The pointer was registered
@@ -167,7 +208,32 @@ unsafe extern "C" fn fixture_xopen(
         unsafe { (*file).pMethods = ptr::null() };
         return ffi::SQLITE_CANTOPEN;
     };
-    unsafe { delegated_open(gate.default_vfs, name, file, flags, out_flags) }
+    let result = unsafe { delegated_open(gate.default_vfs, name, file, flags, out_flags) };
+    if result == ffi::SQLITE_OK && flags & ffi::SQLITE_OPEN_MAIN_DB != 0 && gate.wrap_main_shm {
+        let original = unsafe { (*file).pMethods };
+        if original.is_null() || unsafe { (*original).iVersion } < 2
+            || (unsafe { (*original).xShmMap }).is_none()
+        {
+            if !original.is_null() {
+                if let Some(close) = unsafe { (*original).xClose } {
+                    let _ = unsafe { close(file) };
+                }
+            }
+            unsafe { (*file).pMethods = ptr::null() };
+            return ffi::SQLITE_CANTOPEN;
+        }
+        let tail = unsafe { (file as *mut u8).add(gate.file_tail_offset) }
+            as *mut FixtureMainFileTail;
+        let mut methods = unsafe { ptr::read(original) };
+        methods.xShmMap = Some(fixture_xshm_map);
+        unsafe {
+            ptr::write(tail, FixtureMainFileTail {
+                methods, original_methods: original, vfs: gate,
+            });
+            (*file).pMethods = &(*tail).methods;
+        }
+    }
+    result
 }
 
 struct RegisteredFixtureVfs {
@@ -193,6 +259,17 @@ impl RegisteredFixtureVfs {
         allow_main_db: bool, deny_journal: bool, deny_wal: bool,
         precheck: Option<FileIdPrecheckPlan>,
     ) -> Self {
+        Self::with_policy(allow_main_db, deny_journal, deny_wal, precheck, None)
+    }
+
+    fn with_shm_policy(deny_shm: bool) -> Self {
+        Self::with_policy(true, false, false, None, Some(deny_shm))
+    }
+
+    fn with_policy(
+        allow_main_db: bool, deny_journal: bool, deny_wal: bool,
+        precheck: Option<FileIdPrecheckPlan>, shm_policy: Option<bool>,
+    ) -> Self {
         // Distinct registered names avoid interfering with other parallel
         // SQLite tests, and makeDflt=0 never changes the process default.
         static NEXT: AtomicUsize = AtomicUsize::new(0);
@@ -200,9 +277,19 @@ impl RegisteredFixtureVfs {
             process::id(), NEXT.fetch_add(1, Ordering::Relaxed))).unwrap();
         let default_vfs = unsafe { ffi::sqlite3_vfs_find(ptr::null()) };
         assert!(!default_vfs.is_null(), "SQLite default VFS unavailable");
+        let default_file_size = unsafe { (*default_vfs).szOsFile } as usize;
+        let tail_align = std::mem::align_of::<FixtureMainFileTail>();
+        let file_tail_offset = default_file_size.div_ceil(tail_align) * tail_align;
+        let wrapped_file_size = file_tail_offset + std::mem::size_of::<FixtureMainFileTail>();
+        assert!(wrapped_file_size <= c_int::MAX as usize);
         let mut state = Box::new(FixtureVfs {
             dispatch: unsafe { ptr::read(default_vfs) },
             default_vfs,
+            file_tail_offset,
+            wrap_main_shm: shm_policy.is_some(),
+            deny_shm: AtomicBool::new(shm_policy.unwrap_or(false)),
+            shm_map_refusals: AtomicUsize::new(0),
+            shm_map_delegations: AtomicUsize::new(0),
             allow_main_db: AtomicBool::new(allow_main_db),
             deny_journal: AtomicBool::new(deny_journal),
             deny_wal: AtomicBool::new(deny_wal),
@@ -219,6 +306,9 @@ impl RegisteredFixtureVfs {
         });
         state.dispatch.pNext = ptr::null_mut();
         state.dispatch.zName = name.as_ptr();
+        if shm_policy.is_some() {
+            state.dispatch.szOsFile = wrapped_file_size as c_int;
+        }
         state.dispatch.xOpen = Some(fixture_xopen);
         assert_eq!(unsafe { ffi::sqlite3_vfs_register(&mut state.dispatch, 0) }, ffi::SQLITE_OK);
         Self { state, _name: name }
@@ -372,5 +462,43 @@ fn m32_vfs_fixture_wal_xopen_does_not_cover_shm_mapping() {
         "default Windows xShmMap creates the owned WAL index while the connection lives");
     assert_eq!(gate.state.shm_named_xopens.load(Ordering::SeqCst), 0,
         "a name-only xOpen policy did not authorize or intercept -shm");
+    drop(db);
+}
+
+#[test]
+fn m32_vfs_fixture_wrapped_shm_map_refuses_before_default_mapping() {
+    let owned = DisposableRoot::new();
+    let path = owned.db();
+    fs::OpenOptions::new().write(true).create_new(true).open(&path).unwrap();
+    let gate = RegisteredFixtureVfs::with_shm_policy(true);
+    let db = Connection::open_with_flags_and_vfs(&path, OpenFlags::SQLITE_OPEN_READ_WRITE, gate.name())
+        .expect("owned fixture, wrapped main-file methods");
+    let switch = db.execute_batch("PRAGMA journal_mode=WAL;");
+    if switch.is_ok() {
+        assert!(db.execute_batch("CREATE TABLE invented(id INTEGER PRIMARY KEY);").is_err());
+    }
+    assert!(gate.state.shm_map_refusals.load(Ordering::SeqCst) >= 1);
+    assert_eq!(gate.state.shm_map_delegations.load(Ordering::SeqCst), 0);
+    assert!(!owned.0.join("new.sqlite3-shm").exists(),
+        "the default Windows xShmMap was not reached to create the WAL index");
+    drop(db);
+}
+
+#[test]
+fn m32_vfs_fixture_wrapped_shm_map_delegates_disposable_wal() {
+    let owned = DisposableRoot::new();
+    let path = owned.db();
+    fs::OpenOptions::new().write(true).create_new(true).open(&path).unwrap();
+    let gate = RegisteredFixtureVfs::with_shm_policy(false);
+    let db = Connection::open_with_flags_and_vfs(&path, OpenFlags::SQLITE_OPEN_READ_WRITE, gate.name())
+        .expect("owned fixture, wrapped main-file methods");
+    let mode: String = db.query_row("PRAGMA journal_mode=WAL", [], |r| r.get(0)).unwrap();
+    assert_eq!(mode.to_ascii_lowercase(), "wal");
+    db.execute_batch("CREATE TABLE invented(id INTEGER PRIMARY KEY);").unwrap();
+    assert!(gate.state.shm_map_delegations.load(Ordering::SeqCst) >= 1);
+    assert_eq!(gate.state.shm_map_refusals.load(Ordering::SeqCst), 0);
+    assert!(owned.0.join("new.sqlite3-shm").exists());
+    assert_eq!(gate.state.shm_named_xopens.load(Ordering::SeqCst), 0,
+        "the io_methods hook, not the xOpen filename hook, mediated WAL mapping");
     drop(db);
 }

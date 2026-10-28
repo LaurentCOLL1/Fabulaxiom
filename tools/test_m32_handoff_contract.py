@@ -4238,7 +4238,7 @@ class HandoffContractTests(unittest.TestCase):
                        "179 Rust", "133 contrats", "writer"):
             self.assertIn(signal, doc)
         fixture = (ROOT / candidate["rust_fixture"]).read_text(encoding="utf-8")
-        self.assertEqual(fixture.count("#[test]"), 8)
+        self.assertGreaterEqual(fixture.count("#[test]"), 8)
         self.assertIn("SQLITE_OPEN_WAL", fixture)
         self.assertIn("xShmMap", fixture)
         for filename in ("RESUME_PROMPT_SHORT.md", "RESUME_PROMPT.md", "HANDOFF_CURRENT.md",
@@ -4251,5 +4251,47 @@ class HandoffContractTests(unittest.TestCase):
             body = (ROOT / "docs/roadmap" / filename).read_text(encoding="utf-8")
             self.assertIn("40595455638", body, filename)
             self.assertIn("M3_2_SQLITE_VFS_WAL_SHM_BOUNDARY_20261028.md", body, filename)
+
+    def test_134_pr202_terminal_and_xshmmap_wrapper_fixture_candidate(self):
+        terminal = self.data["post_pr202_terminal_observation"]
+        self.assertEqual(terminal["pr"], 202)
+        self.assertEqual(terminal["source_sha"], "8288c26c1ca7c4477c86d1a51713e931751f6b8a")
+        self.assertEqual(terminal["source_ci"], {"run_id": 40609906017, "conclusion": "SUCCESS"})
+        self.assertEqual(terminal["merge_sha"], "60ca76331d45062317cf2b4794a06733becca1d7")
+        self.assertEqual(terminal["postmain_ci"], {"run_id": 40611263489, "conclusion": "SUCCESS"})
+        self.assertEqual(tuple(terminal[key] for key in ("rust_base_tests", "greenfield_runner_tests",
+                                                  "sqlite_inventory_tests", "handoff_tests")),
+                         (179, 7, 39, 133))
+        self.assertEqual(terminal["issue38_terminal_comment"], 6457823553)
+        self.assertTrue(terminal["protect_main_active_strict"])
+        candidate = self.data["next_m32_vfs_shm_methods_wrapper_candidate_20261028"]
+        self.assertEqual(candidate["base_main_sha"], terminal["merge_sha"])
+        self.assertEqual(tuple(candidate[key] for key in ("rust_base_tests_expected",
+            "greenfield_runner_tests_expected", "sqlite_inventory_tests_expected",
+            "handoff_tests_expected")), (181, 7, 40, 134))
+        for key in ("candidate_ci_qualified", "production_v7_opener_implemented",
+            "atomic_sqlite_pre_xopen_proven", "writer_absence_proven", "operator_sqlite_access",
+            "native_hello_authorized", "migration_007_authorized", "writer_ipc_authorized"):
+            self.assertFalse(candidate[key], key)
+        self.assertEqual(candidate["operator_execution"], "NO_OPERATOR_EXECUTION")
+        self.assertEqual(candidate["profile_identifier"], "com.fabulaxiom.greenfield.v1")
+        self.assertEqual(candidate["real_g3"], "STOP_UNAVAILABLE")
+        doc = (ROOT / candidate["qualification"]).read_text(encoding="utf-8")
+        for signal in ("NON QUALIFIÉE", "xShmMap", "io_methods", "181 Rust", "134 contrats",
+                       "writer", "szOsFile"):
+            self.assertIn(signal, doc)
+        fixture = (ROOT / candidate["rust_fixture"]).read_text(encoding="utf-8")
+        self.assertEqual(fixture.count("#[test]"), 10)
+        self.assertIn("fixture_xshm_map", fixture)
+        for filename in ("RESUME_PROMPT_SHORT.md", "RESUME_PROMPT.md", "HANDOFF_CURRENT.md",
+                         "HANDOFF_PROTOCOL.md", "HANDOFF_HISTORY.md", "NEXT.md", "STATE.md",
+                         "M3_2_GATE_DECISION_CURRENT.md", "README.md"):
+            body = (DIRECTORY / filename).read_text(encoding="utf-8")
+            self.assertIn("40611263489", body, filename)
+            self.assertIn("M3_2_SQLITE_VFS_SHM_IO_METHODS_WRAPPER_20261028.md", body, filename)
+        for filename in ("ROADMAP_STATUS_CURRENT.md", "FABULAXIOM_ROADMAP_V1.md"):
+            body = (ROOT / "docs/roadmap" / filename).read_text(encoding="utf-8")
+            self.assertIn("40611263489", body, filename)
+            self.assertIn("M3_2_SQLITE_VFS_SHM_IO_METHODS_WRAPPER_20261028.md", body, filename)
 if __name__ == "__main__":
     unittest.main()
