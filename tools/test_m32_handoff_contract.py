@@ -4709,6 +4709,10 @@ class HandoffContractTests(unittest.TestCase):
             "continuity_contracts": 149
         })
         self.assertTrue(d3["previous_d2_disposable_source_qualified"])
+        self.assertEqual(d3["first_source_ci_run"], 40758059521)
+        self.assertEqual(d3["first_source_ci_conclusion"],
+                         "FAILURE_HISTORIC_SHORT_PROMPT_FILES_134_135")
+        self.assertTrue(d3["short_prompt_historic_references_restored"])
         self.assertEqual(d3["continuity_contracts_expected"], 150)
         self.assertEqual(d3["new_rust_fixture_tests"], 0)
         for key in ("d3a_wal_shm_disposable_windows_fixture_authorized",

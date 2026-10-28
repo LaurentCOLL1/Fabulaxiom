@@ -1,5 +1,7 @@
 # M3.2 v7 — D3 P1 WAL/SHM custody and crash/restart: bounded design, no executable proof
 
+**28 octobre 2026 — D3 PREMIÈRE CI #40758059521 FAILURE (CONTRATS HISTORIQUES DU PROMPT COURT) :** source `bf503d8484dc984f2c2db5f287477429585b843a` NON QUALIFIÉE. Le compactage du prompt COURT avait supprimé deux noms de fichiers de référence exigés par les contrats #134 (`M3_2_SQLITE_VFS_SHM_IO_METHODS_WRAPPER_20261028.md`) et #135 (`M3_2_V7_RUST_SINGLE_OWNER_WRITER_PREPARATION_20261028.md`) ; ils sont restaurés sans relâcher les assertions, prompt maintenu sous 4 200 caractères/octets CRLF Windows. Pas d'échec Rust D2 imputé. Nouveau HEAD et CI SHA exacte obligatoires ; **216/7/41/150 ATTENDUS NON QUALIFIÉS PAS PASS**. R1–R9 production, A0/writer et D3a/D3b restent STOP/NOT_AUTHORIZED.
+
 **28 October 2026 — DOCUMENTARY FOLLOW-ON ONLY, NOT D3 FIXTURE OR RUNTIME AUTHORIZATION.** Owner request "Continue" follows the separately authorized and CI-qualified **D2 disposable Windows fixtures** in [draft PR #215](https://github.com/LaurentCOLL1/Fabulaxiom/pull/215). This document specifies the *next proposed proof* and refusal criteria. It does not run Windows tests, modify Rust/SQLite, open an operator profile, approve recovery, create persistent markers, or grant writer admission.
 
 ## 1. Verified starting point and threat boundary
