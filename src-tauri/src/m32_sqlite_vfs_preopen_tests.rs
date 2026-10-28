@@ -61,6 +61,9 @@ fn sqlite_opened_file_id_128(db: &Connection) -> Result<(u64, [u8; 16]), String>
 struct FileIdPrecheckPlan {
     path: PathBuf,
     expected: (u64, [u8; 16]),
+    // Experimental in-xOpen *veto*: verify the delegated handle before this
+    // callback returns to SQLite, never manufacture runtime writer admission.
+    check_delegated_handle: bool,
     // A controlled fixture-only move between a successful precheck and the
     // default VFS xOpen, to make the TOCTOU gap deterministic.
     move_original_to: Option<PathBuf>,
@@ -106,6 +109,8 @@ struct FixtureVfs {
     precheck_acceptances: AtomicUsize,
     precheck_refusals: AtomicUsize,
     swaps_after_precheck: AtomicUsize,
+    delegated_handle_matches: AtomicUsize,
+    delegated_handle_refusals: AtomicUsize,
 }
 
 // The default Win32 sqlite3_file occupies the first default_vfs.szOsFile bytes.
@@ -209,6 +214,36 @@ unsafe extern "C" fn fixture_xopen(
         return ffi::SQLITE_CANTOPEN;
     };
     let result = unsafe { delegated_open(gate.default_vfs, name, file, flags, out_flags) };
+    if result == ffi::SQLITE_OK && flags & ffi::SQLITE_OPEN_MAIN_DB != 0 {
+        if let Some(plan) = &gate.precheck {
+            if plan.check_delegated_handle {
+                // Exactly the file object returned by the *delegated* xOpen.
+                // A separate post-Connection-open check would be too late.
+                let methods = unsafe { (*file).pMethods };
+                let mut handle: *mut c_void = ptr::null_mut();
+                let control = if methods.is_null() {
+                    ffi::SQLITE_CANTOPEN
+                } else if let Some(file_control) = unsafe { (*methods).xFileControl } {
+                    unsafe { file_control(file, ffi::SQLITE_FCNTL_WIN32_GET_HANDLE,
+                        (&mut handle as *mut *mut c_void).cast()) }
+                } else { ffi::SQLITE_CANTOPEN };
+                let identity = if control == ffi::SQLITE_OK && !handle.is_null() {
+                    win_raw_file_id_128(handle).ok()
+                } else { None };
+                if identity != Some(plan.expected) {
+                    gate.delegated_handle_refusals.fetch_add(1, Ordering::SeqCst);
+                    if !methods.is_null() {
+                        if let Some(close) = unsafe { (*methods).xClose } {
+                            let _ = unsafe { close(file) };
+                        }
+                    }
+                    unsafe { (*file).pMethods = ptr::null() };
+                    return ffi::SQLITE_CANTOPEN;
+                }
+                gate.delegated_handle_matches.fetch_add(1, Ordering::SeqCst);
+            }
+        }
+    }
     if result == ffi::SQLITE_OK && flags & ffi::SQLITE_OPEN_MAIN_DB != 0 && gate.wrap_main_shm {
         let original = unsafe { (*file).pMethods };
         if original.is_null() || unsafe { (*original).iVersion } < 2
@@ -303,6 +338,8 @@ impl RegisteredFixtureVfs {
             precheck_acceptances: AtomicUsize::new(0),
             precheck_refusals: AtomicUsize::new(0),
             swaps_after_precheck: AtomicUsize::new(0),
+            delegated_handle_matches: AtomicUsize::new(0),
+            delegated_handle_refusals: AtomicUsize::new(0),
         });
         state.dispatch.pNext = ptr::null_mut();
         state.dispatch.zName = name.as_ptr();
@@ -323,7 +360,7 @@ fn m32_vfs_fixture_fileid128_precheck_accepts_stable_disposable_identity() {
     fs::OpenOptions::new().write(true).create_new(true).open(&path).unwrap();
     let expected = win_file_id_128(&fs::File::open(&path).unwrap()).unwrap();
     let gate = RegisteredFixtureVfs::with_precheck(true, false, Some(FileIdPrecheckPlan {
-        path: path.clone(), expected, move_original_to: None,
+        path: path.clone(), expected, check_delegated_handle: false, move_original_to: None,
     }));
     let db = Connection::open_with_flags_and_vfs(&path, OpenFlags::SQLITE_OPEN_READ_WRITE, gate.name())
         .expect("stable owned test path should delegate");
@@ -343,7 +380,7 @@ fn m32_vfs_fixture_fileid128_precheck_refuses_already_replaced_name() {
     fs::rename(&path, &displaced).unwrap();
     fs::OpenOptions::new().write(true).create_new(true).open(&path).unwrap();
     let gate = RegisteredFixtureVfs::with_precheck(true, false, Some(FileIdPrecheckPlan {
-        path: path.clone(), expected, move_original_to: None,
+        path: path.clone(), expected, check_delegated_handle: false, move_original_to: None,
     }));
     let result = Connection::open_with_flags_and_vfs(&path, OpenFlags::SQLITE_OPEN_READ_WRITE, gate.name());
     assert!(result.is_err(), "already replaced owned name must refuse before delegate");
@@ -360,7 +397,8 @@ fn m32_vfs_fixture_fileid128_precheck_then_internal_name_swap_is_not_atomic() {
     fs::OpenOptions::new().write(true).create_new(true).open(&path).unwrap();
     let expected = win_file_id_128(&fs::File::open(&path).unwrap()).unwrap();
     let gate = RegisteredFixtureVfs::with_precheck(true, false, Some(FileIdPrecheckPlan {
-        path: path.clone(), expected, move_original_to: Some(displaced.clone()),
+        path: path.clone(), expected, check_delegated_handle: false,
+        move_original_to: Some(displaced.clone()),
     }));
     let db = Connection::open_with_flags_and_vfs(&path, OpenFlags::SQLITE_OPEN_READ_WRITE, gate.name())
         .expect("SQLite default VFS follows the substituted fixture name");
@@ -374,6 +412,45 @@ fn m32_vfs_fixture_fileid128_precheck_then_internal_name_swap_is_not_atomic() {
     assert_eq!(actual, win_file_id_128(&fs::File::open(&path).unwrap()).unwrap());
     assert_eq!(expected, win_file_id_128(&fs::File::open(&displaced).unwrap()).unwrap());
     drop(db);
+}
+
+#[test]
+fn m32_vfs_fixture_xopen_delegated_handle_matches_before_sqlite_accepts() {
+    let owned = DisposableRoot::new();
+    let path = owned.db();
+    fs::OpenOptions::new().write(true).create_new(true).open(&path).unwrap();
+    let expected = win_file_id_128(&fs::File::open(&path).unwrap()).unwrap();
+    let gate = RegisteredFixtureVfs::with_precheck(true, false, Some(FileIdPrecheckPlan {
+        path: path.clone(), expected, check_delegated_handle: true, move_original_to: None,
+    }));
+    let db = Connection::open_with_flags_and_vfs(&path, OpenFlags::SQLITE_OPEN_READ_WRITE, gate.name())
+        .expect("only the unchanged disposable delegated handle may return to SQLite");
+    assert_eq!(sqlite_opened_file_id_128(&db).unwrap(), expected);
+    assert_eq!(gate.state.delegated_handle_matches.load(Ordering::SeqCst), 1);
+    assert_eq!(gate.state.delegated_handle_refusals.load(Ordering::SeqCst), 0);
+    drop(db);
+}
+
+#[test]
+fn m32_vfs_fixture_xopen_delegated_substitution_closes_and_vetoes() {
+    let owned = DisposableRoot::new();
+    let path = owned.db();
+    let displaced = owned.0.join("prior.sqlite3");
+    fs::OpenOptions::new().write(true).create_new(true).open(&path).unwrap();
+    let expected = win_file_id_128(&fs::File::open(&path).unwrap()).unwrap();
+    let gate = RegisteredFixtureVfs::with_precheck(true, false, Some(FileIdPrecheckPlan {
+        path: path.clone(), expected, check_delegated_handle: true,
+        move_original_to: Some(displaced.clone()),
+    }));
+    let attempt = Connection::open_with_flags_and_vfs(&path, OpenFlags::SQLITE_OPEN_READ_WRITE, gate.name());
+    assert!(attempt.is_err(), "substitution between precheck and delegated xOpen must refuse");
+    assert_eq!(gate.state.precheck_acceptances.load(Ordering::SeqCst), 1);
+    assert_eq!(gate.state.swaps_after_precheck.load(Ordering::SeqCst), 1);
+    assert_eq!(gate.state.main_delegations.load(Ordering::SeqCst), 1);
+    assert_eq!(gate.state.delegated_handle_refusals.load(Ordering::SeqCst), 1);
+    assert_eq!(gate.state.delegated_handle_matches.load(Ordering::SeqCst), 0);
+    assert_eq!(win_file_id_128(&fs::File::open(&displaced).unwrap()).unwrap(), expected);
+    assert_ne!(win_file_id_128(&fs::File::open(&path).unwrap()).unwrap(), expected);
 }
 impl Drop for RegisteredFixtureVfs {
     fn drop(&mut self) {
