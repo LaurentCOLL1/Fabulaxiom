@@ -25,6 +25,11 @@ mod revisions;
 // no path opener, no production admission token and no operator database I/O.
 mod m32_v7_writer_service;
 
+// S1/S2 admission preflight witness: disposable Windows tests only. It cannot
+// construct V7WriterAdmission or register an operator opener / Tauri IPC.
+#[cfg(all(test, windows))]
+mod m32_v7_admission_preflight_tests;
+
 // Route C: generated disposable CI runner files only; never operator storage.
 #[cfg(test)]
 mod greenfield_smoke_tests;

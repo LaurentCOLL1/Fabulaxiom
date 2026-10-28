@@ -56,6 +56,10 @@ EXPECTED = {
     # Two RAM-only constructors, migration and ATTACH are confined to its
     # #[cfg(test)] fictional fixture; no production path opening is added.
     "src-tauri/src/m32_v7_writer_service.rs": (2, 0, 1, 0, 1, 0, 0),
+    # 2026-10-28 S1/S2: three SQLite constructor mentions and three open
+    # flag names only in #[cfg(all(test, windows))] disposable preflight.
+    # This path cannot mint V7WriterAdmission and is NOT a runtime opener.
+    "src-tauri/src/m32_v7_admission_preflight_tests.rs": (3, 0, 0, 0, 0, 3, 0),
     "src-tauri/src/m32_owner_handoff_actor_toy.rs": (2, 0, 0, 0, 1, 0, 0),
     "src-tauri/src/m32_owner_lifecycle_toy.rs": (4, 0, 0, 0, 1, 0, 0),
     "src-tauri/src/review_commands.rs": (0, 1, 0, 0, 0, 0, 0),
