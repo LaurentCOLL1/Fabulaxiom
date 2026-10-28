@@ -65,7 +65,10 @@ EXPECTED = {
     # it closes immediately and never constructs an admission runtime token.
     # S1: two more Connection::open calls only under Windows cfg(test):
     # explicit-close vs implicit-Drop disposable fixture, never production.
-    "src-tauri/src/m32_v7_admission_preflight_tests.rs": (8, 0, 0, 0, 0, 3, 0),
+    # A2+A3 S1/S2 disposable Windows experiment: +3 test-only constructors
+    # (clean fixture, read-only corrupted candidate, ambiguous WAL fixture)
+    # and +1 READ_ONLY flag; absolutely no runtime opener added.
+    "src-tauri/src/m32_v7_admission_preflight_tests.rs": (11, 0, 0, 0, 0, 4, 0),
     "src-tauri/src/m32_owner_handoff_actor_toy.rs": (2, 0, 0, 0, 1, 0, 0),
     "src-tauri/src/m32_owner_lifecycle_toy.rs": (4, 0, 0, 0, 1, 0, 0),
     "src-tauri/src/review_commands.rs": (0, 1, 0, 0, 0, 0, 0),

@@ -4485,6 +4485,19 @@ class HandoffContractTests(unittest.TestCase):
         writer = (ROOT / "src-tauri/src/m32_v7_writer_service.rs").read_text(encoding="utf-8")
         self.assertIn("#[cfg(test)]\nimpl V7WriterAdmission", writer)
 
+    def test_144_a2_a3_windows_disposable_proof_remains_a_veto(self):
+        src = (ROOT / "src-tauri/src/m32_v7_admission_preflight_tests.rs").read_text(encoding="utf-8")
+        doc = (ROOT / "docs/qualification/M3_2_V7_S1_S2_A2_A3_DISPOSABLE_EXPERIMENT_20261028.md").read_text(encoding="utf-8")
+        for signal in ("CreateMutexW", "WaitForSingleObject", "WAIT_ABANDONED",
+                       "m32_s2_a2_two_cooperating_processes", "m32_s2_a2_abandoned",
+                       "a3_disposable_integrity_veto", "m32_s2_a3_corrupted",
+                       "m32_s2_a3_wal_sidecar", "HandoffNotAtomic"):
+            self.assertIn(signal, src)
+        self.assertNotIn("V7WriterAdmission {", src)
+        for signal in ("A0", "NOT_PROVEN", "STOP_UNAVAILABLE", "no atomic",
+                       "S3/S4", "no operator", "security descriptor", "NOT PASS"):
+            self.assertIn(signal.lower(), doc.lower())
+
     def test_143_s1_route_a_a2_a3_design_has_no_runtime_authority(self):
         doc = (ROOT / "docs/qualification/M3_2_V7_S1_ROUTE_A_A2_A3_COMBINED_DESIGN_20261028.md").read_text(encoding="utf-8")
         for signal in ("design study only", "named mutex", "COORDINATION_UNPROVEN",

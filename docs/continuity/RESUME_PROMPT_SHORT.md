@@ -2,13 +2,13 @@
 
 ---
 
-Dépôt vivant : https://github.com/LaurentCOLL1/Fabulaxiom
+Dépôt : https://github.com/LaurentCOLL1/Fabulaxiom
 
 Re-fetch `main`, PR, issues, CI, `Protect main`. Lire d'abord `docs/continuity/RESUME_PROMPT.md`, puis `HANDOFF_CURRENT.md`, `HANDOFF_CURRENT.json`, `HANDOFF_PROTOCOL.md`, `HANDOFF_HISTORY.md`, `STATE.md`, `NEXT.md`, `M3_2_GATE_DECISION_CURRENT.md`, `docs/roadmap/ROADMAP_STATUS_CURRENT.md` / `FABULAXIOM_ROADMAP_V1.md`. GitHub vivant fait autorité.
 
 **PR204 :** source `edc69ff3b2f7b428658315882b1604001a19a0cc`, CI #40651970744, `main=d2d8634a92d335d8e3810047a704ff44464135b1`, postmain #40653351119 SUCCESS (189/7/41/135), #38 6463892458. [Writer v7](../qualification/M3_2_V7_RUST_SINGLE_OWNER_WRITER_PREPARATION_20261028.md) sans IPC. PR203 #40647564175 [xShmMap](../qualification/M3_2_SQLITE_VFS_SHM_IO_METHODS_WRAPPER_20261028.md).
 
-**S1→S4 :** [stratégie](M3_2_V7_WRITER_ADMISSION_STRATEGY_20261028.md) ; #211 MERGED CI #40689412991, `main=f96a44d6d02d6510cd13736741112cc0682a5bd8`, postmain #40691190713 PASS 203/7/41/142, #38 6469667735. [A2+A3](../qualification/M3_2_V7_S1_ROUTE_A_A2_A3_COMBINED_DESIGN_20261028.md) ÉTUDE SEULE NON QUALIFIÉE 203/7/41/143 attendus ; xOpen non atomique, writer NOT_PROVEN. S3/S4/IPC, migration 007, Hello STOP. #35 OPEN/DRAFT.
+**S1→S4 :** [stratégie](M3_2_V7_WRITER_ADMISSION_STRATEGY_20261028.md). #212 CI #40694186183, `main=422b17955154085fba0eecee9cdff639d3b0fa14`, postmain #40695996216 SUCCESS 203/7/41/143, #38 6470411910. [A2+A3 jetable](../qualification/M3_2_V7_S1_S2_A2_A3_DISPOSABLE_EXPERIMENT_20261028.md) autorisé : mutex/abandon STOP, A3 corruption/WAL ; 208/7/41/144 ATTENDUS NON QUALIFIÉS PAS PASS. xOpen non atomique, writer NOT_PROVEN ; A0 EXISTING_PROFILE STOP, S3/S4/IPC/007/Hello STOP, #35 OPEN/DRAFT.
 
 **Historique :** PR207–205 : voir prompt détaillé ; PR202 #40609906017/#40611263489 [WAL](../qualification/M3_2_SQLITE_VFS_WAL_SHM_BOUNDARY_20261028.md) ; PR201 #40593808508/#40595455638 [FileId](../qualification/M3_2_SQLITE_VFS_FILEID128_PREDISPATCH_TOCTOU_20261027.md) ; PR200 #40584565021/#40586436340 ; PR199 #40578342548 [VFS](../qualification/M3_2_SQLITE_VFS_PREDELEGATION_REFUSAL_FIXTURE_20261027.md) ; PR198 #40571697037 [HWND](../qualification/M3_2_WINDOWS_HELLO_DESKTOP_HWND_BACKEND_BOUNDARY_20261027.md) ; PR197 `main=dde962a50e3a063753fb77e9a5bcee014f406d30` #40558476584 [Hello](../qualification/M3_2_SINGLE_USER_WINDOWS_HELLO_SENSITIVE_CONSENT_POLICY_20261027.md) ; PR196 #40525427034 ; PR195 #40518270685 ; PR194 #40508416842 ; négatifs #40499869627/#40501278786.
 
@@ -18,7 +18,7 @@ Re-fetch `main`, PR, issues, CI, `Protect main`. Lire d'abord `docs/continuity/R
 
 **Windows :** `M:\Fabulaxiom` ; SQLite `%LOCALAPPDATA%\com.fabulaxiom.greenfield.v1\database\fabulaxiom.sqlite3` ; `WINDOWS_OPERATOR_PATHS_ROUTE_C_20261026.md` privée. PR183 40310982760 / PR184 40338104050.
 
-**Suite :** writer avant CRUD ; Hello STOP. [#35](../qualification/M3_2_PR35_LIVE_AUDIT_PROSPECTIVE_FAST_TRACK_20261027.md) incertain.
+**Suite :** [#35](../qualification/M3_2_PR35_LIVE_AUDIT_PROSPECTIVE_FAST_TRACK_20261027.md) OPEN/DRAFT ; writer ; Hello STOP.
 
 **CI historiques (non transférables) :** 40085871815 40094464488 40095354727 40103615181 40106296690 40108674282 40116658246 40122346098 40128407418 40156277835 40169967245 40179336243 40190429389 40200127549 40210737724 40213790809 40220215000 40230066592 40392826209 40403984550 40445392523. B0/B1 consommés. A `UNAVAILABLE_NOT_PROVEN`, B `NOT_PROVEN`.
 
@@ -26,4 +26,4 @@ Re-fetch `main`, PR, issues, CI, `Protect main`. Lire d'abord `docs/continuity/R
 
 **STOP :** M3.2 `IN_PROGRESS_NOT_ACCEPTED`, G2B `NOT_ACCEPTED`, writer `NOT_PROVEN`, G2C `NOT_AUTHORIZED`, G3 `STOP_UNAVAILABLE`, historique `PENDING_EXTERNAL_ATTESTATION(21/3/2)`, prospective `NOT_STARTED`, #35 OPEN/DRAFT. SQLite v6/v7, backups, ACL, journaux, marqueur, migration 007, IPC writer interdits sans accord distinct.
 
-CI exacte, reviews/threads, `expected_head_sha`, postmain. **Chaque PR : deux prompts, deux handoffs, roadmap, #38 append-only.**
+CI exacte, reviews/threads, `expected_head_sha`, postmain. **Deux prompts/handoffs, roadmap, #38 append-only.**
