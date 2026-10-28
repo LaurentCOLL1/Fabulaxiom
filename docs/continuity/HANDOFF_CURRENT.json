@@ -336,15 +336,9 @@
   "post_pr204_terminal_observation": {
     "pr": 204,
     "source_sha": "edc69ff3b2f7b428658315882b1604001a19a0cc",
-    "source_ci": {
-      "run_id": 40651970744,
-      "conclusion": "SUCCESS"
-    },
+    "source_ci": {"run_id": 40651970744, "conclusion": "SUCCESS"},
     "merge_sha": "d2d8634a92d335d8e3810047a704ff44464135b1",
-    "postmain_ci": {
-      "run_id": 40653351119,
-      "conclusion": "SUCCESS"
-    },
+    "postmain_ci": {"run_id": 40653351119, "conclusion": "SUCCESS"},
     "rust_base_tests": 189,
     "greenfield_runner_tests": 7,
     "sqlite_inventory_tests": 41,
@@ -364,11 +358,7 @@
     "strategy": "docs/continuity/M3_2_V7_WRITER_ADMISSION_STRATEGY_20261028.md",
     "base_main_sha": "d2d8634a92d335d8e3810047a704ff44464135b1",
     "first_step": "S1_NEW_ONLY_VS_EXISTING_PROFILE_ADMISSION_CONTRACT_SOURCE_ONLY",
-    "then": [
-      "S2_DISPOSABLE_WINDOWS_ADMISSION_NEGATIVE_MATRIX",
-      "S3_SEPARATELY_AUTHORIZED_TAURI_WRITER_IPC",
-      "S4_SEPARATELY_ATTESTED_WINDOWS_OPERATOR"
-    ],
+    "then": ["S2_DISPOSABLE_WINDOWS_ADMISSION_NEGATIVE_MATRIX", "S3_SEPARATELY_AUTHORIZED_TAURI_WRITER_IPC", "S4_SEPARATELY_ATTESTED_WINDOWS_OPERATOR"],
     "same_profile": "com.fabulaxiom.greenfield.v1",
     "prepared_writer_source_qualified": true,
     "admission_runtime_implemented": false,
@@ -395,15 +385,9 @@
   "post_pr203_terminal_observation": {
     "pr": 203,
     "source_sha": "9ec042bd57d6633d5aa9df8ca0a4a3530e83c2df",
-    "source_ci": {
-      "run_id": 40646300928,
-      "conclusion": "SUCCESS"
-    },
+    "source_ci": {"run_id": 40646300928, "conclusion": "SUCCESS"},
     "merge_sha": "17bf8e8456c4f06875141788b30fcaa1d7f4a975",
-    "postmain_ci": {
-      "run_id": 40647564175,
-      "conclusion": "SUCCESS"
-    },
+    "postmain_ci": {"run_id": 40647564175, "conclusion": "SUCCESS"},
     "rust_base_tests": 181,
     "greenfield_runner_tests": 7,
     "sqlite_inventory_tests": 40,
@@ -447,15 +431,9 @@
   "post_pr202_terminal_observation": {
     "pr": 202,
     "source_sha": "8288c26c1ca7c4477c86d1a51713e931751f6b8a",
-    "source_ci": {
-      "run_id": 40609906017,
-      "conclusion": "SUCCESS"
-    },
+    "source_ci": {"run_id": 40609906017, "conclusion": "SUCCESS"},
     "merge_sha": "60ca76331d45062317cf2b4794a06733becca1d7",
-    "postmain_ci": {
-      "run_id": 40611263489,
-      "conclusion": "SUCCESS"
-    },
+    "postmain_ci": {"run_id": 40611263489, "conclusion": "SUCCESS"},
     "rust_base_tests": 179,
     "greenfield_runner_tests": 7,
     "sqlite_inventory_tests": 39,
@@ -496,15 +474,9 @@
   "post_pr201_terminal_observation": {
     "pr": 201,
     "source_sha": "c9b8567f6b1a0c4af44a835ec2fe5f39449193e5",
-    "source_ci": {
-      "run_id": 40593808508,
-      "conclusion": "SUCCESS"
-    },
+    "source_ci": {"run_id": 40593808508, "conclusion": "SUCCESS"},
     "merge_sha": "d235e492c5081734ff226563eec6fdb983e4808d",
-    "postmain_ci": {
-      "run_id": 40595455638,
-      "conclusion": "SUCCESS"
-    },
+    "postmain_ci": {"run_id": 40595455638, "conclusion": "SUCCESS"},
     "rust_base_tests": 177,
     "greenfield_runner_tests": 7,
     "sqlite_inventory_tests": 38,
@@ -554,15 +526,9 @@
   "post_pr198_terminal_observation": {
     "pr": 198,
     "source_sha": "9b4b4049c461986c8427620f649a4e2113078800",
-    "source_ci": {
-      "run_id": 40569850503,
-      "conclusion": "SUCCESS"
-    },
+    "source_ci": {"run_id": 40569850503, "conclusion": "SUCCESS"},
     "merge_sha": "34b4174dd79d7c133b3700d72a705236f7623640",
-    "postmain_ci": {
-      "run_id": 40571697037,
-      "conclusion": "SUCCESS"
-    },
+    "postmain_ci": {"run_id": 40571697037, "conclusion": "SUCCESS"},
     "rust_base_tests": 165,
     "greenfield_runner_tests": 7,
     "sqlite_inventory_tests": 36,
@@ -575,15 +541,9 @@
   "post_pr199_terminal_observation": {
     "pr": 199,
     "source_sha": "debc6f9cea8ba668f64afd9c815445c282c842c4",
-    "source_ci": {
-      "run_id": 40576413834,
-      "conclusion": "SUCCESS"
-    },
+    "source_ci": {"run_id": 40576413834, "conclusion": "SUCCESS"},
     "merge_sha": "4e04412b1d4cbdb4ce738b32c8a06c2ab6127b61",
-    "postmain_ci": {
-      "run_id": 40578342548,
-      "conclusion": "SUCCESS"
-    },
+    "postmain_ci": {"run_id": 40578342548, "conclusion": "SUCCESS"},
     "rust_base_tests": 171,
     "greenfield_runner_tests": 7,
     "sqlite_inventory_tests": 36,
@@ -596,15 +556,9 @@
   "post_pr200_terminal_observation": {
     "pr": 200,
     "source_sha": "6b9ff6351ab5e74661a65fa5b8d895237fc6d4bc",
-    "source_ci": {
-      "run_id": 40584565021,
-      "conclusion": "SUCCESS"
-    },
+    "source_ci": {"run_id": 40584565021, "conclusion": "SUCCESS"},
     "merge_sha": "beda84001ebe6ee2769cb9377017848e52319e70",
-    "postmain_ci": {
-      "run_id": 40586436340,
-      "conclusion": "SUCCESS"
-    },
+    "postmain_ci": {"run_id": 40586436340, "conclusion": "SUCCESS"},
     "rust_base_tests": 174,
     "greenfield_runner_tests": 7,
     "sqlite_inventory_tests": 37,
@@ -4355,15 +4309,9 @@
   "post_pr175_terminal_observation": {
     "pr": 175,
     "source_sha": "bd5e8ef35b80d653530f1f36d288724c1642f2ea",
-    "source_ci": {
-      "run_id": 40209991293,
-      "conclusion": "SUCCESS"
-    },
+    "source_ci": {"run_id": 40209991293, "conclusion": "SUCCESS"},
     "merge_sha": "c7d93dd2844bdd3cb17c5ffb5cc600902f9ba18f",
-    "postmain_ci": {
-      "run_id": 40210737724,
-      "conclusion": "SUCCESS"
-    },
+    "postmain_ci": {"run_id": 40210737724, "conclusion": "SUCCESS"},
     "source_steps": 81,
     "postmain_passed_steps": 80,
     "postmain_skipped_steps": 1,
@@ -4372,10 +4320,7 @@
     "chromium_normal": 82,
     "chromium_strict_csp": 82,
     "rust_tests": 132,
-    "feature_test_names": [
-      "toy_20",
-      "toy_21"
-    ],
+    "feature_test_names": ["toy_20", "toy_21"],
     "operator_windows_access": false,
     "real_g3": "STOP_UNAVAILABLE"
   },
@@ -4397,20 +4342,10 @@
   "post_pr176_terminal_observation": {
     "pr": 176,
     "source_sha": "8b889049c118d7a8dcea21b5ce77a6bd2ce2b278",
-    "source_ci": {
-      "run_id": 40212798456,
-      "conclusion": "SUCCESS"
-    },
-    "earlier_failed_source_ci": {
-      "run_id": 40212633142,
-      "conclusion": "FAILURE",
-      "not_transferable_to_new_sha": true
-    },
+    "source_ci": {"run_id": 40212798456, "conclusion": "SUCCESS"},
+    "earlier_failed_source_ci": {"run_id": 40212633142, "conclusion": "FAILURE", "not_transferable_to_new_sha": true},
     "merge_sha": "254384336d8c086fefec769c41cb7723112c9077",
-    "postmain_ci": {
-      "run_id": 40213790809,
-      "conclusion": "SUCCESS"
-    },
+    "postmain_ci": {"run_id": 40213790809, "conclusion": "SUCCESS"},
     "source_steps": 81,
     "postmain_passed_steps": 80,
     "postmain_skipped_steps": 1,
@@ -4419,10 +4354,7 @@
     "chromium_normal": 82,
     "chromium_strict_csp": 82,
     "rust_tests": 132,
-    "feature_test_names": [
-      "toy_22",
-      "toy_23"
-    ],
+    "feature_test_names": ["toy_22", "toy_23"],
     "operator_windows_access": false,
     "real_g3": "STOP_UNAVAILABLE"
   },
@@ -4444,15 +4376,9 @@
   "post_pr177_terminal_observation": {
     "pr": 177,
     "source_sha": "32093f7f31f26c98e7b91bc9d25930ee4f973d27",
-    "source_ci": {
-      "run_id": 40219228723,
-      "conclusion": "SUCCESS"
-    },
+    "source_ci": {"run_id": 40219228723, "conclusion": "SUCCESS"},
     "merge_sha": "c1868256739247810ecf6b606e051b53b8c0d529",
-    "postmain_ci": {
-      "run_id": 40220215000,
-      "conclusion": "SUCCESS"
-    },
+    "postmain_ci": {"run_id": 40220215000, "conclusion": "SUCCESS"},
     "source_steps": 81,
     "postmain_passed_steps": 80,
     "postmain_skipped_steps": 1,
@@ -4461,10 +4387,7 @@
     "chromium_normal": 82,
     "chromium_strict_csp": 82,
     "rust_tests": 132,
-    "feature_test_names": [
-      "toy_24",
-      "toy_25"
-    ],
+    "feature_test_names": ["toy_24", "toy_25"],
     "operator_windows_access": false,
     "real_g3": "STOP_UNAVAILABLE"
   },
@@ -4485,15 +4408,9 @@
   "post_pr178_terminal_observation": {
     "pr": 178,
     "source_sha": "c13a166f07c4850258628db5279594699b5ccfe8",
-    "source_ci": {
-      "run_id": 40229362824,
-      "conclusion": "SUCCESS"
-    },
+    "source_ci": {"run_id": 40229362824, "conclusion": "SUCCESS"},
     "merge_sha": "dd5e6f17c6a4d71f4ac19ba0da4821a362f2af7d",
-    "postmain_ci": {
-      "run_id": 40230066592,
-      "conclusion": "SUCCESS"
-    },
+    "postmain_ci": {"run_id": 40230066592, "conclusion": "SUCCESS"},
     "source_steps": 81,
     "postmain_passed_steps": 80,
     "postmain_skipped_steps": 1,
@@ -4502,9 +4419,7 @@
     "chromium_normal": 82,
     "chromium_strict_csp": 82,
     "rust_tests": 132,
-    "feature_test_names": [
-      "toy_26"
-    ],
+    "feature_test_names": ["toy_26"],
     "operator_windows_access": false,
     "real_g3": "STOP_UNAVAILABLE"
   },
@@ -4556,15 +4471,9 @@
   "post_pr180_terminal_observation": {
     "pr": 180,
     "source_sha": "33a8fc0462a56e5ca263fc4da341edbb318a832d",
-    "source_ci": {
-      "run_id": 40263927654,
-      "conclusion": "SUCCESS"
-    },
+    "source_ci": {"run_id": 40263927654, "conclusion": "SUCCESS"},
     "merged_main": "06d6c3cd1e775988d0d36dc740068d90dda44053",
-    "postmain_ci": {
-      "run_id": 40264714264,
-      "conclusion": "SUCCESS"
-    },
+    "postmain_ci": {"run_id": 40264714264, "conclusion": "SUCCESS"},
     "greenfield_source_contract_tests": 10,
     "handoff_tests": 113,
     "rust_base_tests": 132,
@@ -4588,20 +4497,10 @@
   "post_pr181_terminal_observation": {
     "pr": 181,
     "source_sha": "4ff36463205727b9481fbf216a5f623305b33cfd",
-    "source_ci": {
-      "run_id": 40277924539,
-      "conclusion": "SUCCESS"
-    },
-    "old_ci_failed_only_on_old_sha": {
-      "run_id": 40277632492,
-      "head": "4bb12c75a0cef1c3f5a408e7f904c9e8a8bd8cb2",
-      "conclusion": "FAILURE"
-    },
+    "source_ci": {"run_id": 40277924539, "conclusion": "SUCCESS"},
+    "old_ci_failed_only_on_old_sha": {"run_id": 40277632492, "head": "4bb12c75a0cef1c3f5a408e7f904c9e8a8bd8cb2", "conclusion": "FAILURE"},
     "merged_main": "06452e2ae7e442272a6c1429b1454f56f2266d57",
-    "postmain_ci": {
-      "run_id": 40278919705,
-      "conclusion": "SUCCESS"
-    },
+    "postmain_ci": {"run_id": 40278919705, "conclusion": "SUCCESS"},
     "handoff_tests": 113,
     "rust_inventory_tests": 25,
     "rust_base_tests": 133,
@@ -4627,15 +4526,9 @@
   "post_pr183_terminal_observation": {
     "pr": 183,
     "source_sha": "7879f2b052944d68ca367537809b0af8e05bca04",
-    "source_ci": {
-      "run_id": 40309445029,
-      "conclusion": "SUCCESS"
-    },
+    "source_ci": {"run_id": 40309445029, "conclusion": "SUCCESS"},
     "merge_sha": "39725a020a8656b8d0488628bc208fcf104c058c",
-    "postmain_ci": {
-      "run_id": 40310982760,
-      "conclusion": "SUCCESS"
-    },
+    "postmain_ci": {"run_id": 40310982760, "conclusion": "SUCCESS"},
     "greenfield_archive_source_tests": 7,
     "rust_base_tests": 137,
     "vitest_tests": 327,
@@ -4675,15 +4568,9 @@
   "post_pr184_terminal_observation": {
     "pr": 184,
     "source_sha": "fa82e4e7d566d3deb0f7f84d35c10375b44fb944",
-    "source_ci": {
-      "run_id": 40336276164,
-      "conclusion": "SUCCESS"
-    },
+    "source_ci": {"run_id": 40336276164, "conclusion": "SUCCESS"},
     "merge_sha": "810a31b22dabb0507d43d83dd1b5b374916bf13b",
-    "postmain_ci": {
-      "run_id": 40338104050,
-      "conclusion": "SUCCESS"
-    },
+    "postmain_ci": {"run_id": 40338104050, "conclusion": "SUCCESS"},
     "handoff_tests": 114,
     "rust_base_tests": 137,
     "vitest_tests": 327,
@@ -4718,15 +4605,9 @@
   "post_pr185_terminal_observation": {
     "pr": 185,
     "source_sha": "84087eb4093b9a72b35b7ea2d6376fcce52c1ddf",
-    "source_ci": {
-      "run_id": 40391038879,
-      "conclusion": "SUCCESS"
-    },
+    "source_ci": {"run_id": 40391038879, "conclusion": "SUCCESS"},
     "merge_sha": "03c205f18e4b8c7ed4780ad746d9229e7e910e2c",
-    "postmain_ci": {
-      "run_id": 40392826209,
-      "conclusion": "SUCCESS"
-    },
+    "postmain_ci": {"run_id": 40392826209, "conclusion": "SUCCESS"},
     "rust_base_tests": 139,
     "greenfield_runner_tests": 3,
     "handoff_tests": 115,
@@ -4763,15 +4644,9 @@
   "post_pr186_terminal_observation": {
     "pr": 186,
     "source_sha": "ad202a0310c378bdbda430f68d9d8686f59a6e18",
-    "source_ci": {
-      "run_id": 40402322000,
-      "conclusion": "SUCCESS"
-    },
+    "source_ci": {"run_id": 40402322000, "conclusion": "SUCCESS"},
     "merge_sha": "92160c6401fa8b9f2f1667704fb8f51294fdae72",
-    "postmain_ci": {
-      "run_id": 40403984550,
-      "conclusion": "SUCCESS"
-    },
+    "postmain_ci": {"run_id": 40403984550, "conclusion": "SUCCESS"},
     "rust_base_tests": 140,
     "greenfield_runner_tests": 4,
     "handoff_tests": 116,
@@ -4811,15 +4686,9 @@
   "post_pr187_terminal_observation": {
     "pr": 187,
     "source_sha": "3029bf61d526a243a431bf2c151de0ebeaf50818",
-    "source_ci": {
-      "run_id": 40444374426,
-      "conclusion": "SUCCESS"
-    },
+    "source_ci": {"run_id": 40444374426, "conclusion": "SUCCESS"},
     "merge_sha": "0b0964a723340fd832134691fdd93563c1afe9c0",
-    "postmain_ci": {
-      "run_id": 40445392523,
-      "conclusion": "SUCCESS"
-    },
+    "postmain_ci": {"run_id": 40445392523, "conclusion": "SUCCESS"},
     "rust_base_tests": 141,
     "greenfield_runner_tests": 5,
     "handoff_tests": 117,
@@ -4861,15 +4730,9 @@
   "post_pr188_terminal_observation": {
     "pr": 188,
     "source_sha": "9ca23c1b78c5fb2e3f49c2c3728024be374caeba",
-    "source_ci": {
-      "run_id": 40450684268,
-      "conclusion": "SUCCESS"
-    },
+    "source_ci": {"run_id": 40450684268, "conclusion": "SUCCESS"},
     "merge_sha": "e4cd6ba8151f2d6cbab8723d2fb200d3ac3ffebc",
-    "postmain_ci": {
-      "run_id": 40451602743,
-      "conclusion": "SUCCESS"
-    },
+    "postmain_ci": {"run_id": 40451602743, "conclusion": "SUCCESS"},
     "rust_base_tests": 142,
     "greenfield_runner_tests": 6,
     "handoff_tests": 118,
@@ -4911,15 +4774,9 @@
   "post_pr193_terminal_observation": {
     "pr": 193,
     "source_sha": "38540a4602c5c5e4f9d9b3bdb6b8bf155e0ed256",
-    "source_ci": {
-      "run_id": 40485043798,
-      "conclusion": "SUCCESS"
-    },
+    "source_ci": {"run_id": 40485043798, "conclusion": "SUCCESS"},
     "merge_sha": "8d034d66c3de76735c356c6f79e436c0b9965dec",
-    "postmain_ci": {
-      "run_id": 40486676658,
-      "conclusion": "SUCCESS"
-    },
+    "postmain_ci": {"run_id": 40486676658, "conclusion": "SUCCESS"},
     "rust_base_tests": 149,
     "greenfield_runner_tests": 7,
     "handoff_tests": 123,
@@ -4936,28 +4793,9 @@
     "state_at_checkpoint": "OPEN_NOT_MERGED",
     "base_main_sha": "8d034d66c3de76735c356c6f79e436c0b9965dec",
     "source_attempts": [
-      {
-        "head": "de080fa87322892ce05ada47b9cb330d97296a20",
-        "run_id": 40498356467,
-        "conclusion": "FAILURE",
-        "cause": "RUST_E0658_UNSTABLE_WINDOWS_BY_HANDLE_BEFORE_TESTS"
-      },
-      {
-        "head": "36dee613ffe66dac5a8d7c869d88cf3db9f9240a",
-        "run_id": 40499869627,
-        "conclusion": "FAILURE",
-        "rust_passed": 150,
-        "rust_failed": 1,
-        "cause": "WINDOWS_EMPTY_LEAF_RENAMABLE_WITH_METADATA_ONLY_HANDLE"
-      },
-      {
-        "head": "884d8515e43d71433fab221cb891817ac8c76334",
-        "run_id": 40501278786,
-        "conclusion": "FAILURE",
-        "rust_passed": 150,
-        "rust_failed": 1,
-        "cause": "WINDOWS_EMPTY_LEAF_RENAMABLE_WITH_FILE_READ_ATTRIBUTES_HANDLE"
-      }
+      {"head": "de080fa87322892ce05ada47b9cb330d97296a20", "run_id": 40498356467, "conclusion": "FAILURE", "cause": "RUST_E0658_UNSTABLE_WINDOWS_BY_HANDLE_BEFORE_TESTS"},
+      {"head": "36dee613ffe66dac5a8d7c869d88cf3db9f9240a", "run_id": 40499869627, "conclusion": "FAILURE", "rust_passed": 150, "rust_failed": 1, "cause": "WINDOWS_EMPTY_LEAF_RENAMABLE_WITH_METADATA_ONLY_HANDLE"},
+      {"head": "884d8515e43d71433fab221cb891817ac8c76334", "run_id": 40501278786, "conclusion": "FAILURE", "rust_passed": 150, "rust_failed": 1, "cause": "WINDOWS_EMPTY_LEAF_RENAMABLE_WITH_FILE_READ_ATTRIBUTES_HANDLE"}
     ],
     "issue38_terminal_stop_comment": 6441614257,
     "current_candidate": "TEST_ONLY_WINDOWS_REVALIDATE_ORIGINAL_HELD_DIRECTORY_IDS_AFTER_CONTROLLED_SAME_NAME_SUBSTITUTION",
@@ -4981,15 +4819,9 @@
   "post_pr194_terminal_observation": {
     "pr": 194,
     "source_sha": "de54c003421d09309f5bff8a31d110fb24d93678",
-    "source_ci": {
-      "run_id": 40507105063,
-      "conclusion": "SUCCESS"
-    },
+    "source_ci": {"run_id": 40507105063, "conclusion": "SUCCESS"},
     "merge_sha": "567638515444d621749507f9700a3e2a69c52c6b",
-    "postmain_ci": {
-      "run_id": 40508416842,
-      "conclusion": "SUCCESS"
-    },
+    "postmain_ci": {"run_id": 40508416842, "conclusion": "SUCCESS"},
     "rust_base_tests": 151,
     "greenfield_runner_tests": 7,
     "sqlite_inventory_tests": 32,
@@ -5041,15 +4873,9 @@
   "post_pr197_terminal_observation": {
     "pr": 197,
     "source_sha": "ab55f506f767f36659ffdd50c2970d9c703e0f0b",
-    "source_ci": {
-      "run_id": 40556607820,
-      "conclusion": "SUCCESS"
-    },
+    "source_ci": {"run_id": 40556607820, "conclusion": "SUCCESS"},
     "merge_sha": "dde962a50e3a063753fb77e9a5bcee014f406d30",
-    "postmain_ci": {
-      "run_id": 40558476584,
-      "conclusion": "SUCCESS"
-    },
+    "postmain_ci": {"run_id": 40558476584, "conclusion": "SUCCESS"},
     "rust_base_tests": 165,
     "greenfield_runner_tests": 7,
     "sqlite_inventory_tests": 36,
@@ -5094,15 +4920,9 @@
   "post_pr196_terminal_observation": {
     "pr": 196,
     "source_sha": "2925a6a561f54fe3e7c0dc9aa7301e6a1c55930a",
-    "source_ci": {
-      "run_id": 40523209147,
-      "conclusion": "SUCCESS"
-    },
+    "source_ci": {"run_id": 40523209147, "conclusion": "SUCCESS"},
     "merge_sha": "3546e62a19cb4db0da970cb07019982ff6c8634a",
-    "postmain_ci": {
-      "run_id": 40525427034,
-      "conclusion": "SUCCESS"
-    },
+    "postmain_ci": {"run_id": 40525427034, "conclusion": "SUCCESS"},
     "rust_base_tests": 154,
     "greenfield_runner_tests": 7,
     "sqlite_inventory_tests": 35,
@@ -5157,15 +4977,9 @@
   "post_pr195_terminal_observation": {
     "pr": 195,
     "source_sha": "f84f3035170baa4830879796230675ad8b328a2c",
-    "source_ci": {
-      "run_id": 40516204731,
-      "conclusion": "SUCCESS"
-    },
+    "source_ci": {"run_id": 40516204731, "conclusion": "SUCCESS"},
     "merge_sha": "1ab320f7834086ac587ce2fdaa8638d7c29d61f5",
-    "postmain_ci": {
-      "run_id": 40518270685,
-      "conclusion": "SUCCESS"
-    },
+    "postmain_ci": {"run_id": 40518270685, "conclusion": "SUCCESS"},
     "rust_base_tests": 153,
     "greenfield_runner_tests": 7,
     "sqlite_inventory_tests": 34,
@@ -5257,15 +5071,9 @@
   "post_pr192_terminal_observation": {
     "pr": 192,
     "source_sha": "a061311a4d8ca54b213d134c2affa34defa3f023",
-    "source_ci": {
-      "run_id": 40474849956,
-      "conclusion": "SUCCESS"
-    },
+    "source_ci": {"run_id": 40474849956, "conclusion": "SUCCESS"},
     "merge_sha": "0584291d6dc3c8d2fc8860c8c5084250f4c43ba4",
-    "postmain_ci": {
-      "run_id": 40476232974,
-      "conclusion": "SUCCESS"
-    },
+    "postmain_ci": {"run_id": 40476232974, "conclusion": "SUCCESS"},
     "rust_base_tests": 147,
     "greenfield_runner_tests": 7,
     "handoff_tests": 122,
@@ -5310,15 +5118,9 @@
   "post_pr191_terminal_observation": {
     "pr": 191,
     "source_sha": "c6b23ae071392c5f68912e53915df5067787605b",
-    "source_ci": {
-      "run_id": 40469481613,
-      "conclusion": "SUCCESS"
-    },
+    "source_ci": {"run_id": 40469481613, "conclusion": "SUCCESS"},
     "merge_sha": "2b4a7aaa37b2ada590a8e05fc4c5e973949041cc",
-    "postmain_ci": {
-      "run_id": 40470700689,
-      "conclusion": "SUCCESS"
-    },
+    "postmain_ci": {"run_id": 40470700689, "conclusion": "SUCCESS"},
     "rust_base_tests": 144,
     "greenfield_runner_tests": 7,
     "handoff_tests": 121,
@@ -5365,15 +5167,9 @@
   "post_pr190_terminal_observation": {
     "pr": 190,
     "source_sha": "d15f58b40a8b6124967f89ffed013dab14497b13",
-    "source_ci": {
-      "run_id": 40461093909,
-      "conclusion": "SUCCESS"
-    },
+    "source_ci": {"run_id": 40461093909, "conclusion": "SUCCESS"},
     "merge_sha": "7c7e02899784e52e3eb06dfff9d79a613eec95c1",
-    "postmain_ci": {
-      "run_id": 40462274918,
-      "conclusion": "SUCCESS"
-    },
+    "postmain_ci": {"run_id": 40462274918, "conclusion": "SUCCESS"},
     "issue38_terminal_comment": 6435633242,
     "operator_backup_restore_executed": false,
     "new_operator_profile_required": false,
@@ -5413,15 +5209,9 @@
   "post_pr189_terminal_observation": {
     "pr": 189,
     "source_sha": "546cdee207e1cec049d7d0c2113696f3ce0461dd",
-    "source_ci": {
-      "run_id": 40455683237,
-      "conclusion": "SUCCESS"
-    },
+    "source_ci": {"run_id": 40455683237, "conclusion": "SUCCESS"},
     "merge_sha": "009fa1723b3fc9a574e867a28759adff42e255d0",
-    "postmain_ci": {
-      "run_id": 40456835489,
-      "conclusion": "SUCCESS"
-    },
+    "postmain_ci": {"run_id": 40456835489, "conclusion": "SUCCESS"},
     "rust_base_tests": 143,
     "greenfield_runner_tests": 7,
     "handoff_tests": 119,
