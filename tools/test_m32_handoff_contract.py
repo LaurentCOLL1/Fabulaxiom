@@ -4485,5 +4485,17 @@ class HandoffContractTests(unittest.TestCase):
         writer = (ROOT / "src-tauri/src/m32_v7_writer_service.rs").read_text(encoding="utf-8")
         self.assertIn("#[cfg(test)]\nimpl V7WriterAdmission", writer)
 
+    def test_143_s1_route_a_a2_a3_design_has_no_runtime_authority(self):
+        doc = (ROOT / "docs/qualification/M3_2_V7_S1_ROUTE_A_A2_A3_COMBINED_DESIGN_20261028.md").read_text(encoding="utf-8")
+        for signal in ("design study only", "named mutex", "COORDINATION_UNPROVEN",
+                       "RECOVERY_REQUIRED_NOT_AUTHORIZED", "FOREIGN_PROVENANCE",
+                       "INVALID_FIXTURE", "STRUCTURALLY_CONSISTENT_UNAUTHENTICATED",
+                       "HandoffNotAtomic", "WAIT_ABANDONED", "NEW_ONLY", "EXISTING_PROFILE",
+                       "A0", "NOT_PROVEN", "STOP_UNAVAILABLE", "S3/S4",
+                       "no operator execution", "implementation gate"):
+            self.assertIn(signal.lower(), doc.lower())
+        rust = (ROOT / "src-tauri/src/m32_v7_writer_service.rs").read_text(encoding="utf-8")
+        self.assertIn("#[cfg(test)]\nimpl V7WriterAdmission", rust)
+
 if __name__ == "__main__":
     unittest.main()
