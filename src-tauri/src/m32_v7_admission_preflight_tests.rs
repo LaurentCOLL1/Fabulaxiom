@@ -7,7 +7,8 @@ use std::{
     io,
     path::{Path, PathBuf},
     process,
-    sync::atomic::{AtomicU64, Ordering},
+    sync::{atomic::{AtomicU64, Ordering}, Arc, Barrier},
+    thread,
     time::{SystemTime, UNIX_EPOCH},
 };
 
@@ -28,8 +29,9 @@ const SIDECARS: [&str; 3] = ["-wal", "-shm", "-journal"];
 fn sidecars_absent(path: &Path) -> Result<(), Refusal> {
     let name = path.file_name().unwrap().to_string_lossy();
     for suffix in SIDECARS {
-        if path.with_file_name(format!("{name}{suffix}")).symlink_metadata().is_ok() {
-            return Err(Refusal::SidecarPresent);
+        match path.with_file_name(format!("{name}{suffix}")).symlink_metadata() {
+            Err(e) if e.kind() == io::ErrorKind::NotFound => {},
+            _ => return Err(Refusal::SidecarPresent),
         }
     }
     Ok(())
@@ -146,4 +148,59 @@ fn m32_s2_broken_foreign_key_refused_on_disposable_sqlite() {
         INSERT INTO child(parent_id) VALUES(99);").unwrap();
     assert_eq!(reject_foreign_fixture(&connection), Err(Refusal::ForeignKeyViolation));
     assert_eq!(deny_unbound_handoff(), Err(Refusal::HandoffNotAtomic));
+}
+
+#[test]
+fn m32_s2_two_simultaneous_new_only_claims_admit_only_one_name_reservation() {
+    let root = Disposable::new(); root.prepare(); let db = root.db();
+    let barrier = Arc::new(Barrier::new(3));
+    let mut workers = Vec::new();
+    for _ in 0..2 {
+        let path = db.clone(); let start = barrier.clone();
+        workers.push(thread::spawn(move || {
+            start.wait();
+            OpenOptions::new().write(true).create_new(true).open(&path).is_ok()
+        }));
+    }
+    barrier.wait();
+    let wins = workers.into_iter().map(|worker| worker.join().unwrap()).filter(|won| *won).count();
+    assert_eq!(wins, 1);
+    assert_eq!(preflight(&db, AdmissionMode::NewOnly), Err(Refusal::AlreadyExists));
+    assert_eq!(deny_unbound_handoff(), Err(Refusal::HandoffNotAtomic));
+}
+
+#[test]
+fn m32_s2_parent_namespace_replacement_after_preflight_is_a_stop() {
+    let root = Disposable::new(); root.prepare(); let db = root.db();
+    fs::write(&db, b"first namespace").unwrap();
+    assert_eq!(preflight(&db, AdmissionMode::ExistingProfile), Ok(()));
+    let parent = db.parent().unwrap();
+    let renamed = root.0.join("database-moved");
+    fs::rename(parent, &renamed).unwrap();
+    fs::create_dir(parent).unwrap();
+    fs::write(&db, b"replacement namespace").unwrap();
+    assert_eq!(fs::read(renamed.join("fabulaxiom.sqlite3")).unwrap(), b"first namespace");
+    assert_eq!(fs::read(&db).unwrap(), b"replacement namespace");
+    // Two path checks can both pass; neither binds a subsequent SQLite xOpen.
+    assert_eq!(preflight(&db, AdmissionMode::ExistingProfile), Ok(()));
+    assert_eq!(deny_unbound_handoff(), Err(Refusal::HandoffNotAtomic));
+}
+
+#[test]
+fn m32_s2_live_wal_and_external_connection_lock_are_not_writer_proof() {
+    let root = Disposable::new(); root.prepare(); let db = root.db();
+    let first = Connection::open(&db).unwrap();
+    let journal: String = first.query_row("PRAGMA journal_mode=WAL", [], |r| r.get(0)).unwrap();
+    assert_eq!(journal.to_lowercase(), "wal");
+    first.execute_batch("CREATE TABLE invented(id INTEGER PRIMARY KEY); BEGIN IMMEDIATE;
+        INSERT INTO invented(id) VALUES(1);").unwrap();
+    assert_eq!(preflight(&db, AdmissionMode::ExistingProfile), Err(Refusal::SidecarPresent));
+    let second = Connection::open(&db).unwrap();
+    second.busy_timeout(std::time::Duration::ZERO).unwrap();
+    assert!(second.execute_batch("BEGIN IMMEDIATE; INSERT INTO invented(id) VALUES(2); COMMIT;").is_err());
+    first.execute_batch("ROLLBACK").unwrap();
+    second.execute_batch("BEGIN IMMEDIATE; INSERT INTO invented(id) VALUES(2); COMMIT;").unwrap();
+    // A prior BUSY does not establish absence of a writer later.
+    assert_eq!(deny_unbound_handoff(), Err(Refusal::HandoffNotAtomic));
+    drop(second); drop(first);
 }

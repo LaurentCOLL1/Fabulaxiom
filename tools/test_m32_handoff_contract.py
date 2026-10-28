@@ -4421,5 +4421,17 @@ class HandoffContractTests(unittest.TestCase):
         for stop in ("NOT_PROVEN", "NOT_AUTHORIZED", "STOP_UNAVAILABLE", "S3/S4"):
             self.assertIn(stop, scope)
 
+    def test_138_s2_namespace_concurrency_and_live_wal_remain_non_admission(self):
+        fixture = (ROOT / "src-tauri/src/m32_v7_admission_preflight_tests.rs").read_text(encoding="utf-8")
+        qualification = (ROOT / "docs/qualification/M3_2_V7_S2_NAMESPACE_CONCURRENCY_WAL_20261028.md").read_text(encoding="utf-8")
+        for signal in ("m32_s2_two_simultaneous_new_only_claims", "m32_s2_parent_namespace_replacement",
+                       "m32_s2_live_wal_and_external_connection_lock", "create_new(true)",
+                       "BEGIN IMMEDIATE", "Err(Refusal::HandoffNotAtomic)"):
+            self.assertIn(signal, fixture, signal)
+        self.assertIn("#[cfg(all(test, windows))]", (ROOT / "src-tauri/src/lib.rs").read_text(encoding="utf-8"))
+        self.assertNotIn("V7WriterAdmission {", fixture)
+        for stop in ("NOT_PROVEN", "STOP_UNAVAILABLE", "S3/S4", "not atomic"):
+            self.assertIn(stop, qualification)
+
 if __name__ == "__main__":
     unittest.main()
