@@ -4348,5 +4348,61 @@ class HandoffContractTests(unittest.TestCase):
             self.assertIn("40647564175", body, filename)
             self.assertIn("M3_2_V7_RUST_SINGLE_OWNER_WRITER_PREPARATION_20261028.md", body, filename)
 
+    def test_136_pr204_terminal_and_new_writer_admission_continuity_strategy(self):
+        terminal = self.data["post_pr204_terminal_observation"]
+        self.assertEqual(terminal["pr"], 204)
+        self.assertEqual(terminal["source_sha"], "edc69ff3b2f7b428658315882b1604001a19a0cc")
+        self.assertEqual(terminal["source_ci"], {"run_id": 40651970744, "conclusion": "SUCCESS"})
+        self.assertEqual(terminal["merge_sha"], "d2d8634a92d335d8e3810047a704ff44464135b1")
+        self.assertEqual(terminal["postmain_ci"], {"run_id": 40653351119, "conclusion": "SUCCESS"})
+        self.assertEqual(tuple(terminal[key] for key in ("rust_base_tests", "greenfield_runner_tests",
+                                                    "sqlite_inventory_tests", "handoff_tests")),
+                         (189, 7, 41, 135))
+        self.assertEqual(terminal["issue38_terminal_comment"], 6463892458)
+        self.assertTrue(terminal["protect_main_active_strict"])
+        self.assertTrue(terminal["prepared_writer_source_qualified"])
+        for key in ("runtime_admission_token_available", "tauri_state_registered", "writer_ipc_authorized"):
+            self.assertFalse(terminal[key], key)
+        self.assertEqual(terminal["operator_execution"], "NO_OPERATOR_EXECUTION")
+
+        strategy = self.data["next_m32_v7_writer_admission_strategy_20261028"]
+        self.assertEqual(strategy["base_main_sha"], terminal["merge_sha"])
+        self.assertEqual(strategy["first_step"],
+                         "S1_NEW_ONLY_VS_EXISTING_PROFILE_ADMISSION_CONTRACT_SOURCE_ONLY")
+        self.assertEqual(strategy["same_profile"], "com.fabulaxiom.greenfield.v1")
+        self.assertEqual(tuple(strategy[key] for key in ("rust_base_tests_expected",
+            "greenfield_runner_tests_expected", "sqlite_inventory_tests_expected",
+            "handoff_tests_expected")), (189, 7, 41, 136))
+        self.assertTrue(strategy["prepared_writer_source_qualified"])
+        for key in ("admission_runtime_implemented", "atomic_sqlite_pre_xopen_proven",
+                    "writer_absence_proven", "writer_ipc_authorized", "operator_sqlite_access",
+                    "migration_007_authorized", "native_hello_authorized", "strategy_document_ci_qualified"):
+            self.assertFalse(strategy[key], key)
+        self.assertEqual(strategy["operator_execution"], "NO_OPERATOR_EXECUTION")
+        for key, value in (("m3_2", "IN_PROGRESS_NOT_ACCEPTED"), ("g2b", "NOT_ACCEPTED"),
+                           ("writer", "NOT_PROVEN"), ("g2c", "NOT_AUTHORIZED"),
+                           ("real_g3", "STOP_UNAVAILABLE"),
+                           ("historical", "PENDING_EXTERNAL_ATTESTATION(21/3/2)"),
+                           ("prospective", "NOT_STARTED")):
+            self.assertEqual(strategy[key], value)
+
+        doc = (ROOT / strategy["strategy"]).read_text(encoding="utf-8")
+        for signal in ("PR #204", "40651970744", "40653351119", "6463892458",
+                       "S0", "S1", "S2", "S3", "S4", "NEW_ONLY", "EXISTING_PROFILE",
+                       "-wal", "-shm", "-journal", "TOCTOU", "189 Rust", "135 contrats",
+                       "com.fabulaxiom.greenfield.v1", "NOT_PROVEN", "NOT_AUTHORIZED",
+                       "STOP_UNAVAILABLE", "autorisation distincte", "aucun constructeur"):
+            self.assertIn(signal, doc, signal)
+        for filename in ("RESUME_PROMPT_SHORT.md", "RESUME_PROMPT.md", "HANDOFF_CURRENT.md",
+                         "HANDOFF_PROTOCOL.md", "HANDOFF_HISTORY.md", "NEXT.md", "STATE.md",
+                         "M3_2_GATE_DECISION_CURRENT.md", "README.md"):
+            body = (DIRECTORY / filename).read_text(encoding="utf-8")
+            self.assertIn("40653351119", body, filename)
+            self.assertIn("M3_2_V7_WRITER_ADMISSION_STRATEGY_20261028.md", body, filename)
+        for filename in ("ROADMAP_STATUS_CURRENT.md", "FABULAXIOM_ROADMAP_V1.md"):
+            body = (ROOT / "docs/roadmap" / filename).read_text(encoding="utf-8")
+            self.assertIn("40653351119", body, filename)
+            self.assertIn("M3_2_V7_WRITER_ADMISSION_STRATEGY_20261028.md", body, filename)
+
 if __name__ == "__main__":
     unittest.main()
