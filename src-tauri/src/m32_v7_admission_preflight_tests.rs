@@ -77,7 +77,7 @@ impl Disposable {
     }
     fn db(&self) -> PathBuf { self.0.join(PROFILE).join("database").join("fabulaxiom.sqlite3") }
     fn prepare(&self) {
-        fs::create_dir(self.db().parent().unwrap()).unwrap();
+        fs::create_dir_all(self.db().parent().unwrap()).unwrap();
     }
 }
 impl Drop for Disposable {

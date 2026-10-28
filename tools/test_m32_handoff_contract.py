@@ -4413,6 +4413,7 @@ class HandoffContractTests(unittest.TestCase):
         self.assertIn("mod m32_v7_admission_preflight_tests;", backend)
         self.assertIn("Err(Refusal::HandoffNotAtomic)", candidate)
         self.assertIn("create_new(true)", candidate)
+        self.assertIn("create_dir_all(self.db().parent()", candidate)
         for signal in ("NewOnly", "ExistingProfile", "-wal", "-shm", "-journal", "ForeignSchema", "ForeignKeyViolation"):
             self.assertIn(signal, candidate)
         self.assertNotIn("V7WriterAdmission {", candidate)

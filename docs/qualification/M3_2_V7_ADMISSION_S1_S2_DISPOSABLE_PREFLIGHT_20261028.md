@@ -2,6 +2,8 @@
 
 **Candidate, not CI-qualified or admitted.** Base `main=5f2a47f13715de5fb34d838daa869bb108e2ddfe` (PR #205 terminal: source `0f54d6dfe553c7d9b7a27a36b4e852ae550d5faa`, source CI #40657401464 and independent postmain #40658931404 SUCCESS; 189 Rust / 7 Greenfield / 41 SQLite guards / 136 continuity contracts). Owner authorization in the conversation is limited to S1/S2 Rust preparation and disposable Windows fixtures. It grants **no** S3/S4, operator SQLite/backup/ACL/sidecar/journal/marker, IPC, migration 007 or native Windows Hello.
 
+**First-source negative evidence (retain, do not transfer):** PR #206 SHA `60ea6fa5ab4bc4fdca5d501514e72640e1460b67`, Windows CI #40664955879 **FAILURE** at Rust step: 189 baseline PASS, five new tests FAIL before assertions at fixture line 80 (`create_dir` could not create nested `database/` because the same-profile parent had not yet been created). No operator path or admission used. Candidate correction uses `create_dir_all` exclusively beneath a unique runner-owned fixture root; a fresh exact-SHA CI is mandatory. This is fixture setup correction, **not** an admission security relaxation.
+
 ## S1 — admission contract
 
 - Same logical `com.fabulaxiom.greenfield.v1` profile only; no alternate application identity. `NEW_ONLY` requires an absent main file and exclusive `create_new` reservation; `EXISTING_PROFILE` requires a pre-existing regular main file from this exact profile and forbids creating it.
