@@ -4281,7 +4281,8 @@ class HandoffContractTests(unittest.TestCase):
                        "writer", "szOsFile"):
             self.assertIn(signal, doc)
         fixture = (ROOT / candidate["rust_fixture"]).read_text(encoding="utf-8")
-        self.assertEqual(fixture.count("#[test]"), 12)
+        # Historical PR202 twelve witnesses remain; D2 pins six additional tests in #149.
+        self.assertGreaterEqual(fixture.count("#[test]"), 12)
         self.assertIn("fixture_xshm_map", fixture)
         for filename in ("RESUME_PROMPT_SHORT.md", "RESUME_PROMPT.md", "HANDOFF_CURRENT.md",
                          "HANDOFF_PROTOCOL.md", "HANDOFF_HISTORY.md", "NEXT.md", "STATE.md",

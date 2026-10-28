@@ -73,7 +73,12 @@
       17,
       0
     ],
-    "source_inventory_tripwire_remains_active": true
+    "source_inventory_tripwire_remains_active": true,
+    "second_source_ci_run": 40752932972,
+    "second_source_ci_conclusion": "FAILURE_HISTORIC_PR202_EXACT_12_VFS_TEST_COUNT",
+    "second_source_head_sha": "9f82cd8bfe9d50c1c57f94a5c1e75aceae6ab732",
+    "historic_pr202_minimum_tests_preserved": 12,
+    "new_d2_exact_vfs_tests": 18
   },
   "next_p1_single_owner_session_proof_plan_20261028": {
     "scope": "DOCUMENTARY_P1_SINGLE_OWNER_SESSION_R1_R9_PROOF_PLAN_ONLY",
