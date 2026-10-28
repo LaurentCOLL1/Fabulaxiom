@@ -54,7 +54,13 @@ EXPECTED = {
     # 2026-10-28: +2 explicitly reviewed disposable Windows VFS
     # open_with_flags_and_vfs calls and +2 RW flags for in-xOpen delegated
     # native handle veto/mismatch witnesses, never a production opener.
-    "src-tauri/src/m32_sqlite_vfs_preopen_tests.rs": (12, 0, 0, 0, 0, 13, 0),
+    # D2 P1-0 owner-authorized Windows CI disposable fixture: +4 reviewed
+    # Connection::open_with_flags_and_vfs and +4 SQLITE_OPEN_READ_WRITE
+    # occurrences, all in the already cfg(all(test, windows)) module.
+    # Six new Rust tests share one random Local mutex/owned temp directory
+    # and existing delegated FileId128 + WAL/xShmMap VFS wrappers. Source-only
+    # count is not a production writer/external-writer-absence proof.
+    "src-tauri/src/m32_sqlite_vfs_preopen_tests.rs": (16, 0, 0, 0, 0, 17, 0),
     # 2026-10-28: an UNWIRED writer core owns an ALREADY admitted connection.
     # Two RAM-only constructors, migration and ATTACH are confined to its
     # #[cfg(test)] fictional fixture; no production path opening is added.

@@ -4680,6 +4680,20 @@ class HandoffContractTests(unittest.TestCase):
         self.assertIn("148 ATTENDUS NON QUALIFIÉS PAS PASS", short)
         self.assertIn("D2", short)
         self.assertIn("216/7/41/149 ATTENDUS NON QUALIFIÉS", short)
+        self.assertEqual(candidate["first_source_ci_run"], 40752418946)
+        self.assertEqual(candidate["first_source_ci_conclusion"],
+                         "FAILURE_REVIEW_REQUIRED_RUST_SQLITE_SOURCE_OCCURRENCE_INVENTORY")
+        self.assertEqual(candidate["reviewed_added_test_only_sqlite_open_sites"], 4)
+        self.assertEqual(candidate["reviewed_added_test_only_sqlite_rw_flags"], 4)
+        self.assertEqual(candidate["reviewed_vfs_inventory_counts"],
+                         [16, 0, 0, 0, 0, 17, 0])
+        self.assertTrue(candidate["source_inventory_tripwire_remains_active"])
+        inventory = (ROOT / "tools/m32_rust_sqlite_open_inventory.py").read_text(encoding="utf-8")
+        guards = (ROOT / "tools/test_m32_rust_sqlite_open_inventory.py").read_text(encoding="utf-8")
+        self.assertIn('"src-tauri/src/m32_sqlite_vfs_preopen_tests.rs": (16, 0, 0, 0, 0, 17, 0)',
+                      inventory)
+        self.assertEqual(guards.count("(16, 0, 0, 0, 0, 17, 0)"), 4)
+        self.assertIn('self.assertEqual(source.count("#[test]"), 18)', guards)
         self.assertEqual(candidate["operator_execution"], "NO_OPERATOR_EXECUTION")
 
 if __name__ == "__main__":

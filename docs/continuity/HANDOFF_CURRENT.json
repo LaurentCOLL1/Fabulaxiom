@@ -58,7 +58,22 @@
     "writer_ipc_authorized": false,
     "migration_007_authorized": false,
     "hello_native_authorized": false,
-    "persistent_marker_authorized": false
+    "persistent_marker_authorized": false,
+    "first_source_ci_run": 40752418946,
+    "first_source_ci_conclusion": "FAILURE_REVIEW_REQUIRED_RUST_SQLITE_SOURCE_OCCURRENCE_INVENTORY",
+    "first_source_head_sha": "2bce090e7fc75aa238283b97752d971b1c7a3379",
+    "reviewed_added_test_only_sqlite_open_sites": 4,
+    "reviewed_added_test_only_sqlite_rw_flags": 4,
+    "reviewed_vfs_inventory_counts": [
+      16,
+      0,
+      0,
+      0,
+      0,
+      17,
+      0
+    ],
+    "source_inventory_tripwire_remains_active": true
   },
   "next_p1_single_owner_session_proof_plan_20261028": {
     "scope": "DOCUMENTARY_P1_SINGLE_OWNER_SESSION_R1_R9_PROOF_PLAN_ONLY",
