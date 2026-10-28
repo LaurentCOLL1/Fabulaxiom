@@ -4534,7 +4534,7 @@ class HandoffContractTests(unittest.TestCase):
                        "no persistent marker", "no runtime writer"):
             self.assertIn(signal.lower(), doc.lower())
         writer = (ROOT / "src-tauri/src/m32_v7_writer_service.rs").read_text(encoding="utf-8")
-        self.assertIn("#[cfg(test)]\\nimpl V7WriterAdmission", writer)
+        self.assertIn("#[cfg(test)]\nimpl V7WriterAdmission", writer)
         for filename in ("RESUME_PROMPT.md", "RESUME_PROMPT_SHORT.md",
                          "HANDOFF_CURRENT.md", "HANDOFF_PROTOCOL.md",
                          "HANDOFF_HISTORY.md", "STATE.md", "NEXT.md",
