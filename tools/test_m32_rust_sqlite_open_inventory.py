@@ -388,5 +388,25 @@ class RustSqliteOpenInventoryTests(unittest.TestCase):
             self.assertNotIn(forbidden, source)
         self.assertFalse(audit_inventory(self.src)["real_g3_authorized"])
 
+
+    def test_43_p1_integrated_prefix_is_windows_only_and_never_opens_sqlite(self):
+        p = "src-tauri/src/m32_p1_integrated_prefix_tests.rs"
+        source = self.src[p]
+        self.assertEqual(counts(source), (0, 0, 0, 0, 0, 0, 0))
+        self.assertEqual(source.count("#[test]"), 5)
+        self.assertIn("GetFileInformationByHandleEx", source)
+        self.assertIn("CreateMutexW", source)
+        self.assertIn("create_new(true)", source)
+        self.assertIn("R2AncestorsNotPinned", source)
+        self.assertIn("R7PredecessorUnknown", source)
+        self.assertIn("#[cfg(all(test, windows))]\\nmod m32_p1_integrated_prefix_tests;".replace("\\n", "\n"),
+                      self.src["src-tauri/src/lib.rs"])
+        for forbidden in ("#[tauri::command]", "Connection::open(", "Connection::open_with_flags(",
+                          "Connection::open_with_flags_and_vfs(", "database::open_database(",
+                          "sqlite3_open", "migration_007", "SQLITE_OPEN_CREATE",
+                          "app_local_data_dir()", "tauri::State"):
+            self.assertNotIn(forbidden, source)
+        self.assertFalse(audit_inventory(self.src)["real_g3_authorized"])
+
 if __name__ == "__main__":
     unittest.main()

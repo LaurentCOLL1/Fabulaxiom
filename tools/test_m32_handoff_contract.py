@@ -4661,5 +4661,38 @@ class HandoffContractTests(unittest.TestCase):
             self.assertIn(doc_name, (DIRECTORY / file).read_text(encoding="utf-8"))
         self.assertIn("D3b-5", (DIRECTORY / "RESUME_PROMPT_SHORT.md").read_text(encoding="utf-8"))
 
+    def test_150_p1_integrated_prefix_still_cannot_admit_an_existing_profile(self):
+        checkpoint = self.data["m32_p1_integrated_prefix_20261029"]
+        self.assertEqual(checkpoint["scope"], "WINDOWS_CI_DISPOSABLE_PREFIX_ONLY")
+        self.assertEqual(checkpoint["fixture_tests"], 5)
+        self.assertEqual(checkpoint["previous_pr"], 222)
+        self.assertEqual(checkpoint["previous_main"], "35036c09f62e12d96639ac318b074b9b72f5f1e3")
+        self.assertEqual(checkpoint["previous_postmain_ci"], 40867166160)
+        self.assertEqual(checkpoint["previous_postmain_conclusion"], "SUCCESS")
+        self.assertEqual(checkpoint["r2_root_ancestors_pinned"], False)
+        for key in ("r4_shm_mapping_proven", "r5_schema_authentication_proven",
+                    "r6_writer_actor_admitted", "r7_crash_recovery_authorized",
+                    "r8_lifecycle_proven", "r9_production_release_authorized",
+                    "operator_data_access", "sqlite_opened", "runtime_writer_activated",
+                    "migration_007", "new_ipc", "durable_marker"):
+            self.assertFalse(checkpoint[key], key)
+        source = (ROOT / "src-tauri/src/m32_p1_integrated_prefix_tests.rs").read_text(encoding="utf-8")
+        self.assertEqual(source.count("#[test]"), 5)
+        for test in ("m32_p1_prefix_fresh_claim_fileid_still_stops_before_sqlite",
+                     "m32_p1_prefix_file_identity_substitution_refuses_without_sqlite",
+                     "m32_p1_prefix_unknown_sidecars_refuse_and_preserve_sentinel",
+                     "m32_p1_prefix_unclaimed_or_destroyed_mutex_never_attests_previous_owner",
+                     "m32_p1_prefix_rejects_path_escape_even_if_main_name_matches"):
+            self.assertIn("fn "+test+"(", source)
+        self.assertIn("#[cfg(all(test, windows))]\nmod m32_p1_integrated_prefix_tests;",
+                      (ROOT / "src-tauri/src/lib.rs").read_text(encoding="utf-8"))
+        self.assertEqual(self.data["m32_d3b5_disposable_phase_matrix_20261029"]["vfs_historical_tests_unchanged"], 26)
+        doc_name = "M3_2_P1_R1_R4_INTEGRATED_PREFIX_REFUSAL_20261029.md"
+        self.assertTrue((ROOT / "docs/qualification" / doc_name).exists())
+        for filename in ("RESUME_PROMPT.md", "HANDOFF_CURRENT.md", "HANDOFF_PROTOCOL.md",
+                         "NEXT.md", "STATE.md", "M3_2_GATE_DECISION_CURRENT.md"):
+            self.assertIn(doc_name, (DIRECTORY / filename).read_text(encoding="utf-8"))
+        self.assertIn("P1", (DIRECTORY / "RESUME_PROMPT_SHORT.md").read_text(encoding="utf-8"))
+
 if __name__ == "__main__":
     unittest.main()

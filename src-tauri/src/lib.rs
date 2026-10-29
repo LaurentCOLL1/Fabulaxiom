@@ -65,6 +65,11 @@ mod m32_sqlite_vfs_preopen_tests;
 #[cfg(all(test, windows))]
 mod m32_d3b5_phase_matrix_tests;
 
+// P1 R1–R4 integrated pre-admission Win32 prefix: disposable CI only;
+// no SQLite opener, production token, operator identity or Tauri IPC.
+#[cfg(all(test, windows))]
+mod m32_p1_integrated_prefix_tests;
+
 // Never compile this feature into a Tauri runtime, even debug builds.
 #[cfg(all(feature = "m32-g3-owned-ram-toy", not(test)))]
 compile_error!("M3.2 owner-to-RAM backup fixture must be compiled ONLY as Rust unit tests");
