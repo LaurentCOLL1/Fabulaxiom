@@ -60,6 +60,11 @@ mod m32_desktop_hello_boundary_tests;
 #[cfg(all(test, windows))]
 mod m32_sqlite_vfs_preopen_tests;
 
+// D3b-5 bounded phase-bracket crash refusal on fresh disposable Windows CI files.
+// Does NOT reopen crashed SQLite, attest xSync/xShmUnmap timing or admit a writer.
+#[cfg(all(test, windows))]
+mod m32_d3b5_phase_matrix_tests;
+
 // Never compile this feature into a Tauri runtime, even debug builds.
 #[cfg(all(feature = "m32-g3-owned-ram-toy", not(test)))]
 compile_error!("M3.2 owner-to-RAM backup fixture must be compiled ONLY as Rust unit tests");

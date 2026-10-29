@@ -68,6 +68,9 @@ EXPECTED = {
     # sqlite3_close() fixture. Successor parents DO NOT reopen a crashed DB.
     # D3b has no production opener, existing-profile recovery or marker.
     "src-tauri/src/m32_sqlite_vfs_preopen_tests.rs": (22, 0, 0, 0, 0, 23, 0),
+    # D3b-5 distinct Windows test-only phase fixture: one owned-file opener,
+    # no successor SQLite open; historical 26 VFS witnesses unchanged.
+    "src-tauri/src/m32_d3b5_phase_matrix_tests.rs": (1, 0, 0, 0, 0, 1, 0),
     # 2026-10-28: an UNWIRED writer core owns an ALREADY admitted connection.
     # Two RAM-only constructors, migration and ATTACH are confined to its
     # #[cfg(test)] fictional fixture; no production path opening is added.

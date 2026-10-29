@@ -369,5 +369,24 @@ class RustSqliteOpenInventoryTests(unittest.TestCase):
         self.assertNotIn("m32_v7_writer_service::", lib)
         self.assertEqual(repository_inventory()["writer_absence"], "NOT_PROVEN")
 
+
+    def test_42_d3b5_disposable_phase_matrix_is_exactly_one_reviewed_test_only_open(self):
+        p = "src-tauri/src/m32_d3b5_phase_matrix_tests.rs"
+        source = self.src[p]
+        self.assertEqual(EXPECTED[p], (1, 0, 0, 0, 0, 1, 0))
+        self.assertEqual(counts(source), (1, 0, 0, 0, 0, 1, 0))
+        self.assertEqual(source.count("#[test]"), 4)
+        self.assertIn("TerminateProcess(GetCurrentProcess()", source)
+        self.assertIn("RECOVERY_REQUIRED_NOT_AUTHORIZED", source)
+        self.assertIn("create_new(true)", source)
+        self.assertIn("std::env::temp_dir()", source)
+        self.assertIn("#[cfg(all(test, windows))]\nmod m32_d3b5_phase_matrix_tests;",
+                      self.src["src-tauri/src/lib.rs"])
+        for forbidden in ("#[tauri::command]", "app_local_data_dir()",
+                          "database::open_database(", "SQLITE_OPEN_CREATE",
+                          "run_migrations(", "VACUUM INTO", "ATTACH DATABASE"):
+            self.assertNotIn(forbidden, source)
+        self.assertFalse(audit_inventory(self.src)["real_g3_authorized"])
+
 if __name__ == "__main__":
     unittest.main()
