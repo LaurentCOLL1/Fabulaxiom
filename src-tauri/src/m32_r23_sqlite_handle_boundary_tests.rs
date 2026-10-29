@@ -370,3 +370,71 @@ fn m32_r3_other_process_rename_is_refused_before_and_during_sqlite_xopen() {
         Ok(expected));
     drop(pins);
 }
+
+
+// R3 follow-up: Win32 ReOpenFile works from an already selected HANDLE, not
+// the pathname. This is a *non-SQLite* CI-only experiment; the existing SQLite
+// default VFS still opens by name and MUST NOT be called atomic by these tests.
+#[link(name = "kernel32")]
+unsafe extern "system" {
+    fn ReOpenFile(original: *mut c_void, access: u32, share: u32, flags: u32) -> *mut c_void;
+}
+const R3_SHARE_DELETE: u32 = 4;
+const R3_GENERIC_READ: u32 = 0x8000_0000;
+const R3_GENERIC_WRITE: u32 = 0x4000_0000;
+
+fn r3_reopen_existing_win32_file(file: &File, share: u32) -> io::Result<File> {
+    use std::os::windows::io::FromRawHandle;
+    let reopened = unsafe {
+        ReOpenFile(file.as_raw_handle().cast(), R3_GENERIC_READ | R3_GENERIC_WRITE, share, 0)
+    };
+    if reopened as isize == -1 {
+        return Err(io::Error::last_os_error());
+    }
+    // ReOpenFile creates a NEW HANDLE. Ownership transfers to the Rust File;
+    // the borrowed original handle is never closed or consumed.
+    Ok(unsafe { File::from_raw_handle(reopened.cast()) })
+}
+
+#[test]
+fn m32_r3_reopenfile_preserves_live_disposable_main_identity_without_path_lookup() {
+    let root = OwnedRoot::fresh();
+    root.create_empty_main();
+    let held = OpenOptions::new().read(true).write(true)
+        .share_mode(SHARE_READ | SHARE_WRITE).open(root.main()).unwrap();
+    let original = file_id(&held).unwrap();
+    let reopened = r3_reopen_existing_win32_file(&held, SHARE_READ | SHARE_WRITE)
+        .expect("ReOpenFile should reopen the already held fixture object");
+    assert_eq!(file_id(&reopened), Ok(original));
+    assert_eq!(file_id(&File::open(root.main()).unwrap()), Ok(original));
+    assert!(fs::rename(root.main(), root.main().with_file_name("cannot-rename-held-main")).is_err());
+    drop(reopened);
+    drop(held);
+    assert!(!root.main().with_file_name("cannot-rename-held-main").exists());
+}
+
+#[test]
+fn m32_r3_reopenfile_binds_original_file_even_after_name_replacement() {
+    let root = OwnedRoot::fresh();
+    let held = OpenOptions::new().read(true).write(true).create_new(true)
+        .share_mode(SHARE_READ | SHARE_WRITE | R3_SHARE_DELETE)
+        .open(root.main()).unwrap();
+    let original = file_id(&held).unwrap();
+    let displaced = root.main().with_file_name("displaced-before-handle-reopen");
+    fs::rename(root.main(), &displaced).unwrap();
+    let replacement = OpenOptions::new().read(true).write(true).create_new(true)
+        .share_mode(SHARE_READ | SHARE_WRITE | R3_SHARE_DELETE)
+        .open(root.main()).unwrap();
+    let foreign_identity = file_id(&replacement).unwrap();
+    assert_ne!(foreign_identity, original, "controlled CI-only name replacement");
+    let reopened = r3_reopen_existing_win32_file(
+        &held, SHARE_READ | SHARE_WRITE | R3_SHARE_DELETE
+    ).expect("ReOpenFile MUST follow original handle, not the substituted name");
+    assert_eq!(file_id(&reopened), Ok(original));
+    assert_eq!(file_id(&held), Ok(original));
+    assert_eq!(file_id(&File::open(&displaced).unwrap()), Ok(original));
+    assert_eq!(file_id(&File::open(root.main()).unwrap()), Ok(foreign_identity));
+    drop(reopened);
+    drop(replacement);
+    drop(held);
+}
