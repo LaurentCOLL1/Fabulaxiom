@@ -491,12 +491,14 @@ class RustSqliteOpenInventoryTests(unittest.TestCase):
         r4 = src.split("// R4 / P1 decision probe", 1)[1]
         for name in (
             "m32_r4_exclusive_owner_refuses_second_sqlite_reader_without_ipc",
-            "m32_r4_exclusive_wal_normal_request_is_noop_during_owner_lifetime",
+            "m32_r4_exclusive_wal_owner_policy_refuses_normal_downgrade",
         ):
             self.assertIn("fn " + name + "(", r4)
         self.assertIn("SQLITE_OPEN_READ_ONLY", r4)
         self.assertIn("ErrorCode::DatabaseBusy", r4)
-        self.assertIn("PRAGMA locking_mode=NORMAL", r4)
+        self.assertIn("R4OwnerRequest::DowngradeLockingToNormal", r4)
+        self.assertIn("r4_fixture_owner_execute", r4)
+        self.assertNotIn('"PRAGMA locking_mode=NORMAL"', r4)
         self.assertEqual(r4.count("#[test]"), 5)
         self.assertNotIn("SQLITE_OPEN_CREATE", r4)
         self.assertNotIn("#[tauri::command]", r4)
