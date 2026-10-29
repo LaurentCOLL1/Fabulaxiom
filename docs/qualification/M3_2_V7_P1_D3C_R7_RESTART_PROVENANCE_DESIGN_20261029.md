@@ -2,6 +2,20 @@
 
 **29 October 2026. Status: DESIGN PROPOSAL, NOT AN AUTHORIZED WINDOWS EXPERIMENT.** The name **D3c** is introduced by this document as a proposed successor to the bounded D3b refusal witnesses. It was **not** already qualified or separately authorized for execution. No production/CI Rust code, VFS, Tauri IPC, migrations, markers, SQLite files, operator paths, or Ollama connections are created or changed by this document.
 
+## 0. Naming reconciliation after repository-history audit (29 October 2026)
+
+**CORRECTION — DO NOT TREAT D3c AS A NEW CANONICAL STEP.** An explicit named `D3c`, `D3d` or `D3e` stage was not found in the prior indexed PR titles/bodies/issues or the prior D3 design checked. The *substance*, however, was already scoped in [PR #215's D3 design](M3_2_V7_P1_D3_WAL_SHM_LIFECYCLE_CRASH_RESTART_DESIGN_20261028.md): **D3b-4** proposed replay/swap/omission of a hypothetical restart witness (format separately authorized), **D3b-5** proposed crash timing around commit/WAL sync/checkpoint/SHM unmap/SQLite close, and **D3a-3** proposed checkpoint/busy observation. None of D3b-4/-5 was implemented or authorized by the limited D3b Windows CI proof.
+
+Consequently the `D3c` label in this PR is **provisional shorthand for consolidating existing D3b-4/-5 R7 design work**, *not* an additional approved milestone, a fresh set of 12 mandatory tests, or a supersession of PR #215. Its 12 suggested cases are a **decomposition/mapping** of pre-existing proposed obligations and R7/R4/R8 safety analysis, not 12 newly authorized gates. Future labels `D3d` / `D3e` remain **UNDEFINED**; do not invent scope for them. The canonical source remains PR #215 until a separately reviewed naming decision. The documentation-only PR #217 must stay draft pending this reconciliation and exact-source CI. No production writer admission follows from document review.
+
+| Existing scope in PR #215 | Overlapping candidate analysis in PR #217 |
+|---|---|
+| D3b-4, missing/replayed/swapped hypothetical witness | D3c-01 to D3c-05, generation and publication ordering |
+| D3b-3, close BUSY and deferred destruction | D3c-06, D3c-07 |
+| D3b-5, crash-phase matrix | D3c-08, D3c-09, D3c-12 |
+| D3a-3 and R4, checkpoint/WAL/SHM custody | D3c-10 |
+| R2/R3 and cooperative ownership hazards | D3c-11 |
+
 ## 1. Exact observed baseline; avoid proof transfer
 
 - Source-controlled protected `main=4fbffea526182e551cb5c19848817ba2d96417e3` after documentation-only protected PR #216; independent post-main push CI [#40830760358](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/40830760358) **completed/SUCCESS**, which proves source checks for that main, not a v7 writer admission.
