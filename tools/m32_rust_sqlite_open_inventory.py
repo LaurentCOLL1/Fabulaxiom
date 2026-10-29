@@ -62,8 +62,12 @@ EXPECTED = {
     # count is not a production writer/external-writer-absence proof.
     # D3a adds exactly four cfg(test,windows) fixture-only SQLite RW opens:
     # real delegated -wal FileId128 match, wrong expected WAL ID xClose veto,
-    # xShmLock refusal, and synthetic missing-method xOpen STOP. No D3b.
-    "src-tauri/src/m32_sqlite_vfs_preopen_tests.rs": (20, 0, 0, 0, 0, 21, 0),
+    # xShmLock refusal, and synthetic missing-method xOpen STOP.
+    # D3b adds exactly two more Windows cfg(test) RW SQLite open sites:
+    # one forced-termination CHILD on a fresh CI temp-owned main, one busy
+    # sqlite3_close() fixture. Successor parents DO NOT reopen a crashed DB.
+    # D3b has no production opener, existing-profile recovery or marker.
+    "src-tauri/src/m32_sqlite_vfs_preopen_tests.rs": (22, 0, 0, 0, 0, 23, 0),
     # 2026-10-28: an UNWIRED writer core owns an ALREADY admitted connection.
     # Two RAM-only constructors, migration and ATTACH are confined to its
     # #[cfg(test)] fictional fixture; no production path opening is added.

@@ -2,7 +2,8 @@
 //! A refusal at xOpen precedes default-VFS delegation; a post-xOpen FileId
 //! check does not. This does NOT authenticate any Windows operator profile.
 //! Disposable D2 xShmMap and D3a xShmLock/xShmBarrier/xShmUnmap/xClose
-//! probes use SQLite-allocated extra bytes; no production VFS or atomic opener.
+//! probes use SQLite-allocated extra bytes; D3b kills only a CI fixture child.
+//! No production VFS, crash recovery, operator file or atomic opener.
 
 use rusqlite::{ffi, Connection, OpenFlags};
 use std::{
@@ -1119,5 +1120,215 @@ mod d3a_p1_disposable_wal_shm {
         assert_eq!(gate.state.d3a_wal_identity_matches.load(Ordering::SeqCst), 0);
         assert_eq!(gate.state.shm_map_delegations.load(Ordering::SeqCst), 0);
         assert!(!path.with_file_name("new.sqlite3-wal").exists());
+    }
+}
+
+// D3b: separately owner-authorized *Windows CI disposable fixtures* only.
+// A terminated child intentionally leaves fixture-owned WAL state behind. The
+// surviving process inspects only filesystem metadata and a cooperative mutex:
+// it MUST NOT call SQLite on that existing database, since even opening it may
+// begin a recovery or checkpoint. This is a refusal witness, NOT recovery.
+mod d3b_p1_disposable_crash_refusal {
+    use super::*;
+    use std::{ffi::{c_void, OsStr}, os::windows::ffi::OsStrExt};
+
+    const WAIT_OBJECT_0: u32 = 0;
+    const WAIT_ABANDONED: u32 = 0x80;
+    const ERROR_ALREADY_EXISTS: u32 = 183;
+    const CHILD_TERMINATED: i32 = 77;
+    const CHILD_ROLE: &str = "FABULAXIOM_M32_D3B_CHILD_ROLE";
+    const CHILD_DB: &str = "FABULAXIOM_M32_D3B_CHILD_DB";
+    const CHILD_MUTEX: &str = "FABULAXIOM_M32_D3B_CHILD_MUTEX";
+
+    #[link(name = "kernel32")]
+    unsafe extern "system" {
+        fn CreateMutexW(attributes: *mut c_void, initial_owner: i32, name: *const u16) -> *mut c_void;
+        fn WaitForSingleObject(handle: *mut c_void, milliseconds: u32) -> u32;
+        fn ReleaseMutex(handle: *mut c_void) -> i32;
+        fn CloseHandle(handle: *mut c_void) -> i32;
+        fn GetLastError() -> u32;
+        fn GetCurrentProcess() -> *mut c_void;
+        fn TerminateProcess(handle: *mut c_void, exit_code: u32) -> i32;
+    }
+
+    struct D3bMutex { handle: *mut c_void, held: bool }
+    impl D3bMutex {
+        fn open(name: &str) -> (Self, bool) {
+            assert!(name.starts_with("Local\\Fabulaxiom-D3b-Disposable-"));
+            let wide: Vec<u16> = OsStr::new(name).encode_wide().chain(Some(0)).collect();
+            let handle = unsafe { CreateMutexW(ptr::null_mut(), 0, wide.as_ptr()) };
+            assert!(!handle.is_null(), "D3b fixture-only mutex CreateMutexW");
+            (Self { handle, held: false }, unsafe { GetLastError() } == ERROR_ALREADY_EXISTS)
+        }
+        fn claim(&mut self) -> u32 {
+            let outcome = unsafe { WaitForSingleObject(self.handle, 0) };
+            assert!(matches!(outcome, WAIT_OBJECT_0 | WAIT_ABANDONED),
+                "D3b fixture mutex must be immediately claimable after child termination: {outcome}");
+            self.held = true;
+            outcome
+        }
+        fn release(&mut self) {
+            assert!(self.held);
+            assert_ne!(unsafe { ReleaseMutex(self.handle) }, 0);
+            self.held = false;
+        }
+    }
+    impl Drop for D3bMutex {
+        fn drop(&mut self) {
+            if self.held { self.release(); }
+            assert_ne!(unsafe { CloseHandle(self.handle) }, 0);
+        }
+    }
+
+    #[derive(Debug, PartialEq, Eq)]
+    enum RestartDecision { RecoveryRequiredNotAuthorized }
+
+    // Never use the outcome of a volatile mutex as durable predecessor proof.
+    // No synthetic marker is manufactured or installed by D3b.
+    fn reject_unattested_restart(_mutex_outcome: u32) -> RestartDecision {
+        RestartDecision::RecoveryRequiredNotAuthorized
+    }
+
+    fn fresh_owned() -> (DisposableRoot, PathBuf, (u64, [u8; 16])) {
+        let root = DisposableRoot::new();
+        let path = root.db();
+        fs::OpenOptions::new().write(true).create_new(true)
+            .open(&path).expect("D3b fresh CI-only database, no existing profile");
+        let id = win_file_id_128(&fs::File::open(&path).unwrap()).unwrap();
+        (root, path, id)
+    }
+
+    fn mutex_name() -> String {
+        static NEXT: AtomicUsize = AtomicUsize::new(0);
+        let tick = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_nanos();
+        format!("Local\\Fabulaxiom-D3b-Disposable-{}-{tick}-{}",
+            process::id(), NEXT.fetch_add(1, Ordering::Relaxed))
+    }
+
+    fn crash_child(role: &str, path: &PathBuf, name: &str) {
+        let result = process::Command::new(std::env::current_exe().unwrap())
+            .arg("--exact")
+            .arg("m32_sqlite_vfs_preopen_tests::d3b_p1_disposable_crash_refusal::m32_d3b_child_fixture_terminate_before_sqlite_close")
+            .arg("--nocapture")
+            .env(CHILD_ROLE, role)
+            .env(CHILD_DB, path)
+            .env(CHILD_MUTEX, name)
+            .status().expect("spawn only the same CI Rust test binary");
+        assert_eq!(result.code(), Some(CHILD_TERMINATED),
+            "D3b child must be forcibly terminated, not normally closed: {result:?}");
+    }
+
+    fn assert_disposable_path(path: &PathBuf) {
+        assert_eq!(path.file_name(), Some(OsStr::new("new.sqlite3")));
+        let parent = path.parent().expect("owned fixture parent");
+        assert!(parent.starts_with(std::env::temp_dir()), "CI temp root only");
+        assert!(parent.file_name().unwrap().to_string_lossy()
+            .starts_with("fabulaxiom-vfs-fixture-"), "reject any operator directory");
+        assert!(path.is_file(), "D3b fresh main must already exist");
+    }
+
+    #[test]
+    fn m32_d3b_child_fixture_terminate_before_sqlite_close() {
+        let Ok(role) = std::env::var(CHILD_ROLE) else { return };
+        assert!(matches!(role.as_str(), "committed" | "pending"));
+        let path = PathBuf::from(std::env::var_os(CHILD_DB).unwrap());
+        assert_disposable_path(&path);
+        let name = std::env::var(CHILD_MUTEX).unwrap();
+        let (mut mutex, _) = D3bMutex::open(&name);
+        assert_eq!(mutex.claim(), WAIT_OBJECT_0);
+        let actual = win_file_id_128(&fs::File::open(&path).unwrap()).unwrap();
+        let gate = RegisteredFixtureVfs::with_d3a(path.clone(), actual, None, false, false);
+        let db = Connection::open_with_flags_and_vfs(
+            &path, OpenFlags::SQLITE_OPEN_READ_WRITE, gate.name()).unwrap();
+        assert_eq!(sqlite_opened_file_id_128(&db).unwrap(), actual);
+        let mode: String = db.query_row("PRAGMA journal_mode=WAL", [], |row| row.get(0)).unwrap();
+        assert_eq!(mode.to_ascii_lowercase(), "wal");
+        db.execute_batch("CREATE TABLE invented_d3b(id INTEGER PRIMARY KEY, note TEXT);")
+            .expect("only fixture-owned synthetic SQL");
+        if role == "committed" {
+            db.execute_batch("INSERT INTO invented_d3b(note) VALUES ('committed-fiction');")
+                .unwrap();
+        } else {
+            db.execute_batch("BEGIN IMMEDIATE;
+                INSERT INTO invented_d3b(note) VALUES ('never-committed-fiction');")
+                .unwrap();
+        }
+        assert!(path.with_file_name("new.sqlite3-wal").exists());
+        assert!(gate.state.d3a_wal_identity_matches.load(Ordering::SeqCst) >= 1);
+        // Explicit Windows process termination skips Rust destructors, SQLite
+        // close, SHM unmap, mutex release and last-close checkpoint. Never use
+        // process::abort (which could invoke crash dialog/reporting on CI).
+        let terminated = unsafe { TerminateProcess(GetCurrentProcess(), CHILD_TERMINATED as u32) };
+        panic!("D3b TerminateProcess unexpectedly returned {terminated}");
+    }
+
+    fn inspect_only_owned_files(path: &PathBuf, expected: (u64, [u8; 16])) {
+        assert_disposable_path(path);
+        assert_eq!(win_file_id_128(&fs::File::open(path).unwrap()).unwrap(), expected);
+        let wal = path.with_file_name("new.sqlite3-wal");
+        assert!(fs::metadata(&wal).unwrap().len() > 0,
+            "the fixture's post-crash WAL is a persistent state witness");
+        // No Connection::open, PRAGMA, checkpoint, WAL delete, rename or repair.
+        // A real -shm path may be present; its presence is not authenticated.
+    }
+
+    #[test]
+    fn m32_d3b_committed_wal_abandoned_mutex_refuses_unattested_reopen() {
+        let (_root, path, main_id) = fresh_owned();
+        let name = mutex_name();
+        let (mut parent, existed) = D3bMutex::open(&name);
+        assert!(!existed);
+        // Retained parent handle makes the child's abandoned mutex observable.
+        crash_child("committed", &path, &name);
+        assert_eq!(parent.claim(), WAIT_ABANDONED);
+        inspect_only_owned_files(&path, main_id);
+        assert_eq!(reject_unattested_restart(WAIT_ABANDONED),
+            RestartDecision::RecoveryRequiredNotAuthorized);
+        parent.release();
+    }
+
+    #[test]
+    fn m32_d3b_pending_wal_vanished_mutex_still_refuses_unattested_reopen() {
+        let (_root, path, main_id) = fresh_owned();
+        let name = mutex_name();
+        // The child owns the only named mutex handle. After its termination,
+        // the parent creates a NEW free mutex -- never a clean-close witness.
+        crash_child("pending", &path, &name);
+        let (mut successor, existed) = D3bMutex::open(&name);
+        assert!(!existed, "last handle closed, named mutex must be destroyed");
+        assert_eq!(successor.claim(), WAIT_OBJECT_0);
+        inspect_only_owned_files(&path, main_id);
+        assert_eq!(reject_unattested_restart(WAIT_OBJECT_0),
+            RestartDecision::RecoveryRequiredNotAuthorized);
+        successor.release();
+    }
+
+    #[test]
+    fn m32_d3b_busy_close_does_not_attest_restart_even_after_final_close() {
+        let (_root, path, main_id) = fresh_owned();
+        let name = mutex_name();
+        let (mut mutex, existed) = D3bMutex::open(&name);
+        assert!(!existed);
+        assert_eq!(mutex.claim(), WAIT_OBJECT_0);
+        let gate = RegisteredFixtureVfs::with_d3a(path.clone(), main_id, None, false, false);
+        let db = Connection::open_with_flags_and_vfs(
+            &path, OpenFlags::SQLITE_OPEN_READ_WRITE, gate.name()).unwrap();
+        db.execute_batch("PRAGMA journal_mode=WAL;
+            CREATE TABLE invented_d3b_busy(id INTEGER PRIMARY KEY);")
+            .unwrap();
+        let mut statement = db.prepare("SELECT * FROM invented_d3b_busy").unwrap();
+        assert!(statement.exists([]).is_ok());
+        // sqlite3_close, unlike sqlite3_close_v2, returns BUSY when statement
+        // handles remain live. A failed close MUST NOT release the claim.
+        let first_close = unsafe { ffi::sqlite3_close(db.handle()) };
+        assert_eq!(first_close, ffi::SQLITE_BUSY);
+        assert_eq!(gate.state.d3a_main_close_successes.load(Ordering::SeqCst), 0);
+        assert_eq!(reject_unattested_restart(WAIT_OBJECT_0),
+            RestartDecision::RecoveryRequiredNotAuthorized);
+        drop(statement);
+        assert!(db.close().is_ok(), "fixture cleanup only, not durable attestation");
+        assert_eq!(gate.state.d3a_main_close_successes.load(Ordering::SeqCst), 1);
+        mutex.release();
+        // Even this completed local close cannot authenticate another process.
     }
 }
