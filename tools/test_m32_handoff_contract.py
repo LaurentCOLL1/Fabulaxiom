@@ -4281,7 +4281,8 @@ class HandoffContractTests(unittest.TestCase):
                        "writer", "szOsFile"):
             self.assertIn(signal, doc)
         fixture = (ROOT / candidate["rust_fixture"]).read_text(encoding="utf-8")
-        self.assertEqual(fixture.count("#[test]"), 12)
+        # Historical PR202 12 + qualified #215 6 D2 + 4 D3a + 4 D3b; require exact 26.
+        self.assertEqual(fixture.count("#[test]"), 26)
         self.assertIn("fixture_xshm_map", fixture)
         for filename in ("RESUME_PROMPT_SHORT.md", "RESUME_PROMPT.md", "HANDOFF_CURRENT.md",
                          "HANDOFF_PROTOCOL.md", "HANDOFF_HISTORY.md", "NEXT.md", "STATE.md",
@@ -4581,6 +4582,54 @@ class HandoffContractTests(unittest.TestCase):
                      "writer_ipc_authorized", "migration_007_authorized",
                      "new_runtime_rust_code"):
             self.assertFalse(checkpoint[flag], flag)
+
+
+    def test_148_d2_d3ab_port_keeps_exact_windows_only_qualifications(self):
+        fixture_path = ROOT / "src-tauri/src/m32_sqlite_vfs_preopen_tests.rs"
+        fixture = fixture_path.read_text(encoding="utf-8")
+        inventory = (ROOT / "tools/m32_rust_sqlite_open_inventory.py").read_text(encoding="utf-8")
+        inventory_tests = (ROOT / "tools/test_m32_rust_sqlite_open_inventory.py").read_text(encoding="utf-8")
+        lib = (ROOT / "src-tauri/src/lib.rs").read_text(encoding="utf-8")
+        checkpoint = self.data["m32_d2_d3ab_windows_test_only_port_20261029"]
+        self.assertEqual(fixture.count("#[test]"), 26)
+        for symbol in (
+            "m32_d2_child_probe",
+            "m32_d2_p1_cooperative_owner_delegated_fileid_wal_shm_positive_is_not_admission",
+            "m32_d2_p1_identity_swap_after_cooperative_claim_vetoes_xopen",
+            "m32_d2_p1_wal_veto_after_bound_main_handle_stops_before_wal_open",
+            "m32_d2_p1_shm_veto_after_bound_main_handle_stops_before_mapping",
+            "m32_d2_p1_abandoned_mutex_refuses_before_sqlite_xopen",
+            "m32_d3a_wal_real_delegated_fileid_all_shm_callbacks_and_close_positive_not_admission",
+            "m32_d3a_wrong_expected_wal_fileid_vetoes_after_delegation_and_closes",
+            "m32_d3a_shm_lock_veto_after_wal_handle_binding_refuses_sql",
+            "m32_d3a_missing_shm_lock_method_refuses_at_main_xopen_without_wal",
+            "m32_d3b_child_fixture_terminate_before_sqlite_close",
+            "m32_d3b_committed_wal_abandoned_mutex_refuses_unattested_reopen",
+            "m32_d3b_pending_wal_vanished_mutex_still_refuses_unattested_reopen",
+            "m32_d3b_busy_close_does_not_attest_restart_even_after_final_close"
+        ):
+            self.assertIn("fn " + symbol + "(", fixture, symbol)
+        self.assertIn("#[cfg(all(test, windows))]\nmod m32_sqlite_vfs_preopen_tests;", lib)
+        self.assertIn('"src-tauri/src/m32_sqlite_vfs_preopen_tests.rs": (22, 0, 0, 0, 0, 23, 0)', inventory)
+        self.assertIn("self.assertEqual(counts(source), (22, 0, 0, 0, 0, 23, 0))", inventory_tests)
+        for name in (
+            "M3_2_V7_P1_D2_DISPOSABLE_SESSION_VFS_WAL_SHM_EXPERIMENT_20261028.md",
+            "M3_2_V7_P1_D3A_WAL_SHM_HANDLE_CUSTODY_DISPOSABLE_WINDOWS_FIXTURE_20261028.md",
+            "M3_2_V7_P1_D3B_DISPOSABLE_WINDOWS_CRASH_RESTART_REFUSAL_FIXTURE_20261028.md",
+            "M3_2_V7_P1_D3_WAL_SHM_LIFECYCLE_CRASH_RESTART_DESIGN_20261028.md",
+            "M3_2_V7_P1_SINGLE_OWNER_SESSION_PROOF_PLAN_20261028.md",
+            "M3_2_V7_PRODUCTION_WRITER_CUSTODY_DESIGN_STUDY_20261028.md"
+        ):
+            self.assertTrue((ROOT / "docs/qualification" / name).is_file(), name)
+        self.assertEqual(checkpoint["authority"], "TEST_ONLY_HISTORICAL_PORT_NOT_RELEASE_ADMISSION")
+        self.assertEqual(checkpoint["source_sha"], "8203b7323877edc87ffabaad1694c52d2523023d")
+        for flag in (
+            "d3b4_marker_implemented", "d3b5_crash_phase_implemented",
+            "operator_files_accessed", "production_writer_admitted", "migration_007_enabled",
+            "new_ipc_enabled", "independent_merge_authorized"
+        ):
+            self.assertFalse(checkpoint[flag], flag)
+        self.assertEqual(checkpoint["a0_existing_profile"], "STOP")
 
 if __name__ == "__main__":
     unittest.main()
