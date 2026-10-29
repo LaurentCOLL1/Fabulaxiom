@@ -4523,5 +4523,27 @@ class HandoffContractTests(unittest.TestCase):
         rust = (ROOT / "src-tauri/src/m32_v7_writer_service.rs").read_text(encoding="utf-8")
         self.assertIn("#[cfg(test)]\nimpl V7WriterAdmission", rust)
 
+
+    def test_146_d3c_r7_design_is_not_a_runtime_or_disposable_fixture_authorization(self):
+        design_name = "M3_2_V7_P1_D3C_R7_RESTART_PROVENANCE_DESIGN_20261029.md"
+        doc = (ROOT / "docs/qualification" / design_name).read_text(encoding="utf-8")
+        short = (DIRECTORY / "RESUME_PROMPT_SHORT.md").read_text(encoding="utf-8")
+        detailed = (DIRECTORY / "RESUME_PROMPT.md").read_text(encoding="utf-8")
+        for needle in ("D3c", "DESIGN PROPOSAL", "NOT AUTHORIZED", "RECOVERY_REQUIRED_NOT_AUTHORIZED", "EXISTING_PROFILE", "R1–R9", "D3c-12", "no production", "not recovery"):
+            self.assertIn(needle.lower(), doc.lower(), needle)
+        self.assertIn("D3c", short)
+        self.assertIn(design_name, detailed)
+        self.assertIn(design_name, self.doc)
+        self.assertIn(design_name, self.policy)
+        checkpoint = self.data["d3c_r7_design_checkpoint_20261029"]
+        self.assertEqual(checkpoint["authority"], "NOT_AUTHORIZED_FOR_D3C_CODE_OR_FIXTURES")
+        self.assertEqual(checkpoint["a0_existing_profile"], "STOP")
+        for key in ("d3c_test_implemented", "d3c_r7_production_proven",
+                    "persistent_marker_authorized", "crash_recovery_authorized",
+                    "writer_ipc_authorized", "migration_007_authorized"):
+            self.assertFalse(checkpoint[key], key)
+        self.assertIn("#[cfg(test)]\\nimpl V7WriterAdmission",
+                      (ROOT / "src-tauri/src/m32_v7_writer_service.rs").read_text(encoding="utf-8"))
+
 if __name__ == "__main__":
     unittest.main()
