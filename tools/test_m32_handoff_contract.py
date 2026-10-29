@@ -4281,7 +4281,8 @@ class HandoffContractTests(unittest.TestCase):
                        "writer", "szOsFile"):
             self.assertIn(signal, doc)
         fixture = (ROOT / candidate["rust_fixture"]).read_text(encoding="utf-8")
-        self.assertEqual(fixture.count("#[test]"), 12)
+        # Historical PR202 twelve witnesses remain; D2 pins six additional tests in #149.
+        self.assertGreaterEqual(fixture.count("#[test]"), 12)
         self.assertIn("fixture_xshm_map", fixture)
         for filename in ("RESUME_PROMPT_SHORT.md", "RESUME_PROMPT.md", "HANDOFF_CURRENT.md",
                          "HANDOFF_PROTOCOL.md", "HANDOFF_HISTORY.md", "NEXT.md", "STATE.md",
@@ -4522,6 +4523,427 @@ class HandoffContractTests(unittest.TestCase):
             self.assertIn(signal.lower(), doc.lower())
         rust = (ROOT / "src-tauri/src/m32_v7_writer_service.rs").read_text(encoding="utf-8")
         self.assertIn("#[cfg(test)]\nimpl V7WriterAdmission", rust)
+
+    def test_146_production_writer_custody_design_has_no_runtime_admission(self):
+        doc = (ROOT / "docs/qualification/M3_2_V7_PRODUCTION_WRITER_CUSTODY_DESIGN_STUDY_20261028.md").read_text(encoding="utf-8")
+        for signal in ("DESIGN STUDY ONLY", "A0", "P1", "P2", "same-SID",
+                       "DACL", "xOpen", "xShmMap", "WAL", "FileId128",
+                       "R1", "R2", "R3", "R4", "R5", "R6", "R7", "R8", "R9",
+                       "D0", "D1", "D2", "D3", "EXISTING_PROFILE",
+                       "RECOVERY_REQUIRED_NOT_AUTHORIZED", "NOT_PROVEN",
+                       "STOP_UNAVAILABLE", "S3/S4", "no operator execution",
+                       "no persistent marker", "no runtime writer"):
+            self.assertIn(signal.lower(), doc.lower())
+        writer = (ROOT / "src-tauri/src/m32_v7_writer_service.rs").read_text(encoding="utf-8")
+        self.assertIn("#[cfg(test)]\nimpl V7WriterAdmission", writer)
+        for filename in ("RESUME_PROMPT.md", "RESUME_PROMPT_SHORT.md",
+                         "HANDOFF_CURRENT.md", "HANDOFF_PROTOCOL.md",
+                         "HANDOFF_HISTORY.md", "STATE.md", "NEXT.md",
+                         "M3_2_GATE_DECISION_CURRENT.md"):
+            content = (ROOT / "docs/continuity" / filename).read_text(encoding="utf-8")
+            self.assertIn("M3_2_V7_PRODUCTION_WRITER_CUSTODY_DESIGN_STUDY_20261028.md", content)
+        handoff = json.loads((ROOT / "docs/continuity/HANDOFF_CURRENT.json").read_text(encoding="utf-8"))
+        next_study = handoff["next_production_writer_custody_design_study_20261028"]
+        self.assertFalse(next_study["candidate_ci_qualified"])
+        self.assertFalse(next_study["production_writer_authorized"])
+        self.assertEqual(next_study["continuity_contracts_expected"], 146)
+        self.assertEqual(next_study["external_writer_absence"], "NOT_PROVEN")
+
+    def test_147_owner_p1_trusted_sid_ollama_context_no_runtime_promotion(self):
+        study = (ROOT / "docs/qualification/M3_2_V7_PRODUCTION_WRITER_CUSTODY_DESIGN_STUDY_20261028.md").read_text(encoding="utf-8")
+        roadmap = (ROOT / "docs/roadmap/FABULAXIOM_ROADMAP_V1.md").read_text(encoding="utf-8")
+        decision = self.data["owner_p1_same_sid_ollama_design_decision_20261028"]
+        for key in ("same_sid_processes_trusted", "p1_selected_for_architecture",
+                    "p2_deferred", "ollama_read_only_versioned_context",
+                    "ollama_fiches_and_histories_required"):
+            self.assertTrue(decision[key], key)
+        for key in ("same_sid_bypass_os_prevented", "ollama_model_direct_sqlite_access",
+                    "ollama_implicit_cloud_fallback_authorized", "generated_fact_auto_approve_canon",
+                    "m4_m5_m6_m7_runtime_authorized", "production_writer_authorized",
+                    "candidate_ci_qualified"):
+            self.assertFalse(decision[key], key)
+        self.assertEqual(decision["continuity_contracts_expected"], 147)
+        self.assertEqual(decision["writer"], "NOT_PROVEN")
+        self.assertEqual(decision["a0_existing_profile_cross_process"], "STOP")
+        for term in ("same-SID Windows processes trusted", "P1 selected",
+                     "read-only context broker", "APPROVE_CANON", "reveal",
+                     "Ollama", "GET /api/tags", "POST /api/chat", "POST /api/embed",
+                     "NOT_PROVEN", "A0", "M4", "M5", "M6", "M7"):
+            self.assertIn(term.lower(), study.lower(), term)
+        for term in ("read-only", "fiches", "histories", "canon", "Ollama"):
+            self.assertIn(term.lower(), roadmap.lower(), term)
+        writer = (ROOT / "src-tauri/src/m32_v7_writer_service.rs").read_text(encoding="utf-8")
+        self.assertIn("#[cfg(test)]", writer)
+
+    def test_148_p1_single_owner_session_proof_plan_is_documentary_only(self):
+        name = "M3_2_V7_P1_SINGLE_OWNER_SESSION_PROOF_PLAN_20261028.md"
+        doc = (ROOT / "docs/qualification" / name).read_text(encoding="utf-8")
+        previous = (ROOT / "docs/qualification/M3_2_V7_PRODUCTION_WRITER_CUSTODY_DESIGN_STUDY_20261028.md").read_text(encoding="utf-8")
+        roadmap = (ROOT / "docs/roadmap/FABULAXIOM_ROADMAP_V1.md").read_text(encoding="utf-8")
+        candidate = self.data["next_p1_single_owner_session_proof_plan_20261028"]
+        self.assertEqual(candidate["previous_pr_head_sha"], "85884e0ffd491066bec862d02bec38cfc79d4ecd")
+        self.assertEqual(candidate["previous_ci_run"], 40744154704)
+        self.assertEqual(candidate["previous_qualified_counts"]["continuity_contracts"], 147)
+        self.assertEqual(candidate["continuity_contracts_expected"], 148)
+        for key in ("single_rust_owned_connection_design",
+                    "ollama_in_memory_versioned_context_design",
+                    "same_sid_processes_trusted", "p1_architecture_selected"):
+            self.assertTrue(candidate[key], key)
+        for key in ("separate_readonly_sqlite_connection_authorized",
+                    "ollama_model_direct_sqlite_access", "wal_shm_custody_proven",
+                    "namespace_open_atomic_proven", "crash_restart_proven",
+                    "r1_r9_production_proven", "windows_disposable_proof_authorized",
+                    "production_writer_authorized", "m4_m5_m6_m7_runtime_authorized",
+                    "candidate_ci_qualified"):
+            self.assertFalse(candidate[key], key)
+        self.assertEqual(candidate["writer"], "NOT_PROVEN")
+        self.assertEqual(candidate["a0_existing_profile_cross_process"], "STOP")
+        for signal in ("NO IMPLEMENTATION OR OPERATOR AUTHORITY",
+                       "same Windows SID", "P1", "P2", "A0_STOP",
+                       "CLAIM_PROVISIONAL", "OPENED_UNVERIFIED",
+                       "SIDECARS_UNVERIFIED", "IDENTITY_BOUND_UNADMITTED",
+                       "SESSION_ADMITTED", "QUIESCING", "CLOSED_ATTESTED",
+                       "RECOVERY_REQUIRED_NOT_AUTHORIZED", "WAIT_ABANDONED",
+                       "xOpen", "xClose", "xShmMap", "xShmLock", "xShmUnmap",
+                       "WAL", "SHM", "FileId128", "R1", "R2", "R3", "R4",
+                       "R5", "R6", "R7", "R8", "R9", "Ollama",
+                       "NarrativeContextPacket", "APPROVE_CANON",
+                       "source", "no second", "separate owner runtime authorization",
+                       "no operator"):
+            self.assertIn(signal.lower(), doc.lower(), signal)
+        self.assertIn(name, previous)
+        self.assertIn("single Rust-owned SQLite session", roadmap)
+        for filename in ("RESUME_PROMPT.md", "HANDOFF_CURRENT.md",
+                         "HANDOFF_PROTOCOL.md", "HANDOFF_HISTORY.md",
+                         "STATE.md", "NEXT.md", "M3_2_GATE_DECISION_CURRENT.md"):
+            content = (DIRECTORY / filename).read_text(encoding="utf-8")
+            self.assertIn(name, content, filename)
+        short = (DIRECTORY / "RESUME_PROMPT_SHORT.md").read_text(encoding="utf-8")
+        self.assertIn("148 ATTENDUS NON QUALIFIÉS PAS PASS", short)
+        self.assertIn("40744154704", short)
+        writer = (ROOT / "src-tauri/src/m32_v7_writer_service.rs").read_text(encoding="utf-8")
+        self.assertIn("#[cfg(test)]", writer)
+
+    def test_149_p1_d2_windows_disposable_integrated_session_is_not_runtime(self):
+        candidate = self.data["next_p1_d2_disposable_integrated_session_20261028"]
+        self.assertEqual(candidate["owner_decision"],
+                         "AUTHORIZED_DISPOSABLE_WINDOWS_CI_TEST_ONLY_NOT_OPERATOR_OR_RUNTIME")
+        self.assertEqual(candidate["previous_pr_head_sha"],
+                         "cb033fb27b5cc5a5f873d24b85c7f41864de4870")
+        self.assertEqual(candidate["previous_ci_run"], 40747739565)
+        self.assertEqual(candidate["previous_qualified_counts"]["continuity_contracts"], 148)
+        self.assertEqual(candidate["additional_windows_rust_tests_expected"], 6)
+        self.assertEqual(candidate["rust_tests_expected"], 216)
+        self.assertEqual(candidate["continuity_contracts_expected"], 149)
+        self.assertTrue(candidate["source_only_disposable_windows_fixture_authorized"])
+        for key in ("production_vfs_implemented", "production_mutex_dacl_implemented",
+                    "production_writer_authorized", "operator_sqlite_access",
+                    "r1_r9_production_proven", "wal_shm_full_custody_proven",
+                    "crash_restart_proven", "atomic_os_open_proven",
+                    "m4_m5_m6_m7_runtime_authorized", "ollama_direct_sqlite_access_authorized",
+                    "candidate_ci_qualified", "s3_authorized", "s4_authorized",
+                    "writer_ipc_authorized", "migration_007_authorized",
+                    "hello_native_authorized", "persistent_marker_authorized"):
+            self.assertFalse(candidate[key], key)
+        self.assertEqual(candidate["writer"], "NOT_PROVEN")
+        self.assertEqual(candidate["a0_existing_profile_cross_process"], "STOP")
+        src = (ROOT / candidate["rust_fixture"]).read_text(encoding="utf-8")
+        lib = (ROOT / "src-tauri/src/lib.rs").read_text(encoding="utf-8")
+        self.assertIn("#[cfg(all(test, windows))]\nmod m32_sqlite_vfs_preopen_tests;", lib)
+        self.assertGreaterEqual(src.count("#[test]"), 18)
+        for term in ("mod d2_p1_disposable_session", "CreateMutexW", "WaitForSingleObject",
+                     "ReleaseMutex", "WAIT_ABANDONED", "Fabulaxiom-D2-Disposable",
+                     "check_delegated_handle: true", "with_policy", "xShmMap",
+                     "SQLITE_OPEN_READ_WRITE", "create_new(true)",
+                     "m32_d2_child_probe",
+                     "m32_d2_p1_cooperative_owner_delegated_fileid_wal_shm_positive_is_not_admission",
+                     "m32_d2_p1_identity_swap_after_cooperative_claim_vetoes_xopen",
+                     "m32_d2_p1_wal_veto_after_bound_main_handle_stops_before_wal_open",
+                     "m32_d2_p1_shm_veto_after_bound_main_handle_stops_before_mapping",
+                     "m32_d2_p1_abandoned_mutex_refuses_before_sqlite_xopen"):
+            self.assertIn(term, src, term)
+        self.assertNotIn("V7WriterAdmission {", src)
+        docname = "M3_2_V7_P1_D2_DISPOSABLE_SESSION_VFS_WAL_SHM_EXPERIMENT_20261028.md"
+        doc = (ROOT / "docs/qualification" / docname).read_text(encoding="utf-8")
+        for term in ("D2 WINDOWS CI DISPOSABLE FIXTURES ONLY",
+                     "216 Rust", "149 continuity contracts", "NOT QUALIFIED",
+                     "R1", "R2", "R3", "R4", "R5", "R6", "R7", "R8", "R9",
+                     "NOT_PROVEN", "STOP_UNAVAILABLE", "A0", "EXISTING_PROFILE",
+                     "WAL", "xShmMap", "WAIT_ABANDONED", "same-SID", "no operator",
+                     "V7WriterAdmission", "no production", "M4", "Ollama"):
+            self.assertIn(term.lower(), doc.lower(), term)
+        for filename in ("RESUME_PROMPT.md", "HANDOFF_CURRENT.md",
+                         "HANDOFF_PROTOCOL.md", "HANDOFF_HISTORY.md",
+                         "STATE.md", "NEXT.md", "M3_2_GATE_DECISION_CURRENT.md"):
+            content = (DIRECTORY / filename).read_text(encoding="utf-8")
+            self.assertIn(docname, content, filename)
+        short = (DIRECTORY / "RESUME_PROMPT_SHORT.md").read_text(encoding="utf-8")
+        self.assertIn("148 ATTENDUS NON QUALIFIÉS PAS PASS", short)
+        self.assertIn("D2", short)
+        self.assertIn("216/7/41/149 ATTENDUS NON QUALIFIÉS", short)
+        self.assertEqual(candidate["first_source_ci_run"], 40752418946)
+        self.assertEqual(candidate["first_source_ci_conclusion"],
+                         "FAILURE_REVIEW_REQUIRED_RUST_SQLITE_SOURCE_OCCURRENCE_INVENTORY")
+        self.assertEqual(candidate["reviewed_added_test_only_sqlite_open_sites"], 4)
+        self.assertEqual(candidate["reviewed_added_test_only_sqlite_rw_flags"], 4)
+        self.assertEqual(candidate["reviewed_vfs_inventory_counts"],
+                         [16, 0, 0, 0, 0, 17, 0])
+        self.assertTrue(candidate["source_inventory_tripwire_remains_active"])
+        inventory = (ROOT / "tools/m32_rust_sqlite_open_inventory.py").read_text(encoding="utf-8")
+        guards = (ROOT / "tools/test_m32_rust_sqlite_open_inventory.py").read_text(encoding="utf-8")
+        self.assertIn('"src-tauri/src/m32_sqlite_vfs_preopen_tests.rs": (22, 0, 0, 0, 0, 23, 0)',
+                      inventory)
+        self.assertEqual(guards.count("(22, 0, 0, 0, 0, 23, 0)"), 4)
+        self.assertIn('self.assertGreaterEqual(source.count("#[test]"), 18)', guards)
+        self.assertEqual(candidate["operator_execution"], "NO_OPERATOR_EXECUTION")
+
+    def test_150_p1_d3_design_separates_volatile_mutex_wal_shm_crash_from_runtime(self):
+        name = "M3_2_V7_P1_D3_WAL_SHM_LIFECYCLE_CRASH_RESTART_DESIGN_20261028.md"
+        d3 = self.data["next_p1_d3_wal_shm_crash_restart_documentary_20261028"]
+        doc = (ROOT / "docs/qualification" / name).read_text(encoding="utf-8")
+        self.assertEqual(d3["previous_pr_head_sha"], "c42a6f40caca52550fa485851c0131f84859f651")
+        self.assertEqual(d3["previous_ci_run"], 40753334640)
+        self.assertEqual(d3["previous_ci_conclusion"], "SUCCESS")
+        self.assertEqual(d3["previous_ci_counts"], {
+            "rust": 216, "greenfield": 7, "sqlite_guards": 41,
+            "continuity_contracts": 149
+        })
+        self.assertTrue(d3["previous_d2_disposable_source_qualified"])
+        self.assertEqual(d3["first_source_ci_run"], 40758059521)
+        self.assertEqual(d3["first_source_ci_conclusion"],
+                         "FAILURE_HISTORIC_SHORT_PROMPT_FILES_134_135")
+        self.assertTrue(d3["short_prompt_historic_references_restored"])
+        self.assertEqual(d3["continuity_contracts_expected"], 150)
+        self.assertEqual(d3["new_rust_fixture_tests"], 0)
+        for key in ("d3a_wal_shm_disposable_windows_fixture_authorized",
+                    "d3b_crash_restart_disposable_windows_fixture_authorized",
+                    "d3_production_authorized", "candidate_ci_qualified",
+                    "operator_sqlite_access", "named_mutex_is_durable_handoff_proof",
+                    "fresh_mutex_after_last_handle_close_proves_clean_close",
+                    "wait_abandoned_sole_crash_detector",
+                    "manual_wal_shm_deletion_authorized",
+                    "sqlite3_close_v2_ok_proves_immediate_resource_free",
+                    "authenticated_predecessor_restart_proven",
+                    "wal_shm_full_custody_proven", "r1_r9_production_proven",
+                    "production_writer_authorized", "persistent_marker_authorized",
+                    "m4_m5_m6_m7_runtime_authorized",
+                    "ollama_direct_sqlite_access_authorized"):
+            self.assertFalse(d3[key], key)
+        self.assertTrue(d3["wal_file_may_contain_committed_transactions"])
+        self.assertEqual(d3["writer"], "NOT_PROVEN")
+        self.assertEqual(d3["a0_existing_profile_cross_process"], "STOP")
+        self.assertEqual(d3["operator_execution"], "NO_OPERATOR_EXECUTION")
+        self.assertEqual(d3["next_authorization_request"],
+                         "D3A_WINDOWS_CI_DISPOSABLE_WAL_SHM_ONLY_SEPARATE_APPROVAL_REQUIRED")
+        for phrase in ("D3 P1 WAL/SHM", "D3a-1", "D3a-2", "D3b-1",
+                       "D3b-2", "D3b-5", "last handle closes",
+                       "fresh mutex", "WAIT_ABANDONED", "sqlite3_close_v2()",
+                       "SQLITE_BUSY", "xShmMap", "xShmLock", "xShmBarrier",
+                       "xShmUnmap", "checkpoint", "FileId128", "WAL",
+                       "RECOVERY_REQUIRED_NOT_AUTHORIZED", "216/216 Rust",
+                       "149/149 continuity contracts", "NOT_AUTHORIZED",
+                       "A0_STOP", "APPROVE_CANON", "Ollama", "NOT_PROVEN"):
+            self.assertIn(phrase.lower(), doc.lower(), phrase)
+        for filename in ("RESUME_PROMPT.md", "HANDOFF_CURRENT.md",
+                         "HANDOFF_PROTOCOL.md", "HANDOFF_HISTORY.md",
+                         "STATE.md", "NEXT.md", "M3_2_GATE_DECISION_CURRENT.md",
+                         "README.md"):
+            self.assertIn(name, (DIRECTORY / filename).read_text(encoding="utf-8"))
+        for filename in ("ROADMAP_STATUS_CURRENT.md", "FABULAXIOM_ROADMAP_V1.md"):
+            self.assertIn(name, (ROOT / "docs/roadmap" / filename).read_text(encoding="utf-8"))
+        short = (DIRECTORY / "RESUME_PROMPT_SHORT.md").read_text(encoding="utf-8")
+        self.assertLess(len(short), 4200)
+        self.assertIn("40753334640", short)
+        self.assertIn("216/7/41/150 ATTENDUS NON QUALIFIÉS", short)
+        rust = (ROOT / "src-tauri/src/m32_sqlite_vfs_preopen_tests.rs").read_text(encoding="utf-8")
+        self.assertGreaterEqual(rust.count("#[test]"), 18)
+        self.assertNotIn("V7WriterAdmission {", rust)
+
+
+
+    def test_151_d3a_windows_disposable_delegated_wal_shm_close_is_not_runtime(self):
+        name = "M3_2_V7_P1_D3A_WAL_SHM_HANDLE_CUSTODY_DISPOSABLE_WINDOWS_FIXTURE_20261028.md"
+        d3a = self.data["next_p1_d3a_wal_shm_disposable_windows_fixture_20261028"]
+        self.assertEqual(d3a["owner_decision"],
+                         "AUTHORIZED_D3A_WINDOWS_CI_FIXTURES_ONLY_NO_D3B_RUNTIME_OPERATOR")
+        self.assertEqual(d3a["previous_pr_head_sha"],
+                         "b1791ba59f8196bda0a95a8d55118a21d3ec9193")
+        self.assertEqual(d3a["previous_source_ci_run"], 40758512734)
+        self.assertEqual(d3a["previous_source_ci_conclusion"], "SUCCESS")
+        self.assertEqual(d3a["previous_qualified_counts"], {
+            "rust": 216, "greenfield": 7, "sqlite_guards": 41,
+            "continuity_contracts": 150
+        })
+        self.assertEqual(d3a["added_disposable_rust_tests_expected"], 4)
+        self.assertEqual(d3a["total_vfs_fixture_test_functions_expected"], 22)
+        self.assertEqual(d3a["rust_tests_expected"], 220)
+        self.assertEqual(d3a["greenfield_tests_expected"], 7)
+        self.assertEqual(d3a["sqlite_guards_expected"], 41)
+        self.assertEqual(d3a["continuity_contracts_expected"], 151)
+        self.assertEqual(d3a["reviewed_added_test_only_sqlite_open_sites"], 4)
+        self.assertEqual(d3a["reviewed_added_test_only_sqlite_rw_flags"], 4)
+        self.assertEqual(d3a["reviewed_vfs_inventory_counts"], [20, 0, 0, 0, 0, 21, 0])
+        for key in ("test_only_windows_cfg", "whole_tree_inventory_tripwire_remains_active",
+                    "delegated_wal_handle_fileid128_fixture_expected",
+                    "negative_foreign_wal_fileid_fixture_expected",
+                    "wal_xclose_on_mismatch_fixture_expected",
+                    "full_shm_callback_wrapping_fixture_expected",
+                    "shm_lock_predelegation_refusal_fixture_expected",
+                    "synthetic_missing_shm_method_refusal_expected",
+                    "main_and_wal_xclose_fixture_witness_expected",
+                    "same_sid_processes_trusted", "p1_selected_architecture",
+                    "p2_deferred"):
+            self.assertTrue(d3a[key], key)
+        for key in ("candidate_ci_qualified", "wal_os_open_atomic_proven",
+                    "shm_backing_handle_fileid128_proven", "durable_clean_close_proven",
+                    "d3b_crash_restart_authorized", "d3b_crash_restart_executed",
+                    "checkpoint_completeness_proven", "production_r1_r9_proven",
+                    "production_writer_authorized", "persistent_marker_authorized",
+                    "operator_sqlite_access", "m4_m5_m6_m7_runtime_authorized",
+                    "ollama_direct_sqlite_access_authorized", "s3_authorized",
+                    "s4_authorized", "writer_ipc_authorized", "migration_007_authorized",
+                    "hello_native_authorized"):
+            self.assertFalse(d3a[key], key)
+        self.assertEqual(d3a["operator_execution"], "NO_OPERATOR_EXECUTION")
+        self.assertEqual(d3a["writer"], "NOT_PROVEN")
+        self.assertEqual(d3a["a0_existing_profile_cross_process"], "STOP")
+        self.assertEqual(d3a["d3b_crash_restart_authorized"], False)
+        src = (ROOT / d3a["rust_fixture"]).read_text(encoding="utf-8")
+        self.assertIn("#[cfg(all(test, windows))]\nmod m32_sqlite_vfs_preopen_tests;",
+                      (ROOT / "src-tauri/src/lib.rs").read_text(encoding="utf-8"))
+        self.assertGreaterEqual(src.count("#[test]"), 22)
+        self.assertGreaterEqual(src.count("Connection::open_with_flags_and_vfs("), 20)
+        self.assertGreaterEqual(src.count("OpenFlags::SQLITE_OPEN_READ_WRITE"), 20)
+        for signal in (
+            "mod d3a_p1_disposable_wal_shm", "fn with_d3a(",
+            "d3a_wal_path", "d3a_wrong_expected_wal_id",
+            "SQLITE_FCNTL_WIN32_GET_HANDLE", "win_raw_file_id_128(handle)",
+            "fixture_d3a_xshm_lock", "fixture_d3a_xshm_barrier",
+            "fixture_d3a_xshm_unmap", "fixture_d3a_xclose",
+            "d3a_wal_veto_close_calls", "d3a_shm_lock_refusals",
+            "d3a_main_close_successes", "d3a_wal_close_successes",
+            "d3a_simulate_missing_shm_lock", "SQLITE_CANTOPEN",
+            "m32_d3a_wal_real_delegated_fileid_all_shm_callbacks_and_close_positive_not_admission",
+            "m32_d3a_wrong_expected_wal_fileid_vetoes_after_delegation_and_closes",
+            "m32_d3a_shm_lock_veto_after_wal_handle_binding_refuses_sql",
+            "m32_d3a_missing_shm_lock_method_refuses_at_main_xopen_without_wal"):
+            self.assertIn(signal, src, signal)
+        for forbidden in ("#[tauri::command]", "run_migrations(",
+                          "V7WriterAdmission {", "SQLITE_FCNTL_WIN32_SET_HANDLE"):
+            self.assertNotIn(forbidden, src)
+        inventory = (ROOT / "tools/m32_rust_sqlite_open_inventory.py").read_text(encoding="utf-8")
+        guards = (ROOT / "tools/test_m32_rust_sqlite_open_inventory.py").read_text(encoding="utf-8")
+        self.assertIn('"src-tauri/src/m32_sqlite_vfs_preopen_tests.rs": (22, 0, 0, 0, 0, 23, 0)',
+                      inventory)
+        self.assertEqual(guards.count("(22, 0, 0, 0, 0, 23, 0)"), 4)
+        self.assertIn('self.assertGreaterEqual(source.count("#[test]"), 18)', guards)
+        doc = (ROOT / "docs/qualification" / name).read_text(encoding="utf-8")
+        for signal in ("D3a WINDOWS CI DISPOSABLE FIXTURES ONLY",
+                       "220 Rust", "41 SQLite guards", "151 continuity contracts",
+                       "EXPECTED, NOT QUALIFIED", "main", "WAL", "xShmMap",
+                       "xShmLock", "xShmBarrier", "xShmUnmap", "xClose",
+                       "FileId128", "not atomic", "D3b", "NOT_AUTHORIZED",
+                       "NOT_PROVEN", "A0", "Ollama", "APPROVE_CANON"):
+            self.assertIn(signal.lower(), doc.lower(), signal)
+        for filename in ("RESUME_PROMPT.md", "HANDOFF_CURRENT.md",
+                         "HANDOFF_PROTOCOL.md", "HANDOFF_HISTORY.md",
+                         "STATE.md", "NEXT.md", "M3_2_GATE_DECISION_CURRENT.md",
+                         "README.md"):
+            self.assertIn(name, (DIRECTORY / filename).read_text(encoding="utf-8"))
+        for filename in ("ROADMAP_STATUS_CURRENT.md", "FABULAXIOM_ROADMAP_V1.md"):
+            self.assertIn(name, (ROOT / "docs/roadmap" / filename).read_text(encoding="utf-8"))
+        short = (DIRECTORY / "RESUME_PROMPT_SHORT.md").read_text(encoding="utf-8")
+        self.assertIn("220/7/41/151 ATTENDUS NON QUALIFIÉS", short)
+        self.assertLess(len(short), 4200)
+        self.assertEqual(d3a["postmain"], "NOT_APPLICABLE_UNMERGED")
+
+    def test_152_d3b_windows_disposable_crash_requires_stop_before_sqlite_reopen(self):
+        name = "M3_2_V7_P1_D3B_DISPOSABLE_WINDOWS_CRASH_RESTART_REFUSAL_FIXTURE_20261028.md"
+        d3b = self.data["next_p1_d3b_disposable_crash_restart_refusal_fixture_20261028"]
+        self.assertEqual(d3b["owner_decision"],
+                         "AUTHORIZED_D3B_WINDOWS_CI_FIXTURES_ONLY_NO_RECOVERY_RUNTIME_OPERATOR")
+        self.assertEqual(d3b["previous_d3a_head_sha"],
+                         "a7323ab80f12372aa83b2be48019806be212eb32")
+        self.assertEqual(d3b["previous_d3a_source_ci_run"], 40764117809)
+        self.assertEqual(d3b["previous_d3a_ci_conclusion"], "SUCCESS")
+        self.assertEqual(d3b["previous_d3a_issue38_comment"], 6480242784)
+        self.assertEqual(d3b["previous_d3a_counts"], {
+            "rust": 220, "greenfield": 7, "sqlite_guards": 41,
+            "continuity_contracts": 151,
+        })
+        self.assertEqual(d3b["added_rust_test_functions_expected"], 4)
+        self.assertEqual(d3b["added_parent_refusal_witnesses_expected"], 3)
+        self.assertEqual(d3b["total_vfs_fixture_test_functions_expected"], 26)
+        self.assertEqual((d3b["rust_tests_expected"], d3b["greenfield_tests_expected"],
+                          d3b["sqlite_guards_expected"],
+                          d3b["continuity_contracts_expected"]), (224, 7, 41, 152))
+        self.assertEqual(d3b["reviewed_added_test_only_sqlite_open_sites"], 2)
+        self.assertEqual(d3b["reviewed_added_test_only_sqlite_rw_flags"], 2)
+        self.assertEqual(d3b["reviewed_vfs_inventory_counts"], [22, 0, 0, 0, 0, 23, 0])
+        for key in ("test_only_windows_cfg", "whole_tree_inventory_tripwire_remains_active",
+                    "child_process_only_termination_expected",
+                    "committed_wal_abandoned_mutex_negative_expected",
+                    "pending_wal_fresh_mutex_negative_expected",
+                    "busy_close_negative_expected", "same_sid_processes_trusted",
+                    "p1_selected_architecture", "p2_deferred"):
+            self.assertTrue(d3b[key], key)
+        for key in ("candidate_ci_qualified", "successor_sqlite_reopen_performed",
+                    "crash_recovery_authorized", "crash_recovery_proven",
+                    "durable_predecessor_marker_authorized",
+                    "d3b_marker_replay_omission_witness_implemented",
+                    "power_loss_durability_proven", "all_crash_phases_proven",
+                    "checkpoint_completeness_proven", "shm_backing_handle_fileid128_proven",
+                    "production_r1_r9_proven", "production_writer_authorized",
+                    "persistent_marker_authorized", "operator_sqlite_access",
+                    "s3_authorized", "s4_authorized", "writer_ipc_authorized",
+                    "migration_007_authorized", "hello_native_authorized",
+                    "m4_m5_m6_m7_runtime_authorized", "ollama_direct_sqlite_access_authorized"):
+            self.assertFalse(d3b[key], key)
+        self.assertEqual(d3b["operator_execution"], "NO_OPERATOR_EXECUTION")
+        self.assertEqual(d3b["a0_existing_profile_cross_process"], "STOP")
+        self.assertEqual(d3b["writer"], "NOT_PROVEN")
+        self.assertEqual(d3b["postmain"], "NOT_APPLICABLE_UNMERGED")
+        source = (ROOT / d3b["rust_fixture"]).read_text(encoding="utf-8")
+        self.assertEqual(source.count("#[test]"), 26)
+        self.assertEqual(source.count("Connection::open_with_flags_and_vfs("), 22)
+        self.assertEqual(source.count("OpenFlags::SQLITE_OPEN_READ_WRITE"), 22)
+        self.assertIn("#[cfg(all(test, windows))]\nmod m32_sqlite_vfs_preopen_tests;",
+                      (ROOT / "src-tauri/src/lib.rs").read_text(encoding="utf-8"))
+        for signal in ("mod d3b_p1_disposable_crash_refusal",
+                       "m32_d3b_child_fixture_terminate_before_sqlite_close",
+                       "m32_d3b_committed_wal_abandoned_mutex_refuses_unattested_reopen",
+                       "m32_d3b_pending_wal_vanished_mutex_still_refuses_unattested_reopen",
+                       "m32_d3b_busy_close_does_not_attest_restart_even_after_final_close",
+                       "TerminateProcess(GetCurrentProcess()", "CHILD_TERMINATED: i32 = 77",
+                       "WAIT_ABANDONED", "WAIT_OBJECT_0", "ffi::SQLITE_BUSY",
+                       "RestartDecision::RecoveryRequiredNotAuthorized",
+                       "assert_disposable_path", "create_new(true)",
+                       "inspect_only_owned_files", "new.sqlite3-wal"):
+            self.assertIn(signal, source, signal)
+        for forbidden in ("#[tauri::command]", "run_migrations(",
+                          "V7WriterAdmission {", "SQLITE_FCNTL_WIN32_SET_HANDLE"):
+            self.assertNotIn(forbidden, source)
+        inv = (ROOT / "tools/m32_rust_sqlite_open_inventory.py").read_text(encoding="utf-8")
+        guards = (ROOT / "tools/test_m32_rust_sqlite_open_inventory.py").read_text(encoding="utf-8")
+        self.assertIn('"src-tauri/src/m32_sqlite_vfs_preopen_tests.rs": (22, 0, 0, 0, 0, 23, 0)', inv)
+        self.assertEqual(guards.count("(22, 0, 0, 0, 0, 23, 0)"), 4)
+        doc = (ROOT / "docs/qualification" / name).read_text(encoding="utf-8")
+        for signal in ("224 Rust", "7 Greenfield", "41 SQLite guards",
+                       "152 continuity contracts", "EXPECTED, NOT QUALIFIED",
+                       "WAIT_ABANDONED", "WAIT_OBJECT_0", "SQLITE_BUSY",
+                       "RECOVERY_REQUIRED_NOT_AUTHORIZED", "no SQLite reopen",
+                       "TerminateProcess", "A0", "NOT_PROVEN", "Ollama", "APPROVE_CANON"):
+            self.assertIn(signal.lower(), doc.lower(), signal)
+        for filename in ("RESUME_PROMPT.md", "HANDOFF_CURRENT.md",
+                         "HANDOFF_PROTOCOL.md", "HANDOFF_HISTORY.md", "STATE.md",
+                         "NEXT.md", "M3_2_GATE_DECISION_CURRENT.md", "README.md"):
+            self.assertIn(name, (DIRECTORY / filename).read_text(encoding="utf-8"), filename)
+        for filename in ("ROADMAP_STATUS_CURRENT.md", "FABULAXIOM_ROADMAP_V1.md"):
+            self.assertIn(name, (ROOT / "docs/roadmap" / filename).read_text(encoding="utf-8"))
+        short = (DIRECTORY / "RESUME_PROMPT_SHORT.md").read_text(encoding="utf-8")
+        self.assertIn(name, short)
+        self.assertIn("224/7/41/152 ATTENDUS NON QUALIFIÉS", short)
+        self.assertLess(len(short.encode("utf-8")) + short.count("\n"), 4200)
 
 if __name__ == "__main__":
     unittest.main()

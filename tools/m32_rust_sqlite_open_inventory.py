@@ -54,7 +54,20 @@ EXPECTED = {
     # 2026-10-28: +2 explicitly reviewed disposable Windows VFS
     # open_with_flags_and_vfs calls and +2 RW flags for in-xOpen delegated
     # native handle veto/mismatch witnesses, never a production opener.
-    "src-tauri/src/m32_sqlite_vfs_preopen_tests.rs": (12, 0, 0, 0, 0, 13, 0),
+    # D2 P1-0 owner-authorized Windows CI disposable fixture: +4 reviewed
+    # Connection::open_with_flags_and_vfs and +4 SQLITE_OPEN_READ_WRITE
+    # occurrences, all in the already cfg(all(test, windows)) module.
+    # Six new Rust tests share one random Local mutex/owned temp directory
+    # and existing delegated FileId128 + WAL/xShmMap VFS wrappers. Source-only
+    # count is not a production writer/external-writer-absence proof.
+    # D3a adds exactly four cfg(test,windows) fixture-only SQLite RW opens:
+    # real delegated -wal FileId128 match, wrong expected WAL ID xClose veto,
+    # xShmLock refusal, and synthetic missing-method xOpen STOP.
+    # D3b adds exactly two more Windows cfg(test) RW SQLite open sites:
+    # one forced-termination CHILD on a fresh CI temp-owned main, one busy
+    # sqlite3_close() fixture. Successor parents DO NOT reopen a crashed DB.
+    # D3b has no production opener, existing-profile recovery or marker.
+    "src-tauri/src/m32_sqlite_vfs_preopen_tests.rs": (22, 0, 0, 0, 0, 23, 0),
     # 2026-10-28: an UNWIRED writer core owns an ALREADY admitted connection.
     # Two RAM-only constructors, migration and ATTACH are confined to its
     # #[cfg(test)] fictional fixture; no production path opening is added.
