@@ -2,7 +2,7 @@
 
 ---
 
-**#224 MERGED :** main=c7b19ff4e695eeb88598db7274da0fda756a03c4 ; #40889773089/#40891993272 PASS 237/7/44/151 ; D3b-5 PASS ; R2→R3 Win CANDIDAT ; D3b-4 STOP ; D3c/R7 étude ; writer NOT_PROVEN.
+**#225 :** main=54cfa6a32cfba08bb3035a9639708e82fff65268 ; CI #40896144230/#40898239262 PASS 241/7/45/152 ; D3b-5 PASS ; writer STOP.
 
 https://github.com/LaurentCOLL1/Fabulaxiom
 
@@ -22,7 +22,7 @@ GitHub autorité : re-fetch `main`/PR/issues/CI/`Protect main` ; lire `RESUME_PR
 
 **Win :** `M:\Fabulaxiom` ; `%LOCALAPPDATA%\com.fabulaxiom.greenfield.v1\database\fabulaxiom.sqlite3` ; `WINDOWS_OPERATOR_PATHS_ROUTE_C_20261026.md` privée ; PR183/184 40310982760/40338104050.
 
-**Suite:** #35 DRAFT `M3_2_PR35_LIVE_AUDIT_PROSPECTIVE_FAST_TRACK_20261027.md`.
+**Suite :** R2/R3 pré-xOpen VFS ; R4 WAL/SHM ; R5/R6/R8 schéma/acteur/close ; R7/R9 reprise/admission. #35 DRAFT `M3_2_PR35_LIVE_AUDIT_PROSPECTIVE_FAST_TRACK_20261027.md`.
 
 **CI anciennes :** 40085871815 40094464488 40095354727 40103615181 40106296690 40108674282 40116658246 40122346098 40128407418 40156277835 40169967245 40179336243 40190429389 40200127549 40210737724 40213790809 40220215000 40230066592 40392826209 40403984550 40445392523. B0/B1 consommés. A `UNAVAILABLE_NOT_PROVEN`, B `NOT_PROVEN`.
 
@@ -30,4 +30,4 @@ GitHub autorité : re-fetch `main`/PR/issues/CI/`Protect main` ; lire `RESUME_PR
 
 **STOP :** M3.2 `IN_PROGRESS_NOT_ACCEPTED`, G2B `NOT_ACCEPTED`, writer `NOT_PROVEN`, G2C `NOT_AUTHORIZED`, G3 `STOP_UNAVAILABLE`, historique `PENDING_EXTERNAL_ATTESTATION(21/3/2)`, prospective `NOT_STARTED`, #35 OPEN/DRAFT. v6/v7/backup/ACL/journaux/marqueur/007/IPC interdits.
 
-CI SHA/reviews/threads/`expected_head_sha`/postmain ; 2 prompts/handoffs, roadmap, #38 append-only.
+CI SHA/reviews/threads/`expected_head_sha`/postmain ; 2 prompts/roadmap/#38 append-only.
