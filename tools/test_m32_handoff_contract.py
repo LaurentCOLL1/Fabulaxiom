@@ -4610,8 +4610,8 @@ class HandoffContractTests(unittest.TestCase):
         ):
             self.assertIn("fn " + symbol + "(", fixture, symbol)
         self.assertIn("#[cfg(all(test, windows))]\nmod m32_sqlite_vfs_preopen_tests;", lib)
-        self.assertIn('"src-tauri/src/m32_sqlite_vfs_preopen_tests.rs": (22, 0, 0, 0, 0, 23, 0)', inventory)
-        self.assertIn("self.assertEqual(counts(source), (22, 0, 0, 0, 0, 23, 0))", inventory_tests)
+        self.assertIn('"src-tauri/src/m32_sqlite_vfs_preopen_tests.rs": (23, 0, 0, 0, 0, 24, 0)', inventory)
+        self.assertIn("self.assertEqual(counts(source), (23, 0, 0, 0, 0, 24, 0))", inventory_tests)
         for name in (
             "M3_2_V7_P1_D2_DISPOSABLE_SESSION_VFS_WAL_SHM_EXPERIMENT_20261028.md",
             "M3_2_V7_P1_D3A_WAL_SHM_HANDLE_CUSTODY_DISPOSABLE_WINDOWS_FIXTURE_20261028.md",
@@ -4771,6 +4771,33 @@ class HandoffContractTests(unittest.TestCase):
                      "NEXT.md", "STATE.md", "M3_2_GATE_DECISION_CURRENT.md"):
             self.assertIn(note, (DIRECTORY / path).read_text(encoding="utf-8"))
         self.assertIn("R3", (DIRECTORY / "RESUME_PROMPT_SHORT.md").read_text(encoding="utf-8"))
+
+
+    def test_153_r4_p1_exclusive_wal_before_first_access_is_not_writer_admission(self):
+        item = self.data["m32_r4_p1_exclusive_wal_disposable_candidate_20261029"]
+        self.assertEqual(item["scope"], "WINDOWS_CI_FRESH_DISPOSABLE_R4_EXCLUSIVE_ONLY")
+        self.assertFalse(item["sqlite_handle_admitted"])
+        self.assertFalse(item["production_writer_admitted"])
+        self.assertFalse(item["r3_atomic_xopen_proven"])
+        self.assertFalse(item["r4_production_proven"])
+        self.assertEqual(item["existing_profile"], "STOP")
+        self.assertEqual(item["expected_rust_tests_not_pass_yet"], 250)
+        self.assertEqual(item["expected_inventory_tests_not_pass_yet"], 46)
+        self.assertEqual(item["expected_continuity_tests_not_pass_yet"], 153)
+        rust = (ROOT / "src-tauri/src/m32_sqlite_vfs_preopen_tests.rs").read_text(encoding="utf-8")
+        for name in (
+            "m32_r4_exclusive_before_wal_avoids_every_wrapped_shm_callback",
+            "m32_r4_exclusive_before_wal_succeeds_with_shm_map_veto_armed",
+            "m32_r4_exclusive_after_wal_does_not_undo_existing_shm_mapping",
+        ):
+            self.assertIn("fn " + name + "(", rust)
+        note = "M3_2_P1_R4_EXCLUSIVE_BEFORE_WAL_DISPOSABLE_20261029.md"
+        self.assertTrue((ROOT / "docs/qualification" / note).is_file())
+        for name in ("RESUME_PROMPT.md", "HANDOFF_CURRENT.md", "NEXT.md",
+                     "STATE.md", "M3_2_GATE_DECISION_CURRENT.md"):
+            self.assertIn(note, (DIRECTORY / name).read_text(encoding="utf-8"))
+        self.assertIn("R4", (DIRECTORY / "RESUME_PROMPT_SHORT.md").read_text(encoding="utf-8"))
+
 
 if __name__ == "__main__":
     unittest.main()
