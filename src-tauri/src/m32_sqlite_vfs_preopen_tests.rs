@@ -1332,3 +1332,95 @@ mod d3b_p1_disposable_crash_refusal {
         // Even this completed local close cannot authenticate another process.
     }
 }
+
+
+// R4 / P1 decision probe, Windows CI-only on a NEW disposable SQLite file.
+// SQLite documents that locking_mode=EXCLUSIVE before the FIRST WAL access
+// suppresses xShmMap/xShmLock/xShmBarrier/xShmUnmap. The distinct "too late"
+// control retains ordinary WAL shared-memory behavior. No runtime writer,
+// existing-profile open, restart, marker, or VFS-handle handoff is implied.
+mod r4_p1_exclusive_wal_disposable {
+    use super::*;
+
+    fn fresh_fixture(
+        exclusive_before_wal: bool, veto_all_shm_map: bool,
+    ) -> (DisposableRoot, RegisteredFixtureVfs, Connection) {
+        let root = DisposableRoot::new();
+        let path = root.db();
+        fs::OpenOptions::new().write(true).create_new(true)
+            .open(&path).expect("only a new, CI-owned main is created");
+        let id = win_file_id_128(&fs::File::open(&path).unwrap()).unwrap();
+        let gate = if veto_all_shm_map {
+            RegisteredFixtureVfs::with_shm_policy(true)
+        } else {
+            RegisteredFixtureVfs::with_d3a(path.clone(), id, None, false, false)
+        };
+        // Exactly one new reviewed SQLite opening site in this helper;
+        // never turn it into a runtime opener or use a historical profile.
+        let db = Connection::open_with_flags_and_vfs(
+            &path, OpenFlags::SQLITE_OPEN_READ_WRITE, gate.name()
+        ).expect("test-owned SQLite main, no CREATE flag");
+        if exclusive_before_wal {
+            let lock: String = db.query_row(
+                "PRAGMA locking_mode=EXCLUSIVE", [], |row| row.get(0)
+            ).unwrap();
+            assert_eq!(lock.to_ascii_lowercase(), "exclusive");
+        }
+        let mode: String = db.query_row(
+            "PRAGMA journal_mode=WAL", [], |row| row.get(0)
+        ).expect("fresh test-owned WAL");
+        assert_eq!(mode.to_ascii_lowercase(), "wal");
+        db.execute_batch(
+            "CREATE TABLE invented_r4(id INTEGER PRIMARY KEY, content TEXT);
+             INSERT INTO invented_r4(content) VALUES ('fictional');"
+        ).expect("SQLite writes only into this newly created CI fixture");
+        assert_eq!(db.query_row("SELECT COUNT(*) FROM invented_r4", [],
+            |row| row.get::<_, i64>(0)).unwrap(), 1);
+        if !exclusive_before_wal {
+            let lock: String = db.query_row(
+                "PRAGMA locking_mode=EXCLUSIVE", [], |row| row.get(0)
+            ).unwrap();
+            assert_eq!(lock.to_ascii_lowercase(), "exclusive");
+        }
+        (root, gate, db)
+    }
+
+    #[test]
+    fn m32_r4_exclusive_before_wal_avoids_every_wrapped_shm_callback() {
+        let (root, gate, db) = fresh_fixture(true, false);
+        assert!(root.db().with_file_name("new.sqlite3-wal").exists());
+        assert!(!root.db().with_file_name("new.sqlite3-shm").exists());
+        assert!(gate.state.d3a_wal_identity_matches.load(Ordering::SeqCst) >= 1);
+        assert_eq!(gate.state.shm_map_delegations.load(Ordering::SeqCst), 0);
+        assert_eq!(gate.state.d3a_shm_lock_delegations.load(Ordering::SeqCst), 0);
+        assert_eq!(gate.state.d3a_shm_barrier_delegations.load(Ordering::SeqCst), 0);
+        assert_eq!(gate.state.d3a_shm_unmap_delegations.load(Ordering::SeqCst), 0);
+        assert!(db.close().is_ok(), "explicit clean close only, NOT R7 restart");
+        assert_eq!(gate.state.d3a_main_close_successes.load(Ordering::SeqCst), 1);
+        assert_eq!(gate.state.d3a_close_failures.load(Ordering::SeqCst), 0);
+        // Closing the test-only WAL session is not durable successor admission.
+    }
+
+    #[test]
+    fn m32_r4_exclusive_before_wal_succeeds_with_shm_map_veto_armed() {
+        let (root, gate, db) = fresh_fixture(true, true);
+        assert!(root.db().with_file_name("new.sqlite3-wal").exists());
+        assert!(!root.db().with_file_name("new.sqlite3-shm").exists());
+        assert_eq!(gate.state.shm_map_refusals.load(Ordering::SeqCst), 0);
+        assert_eq!(gate.state.shm_map_delegations.load(Ordering::SeqCst), 0);
+        assert!(db.close().is_ok(), "test-only SQLite close");
+    }
+
+    #[test]
+    fn m32_r4_exclusive_after_wal_does_not_undo_existing_shm_mapping() {
+        let (root, gate, db) = fresh_fixture(false, false);
+        assert!(root.db().with_file_name("new.sqlite3-wal").exists());
+        assert!(root.db().with_file_name("new.sqlite3-shm").exists(),
+            "normal WAL first must create the ordinary shared-memory index");
+        assert!(gate.state.shm_map_delegations.load(Ordering::SeqCst) >= 1);
+        assert!(gate.state.d3a_shm_lock_delegations.load(Ordering::SeqCst) >= 1);
+        assert!(gate.state.d3a_shm_barrier_delegations.load(Ordering::SeqCst) >= 1);
+        assert!(db.close().is_ok(), "no restart, no recovery");
+        assert!(gate.state.d3a_shm_unmap_delegations.load(Ordering::SeqCst) >= 1);
+    }
+}
