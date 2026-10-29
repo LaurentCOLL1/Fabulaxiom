@@ -1423,4 +1423,78 @@ mod r4_p1_exclusive_wal_disposable {
         assert!(db.close().is_ok(), "no restart, no recovery");
         assert!(gate.state.d3a_shm_unmap_delegations.load(Ordering::SeqCst) >= 1);
     }
+
+    // A second SQLite connection is not a second authorized P1 reader merely
+    // because it runs under the same Windows SID or process. Never route UI
+    // consultation through an independently opened SQLite connection while
+    // a single owner holds EXCLUSIVE WAL.
+    #[test]
+    fn m32_r4_exclusive_owner_refuses_second_sqlite_reader_without_ipc() {
+        let (root, gate, owner) = fresh_fixture(true, false);
+        let reader = Connection::open_with_flags_and_vfs(
+            &root.db(), OpenFlags::SQLITE_OPEN_READ_ONLY, gate.name()
+        ).expect("test-only second connection constructor, NOT a P1 reader");
+        reader.busy_timeout(std::time::Duration::from_millis(100)).unwrap();
+        let failure = reader.query_row(
+            "SELECT COUNT(*) FROM invented_r4", [],
+            |row| row.get::<_, i64>(0)
+        ).expect_err("EXCLUSIVE owner must prevent a separately opened reader");
+        match failure {
+            rusqlite::Error::SqliteFailure(native, _) =>
+                assert_eq!(native.code, rusqlite::ErrorCode::DatabaseBusy),
+            other => panic!("second reader must fail with SQLite BUSY: {other:?}"),
+        }
+        assert_eq!(owner.query_row("SELECT COUNT(*) FROM invented_r4", [],
+            |row| row.get::<_, i64>(0)).unwrap(), 1,
+            "the single owner remains the only admitted reader");
+        assert_eq!(gate.state.shm_map_delegations.load(Ordering::SeqCst), 0);
+        drop(reader);
+        assert!(owner.close().is_ok(), "clean test-only close, not R7 restart proof");
+    }
+
+    // The initial raw-PRAGMA test FAILED at exact-head Windows CI
+    // #40948171560: SQLite returned "normal" even though the fixture entered
+    // WAL under EXCLUSIVE, while its second-reader refusal test passed.
+    // Do not make file custody depend on a PRAGMA response. Model typed P1
+    // requests with an explicit fail-closed owner boundary instead.
+    #[derive(Debug, Clone, Copy)]
+    enum R4OwnerRequest { ReadInventedCount, DowngradeLockingToNormal }
+
+    fn r4_fixture_owner_execute(
+        db: &Connection, request: R4OwnerRequest,
+    ) -> Result<i64, &'static str> {
+        match request {
+            R4OwnerRequest::ReadInventedCount =>
+                db.query_row("SELECT COUNT(*) FROM invented_r4", [],
+                    |row| row.get::<_, i64>(0))
+                    .map_err(|_| "STOP: fictional owner read failed"),
+            R4OwnerRequest::DowngradeLockingToNormal =>
+                Err("STOP: P1 EXCLUSIVE WAL locking downgrade not an allowed owner operation"),
+        }
+    }
+
+    #[test]
+    fn m32_r4_exclusive_wal_owner_policy_refuses_normal_downgrade() {
+        let (_root, gate, owner) = fresh_fixture(true, false);
+        let before: String = owner.query_row(
+            "PRAGMA locking_mode", [], |row| row.get(0)
+        ).unwrap();
+        assert_eq!(before.to_ascii_lowercase(), "exclusive");
+        assert_eq!(r4_fixture_owner_execute(&owner, R4OwnerRequest::ReadInventedCount),
+            Ok(1));
+        assert!(r4_fixture_owner_execute(
+            &owner, R4OwnerRequest::DowngradeLockingToNormal
+        ).unwrap_err().starts_with("STOP:"));
+        // The rejected operation never invokes the unsafe SQLite PRAGMA.
+        // This is NOT a production dispatcher or a proof of SQLite internals.
+        let after: String = owner.query_row(
+            "PRAGMA locking_mode", [], |row| row.get(0)
+        ).unwrap();
+        assert_eq!(after.to_ascii_lowercase(), "exclusive");
+        assert_eq!(r4_fixture_owner_execute(&owner, R4OwnerRequest::ReadInventedCount),
+            Ok(1));
+        assert_eq!(gate.state.shm_map_delegations.load(Ordering::SeqCst), 0);
+        assert!(owner.close().is_ok(), "test-only close; no reopening or recovery");
+    }
+
 }
