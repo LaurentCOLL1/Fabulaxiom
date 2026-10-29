@@ -2,7 +2,7 @@
 
 ---
 
-**29 octobre 2026 — #231 TERMINALE ; R5/R6/R8 RAM-ONLY CANDIDATE NON QUALIFIÉE :** protected `main=fb81eb85ec5842f9d117e9f6c64351c1f107fc23` ; PR #231 source #40951341500 et CI postmain indépendante #40953281939 **SUCCESS 252 Rust / 7 Greenfield / 47 SQLite / 154 continuité**. Nouvelle [qualification R5/R6/R8](../qualification/M3_2_P1_R5_R6_R8_PREPARED_OWNER_RAM_REFUSAL_20261029.md) : trois tests Rust supplémentaires sur le propriétaire préparatoire **non raccordé**, schéma fictif v6 en RAM (lignée incomplète, FK OFF, Drop propriétaire révoque clients) ; **255/7/47/155 ATTENDUS NON PASS AVANT CI EXACTE**. Ce n'est PAS une admission v7, un IPC, un VFS production, ni une preuve de récupération. R3 xOpen et R4 production NOT_PROVEN ; R5/R6/R8 production NOT_PROVEN ; A0 EXISTING_PROFILE STOP, M3.2 IN_PROGRESS_NOT_ACCEPTED, writer/R1–R9 NOT_PROVEN, G2B NOT_ACCEPTED, G2C NOT_AUTHORIZED, G3 STOP_UNAVAILABLE, historique PENDING_EXTERNAL_ATTESTATION(21/3/2), prospective NOT_STARTED, #215/#35 DRAFT. Suite : CI exact-head, reviews/threads, Protect main strict, fusion sous `expected_head_sha` si PASS, CI postmain indépendante, #38 append-only ; puis VFS R3 réellement lié au HANDLE et lignée v7 sur fixtures, R7/R9 séparés. Aucun fichier opérateur/007/Hello/IPC/marker/recovery.
+**29/10/2026 — #231 FUSIONNÉE :** main=fb81eb85ec5842f9d117e9f6c64351c1f107fc23 ; CI #40951341500/#40953281939 SUCCESS 252/7/47/154. **#232 R5/R6/R8 RAM uniquement :** CI source #40956518375 FAIL (2 tests taille prompt, pas de qualification Rust). Correctif à qualifier : 255/7/47/155 ATTENDUS PAS PASS ; [fiche](../qualification/M3_2_P1_R5_R6_R8_PREPARED_OWNER_RAM_REFUSAL_20261029.md). R3 xOpen NOT_PROVEN ; R4 et writer production STOP. CI exacte/reviews/Protect main/`expected_head_sha`/postmain, issue #38 append-only.
 
 **Historique #225 :** main=54cfa6a32cfba08bb3035a9639708e82fff65268 ; CI #40896144230/#40898239262 PASS 241/7/45/152 ; D3b-5 PASS ; writer STOP.
 
@@ -20,16 +20,13 @@ GitHub autorité : re-fetch `main`/PR/issues/CI/`Protect main` ; lire `RESUME_PR
 
 **#188 :** #40450684268/#40451602743 `M3_2_ROUTE_C_SAME_PROFILE_FOREIGN_SCHEMA_REFUSAL_20261027.md` 5/5.
 
-**Sources :** `M3_2_GREENFIELD_NEW_ONLY_DISPOSABLE_V7_CHRONOLOGY_PERSISTENCE_20261027.md`, `M3_2_GREENFIELD_V7_EXCLUSIVE_NEW_FILE_CLAIM_20261027.md`, `M3_2_GREENFIELD_V7_PINNED_HANDOFF_PARENT_NAMESPACE_20261027.md`, `M3_2_GREENFIELD_V7_OWNED_FIXTURE_DIRECTORY_CHAIN_20261027.md`, `M3_2_GREENFIELD_V7_SQLITE_WIN32_NATIVE_HANDLE_POSTOPEN_20261027.md`, `M3_2_WIN32_FILEID_128_AND_WINDOWS_HELLO_BOUNDARY_20261027.md`. Postmain 189–193: 40456835489 40462274918 40470700689 40476232974 40486676658.
 
 **Win :** `M:\Fabulaxiom` ; `%LOCALAPPDATA%\com.fabulaxiom.greenfield.v1\database\fabulaxiom.sqlite3` ; `WINDOWS_OPERATOR_PATHS_ROUTE_C_20261026.md` privée ; PR183/184 40310982760/40338104050.
 
-**Suite :** R4#231 lecteur P1 ; R5/R6/R8 schéma/acteur/close ; R7/R9 reprise/admission. #35 DRAFT `M3_2_PR35_LIVE_AUDIT_PROSPECTIVE_FAST_TRACK_20261027.md`.
+**Suite :** R2/R3 VFS HANDLE ; R4 WAL ; R5/R6/R8 schéma/acteur/close ; R7/R9 reprise/admission. #35 DRAFT `M3_2_PR35_LIVE_AUDIT_PROSPECTIVE_FAST_TRACK_20261027.md`.
 
-**CI anciennes :** 40085871815 40094464488 40095354727 40103615181 40106296690 40108674282 40116658246 40122346098 40128407418 40156277835 40169967245 40179336243 40190429389 40200127549 40210737724 40213790809 40220215000 40230066592 40392826209 40403984550 40445392523. B0/B1 consommés. A `UNAVAILABLE_NOT_PROVEN`, B `NOT_PROVEN`.
 
-**Arch. :** `M3_2_ROUTE_C_GREENFIELD_BACKUP_RESTORE_20261026.md` ; `M3_2_ROUTE_C_SAME_PROFILE_RESTORE_20261026.md` ; `M3_2_ROUTE_C_SAME_PROFILE_RESTORE_REFUSAL_20261027.md` ; `M3_2_ROUTE_C_SAME_PROFILE_FOREIGN_KEY_RESTORE_REFUSAL_20261027.md`.
 
-**STOP :** M3.2 `IN_PROGRESS_NOT_ACCEPTED`, G2B `NOT_ACCEPTED`, writer `NOT_PROVEN`, G2C `NOT_AUTHORIZED`, G3 `STOP_UNAVAILABLE`, historique `PENDING_EXTERNAL_ATTESTATION(21/3/2)`, prospective `NOT_STARTED`, #35 OPEN/DRAFT. v6/v7/backup/ACL/journaux/marqueur/007/IPC interdits.
+**STOP :** A `UNAVAILABLE_NOT_PROVEN` ; B `NOT_PROVEN` ; M3.2 `IN_PROGRESS_NOT_ACCEPTED`, G2B `NOT_ACCEPTED`, writer `NOT_PROVEN`, G2C `NOT_AUTHORIZED`, G3 `STOP_UNAVAILABLE`, historique `PENDING_EXTERNAL_ATTESTATION(21/3/2)`, prospective `NOT_STARTED`, #35 OPEN/DRAFT. v6/v7/backup/ACL/journaux/marqueur/007/IPC interdits.
 
 CI SHA/reviews/threads/`expected_head_sha`/postmain ; 2 prompts/roadmap/#38 append-only.

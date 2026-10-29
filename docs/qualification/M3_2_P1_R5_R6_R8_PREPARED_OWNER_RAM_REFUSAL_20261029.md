@@ -1,5 +1,7 @@
 # M3.2 P1 R5/R6/R8 — prepared owner RAM-only refusal evidence
 
+**29 octobre — ÉCHEC CI SOURCE À CONSERVER :** PR #232 source initiale `2e989c555c132b298a277e7c18218b691ef8f648`, [#40956518375](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/40956518375) completed/FAILURE avant les tests Rust : **153/155 contrats PASS, 2 FAIL** (`test_77` et `test_129`) car le prompt COURT avait 5422 caractères / 5501 octets, supérieur à la limite 4200. Cette correction supprime des références anciennes redondantes du prompt court mais les conserve dans les handoffs complets. **Nouvelle CI sur le HEAD corrigé exigée ; ancien FAIL non transférable.**
+
 **29 octobre 2026 — CANDIDATE, NOT EXACT-HEAD CI PASS.** Protected parent `fb81eb85ec5842f9d117e9f6c64351c1f107fc23` after PR #231. Source Windows CI [#40951341500](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/40951341500) and independent postmain [#40953281939](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/40953281939) SUCCESS at respective exact SHA: **252 Rust, 7 Greenfield, 47 SQLite inventory, 154 continuity**.
 
 ## Bounded code change
