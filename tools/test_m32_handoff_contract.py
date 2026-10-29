@@ -4568,10 +4568,9 @@ class HandoffContractTests(unittest.TestCase):
             self.assertIn(needle.lower(), design.lower(), needle)
         self.assertIn("D3b-4/5", short)
         self.assertIn("R7", detailed)
-        self.assertIn("rusqlite = { version = \\"0.40.2\\", features = [\\"bundled\\"] }", cargo)
-        for needle in ('name = "rusqlite"\\nversion = "0.40.2"',
-                       'name = "libsqlite3-sys"\\nversion = "0.38.2"'):
-            self.assertIn(needle, lock)
+        self.assertIn('rusqlite = { version = "0.40.2", features = ["bundled"] }', cargo)
+        self.assertRegex(lock, r'name = "rusqlite"\s+version = "0\.40\.2"')
+        self.assertRegex(lock, r'name = "libsqlite3-sys"\s+version = "0\.38\.2"')
         self.assertEqual(checkpoint["sqlite_recovery_and_profile_admission"],
                          "SEPARATE_INDEPENDENT_GATES")
         self.assertEqual(checkpoint["actual_operator_binary_sqlite_version"], "NOT_ATTESTED")
