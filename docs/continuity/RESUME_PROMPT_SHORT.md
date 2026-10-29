@@ -1,29 +1,13 @@
-# Fabulaxiom — reprise COURTE
+# Fabulaxiom — reprise courte (29 octobre 2026)
 
----
+**Reprise obligatoire :** consulter d'abord [RESUME_PROMPT.md](RESUME_PROMPT.md), puis HANDOFF_CURRENT.md, HANDOFF_CURRENT.json, HANDOFF_PROTOCOL.md, HANDOFF_HISTORY.md, STATE.md, NEXT.md, M3_2_GATE_DECISION_CURRENT.md et les deux roadmaps. Re-fetch main, PR, issues, CI, ruleset Protect main. Les états GitHub actuels priment sur les SHA historiques.
 
-Dépôt : https://github.com/LaurentCOLL1/Fabulaxiom
+**Point GitHub vérifié :** main `90142d8c78dd8a84ee3f0ee1676a753c8521d78e` ; PR [#215](https://github.com/LaurentCOLL1/Fabulaxiom/pull/215) OPEN/DRAFT, HEAD `8203b7323877edc87ffabaad1694c52d2523023d` ; Windows CI [#40793962533](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/40793962533) completed/SUCCESS au HEAD exact. D3a ancien HEAD `a7323ab80f12372aa83b2be48019806be212eb32` CI #40764117809 SUCCESS 220 Rust/7 Greenfield/41 gardes/151 contrats. **Inspecter les logs D3b exacts avant de déclarer 224/7/41/152 qualifiés.**
 
-Re-fetch `main`, PR, issues, CI, `Protect main`. Lire `docs/continuity/RESUME_PROMPT.md`, puis `HANDOFF_CURRENT.md`, `HANDOFF_CURRENT.json`, `HANDOFF_PROTOCOL.md`, `HANDOFF_HISTORY.md`, `STATE.md`, `NEXT.md`, `M3_2_GATE_DECISION_CURRENT.md`, `docs/roadmap/ROADMAP_STATUS_CURRENT.md` / `FABULAXIOM_ROADMAP_V1.md`. GitHub fait autorité.
+**D3b autorisé uniquement sur fixtures Windows CI jetables :** 4 tests de crash/restart, WAL commit/pending, mutex WAIT_ABANDONED ou disparu, SQLITE_BUSY ; après crash, REFUS `RECOVERY_REQUIRED_NOT_AUTHORIZED`, aucune réouverture ni récupération SQLite. Conception et code expérimental dans la PR #215 et [D3b](../qualification/M3_2_V7_P1_D3B_DISPOSABLE_WINDOWS_CRASH_RESTART_REFUSAL_FIXTURE_20261028.md) sur sa branche, **pas sur main**. Ne pas fusionner #215 en assimilant des tests à l'admission writer.
 
-**PR204 :** source `edc69ff3b2f7b428658315882b1604001a19a0cc`, CI #40651970744, `main=d2d8634a92d335d8e3810047a704ff44464135b1`, postmain #40653351119 SUCCESS (189/7/41/135), #38 6463892458. [Writer v7](../qualification/M3_2_V7_RUST_SINGLE_OWNER_WRITER_PREPARATION_20261028.md) sans IPC. PR203 #40647564175 [xShmMap](../qualification/M3_2_SQLITE_VFS_SHM_IO_METHODS_WRAPPER_20261028.md).
+**STOP :** M3.2 IN_PROGRESS_NOT_ACCEPTED ; A0 EXISTING_PROFILE STOP ; writer/R1–R9 production NOT_PROVEN ; G2B NOT_ACCEPTED ; G2C NOT_AUTHORIZED ; G3 STOP_UNAVAILABLE ; historique PENDING_EXTERNAL_ATTESTATION(21/3/2) ; prospective NOT_STARTED ; PR #35 OPEN/DRAFT. Aucun accès SQLite opérateur, backup, ACL, WAL/SHM, marqueur persistant, récupération réelle, S3/S4, migration 007, IPC, Hello ou Ollama runtime. Respecter #38 append-only, CI exacte SHA, reviews/threads, expected_head_sha, postmain et ruleset sans bypass.
 
-**S1→S4 :** [stratégie](M3_2_V7_WRITER_ADMISSION_STRATEGY_20261028.md). #213 CI #40700929628, `main=15bdc1717c8d377fca37da4d0bdbeee59230c118`, postmain #40702949231 SUCCESS **208/7/41/144**, #38 6471475000. [xOpen veto](../qualification/M3_2_V7_SQLITE_XOPEN_DELEGATED_HANDLE_BOUNDARY_DECISION_20261028.md) : FileId128 du handle délégué dans xOpen, mismatch xClose/STOP ; **210/7/41/145 ATTENDUS NON QUALIFIÉS PAS PASS**. OS-open non atomique ; writer NOT_PROVEN, A0 EXISTING_PROFILE STOP, S3/S4/IPC/007/Hello STOP, #35 OPEN/DRAFT.
+**Windows :** code `M:\\Fabulaxiom` ; profil Greenfield `%LOCALAPPDATA%\\com.fabulaxiom.greenfield.v1` ; ne pas ouvrir la base opérateur. Objectif : application locale utilisable pour création littéraire, mémoire narrative, chronologie et Ollama local, sans cloud ni API payante.
 
-**Historique :** PR207–205 : voir prompt détaillé ; PR202 #40609906017/#40611263489 [WAL](../qualification/M3_2_SQLITE_VFS_WAL_SHM_BOUNDARY_20261028.md) ; PR201 #40593808508/#40595455638 [FileId](../qualification/M3_2_SQLITE_VFS_FILEID128_PREDISPATCH_TOCTOU_20261027.md) ; PR200 #40584565021/#40586436340 ; PR199 #40578342548 [VFS](../qualification/M3_2_SQLITE_VFS_PREDELEGATION_REFUSAL_FIXTURE_20261027.md) ; PR198 #40571697037 [HWND](../qualification/M3_2_WINDOWS_HELLO_DESKTOP_HWND_BACKEND_BOUNDARY_20261027.md) ; PR197 `main=dde962a50e3a063753fb77e9a5bcee014f406d30` #40558476584 [Hello](../qualification/M3_2_SINGLE_USER_WINDOWS_HELLO_SENSITIVE_CONSENT_POLICY_20261027.md) ; PR196 #40525427034 ; PR195 #40518270685 ; PR194 #40508416842 ; négatifs #40499869627/#40501278786.
-
-**PR188 :** #40450684268/#40451602743 ; [provenance](../qualification/M3_2_ROUTE_C_SAME_PROFILE_FOREIGN_SCHEMA_REFUSAL_20261027.md). 5/5 owner-reported.
-
-**Sources :** `M3_2_GREENFIELD_NEW_ONLY_DISPOSABLE_V7_CHRONOLOGY_PERSISTENCE_20261027.md`, `M3_2_GREENFIELD_V7_EXCLUSIVE_NEW_FILE_CLAIM_20261027.md`, `M3_2_GREENFIELD_V7_PINNED_HANDOFF_PARENT_NAMESPACE_20261027.md`, `M3_2_GREENFIELD_V7_OWNED_FIXTURE_DIRECTORY_CHAIN_20261027.md`, `M3_2_GREENFIELD_V7_SQLITE_WIN32_NATIVE_HANDLE_POSTOPEN_20261027.md`, `M3_2_WIN32_FILEID_128_AND_WINDOWS_HELLO_BOUNDARY_20261027.md`. Postmain PR189–193 : 40456835489 40462274918 40470700689 40476232974 40486676658.
-
-**Windows :** `M:\Fabulaxiom` ; SQLite `%LOCALAPPDATA%\com.fabulaxiom.greenfield.v1\database\fabulaxiom.sqlite3` ; `WINDOWS_OPERATOR_PATHS_ROUTE_C_20261026.md` privée. PR183 40310982760 / PR184 40338104050.
-
-**Suite :** [#35](../qualification/M3_2_PR35_LIVE_AUDIT_PROSPECTIVE_FAST_TRACK_20261027.md) OPEN/DRAFT ; Hello STOP.
-
-**CI historiques (non transférables) :** 40085871815 40094464488 40095354727 40103615181 40106296690 40108674282 40116658246 40122346098 40128407418 40156277835 40169967245 40179336243 40190429389 40200127549 40210737724 40213790809 40220215000 40230066592 40392826209 40403984550 40445392523. B0/B1 consommés. A `UNAVAILABLE_NOT_PROVEN`, B `NOT_PROVEN`.
-
-**Archives :** `M3_2_ROUTE_C_GREENFIELD_BACKUP_RESTORE_20261026.md` ; `M3_2_ROUTE_C_SAME_PROFILE_RESTORE_20261026.md` ; `M3_2_ROUTE_C_SAME_PROFILE_RESTORE_REFUSAL_20261027.md` ; `M3_2_ROUTE_C_SAME_PROFILE_FOREIGN_KEY_RESTORE_REFUSAL_20261027.md`.
-
-**STOP :** M3.2 `IN_PROGRESS_NOT_ACCEPTED`, G2B `NOT_ACCEPTED`, writer `NOT_PROVEN`, G2C `NOT_AUTHORIZED`, G3 `STOP_UNAVAILABLE`, historique `PENDING_EXTERNAL_ATTESTATION(21/3/2)`, prospective `NOT_STARTED`, #35 OPEN/DRAFT. SQLite v6/v7, backups, ACL, journaux, marqueur, migration 007, IPC writer interdits sans accord distinct.
-
-CI exacte, reviews/threads, `expected_head_sha`, postmain. **Deux prompts/handoffs, roadmap, #38 append-only.**
+**Suite :** poursuivre qualification D3b sur #215 sans déployer ; préparer les preuves restantes R1–R9 sur fixtures, puis décision architecturale explicite. Ce handoff documentaire ne constitue ni preuve de production ni autorisation de fusion de #215.
