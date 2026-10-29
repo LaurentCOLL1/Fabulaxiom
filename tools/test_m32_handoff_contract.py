@@ -4553,5 +4553,35 @@ class HandoffContractTests(unittest.TestCase):
         self.assertIn("#[cfg(test)]\nimpl V7WriterAdmission",
                       (ROOT / "src-tauri/src/m32_v7_writer_service.rs").read_text(encoding="utf-8"))
 
+
+    def test_147_r7_native_sqlite_recovery_is_not_profile_admission(self):
+        design = (ROOT / "docs/qualification/M3_2_V7_P1_R7_SQLITE_NATIVE_RECOVERY_VS_PROFILE_ADMISSION_DECISION_20261029.md").read_text(encoding="utf-8")
+        checkpoint = self.data["r7_native_sqlite_recovery_vs_profile_admission_design_20261029"]
+        cargo = (ROOT / "src-tauri/Cargo.toml").read_text(encoding="utf-8")
+        lock = (ROOT / "src-tauri/Cargo.lock").read_text(encoding="utf-8")
+        short = (DIRECTORY / "RESUME_PROMPT_SHORT.md").read_text(encoding="utf-8")
+        detailed = (DIRECTORY / "RESUME_PROMPT.md").read_text(encoding="utf-8")
+        for needle in ("R7-SQLITE", "R7-ADMISSION", "D3b-4", "D3b-5",
+                       "EXISTING_PROFILE", "RECOVERY_REQUIRED_NOT_AUTHORIZED",
+                       "NO WINDOWS TEST", "NOT_ATTESTED", "NOT_PROVEN",
+                       "no journal_mode switch"):
+            self.assertIn(needle.lower(), design.lower(), needle)
+        self.assertIn("D3b-4/5", short)
+        self.assertIn("R7", detailed)
+        self.assertIn("rusqlite = { version = \\"0.40.2\\", features = [\\"bundled\\"] }", cargo)
+        for needle in ('name = "rusqlite"\\nversion = "0.40.2"',
+                       'name = "libsqlite3-sys"\\nversion = "0.38.2"'):
+            self.assertIn(needle, lock)
+        self.assertEqual(checkpoint["sqlite_recovery_and_profile_admission"],
+                         "SEPARATE_INDEPENDENT_GATES")
+        self.assertEqual(checkpoint["actual_operator_binary_sqlite_version"], "NOT_ATTESTED")
+        self.assertEqual(checkpoint["a0_existing_profile"], "STOP")
+        for flag in ("d3b4_marker_replay_implemented", "d3b5_crash_matrix_implemented",
+                     "persistent_marker_authorized", "sqlite_reopen_after_crash_authorized",
+                     "operator_data_access_authorized", "journal_mode_switch_authorized",
+                     "writer_ipc_authorized", "migration_007_authorized",
+                     "new_runtime_rust_code"):
+            self.assertFalse(checkpoint[flag], flag)
+
 if __name__ == "__main__":
     unittest.main()
