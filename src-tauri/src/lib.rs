@@ -75,6 +75,11 @@ mod m32_p1_integrated_prefix_tests;
 #[cfg(all(test, windows))]
 mod m32_r2_held_parent_chain_tests;
 
+// R2->R3 CI-only FileId128 after SQLite's real xOpen on new disposable files.
+// Not an atomic pre-xOpen authorization, not a runtime writer or WAL admission.
+#[cfg(all(test, windows))]
+mod m32_r23_sqlite_handle_boundary_tests;
+
 // Never compile this feature into a Tauri runtime, even debug builds.
 #[cfg(all(feature = "m32-g3-owned-ram-toy", not(test)))]
 compile_error!("M3.2 owner-to-RAM backup fixture must be compiled ONLY as Rust unit tests");

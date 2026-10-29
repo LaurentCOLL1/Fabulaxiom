@@ -2,7 +2,7 @@
 
 ---
 
-**#223 MERGED :** main=5c656ea0a0463e13835b7ff50482b11fed3d53fb ; #40881357491/#40883026858 PASS 233/7/43/150 ; D3b-5 PASS ; R2 handles Win CANDIDAT ; D3b-4 STOP ; D3c/R7 étude ; writer NOT_PROVEN.
+**#224 MERGED :** main=c7b19ff4e695eeb88598db7274da0fda756a03c4 ; #40889773089/#40891993272 PASS 237/7/44/151 ; D3b-5 PASS ; R2→R3 Win CANDIDAT ; D3b-4 STOP ; D3c/R7 étude ; writer NOT_PROVEN.
 
 https://github.com/LaurentCOLL1/Fabulaxiom
 

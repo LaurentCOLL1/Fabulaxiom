@@ -429,5 +429,26 @@ class RustSqliteOpenInventoryTests(unittest.TestCase):
                       self.src["src-tauri/src/lib.rs"])
         self.assertFalse(repository_inventory()["real_g3_authorized"])
 
+
+    def test_45_r23_exactly_one_windows_test_only_sqlite_opener_is_reviewed(self):
+        p = "src-tauri/src/m32_r23_sqlite_handle_boundary_tests.rs"
+        source = self.src[p]
+        self.assertEqual(counts(source), (1, 0, 0, 0, 0, 1, 0))
+        self.assertEqual(EXPECTED[p], (1, 0, 0, 0, 0, 1, 0))
+        self.assertEqual(source.count("#[test]"), 4)
+        for needle in ("GetFileInformationByHandleEx", "SQLITE_FCNTL_WIN32_GET_HANDLE",
+                       "FILE_ID_INFO", "SqliteHandleUnavailable",
+                       "R4MappingUnproven", "swap_after_precheck", "create_new(true)",
+                       "FILE_ID_INFO", "UnknownSidecar", "Pins",
+                       "m32_r23_controlled_swap_after_precheck_vetoes_real_sqlite_handle"):
+            self.assertIn(needle, source)
+        self.assertIn("#[cfg(all(test, windows))]\nmod m32_r23_sqlite_handle_boundary_tests;",
+                      self.src["src-tauri/src/lib.rs"])
+        for forbidden in ("#[tauri::command]", "database::open_database(",
+                          "run_migrations(", "SQLITE_OPEN_CREATE", "ATTACH DATABASE",
+                          "VACUUM INTO", "app_local_data_dir()", "V7WriterAdmission {"):
+            self.assertNotIn(forbidden, source)
+        self.assertFalse(repository_inventory()["real_g3_authorized"])
+
 if __name__ == "__main__":
     unittest.main()
