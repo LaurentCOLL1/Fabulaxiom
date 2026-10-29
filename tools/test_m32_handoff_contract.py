@@ -4730,5 +4730,40 @@ class HandoffContractTests(unittest.TestCase):
             self.assertIn(note, (DIRECTORY / name).read_text(encoding="utf-8"))
         self.assertIn("R2", (DIRECTORY / "RESUME_PROMPT_SHORT.md").read_text(encoding="utf-8"))
 
+
+    def test_152_r23_real_sqlite_handle_is_test_only_not_atomic_admission(self):
+        checkpoint = self.data["m32_r23_sqlite_handle_boundary_20261029"]
+        self.assertEqual(checkpoint["scope"], "WINDOWS_CI_FRESH_DISPOSABLE_R2_R3_ONLY")
+        self.assertEqual(checkpoint["previous_pr"], 224)
+        self.assertEqual(checkpoint["previous_main"], "c7b19ff4e695eeb88598db7274da0fda756a03c4")
+        self.assertEqual(checkpoint["previous_postmain_ci"], 40891993272)
+        self.assertEqual(checkpoint["previous_postmain_conclusion"], "SUCCESS")
+        self.assertEqual(checkpoint["new_rust_tests"], 4)
+        self.assertEqual(checkpoint["expected_rust_tests"], 241)
+        self.assertEqual(checkpoint["expected_inventory_tests"], 45)
+        self.assertEqual(checkpoint["expected_continuity_tests"], 152)
+        self.assertTrue(checkpoint["r3_actual_sqlite_handle_fileid_observed_fixture"])
+        for flag in ("operator_data_accessed", "production_sqlite_open",
+                     "production_writer_admitted", "r3_atomic_xopen_proven",
+                     "r4_wal_shm_proven", "r5_lineage_proven", "r6_owner_admitted",
+                     "r7_restart_authorized", "r8_runtime_lifecycle_proven",
+                     "r9_release_admitted", "new_ipc", "migration_007", "durable_marker"):
+            self.assertFalse(checkpoint[flag], flag)
+        src = (ROOT / "src-tauri/src/m32_r23_sqlite_handle_boundary_tests.rs").read_text(encoding="utf-8")
+        self.assertEqual(src.count("#[test]"), 4)
+        for name in ("m32_r23_pinned_ancestors_and_actual_sqlite_handle_match_on_fresh_fixture",
+                     "m32_r23_replaced_main_name_refuses_before_sqlite_open",
+                     "m32_r23_unknown_sidecar_refuses_without_changing_sentinel",
+                     "m32_r23_controlled_swap_after_precheck_vetoes_real_sqlite_handle"):
+            self.assertIn("fn " + name + "(", src)
+        self.assertIn("#[cfg(all(test, windows))]\nmod m32_r23_sqlite_handle_boundary_tests;",
+                      (ROOT / "src-tauri/src/lib.rs").read_text(encoding="utf-8"))
+        note = "M3_2_P1_R2_R3_DISPOSABLE_SQLITE_HANDLE_BOUNDARY_20261029.md"
+        self.assertTrue((ROOT / "docs/qualification" / note).is_file())
+        for path in ("RESUME_PROMPT.md", "HANDOFF_CURRENT.md", "HANDOFF_PROTOCOL.md",
+                     "NEXT.md", "STATE.md", "M3_2_GATE_DECISION_CURRENT.md"):
+            self.assertIn(note, (DIRECTORY / path).read_text(encoding="utf-8"))
+        self.assertIn("R3", (DIRECTORY / "RESUME_PROMPT_SHORT.md").read_text(encoding="utf-8"))
+
 if __name__ == "__main__":
     unittest.main()

@@ -71,6 +71,10 @@ EXPECTED = {
     # D3b-5 distinct Windows test-only phase fixture: one owned-file opener,
     # no successor SQLite open; historical 26 VFS witnesses unchanged.
     "src-tauri/src/m32_d3b5_phase_matrix_tests.rs": (1, 0, 0, 0, 0, 1, 0),
+    # R2/R3 test-only: ONE RW SQLite opening on a *fresh* CI-owned file,
+    # followed by actual SQLITE_FCNTL_WIN32_GET_HANDLE FileId128 verification.
+    # A post-xOpen check is NOT atomic admission or WAL/SHM ownership.
+    "src-tauri/src/m32_r23_sqlite_handle_boundary_tests.rs": (1, 0, 0, 0, 0, 1, 0),
     # 2026-10-28: an UNWIRED writer core owns an ALREADY admitted connection.
     # Two RAM-only constructors, migration and ATTACH are confined to its
     # #[cfg(test)] fictional fixture; no production path opening is added.
