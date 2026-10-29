@@ -4282,7 +4282,8 @@ class HandoffContractTests(unittest.TestCase):
             self.assertIn(signal, doc)
         fixture = (ROOT / candidate["rust_fixture"]).read_text(encoding="utf-8")
         # Historical PR202 12 + qualified #215 6 D2 + 4 D3a + 4 D3b; require exact 26.
-        self.assertEqual(fixture.count("#[test]"), 26)
+        self.assertEqual(fixture.split("// R4 / P1 decision probe", 1)[0].count("#[test]"), 26)
+        self.assertEqual(fixture.split("// R4 / P1 decision probe", 1)[1].count("#[test]"), 3)
         self.assertIn("fixture_xshm_map", fixture)
         for filename in ("RESUME_PROMPT_SHORT.md", "RESUME_PROMPT.md", "HANDOFF_CURRENT.md",
                          "HANDOFF_PROTOCOL.md", "HANDOFF_HISTORY.md", "NEXT.md", "STATE.md",
@@ -4591,7 +4592,8 @@ class HandoffContractTests(unittest.TestCase):
         inventory_tests = (ROOT / "tools/test_m32_rust_sqlite_open_inventory.py").read_text(encoding="utf-8")
         lib = (ROOT / "src-tauri/src/lib.rs").read_text(encoding="utf-8")
         checkpoint = self.data["m32_d2_d3ab_windows_test_only_port_20261029"]
-        self.assertEqual(fixture.count("#[test]"), 26)
+        self.assertEqual(fixture.split("// R4 / P1 decision probe", 1)[0].count("#[test]"), 26)
+        self.assertEqual(fixture.split("// R4 / P1 decision probe", 1)[1].count("#[test]"), 3)
         for symbol in (
             "m32_d2_child_probe",
             "m32_d2_p1_cooperative_owner_delegated_fileid_wal_shm_positive_is_not_admission",
@@ -4610,8 +4612,8 @@ class HandoffContractTests(unittest.TestCase):
         ):
             self.assertIn("fn " + symbol + "(", fixture, symbol)
         self.assertIn("#[cfg(all(test, windows))]\nmod m32_sqlite_vfs_preopen_tests;", lib)
-        self.assertIn('"src-tauri/src/m32_sqlite_vfs_preopen_tests.rs": (22, 0, 0, 0, 0, 23, 0)', inventory)
-        self.assertIn("self.assertEqual(counts(source), (22, 0, 0, 0, 0, 23, 0))", inventory_tests)
+        self.assertIn('"src-tauri/src/m32_sqlite_vfs_preopen_tests.rs": (23, 0, 0, 0, 0, 24, 0)', inventory)
+        self.assertIn("self.assertEqual(counts(source), (23, 0, 0, 0, 0, 24, 0))", inventory_tests)
         for name in (
             "M3_2_V7_P1_D2_DISPOSABLE_SESSION_VFS_WAL_SHM_EXPERIMENT_20261028.md",
             "M3_2_V7_P1_D3A_WAL_SHM_HANDLE_CUSTODY_DISPOSABLE_WINDOWS_FIXTURE_20261028.md",
@@ -4652,8 +4654,11 @@ class HandoffContractTests(unittest.TestCase):
             self.assertIn("fn " + name + "(", source)
         self.assertIn('mod m32_d3b5_phase_matrix_tests;', 
                       (ROOT / "src-tauri/src/lib.rs").read_text(encoding="utf-8"))
-        self.assertEqual((ROOT / "src-tauri/src/m32_sqlite_vfs_preopen_tests.rs")
-                         .read_text(encoding="utf-8").count("#[test]"), 26)
+        vfs = (ROOT / "src-tauri/src/m32_sqlite_vfs_preopen_tests.rs").read_text(encoding="utf-8")
+        historical, boundary, r4 = vfs.partition("// R4 / P1 decision probe")
+        self.assertTrue(boundary, "R4 must be an appended, test-only section")
+        self.assertEqual(historical.count("#[test]"), 26)
+        self.assertEqual(r4.count("#[test]"), 3)
         doc_name = "M3_2_V7_P1_D3B5_BOUNDED_DISPOSABLE_CRASH_PHASE_MATRIX_20261029.md"
         self.assertTrue((ROOT / "docs/qualification" / doc_name).is_file())
         for file in ("RESUME_PROMPT.md", "HANDOFF_CURRENT.md", "HANDOFF_PROTOCOL.md",
@@ -4771,6 +4776,33 @@ class HandoffContractTests(unittest.TestCase):
                      "NEXT.md", "STATE.md", "M3_2_GATE_DECISION_CURRENT.md"):
             self.assertIn(note, (DIRECTORY / path).read_text(encoding="utf-8"))
         self.assertIn("R3", (DIRECTORY / "RESUME_PROMPT_SHORT.md").read_text(encoding="utf-8"))
+
+
+    def test_153_r4_p1_exclusive_wal_before_first_access_is_not_writer_admission(self):
+        item = self.data["m32_r4_p1_exclusive_wal_disposable_candidate_20261029"]
+        self.assertEqual(item["scope"], "WINDOWS_CI_FRESH_DISPOSABLE_R4_EXCLUSIVE_ONLY")
+        self.assertFalse(item["sqlite_handle_admitted"])
+        self.assertFalse(item["production_writer_admitted"])
+        self.assertFalse(item["r3_atomic_xopen_proven"])
+        self.assertFalse(item["r4_production_proven"])
+        self.assertEqual(item["existing_profile"], "STOP")
+        self.assertEqual(item["expected_rust_tests_not_pass_yet"], 250)
+        self.assertEqual(item["expected_inventory_tests_not_pass_yet"], 46)
+        self.assertEqual(item["expected_continuity_tests_not_pass_yet"], 153)
+        rust = (ROOT / "src-tauri/src/m32_sqlite_vfs_preopen_tests.rs").read_text(encoding="utf-8")
+        for name in (
+            "m32_r4_exclusive_before_wal_avoids_every_wrapped_shm_callback",
+            "m32_r4_exclusive_before_wal_succeeds_with_shm_map_veto_armed",
+            "m32_r4_exclusive_after_wal_does_not_undo_existing_shm_mapping",
+        ):
+            self.assertIn("fn " + name + "(", rust)
+        note = "M3_2_P1_R4_EXCLUSIVE_BEFORE_WAL_DISPOSABLE_20261029.md"
+        self.assertTrue((ROOT / "docs/qualification" / note).is_file())
+        for name in ("RESUME_PROMPT.md", "HANDOFF_CURRENT.md", "NEXT.md",
+                     "STATE.md", "M3_2_GATE_DECISION_CURRENT.md"):
+            self.assertIn(note, (DIRECTORY / name).read_text(encoding="utf-8"))
+        self.assertIn("R4", (DIRECTORY / "RESUME_PROMPT_SHORT.md").read_text(encoding="utf-8"))
+
 
 if __name__ == "__main__":
     unittest.main()
