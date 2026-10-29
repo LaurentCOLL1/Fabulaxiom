@@ -4750,7 +4750,7 @@ class HandoffContractTests(unittest.TestCase):
                      "r9_release_admitted", "new_ipc", "migration_007", "durable_marker"):
             self.assertFalse(checkpoint[flag], flag)
         src = (ROOT / "src-tauri/src/m32_r23_sqlite_handle_boundary_tests.rs").read_text(encoding="utf-8")
-        self.assertEqual(src.count("#[test]"), 8)  # 4 PR225 + 2 PR227 + 2 inter-process Win32 fixtures
+        self.assertEqual(src.count("#[test]"), 10)  # PR225/227/228 each retained + 2 ReOpenFile CI-only fixtures
         for name in ("m32_r23_pinned_ancestors_and_actual_sqlite_handle_match_on_fresh_fixture",
                      "m32_r23_replaced_main_name_refuses_before_sqlite_open",
                      "m32_r23_unknown_sidecar_refuses_without_changing_sentinel",
@@ -4759,7 +4759,9 @@ class HandoffContractTests(unittest.TestCase):
         for new_name in ("m32_r3_held_main_without_delete_share_refuses_rename_before_sqlite_open",
                          "m32_r3_held_main_without_delete_share_survives_sqlite_xopen_but_stops_at_r4",
                          "m32_r3_child_rename_probe_only_fresh_disposable_main",
-                         "m32_r3_other_process_rename_is_refused_before_and_during_sqlite_xopen"):
+                         "m32_r3_other_process_rename_is_refused_before_and_during_sqlite_xopen",
+                         "m32_r3_reopenfile_preserves_live_disposable_main_identity_without_path_lookup",
+                         "m32_r3_reopenfile_binds_original_file_even_after_name_replacement"):
             self.assertIn("fn " + new_name + "(", src)
         self.assertIn("#[cfg(all(test, windows))]\nmod m32_r23_sqlite_handle_boundary_tests;",
                       (ROOT / "src-tauri/src/lib.rs").read_text(encoding="utf-8"))
