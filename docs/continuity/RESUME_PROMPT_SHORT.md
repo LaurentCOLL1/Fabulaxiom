@@ -1,6 +1,6 @@
 # Fabulaxiom — reprise COURTE
 
-**R3 CANDIDAT :** 2 tests Windows main-HANDLE sans `FILE_SHARE_DELETE` et xOpen ; 243/7/45/152 ATTENDUS NON PASS, R3 atomique/R4/writer STOP. Voir `M3_2_P1_R3_HELD_MAIN_NO_DELETE_SHARE_DISPOSABLE_20261029.md`.
+**R3 CANDIDAT #227 :** base main=ba51ea692a9079a968dd1f54a8d9ea6d87559d50 ; 2 tests Windows main-HANDLE sans `FILE_SHARE_DELETE` et xOpen ; 243/7/45/152 ATTENDUS NON PASS, R3 atomique/R4/writer STOP. Voir `M3_2_P1_R3_HELD_MAIN_NO_DELETE_SHARE_DISPOSABLE_20261029.md`.
 
 
 ---
