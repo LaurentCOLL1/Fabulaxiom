@@ -250,3 +250,52 @@ fn m32_r23_controlled_swap_after_precheck_vetoes_real_sqlite_handle() {
     assert!(root.main().with_file_name("displaced-after-preflight").is_file());
     assert_eq!(pins.revalidate(&root), Ok(()));
 }
+
+
+// R3 probe: retain a Win32 MAIN handle without FILE_SHARE_DELETE throughout
+// the separate pathname-based SQLite xOpen. This tests cooperative Win32 rename
+// exclusion on a NEW, disposable file; it does not prove atomic VFS admission,
+// hard-link immunity, or the WAL/SHM/callback side of the same session.
+#[test]
+fn m32_r3_held_main_without_delete_share_refuses_rename_before_sqlite_open() {
+    let root = OwnedRoot::fresh();
+    let first = root.create_empty_main();
+    drop(first);
+    let held = OpenOptions::new().read(true).write(true)
+        .share_mode(SHARE_READ | SHARE_WRITE).open(root.main()).unwrap();
+    let expected = file_id(&held).unwrap();
+    let pins = Pins::acquire(&root).unwrap();
+    let displaced = root.main().with_file_name("renamed-under-held-main");
+    assert!(fs::rename(root.main(), &displaced).is_err(),
+        "Win32 main handle without FILE_SHARE_DELETE must prevent rename");
+    assert_eq!(file_id(&File::open(root.main()).unwrap()), Ok(expected));
+    assert!(!displaced.exists(), "failed rename cannot install another identity");
+    assert_eq!(pins.revalidate(&root), Ok(()));
+    drop(held);
+    // Negative control: rename becomes possible after releasing the main claim.
+    fs::rename(root.main(), &displaced).unwrap();
+    assert!(displaced.is_file());
+    assert!(!root.main().exists());
+    drop(pins);
+}
+
+#[test]
+fn m32_r3_held_main_without_delete_share_survives_sqlite_xopen_but_stops_at_r4() {
+    let root = OwnedRoot::fresh();
+    let first = root.create_empty_main();
+    drop(first);
+    let held = OpenOptions::new().read(true).write(true)
+        .share_mode(SHARE_READ | SHARE_WRITE).open(root.main()).unwrap();
+    let expected = file_id(&held).unwrap();
+    let pins = Pins::acquire(&root).unwrap();
+    // Uses the SINGLE already-inventoried SQLite open site; no new SQL site.
+    let db = open_after_fixture_preflight(&root, &pins, expected, false).unwrap();
+    assert_eq!(sqlite_opened_id(&db), Ok(expected));
+    assert_eq!(file_id(&held), Ok(expected));
+    assert_eq!(pins.revalidate(&root), Ok(()));
+    assert_eq!(refuse_unverified_r4(&root, &pins, &db, expected),
+        Refusal::R4MappingUnproven, "a held main is NOT a WAL/SHM admission");
+    assert!(db.close().is_ok(), "fixture-only close without SQL");
+    drop(held);
+    drop(pins);
+}
