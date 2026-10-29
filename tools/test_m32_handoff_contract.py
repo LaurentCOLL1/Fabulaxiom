@@ -4330,7 +4330,7 @@ class HandoffContractTests(unittest.TestCase):
         fixture = (ROOT / candidate["rust_module"]).read_text(encoding="utf-8")
         for term in ("NON QUALIFIÉE", "189 Rust", "135 contrats", "writer", "Tauri"):
             self.assertIn(term, doc)
-        self.assertEqual(fixture.count("#[test]"), 8)
+        self.assertGreaterEqual(fixture.count("#[test]"), 8)  # historical eight retained; #155 pins 11
         for term in ("sync_channel(QUEUE_CAPACITY)", "TransactionBehavior::Immediate",
                      "set_transaction_behavior", "V7WriterAdmission", "#[cfg(test)]",
                      "fn worker_loop", "WriterError::AdmissionRejected"):
@@ -4830,6 +4830,34 @@ class HandoffContractTests(unittest.TestCase):
             self.assertIn(note, (DIRECTORY / name).read_text(encoding="utf-8"))
         self.assertIn("R4", (DIRECTORY / "RESUME_PROMPT_SHORT.md").read_text(encoding="utf-8"))
 
+
+
+    def test_155_r5_r6_r8_prepared_owner_ram_refusals_unwired(self):
+        item = self.data["m32_r5_r6_r8_prepared_owner_ram_candidate_20261029"]
+        self.assertEqual(item["scope"], "PURE_RAM_UNWIRED_PREPARED_WRITER_TESTS")
+        self.assertEqual(item["source_main_before_pr"], "fb81eb85ec5842f9d117e9f6c64351c1f107fc23")
+        self.assertEqual(item["expected_rust_tests_not_yet_qualified"], 255)
+        self.assertEqual(item["expected_continuity_tests_not_yet_qualified"], 155)
+        for key in ("real_v7_schema_admitted", "atomic_xopen_proven", "production_writer_admitted",
+                    "tauri_ipc_added", "operator_data_accessed", "crash_recovery_authorized"):
+            self.assertFalse(item[key], key)
+        self.assertEqual(item["existing_profile"], "STOP")
+        src = (ROOT / "src-tauri/src/m32_v7_writer_service.rs").read_text(encoding="utf-8")
+        self.assertEqual(src.count("#[test]"), 11)
+        for name in ("m32_v7_writer_prepared_r5_rejects_incomplete_migration_lineage",
+                     "m32_v7_writer_prepared_r5_rejects_foreign_keys_off",
+                     "m32_v7_writer_prepared_r8_drop_revokes_multiple_clients"):
+            self.assertIn("fn " + name + "(", src)
+        self.assertIn("impl V7WriterAdmission", src)
+        self.assertNotIn("#[tauri::command]", src)
+        filename = "M3_2_P1_R5_R6_R8_PREPARED_OWNER_RAM_REFUSAL_20261029.md"
+        self.assertTrue((ROOT / "docs/qualification" / filename).is_file())
+        for p in ("RESUME_PROMPT.md", "RESUME_PROMPT_SHORT.md", "HANDOFF_CURRENT.md",
+                  "HANDOFF_PROTOCOL.md", "HANDOFF_HISTORY.md", "STATE.md", "NEXT.md",
+                  "M3_2_GATE_DECISION_CURRENT.md", "README.md"):
+            self.assertIn(filename, (DIRECTORY / p).read_text(encoding="utf-8"))
+        for p in ("ROADMAP_STATUS_CURRENT.md", "FABULAXIOM_ROADMAP_V1.md"):
+            self.assertIn(filename, (ROOT / "docs/roadmap" / p).read_text(encoding="utf-8"))
 
 if __name__ == "__main__":
     unittest.main()
