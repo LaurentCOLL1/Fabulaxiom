@@ -1,6 +1,6 @@
 # Fabulaxiom — reprise COURTE
 
-**29 octobre 2026 — CANDIDATE R3 HANDLE MAIN PINNÉ, NON QUALIFIÉE EN CI :** base vivante vérifiée `main=ba51ea692a9079a968dd1f54a8d9ea6d87559d50` après PR #226, push CI #40909071737 SUCCESS. Nouvelle tranche Windows `cfg(test)` **strictement jetable** : deux tests sur handle principal conservé sans `FILE_SHARE_DELETE` (renommage interdit tant que le handle est tenu ; xOpen SQLite existant puis comparaison FileId128) ; [qualification](../qualification/M3_2_P1_R3_HELD_MAIN_NO_DELETE_SHARE_DISPOSABLE_20261029.md). **243 Rust / 7 Greenfield / 45 inventaires / 152 continuité ATTENDUS, PAS PASS exact-head à ce stade**. Le VFS par chemin n'est pas prouvé atomique, WAL/SHM R4 et writer R1–R9 restent NOT_PROVEN ; aucun nouveau constructeur SQL/runtime, aucune base opérateur. PR #215/#35 DRAFT, issue #38 append-only, Protect main strict sans bypass. **Prochaine opération : attendre la qualification de la CI du head exact, puis audit diff/reviews/threads, fusion seulement avec `expected_head_sha`, et CI postmain indépendante ; ensuite étude R3 inter-processus / R4.** STOP A0 EXISTING_PROFILE, M3.2 IN_PROGRESS_NOT_ACCEPTED, G2B NOT_ACCEPTED, G2C NOT_AUTHORIZED, G3 STOP_UNAVAILABLE, historique PENDING_EXTERNAL_ATTESTATION(21/3/2), prospective NOT_STARTED ; pas de writer IPC, migration 007, marqueur D3b-4, Hello natif, données opérateur ou réouverture après crash.
+**R3 CANDIDAT :** 2 tests Windows main-HANDLE sans `FILE_SHARE_DELETE` et xOpen ; 243/7/45/152 ATTENDUS NON PASS, R3 atomique/R4/writer STOP. Voir `M3_2_P1_R3_HELD_MAIN_NO_DELETE_SHARE_DISPOSABLE_20261029.md`.
 
 
 ---
@@ -27,7 +27,6 @@ GitHub autorité : re-fetch `main`/PR/issues/CI/`Protect main` ; lire `RESUME_PR
 
 **Suite :** R2/R3 pré-xOpen VFS ; R4 WAL/SHM ; R5/R6/R8 schéma/acteur/close ; R7/R9 reprise/admission. #35 DRAFT `M3_2_PR35_LIVE_AUDIT_PROSPECTIVE_FAST_TRACK_20261027.md`.
 
-**CI anciennes :** 40085871815 40094464488 40095354727 40103615181 40106296690 40108674282 40116658246 40122346098 40128407418 40156277835 40169967245 40179336243 40190429389 40200127549 40210737724 40213790809 40220215000 40230066592 40392826209 40403984550 40445392523. B0/B1 consommés. A `UNAVAILABLE_NOT_PROVEN`, B `NOT_PROVEN`.
 
 **Arch. :** `M3_2_ROUTE_C_GREENFIELD_BACKUP_RESTORE_20261026.md` ; `M3_2_ROUTE_C_SAME_PROFILE_RESTORE_20261026.md` ; `M3_2_ROUTE_C_SAME_PROFILE_RESTORE_REFUSAL_20261027.md` ; `M3_2_ROUTE_C_SAME_PROFILE_FOREIGN_KEY_RESTORE_REFUSAL_20261027.md`.
 
