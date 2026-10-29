@@ -1423,4 +1423,49 @@ mod r4_p1_exclusive_wal_disposable {
         assert!(db.close().is_ok(), "no restart, no recovery");
         assert!(gate.state.d3a_shm_unmap_delegations.load(Ordering::SeqCst) >= 1);
     }
+
+    // A second SQLite connection is not a second authorized P1 reader merely
+    // because it runs under the same Windows SID or process. Never route UI
+    // consultation through an independently opened SQLite connection while
+    // a single owner holds EXCLUSIVE WAL.
+    #[test]
+    fn m32_r4_exclusive_owner_refuses_second_sqlite_reader_without_ipc() {
+        let (root, gate, owner) = fresh_fixture(true, false);
+        let reader = Connection::open_with_flags_and_vfs(
+            &root.db(), OpenFlags::SQLITE_OPEN_READ_ONLY, gate.name()
+        ).expect("test-only second connection constructor, NOT a P1 reader");
+        reader.busy_timeout(std::time::Duration::from_millis(100)).unwrap();
+        let failure = reader.query_row(
+            "SELECT COUNT(*) FROM invented_r4", [],
+            |row| row.get::<_, i64>(0)
+        ).expect_err("EXCLUSIVE owner must prevent a separately opened reader");
+        match failure {
+            rusqlite::Error::SqliteFailure(native, _) =>
+                assert_eq!(native.code, rusqlite::ErrorCode::DatabaseBusy),
+            other => panic!("second reader must fail with SQLite BUSY: {other:?}"),
+        }
+        assert_eq!(owner.query_row("SELECT COUNT(*) FROM invented_r4", [],
+            |row| row.get::<_, i64>(0)).unwrap(), 1,
+            "the single owner remains the only admitted reader");
+        assert_eq!(gate.state.shm_map_delegations.load(Ordering::SeqCst), 0);
+        drop(reader);
+        assert!(owner.close().is_ok(), "clean test-only close, not R7 restart proof");
+    }
+
+    #[test]
+    fn m32_r4_exclusive_wal_normal_request_is_noop_during_owner_lifetime() {
+        let (_root, gate, owner) = fresh_fixture(true, false);
+        let answer: String = owner.query_row(
+            "PRAGMA locking_mode=NORMAL", [], |row| row.get(0)
+        ).unwrap();
+        assert_eq!(answer.to_ascii_lowercase(), "exclusive",
+            "SQLite WAL entered under EXCLUSIVE must not silently release the claim");
+        let still: String = owner.query_row(
+            "PRAGMA locking_mode", [], |row| row.get(0)
+        ).unwrap();
+        assert_eq!(still.to_ascii_lowercase(), "exclusive");
+        assert_eq!(gate.state.shm_map_delegations.load(Ordering::SeqCst), 0);
+        assert!(owner.close().is_ok(), "test-only close; no reopening or recovery");
+    }
+
 }
