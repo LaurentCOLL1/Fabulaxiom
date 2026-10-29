@@ -4282,7 +4282,8 @@ class HandoffContractTests(unittest.TestCase):
             self.assertIn(signal, doc)
         fixture = (ROOT / candidate["rust_fixture"]).read_text(encoding="utf-8")
         # Historical PR202 12 + qualified #215 6 D2 + 4 D3a + 4 D3b; require exact 26.
-        self.assertEqual(fixture.count("#[test]"), 26)
+        self.assertEqual(fixture.split("// R4 / P1 decision probe", 1)[0].count("#[test]"), 26)
+        self.assertEqual(fixture.split("// R4 / P1 decision probe", 1)[1].count("#[test]"), 3)
         self.assertIn("fixture_xshm_map", fixture)
         for filename in ("RESUME_PROMPT_SHORT.md", "RESUME_PROMPT.md", "HANDOFF_CURRENT.md",
                          "HANDOFF_PROTOCOL.md", "HANDOFF_HISTORY.md", "NEXT.md", "STATE.md",
@@ -4591,7 +4592,8 @@ class HandoffContractTests(unittest.TestCase):
         inventory_tests = (ROOT / "tools/test_m32_rust_sqlite_open_inventory.py").read_text(encoding="utf-8")
         lib = (ROOT / "src-tauri/src/lib.rs").read_text(encoding="utf-8")
         checkpoint = self.data["m32_d2_d3ab_windows_test_only_port_20261029"]
-        self.assertEqual(fixture.count("#[test]"), 26)
+        self.assertEqual(fixture.split("// R4 / P1 decision probe", 1)[0].count("#[test]"), 26)
+        self.assertEqual(fixture.split("// R4 / P1 decision probe", 1)[1].count("#[test]"), 3)
         for symbol in (
             "m32_d2_child_probe",
             "m32_d2_p1_cooperative_owner_delegated_fileid_wal_shm_positive_is_not_admission",
@@ -4652,8 +4654,11 @@ class HandoffContractTests(unittest.TestCase):
             self.assertIn("fn " + name + "(", source)
         self.assertIn('mod m32_d3b5_phase_matrix_tests;', 
                       (ROOT / "src-tauri/src/lib.rs").read_text(encoding="utf-8"))
-        self.assertEqual((ROOT / "src-tauri/src/m32_sqlite_vfs_preopen_tests.rs")
-                         .read_text(encoding="utf-8").count("#[test]"), 26)
+        vfs = (ROOT / "src-tauri/src/m32_sqlite_vfs_preopen_tests.rs").read_text(encoding="utf-8")
+        historical, boundary, r4 = vfs.partition("// R4 / P1 decision probe")
+        self.assertTrue(boundary, "R4 must be an appended, test-only section")
+        self.assertEqual(historical.count("#[test]"), 26)
+        self.assertEqual(r4.count("#[test]"), 3)
         doc_name = "M3_2_V7_P1_D3B5_BOUNDED_DISPOSABLE_CRASH_PHASE_MATRIX_20261029.md"
         self.assertTrue((ROOT / "docs/qualification" / doc_name).is_file())
         for file in ("RESUME_PROMPT.md", "HANDOFF_CURRENT.md", "HANDOFF_PROTOCOL.md",
