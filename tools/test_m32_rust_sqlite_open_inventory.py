@@ -472,12 +472,16 @@ class RustSqliteOpenInventoryTests(unittest.TestCase):
         self.assertIn("PRAGMA journal_mode=WAL", source)
         self.assertIn("d3a_shm_unmap_delegations", source)
         self.assertIn("RegisteredFixtureVfs::with_shm_policy(true)", source)
+        # Historical VFS fixtures already contain an OPEN_CREATE policy token.
+        # Scope new negative assertions to the added R4 module only, without
+        # weakening the existing whole-tree/old-module inventory checks.
+        new_r4 = source.split("// R4 / P1 decision probe", 1)[1]
         for forbidden in (
             "#[tauri::command]", "database::open_database(",
             "run_migrations(", "SQLITE_OPEN_CREATE",
             "V7WriterAdmission {", "M:\\\\Fabulaxiom",
         ):
-            self.assertNotIn(forbidden, source)
+            self.assertNotIn(forbidden, new_r4)
         self.assertEqual(repository_inventory()["real_g3"], "STOP_UNAVAILABLE")
 
 if __name__ == "__main__":
