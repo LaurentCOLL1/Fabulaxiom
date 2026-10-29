@@ -299,3 +299,74 @@ fn m32_r3_held_main_without_delete_share_survives_sqlite_xopen_but_stops_at_r4()
     drop(held);
     drop(pins);
 }
+
+
+// Separate Windows process holds no pre-existing database privileges. The child
+// receives only an explicitly invented per-test path under fresh %TEMP%.
+// This is a CI experiment, not a Windows operator profile or a writer IPC.
+const R3_CHILD_FILE: &str = "FABULAXIOM_R3_DISPOSABLE_CHILD_FILE";
+const R3_CHILD_DENIED: i32 = 71;
+const R3_CHILD_RENAMED: i32 = 72;
+
+#[test]
+fn m32_r3_child_rename_probe_only_fresh_disposable_main() {
+    let Some(raw) = std::env::var_os(R3_CHILD_FILE) else { return };
+    let path = PathBuf::from(raw);
+    assert_eq!(path.file_name(), Some(std::ffi::OsStr::new(MAIN)));
+    let database = path.parent().unwrap();
+    assert_eq!(database.file_name(), Some(std::ffi::OsStr::new("database")));
+    let profile = database.parent().unwrap();
+    assert_eq!(profile.file_name(), Some(std::ffi::OsStr::new("fictional-profile")));
+    let root = profile.parent().unwrap();
+    assert!(root.starts_with(std::env::temp_dir()));
+    assert!(root.file_name().unwrap().to_string_lossy().starts_with(ROOT_PREFIX));
+    assert!(fs::symlink_metadata(&path).unwrap().is_file());
+    let moved = path.with_file_name("moved-by-disposable-child");
+    assert!(!moved.exists());
+    let code = if fs::rename(&path, &moved).is_ok() {
+        R3_CHILD_RENAMED
+    } else {
+        R3_CHILD_DENIED
+    };
+    process::exit(code);
+}
+
+fn r3_disposable_child_rename(path: &Path) -> i32 {
+    assert_eq!(path.file_name(), Some(std::ffi::OsStr::new(MAIN)));
+    let status = process::Command::new(std::env::current_exe().unwrap())
+        .arg("--exact")
+        .arg("m32_r23_sqlite_handle_boundary_tests::m32_r3_child_rename_probe_only_fresh_disposable_main")
+        .arg("--nocapture")
+        .env(R3_CHILD_FILE, path)
+        .status().expect("only CI Rust test executable may run");
+    status.code().expect("child must report an explicit rename result")
+}
+
+#[test]
+fn m32_r3_other_process_rename_is_refused_before_and_during_sqlite_xopen() {
+    let root = OwnedRoot::fresh();
+    let first = root.create_empty_main();
+    let expected = file_id(&first).unwrap();
+    drop(first);
+    let claim = OpenOptions::new().read(true).write(true)
+        .share_mode(SHARE_READ | SHARE_WRITE).open(root.main()).unwrap();
+    assert_eq!(file_id(&claim), Ok(expected));
+    let pins = Pins::acquire(&root).unwrap();
+    assert_eq!(r3_disposable_child_rename(&root.main()), R3_CHILD_DENIED);
+    assert_eq!(file_id(&File::open(root.main()).unwrap()), Ok(expected));
+    let db = open_after_fixture_preflight(&root, &pins, expected, false).unwrap();
+    assert_eq!(sqlite_opened_id(&db), Ok(expected));
+    assert_eq!(r3_disposable_child_rename(&root.main()), R3_CHILD_DENIED);
+    assert_eq!(sqlite_opened_id(&db), Ok(expected));
+    assert_eq!(refuse_unverified_r4(&root, &pins, &db, expected),
+        Refusal::R4MappingUnproven);
+    assert!(db.close().is_ok(), "disposable main close without SQL");
+    drop(claim);
+    // A true negative control: child succeeds with the very same owned path
+    // after the claim is dropped, even while ancestor handles are retained.
+    assert_eq!(r3_disposable_child_rename(&root.main()), R3_CHILD_RENAMED);
+    assert!(!root.main().exists());
+    assert_eq!(file_id(&File::open(root.main().with_file_name("moved-by-disposable-child")).unwrap()),
+        Ok(expected));
+    drop(pins);
+}
