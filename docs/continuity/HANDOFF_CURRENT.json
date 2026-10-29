@@ -1,5 +1,12 @@
 {
   "d3c_r7_design_checkpoint_20261029": {
+    "stage_name_status": "PROVISIONAL_ALIAS_NOT_NEW_CANONICAL_GATE",
+    "preexisting_d3b_4_scope": "RESTART_WITNESS_REPLAY_SWAP_OMISSION_DESIGN_ONLY_PR215",
+    "preexisting_d3b_5_scope": "CRASH_TIMING_MATRIX_DESIGN_ONLY_PR215",
+    "preexisting_d3a_3_scope": "WAL_CHECKPOINT_BUSY_OBSERVATION_DESIGN_ONLY_PR215",
+    "d3d_prior_canonical_definition": "NOT_FOUND_IN_VERIFIED_PRIOR_SOURCES",
+    "d3e_prior_canonical_definition": "NOT_FOUND_IN_VERIFIED_PRIOR_SOURCES",
+    "d3c_new_independent_milestone_authorized": false,
     "scope": "DOCUMENTATION_ONLY_R7_D3C_PROPOSED_DESIGN_NO_EXECUTION",
     "authority": "NOT_AUTHORIZED_FOR_D3C_CODE_OR_FIXTURES",
     "base_main_sha": "4fbffea526182e551cb5c19848817ba2d96417e3",
