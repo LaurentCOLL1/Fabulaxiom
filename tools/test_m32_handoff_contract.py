@@ -4631,5 +4631,35 @@ class HandoffContractTests(unittest.TestCase):
             self.assertFalse(checkpoint[flag], flag)
         self.assertEqual(checkpoint["a0_existing_profile"], "STOP")
 
+
+    def test_149_d3b5_phase_brackets_keep_26_historical_vfs_tests_immutable(self):
+        checkpoint = self.data["m32_d3b5_disposable_phase_matrix_20261029"]
+        self.assertEqual(checkpoint["scope"], "WINDOWS_CI_FRESH_DISPOSABLE_ONLY")
+        self.assertEqual(checkpoint["vfs_historical_tests_unchanged"], 26)
+        self.assertEqual(checkpoint["new_test_functions"], 4)
+        self.assertEqual(checkpoint["child_phase_brackets"], 6)
+        self.assertFalse(checkpoint["intra_xsync_or_xshmunmap_crash_proven"])
+        for key in ("production_writer_admitted", "new_durable_marker",
+                    "operator_files_accessed", "sqlite_successor_reopened",
+                    "sqlite_recovery_performed", "writer_ipc", "migration_007"):
+            self.assertFalse(checkpoint[key], key)
+        source = (ROOT / "src-tauri/src/m32_d3b5_phase_matrix_tests.rs").read_text(encoding="utf-8")
+        self.assertEqual(source.count("#[test]"), 4)
+        for name in ("m32_d3b5_child_terminate_at_phase",
+                     "m32_d3b5_before_after_commit_always_refuses_successor_open",
+                     "m32_d3b5_before_after_passive_checkpoint_never_authorizes_recovery",
+                     "m32_d3b5_before_after_explicit_close_is_not_restart_attestation"):
+            self.assertIn("fn " + name + "(", source)
+        self.assertIn('mod m32_d3b5_phase_matrix_tests;', 
+                      (ROOT / "src-tauri/src/lib.rs").read_text(encoding="utf-8"))
+        self.assertEqual((ROOT / "src-tauri/src/m32_sqlite_vfs_preopen_tests.rs")
+                         .read_text(encoding="utf-8").count("#[test]"), 26)
+        doc_name = "M3_2_V7_P1_D3B5_BOUNDED_DISPOSABLE_CRASH_PHASE_MATRIX_20261029.md"
+        self.assertTrue((ROOT / "docs/qualification" / doc_name).is_file())
+        for file in ("RESUME_PROMPT.md", "HANDOFF_CURRENT.md", "HANDOFF_PROTOCOL.md",
+                     "NEXT.md", "STATE.md", "M3_2_GATE_DECISION_CURRENT.md"):
+            self.assertIn(doc_name, (DIRECTORY / file).read_text(encoding="utf-8"))
+        self.assertIn("D3b-5", (DIRECTORY / "RESUME_PROMPT_SHORT.md").read_text(encoding="utf-8"))
+
 if __name__ == "__main__":
     unittest.main()

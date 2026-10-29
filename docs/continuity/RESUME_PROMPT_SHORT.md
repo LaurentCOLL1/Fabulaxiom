@@ -2,7 +2,7 @@
 
 ---
 
-**#220 MERGED :** `main=44ed8f07d029c7692ffbaa9864b59e34fb430cad` ; CI #40854438390/#40856632214 SUCCESS 224/7/41/148 ; 26 VFS. D3b-4/5 STOP ; D3c/R7 conception ; writer NOT_PROVEN.
+**#220 MERGED :** `main=44ed8f07d029c7692ffbaa9864b59e34fb430cad` ; CI #40854438390/#40856632214 SUCCESS 224/7/41/148 ; 26 VFS. D3b-4 STOP ; D3b-5 candidate CI ; D3c/R7 conception ; writer NOT_PROVEN.
 
 https://github.com/LaurentCOLL1/Fabulaxiom
 
