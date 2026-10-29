@@ -1452,18 +1452,47 @@ mod r4_p1_exclusive_wal_disposable {
         assert!(owner.close().is_ok(), "clean test-only close, not R7 restart proof");
     }
 
+    // The initial raw-PRAGMA test FAILED at exact-head Windows CI
+    // #40948171560: SQLite returned "normal" even though the fixture entered
+    // WAL under EXCLUSIVE, while its second-reader refusal test passed.
+    // Do not make file custody depend on a PRAGMA response. Model typed P1
+    // requests with an explicit fail-closed owner boundary instead.
+    #[derive(Debug, Clone, Copy)]
+    enum R4OwnerRequest { ReadInventedCount, DowngradeLockingToNormal }
+
+    fn r4_fixture_owner_execute(
+        db: &Connection, request: R4OwnerRequest,
+    ) -> Result<i64, &'static str> {
+        match request {
+            R4OwnerRequest::ReadInventedCount =>
+                db.query_row("SELECT COUNT(*) FROM invented_r4", [],
+                    |row| row.get::<_, i64>(0))
+                    .map_err(|_| "STOP: fictional owner read failed"),
+            R4OwnerRequest::DowngradeLockingToNormal =>
+                Err("STOP: P1 EXCLUSIVE WAL locking downgrade not an allowed owner operation"),
+        }
+    }
+
     #[test]
-    fn m32_r4_exclusive_wal_normal_request_is_noop_during_owner_lifetime() {
+    fn m32_r4_exclusive_wal_owner_policy_refuses_normal_downgrade() {
         let (_root, gate, owner) = fresh_fixture(true, false);
-        let answer: String = owner.query_row(
-            "PRAGMA locking_mode=NORMAL", [], |row| row.get(0)
-        ).unwrap();
-        assert_eq!(answer.to_ascii_lowercase(), "exclusive",
-            "SQLite WAL entered under EXCLUSIVE must not silently release the claim");
-        let still: String = owner.query_row(
+        let before: String = owner.query_row(
             "PRAGMA locking_mode", [], |row| row.get(0)
         ).unwrap();
-        assert_eq!(still.to_ascii_lowercase(), "exclusive");
+        assert_eq!(before.to_ascii_lowercase(), "exclusive");
+        assert_eq!(r4_fixture_owner_execute(&owner, R4OwnerRequest::ReadInventedCount),
+            Ok(1));
+        assert!(r4_fixture_owner_execute(
+            &owner, R4OwnerRequest::DowngradeLockingToNormal
+        ).unwrap_err().starts_with("STOP:"));
+        // The rejected operation never invokes the unsafe SQLite PRAGMA.
+        // This is NOT a production dispatcher or a proof of SQLite internals.
+        let after: String = owner.query_row(
+            "PRAGMA locking_mode", [], |row| row.get(0)
+        ).unwrap();
+        assert_eq!(after.to_ascii_lowercase(), "exclusive");
+        assert_eq!(r4_fixture_owner_execute(&owner, R4OwnerRequest::ReadInventedCount),
+            Ok(1));
         assert_eq!(gate.state.shm_map_delegations.load(Ordering::SeqCst), 0);
         assert!(owner.close().is_ok(), "test-only close; no reopening or recovery");
     }
