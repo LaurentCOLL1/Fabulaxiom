@@ -435,7 +435,7 @@ class RustSqliteOpenInventoryTests(unittest.TestCase):
         source = self.src[p]
         self.assertEqual(counts(source), (1, 0, 0, 0, 0, 1, 0))
         self.assertEqual(EXPECTED[p], (1, 0, 0, 0, 0, 1, 0))
-        self.assertEqual(source.count("#[test]"), 6)
+        self.assertEqual(source.count("#[test]"), 8)
         for needle in ("GetFileInformationByHandleEx", "SQLITE_FCNTL_WIN32_GET_HANDLE",
                        "FILE_ID_INFO", "SqliteHandleUnavailable",
                        "R4MappingUnproven", "swap_after_precheck", "create_new(true)",
@@ -443,6 +443,8 @@ class RustSqliteOpenInventoryTests(unittest.TestCase):
                        "m32_r23_controlled_swap_after_precheck_vetoes_real_sqlite_handle",
                        "m32_r3_held_main_without_delete_share_refuses_rename_before_sqlite_open",
                        "m32_r3_held_main_without_delete_share_survives_sqlite_xopen_but_stops_at_r4",
+                       "m32_r3_child_rename_probe_only_fresh_disposable_main",
+                       "m32_r3_other_process_rename_is_refused_before_and_during_sqlite_xopen",
                        ".share_mode(SHARE_READ | SHARE_WRITE)"):
             self.assertIn(needle, source)
         self.assertIn("#[cfg(all(test, windows))]\nmod m32_r23_sqlite_handle_boundary_tests;",
