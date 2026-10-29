@@ -317,4 +317,39 @@ mod tests {
         assert_eq!(client.create_revision(revision("later", "sc1")),
             Err(WriterError::Disconnected));
     }
+
+    // Fictional RAM-only owner tests. They cannot authorize a real v7 file.
+    #[test]
+    fn m32_v7_writer_prepared_r5_rejects_incomplete_migration_lineage() {
+        let db = fictive_connection();
+        db.execute("DELETE FROM schema_migrations WHERE version = ?1", [CURRENT_SCHEMA_VERSION]).unwrap();
+        assert!(matches!(
+            PreparedV7Writer::admit(db, V7WriterAdmission::fictional_ram_only()),
+            Err(WriterError::AdmissionRejected)
+        ));
+    }
+
+    #[test]
+    fn m32_v7_writer_prepared_r5_rejects_foreign_keys_off() {
+        let db = fictive_connection();
+        db.pragma_update(None, "foreign_keys", false).unwrap();
+        assert!(!database::foreign_keys_enabled(&db).unwrap());
+        assert!(matches!(
+            PreparedV7Writer::admit(db, V7WriterAdmission::fictional_ram_only()),
+            Err(WriterError::AdmissionRejected)
+        ));
+    }
+
+    #[test]
+    fn m32_v7_writer_prepared_r8_drop_revokes_multiple_clients() {
+        let owner = new_actor();
+        let first = owner.client();
+        let second = owner.client();
+        assert!(first.revision_history("sc1".into()).is_ok());
+        drop(owner);
+        assert_eq!(first.revision_history("sc1".into()), Err(WriterError::Disconnected));
+        assert_eq!(second.create_revision(revision("after-drop", "sc1")),
+            Err(WriterError::Disconnected));
+    }
+
 }

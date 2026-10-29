@@ -2,7 +2,9 @@
 
 ---
 
-**#225 :** main=54cfa6a32cfba08bb3035a9639708e82fff65268 ; CI #40896144230/#40898239262 PASS 241/7/45/152 ; D3b-5 PASS ; writer STOP.
+**29 octobre 2026 — #231 TERMINALE ; R5/R6/R8 RAM-ONLY CANDIDATE NON QUALIFIÉE :** protected `main=fb81eb85ec5842f9d117e9f6c64351c1f107fc23` ; PR #231 source #40951341500 et CI postmain indépendante #40953281939 **SUCCESS 252 Rust / 7 Greenfield / 47 SQLite / 154 continuité**. Nouvelle [qualification R5/R6/R8](../qualification/M3_2_P1_R5_R6_R8_PREPARED_OWNER_RAM_REFUSAL_20261029.md) : trois tests Rust supplémentaires sur le propriétaire préparatoire **non raccordé**, schéma fictif v6 en RAM (lignée incomplète, FK OFF, Drop propriétaire révoque clients) ; **255/7/47/155 ATTENDUS NON PASS AVANT CI EXACTE**. Ce n'est PAS une admission v7, un IPC, un VFS production, ni une preuve de récupération. R3 xOpen et R4 production NOT_PROVEN ; R5/R6/R8 production NOT_PROVEN ; A0 EXISTING_PROFILE STOP, M3.2 IN_PROGRESS_NOT_ACCEPTED, writer/R1–R9 NOT_PROVEN, G2B NOT_ACCEPTED, G2C NOT_AUTHORIZED, G3 STOP_UNAVAILABLE, historique PENDING_EXTERNAL_ATTESTATION(21/3/2), prospective NOT_STARTED, #215/#35 DRAFT. Suite : CI exact-head, reviews/threads, Protect main strict, fusion sous `expected_head_sha` si PASS, CI postmain indépendante, #38 append-only ; puis VFS R3 réellement lié au HANDLE et lignée v7 sur fixtures, R7/R9 séparés. Aucun fichier opérateur/007/Hello/IPC/marker/recovery.
+
+**Historique #225 :** main=54cfa6a32cfba08bb3035a9639708e82fff65268 ; CI #40896144230/#40898239262 PASS 241/7/45/152 ; D3b-5 PASS ; writer STOP.
 
 https://github.com/LaurentCOLL1/Fabulaxiom
 

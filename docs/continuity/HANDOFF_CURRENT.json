@@ -1,4 +1,44 @@
 {
+  "m32_r5_r6_r8_prepared_owner_ram_candidate_20261029": {
+    "scope": "PURE_RAM_UNWIRED_PREPARED_WRITER_TESTS",
+    "source_main_before_pr": "fb81eb85ec5842f9d117e9f6c64351c1f107fc23",
+    "pr231": 231,
+    "pr231_source_ci": 40951341500,
+    "pr231_independent_postmain_ci": 40953281939,
+    "qualified_parent_counts": {
+      "rust": 252,
+      "greenfield": 7,
+      "sqlite_inventory": 47,
+      "continuity": 154
+    },
+    "expected_rust_tests_not_yet_qualified": 255,
+    "expected_greenfield_tests_not_yet_qualified": 7,
+    "expected_sqlite_inventory_tests_not_yet_qualified": 47,
+    "expected_continuity_tests_not_yet_qualified": 155,
+    "qualification": "docs/qualification/M3_2_P1_R5_R6_R8_PREPARED_OWNER_RAM_REFUSAL_20261029.md",
+    "three_new_ram_tests_only": true,
+    "real_v7_schema_admitted": false,
+    "atomic_xopen_proven": false,
+    "production_writer_admitted": false,
+    "tauri_ipc_added": false,
+    "operator_data_accessed": false,
+    "crash_recovery_authorized": false,
+    "existing_profile": "STOP",
+    "m3_2": "IN_PROGRESS_NOT_ACCEPTED",
+    "g2b": "NOT_ACCEPTED",
+    "g2c": "NOT_AUTHORIZED",
+    "g3": "STOP_UNAVAILABLE",
+    "historical": "PENDING_EXTERNAL_ATTESTATION(21/3/2)",
+    "prospective": "NOT_STARTED",
+    "next": [
+      "exact_source_head_windows_ci",
+      "review_diff_threads_protect_main",
+      "protected_merge_expected_head_sha_if_pass",
+      "independent_postmain_windows_ci",
+      "issue38_append_only",
+      "R3_handle_bound_VFS_and_actual_R5_v7_lineage"
+    ]
+  },
   "m32_r4_p1_exclusive_second_reader_disposable_candidate_20261029": {
     "status": "CORRECTIVE_CANDIDATE_NOT_YET_EXACT_HEAD_CI_QUALIFIED",
     "date": "2026-10-29",
