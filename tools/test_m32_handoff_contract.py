@@ -4750,14 +4750,16 @@ class HandoffContractTests(unittest.TestCase):
                      "r9_release_admitted", "new_ipc", "migration_007", "durable_marker"):
             self.assertFalse(checkpoint[flag], flag)
         src = (ROOT / "src-tauri/src/m32_r23_sqlite_handle_boundary_tests.rs").read_text(encoding="utf-8")
-        self.assertEqual(src.count("#[test]"), 6)  # 4 PR225 baseline + 2 new R3 Win32 fixtures
+        self.assertEqual(src.count("#[test]"), 8)  # 4 PR225 + 2 PR227 + 2 inter-process Win32 fixtures
         for name in ("m32_r23_pinned_ancestors_and_actual_sqlite_handle_match_on_fresh_fixture",
                      "m32_r23_replaced_main_name_refuses_before_sqlite_open",
                      "m32_r23_unknown_sidecar_refuses_without_changing_sentinel",
                      "m32_r23_controlled_swap_after_precheck_vetoes_real_sqlite_handle"):
             self.assertIn("fn " + name + "(", src)
         for new_name in ("m32_r3_held_main_without_delete_share_refuses_rename_before_sqlite_open",
-                         "m32_r3_held_main_without_delete_share_survives_sqlite_xopen_but_stops_at_r4"):
+                         "m32_r3_held_main_without_delete_share_survives_sqlite_xopen_but_stops_at_r4",
+                         "m32_r3_child_rename_probe_only_fresh_disposable_main",
+                         "m32_r3_other_process_rename_is_refused_before_and_during_sqlite_xopen"):
             self.assertIn("fn " + new_name + "(", src)
         self.assertIn("#[cfg(all(test, windows))]\nmod m32_r23_sqlite_handle_boundary_tests;",
                       (ROOT / "src-tauri/src/lib.rs").read_text(encoding="utf-8"))
