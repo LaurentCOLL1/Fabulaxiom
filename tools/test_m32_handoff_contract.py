@@ -4818,7 +4818,7 @@ class HandoffContractTests(unittest.TestCase):
         fixture = (ROOT / "src-tauri/src/m32_sqlite_vfs_preopen_tests.rs").read_text(encoding="utf-8")
         for name in (
             "m32_r4_exclusive_owner_refuses_second_sqlite_reader_without_ipc",
-            "m32_r4_exclusive_wal_normal_request_is_noop_during_owner_lifetime",
+            "m32_r4_exclusive_wal_owner_policy_refuses_normal_downgrade",
         ):
             self.assertIn("fn " + name + "(", fixture)
         self.assertEqual(fixture.split("// R4 / P1 decision probe", 1)[0].count("#[test]"), 26)
