@@ -1,5 +1,8 @@
 # Fabulaxiom — reprise COURTE
 
+**29 octobre 2026 — CANDIDATE R3 HANDLE MAIN PINNÉ, NON QUALIFIÉE EN CI :** base vivante vérifiée `main=ba51ea692a9079a968dd1f54a8d9ea6d87559d50` après PR #226, push CI #40909071737 SUCCESS. Nouvelle tranche Windows `cfg(test)` **strictement jetable** : deux tests sur handle principal conservé sans `FILE_SHARE_DELETE` (renommage interdit tant que le handle est tenu ; xOpen SQLite existant puis comparaison FileId128) ; [qualification](../qualification/M3_2_P1_R3_HELD_MAIN_NO_DELETE_SHARE_DISPOSABLE_20261029.md). **243 Rust / 7 Greenfield / 45 inventaires / 152 continuité ATTENDUS, PAS PASS exact-head à ce stade**. Le VFS par chemin n'est pas prouvé atomique, WAL/SHM R4 et writer R1–R9 restent NOT_PROVEN ; aucun nouveau constructeur SQL/runtime, aucune base opérateur. PR #215/#35 DRAFT, issue #38 append-only, Protect main strict sans bypass. **Prochaine opération : attendre la qualification de la CI du head exact, puis audit diff/reviews/threads, fusion seulement avec `expected_head_sha`, et CI postmain indépendante ; ensuite étude R3 inter-processus / R4.** STOP A0 EXISTING_PROFILE, M3.2 IN_PROGRESS_NOT_ACCEPTED, G2B NOT_ACCEPTED, G2C NOT_AUTHORIZED, G3 STOP_UNAVAILABLE, historique PENDING_EXTERNAL_ATTESTATION(21/3/2), prospective NOT_STARTED ; pas de writer IPC, migration 007, marqueur D3b-4, Hello natif, données opérateur ou réouverture après crash.
+
+
 ---
 
 **#225 :** main=54cfa6a32cfba08bb3035a9639708e82fff65268 ; CI #40896144230/#40898239262 PASS 241/7/45/152 ; D3b-5 PASS ; writer STOP.
