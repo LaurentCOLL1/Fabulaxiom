@@ -4537,6 +4537,14 @@ class HandoffContractTests(unittest.TestCase):
         self.assertIn(design_name, self.policy)
         checkpoint = self.data["d3c_r7_design_checkpoint_20261029"]
         self.assertEqual(checkpoint["authority"], "NOT_AUTHORIZED_FOR_D3C_CODE_OR_FIXTURES")
+        self.assertEqual(checkpoint["stage_name_status"],
+                         "PROVISIONAL_ALIAS_NOT_NEW_CANONICAL_GATE")
+        self.assertFalse(checkpoint["d3c_new_independent_milestone_authorized"])
+        self.assertIn("D3b-4", doc)
+        self.assertIn("D3b-5", doc)
+        self.assertIn("D3a-3", doc)
+        self.assertIn("D3d", doc)
+        self.assertIn("D3e", doc)
         self.assertEqual(checkpoint["a0_existing_profile"], "STOP")
         for key in ("d3c_test_implemented", "d3c_r7_production_proven",
                     "persistent_marker_authorized", "crash_recovery_authorized",
