@@ -69,7 +69,7 @@ EXPECTED = {
     # D3b has no production opener, existing-profile recovery or marker.
     # PR230 R4 Windows CI-only: ONE extra opening expression in the new
     # exclusive-before-WAL helper; not a runtime/production writer path.
-    "src-tauri/src/m32_sqlite_vfs_preopen_tests.rs": (23, 0, 0, 0, 0, 24, 0),
+    "src-tauri/src/m32_sqlite_vfs_preopen_tests.rs": (24, 0, 0, 0, 0, 25, 0),
     # D3b-5 distinct Windows test-only phase fixture: one owned-file opener,
     # no successor SQLite open; historical 26 VFS witnesses unchanged.
     "src-tauri/src/m32_d3b5_phase_matrix_tests.rs": (1, 0, 0, 0, 0, 1, 0),
