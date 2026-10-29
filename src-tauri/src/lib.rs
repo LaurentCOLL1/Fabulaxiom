@@ -70,6 +70,11 @@ mod m32_d3b5_phase_matrix_tests;
 #[cfg(all(test, windows))]
 mod m32_p1_integrated_prefix_tests;
 
+// P1 R2 Windows held ancestor handles + native FileId on new disposable CI objects.
+// Pre-admission witness only: no SQLite xOpen, WAL mapping or operator storage.
+#[cfg(all(test, windows))]
+mod m32_r2_held_parent_chain_tests;
+
 // Never compile this feature into a Tauri runtime, even debug builds.
 #[cfg(all(feature = "m32-g3-owned-ram-toy", not(test)))]
 compile_error!("M3.2 owner-to-RAM backup fixture must be compiled ONLY as Rust unit tests");

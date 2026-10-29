@@ -408,5 +408,26 @@ class RustSqliteOpenInventoryTests(unittest.TestCase):
             self.assertNotIn(forbidden, source)
         self.assertFalse(audit_inventory(self.src)["real_g3_authorized"])
 
+
+    def test_44_r2_held_parent_chain_stops_before_sqlite_and_is_not_runtime(self):
+        p = "src-tauri/src/m32_r2_held_parent_chain_tests.rs"
+        src = self.src[p]
+        self.assertEqual(counts(src), (0, 0, 0, 0, 0, 0, 0))
+        self.assertEqual(src.count("#[test]"), 4)
+        for needle in ("FILE_FLAG_BACKUP_SEMANTICS", "FILE_FLAG_OPEN_REPARSE_POINT",
+                       "FILE_READ_ATTRIBUTES", "GetFileInformationByHandleEx",
+                       "CreateMutexW", "FILE_SHARE_READ | FILE_SHARE_WRITE",
+                       "R4ShmMappingUnproven", "PinnedChain", "sidecars_absent",
+                       "create_new(true)", "m32_p1_r2_parent_rename_while_held_is_denied_or_detected",
+                       "m32_p1_r2_parent_pins_do_not_authenticate_replaced_main_name"):
+            self.assertIn(needle, src)
+        for forbidden in ("#[tauri::command]", "Connection::open(", "Connection::open_with_flags",
+                          "database::open_database(", "sqlite3_open", "SQLITE_OPEN_CREATE",
+                          "migration_007", "app_local_data_dir()", "tauri::State"):
+            self.assertNotIn(forbidden, src)
+        self.assertIn("#[cfg(all(test, windows))]\nmod m32_r2_held_parent_chain_tests;",
+                      self.src["src-tauri/src/lib.rs"])
+        self.assertFalse(repository_inventory()["real_g3_authorized"])
+
 if __name__ == "__main__":
     unittest.main()

@@ -4694,5 +4694,41 @@ class HandoffContractTests(unittest.TestCase):
             self.assertIn(doc_name, (DIRECTORY / filename).read_text(encoding="utf-8"))
         self.assertIn("P1", (DIRECTORY / "RESUME_PROMPT_SHORT.md").read_text(encoding="utf-8"))
 
+
+    def test_151_r2_held_chain_ci_candidate_never_proves_admission(self):
+        checkpoint = self.data["m32_r2_held_chain_20261029"]
+        self.assertEqual(checkpoint["scope"], "WINDOWS_CI_DISPOSABLE_HELD_DIRECTORY_CHAIN")
+        self.assertEqual(checkpoint["prior_pr"], 223)
+        self.assertEqual(checkpoint["prior_merged_main"], "5c656ea0a0463e13835b7ff50482b11fed3d53fb")
+        self.assertEqual(checkpoint["prior_postmain_ci"], 40883026858)
+        self.assertEqual(checkpoint["prior_postmain_conclusion"], "SUCCESS")
+        self.assertEqual(checkpoint["new_windows_tests"], 4)
+        self.assertEqual(checkpoint["expected_rust_tests"], 237)
+        self.assertEqual(checkpoint["expected_sqlite_inventory_tests"], 44)
+        self.assertEqual(checkpoint["expected_continuity_tests"], 151)
+        self.assertTrue(checkpoint["r2_disposable_parents_pinned_by_os_handles"])
+        for key in ("production_parent_namespace_proven", "r3_atomic_sqlite_xopen_proven",
+                    "r4_wal_shm_mapping_proven", "r5_lineage_authenticated",
+                    "r6_writer_actor_admitted", "r7_crash_recovery_authorized",
+                    "r8_runtime_ownership_proven", "r9_operator_release",
+                    "runtime_writer_activated", "operator_data_accessed", "sqlite_opened",
+                    "new_ipc", "migration_007", "durable_marker"):
+            self.assertFalse(checkpoint[key], key)
+        src = (ROOT / "src-tauri/src/m32_r2_held_parent_chain_tests.rs").read_text(encoding="utf-8")
+        self.assertEqual(src.count("#[test]"), 4)
+        for symbol in ("m32_p1_r2_held_parent_handles_and_main_id_stop_at_unmapped_shm",
+                       "m32_p1_r2_parent_rename_while_held_is_denied_or_detected",
+                       "m32_p1_r2_parent_pins_do_not_authenticate_replaced_main_name",
+                       "m32_p1_r2_pinned_chain_refuses_unexpected_sidecar_without_editing_it"):
+            self.assertIn("fn " + symbol + "(", src)
+        self.assertIn("#[cfg(all(test, windows))]\nmod m32_r2_held_parent_chain_tests;",
+                      (ROOT / "src-tauri/src/lib.rs").read_text(encoding="utf-8"))
+        note = "M3_2_P1_R2_HELD_DIRECTORY_CHAIN_DISPOSABLE_20261029.md"
+        self.assertTrue((ROOT / "docs/qualification" / note).is_file())
+        for name in ("RESUME_PROMPT.md", "HANDOFF_CURRENT.md", "HANDOFF_PROTOCOL.md",
+                     "STATE.md", "NEXT.md", "M3_2_GATE_DECISION_CURRENT.md"):
+            self.assertIn(note, (DIRECTORY / name).read_text(encoding="utf-8"))
+        self.assertIn("R2", (DIRECTORY / "RESUME_PROMPT_SHORT.md").read_text(encoding="utf-8"))
+
 if __name__ == "__main__":
     unittest.main()
