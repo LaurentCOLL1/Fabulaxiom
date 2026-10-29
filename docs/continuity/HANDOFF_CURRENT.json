@@ -1,6 +1,6 @@
 {
   "m32_r4_p1_exclusive_second_reader_disposable_candidate_20261029": {
-    "status": "CANDIDATE_UNQUALIFIED_EXACT_HEAD_WINDOWS_CI",
+    "status": "CORRECTIVE_CANDIDATE_NOT_YET_EXACT_HEAD_CI_QUALIFIED",
     "date": "2026-10-29",
     "scope": "WINDOWS_CI_DISPOSABLE_P1_SECOND_SQLITE_READER",
     "previous_main": "0db2577237874908bba5a2b1360921b2f4eb6277",
@@ -33,7 +33,15 @@
       "postmain_push_ci_independent",
       "issue38_append_only",
       "single_owner_Rust_reader_design_and_R3_preopened_HANDLE_VFS"
-    ]
+    ],
+    "prior_failed_exact_head_ci": 40948171560,
+    "prior_failed_sha": "e7c68509ea645a69b5d5925491b701682326e7df",
+    "prior_failed_rust_passed": 251,
+    "prior_failed_rust_failed": 1,
+    "prior_failure_observed_raw_pragma_return": "normal",
+    "prior_failure_incorrect_expected_raw_pragma_return": "exclusive",
+    "corrective_policy_test": "TYPED_OWNER_OPERATION_REFUSES_DOWNGRADE_BEFORE_SQL",
+    "runtime_owner_policy_implemented": false
   },
   "m32_r4_p1_exclusive_wal_disposable_candidate_20261029": {
     "record_type": "R4_P1_EXCLUSIVE_WAL_EARLY_VS_LATE_WINDOWS_CI_CANDIDATE",
