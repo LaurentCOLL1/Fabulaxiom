@@ -4542,7 +4542,7 @@ class HandoffContractTests(unittest.TestCase):
                     "persistent_marker_authorized", "crash_recovery_authorized",
                     "writer_ipc_authorized", "migration_007_authorized"):
             self.assertFalse(checkpoint[key], key)
-        self.assertIn("#[cfg(test)]\\nimpl V7WriterAdmission",
+        self.assertIn("#[cfg(test)]\nimpl V7WriterAdmission",
                       (ROOT / "src-tauri/src/m32_v7_writer_service.rs").read_text(encoding="utf-8"))
 
 if __name__ == "__main__":
