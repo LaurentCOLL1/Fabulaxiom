@@ -530,7 +530,7 @@ class RustSqliteOpenInventoryTests(unittest.TestCase):
                           "run_migrations(", "migration_007", "M:\\\\Fabulaxiom"):
             self.assertNotIn(forbidden, source)
         lib = self.src["src-tauri/src/lib.rs"]
-        self.assertIn("#[cfg(all(test, windows))]\\nmod m32_r3_preopened_readonly_vfs_tests;",
+        self.assertIn("#[cfg(all(test, windows))]\nmod m32_r3_preopened_readonly_vfs_tests;",
                       lib)
         self.assertEqual(repository_inventory()["writer_absence"], "NOT_PROVEN")
 
