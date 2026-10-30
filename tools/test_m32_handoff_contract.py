@@ -4891,5 +4891,44 @@ class HandoffContractTests(unittest.TestCase):
         for p in ("ROADMAP_STATUS_CURRENT.md", "FABULAXIOM_ROADMAP_V1.md"):
             self.assertIn(note, (ROOT / "docs/roadmap" / p).read_text(encoding="utf-8"))
 
+
+    def test_157_r3_readonly_preopened_sqlite_file_is_only_disposable(self):
+        entry = self.data["m32_r3_preopened_readonly_sqlite3_file_candidate_20261030"]
+        self.assertEqual(entry["scope"], "WINDOWS_CI_DISPOSABLE_REAL_READONLY_SQLITE3_FILE")
+        self.assertEqual(entry["source_main_before_pr"], "a14c7826647249587604536e7c8e69a61a47ebc1")
+        self.assertEqual(entry["previous_pr"], 233)
+        self.assertEqual(entry["previous_source_ci"], 40986052100)
+        self.assertEqual(entry["expected_rust_tests_not_yet_qualified"], 260)
+        self.assertEqual(entry["expected_inventory_tests_not_yet_qualified"], 48)
+        self.assertEqual(entry["expected_continuity_tests_not_yet_qualified"], 157)
+        self.assertTrue(entry["fixture_only_readonly_handle_sqlite_query"])
+        for flag in ("win32_native_locking_proven", "wal_shm_proven",
+                     "r3_atomic_production_admission", "r5_real_v7_verified",
+                     "production_writer_admitted", "tauri_ipc_added",
+                     "operator_data_accessed", "migration_007",
+                     "crash_recovery_authorized"):
+            self.assertFalse(entry[flag], flag)
+        self.assertEqual(entry["existing_profile"], "STOP")
+        source = (ROOT / "src-tauri/src/m32_r3_preopened_readonly_vfs_tests.rs").read_text(encoding="utf-8")
+        self.assertEqual(source.count("#[test]"), 3)
+        for name in (
+            "m32_r3_preopened_readonly_file_adapter_reads_invented_sqlite_content",
+            "m32_r3_preopened_readonly_file_adapter_reads_original_after_name_substitution",
+            "m32_r3_preopened_readonly_file_adapter_refuses_write_open_before_dispatch",
+        ):
+            self.assertIn("fn " + name + "(", source)
+        self.assertIn("xLock/xCheckReservedLock deliberately assume ONE sealed fixture reader", source)
+        self.assertIn("xShmMap: None", source)
+        self.assertIn("xWrite: Some(ro_write)", source)
+        self.assertNotIn("#[tauri::command]", source)
+        note = "M3_2_P1_R3_READONLY_SQLITE_FILE_PREOPENED_HANDLE_DISPOSABLE_20261030.md"
+        self.assertTrue((ROOT / "docs/qualification" / note).is_file())
+        for p in ("RESUME_PROMPT.md", "RESUME_PROMPT_SHORT.md",
+                  "HANDOFF_CURRENT.md", "HANDOFF_PROTOCOL.md", "HANDOFF_HISTORY.md",
+                  "STATE.md", "NEXT.md", "M3_2_GATE_DECISION_CURRENT.md", "README.md"):
+            self.assertIn(note, (DIRECTORY / p).read_text(encoding="utf-8"))
+        for p in ("ROADMAP_STATUS_CURRENT.md", "FABULAXIOM_ROADMAP_V1.md"):
+            self.assertIn(note, (ROOT / "docs/roadmap" / p).read_text(encoding="utf-8"))
+
 if __name__ == "__main__":
     unittest.main()
