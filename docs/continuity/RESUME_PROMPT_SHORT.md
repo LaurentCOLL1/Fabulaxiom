@@ -6,7 +6,7 @@ Reprends Fabulaxiom Windows (React, Tauri v2, Rust, SQLite ; voie C locale, Olla
 
 ## Dernier checkpoint
 
-- PR **#242 fusionnée** sous Protect main : `main=6166a256e479ef7cd3c1a6cacdaccaadb68cfb49` ; source #41084067311 SUCCESS (267/7/54/164), CI postmain #41110676555 à vérifier.
+- PR **#242 fusionnée** sous Protect main : `main=6166a256e479ef7cd3c1a6cacdaccaadb68cfb49` ; source #41084067311 SUCCESS (267/7/54/164), CI postmain #41110676555 SUCCESS au SHA exact. Référence R4 précédente : `M3_2_R4_DEFAULT_WIN32_WAL_SHM_SNAPSHOT_DISPOSABLE_20261030.md` (fixtures uniquement).
 - **R3/R4** : SHARED et WAL/SHM standard Win32 sur fixtures, **R3/R4 production NOT_PROVEN**. Nouveau témoin R4 : VFS R3 sans `xShm*` doit REFUSER WAL NORMAL sur SQLite inventée. 268/7/55/165 ATTENDUS NON QUALIFIÉS ; voir `M3_2_R4_NO_XSHM_NORMAL_WAL_READ_REFUSAL_DISPOSABLE_20261030.md`. PR #215/#35 DRAFT.
 
 ## Interdictions actives — STOP
