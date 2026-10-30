@@ -1530,7 +1530,16 @@ class HandoffContractTests(unittest.TestCase):
         self.assertIn("HANDOFF_CURRENT.md", short)
         self.assertIn("HANDOFF_CURRENT.json", short)
         self.assertIn("ROADMAP_STATUS_CURRENT.md", short)
-        self.assertIn("main=" + self.data["last_confirmed_main_before_handoff"], short)
+        # The short prompt is an actionable entry point, never the historical index.
+        self.assertIn("## Dernier checkpoint", short)
+        self.assertIn("## Interdictions actives", short)
+        self.assertIn("## Prochaines opérations", short)
+        self.assertIn("## Documents d\u0027autorité", short)
+        self.assertNotIn("**CI historiques**", short)
+        self.assertNotIn("**SHA historiques**", short)
+        self.assertLess(len(short.encode("utf-8")), 3600)
+        self.assertRegex(short, r"main=[0-9a-f]{40}")
+        self.assertIn("main=" + self.data["last_confirmed_main_before_handoff"], detailed)
         self.assertIn("IN_PROGRESS_AT_CHECKPOINT", detailed)
         for status in ("IN_PROGRESS_NOT_ACCEPTED", "NOT_PROVEN", "STOP_UNAVAILABLE",
                        "PENDING_EXTERNAL_ATTESTATION(21/3/2)", "expected_head_sha"):
@@ -2432,7 +2441,7 @@ class HandoffContractTests(unittest.TestCase):
                     "Verify dependency locks are unchanged"):
             self.assertIn(old, workflow)
         self.assertIn("40085871815",
-            (DIRECTORY / "RESUME_PROMPT_SHORT.md").read_text(encoding="utf-8"))
+            (DIRECTORY / "RESUME_PROMPT.md").read_text(encoding="utf-8"))
         for name in ("RESUME_PROMPT.md", "HANDOFF_CURRENT.md",
                      "HANDOFF_HISTORY.md", "NEXT.md", "STATE.md",
                      "M3_2_GATE_DECISION_CURRENT.md"):
@@ -2459,7 +2468,7 @@ class HandoffContractTests(unittest.TestCase):
         self.assertFalse(p["original_sqlite_touched"])
         self.assertEqual((p["m3_2"], p["g2b"], p["writer_absence"], p["g2c"], p["real_g3"]),
                          ("IN_PROGRESS_NOT_ACCEPTED", "NOT_ACCEPTED", "NOT_PROVEN", "NOT_AUTHORIZED", "STOP_UNAVAILABLE"))
-        for name in ("RESUME_PROMPT_SHORT.md", "RESUME_PROMPT.md", "HANDOFF_CURRENT.md",
+        for name in ("RESUME_PROMPT.md", "HANDOFF_CURRENT.md",
                      "HANDOFF_HISTORY.md", "STATE.md", "NEXT.md", "M3_2_GATE_DECISION_CURRENT.md", "README.md"):
             content = (DIRECTORY / name).read_text(encoding="utf-8")
             self.assertIn("40094464488", content, name)
@@ -2534,7 +2543,7 @@ class HandoffContractTests(unittest.TestCase):
             self.assertEqual(report["real_g3"], "STOP_UNAVAILABLE")
             self.assertFalse(report["operator_access"])
             self.assertFalse(report["evidence_authenticated"])
-        for name in ("RESUME_PROMPT_SHORT.md", "RESUME_PROMPT.md", "HANDOFF_CURRENT.md",
+        for name in ("RESUME_PROMPT.md", "HANDOFF_CURRENT.md",
                      "HANDOFF_HISTORY.md", "STATE.md", "NEXT.md", "M3_2_GATE_DECISION_CURRENT.md", "README.md"):
             self.assertIn("40103615181", (DIRECTORY / name).read_text(encoding="utf-8"), name)
         self.assertIn("40103615181",
@@ -2578,7 +2587,7 @@ class HandoffContractTests(unittest.TestCase):
         self.assertEqual(result["real_g3"], "STOP_UNAVAILABLE")
         self.assertFalse(result["evidence_authenticated"])
         self.assertFalse(result["operator_access"])
-        for name in ("RESUME_PROMPT_SHORT.md", "RESUME_PROMPT.md", "HANDOFF_CURRENT.md",
+        for name in ("RESUME_PROMPT.md", "HANDOFF_CURRENT.md",
                      "HANDOFF_HISTORY.md", "STATE.md", "NEXT.md",
                      "M3_2_GATE_DECISION_CURRENT.md", "README.md"):
             self.assertIn("40106296690",
@@ -2613,7 +2622,7 @@ class HandoffContractTests(unittest.TestCase):
         self.assertNotIn("S-1-5-21-", doc)
         self.assertNotIn("M:\\", doc)
         self.assertNotIn("SQLite format 3", doc)  # no binary artifact bytes
-        for name in ("RESUME_PROMPT_SHORT.md", "RESUME_PROMPT.md", "HANDOFF_CURRENT.md",
+        for name in ("RESUME_PROMPT.md", "HANDOFF_CURRENT.md",
                      "HANDOFF_HISTORY.md", "STATE.md", "NEXT.md", "M3_2_GATE_DECISION_CURRENT.md", "README.md"):
             self.assertIn("40108674282", (DIRECTORY / name).read_text(encoding="utf-8"), name)
         self.assertIn("40108674282",
@@ -2653,7 +2662,7 @@ class HandoffContractTests(unittest.TestCase):
                 self.assertNotIn(forbidden, content)
             import re
             self.assertIsNone(re.search(r"(?<![A-Za-z0-9])[a-f0-9]{64}(?![A-Za-z0-9])", content))
-        for name in ("RESUME_PROMPT_SHORT.md", "RESUME_PROMPT.md", "HANDOFF_CURRENT.md",
+        for name in ("RESUME_PROMPT.md", "HANDOFF_CURRENT.md",
                      "HANDOFF_HISTORY.md", "STATE.md", "NEXT.md", "M3_2_GATE_DECISION_CURRENT.md", "README.md"):
             self.assertIn("40116658246", (DIRECTORY / name).read_text(encoding="utf-8"), name)
         self.assertIn("40116658246",
@@ -2701,7 +2710,7 @@ class HandoffContractTests(unittest.TestCase):
         self.assertNotIn("S-1-5-21-", document)
         self.assertIn("PREPARED_NOT_EXECUTED", document)
         self.assertIn("STOP_UNAVAILABLE", document)
-        for f in ("RESUME_PROMPT_SHORT.md", "RESUME_PROMPT.md",
+        for f in ("RESUME_PROMPT.md",
                   "HANDOFF_CURRENT.md", "HANDOFF_HISTORY.md", "STATE.md",
                   "NEXT.md", "M3_2_GATE_DECISION_CURRENT.md", "README.md"):
             self.assertIn("40122346098", (DIRECTORY / f).read_text(encoding="utf-8"))
@@ -2738,7 +2747,7 @@ class HandoffContractTests(unittest.TestCase):
         self.assertNotIn("Invoke-Expression $candidate", guard)
         proposal = (ROOT / "docs/qualification/M3_2_G2B0_METADATA_ONLY_OPERATOR_REVIEW_20261024.md").read_text(encoding="utf-8")
         self.assertIn("PREPARED_NOT_EXECUTED", proposal)
-        for name in ("RESUME_PROMPT_SHORT.md", "RESUME_PROMPT.md",
+        for name in ("RESUME_PROMPT.md",
                      "HANDOFF_CURRENT.md", "HANDOFF_HISTORY.md", "STATE.md",
                      "NEXT.md", "M3_2_GATE_DECISION_CURRENT.md", "README.md"):
             doc = (DIRECTORY / name).read_text(encoding="utf-8")
@@ -2791,7 +2800,7 @@ class HandoffContractTests(unittest.TestCase):
         self.assertIn("Parser]::ParseInput", guard)
         self.assertIn("fakeChanges", guard)
         self.assertIn("run: ./tools/m32_g2b1_ast_static_review.ps1", workflow)
-        for name in ("RESUME_PROMPT_SHORT.md", "RESUME_PROMPT.md",
+        for name in ("RESUME_PROMPT.md",
                      "HANDOFF_CURRENT.md", "HANDOFF_HISTORY.md", "STATE.md",
                      "NEXT.md", "M3_2_GATE_DECISION_CURRENT.md", "README.md"):
             self.assertIn("40156277835", (DIRECTORY / name).read_text(encoding="utf-8"), name)
@@ -2840,7 +2849,7 @@ class HandoffContractTests(unittest.TestCase):
                          "PENDING_EXTERNAL_ATTESTATION(21/3/2)", "NOT_STARTED",
                          "No automatic escalation"):
             self.assertIn(required, document)
-        for name in ("RESUME_PROMPT_SHORT.md", "RESUME_PROMPT.md",
+        for name in ("RESUME_PROMPT.md",
                      "HANDOFF_CURRENT.md", "HANDOFF_HISTORY.md", "STATE.md",
                      "NEXT.md", "M3_2_GATE_DECISION_CURRENT.md", "README.md",
                      "HANDOFF_PROTOCOL.md"):
@@ -2885,7 +2894,7 @@ class HandoffContractTests(unittest.TestCase):
                          "STOP_UNAVAILABLE", "40179336243",
                          "PRAGMA query_only", "total_changes()"):
             self.assertIn(required, report)
-        for name in ("RESUME_PROMPT_SHORT.md", "RESUME_PROMPT.md",
+        for name in ("RESUME_PROMPT.md",
                      "HANDOFF_CURRENT.md", "HANDOFF_HISTORY.md", "STATE.md",
                      "NEXT.md", "M3_2_GATE_DECISION_CURRENT.md", "README.md",
                      "HANDOFF_PROTOCOL.md"):
@@ -2930,7 +2939,7 @@ class HandoffContractTests(unittest.TestCase):
         for snippet in ("SYNTHÉTIQUES UNIQUEMENT", "NOT_PROVEN",
                         "STOP_UNAVAILABLE", "40190429389", "PRAGMA data_version"):
             self.assertIn(snippet, doc)
-        for name in ("RESUME_PROMPT_SHORT.md", "RESUME_PROMPT.md", "HANDOFF_CURRENT.md",
+        for name in ("RESUME_PROMPT.md", "HANDOFF_CURRENT.md",
                      "HANDOFF_HISTORY.md", "HANDOFF_PROTOCOL.md", "STATE.md",
                      "NEXT.md", "M3_2_GATE_DECISION_CURRENT.md", "README.md"):
             self.assertIn("40190429389", (DIRECTORY / name).read_text(encoding="utf-8"), name)
@@ -2975,7 +2984,7 @@ class HandoffContractTests(unittest.TestCase):
                          "SYNTHETIC", "NOT_PROVEN", "STOP_UNAVAILABLE",
                          "toy_20", "toy_21"):
             self.assertIn(expected, doc)
-        for name in ("RESUME_PROMPT_SHORT.md", "RESUME_PROMPT.md",
+        for name in ("RESUME_PROMPT.md",
                      "HANDOFF_CURRENT.md", "HANDOFF_HISTORY.md", "STATE.md",
                      "NEXT.md", "M3_2_GATE_DECISION_CURRENT.md", "README.md",
                      "HANDOFF_PROTOCOL.md"):
@@ -3024,7 +3033,7 @@ class HandoffContractTests(unittest.TestCase):
         for expected in ("40209991293", "40210737724", "SYNTHETIC_TEST_ONLY",
                          "NOT_PROVEN", "STOP_UNAVAILABLE", "toy_22", "toy_23"):
             self.assertIn(expected, doc)
-        for name in ("RESUME_PROMPT_SHORT.md", "RESUME_PROMPT.md",
+        for name in ("RESUME_PROMPT.md",
                      "HANDOFF_CURRENT.md", "HANDOFF_HISTORY.md", "STATE.md",
                      "NEXT.md", "M3_2_GATE_DECISION_CURRENT.md", "README.md",
                      "HANDOFF_PROTOCOL.md"):
@@ -3070,7 +3079,7 @@ class HandoffContractTests(unittest.TestCase):
         for expected in ("40212798456", "40213790809", "SYNTHETIC_TEST_ONLY",
                          "NOT_PROVEN", "STOP_UNAVAILABLE", "toy_24", "toy_25"):
             self.assertIn(expected, doc)
-        for name in ("RESUME_PROMPT_SHORT.md", "RESUME_PROMPT.md",
+        for name in ("RESUME_PROMPT.md",
                      "HANDOFF_CURRENT.md", "HANDOFF_HISTORY.md", "STATE.md",
                      "NEXT.md", "M3_2_GATE_DECISION_CURRENT.md", "README.md",
                      "HANDOFF_PROTOCOL.md"):
@@ -3119,7 +3128,7 @@ class HandoffContractTests(unittest.TestCase):
         for expected in ("40219228723", "40220215000", "SYNTHETIC_TEST_ONLY",
                          "NOT_PROVEN", "STOP_UNAVAILABLE", "toy_26"):
             self.assertIn(expected, doc)
-        for name in ("RESUME_PROMPT_SHORT.md", "RESUME_PROMPT.md",
+        for name in ("RESUME_PROMPT.md",
                      "HANDOFF_CURRENT.md", "HANDOFF_HISTORY.md", "STATE.md",
                      "NEXT.md", "M3_2_GATE_DECISION_CURRENT.md", "README.md",
                      "HANDOFF_PROTOCOL.md"):
@@ -3168,7 +3177,7 @@ class HandoffContractTests(unittest.TestCase):
                          "M3_2_POST_G2B1_CUSTODY_ROUTE_DECISION_20261025.md",
                          "FILE_SHARE_WRITE", "read_uncommitted"):
             self.assertIn(expected, doc)
-        for name in ("RESUME_PROMPT_SHORT.md", "RESUME_PROMPT.md",
+        for name in ("RESUME_PROMPT.md",
                      "HANDOFF_CURRENT.md", "HANDOFF_HISTORY.md", "STATE.md",
                      "NEXT.md", "M3_2_GATE_DECISION_CURRENT.md", "README.md",
                      "HANDOFF_PROTOCOL.md"):
@@ -3206,12 +3215,12 @@ class HandoffContractTests(unittest.TestCase):
         self.assertTrue(memo.is_file())
         doc = memo.read_text(encoding="utf-8")
         for required in (r"M:\Fabulaxiom", r"M:\Fabulaxiom\src-tauri",
-                         "RESUME_PROMPT_SHORT.md", "RESUME_PROMPT.md",
+                         "RESUME_PROMPT.md",
                          "OWNER_REPORTED_GREENFIELD_REVISION_ARCHIVE_5_OF_5_PASS",
                          "6417653782", "IN_PROGRESS_NOT_ACCEPTED"):
             self.assertIn(required, doc)
         self.assertNotIn("C:\\Users\\", doc)
-        for filename in ("RESUME_PROMPT_SHORT.md", "RESUME_PROMPT.md", "HANDOFF_CURRENT.md",
+        for filename in ("RESUME_PROMPT.md", "HANDOFF_CURRENT.md",
                          "HANDOFF_HISTORY.md", "HANDOFF_PROTOCOL.md", "NEXT.md", "STATE.md",
                          "M3_2_GATE_DECISION_CURRENT.md", "README.md"):
             s = (DIRECTORY / filename).read_text(encoding="utf-8")
@@ -3254,7 +3263,7 @@ class HandoffContractTests(unittest.TestCase):
         for path in (candidate["qualification"], candidate["rust_fixture"],
                      candidate["source_tests"]):
             self.assertTrue((ROOT / path).is_file())
-        for filename in ("RESUME_PROMPT_SHORT.md", "RESUME_PROMPT.md", "HANDOFF_CURRENT.md",
+        for filename in ("RESUME_PROMPT.md", "HANDOFF_CURRENT.md",
                          "HANDOFF_HISTORY.md", "HANDOFF_PROTOCOL.md", "NEXT.md", "STATE.md",
                          "M3_2_GATE_DECISION_CURRENT.md", "README.md"):
             doc = (DIRECTORY / filename).read_text(encoding="utf-8")
@@ -3298,7 +3307,7 @@ class HandoffContractTests(unittest.TestCase):
                               ("g2c", "NOT_AUTHORIZED"), ("real_g3", "STOP_UNAVAILABLE"),
                               ("historical", "PENDING_EXTERNAL_ATTESTATION(21/3/2)")):
             self.assertEqual(candidate[key], expected)
-        for name in ("RESUME_PROMPT_SHORT.md", "RESUME_PROMPT.md", "HANDOFF_CURRENT.md",
+        for name in ("RESUME_PROMPT.md", "HANDOFF_CURRENT.md",
                      "HANDOFF_HISTORY.md", "HANDOFF_PROTOCOL.md", "NEXT.md", "STATE.md",
                      "M3_2_GATE_DECISION_CURRENT.md", "README.md"):
             s = (DIRECTORY / name).read_text(encoding="utf-8")
@@ -3346,7 +3355,7 @@ class HandoffContractTests(unittest.TestCase):
             self.assertEqual(candidate[key], expected)
         for path in (candidate["qualification"], candidate["rust_fixture"], candidate["source_tests"]):
             self.assertTrue((ROOT / path).is_file())
-        for name in ("RESUME_PROMPT_SHORT.md", "RESUME_PROMPT.md", "HANDOFF_CURRENT.md",
+        for name in ("RESUME_PROMPT.md", "HANDOFF_CURRENT.md",
                      "HANDOFF_HISTORY.md", "HANDOFF_PROTOCOL.md", "NEXT.md", "STATE.md",
                      "M3_2_GATE_DECISION_CURRENT.md", "README.md"):
             s = (DIRECTORY / name).read_text(encoding="utf-8")
@@ -3396,7 +3405,7 @@ class HandoffContractTests(unittest.TestCase):
             self.assertEqual(candidate[key], expected)
         for path in (candidate["qualification"], candidate["rust_fixture"], candidate["source_tests"]):
             self.assertTrue((ROOT / path).is_file())
-        for name in ("RESUME_PROMPT_SHORT.md", "RESUME_PROMPT.md", "HANDOFF_CURRENT.md",
+        for name in ("RESUME_PROMPT.md", "HANDOFF_CURRENT.md",
                      "HANDOFF_HISTORY.md", "HANDOFF_PROTOCOL.md", "NEXT.md", "STATE.md",
                      "M3_2_GATE_DECISION_CURRENT.md", "README.md"):
             s = (DIRECTORY / name).read_text(encoding="utf-8")
@@ -3446,7 +3455,7 @@ class HandoffContractTests(unittest.TestCase):
             self.assertEqual(candidate[key], expected)
         for path in (candidate["qualification"], candidate["rust_fixture"], candidate["source_tests"]):
             self.assertTrue((ROOT / path).is_file())
-        for name in ("RESUME_PROMPT_SHORT.md", "RESUME_PROMPT.md", "HANDOFF_CURRENT.md",
+        for name in ("RESUME_PROMPT.md", "HANDOFF_CURRENT.md",
                      "HANDOFF_HISTORY.md", "HANDOFF_PROTOCOL.md", "NEXT.md", "STATE.md",
                      "M3_2_GATE_DECISION_CURRENT.md", "README.md"):
             s = (DIRECTORY / name).read_text(encoding="utf-8")
@@ -3501,7 +3510,7 @@ class HandoffContractTests(unittest.TestCase):
         qualification = ROOT / audit["qualification"]
         self.assertTrue(qualification.is_file())
         self.assertIn("645 behind", qualification.read_text(encoding="utf-8"))
-        for name in ("RESUME_PROMPT_SHORT.md", "RESUME_PROMPT.md", "HANDOFF_CURRENT.md",
+        for name in ("RESUME_PROMPT.md", "HANDOFF_CURRENT.md",
                      "HANDOFF_PROTOCOL.md", "HANDOFF_HISTORY.md", "NEXT.md", "STATE.md",
                      "M3_2_GATE_DECISION_CURRENT.md"):
             doc = (DIRECTORY / name).read_text(encoding="utf-8")
@@ -3550,7 +3559,7 @@ class HandoffContractTests(unittest.TestCase):
                       (ROOT / candidate["rust_fixture"]).read_text(encoding="utf-8"))
         self.assertTrue((ROOT / candidate["qualification"]).is_file())
         self.assertTrue((ROOT / candidate["sqlite_inventory"]).is_file())
-        for name in ("RESUME_PROMPT_SHORT.md", "RESUME_PROMPT.md", "HANDOFF_CURRENT.md",
+        for name in ("RESUME_PROMPT.md", "HANDOFF_CURRENT.md",
                      "HANDOFF_PROTOCOL.md", "HANDOFF_HISTORY.md", "NEXT.md", "STATE.md",
                      "M3_2_GATE_DECISION_CURRENT.md"):
             doc = (DIRECTORY / name).read_text(encoding="utf-8")
@@ -3612,7 +3621,7 @@ class HandoffContractTests(unittest.TestCase):
                      "m32_exclusive_new_file_claim_builds_test_only_v7_and_reopen_cannot_reclaim_it",
                      "m32_exclusive_claim_two_concurrent_creators_only_one_wins"):
             self.assertIn(name, source)
-        for name in ("RESUME_PROMPT_SHORT.md", "RESUME_PROMPT.md", "HANDOFF_CURRENT.md",
+        for name in ("RESUME_PROMPT.md", "HANDOFF_CURRENT.md",
                      "HANDOFF_PROTOCOL.md", "HANDOFF_HISTORY.md", "NEXT.md", "STATE.md",
                      "M3_2_GATE_DECISION_CURRENT.md", "README.md"):
             doc = (DIRECTORY / name).read_text(encoding="utf-8")
@@ -3666,7 +3675,7 @@ class HandoffContractTests(unittest.TestCase):
         self.assertTrue((ROOT / candidate["qualification"]).is_file())
         self.assertTrue((ROOT / candidate["rust_fixture"]).is_file())
         self.assertTrue((ROOT / candidate["sqlite_inventory_tests_file"]).is_file())
-        for name in ("RESUME_PROMPT_SHORT.md", "RESUME_PROMPT.md", "HANDOFF_CURRENT.md",
+        for name in ("RESUME_PROMPT.md", "HANDOFF_CURRENT.md",
                      "HANDOFF_PROTOCOL.md", "HANDOFF_HISTORY.md", "NEXT.md", "STATE.md",
                      "M3_2_GATE_DECISION_CURRENT.md", "README.md"):
             doc = (DIRECTORY / name).read_text(encoding="utf-8")
@@ -3729,7 +3738,7 @@ class HandoffContractTests(unittest.TestCase):
         self.assertTrue((ROOT / candidate["qualification"]).is_file())
         self.assertTrue((ROOT / candidate["rust_fixture"]).is_file())
         self.assertTrue((ROOT / candidate["sqlite_inventory_tests_file"]).is_file())
-        for name in ("RESUME_PROMPT_SHORT.md", "RESUME_PROMPT.md", "HANDOFF_CURRENT.md",
+        for name in ("RESUME_PROMPT.md", "HANDOFF_CURRENT.md",
                      "HANDOFF_PROTOCOL.md", "HANDOFF_HISTORY.md", "NEXT.md", "STATE.md",
                      "M3_2_GATE_DECISION_CURRENT.md", "README.md"):
             doc = (DIRECTORY / name).read_text(encoding="utf-8")
@@ -3766,7 +3775,7 @@ class HandoffContractTests(unittest.TestCase):
         self.assertIn("fn revalidate_checked_fixture_chain", src)
         self.assertIn("m32_windows_owned_fixture_chain_rechecks_substitution_before_sqlite", src)
         self.assertIn("fs::create_dir(&second)", src)
-        for name in ("RESUME_PROMPT_SHORT.md", "RESUME_PROMPT.md", "HANDOFF_CURRENT.md",
+        for name in ("RESUME_PROMPT.md", "HANDOFF_CURRENT.md",
                      "HANDOFF_PROTOCOL.md", "HANDOFF_HISTORY.md", "NEXT.md", "STATE.md",
                      "M3_2_GATE_DECISION_CURRENT.md", "README.md"):
             doc = (DIRECTORY / name).read_text(encoding="utf-8")
@@ -3818,7 +3827,7 @@ class HandoffContractTests(unittest.TestCase):
         fixture = (ROOT / candidate["rust_fixture"]).read_text(encoding="utf-8")
         self.assertIn("SQLITE_FCNTL_WIN32_GET_HANDLE", fixture)
         self.assertIn("m32_windows_sqlite_vfs_native_handle_detects_post_check_name_substitution", fixture)
-        for name in ("RESUME_PROMPT_SHORT.md", "RESUME_PROMPT.md", "HANDOFF_CURRENT.md",
+        for name in ("RESUME_PROMPT.md", "HANDOFF_CURRENT.md",
                      "HANDOFF_PROTOCOL.md", "HANDOFF_HISTORY.md", "NEXT.md", "STATE.md",
                      "M3_2_GATE_DECISION_CURRENT.md", "README.md"):
             doc = (DIRECTORY / name).read_text(encoding="utf-8")
@@ -3881,7 +3890,7 @@ class HandoffContractTests(unittest.TestCase):
         for signal in ("UserConsentVerifier", "RequestVerificationForWindowAsync", "WebAuthn",
                        "PIN", "NON PROUVÉS", "xOpen"):
             self.assertIn(signal, doc)
-        for name in ("RESUME_PROMPT_SHORT.md", "RESUME_PROMPT.md", "HANDOFF_CURRENT.md",
+        for name in ("RESUME_PROMPT.md", "HANDOFF_CURRENT.md",
                      "HANDOFF_PROTOCOL.md", "HANDOFF_HISTORY.md", "NEXT.md", "STATE.md",
                      "M3_2_GATE_DECISION_CURRENT.md", "README.md"):
             content = (DIRECTORY / name).read_text(encoding="utf-8")
@@ -3943,7 +3952,7 @@ class HandoffContractTests(unittest.TestCase):
         rust = (ROOT / candidate["rust_fixture"]).read_text(encoding="utf-8")
         self.assertIn("fn m32_hello_fixture_exact_verified_decision_is_one_shot", rust)
         self.assertIn("fn m32_hello_fixture_backend_revalidation_still_required_after_hello", rust)
-        for filename in ("RESUME_PROMPT_SHORT.md", "RESUME_PROMPT.md", "HANDOFF_CURRENT.md",
+        for filename in ("RESUME_PROMPT.md", "HANDOFF_CURRENT.md",
                          "HANDOFF_PROTOCOL.md", "HANDOFF_HISTORY.md", "NEXT.md", "STATE.md",
                          "M3_2_GATE_DECISION_CURRENT.md", "README.md"):
             doc = (DIRECTORY / filename).read_text(encoding="utf-8")
@@ -4002,7 +4011,7 @@ class HandoffContractTests(unittest.TestCase):
                               ("prospective", "NOT_STARTED")):
             self.assertEqual(followup[key], expected)
 
-        for file in ("RESUME_PROMPT_SHORT.md", "RESUME_PROMPT.md", "HANDOFF_CURRENT.md",
+        for file in ("RESUME_PROMPT.md", "HANDOFF_CURRENT.md",
                      "HANDOFF_PROTOCOL.md", "HANDOFF_HISTORY.md", "NEXT.md", "STATE.md",
                      "M3_2_GATE_DECISION_CURRENT.md", "README.md"):
             source = (DIRECTORY / file).read_text(encoding="utf-8")
@@ -4079,7 +4088,7 @@ class HandoffContractTests(unittest.TestCase):
                           "windows::", "winapi::", "RequestVerificationForWindowAsync(",
                           "tauri::", "std::fs::"):
             self.assertNotIn(forbidden, rust, forbidden)
-        for filename in ("RESUME_PROMPT_SHORT.md", "RESUME_PROMPT.md", "HANDOFF_CURRENT.md",
+        for filename in ("RESUME_PROMPT.md", "HANDOFF_CURRENT.md",
                          "HANDOFF_PROTOCOL.md", "HANDOFF_HISTORY.md", "NEXT.md", "STATE.md",
                          "M3_2_GATE_DECISION_CURRENT.md", "README.md"):
             body = (DIRECTORY / filename).read_text(encoding="utf-8")
@@ -4140,7 +4149,7 @@ class HandoffContractTests(unittest.TestCase):
         self.assertIn("SQLITE_OPEN_MAIN_DB", fixture)
         self.assertIn("#[cfg(all(test, windows))]\nmod m32_sqlite_vfs_preopen_tests;",
                       (ROOT / "src-tauri/src/lib.rs").read_text(encoding="utf-8"))
-        for filename in ("RESUME_PROMPT_SHORT.md", "RESUME_PROMPT.md", "HANDOFF_CURRENT.md",
+        for filename in ("RESUME_PROMPT.md", "HANDOFF_CURRENT.md",
                          "HANDOFF_PROTOCOL.md", "HANDOFF_HISTORY.md", "NEXT.md", "STATE.md",
                          "M3_2_GATE_DECISION_CURRENT.md", "README.md"):
             body = (DIRECTORY / filename).read_text(encoding="utf-8")
@@ -4198,7 +4207,7 @@ class HandoffContractTests(unittest.TestCase):
                        "m32_vfs_fixture_fileid128_precheck_refuses_already_replaced_name",
                        "m32_vfs_fixture_fileid128_precheck_then_internal_name_swap_is_not_atomic"):
             self.assertIn(signal, fixture)
-        for filename in ("RESUME_PROMPT_SHORT.md", "RESUME_PROMPT.md", "HANDOFF_CURRENT.md",
+        for filename in ("RESUME_PROMPT.md", "HANDOFF_CURRENT.md",
                          "HANDOFF_PROTOCOL.md", "HANDOFF_HISTORY.md", "NEXT.md", "STATE.md",
                          "M3_2_GATE_DECISION_CURRENT.md", "README.md"):
             body = (DIRECTORY / filename).read_text(encoding="utf-8")
@@ -4241,7 +4250,7 @@ class HandoffContractTests(unittest.TestCase):
         self.assertGreaterEqual(fixture.count("#[test]"), 8)
         self.assertIn("SQLITE_OPEN_WAL", fixture)
         self.assertIn("xShmMap", fixture)
-        for filename in ("RESUME_PROMPT_SHORT.md", "RESUME_PROMPT.md", "HANDOFF_CURRENT.md",
+        for filename in ("RESUME_PROMPT.md", "HANDOFF_CURRENT.md",
                          "HANDOFF_PROTOCOL.md", "HANDOFF_HISTORY.md", "NEXT.md", "STATE.md",
                          "M3_2_GATE_DECISION_CURRENT.md", "README.md"):
             body = (DIRECTORY / filename).read_text(encoding="utf-8")
@@ -4285,7 +4294,7 @@ class HandoffContractTests(unittest.TestCase):
         self.assertEqual(fixture.split("// R4 / P1 decision probe", 1)[0].count("#[test]"), 26)
         self.assertEqual(fixture.split("// R4 / P1 decision probe", 1)[1].split("// R3 preopened HANDLE xOpen veto", 1)[0].count("#[test]"), 5)
         self.assertIn("fixture_xshm_map", fixture)
-        for filename in ("RESUME_PROMPT_SHORT.md", "RESUME_PROMPT.md", "HANDOFF_CURRENT.md",
+        for filename in ("RESUME_PROMPT.md", "HANDOFF_CURRENT.md",
                          "HANDOFF_PROTOCOL.md", "HANDOFF_HISTORY.md", "NEXT.md", "STATE.md",
                          "M3_2_GATE_DECISION_CURRENT.md", "README.md"):
             body = (DIRECTORY / filename).read_text(encoding="utf-8")
@@ -4339,7 +4348,7 @@ class HandoffContractTests(unittest.TestCase):
             self.assertNotIn(forbidden, fixture)
         self.assertIn("mod m32_v7_writer_service;",
                       (ROOT / "src-tauri/src/lib.rs").read_text(encoding="utf-8"))
-        for filename in ("RESUME_PROMPT_SHORT.md", "RESUME_PROMPT.md", "HANDOFF_CURRENT.md",
+        for filename in ("RESUME_PROMPT.md", "HANDOFF_CURRENT.md",
                          "HANDOFF_PROTOCOL.md", "HANDOFF_HISTORY.md", "NEXT.md", "STATE.md",
                          "M3_2_GATE_DECISION_CURRENT.md", "README.md"):
             body = (DIRECTORY / filename).read_text(encoding="utf-8")
@@ -4395,7 +4404,7 @@ class HandoffContractTests(unittest.TestCase):
                        "com.fabulaxiom.greenfield.v1", "NOT_PROVEN", "NOT_AUTHORIZED",
                        "STOP_UNAVAILABLE", "autorisation distincte", "aucun constructeur"):
             self.assertIn(signal, doc, signal)
-        for filename in ("RESUME_PROMPT_SHORT.md", "RESUME_PROMPT.md", "HANDOFF_CURRENT.md",
+        for filename in ("RESUME_PROMPT.md", "HANDOFF_CURRENT.md",
                          "HANDOFF_PROTOCOL.md", "HANDOFF_HISTORY.md", "NEXT.md", "STATE.md",
                          "M3_2_GATE_DECISION_CURRENT.md", "README.md"):
             body = (DIRECTORY / filename).read_text(encoding="utf-8")
@@ -4853,7 +4862,7 @@ class HandoffContractTests(unittest.TestCase):
         self.assertNotIn("#[tauri::command]", src)
         filename = "M3_2_P1_R5_R6_R8_PREPARED_OWNER_RAM_REFUSAL_20261029.md"
         self.assertTrue((ROOT / "docs/qualification" / filename).is_file())
-        for p in ("RESUME_PROMPT.md", "RESUME_PROMPT_SHORT.md", "HANDOFF_CURRENT.md",
+        for p in ("RESUME_PROMPT.md", "HANDOFF_CURRENT.md",
                   "HANDOFF_PROTOCOL.md", "HANDOFF_HISTORY.md", "STATE.md", "NEXT.md",
                   "M3_2_GATE_DECISION_CURRENT.md", "README.md"):
             self.assertIn(filename, (DIRECTORY / p).read_text(encoding="utf-8"))
@@ -4884,8 +4893,7 @@ class HandoffContractTests(unittest.TestCase):
         self.assertNotIn("SQLITE_FCNTL_WIN32_SET_HANDLE", fixture)
         note = "M3_2_P1_R3_VFS_XOPEN_PREOPENED_HANDLE_VETO_20261030.md"
         self.assertTrue((ROOT / "docs/qualification" / note).is_file())
-        for p in ("RESUME_PROMPT.md", "RESUME_PROMPT_SHORT.md",
-                  "HANDOFF_CURRENT.md", "HANDOFF_PROTOCOL.md", "HANDOFF_HISTORY.md",
+        for p in ("RESUME_PROMPT.md", "HANDOFF_CURRENT.md", "HANDOFF_PROTOCOL.md", "HANDOFF_HISTORY.md",
                   "STATE.md", "NEXT.md", "M3_2_GATE_DECISION_CURRENT.md", "README.md"):
             self.assertIn(note, (DIRECTORY / p).read_text(encoding="utf-8"))
         for p in ("ROADMAP_STATUS_CURRENT.md", "FABULAXIOM_ROADMAP_V1.md"):
@@ -4923,8 +4931,7 @@ class HandoffContractTests(unittest.TestCase):
         self.assertNotIn("#[tauri::command]", source)
         note = "M3_2_P1_R3_READONLY_SQLITE_FILE_PREOPENED_HANDLE_DISPOSABLE_20261030.md"
         self.assertTrue((ROOT / "docs/qualification" / note).is_file())
-        for p in ("RESUME_PROMPT.md", "RESUME_PROMPT_SHORT.md",
-                  "HANDOFF_CURRENT.md", "HANDOFF_PROTOCOL.md", "HANDOFF_HISTORY.md",
+        for p in ("RESUME_PROMPT.md", "HANDOFF_CURRENT.md", "HANDOFF_PROTOCOL.md", "HANDOFF_HISTORY.md",
                   "STATE.md", "NEXT.md", "M3_2_GATE_DECISION_CURRENT.md", "README.md"):
             self.assertIn(note, (DIRECTORY / p).read_text(encoding="utf-8"))
         for p in ("ROADMAP_STATUS_CURRENT.md", "FABULAXIOM_ROADMAP_V1.md"):
@@ -4961,8 +4968,7 @@ class HandoffContractTests(unittest.TestCase):
         self.assertEqual(item["historical"], "PENDING_EXTERNAL_ATTESTATION(21/3/2)")
         note = "M3_2_PR233_PR234_TERMINAL_CI_CONTINUITY_20261030.md"
         self.assertTrue((ROOT / "docs/qualification" / note).is_file())
-        for name in ("RESUME_PROMPT.md", "RESUME_PROMPT_SHORT.md",
-                     "HANDOFF_CURRENT.md", "HANDOFF_PROTOCOL.md", "HANDOFF_HISTORY.md",
+        for name in ("RESUME_PROMPT.md", "HANDOFF_CURRENT.md", "HANDOFF_PROTOCOL.md", "HANDOFF_HISTORY.md",
                      "NEXT.md", "STATE.md", "M3_2_GATE_DECISION_CURRENT.md", "README.md"):
             self.assertIn(note, (DIRECTORY / name).read_text(encoding="utf-8"), name)
         for name in ("ROADMAP_STATUS_CURRENT.md", "FABULAXIOM_ROADMAP_V1.md"):
@@ -4997,8 +5003,7 @@ class HandoffContractTests(unittest.TestCase):
         self.assertNotIn("#[tauri::command]", source)
         note = "M3_2_R3_WIN32_NATIVE_SHARED_LOCKFILEEX_DISPOSABLE_20261030.md"
         self.assertTrue((ROOT / "docs/qualification" / note).is_file())
-        for file in ("RESUME_PROMPT.md", "RESUME_PROMPT_SHORT.md",
-                     "HANDOFF_CURRENT.md", "HANDOFF_PROTOCOL.md", "HANDOFF_HISTORY.md",
+        for file in ("RESUME_PROMPT.md", "HANDOFF_CURRENT.md", "HANDOFF_PROTOCOL.md", "HANDOFF_HISTORY.md",
                      "STATE.md", "NEXT.md", "M3_2_GATE_DECISION_CURRENT.md", "README.md"):
             self.assertIn(note, (DIRECTORY / file).read_text(encoding="utf-8"))
         for file in ("ROADMAP_STATUS_CURRENT.md", "FABULAXIOM_ROADMAP_V1.md"):
