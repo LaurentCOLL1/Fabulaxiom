@@ -511,8 +511,8 @@ class RustSqliteOpenInventoryTests(unittest.TestCase):
     def test_48_preopened_readonly_win32_sqlite3_file_is_disposable_and_no_writer(self):
         p = "src-tauri/src/m32_r3_preopened_readonly_vfs_tests.rs"
         source = self.src[p]
-        self.assertEqual(counts(source), (3, 0, 0, 0, 0, 3, 0))
-        self.assertEqual(source.count("#[test]"), 9)
+        self.assertEqual(counts(source), (5, 0, 0, 0, 0, 4, 0))
+        self.assertEqual(source.count("#[test]"), 10)
         for name in (
             "m32_r3_preopened_readonly_file_adapter_reads_invented_sqlite_content",
             "m32_r3_preopened_readonly_file_adapter_reads_original_after_name_substitution",
@@ -536,8 +536,8 @@ class RustSqliteOpenInventoryTests(unittest.TestCase):
 
     def test_49_native_win32_shared_lock_is_only_disposable_readonly(self):
         source = self.src["src-tauri/src/m32_r3_preopened_readonly_vfs_tests.rs"]
-        self.assertEqual(counts(source), (3, 0, 0, 0, 0, 3, 0))
-        self.assertEqual(source.count("#[test]"), 9)
+        self.assertEqual(counts(source), (5, 0, 0, 0, 0, 4, 0))
+        self.assertEqual(source.count("#[test]"), 10)
         for phrase in ("fn lock_bytes(", "fn unlock_bytes(",
                        "fn ro_lock(", "fn ro_unlock(", "fn ro_reserved(",
                        "LockFileEx(", "UnlockFileEx(", "SHARED_FIRST",
@@ -548,14 +548,19 @@ class RustSqliteOpenInventoryTests(unittest.TestCase):
                         "unsafe extern \"C\" fn ro_write", "ffi::SQLITE_READONLY"):
             self.assertIn(missing, source)
         for forbidden in ("#[tauri::command]", "database::open_database(",
-                          "run_migrations(", "PRAGMA journal_mode=WAL"):
+                          "run_migrations("):
             self.assertNotIn(forbidden, source)
+        # The historical R3 section must remain rollback-only; the new
+        # test-only R4 negative witness is the only WAL-mode section.
+        marker = "\n#[test]\nfn m32_r4_readonly_preopened_vfs_without_xshm_refuses_live_wal_disposable()"
+        self.assertEqual(source.count(marker), 1)
+        self.assertNotIn("PRAGMA journal_mode=WAL", source.split(marker, 1)[0])
         self.assertEqual(repository_inventory()["real_g3"], "STOP_UNAVAILABLE")
 
     def test_50_win32_pending_read_only_admission_is_never_writer_proof(self):
         source = self.src["src-tauri/src/m32_r3_preopened_readonly_vfs_tests.rs"]
-        self.assertEqual(counts(source), (3, 0, 0, 0, 0, 3, 0))
-        self.assertEqual(source.count("#[test]"), 9)
+        self.assertEqual(counts(source), (5, 0, 0, 0, 0, 4, 0))
+        self.assertEqual(source.count("#[test]"), 10)
         for text in ("lock_bytes(native, PENDING_BYTE, 1, false)",
                      "unlock_bytes(native, PENDING_BYTE, 1)",
                      "m32_r3_win32_pending_lock_vetoes_new_reader_reserved_still_allows_reader",
@@ -564,14 +569,19 @@ class RustSqliteOpenInventoryTests(unittest.TestCase):
                      "rusqlite::ErrorCode::DatabaseBusy"):
             self.assertIn(text, source)
         for forbidden in ("#[tauri::command]", "database::open_database(",
-                          "run_migrations(", "PRAGMA journal_mode=WAL"):
+                          "run_migrations("):
             self.assertNotIn(forbidden, source)
+        # The historical R3 section must remain rollback-only; the new
+        # test-only R4 negative witness is the only WAL-mode section.
+        marker = "\n#[test]\nfn m32_r4_readonly_preopened_vfs_without_xshm_refuses_live_wal_disposable()"
+        self.assertEqual(source.count(marker), 1)
+        self.assertNotIn("PRAGMA journal_mode=WAL", source.split(marker, 1)[0])
         self.assertEqual(repository_inventory()["real_g3"], "STOP_UNAVAILABLE")
 
     def test_51_native_lock_phase_matrix_stays_disposable_and_read_only(self):
         source = self.src["src-tauri/src/m32_r3_preopened_readonly_vfs_tests.rs"]
-        self.assertEqual(counts(source), (3, 0, 0, 0, 0, 3, 0))
-        self.assertEqual(source.count("#[test]"), 9)
+        self.assertEqual(counts(source), (5, 0, 0, 0, 0, 4, 0))
+        self.assertEqual(source.count("#[test]"), 10)
         for term in ("m32_r3_win32_native_reserved_pending_exclusive_phase_matrix_without_sqlite_writer",
                      "lock_bytes(&owner, RESERVED_BYTE, 1, true)",
                      "lock_bytes(&contender, RESERVED_BYTE, 1, true)",
@@ -582,14 +592,19 @@ class RustSqliteOpenInventoryTests(unittest.TestCase):
                      "ErrorCode::DatabaseBusy"):
             self.assertIn(term, source)
         for forbidden in ("#[tauri::command]", "database::open_database(",
-                          "run_migrations(", "PRAGMA journal_mode=WAL"):
+                          "run_migrations("):
             self.assertNotIn(forbidden, source)
+        # The historical R3 section must remain rollback-only; the new
+        # test-only R4 negative witness is the only WAL-mode section.
+        marker = "\n#[test]\nfn m32_r4_readonly_preopened_vfs_without_xshm_refuses_live_wal_disposable()"
+        self.assertEqual(source.count(marker), 1)
+        self.assertNotIn("PRAGMA journal_mode=WAL", source.split(marker, 1)[0])
         self.assertEqual(repository_inventory()["real_g3"], "STOP_UNAVAILABLE")
 
     def test_52_failed_shared_and_close_release_only_on_disposable_win32(self):
         source = self.src["src-tauri/src/m32_r3_preopened_readonly_vfs_tests.rs"]
-        self.assertEqual(counts(source), (3, 0, 0, 0, 0, 3, 0))
-        self.assertEqual(source.count("#[test]"), 9)
+        self.assertEqual(counts(source), (5, 0, 0, 0, 0, 4, 0))
+        self.assertEqual(source.count("#[test]"), 10)
         for witness in (
             "m32_r3_failed_shared_lock_drops_pending_gate_and_retry_succeeds",
             "m32_r3_sqlite_close_during_readonly_transaction_releases_native_shared",
@@ -600,14 +615,19 @@ class RustSqliteOpenInventoryTests(unittest.TestCase):
             "ErrorCode::DatabaseBusy", "ERROR_LOCK_VIOLATION"):
             self.assertIn(witness, source)
         for forbidden in ("#[tauri::command]", "database::open_database(",
-                          "run_migrations(", "PRAGMA journal_mode=WAL"):
+                          "run_migrations("):
             self.assertNotIn(forbidden, source)
+        # The historical R3 section must remain rollback-only; the new
+        # test-only R4 negative witness is the only WAL-mode section.
+        marker = "\n#[test]\nfn m32_r4_readonly_preopened_vfs_without_xshm_refuses_live_wal_disposable()"
+        self.assertEqual(source.count(marker), 1)
+        self.assertNotIn("PRAGMA journal_mode=WAL", source.split(marker, 1)[0])
         self.assertEqual(repository_inventory()["real_g3"], "STOP_UNAVAILABLE")
 
     def test_53_two_sqlite_readers_shared_until_last_close_is_only_disposable(self):
         source = self.src["src-tauri/src/m32_r3_preopened_readonly_vfs_tests.rs"]
-        self.assertEqual(counts(source), (3, 0, 0, 0, 0, 3, 0))
-        self.assertEqual(source.count("#[test]"), 9)
+        self.assertEqual(counts(source), (5, 0, 0, 0, 0, 4, 0))
+        self.assertEqual(source.count("#[test]"), 10)
         for token in ("m32_r3_two_sqlite_readers_retain_shared_until_last_connection_closes",
                       "let first = open_readonly(&path, &gate)",
                       "let second = open_readonly(&path, &gate)",
@@ -617,8 +637,13 @@ class RustSqliteOpenInventoryTests(unittest.TestCase):
                       "ERROR_LOCK_VIOLATION"):
             self.assertIn(token, source)
         for forbidden in ("#[tauri::command]", "database::open_database(",
-                          "run_migrations(", "PRAGMA journal_mode=WAL"):
+                          "run_migrations("):
             self.assertNotIn(forbidden, source)
+        # The historical R3 section must remain rollback-only; the new
+        # test-only R4 negative witness is the only WAL-mode section.
+        marker = "\n#[test]\nfn m32_r4_readonly_preopened_vfs_without_xshm_refuses_live_wal_disposable()"
+        self.assertEqual(source.count(marker), 1)
+        self.assertNotIn("PRAGMA journal_mode=WAL", source.split(marker, 1)[0])
         self.assertEqual(repository_inventory()["real_g3"], "STOP_UNAVAILABLE")
 
 
@@ -638,6 +663,22 @@ class RustSqliteOpenInventoryTests(unittest.TestCase):
             self.assertNotIn(t, s)
         self.assertIn("#[cfg(all(test, windows))]\nmod m32_r4_wal_shm_disposable_tests;",
                       self.src["src-tauri/src/lib.rs"])
+        self.assertEqual(repository_inventory()["writer_absence"], "NOT_PROVEN")
+
+
+    def test_55_r4_normal_wal_without_custom_xshm_fails_closed_disposable(self):
+        p = "src-tauri/src/m32_r3_preopened_readonly_vfs_tests.rs"
+        source = self.src[p]
+        self.assertEqual(counts(source), (5, 0, 0, 0, 0, 4, 0))
+        self.assertEqual(source.count("#[test]"), 10)
+        for token in ("m32_r4_readonly_preopened_vfs_without_xshm_refuses_live_wal_disposable",
+                      "PRAGMA journal_mode=WAL", "OpenFlags::SQLITE_OPEN_READ_ONLY",
+                      "assert!(result.is_err()", "drop(writer)",
+                      "xShmMap: None", "xShmLock: None"):
+            self.assertIn(token, source)
+        for forbidden in ("#[tauri::command]", "database::open_database(",
+                          "run_migrations(", "app_local_data_dir("):
+            self.assertNotIn(forbidden, source)
         self.assertEqual(repository_inventory()["writer_absence"], "NOT_PROVEN")
 
 if __name__ == "__main__":

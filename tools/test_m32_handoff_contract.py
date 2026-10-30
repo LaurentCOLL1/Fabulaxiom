@@ -4918,7 +4918,7 @@ class HandoffContractTests(unittest.TestCase):
             self.assertFalse(entry[flag], flag)
         self.assertEqual(entry["existing_profile"], "STOP")
         source = (ROOT / "src-tauri/src/m32_r3_preopened_readonly_vfs_tests.rs").read_text(encoding="utf-8")
-        self.assertEqual(source.count("#[test]"), 9)  # current R3 fixture includes one native SHARED witness
+        self.assertEqual(source.count("#[test]"), 10)  # current R3 fixture includes one native SHARED witness
         for name in (
             "m32_r3_preopened_readonly_file_adapter_reads_invented_sqlite_content",
             "m32_r3_preopened_readonly_file_adapter_reads_original_after_name_substitution",
@@ -4992,7 +4992,7 @@ class HandoffContractTests(unittest.TestCase):
             self.assertFalse(item[flag], flag)
         self.assertEqual(item["m3_2"], "IN_PROGRESS_NOT_ACCEPTED")
         source = (ROOT / "src-tauri/src/m32_r3_preopened_readonly_vfs_tests.rs").read_text(encoding="utf-8")
-        self.assertEqual(source.count("#[test]"), 9)
+        self.assertEqual(source.count("#[test]"), 10)
         for token in ("fn lock_bytes(", "fn unlock_bytes(", "LockFileEx(",
                       "UnlockFileEx(", "SHARED_FIRST", "RESERVED_BYTE",
                       "ffi::SQLITE_LOCK_SHARED",
@@ -5023,7 +5023,7 @@ class HandoffContractTests(unittest.TestCase):
             self.assertFalse(entry[key], key)
         self.assertEqual(entry["m3_2"], "IN_PROGRESS_NOT_ACCEPTED")
         src = (ROOT / "src-tauri/src/m32_r3_preopened_readonly_vfs_tests.rs").read_text(encoding="utf-8")
-        self.assertEqual(src.count("#[test]"), 9)
+        self.assertEqual(src.count("#[test]"), 10)
         self.assertIn("PENDING_BYTE, 1, false", src)
         self.assertIn("PENDING_BYTE, 1, true", src)
         self.assertIn("RESERVED_BYTE, 1, true", src)
@@ -5053,7 +5053,7 @@ class HandoffContractTests(unittest.TestCase):
             self.assertFalse(c[key], key)
         self.assertEqual(c["m3_2"], "IN_PROGRESS_NOT_ACCEPTED")
         source = (ROOT / "src-tauri/src/m32_r3_preopened_readonly_vfs_tests.rs").read_text(encoding="utf-8")
-        self.assertEqual(source.count("#[test]"), 9)
+        self.assertEqual(source.count("#[test]"), 10)
         self.assertIn("m32_r3_win32_native_reserved_pending_exclusive_phase_matrix_without_sqlite_writer", source)
         self.assertIn("xShmLock: None", source)
         self.assertIn("xWrite: Some(ro_write)", source)
@@ -5081,7 +5081,7 @@ class HandoffContractTests(unittest.TestCase):
             self.assertFalse(state[name], name)
         self.assertEqual(state["m3_2"], "IN_PROGRESS_NOT_ACCEPTED")
         source = (ROOT / "src-tauri/src/m32_r3_preopened_readonly_vfs_tests.rs").read_text(encoding="utf-8")
-        self.assertEqual(source.count("#[test]"), 9)
+        self.assertEqual(source.count("#[test]"), 10)
         self.assertIn("m32_r3_failed_shared_lock_drops_pending_gate_and_retry_succeeds", source)
         self.assertIn("m32_r3_sqlite_close_during_readonly_transaction_releases_native_shared", source)
         self.assertIn("xShmLock: None", source)
@@ -5110,7 +5110,7 @@ class HandoffContractTests(unittest.TestCase):
             self.assertFalse(c[key], key)
         self.assertEqual(c["m3_2"], "IN_PROGRESS_NOT_ACCEPTED")
         source = (ROOT / "src-tauri/src/m32_r3_preopened_readonly_vfs_tests.rs").read_text(encoding="utf-8")
-        self.assertEqual(source.count("#[test]"), 9)
+        self.assertEqual(source.count("#[test]"), 10)
         self.assertIn("m32_r3_two_sqlite_readers_retain_shared_until_last_connection_closes", source)
         self.assertIn("xShmLock: None", source)
         self.assertIn("xWrite: Some(ro_write)", source)
@@ -5148,6 +5148,31 @@ class HandoffContractTests(unittest.TestCase):
                   "HANDOFF_PROTOCOL.md", "HANDOFF_HISTORY.md", "STATE.md",
                   "NEXT.md", "M3_2_GATE_DECISION_CURRENT.md", "README.md"):
             self.assertIn(note, (DIRECTORY / p).read_text(encoding="utf-8"))
+        for p in ("ROADMAP_STATUS_CURRENT.md", "FABULAXIOM_ROADMAP_V1.md"):
+            self.assertIn(note, (ROOT / "docs/roadmap" / p).read_text(encoding="utf-8"))
+
+
+    def test_165_r4_normal_wal_no_shm_negative_is_disposable_only(self):
+        e = self.data["m32_r4_normal_wal_without_xshm_refusal_candidate_20261030"]
+        self.assertEqual(e["scope"], "WINDOWS_CI_DISPOSABLE_NORMAL_WAL_NO_XSHM_REFUSAL")
+        self.assertEqual(e["expected_rust_tests_not_qualified"], 268)
+        self.assertEqual(e["expected_inventory_tests_not_qualified"], 55)
+        self.assertEqual(e["expected_continuity_tests_not_qualified"], 165)
+        for flag in ("custom_xshm_supported", "atomic_wal_shm_custody_proven",
+                     "writer_admitted", "operator_data_accessed", "ipc_enabled",
+                     "migration_007", "native_hello", "persistent_marker",
+                     "recovery_authorized"):
+            self.assertFalse(e[flag], flag)
+        self.assertEqual(e["m3_2"], "IN_PROGRESS_NOT_ACCEPTED")
+        self.assertEqual(e["g2b"], "NOT_ACCEPTED")
+        self.assertEqual(e["g2c"], "NOT_AUTHORIZED")
+        self.assertEqual(e["g3"], "STOP_UNAVAILABLE")
+        note = "M3_2_R4_NO_XSHM_NORMAL_WAL_READ_REFUSAL_DISPOSABLE_20261030.md"
+        self.assertTrue((ROOT / "docs/qualification" / note).is_file())
+        for p in ("RESUME_PROMPT_SHORT.md", "RESUME_PROMPT.md", "HANDOFF_CURRENT.md",
+                  "HANDOFF_HISTORY.md", "HANDOFF_PROTOCOL.md",
+                  "STATE.md", "NEXT.md", "M3_2_GATE_DECISION_CURRENT.md", "README.md"):
+            self.assertIn(note, (DIRECTORY / p).read_text(encoding="utf-8"), p)
         for p in ("ROADMAP_STATUS_CURRENT.md", "FABULAXIOM_ROADMAP_V1.md"):
             self.assertIn(note, (ROOT / "docs/roadmap" / p).read_text(encoding="utf-8"))
 
