@@ -5176,5 +5176,31 @@ class HandoffContractTests(unittest.TestCase):
         for p in ("ROADMAP_STATUS_CURRENT.md", "FABULAXIOM_ROADMAP_V1.md"):
             self.assertIn(note, (ROOT / "docs/roadmap" / p).read_text(encoding="utf-8"))
 
+
+    def test_166_r4_live_shm_fileid_is_not_atomic_custody_or_writer(self):
+        e = self.data["m32_r4_d3a_live_shm_fileid_disposable_candidate_20261030"]
+        self.assertEqual(e["scope"], "WINDOWS_CI_DISPOSABLE_D3A_LIVE_SHM_FILEID_OBSERVATION")
+        self.assertEqual(e["expected_rust_tests_not_qualified"], 269)
+        self.assertEqual(e["expected_greenfield_tests_not_qualified"], 7)
+        self.assertEqual(e["expected_inventory_tests_not_qualified"], 56)
+        self.assertEqual(e["expected_continuity_tests_not_qualified"], 166)
+        for flag in ("atomic_three_file_custody_proven", "preopened_r3_xshm_supported",
+                     "writer_admitted", "operator_data_accessed", "ipc_enabled",
+                     "migration_007", "native_hello", "persistent_marker",
+                     "recovery_authorized"):
+            self.assertFalse(e[flag], flag)
+        self.assertEqual(e["m3_2"], "IN_PROGRESS_NOT_ACCEPTED")
+        self.assertEqual(e["g2b"], "NOT_ACCEPTED")
+        self.assertEqual(e["g2c"], "NOT_AUTHORIZED")
+        self.assertEqual(e["g3"], "STOP_UNAVAILABLE")
+        note = "M3_2_R4_D3A_LIVE_SHM_FILEID_DISPOSABLE_20261030.md"
+        self.assertTrue((ROOT / "docs/qualification" / note).is_file())
+        for p in ("RESUME_PROMPT_SHORT.md", "RESUME_PROMPT.md",
+                  "HANDOFF_CURRENT.md", "HANDOFF_HISTORY.md", "HANDOFF_PROTOCOL.md",
+                  "STATE.md", "NEXT.md", "M3_2_GATE_DECISION_CURRENT.md", "README.md"):
+            self.assertIn(note, (DIRECTORY / p).read_text(encoding="utf-8"), p)
+        for p in ("ROADMAP_STATUS_CURRENT.md", "FABULAXIOM_ROADMAP_V1.md"):
+            self.assertIn(note, (ROOT / "docs/roadmap" / p).read_text(encoding="utf-8"))
+
 if __name__ == "__main__":
     unittest.main()
