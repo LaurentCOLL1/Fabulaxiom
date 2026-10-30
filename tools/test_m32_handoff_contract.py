@@ -4917,7 +4917,7 @@ class HandoffContractTests(unittest.TestCase):
             "m32_r3_preopened_readonly_file_adapter_refuses_write_open_before_dispatch",
         ):
             self.assertIn("fn " + name + "(", source)
-        self.assertIn("xLock/xCheckReservedLock deliberately assume ONE sealed fixture reader", source)
+        self.assertIn("R3 shared-reader xLock now holds native Win32 LockFileEx byte-range locks.", source)
         self.assertIn("xShmMap: None", source)
         self.assertIn("xWrite: Some(ro_write)", source)
         self.assertNotIn("#[tauri::command]", source)
