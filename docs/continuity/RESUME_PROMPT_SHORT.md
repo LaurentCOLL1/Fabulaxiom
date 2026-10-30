@@ -24,6 +24,6 @@ Reprends le développement de l'application Windows **Fabulaxiom** (React, Tauri
 
 ## Documents d'autorité
 
-Lire d'abord [RESUME_PROMPT.md](RESUME_PROMPT.md), puis `HANDOFF_CURRENT.json`, `HANDOFF_CURRENT.md`, `HANDOFF_PROTOCOL.md`, `HANDOFF_HISTORY.md`, `STATE.md`, `NEXT.md`, `M3_2_GATE_DECISION_CURRENT.md` et les deux roadmaps. Qualification candidate : [M3_2_R4_DEFAULT_WIN32_WAL_SHM_SNAPSHOT_DISPOSABLE_20261030.md](../qualification/M3_2_R4_DEFAULT_WIN32_WAL_SHM_SNAPSHOT_DISPOSABLE_20261030.md).
+Lire d'abord [RESUME_PROMPT.md](RESUME_PROMPT.md), puis `HANDOFF_CURRENT.json`, `HANDOFF_CURRENT.md`, `HANDOFF_PROTOCOL.md`, `HANDOFF_HISTORY.md`, `STATE.md`, `NEXT.md`, `M3_2_GATE_DECISION_CURRENT.md` et les roadmaps `docs/roadmap/ROADMAP_STATUS_CURRENT.md` et `docs/roadmap/FABULAXIOM_ROADMAP_V1.md`. Qualification candidate : [M3_2_R4_DEFAULT_WIN32_WAL_SHM_SNAPSHOT_DISPOSABLE_20261030.md](../qualification/M3_2_R4_DEFAULT_WIN32_WAL_SHM_SNAPSHOT_DISPOSABLE_20261030.md).
 
 **Règle :** ne jamais extrapoler les fixtures aux données réelles. CI/SHA et inventaires historiques restent dans le prompt complet et les handoffs, pas ici.
