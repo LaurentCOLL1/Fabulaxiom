@@ -21,8 +21,8 @@
     "pr234_source_success": true,
     "pr234_merge_sha": "5635994bdedc2310e9be4ab5c2e91aa5b85aef16",
     "pr234_postmain_ci": 41001188510,
-    "pr234_postmain_success": false,
-    "pr234_postmain_status": "PENDING_TERMINAL_VERIFICATION",
+    "pr234_postmain_success": true,
+    "pr234_postmain_status": "SUCCESS_EXACT_SHA_POSTMAIN",
     "pr234_counts_source": {
       "rust": 260,
       "greenfield": 7,

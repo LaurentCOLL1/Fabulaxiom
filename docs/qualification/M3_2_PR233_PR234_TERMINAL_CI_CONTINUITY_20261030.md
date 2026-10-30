@@ -1,5 +1,7 @@
 # M3.2 R3 — protected PR #233 terminal; PR #234 source merged (30 October 2026)
 
+**30 octobre — #234 TERMINALE :** CI indépendante push main [#41001188510](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/41001188510) **completed/SUCCESS** sur `main=5635994bdedc2310e9be4ab5c2e91aa5b85aef16`, job #123885711275 ; **260 Rust / 7 Greenfield / 48 SQLite inventory / 157 continuity**, trois nouveaux tests read-only Win32 HANDLE individuellement `ok`. Les deux CI source #41000221598 et postmain #41001188510 sont maintenant indépendamment qualifiées SUCCESS. La mention « PENDING » ci-dessous est conservée comme état intermédiaire historique avant l'achèvement, et ne décrit plus la situation courante. R3/4 production et writer R1–R9 **NOT_PROVEN** ; aucun opérateur, IPC, 007, Hello, marker, recovery.
+
 ## Verified exact-SHA authority
 
 **PR #233 TERMINAL:** source `b4cff959df67efebae3d5692c87a5178809c9692`, exact source Windows [#40986052100](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/40986052100) **completed/SUCCESS**, protected strict squash `expected_head_sha` `main=a14c7826647249587604536e7c8e69a61a47ebc1`, independent main-push Windows [#40999259593](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/40999259593) **completed/SUCCESS** at this exact main. Both logs: **257 Rust / 7 Greenfield / 47 SQLite inventory / 156 continuity**, both R3 fail-closed preopened-HANDLE `xOpen` tests individually ok. Issue #38 terminal [comment #6514621418](https://github.com/LaurentCOLL1/Fabulaxiom/issues/38#issuecomment-6514621418).

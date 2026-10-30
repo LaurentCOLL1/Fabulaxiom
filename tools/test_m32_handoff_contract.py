@@ -4947,8 +4947,8 @@ class HandoffContractTests(unittest.TestCase):
         self.assertEqual(item["pr234_source_ci"], 41000221598)
         self.assertTrue(item["pr234_source_success"])
         self.assertEqual(item["pr234_postmain_ci"], 41001188510)
-        self.assertEqual(item["pr234_postmain_status"], "PENDING_TERMINAL_VERIFICATION")
-        self.assertFalse(item["pr234_postmain_success"])
+        self.assertEqual(item["pr234_postmain_status"], "SUCCESS_EXACT_SHA_POSTMAIN")
+        self.assertTrue(item["pr234_postmain_success"])
         self.assertEqual(item["pr234_prior_failed_ci"], 41000011767)
         self.assertEqual(item["pr234_counts_source"], {"rust": 260, "greenfield": 7,
                                                       "sqlite_inventory": 48, "continuity": 157})
