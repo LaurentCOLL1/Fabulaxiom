@@ -1,11 +1,29 @@
-# Fabulaxiom — reprise COURTE
+# Fabulaxiom — reprise courte (30 octobre 2026)
 
-GitHub https://github.com/LaurentCOLL1/Fabulaxiom ; re-fetch main/PR/issues/CI/Protect main.
-**30/10** #233 main=a14c7826647249587604536e7c8e69a61a47ebc1 CI #40986052100/#40999259593 SUCCESS 257/7/47/156 ; #234 main=5635994bdedc2310e9be4ab5c2e91aa5b85aef16 CI #41000221598/#41001188510 SUCCESS 260/7/48/157 ; #235 main=d50753ef95afd79f5c2d7fa38676acad284c9eaf CI #41003012379 SUCCESS 260/7/48/158 postmain #41004059698 PENDING ; #236 DRAFT M3_2_R3_WIN32_NATIVE_SHARED_LOCKFILEEX_DISPOSABLE_20261030.md Win32 SHARED LockFileEx, quatre tests fictifs, 261/7/49/159 ATTENDUS NON QUALIFIÉS. M3_2_PR233_PR234_TERMINAL_CI_CONTINUITY_20261030.md ; M3_2_P1_R3_READONLY_SQLITE_FILE_PREOPENED_HANDLE_DISPOSABLE_20261030.md ; M3_2_P1_R3_VFS_XOPEN_PREOPENED_HANDLE_VETO_20261030.md ; M3_2_P1_R5_R6_R8_PREPARED_OWNER_RAM_REFUSAL_20261029.md. Hist #231 #40951341500/#40953281939 ; #232 #40958814457/#40960445573 ; FAIL #40956518375/#40958177440.
-**Suite** R3 production NON QUALIFIÉE/NOT_PROVEN ; R4 WAL/SHM ; R5/R6/R8 ; R7/R9 ; #215/#35 DRAFT ; exact-SHA CI, reviews/threads, Protect main, expected_head_sha, postmain, #38.
-**STOP** M3.2 IN_PROGRESS_NOT_ACCEPTED ; writer/R1–R9 NOT_PROVEN ; G2B NOT_ACCEPTED ; G2C NOT_AUTHORIZED ; G3 STOP_UNAVAILABLE ; historique PENDING_EXTERNAL_ATTESTATION(21/3/2) ; prospective NOT_STARTED ; A UNAVAILABLE_NOT_PROVEN ; B NOT_PROVEN ; D3b-4/5 et D3b-5 STOP, D3c design ; ni opérateur v6/v7, IPC, 007, Hello, marqueur, recovery.
-**Windows** M:\Fabulaxiom ; %LOCALAPPDATA%\com.fabulaxiom.greenfield.v1\database\fabulaxiom.sqlite3 ; ne pas accéder.
-**Handoff** HANDOFF_CURRENT.json ; RESUME_PROMPT.md, deux prompts/roadmaps à chaque PR.
-RESUME_PROMPT.md HANDOFF_CURRENT.md HANDOFF_PROTOCOL.md HANDOFF_HISTORY.md STATE.md NEXT.md M3_2_GATE_DECISION_CURRENT.md ROADMAP_STATUS_CURRENT.md FABULAXIOM_ROADMAP_V1.md M3_2_V7_RUST_SINGLE_OWNER_WRITER_PREPARATION_20261028.md M3_2_SQLITE_VFS_SHM_IO_METHODS_WRAPPER_20261028.md M3_2_V7_WRITER_ADMISSION_STRATEGY_20261028.md M3_2_V7_P1_D3B_DISPOSABLE_WINDOWS_CRASH_RESTART_REFUSAL_FIXTURE_20261028.md M3_2_SQLITE_VFS_WAL_SHM_BOUNDARY_20261028.md M3_2_SQLITE_VFS_FILEID128_PREDISPATCH_TOCTOU_20261027.md M3_2_SQLITE_VFS_PREDELEGATION_REFUSAL_FIXTURE_20261027.md M3_2_WINDOWS_HELLO_DESKTOP_HWND_BACKEND_BOUNDARY_20261027.md M3_2_SINGLE_USER_WINDOWS_HELLO_SENSITIVE_CONSENT_POLICY_20261027.md M3_2_ROUTE_C_SAME_PROFILE_FOREIGN_SCHEMA_REFUSAL_20261027.md M3_2_GREENFIELD_NEW_ONLY_DISPOSABLE_V7_CHRONOLOGY_PERSISTENCE_20261027.md M3_2_GREENFIELD_V7_EXCLUSIVE_NEW_FILE_CLAIM_20261027.md M3_2_GREENFIELD_V7_PINNED_HANDOFF_PARENT_NAMESPACE_20261027.md M3_2_GREENFIELD_V7_OWNED_FIXTURE_DIRECTORY_CHAIN_20261027.md M3_2_GREENFIELD_V7_SQLITE_WIN32_NATIVE_HANDLE_POSTOPEN_20261027.md M3_2_WIN32_FILEID_128_AND_WINDOWS_HELLO_BOUNDARY_20261027.md WINDOWS_OPERATOR_PATHS_ROUTE_C_20261026.md M3_2_PR35_LIVE_AUDIT_PROSPECTIVE_FAST_TRACK_20261027.md M3_2_ROUTE_C_GREENFIELD_BACKUP_RESTORE_20261026.md M3_2_ROUTE_C_SAME_PROFILE_RESTORE_20261026.md M3_2_ROUTE_C_SAME_PROFILE_RESTORE_REFUSAL_20261027.md M3_2_ROUTE_C_SAME_PROFILE_FOREIGN_KEY_RESTORE_REFUSAL_20261027.md
-**CI historiques** 40896144230 40898239262 40651970744 40653351119 40647564175 40713872679 40715995392 40744154704 40747739565 40753334640 40758059521 40764117809 40793962533 40609906017 40611263489 40593808508 40595455638 40584565021 40586436340 40578342548 40571697037 40558476584 40525427034 40518270685 40508416842 40499869627 40501278786 40450684268 40451602743 40456835489 40462274918 40470700689 40476232974 40486676658 40310982760 40338104050 40085871815 40094464488 40095354727 40103615181 40106296690 40108674282 40116658246 40122346098 40128407418 40156277835 40169967245 40179336243 40190429389 40200127549 40210737724 40213790809 40220215000 40230066592 40392826209 40403984550 40445392523
-**SHA historiques** main=54cfa6a32cfba08bb3035a9639708e82fff65268 90142d8c78dd8a84ee3f0ee1676a753c8521d78e a7323ab80f12372aa83b2be48019806be212eb32 main=dde962a50e3a063753fb77e9a5bcee014f406d30
+Reprends le développement de l'application Windows **Fabulaxiom** (React, Tauri v2, Rust, SQLite ; voie C locale et Ollama). Dépôt : https://github.com/LaurentCOLL1/Fabulaxiom
+
+**D'abord :** re-fetch GitHub vivant : `main`, PR, issues, CI Windows au SHA exact, reviews/threads et ruleset **Protect main** (strict, zéro bypass). Ce checkpoint ne remplace jamais la vérification du dépôt.
+
+## Dernier checkpoint
+
+- PR **#236 fusionnée** : `main=dc6e38252bd57ddcf588e97baa7be4a06d05eb68`.
+- CI source [#41004539135](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/41004539135) **SUCCESS** (261 Rust / 7 Greenfield / 49 inventaire SQLite / 159 continuité). CI postmain [#41038182886](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/41038182886) **SUCCESS au checkpoint** : vérifier sa conclusion et son SHA.
+- **R3** : premiers verrous Win32 SHARED `LockFileEx`, uniquement en tests Windows sur bases fictives jetables. R3 production et R4 WAL/SHM restent **NOT_PROVEN**. PR #215/#35 : DRAFT.
+
+## Interdictions actives — STOP
+
+**M3.2 IN_PROGRESS_NOT_ACCEPTED ; writer/R1–R9 NOT_PROVEN ; G2B NOT_ACCEPTED ; G2C NOT_AUTHORIZED ; G3 STOP_UNAVAILABLE.** Historique `PENDING_EXTERNAL_ATTESTATION(21/3/2)`, prospective `NOT_STARTED`. A `UNAVAILABLE_NOT_PROVEN`, B `NOT_PROVEN`. D3b-4/5 et D3b-5 **STOP** ; D3c : conception seulement.
+
+**Ne pas toucher aux données opérateur v6/v7**, ni à leurs journaux ou sauvegardes ; pas d'IPC writer, migration 007, Windows Hello natif, marqueur persistant ou recovery. Dépôt Windows : `M:\Fabulaxiom` ; profil existant `%LOCALAPPDATA%\com.fabulaxiom.greenfield.v1` : **aucun accès**.
+
+## Prochaines opérations
+
+1. Vérifier la CI postmain #236 et l'état actuel de #38 / #215 / #35.
+2. Continuer **P1, R2/R3** (verrous SQLite Win32 complets), **R4** (WAL/SHM), puis **R5/R6/R8**, **R7/R9** sur fixtures neuves ; ne pas promouvoir les preuves de test en admission production.
+3. Toute PR : diff, reviews/threads, CI Windows **exact-head SUCCESS**, Protect main sans bypass, fusion `expected_head_sha` seulement si admissible, CI postmain indépendante, journal #38 append-only ; actualiser les **deux prompts et roadmaps**.
+
+## Documents d'autorité
+
+Lire en premier [RESUME_PROMPT.md](RESUME_PROMPT.md) (preuves et archives), puis `HANDOFF_CURRENT.json`, `HANDOFF_CURRENT.md`, `HANDOFF_PROTOCOL.md`, `HANDOFF_HISTORY.md`, `STATE.md`, `NEXT.md`, `M3_2_GATE_DECISION_CURRENT.md` ; `docs/roadmap/ROADMAP_STATUS_CURRENT.md` et `docs/roadmap/FABULAXIOM_ROADMAP_V1.md`. Dernière qualification : `docs/qualification/M3_2_R3_WIN32_NATIVE_SHARED_LOCKFILEEX_DISPOSABLE_20261030.md`.
+
+**Règle :** ne jamais extrapoler les fixtures aux données réelles. CI/SHA et inventaires historiques restent dans le prompt complet et les handoffs, pas ici.
