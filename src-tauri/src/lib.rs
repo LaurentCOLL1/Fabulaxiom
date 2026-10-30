@@ -60,6 +60,11 @@ mod m32_desktop_hello_boundary_tests;
 #[cfg(all(test, windows))]
 mod m32_sqlite_vfs_preopen_tests;
 
+// Real read-only sqlite3_file/SQLite xOpen HANDLE adapter: WINDOWS TEST ONLY.
+// Lock model is single fresh CI fixture; NOT production admission or WAL.
+#[cfg(all(test, windows))]
+mod m32_r3_preopened_readonly_vfs_tests;
+
 // D3b-5 bounded phase-bracket crash refusal on fresh disposable Windows CI files.
 // Does NOT reopen crashed SQLite, attest xSync/xShmUnmap timing or admit a writer.
 #[cfg(all(test, windows))]
