@@ -6,9 +6,9 @@ Reprends le développement de l'application Windows **Fabulaxiom** (React, Tauri
 
 ## Dernier checkpoint
 
-- PR **#236 fusionnée** : `main=dc6e38252bd57ddcf588e97baa7be4a06d05eb68`.
+- PR **#237 fusionnée** : `main=2d8cde651bbdd0653bab9639b2dc7ca8981ad88e` ; CI #41040065251 SUCCESS ; postmain #41051070838 à requalifier.
 - CI source [#41004539135](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/41004539135) **SUCCESS** (261 Rust / 7 Greenfield / 49 inventaire SQLite / 159 continuité). CI postmain [#41038182886](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/41038182886) **SUCCESS au checkpoint** : vérifier sa conclusion et son SHA.
-- **R3** : premiers verrous Win32 SHARED `LockFileEx`, uniquement en tests Windows sur bases fictives jetables. R3 production et R4 WAL/SHM restent **NOT_PROVEN**. PR #215/#35 : DRAFT.
+- **R3** : SHARED et nouveau candidat PENDING/RESERVED `LockFileEx` sur fixtures Windows jetables ; 262/7/50/160 ATTENDUS NON QUALIFIÉS. R3 production et R4 WAL/SHM restent **NOT_PROVEN**. PR #215/#35 : DRAFT.
 
 ## Interdictions actives — STOP
 
@@ -18,7 +18,7 @@ Reprends le développement de l'application Windows **Fabulaxiom** (React, Tauri
 
 ## Prochaines opérations
 
-1. Vérifier la CI postmain #236 et l'état actuel de #38 / #215 / #35.
+1. Vérifier la CI postmain #237 et l'état actuel de #38 / #215 / #35.
 2. Continuer **P1, R2/R3** (verrous SQLite Win32 complets), **R4** (WAL/SHM), puis **R5/R6/R8**, **R7/R9** sur fixtures neuves ; ne pas promouvoir les preuves de test en admission production.
 3. Toute PR : diff, reviews/threads, CI Windows **exact-head SUCCESS**, Protect main sans bypass, fusion `expected_head_sha` seulement si admissible, CI postmain indépendante, journal #38 append-only ; actualiser les **deux prompts et roadmaps**.
 
