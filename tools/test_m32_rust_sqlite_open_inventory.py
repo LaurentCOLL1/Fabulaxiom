@@ -548,8 +548,13 @@ class RustSqliteOpenInventoryTests(unittest.TestCase):
                         "unsafe extern \"C\" fn ro_write", "ffi::SQLITE_READONLY"):
             self.assertIn(missing, source)
         for forbidden in ("#[tauri::command]", "database::open_database(",
-                          "run_migrations(", "PRAGMA journal_mode=WAL"):
+                          "run_migrations("):
             self.assertNotIn(forbidden, source)
+        # The historical R3 section must remain rollback-only; the new
+        # test-only R4 negative witness is the only WAL-mode section.
+        marker = "\n#[test]\nfn m32_r4_readonly_preopened_vfs_without_xshm_refuses_live_wal_disposable()"
+        self.assertEqual(source.count(marker), 1)
+        self.assertNotIn("PRAGMA journal_mode=WAL", source.split(marker, 1)[0])
         self.assertEqual(repository_inventory()["real_g3"], "STOP_UNAVAILABLE")
 
     def test_50_win32_pending_read_only_admission_is_never_writer_proof(self):
@@ -564,8 +569,13 @@ class RustSqliteOpenInventoryTests(unittest.TestCase):
                      "rusqlite::ErrorCode::DatabaseBusy"):
             self.assertIn(text, source)
         for forbidden in ("#[tauri::command]", "database::open_database(",
-                          "run_migrations(", "PRAGMA journal_mode=WAL"):
+                          "run_migrations("):
             self.assertNotIn(forbidden, source)
+        # The historical R3 section must remain rollback-only; the new
+        # test-only R4 negative witness is the only WAL-mode section.
+        marker = "\n#[test]\nfn m32_r4_readonly_preopened_vfs_without_xshm_refuses_live_wal_disposable()"
+        self.assertEqual(source.count(marker), 1)
+        self.assertNotIn("PRAGMA journal_mode=WAL", source.split(marker, 1)[0])
         self.assertEqual(repository_inventory()["real_g3"], "STOP_UNAVAILABLE")
 
     def test_51_native_lock_phase_matrix_stays_disposable_and_read_only(self):
@@ -582,8 +592,13 @@ class RustSqliteOpenInventoryTests(unittest.TestCase):
                      "ErrorCode::DatabaseBusy"):
             self.assertIn(term, source)
         for forbidden in ("#[tauri::command]", "database::open_database(",
-                          "run_migrations(", "PRAGMA journal_mode=WAL"):
+                          "run_migrations("):
             self.assertNotIn(forbidden, source)
+        # The historical R3 section must remain rollback-only; the new
+        # test-only R4 negative witness is the only WAL-mode section.
+        marker = "\n#[test]\nfn m32_r4_readonly_preopened_vfs_without_xshm_refuses_live_wal_disposable()"
+        self.assertEqual(source.count(marker), 1)
+        self.assertNotIn("PRAGMA journal_mode=WAL", source.split(marker, 1)[0])
         self.assertEqual(repository_inventory()["real_g3"], "STOP_UNAVAILABLE")
 
     def test_52_failed_shared_and_close_release_only_on_disposable_win32(self):
@@ -600,8 +615,13 @@ class RustSqliteOpenInventoryTests(unittest.TestCase):
             "ErrorCode::DatabaseBusy", "ERROR_LOCK_VIOLATION"):
             self.assertIn(witness, source)
         for forbidden in ("#[tauri::command]", "database::open_database(",
-                          "run_migrations(", "PRAGMA journal_mode=WAL"):
+                          "run_migrations("):
             self.assertNotIn(forbidden, source)
+        # The historical R3 section must remain rollback-only; the new
+        # test-only R4 negative witness is the only WAL-mode section.
+        marker = "\n#[test]\nfn m32_r4_readonly_preopened_vfs_without_xshm_refuses_live_wal_disposable()"
+        self.assertEqual(source.count(marker), 1)
+        self.assertNotIn("PRAGMA journal_mode=WAL", source.split(marker, 1)[0])
         self.assertEqual(repository_inventory()["real_g3"], "STOP_UNAVAILABLE")
 
     def test_53_two_sqlite_readers_shared_until_last_close_is_only_disposable(self):
@@ -617,8 +637,13 @@ class RustSqliteOpenInventoryTests(unittest.TestCase):
                       "ERROR_LOCK_VIOLATION"):
             self.assertIn(token, source)
         for forbidden in ("#[tauri::command]", "database::open_database(",
-                          "run_migrations(", "PRAGMA journal_mode=WAL"):
+                          "run_migrations("):
             self.assertNotIn(forbidden, source)
+        # The historical R3 section must remain rollback-only; the new
+        # test-only R4 negative witness is the only WAL-mode section.
+        marker = "\n#[test]\nfn m32_r4_readonly_preopened_vfs_without_xshm_refuses_live_wal_disposable()"
+        self.assertEqual(source.count(marker), 1)
+        self.assertNotIn("PRAGMA journal_mode=WAL", source.split(marker, 1)[0])
         self.assertEqual(repository_inventory()["real_g3"], "STOP_UNAVAILABLE")
 
 
