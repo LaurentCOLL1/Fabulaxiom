@@ -507,5 +507,32 @@ class RustSqliteOpenInventoryTests(unittest.TestCase):
         self.assertEqual(repository_inventory()["real_g3"], "STOP_UNAVAILABLE")
 
 
+
+    def test_48_preopened_readonly_win32_sqlite3_file_is_disposable_and_no_writer(self):
+        p = "src-tauri/src/m32_r3_preopened_readonly_vfs_tests.rs"
+        source = self.src[p]
+        self.assertEqual(counts(source), (3, 0, 0, 0, 0, 3, 0))
+        self.assertEqual(source.count("#[test]"), 3)
+        for name in (
+            "m32_r3_preopened_readonly_file_adapter_reads_invented_sqlite_content",
+            "m32_r3_preopened_readonly_file_adapter_reads_original_after_name_substitution",
+            "m32_r3_preopened_readonly_file_adapter_refuses_write_open_before_dispatch",
+        ):
+            self.assertIn("fn " + name + "(", source)
+        for signal in ("ReOpenFile(", "static READONLY_IO: ffi::sqlite3_io_methods",
+                       "xRead: Some(ro_read)", "xWrite: Some(ro_write)",
+                       "SQLITE_IOERR_SHORT_READ", "data.fill(0)",
+                       "SQLITE_READONLY", "SQLITE_CANTOPEN", "sqlite3_vfs_register",
+                       "sqlite3_vfs_unregister", "std::env::temp_dir()", "create_dir(",
+                       "ro_lock(", "single-reader lock convention", "No Win32 file-range locks"):
+            self.assertIn(signal, source)
+        for forbidden in ("#[tauri::command]", "database::open_database(",
+                          "run_migrations(", "migration_007", "M:\\\\Fabulaxiom"):
+            self.assertNotIn(forbidden, source)
+        lib = self.src["src-tauri/src/lib.rs"]
+        self.assertIn("#[cfg(all(test, windows))]\\nmod m32_r3_preopened_readonly_vfs_tests;",
+                      lib)
+        self.assertEqual(repository_inventory()["writer_absence"], "NOT_PROVEN")
+
 if __name__ == "__main__":
     unittest.main()
