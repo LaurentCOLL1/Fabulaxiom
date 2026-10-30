@@ -1,0 +1,17 @@
+# M3.2 R3 — protected PR #233 terminal; PR #234 source merged (30 October 2026)
+
+## Verified exact-SHA authority
+
+**PR #233 TERMINAL:** source `b4cff959df67efebae3d5692c87a5178809c9692`, exact source Windows [#40986052100](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/40986052100) **completed/SUCCESS**, protected strict squash `expected_head_sha` `main=a14c7826647249587604536e7c8e69a61a47ebc1`, independent main-push Windows [#40999259593](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/40999259593) **completed/SUCCESS** at this exact main. Both logs: **257 Rust / 7 Greenfield / 47 SQLite inventory / 156 continuity**, both R3 fail-closed preopened-HANDLE `xOpen` tests individually ok. Issue #38 terminal [comment #6514621418](https://github.com/LaurentCOLL1/Fabulaxiom/issues/38#issuecomment-6514621418).
+
+**PR #234 SOURCE / MERGE VERIFIED:** source `e8c0ca900d7dbbd5824385d5602402bdf03e28fd`, exact source Windows [#41000221598](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/41000221598) **completed/SUCCESS**, **260 Rust / 7 Greenfield / 48 inventory / 157 continuity**, all three new read-only `sqlite3_file` tests individually ok. Protect main strict active bypass=[], reviews=[] threads=[], squash under `expected_head_sha` produced `main=5635994bdedc2310e9be4ab5c2e91aa5b85aef16`. First exact source CI #41000011767 FAILED due to incorrect import `std::os::windows::io::FileExt`; corrected to `std::os::windows::fs::FileExt` before qualified source. PR #234 separate postmain push [#41001188510](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/41001188510) **PENDING TERMINAL VERIFICATION, NOT PASS UNTIL VERIFIED**. Issue #38 merge [comment #6514736542](https://github.com/LaurentCOLL1/Fabulaxiom/issues/38#issuecomment-6514736542).
+
+## Actual engineering scope
+
+`src-tauri/src/m32_r3_preopened_readonly_vfs_tests.rs` is **only** `#[cfg(all(test, windows))]`, on newly seeded disposable `%TEMP%` SQLite images. It provides a real `sqlite3_file`/v1 io_methods xRead/xFileSize/xClose using `ReOpenFile` from a selected handle, and hard refuses all writing; the test SELECT reads original data even after controlled file-name replacement. Critically, its synthetic `xLock`/`xUnlock`/`xCheckReservedLock` **do not perform Windows byte-range locking** and are expressly invalid for concurrency or production. The default VFS's xAccess/xFullPathname are still inherited. This is NOT production R3 admission or WAL/SHM custody.
+
+**All gates remain STOP:** A0 EXISTING_PROFILE STOP; M3.2 IN_PROGRESS_NOT_ACCEPTED; R3 production, R4 WAL/SHM, R5 real v7, R6 runtime actor, R7 recovery, R8 shutdown, R9 gate, writer R1–R9 NOT_PROVEN; G2B NOT_ACCEPTED; G2C NOT_AUTHORIZED; G3 STOP_UNAVAILABLE; historical PENDING_EXTERNAL_ATTESTATION(21/3/2), prospective NOT_STARTED; #215/#35 OPEN/DRAFT. No operator files, writer IPC, migration 007, native Hello, marker, WAL/SHM or crash recovery.
+
+## Follow-up
+
+Verify separate PR #234 postmain #41001188510 on exact `5635994...` and append a factual terminal update; requalify this continuity-only PR on exact Windows head, review diffs/reviews/threads and strict Protect main bypass=[], squash with `expected_head_sha` only after success, then independent postmain and issue #38 append-only. After documentation continuity, engineering priority is **correct native Windows locks and R4 WAL/SHM on fresh disposable fixtures**, then proper writer admission, then user-facing Route C functionality. Do not repeat already-closed PR #233/#234 source decisions.
