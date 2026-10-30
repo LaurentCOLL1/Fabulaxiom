@@ -1,8 +1,8 @@
 //! R3 test-only Windows read-only sqlite3_file backed by a pre-held Win32 HANDLE.
 //! Every fixture is freshly created under %TEMP%; no operator file, runtime
 //! VFS registration, writer admission, WAL, or production locking semantics.
-//! xLock/xCheckReservedLock deliberately assume ONE sealed fixture reader:
-//! they are NOT a general cross-process SQLite locking implementation.
+//! R3 shared-reader xLock now holds native Win32 LockFileEx byte-range locks.
+//! No write-lock upgrade, multi-process recovery or R4 WAL is supported.
 
 use rusqlite::{ffi, Connection, OpenFlags};
 use std::{
@@ -10,7 +10,7 @@ use std::{
     fs::{self, File, OpenOptions},
     os::windows::{fs::{OpenOptionsExt, FileExt}, io::{AsRawHandle, FromRawHandle}},
     path::{Path, PathBuf},
-    process, ptr,
+    process, ptr, io,
     sync::atomic::{AtomicUsize, Ordering},
     time::{SystemTime, UNIX_EPOCH},
 };
@@ -18,15 +18,54 @@ use std::{
 type Identity = (u64, [u8; 16]);
 const SHARE_ALL: u32 = 1 | 2 | 4;
 const READ_ACCESS: u32 = 0x8000_0000;
+// Standard SQLite Windows lock-byte locations; read-only SHARED only.
+const PENDING_BYTE: u32 = 0x4000_0000;
+const RESERVED_BYTE: u32 = PENDING_BYTE + 1;
+const SHARED_FIRST: u32 = PENDING_BYTE + 2;
+const SHARED_SIZE: u32 = 510;
+const LOCKFILE_FAIL_IMMEDIATELY: u32 = 1;
+const LOCKFILE_EXCLUSIVE_LOCK: u32 = 2;
+const ERROR_LOCK_VIOLATION: i32 = 33;
 
 #[repr(C)]
 struct WinFileIdInfo { volume: u64, id: [u8; 16] }
+
+#[repr(C)]
+struct WinOverlapped {
+    internal: usize, internal_high: usize,
+    offset: u32, offset_high: u32, event: *mut c_void,
+}
+
+fn lock_overlapped(byte: u32) -> WinOverlapped {
+    WinOverlapped { internal: 0, internal_high: 0,
+        offset: byte, offset_high: 0, event: ptr::null_mut() }
+}
+
+fn lock_bytes(file: &File, byte: u32, count: u32, exclusive: bool) -> io::Result<()> {
+    let mut overlapped = lock_overlapped(byte);
+    let flags = LOCKFILE_FAIL_IMMEDIATELY |
+        if exclusive { LOCKFILE_EXCLUSIVE_LOCK } else { 0 };
+    let ok = unsafe { LockFileEx(file.as_raw_handle().cast(), flags, 0,
+        count, 0, &mut overlapped) };
+    if ok == 0 { Err(io::Error::last_os_error()) } else { Ok(()) }
+}
+
+fn unlock_bytes(file: &File, byte: u32, count: u32) -> io::Result<()> {
+    let mut overlapped = lock_overlapped(byte);
+    let ok = unsafe { UnlockFileEx(file.as_raw_handle().cast(), 0,
+        count, 0, &mut overlapped) };
+    if ok == 0 { Err(io::Error::last_os_error()) } else { Ok(()) }
+}
 
 #[link(name = "kernel32")]
 unsafe extern "system" {
     fn GetFileInformationByHandleEx(handle: *mut c_void, class: i32,
         data: *mut c_void, size: u32) -> i32;
     fn ReOpenFile(original: *mut c_void, access: u32, share: u32, flags: u32) -> *mut c_void;
+    fn LockFileEx(handle: *mut c_void, flags: u32, reserved: u32,
+        low: u32, high: u32, overlapped: *mut WinOverlapped) -> i32;
+    fn UnlockFileEx(handle: *mut c_void, reserved: u32,
+        low: u32, high: u32, overlapped: *mut WinOverlapped) -> i32;
 }
 
 fn id_of(file: &File) -> Option<Identity> {
@@ -51,14 +90,24 @@ fn reopen_readonly(held: &File) -> Option<File> {
 struct ReadOnlySqliteFile {
     base: ffi::sqlite3_file,
     file: *mut File, // owned Box<File>, dropped exactly once by xClose
+    lock_state: c_int, // NONE or SHARED only; no writer upgrade or R4
 }
 
 unsafe extern "C" fn ro_close(file: *mut ffi::sqlite3_file) -> c_int {
     let opened = unsafe { &mut *(file as *mut ReadOnlySqliteFile) };
     let owned = std::mem::replace(&mut opened.file, ptr::null_mut());
+    let mut rc = ffi::SQLITE_OK;
+    if !owned.is_null() {
+        let handle = unsafe { &*owned };
+        if opened.lock_state == ffi::SQLITE_LOCK_SHARED &&
+            unlock_bytes(handle, SHARED_FIRST, SHARED_SIZE).is_err() {
+            rc = ffi::SQLITE_IOERR_CLOSE;
+        }
+        opened.lock_state = ffi::SQLITE_LOCK_NONE;
+        unsafe { drop(Box::from_raw(owned)) };
+    }
     opened.base.pMethods = ptr::null();
-    if !owned.is_null() { unsafe { drop(Box::from_raw(owned)) }; }
-    ffi::SQLITE_OK
+    rc
 }
 
 unsafe extern "C" fn ro_read(
@@ -103,20 +152,55 @@ unsafe extern "C" fn ro_file_size(
     }
 }
 
-// TEST-ONLY single-reader lock convention. No Win32 file-range locks or
-// interprocess safety is claimed. Production R4 remains STOP.
-unsafe extern "C" fn ro_lock(_: *mut ffi::sqlite3_file, lock: c_int) -> c_int {
-    if lock == ffi::SQLITE_LOCK_SHARED { ffi::SQLITE_OK } else { ffi::SQLITE_BUSY }
+// Read-only R3: acquire real Win32 SHARED range, release on SQLite NONE.
+// Refuse ALL writer upgrades. SQLite WAL and recovery remain STOP.
+unsafe extern "C" fn ro_lock(file: *mut ffi::sqlite3_file, lock: c_int) -> c_int {
+    if file.is_null() { return ffi::SQLITE_IOERR_LOCK; }
+    let opened = unsafe { &mut *(file as *mut ReadOnlySqliteFile) };
+    if opened.file.is_null() { return ffi::SQLITE_IOERR_LOCK; }
+    if lock != ffi::SQLITE_LOCK_SHARED { return ffi::SQLITE_BUSY; }
+    if opened.lock_state == ffi::SQLITE_LOCK_SHARED { return ffi::SQLITE_OK; }
+    if opened.lock_state != ffi::SQLITE_LOCK_NONE { return ffi::SQLITE_IOERR_LOCK; }
+    let native = unsafe { &*opened.file };
+    match lock_bytes(native, SHARED_FIRST, SHARED_SIZE, false) {
+        Ok(()) => { opened.lock_state = ffi::SQLITE_LOCK_SHARED; ffi::SQLITE_OK }
+        Err(err) if err.raw_os_error() == Some(ERROR_LOCK_VIOLATION) => ffi::SQLITE_BUSY,
+        Err(_) => ffi::SQLITE_IOERR_LOCK,
+    }
 }
-unsafe extern "C" fn ro_unlock(_: *mut ffi::sqlite3_file, lock: c_int) -> c_int {
-    if lock == ffi::SQLITE_LOCK_NONE || lock == ffi::SQLITE_LOCK_SHARED {
-        ffi::SQLITE_OK
-    } else { ffi::SQLITE_IOERR_UNLOCK }
-}
-unsafe extern "C" fn ro_reserved(_: *mut ffi::sqlite3_file, out: *mut c_int) -> c_int {
-    if out.is_null() { return ffi::SQLITE_IOERR_CHECKRESERVEDLOCK; }
-    unsafe { *out = 0 };
+unsafe extern "C" fn ro_unlock(file: *mut ffi::sqlite3_file, lock: c_int) -> c_int {
+    if file.is_null() { return ffi::SQLITE_IOERR_UNLOCK; }
+    let opened = unsafe { &mut *(file as *mut ReadOnlySqliteFile) };
+    if opened.file.is_null() { return ffi::SQLITE_IOERR_UNLOCK; }
+    if lock == ffi::SQLITE_LOCK_SHARED { return ffi::SQLITE_OK; }
+    if lock != ffi::SQLITE_LOCK_NONE { return ffi::SQLITE_IOERR_UNLOCK; }
+    if opened.lock_state == ffi::SQLITE_LOCK_NONE { return ffi::SQLITE_OK; }
+    let native = unsafe { &*opened.file };
+    if unlock_bytes(native, SHARED_FIRST, SHARED_SIZE).is_err() {
+        return ffi::SQLITE_IOERR_UNLOCK;
+    }
+    opened.lock_state = ffi::SQLITE_LOCK_NONE;
     ffi::SQLITE_OK
+}
+unsafe extern "C" fn ro_reserved(file: *mut ffi::sqlite3_file, out: *mut c_int) -> c_int {
+    if file.is_null() || out.is_null() { return ffi::SQLITE_IOERR_CHECKRESERVEDLOCK; }
+    let opened = unsafe { &*(file as *const ReadOnlySqliteFile) };
+    if opened.file.is_null() { return ffi::SQLITE_IOERR_CHECKRESERVEDLOCK; }
+    let native = unsafe { &*opened.file };
+    match lock_bytes(native, RESERVED_BYTE, 1, true) {
+        Ok(()) => {
+            if unlock_bytes(native, RESERVED_BYTE, 1).is_err() {
+                return ffi::SQLITE_IOERR_CHECKRESERVEDLOCK;
+            }
+            unsafe { *out = 0 };
+            ffi::SQLITE_OK
+        }
+        Err(err) if err.raw_os_error() == Some(ERROR_LOCK_VIOLATION) => {
+            unsafe { *out = 1 };
+            ffi::SQLITE_OK
+        }
+        Err(_) => ffi::SQLITE_IOERR_CHECKRESERVEDLOCK,
+    }
 }
 unsafe extern "C" fn ro_control(_: *mut ffi::sqlite3_file, _: c_int,
     _: *mut c_void) -> c_int { ffi::SQLITE_NOTFOUND }
@@ -182,6 +266,7 @@ unsafe extern "C" fn ro_xopen(
         ptr::write(file.cast::<ReadOnlySqliteFile>(), ReadOnlySqliteFile {
             base: ffi::sqlite3_file { pMethods: &READONLY_IO },
             file: Box::into_raw(Box::new(native)),
+            lock_state: ffi::SQLITE_LOCK_NONE,
         });
         if !out_flags.is_null() { *out_flags = ffi::SQLITE_OPEN_READONLY; }
     }
@@ -254,10 +339,14 @@ fn seed_invented_database(path: &Path, value: i64) {
     drop(db); // no concurrent writer when the read-only adapter runs
 }
 
-fn readonly_count(path: &Path, gate: &RegisteredReadOnlyVfs) -> i64 {
-    let db = Connection::open_with_flags_and_vfs(
+fn open_readonly(path: &Path, gate: &RegisteredReadOnlyVfs) -> Connection {
+    Connection::open_with_flags_and_vfs(
         path, OpenFlags::SQLITE_OPEN_READ_ONLY, gate.name()
-    ).expect("read-only custom sqlite3_file must open a disposable SQLite image");
+    ).expect("read-only custom sqlite3_file must open a disposable SQLite image")
+}
+
+fn readonly_count(path: &Path, gate: &RegisteredReadOnlyVfs) -> i64 {
+    let db = open_readonly(path, gate);
     db.query_row("SELECT value FROM invented_r3", [], |row| row.get(0)).unwrap()
 }
 
@@ -313,6 +402,36 @@ fn m32_r3_preopened_readonly_file_adapter_refuses_write_open_before_dispatch() {
     assert!(attempt.is_err(), "writeable SQLite xOpen must fail before any delegation");
     assert_eq!(gate.state.accepted.load(Ordering::SeqCst), 0);
     assert!(gate.state.refused.load(Ordering::SeqCst) >= 1);
+    assert!(!path.with_file_name("invented.sqlite3-wal").exists());
+    assert!(!path.with_file_name("invented.sqlite3-shm").exists());
+}
+
+#[test]
+fn m32_r3_win32_shared_byte_range_blocks_competing_exclusive_until_commit() {
+    let root = OwnedRoot::new();
+    let path = root.database();
+    seed_invented_database(&path, 41);
+    let held = OpenOptions::new().read(true).share_mode(SHARE_ALL)
+        .open(&path).expect("CI-owned read-only file");
+    let gate = RegisteredReadOnlyVfs::new(held);
+    let db = open_readonly(&path, &gate);
+    db.execute_batch("BEGIN").unwrap();
+    let value: i64 = db.query_row("SELECT value FROM invented_r3", [], |row| row.get(0)).unwrap();
+    assert_eq!(value, 41);
+    // Independent HANDLE, not SQLite: OS must reject overlapping exclusive.
+    let competitor = OpenOptions::new().read(true).share_mode(SHARE_ALL)
+        .open(&path).unwrap();
+    let denied = lock_bytes(&competitor, SHARED_FIRST, SHARED_SIZE, true).unwrap_err();
+    assert_eq!(denied.raw_os_error(), Some(ERROR_LOCK_VIOLATION));
+    // Native SHARED locks may coexist.
+    lock_bytes(&competitor, SHARED_FIRST, SHARED_SIZE, false).unwrap();
+    unlock_bytes(&competitor, SHARED_FIRST, SHARED_SIZE).unwrap();
+    db.execute_batch("COMMIT").unwrap();
+    // After SQLite's xUnlock, exclusive lock is possible on same FileId.
+    lock_bytes(&competitor, SHARED_FIRST, SHARED_SIZE, true).unwrap();
+    unlock_bytes(&competitor, SHARED_FIRST, SHARED_SIZE).unwrap();
+    drop(db);
+    assert_eq!(gate.state.accepted.load(Ordering::SeqCst), 1);
     assert!(!path.with_file_name("invented.sqlite3-wal").exists());
     assert!(!path.with_file_name("invented.sqlite3-shm").exists());
 }
