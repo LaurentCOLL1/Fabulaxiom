@@ -4930,5 +4930,43 @@ class HandoffContractTests(unittest.TestCase):
         for p in ("ROADMAP_STATUS_CURRENT.md", "FABULAXIOM_ROADMAP_V1.md"):
             self.assertIn(note, (ROOT / "docs/roadmap" / p).read_text(encoding="utf-8"))
 
+
+    def test_158_pr233_terminal_pr234_source_and_postmain_separate(self):
+        item = self.data["post_pr233_terminal_pr234_source_merged_20261030"]
+        self.assertEqual(item["scope"], "PROTECTED_SOURCE_AND_INDEPENDENT_POSTMAIN_CI")
+        self.assertEqual(item["pr233"], 233)
+        self.assertEqual(item["pr233_merge_sha"], "a14c7826647249587604536e7c8e69a61a47ebc1")
+        self.assertEqual(item["pr233_source_ci"], 40986052100)
+        self.assertEqual(item["pr233_postmain_ci"], 40999259593)
+        self.assertTrue(item["pr233_source_success"])
+        self.assertTrue(item["pr233_postmain_success"])
+        self.assertEqual(item["pr233_counts"], {"rust": 257, "greenfield": 7,
+                                               "sqlite_inventory": 47, "continuity": 156})
+        self.assertEqual(item["pr234"], 234)
+        self.assertEqual(item["pr234_merge_sha"], "5635994bdedc2310e9be4ab5c2e91aa5b85aef16")
+        self.assertEqual(item["pr234_source_ci"], 41000221598)
+        self.assertTrue(item["pr234_source_success"])
+        self.assertEqual(item["pr234_postmain_ci"], 41001188510)
+        self.assertEqual(item["pr234_postmain_status"], "SUCCESS_EXACT_SHA_POSTMAIN")
+        self.assertTrue(item["pr234_postmain_success"])
+        self.assertEqual(item["pr234_prior_failed_ci"], 41000011767)
+        self.assertEqual(item["pr234_counts_source"], {"rust": 260, "greenfield": 7,
+                                                      "sqlite_inventory": 48, "continuity": 157})
+        for flag in ("r3_production_admitted", "r4_production_proven",
+                     "production_writer_admitted", "operator_data_accessed",
+                     "writer_ipc_added", "migration_007",
+                     "windows_hello_implemented", "recovery_authorized"):
+            self.assertFalse(item[flag], flag)
+        self.assertEqual(item["m3_2"], "IN_PROGRESS_NOT_ACCEPTED")
+        self.assertEqual(item["historical"], "PENDING_EXTERNAL_ATTESTATION(21/3/2)")
+        note = "M3_2_PR233_PR234_TERMINAL_CI_CONTINUITY_20261030.md"
+        self.assertTrue((ROOT / "docs/qualification" / note).is_file())
+        for name in ("RESUME_PROMPT.md", "RESUME_PROMPT_SHORT.md",
+                     "HANDOFF_CURRENT.md", "HANDOFF_PROTOCOL.md", "HANDOFF_HISTORY.md",
+                     "NEXT.md", "STATE.md", "M3_2_GATE_DECISION_CURRENT.md", "README.md"):
+            self.assertIn(note, (DIRECTORY / name).read_text(encoding="utf-8"), name)
+        for name in ("ROADMAP_STATUS_CURRENT.md", "FABULAXIOM_ROADMAP_V1.md"):
+            self.assertIn(note, (ROOT / "docs/roadmap" / name).read_text(encoding="utf-8"))
+
 if __name__ == "__main__":
     unittest.main()
