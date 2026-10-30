@@ -688,7 +688,7 @@ class RustSqliteOpenInventoryTests(unittest.TestCase):
         self.assertEqual(counts(source), (26, 0, 0, 0, 0, 27, 0))
         witness = source.split(
             "fn m32_r4_d3a_shm_fileid_stable_during_live_wrapped_wal_disposable()", 1
-        )[1].split("fn m32_d3a_wrong_expected_wal_fileid_vetoes_after_delegation_and_closes()", 1)[0]
+        )[1].split("// NO atomic custody of three handles; NO writer production admission.", 1)[0]
         for token in ("fresh_main()", "RegisteredFixtureVfs::with_d3a(",
                       "SQLITE_OPEN_READ_WRITE", "new.sqlite3-wal",
                       "new.sqlite3-shm", "win_file_id_128(&wal_held)",

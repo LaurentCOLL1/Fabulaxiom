@@ -21,3 +21,7 @@ Exact PR HEAD, Windows status `completed/SUCCESS` and logs, full diff/reviews/th
 **STOP:** M3.2 IN_PROGRESS_NOT_ACCEPTED; writer/R1–R9 production NOT_PROVEN; G2B NOT_ACCEPTED; G2C NOT_AUTHORIZED; real G3 STOP_UNAVAILABLE; historical PENDING_EXTERNAL_ATTESTATION(21/3/2); prospective NOT_STARTED; D3b-4/5 and D3b-5 STOP; D3c design-only.
 
 **Next architecture:** prove a handle-bound `xShm*` path for preopened R3 main with WAL/SHM identity pinned throughout transitions, on *new fixtures only*; until then fail closed. SQLite [WAL](https://www.sqlite.org/wal.html) and [WAL-index](https://sqlite.org/walformat.html) are normative context, not admission.
+
+## Correctif de périmètre historique, CI initiale refusée
+
+[CI Windows #41123585787](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/41123585787) FAILED à `aba507618e15789f7df148a07f98343242d189b9`, dans cinq tests du contrat de continuité : le nouveau test avait été ajouté **à l'intérieur** de la tranche historique D2/D3ab, dont les 26 tests d'origine sont figés. Correctif sans changement de la politique ni des tests historiques : déplacer le test R4/D3a dans un **nouveau module autonome placé après la section historique**. Le témoin demeure `cfg(all(test, windows))`, les mêmes VFS de test et fichiers fictifs, sans aucune activation en production ; il construit sa propre main SQLite neuve au lieu d'utiliser `fresh_main()` du module historique. Les 26 tests historiques restent strictement 26 ; le total Rust attendu reste 269. **Nouvelle CI exact-head obligatoire avant toute fusion.**

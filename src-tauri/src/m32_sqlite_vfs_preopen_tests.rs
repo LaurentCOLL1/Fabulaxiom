@@ -1115,68 +1115,6 @@ mod d3a_p1_disposable_wal_shm {
     }
 
     #[test]
-    fn m32_r4_d3a_shm_fileid_stable_during_live_wrapped_wal_disposable() {
-        use std::os::windows::fs::OpenOptionsExt;
-        // The default Win32 xShm* implementation remains the source of the
-        // mapped WAL index. This independently observes the live -shm file
-        // through two owned Windows handles; it does not pin xShmMap's HANDLE
-        // or authenticate any entire main/WAL/SHM open as one atomic action.
-        let (_owned, path, main_id) = fresh_main();
-        let wal = path.with_file_name("new.sqlite3-wal");
-        let shm = path.with_file_name("new.sqlite3-shm");
-        let gate = RegisteredFixtureVfs::with_d3a(
-            path.clone(), main_id, None, false, false);
-        let db = Connection::open_with_flags_and_vfs(
-            &path, OpenFlags::SQLITE_OPEN_READ_WRITE, gate.name())
-            .expect("new fixture only, never existing operator database");
-        assert_eq!(sqlite_opened_file_id_128(&db).unwrap(), main_id);
-        let mode: String = db.query_row("PRAGMA journal_mode=WAL", [], |r| r.get(0)).unwrap();
-        assert_eq!(mode.to_ascii_lowercase(), "wal");
-        db.execute_batch(
-            "CREATE TABLE invented_r4_shm(value INTEGER NOT NULL);
-             INSERT INTO invented_r4_shm(value) VALUES (1);"
-        ).unwrap();
-        assert!(fs::metadata(&wal).unwrap().len() > 0);
-        assert!(fs::metadata(&shm).unwrap().len() > 0);
-        const SHARE_READ_WRITE: u32 = 1 | 2;
-        let wal_held = fs::OpenOptions::new().read(true).share_mode(SHARE_READ_WRITE)
-            .open(&wal).expect("fixture's live WAL sidecar only");
-        let shm_held = fs::OpenOptions::new().read(true).share_mode(SHARE_READ_WRITE)
-            .open(&shm).expect("fixture's live SHM sidecar only");
-        let wal_id = win_file_id_128(&wal_held).unwrap();
-        let shm_id = win_file_id_128(&shm_held).unwrap();
-        assert_ne!(main_id, wal_id);
-        assert_ne!(main_id, shm_id);
-        assert_ne!(wal_id, shm_id);
-        db.execute("INSERT INTO invented_r4_shm(value) VALUES (2)", []).unwrap();
-        assert_eq!(db.query_row("SELECT COUNT(*) FROM invented_r4_shm", [],
-            |r| r.get::<_, i64>(0)).unwrap(), 2);
-        assert_eq!(win_file_id_128(&wal_held).unwrap(), wal_id);
-        assert_eq!(win_file_id_128(&shm_held).unwrap(), shm_id);
-        // The second name-based observation is explicitly NON-ATOMIC;
-        // only each held handle's identity is stable by construction.
-        assert_eq!(win_file_id_128(&fs::OpenOptions::new().read(true)
-            .share_mode(SHARE_READ_WRITE).open(&wal).unwrap()).unwrap(), wal_id);
-        assert_eq!(win_file_id_128(&fs::OpenOptions::new().read(true)
-            .share_mode(SHARE_READ_WRITE).open(&shm).unwrap()).unwrap(), shm_id);
-        assert!(gate.state.d3a_wal_identity_matches.load(Ordering::SeqCst) >= 1);
-        assert_eq!(gate.state.d3a_wal_identity_refusals.load(Ordering::SeqCst), 0);
-        assert!(gate.state.shm_map_delegations.load(Ordering::SeqCst) >= 1);
-        assert!(gate.state.d3a_shm_lock_delegations.load(Ordering::SeqCst) >= 1);
-        assert!(gate.state.d3a_shm_barrier_delegations.load(Ordering::SeqCst) >= 1);
-        // Release our extra sidecar handles before SQLite's last-close
-        // checkpoint/delete lifecycle; this is still a disposable fixture.
-        drop(shm_held);
-        drop(wal_held);
-        assert!(db.close().is_ok());
-        assert!(gate.state.d3a_shm_unmap_delegations.load(Ordering::SeqCst) >= 1);
-        assert_eq!(gate.state.d3a_shm_unmap_failures.load(Ordering::SeqCst), 0);
-        assert!(gate.state.d3a_wal_close_successes.load(Ordering::SeqCst) >= 1);
-        assert_eq!(gate.state.d3a_main_close_successes.load(Ordering::SeqCst), 1);
-        // NO atomic custody of three handles; NO writer production admission.
-    }
-
-    #[test]
     fn m32_d3a_wrong_expected_wal_fileid_vetoes_after_delegation_and_closes() {
         let (owned, path, main_id) = fresh_main();
         let decoy = owned.0.join("wrong-d3a-wal-id.fixture");
@@ -1672,4 +1610,79 @@ fn m32_r3_sqlite_xopen_held_handle_survives_replaced_name_but_vetoes() {
     assert!(!path.with_file_name("new.sqlite3-wal").exists());
     assert!(!path.with_file_name("new.sqlite3-shm").exists());
     drop(replacement);
+}
+
+
+// R4 / D3a live -shm FileId128: NEW standalone test module deliberately
+// OUTSIDE the immutable 26-test D2/D3ab historical fixture section and the
+// existing five R4 P1 witnesses. Windows CI only, disposable %TEMP% namespace.
+mod r4_d3a_live_shm_fileid_disposable {
+    use super::*;
+
+    #[test]
+    fn m32_r4_d3a_shm_fileid_stable_during_live_wrapped_wal_disposable() {
+        use std::os::windows::fs::OpenOptionsExt;
+        // The default Win32 xShm* implementation remains the source of the
+        // mapped WAL index. This independently observes the live -shm file
+        // through two owned Windows handles; it does not pin xShmMap's HANDLE
+        // or authenticate any entire main/WAL/SHM open as one atomic action.
+        let owned = DisposableRoot::new();
+        let path = owned.db();
+        fs::OpenOptions::new().write(true).create_new(true).open(&path)
+            .expect("new, CI-owned main only");
+        let main_id = win_file_id_128(&fs::File::open(&path).unwrap()).unwrap();
+        let wal = path.with_file_name("new.sqlite3-wal");
+        let shm = path.with_file_name("new.sqlite3-shm");
+        let gate = RegisteredFixtureVfs::with_d3a(
+            path.clone(), main_id, None, false, false);
+        let db = Connection::open_with_flags_and_vfs(
+            &path, OpenFlags::SQLITE_OPEN_READ_WRITE, gate.name())
+            .expect("new fixture only, never existing operator database");
+        assert_eq!(sqlite_opened_file_id_128(&db).unwrap(), main_id);
+        let mode: String = db.query_row("PRAGMA journal_mode=WAL", [], |r| r.get(0)).unwrap();
+        assert_eq!(mode.to_ascii_lowercase(), "wal");
+        db.execute_batch(
+            "CREATE TABLE invented_r4_shm(value INTEGER NOT NULL);
+             INSERT INTO invented_r4_shm(value) VALUES (1);"
+        ).unwrap();
+        assert!(fs::metadata(&wal).unwrap().len() > 0);
+        assert!(fs::metadata(&shm).unwrap().len() > 0);
+        const SHARE_READ_WRITE: u32 = 1 | 2;
+        let wal_held = fs::OpenOptions::new().read(true).share_mode(SHARE_READ_WRITE)
+            .open(&wal).expect("fixture's live WAL sidecar only");
+        let shm_held = fs::OpenOptions::new().read(true).share_mode(SHARE_READ_WRITE)
+            .open(&shm).expect("fixture's live SHM sidecar only");
+        let wal_id = win_file_id_128(&wal_held).unwrap();
+        let shm_id = win_file_id_128(&shm_held).unwrap();
+        assert_ne!(main_id, wal_id);
+        assert_ne!(main_id, shm_id);
+        assert_ne!(wal_id, shm_id);
+        db.execute("INSERT INTO invented_r4_shm(value) VALUES (2)", []).unwrap();
+        assert_eq!(db.query_row("SELECT COUNT(*) FROM invented_r4_shm", [],
+            |r| r.get::<_, i64>(0)).unwrap(), 2);
+        assert_eq!(win_file_id_128(&wal_held).unwrap(), wal_id);
+        assert_eq!(win_file_id_128(&shm_held).unwrap(), shm_id);
+        // The second name-based observation is explicitly NON-ATOMIC;
+        // only each held handle's identity is stable by construction.
+        assert_eq!(win_file_id_128(&fs::OpenOptions::new().read(true)
+            .share_mode(SHARE_READ_WRITE).open(&wal).unwrap()).unwrap(), wal_id);
+        assert_eq!(win_file_id_128(&fs::OpenOptions::new().read(true)
+            .share_mode(SHARE_READ_WRITE).open(&shm).unwrap()).unwrap(), shm_id);
+        assert!(gate.state.d3a_wal_identity_matches.load(Ordering::SeqCst) >= 1);
+        assert_eq!(gate.state.d3a_wal_identity_refusals.load(Ordering::SeqCst), 0);
+        assert!(gate.state.shm_map_delegations.load(Ordering::SeqCst) >= 1);
+        assert!(gate.state.d3a_shm_lock_delegations.load(Ordering::SeqCst) >= 1);
+        assert!(gate.state.d3a_shm_barrier_delegations.load(Ordering::SeqCst) >= 1);
+        // Release our extra sidecar handles before SQLite's last-close
+        // checkpoint/delete lifecycle; this is still a disposable fixture.
+        drop(shm_held);
+        drop(wal_held);
+        assert!(db.close().is_ok());
+        assert!(gate.state.d3a_shm_unmap_delegations.load(Ordering::SeqCst) >= 1);
+        assert_eq!(gate.state.d3a_shm_unmap_failures.load(Ordering::SeqCst), 0);
+        assert!(gate.state.d3a_wal_close_successes.load(Ordering::SeqCst) >= 1);
+        assert_eq!(gate.state.d3a_main_close_successes.load(Ordering::SeqCst), 1);
+        // NO atomic custody of three handles; NO writer production admission.
+    }
+
 }
