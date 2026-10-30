@@ -524,7 +524,7 @@ class RustSqliteOpenInventoryTests(unittest.TestCase):
                        "SQLITE_IOERR_SHORT_READ", "data.fill(0)",
                        "SQLITE_READONLY", "SQLITE_CANTOPEN", "sqlite3_vfs_register",
                        "sqlite3_vfs_unregister", "std::env::temp_dir()", "create_dir(",
-                       "ro_lock(", "single-reader lock convention", "No Win32 file-range locks"):
+                       "ro_lock(", "Read-only R3: acquire real Win32 SHARED range", "LockFileEx("):
             self.assertIn(signal, source)
         for forbidden in ("#[tauri::command]", "database::open_database(",
                           "run_migrations(", "migration_007", "M:\\\\Fabulaxiom"):
