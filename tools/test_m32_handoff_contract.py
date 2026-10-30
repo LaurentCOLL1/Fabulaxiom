@@ -4910,7 +4910,7 @@ class HandoffContractTests(unittest.TestCase):
             self.assertFalse(entry[flag], flag)
         self.assertEqual(entry["existing_profile"], "STOP")
         source = (ROOT / "src-tauri/src/m32_r3_preopened_readonly_vfs_tests.rs").read_text(encoding="utf-8")
-        self.assertEqual(source.count("#[test]"), 4)  # PR236 adds native Win32 SHARED witness
+        self.assertEqual(source.count("#[test]"), 4)  # current R3 fixture includes one native SHARED witness
         for name in (
             "m32_r3_preopened_readonly_file_adapter_reads_invented_sqlite_content",
             "m32_r3_preopened_readonly_file_adapter_reads_original_after_name_substitution",
@@ -4929,6 +4929,80 @@ class HandoffContractTests(unittest.TestCase):
             self.assertIn(note, (DIRECTORY / p).read_text(encoding="utf-8"))
         for p in ("ROADMAP_STATUS_CURRENT.md", "FABULAXIOM_ROADMAP_V1.md"):
             self.assertIn(note, (ROOT / "docs/roadmap" / p).read_text(encoding="utf-8"))
+
+
+    def test_158_pr233_terminal_pr234_source_and_postmain_separate(self):
+        item = self.data["post_pr233_terminal_pr234_source_merged_20261030"]
+        self.assertEqual(item["scope"], "PROTECTED_SOURCE_AND_INDEPENDENT_POSTMAIN_CI")
+        self.assertEqual(item["pr233"], 233)
+        self.assertEqual(item["pr233_merge_sha"], "a14c7826647249587604536e7c8e69a61a47ebc1")
+        self.assertEqual(item["pr233_source_ci"], 40986052100)
+        self.assertEqual(item["pr233_postmain_ci"], 40999259593)
+        self.assertTrue(item["pr233_source_success"])
+        self.assertTrue(item["pr233_postmain_success"])
+        self.assertEqual(item["pr233_counts"], {"rust": 257, "greenfield": 7,
+                                               "sqlite_inventory": 47, "continuity": 156})
+        self.assertEqual(item["pr234"], 234)
+        self.assertEqual(item["pr234_merge_sha"], "5635994bdedc2310e9be4ab5c2e91aa5b85aef16")
+        self.assertEqual(item["pr234_source_ci"], 41000221598)
+        self.assertTrue(item["pr234_source_success"])
+        self.assertEqual(item["pr234_postmain_ci"], 41001188510)
+        self.assertEqual(item["pr234_postmain_status"], "SUCCESS_EXACT_SHA_POSTMAIN")
+        self.assertTrue(item["pr234_postmain_success"])
+        self.assertEqual(item["pr234_prior_failed_ci"], 41000011767)
+        self.assertEqual(item["pr234_counts_source"], {"rust": 260, "greenfield": 7,
+                                                      "sqlite_inventory": 48, "continuity": 157})
+        for flag in ("r3_production_admitted", "r4_production_proven",
+                     "production_writer_admitted", "operator_data_accessed",
+                     "writer_ipc_added", "migration_007",
+                     "windows_hello_implemented", "recovery_authorized"):
+            self.assertFalse(item[flag], flag)
+        self.assertEqual(item["m3_2"], "IN_PROGRESS_NOT_ACCEPTED")
+        self.assertEqual(item["historical"], "PENDING_EXTERNAL_ATTESTATION(21/3/2)")
+        note = "M3_2_PR233_PR234_TERMINAL_CI_CONTINUITY_20261030.md"
+        self.assertTrue((ROOT / "docs/qualification" / note).is_file())
+        for name in ("RESUME_PROMPT.md", "RESUME_PROMPT_SHORT.md",
+                     "HANDOFF_CURRENT.md", "HANDOFF_PROTOCOL.md", "HANDOFF_HISTORY.md",
+                     "NEXT.md", "STATE.md", "M3_2_GATE_DECISION_CURRENT.md", "README.md"):
+            self.assertIn(note, (DIRECTORY / name).read_text(encoding="utf-8"), name)
+        for name in ("ROADMAP_STATUS_CURRENT.md", "FABULAXIOM_ROADMAP_V1.md"):
+            self.assertIn(note, (ROOT / "docs/roadmap" / name).read_text(encoding="utf-8"))
+
+
+    def test_159_r3_readonly_win32_shared_byte_lock_is_not_writer_admission(self):
+        item = self.data["m32_r3_native_shared_lock_candidate_20261030"]
+        self.assertEqual(item["scope"], "WINDOWS_DISPOSABLE_READONLY_NATIVE_SHARED_LOCK_ONLY")
+        self.assertEqual(item["source_main_before_pr"], "d50753ef95afd79f5c2d7fa38676acad284c9eaf")
+        self.assertEqual(item["previous_pr"], 235)
+        self.assertEqual(item["previous_source_ci"], 41003012379)
+        self.assertEqual(item["expected_rust_tests_not_qualified"], 261)
+        self.assertEqual(item["expected_sqlite_inventory_tests_not_qualified"], 49)
+        self.assertEqual(item["expected_continuity_tests_not_qualified"], 159)
+        self.assertTrue(item["win32_shared_lock_candidate_in_test"])
+        for flag in ("native_writer_lock_transitions_proven", "wal_shm_proven",
+                     "r3_atomic_production_admission", "production_writer_admitted",
+                     "operator_data_accessed", "migration_007", "tauri_ipc_added",
+                     "crash_recovery_authorized"):
+            self.assertFalse(item[flag], flag)
+        self.assertEqual(item["m3_2"], "IN_PROGRESS_NOT_ACCEPTED")
+        source = (ROOT / "src-tauri/src/m32_r3_preopened_readonly_vfs_tests.rs").read_text(encoding="utf-8")
+        self.assertEqual(source.count("#[test]"), 4)
+        for token in ("fn lock_bytes(", "fn unlock_bytes(", "LockFileEx(",
+                      "UnlockFileEx(", "SHARED_FIRST", "RESERVED_BYTE",
+                      "ffi::SQLITE_LOCK_SHARED",
+                      "m32_r3_win32_shared_byte_range_blocks_competing_exclusive_until_commit"):
+            self.assertIn(token, source)
+        self.assertIn("xShmMap: None", source)
+        self.assertIn("xShmLock: None", source)
+        self.assertNotIn("#[tauri::command]", source)
+        note = "M3_2_R3_WIN32_NATIVE_SHARED_LOCKFILEEX_DISPOSABLE_20261030.md"
+        self.assertTrue((ROOT / "docs/qualification" / note).is_file())
+        for file in ("RESUME_PROMPT.md", "RESUME_PROMPT_SHORT.md",
+                     "HANDOFF_CURRENT.md", "HANDOFF_PROTOCOL.md", "HANDOFF_HISTORY.md",
+                     "STATE.md", "NEXT.md", "M3_2_GATE_DECISION_CURRENT.md", "README.md"):
+            self.assertIn(note, (DIRECTORY / file).read_text(encoding="utf-8"))
+        for file in ("ROADMAP_STATUS_CURRENT.md", "FABULAXIOM_ROADMAP_V1.md"):
+            self.assertIn(note, (ROOT / "docs/roadmap" / file).read_text(encoding="utf-8"))
 
 if __name__ == "__main__":
     unittest.main()
