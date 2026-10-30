@@ -69,6 +69,7 @@ EXPECTED = {
     # D3b has no production opener, existing-profile recovery or marker.
     # PR230 R4 Windows CI-only: ONE extra opening expression in the new
     # exclusive-before-WAL helper; not a runtime/production writer path.
+    # Historical PR232: "src-tauri/src/m32_sqlite_vfs_preopen_tests.rs": (24, 0, 0, 0, 0, 25, 0)
     # PR233: one more Windows cfg(test) SQLite attempt; callback always
     # clones the preopened handle then refuses before default xOpen.
     "src-tauri/src/m32_sqlite_vfs_preopen_tests.rs": (25, 0, 0, 0, 0, 26, 0),
