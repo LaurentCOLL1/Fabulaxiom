@@ -621,5 +621,24 @@ class RustSqliteOpenInventoryTests(unittest.TestCase):
             self.assertNotIn(forbidden, source)
         self.assertEqual(repository_inventory()["real_g3"], "STOP_UNAVAILABLE")
 
+
+    def test_54_r4_default_win32_wal_shm_is_only_disposable_reference(self):
+        p = "src-tauri/src/m32_r4_wal_shm_disposable_tests.rs"
+        s = self.src[p]
+        self.assertEqual(counts(s), (2, 0, 0, 0, 0, 1, 0))
+        self.assertEqual(s.count("#[test]"), 1)
+        for t in ("create_new(true)", "std::env::temp_dir()", "GetFileInformationByHandleEx",
+                  "PRAGMA journal_mode=WAL", "PRAGMA wal_autocheckpoint=0",
+                  'owned.sidecar("-wal")', 'owned.sidecar("-shm")',
+                  "m32_r4_default_win32_wal_shm_sidecar_identity_and_reader_snapshot_disposable",
+                  "OpenFlags::SQLITE_OPEN_READ_ONLY", "drop(reader)", "drop(writer)"):
+            self.assertIn(t, s)
+        for t in ("#[tauri::command]", "database::open_database(",
+                  "run_migrations(", "app_local_data_dir(", "migration_007"):
+            self.assertNotIn(t, s)
+        self.assertIn("#[cfg(all(test, windows))]\nmod m32_r4_wal_shm_disposable_tests;",
+                      self.src["src-tauri/src/lib.rs"])
+        self.assertEqual(repository_inventory()["writer_absence"], "NOT_PROVEN")
+
 if __name__ == "__main__":
     unittest.main()

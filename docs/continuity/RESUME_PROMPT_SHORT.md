@@ -6,8 +6,9 @@ Reprends le développement de l'application Windows **Fabulaxiom** (React, Tauri
 
 ## Dernier checkpoint
 
-- PR **#240 fusionnée** : `main=89135b95babeebb7c2f4a15506841e9527b93a3c` ; source CI #41069738923 SUCCESS (265/7/52/162), postmain #41074346064 à vérifier.
-- **R3** : SHARED/RESERVED/PENDING/EXCLUSIVE et libération sous erreur qualifiés sur fichiers fictifs. Nouveau test **deux lecteurs simultanés NON QUALIFIÉ** (266/7/53/163 attendus). Production R3 et R4 WAL/SHM NOT_PROVEN ; #215/#35 DRAFT.
+- PR **#241 fusionnée** : `main=03a2b6206e49f0e7aac5b4acbdfcee2d98737b97` ; CI source #41075099123 SUCCESS (266/7/53/163) ; postmain indépendante #41082491631 IN_PROGRESS au checkpoint, à re-vérifier.
+- **R3** : deux lecteurs SHARED simultanés qualifiés sur fixtures Windows ; R3 production NON PROUVÉ.
+- Nouvelle **candidature R4** : référence WAL/SHM avec VFS Win32 SQLite standard, qualification `M3_2_R4_DEFAULT_WIN32_WAL_SHM_SNAPSHOT_DISPOSABLE_20261030.md` ; **267/7/54/164 attendus NON QUALIFIÉS** jusqu'à CI exact-head. Cela ne prouve PAS les `xShm*` propres au VFS Fabulaxiom ni R4 production. PR #215/#35 DRAFT.
 
 ## Interdictions actives — STOP
 
@@ -17,12 +18,12 @@ Reprends le développement de l'application Windows **Fabulaxiom** (React, Tauri
 
 ## Prochaines opérations
 
-1. Vérifier la CI postmain #240 et l'état actuel de #38 / #215 / #35.
-2. Continuer **P1, R2/R3** (verrous SQLite Win32 complets), **R4** (WAL/SHM), puis **R5/R6/R8**, **R7/R9** sur fixtures neuves ; ne pas promouvoir les preuves de test en admission production.
-3. Toute PR : diff, reviews/threads, CI Windows **exact-head SUCCESS**, Protect main sans bypass, fusion `expected_head_sha` seulement si admissible, CI postmain indépendante, journal #38 append-only ; actualiser les **deux prompts et roadmaps**.
+1. Vérifier la CI postmain #241 ; qualifier la candidature R4 par CI Windows exact-head, diff, reviews/threads, `Protect main` strict, puis fusion `expected_head_sha` uniquement si admissible, CI postmain indépendante et #38 append-only.
+2. Continuer **P1, R2/R3**, notamment **R4 `xShm*` WAL/SHM et garde FileId128** sur fixtures neuves, puis R5/R6/R8 et R7/R9. Ne pas promouvoir les fixtures en admission production.
+3. Actualiser les deux prompts, handoffs et roadmaps à chaque PR importante.
 
 ## Documents d'autorité
 
-Lire en premier [RESUME_PROMPT.md](RESUME_PROMPT.md) (preuves et archives), puis `HANDOFF_CURRENT.json`, `HANDOFF_CURRENT.md`, `HANDOFF_PROTOCOL.md`, `HANDOFF_HISTORY.md`, `STATE.md`, `NEXT.md`, `M3_2_GATE_DECISION_CURRENT.md` ; `docs/roadmap/ROADMAP_STATUS_CURRENT.md` et `docs/roadmap/FABULAXIOM_ROADMAP_V1.md`. Qualification candidate : `docs/qualification/M3_2_R3_TWO_READERS_SHARED_LIFECYCLE_DISPOSABLE_20261030.md`.
+Lire d'abord [RESUME_PROMPT.md](RESUME_PROMPT.md), puis `HANDOFF_CURRENT.json`, `HANDOFF_CURRENT.md`, `HANDOFF_PROTOCOL.md`, `HANDOFF_HISTORY.md`, `STATE.md`, `NEXT.md`, `M3_2_GATE_DECISION_CURRENT.md` et les roadmaps `docs/roadmap/ROADMAP_STATUS_CURRENT.md` et `docs/roadmap/FABULAXIOM_ROADMAP_V1.md`. Qualification candidate : [M3_2_R4_DEFAULT_WIN32_WAL_SHM_SNAPSHOT_DISPOSABLE_20261030.md](../qualification/M3_2_R4_DEFAULT_WIN32_WAL_SHM_SNAPSHOT_DISPOSABLE_20261030.md).
 
 **Règle :** ne jamais extrapoler les fixtures aux données réelles. CI/SHA et inventaires historiques restent dans le prompt complet et les handoffs, pas ici.

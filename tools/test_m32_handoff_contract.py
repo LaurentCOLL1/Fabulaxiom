@@ -5124,5 +5124,32 @@ class HandoffContractTests(unittest.TestCase):
         for name in ("ROADMAP_STATUS_CURRENT.md", "FABULAXIOM_ROADMAP_V1.md"):
             self.assertIn(note, (ROOT / "docs/roadmap" / name).read_text(encoding="utf-8"), name)
 
+
+    def test_164_r4_stock_win32_wal_shm_candidate_never_admits_writer(self):
+        e = self.data["m32_r4_win32_wal_shm_default_vfs_candidate_20261030"]
+        self.assertEqual(e["scope"], "WINDOWS_CI_DISPOSABLE_DEFAULT_SQLITE_VFS_WAL_SHM_REFERENCE")
+        self.assertEqual(e["source_parent_main"], "03a2b6206e49f0e7aac5b4acbdfcee2d98737b97")
+        self.assertEqual(e["expected_rust_tests_not_qualified"], 267)
+        self.assertEqual(e["expected_inventory_tests_not_qualified"], 54)
+        self.assertEqual(e["expected_continuity_tests_not_qualified"], 164)
+        self.assertTrue(e["default_vfs_reference_only"])
+        for k in ("real_custom_vfs_wal_shm_proven", "sidecar_atomic_custody_proven",
+                  "writer_admitted", "operator_data_accessed", "ipc_enabled",
+                  "migration_007", "native_hello", "persistent_marker",
+                  "recovery_authorized"):
+            self.assertFalse(e[k], k)
+        self.assertEqual(e["m3_2"], "IN_PROGRESS_NOT_ACCEPTED")
+        self.assertEqual(e["g2c"], "NOT_AUTHORIZED")
+        self.assertEqual(e["g3"], "STOP_UNAVAILABLE")
+        self.assertEqual(e["historical"], "PENDING_EXTERNAL_ATTESTATION(21/3/2)")
+        note = "M3_2_R4_DEFAULT_WIN32_WAL_SHM_SNAPSHOT_DISPOSABLE_20261030.md"
+        self.assertTrue((ROOT / "docs/qualification" / note).is_file())
+        for p in ("RESUME_PROMPT.md", "RESUME_PROMPT_SHORT.md", "HANDOFF_CURRENT.md",
+                  "HANDOFF_PROTOCOL.md", "HANDOFF_HISTORY.md", "STATE.md",
+                  "NEXT.md", "M3_2_GATE_DECISION_CURRENT.md", "README.md"):
+            self.assertIn(note, (DIRECTORY / p).read_text(encoding="utf-8"))
+        for p in ("ROADMAP_STATUS_CURRENT.md", "FABULAXIOM_ROADMAP_V1.md"):
+            self.assertIn(note, (ROOT / "docs/roadmap" / p).read_text(encoding="utf-8"))
+
 if __name__ == "__main__":
     unittest.main()
