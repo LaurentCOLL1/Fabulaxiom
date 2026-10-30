@@ -4918,14 +4918,14 @@ class HandoffContractTests(unittest.TestCase):
             self.assertFalse(entry[flag], flag)
         self.assertEqual(entry["existing_profile"], "STOP")
         source = (ROOT / "src-tauri/src/m32_r3_preopened_readonly_vfs_tests.rs").read_text(encoding="utf-8")
-        self.assertEqual(source.count("#[test]"), 4)  # current R3 fixture includes one native SHARED witness
+        self.assertEqual(source.count("#[test]"), 5)  # current R3 fixture includes one native SHARED witness
         for name in (
             "m32_r3_preopened_readonly_file_adapter_reads_invented_sqlite_content",
             "m32_r3_preopened_readonly_file_adapter_reads_original_after_name_substitution",
             "m32_r3_preopened_readonly_file_adapter_refuses_write_open_before_dispatch",
         ):
             self.assertIn("fn " + name + "(", source)
-        self.assertIn("R3 shared-reader xLock now holds native Win32 LockFileEx byte-range locks.", source)
+        self.assertIn("R3 read-only SHARED admission briefly locks PENDING_BYTE before the SHARED range.", source)
         self.assertIn("xShmMap: None", source)
         self.assertIn("xWrite: Some(ro_write)", source)
         self.assertNotIn("#[tauri::command]", source)
@@ -4992,7 +4992,7 @@ class HandoffContractTests(unittest.TestCase):
             self.assertFalse(item[flag], flag)
         self.assertEqual(item["m3_2"], "IN_PROGRESS_NOT_ACCEPTED")
         source = (ROOT / "src-tauri/src/m32_r3_preopened_readonly_vfs_tests.rs").read_text(encoding="utf-8")
-        self.assertEqual(source.count("#[test]"), 4)
+        self.assertEqual(source.count("#[test]"), 5)
         for token in ("fn lock_bytes(", "fn unlock_bytes(", "LockFileEx(",
                       "UnlockFileEx(", "SHARED_FIRST", "RESERVED_BYTE",
                       "ffi::SQLITE_LOCK_SHARED",
@@ -5008,6 +5008,36 @@ class HandoffContractTests(unittest.TestCase):
             self.assertIn(note, (DIRECTORY / file).read_text(encoding="utf-8"))
         for file in ("ROADMAP_STATUS_CURRENT.md", "FABULAXIOM_ROADMAP_V1.md"):
             self.assertIn(note, (ROOT / "docs/roadmap" / file).read_text(encoding="utf-8"))
+
+    def test_160_r3_win32_pending_read_only_gate_no_writer(self):
+        entry = self.data["m32_r3_pending_reader_lock_candidate_20261030"]
+        self.assertEqual(entry["scope"], "WINDOWS_CI_DISPOSABLE_READONLY_PENDING_VETO")
+        self.assertEqual(entry["source_parent_main"], "2d8cde651bbdd0653bab9639b2dc7ca8981ad88e")
+        for key, value in (("expected_rust_tests_not_qualified", 262),
+                           ("expected_inventory_tests_not_qualified", 50),
+                           ("expected_continuity_tests_not_qualified", 160)):
+            self.assertEqual(entry[key], value)
+        for key in ("production_r3_admitted", "writer_admitted", "wal_shm_proven",
+                    "operator_data_accessed", "migration_007", "ipc_enabled",
+                    "windows_hello", "recovery_authorized"):
+            self.assertFalse(entry[key], key)
+        self.assertEqual(entry["m3_2"], "IN_PROGRESS_NOT_ACCEPTED")
+        src = (ROOT / "src-tauri/src/m32_r3_preopened_readonly_vfs_tests.rs").read_text(encoding="utf-8")
+        self.assertEqual(src.count("#[test]"), 5)
+        self.assertIn("PENDING_BYTE, 1, false", src)
+        self.assertIn("PENDING_BYTE, 1, true", src)
+        self.assertIn("RESERVED_BYTE, 1, true", src)
+        self.assertIn("xShmLock: None", src)
+        self.assertIn("xWrite: Some(ro_write)", src)
+        self.assertNotIn("#[tauri::command]", src)
+        note = "M3_2_R3_PENDING_READER_ADMISSION_LOCKFILEEX_DISPOSABLE_20261030.md"
+        self.assertTrue((ROOT / "docs/qualification" / note).is_file())
+        for file in ("RESUME_PROMPT.md", "HANDOFF_CURRENT.md",
+                     "HANDOFF_PROTOCOL.md", "HANDOFF_HISTORY.md",
+                     "STATE.md", "NEXT.md", "M3_2_GATE_DECISION_CURRENT.md", "README.md"):
+            self.assertIn(note, (DIRECTORY / file).read_text(encoding="utf-8"), file)
+        for file in ("ROADMAP_STATUS_CURRENT.md", "FABULAXIOM_ROADMAP_V1.md"):
+            self.assertIn(note, (ROOT / "docs/roadmap" / file).read_text(encoding="utf-8"), file)
 
 if __name__ == "__main__":
     unittest.main()

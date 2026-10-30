@@ -1,7 +1,7 @@
 //! R3 test-only Windows read-only sqlite3_file backed by a pre-held Win32 HANDLE.
 //! Every fixture is freshly created under %TEMP%; no operator file, runtime
 //! VFS registration, writer admission, WAL, or production locking semantics.
-//! R3 shared-reader xLock now holds native Win32 LockFileEx byte-range locks.
+//! R3 read-only SHARED admission briefly locks PENDING_BYTE before the SHARED range.
 //! No write-lock upgrade, multi-process recovery or R4 WAL is supported.
 
 use rusqlite::{ffi, Connection, OpenFlags};
@@ -162,7 +162,22 @@ unsafe extern "C" fn ro_lock(file: *mut ffi::sqlite3_file, lock: c_int) -> c_int
     if opened.lock_state == ffi::SQLITE_LOCK_SHARED { return ffi::SQLITE_OK; }
     if opened.lock_state != ffi::SQLITE_LOCK_NONE { return ffi::SQLITE_IOERR_LOCK; }
     let native = unsafe { &*opened.file };
-    match lock_bytes(native, SHARED_FIRST, SHARED_SIZE, false) {
+    // Read-only rollback-mode admission: a brief shared PENDING-byte lock
+    // prevents a new SHARED reader when another handle holds PENDING exclusively.
+    // This never upgrades to SQLite RESERVED/PENDING/EXCLUSIVE writer locks.
+    match lock_bytes(native, PENDING_BYTE, 1, false) {
+        Ok(()) => (),
+        Err(err) if err.raw_os_error() == Some(ERROR_LOCK_VIOLATION) => return ffi::SQLITE_BUSY,
+        Err(_) => return ffi::SQLITE_IOERR_LOCK,
+    }
+    let shared = lock_bytes(native, SHARED_FIRST, SHARED_SIZE, false);
+    if unlock_bytes(native, PENDING_BYTE, 1).is_err() {
+        if shared.is_ok() {
+            let _ = unlock_bytes(native, SHARED_FIRST, SHARED_SIZE);
+        }
+        return ffi::SQLITE_IOERR_LOCK;
+    }
+    match shared {
         Ok(()) => { opened.lock_state = ffi::SQLITE_LOCK_SHARED; ffi::SQLITE_OK }
         Err(err) if err.raw_os_error() == Some(ERROR_LOCK_VIOLATION) => ffi::SQLITE_BUSY,
         Err(_) => ffi::SQLITE_IOERR_LOCK,
@@ -434,4 +449,35 @@ fn m32_r3_win32_shared_byte_range_blocks_competing_exclusive_until_commit() {
     assert_eq!(gate.state.accepted.load(Ordering::SeqCst), 1);
     assert!(!path.with_file_name("invented.sqlite3-wal").exists());
     assert!(!path.with_file_name("invented.sqlite3-shm").exists());
+}
+
+#[test]
+fn m32_r3_win32_pending_lock_vetoes_new_reader_reserved_still_allows_reader() {
+    let root = OwnedRoot::new();
+    let path = root.database();
+    seed_invented_database(&path, 73);
+    let held = OpenOptions::new().read(true).share_mode(SHARE_ALL)
+        .open(&path).expect("new test-owned SQLite file");
+    let expected = id_of(&held).unwrap();
+    let gate = RegisteredReadOnlyVfs::new(held);
+    // Native byte-range witness only: no SQLite writer or changed database.
+    let competitor = OpenOptions::new().read(true).share_mode(SHARE_ALL)
+        .open(&path).unwrap();
+    assert_eq!(id_of(&competitor), Some(expected));
+    lock_bytes(&competitor, PENDING_BYTE, 1, true).unwrap();
+    let blocked = open_readonly(&path, &gate);
+    let error = blocked.query_row("SELECT value FROM invented_r3", [], |r| r.get::<_, i64>(0))
+        .unwrap_err();
+    assert!(matches!(error, rusqlite::Error::SqliteFailure(e, _)
+        if e.code == rusqlite::ErrorCode::DatabaseBusy),
+        "exclusive PENDING must prevent a new SHARED SQLite reader");
+    drop(blocked);
+    unlock_bytes(&competitor, PENDING_BYTE, 1).unwrap();
+    lock_bytes(&competitor, RESERVED_BYTE, 1, true).unwrap();
+    assert_eq!(readonly_count(&path, &gate), 73);
+    unlock_bytes(&competitor, RESERVED_BYTE, 1).unwrap();
+    assert_eq!(readonly_count(&path, &gate), 73);
+    for suffix in ["-wal", "-shm", "-journal"] {
+        assert!(!path.with_file_name(format!("invented.sqlite3{suffix}")).exists());
+    }
 }
