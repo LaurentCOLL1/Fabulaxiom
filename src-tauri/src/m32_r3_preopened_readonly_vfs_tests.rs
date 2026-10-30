@@ -481,3 +481,59 @@ fn m32_r3_win32_pending_lock_vetoes_new_reader_reserved_still_allows_reader() {
         assert!(!path.with_file_name(format!("invented.sqlite3{suffix}")).exists());
     }
 }
+
+#[test]
+fn m32_r3_win32_native_reserved_pending_exclusive_phase_matrix_without_sqlite_writer() {
+    let root = OwnedRoot::new();
+    let path = root.database();
+    seed_invented_database(&path, 83);
+    let held = OpenOptions::new().read(true).share_mode(SHARE_ALL)
+        .open(&path).expect("CI-only held main SQLite handle");
+    let expected = id_of(&held).unwrap();
+    let gate = RegisteredReadOnlyVfs::new(held);
+    // A real SQLite read-only transaction holds native SHARED across SELECTs.
+    let reader = open_readonly(&path, &gate);
+    reader.execute_batch("BEGIN").unwrap();
+    let first: i64 = reader.query_row("SELECT value FROM invented_r3", [], |r| r.get(0)).unwrap();
+    assert_eq!(first, 83);
+    // Three independent handles see the same freshly invented FileId128.
+    // These OS handles simulate a writer's byte locks without ever opening
+    // a SQLite writer, modifying data, or authorizing a runtime writer.
+    let owner = OpenOptions::new().read(true).share_mode(SHARE_ALL).open(&path).unwrap();
+    let contender = OpenOptions::new().read(true).share_mode(SHARE_ALL).open(&path).unwrap();
+    assert_eq!(id_of(&owner), Some(expected));
+    assert_eq!(id_of(&contender), Some(expected));
+    lock_bytes(&owner, RESERVED_BYTE, 1, true).unwrap();
+    let reserved_denied = lock_bytes(&contender, RESERVED_BYTE, 1, true).unwrap_err();
+    assert_eq!(reserved_denied.raw_os_error(), Some(ERROR_LOCK_VIOLATION));
+    // RESERVED coexists with old and new read-only SQLite SHARED readers.
+    assert_eq!(readonly_count(&path, &gate), 83);
+    lock_bytes(&owner, PENDING_BYTE, 1, true).unwrap();
+    let blocked = open_readonly(&path, &gate);
+    let denied = blocked.query_row("SELECT value FROM invented_r3", [], |r| r.get::<_, i64>(0))
+        .unwrap_err();
+    assert!(matches!(denied, rusqlite::Error::SqliteFailure(e, _)
+        if e.code == rusqlite::ErrorCode::DatabaseBusy));
+    drop(blocked);
+    let existing: i64 = reader.query_row("SELECT value FROM invented_r3", [], |r| r.get(0)).unwrap();
+    assert_eq!(existing, 83, "existing SHARED reader survives PENDING");
+    let exclusive_denied = lock_bytes(&owner, SHARED_FIRST, SHARED_SIZE, true).unwrap_err();
+    assert_eq!(exclusive_denied.raw_os_error(), Some(ERROR_LOCK_VIOLATION));
+    reader.execute_batch("COMMIT").unwrap();
+    // With last SHARED reader gone, native EXCLUSIVE is possible.
+    lock_bytes(&owner, SHARED_FIRST, SHARED_SIZE, true).unwrap();
+    let blocked_exclusive = open_readonly(&path, &gate);
+    let busy = blocked_exclusive.query_row("SELECT value FROM invented_r3", [], |r| r.get::<_, i64>(0))
+        .unwrap_err();
+    assert!(matches!(busy, rusqlite::Error::SqliteFailure(e, _)
+        if e.code == rusqlite::ErrorCode::DatabaseBusy));
+    drop(blocked_exclusive);
+    unlock_bytes(&owner, SHARED_FIRST, SHARED_SIZE).unwrap();
+    unlock_bytes(&owner, PENDING_BYTE, 1).unwrap();
+    unlock_bytes(&owner, RESERVED_BYTE, 1).unwrap();
+    assert_eq!(readonly_count(&path, &gate), 83);
+    assert_eq!(id_of(&File::open(&path).unwrap()), Some(expected));
+    for suffix in ["-wal", "-shm", "-journal"] {
+        assert!(!path.with_file_name(format!("invented.sqlite3{suffix}")).exists());
+    }
+}
