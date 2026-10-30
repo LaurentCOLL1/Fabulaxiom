@@ -4910,7 +4910,7 @@ class HandoffContractTests(unittest.TestCase):
             self.assertFalse(entry[flag], flag)
         self.assertEqual(entry["existing_profile"], "STOP")
         source = (ROOT / "src-tauri/src/m32_r3_preopened_readonly_vfs_tests.rs").read_text(encoding="utf-8")
-        self.assertEqual(source.count("#[test]"), 3)
+        self.assertEqual(source.count("#[test]"), 4)  # PR236 adds native Win32 SHARED witness
         for name in (
             "m32_r3_preopened_readonly_file_adapter_reads_invented_sqlite_content",
             "m32_r3_preopened_readonly_file_adapter_reads_original_after_name_substitution",
