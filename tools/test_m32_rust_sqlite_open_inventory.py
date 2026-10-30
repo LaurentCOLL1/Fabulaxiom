@@ -512,7 +512,7 @@ class RustSqliteOpenInventoryTests(unittest.TestCase):
         p = "src-tauri/src/m32_r3_preopened_readonly_vfs_tests.rs"
         source = self.src[p]
         self.assertEqual(counts(source), (3, 0, 0, 0, 0, 3, 0))
-        self.assertEqual(source.count("#[test]"), 3)
+        self.assertEqual(source.count("#[test]"), 4)
         for name in (
             "m32_r3_preopened_readonly_file_adapter_reads_invented_sqlite_content",
             "m32_r3_preopened_readonly_file_adapter_reads_original_after_name_substitution",
@@ -533,6 +533,24 @@ class RustSqliteOpenInventoryTests(unittest.TestCase):
         self.assertIn("#[cfg(all(test, windows))]\nmod m32_r3_preopened_readonly_vfs_tests;",
                       lib)
         self.assertEqual(repository_inventory()["writer_absence"], "NOT_PROVEN")
+
+    def test_49_native_win32_shared_lock_is_only_disposable_readonly(self):
+        source = self.src["src-tauri/src/m32_r3_preopened_readonly_vfs_tests.rs"]
+        self.assertEqual(counts(source), (3, 0, 0, 0, 0, 3, 0))
+        self.assertEqual(source.count("#[test]"), 4)
+        for phrase in ("fn lock_bytes(", "fn unlock_bytes(",
+                       "fn ro_lock(", "fn ro_unlock(", "fn ro_reserved(",
+                       "LockFileEx(", "UnlockFileEx(", "SHARED_FIRST",
+                       "SHARED_SIZE", "RESERVED_BYTE", "ERROR_LOCK_VIOLATION",
+                       "m32_r3_win32_shared_byte_range_blocks_competing_exclusive_until_commit"):
+            self.assertIn(phrase, source)
+        for missing in ("xShmMap: None", "xShmLock: None",
+                        "unsafe extern \"C\" fn ro_write", "ffi::SQLITE_READONLY"):
+            self.assertIn(missing, source)
+        for forbidden in ("#[tauri::command]", "database::open_database(",
+                          "run_migrations(", "PRAGMA journal_mode=WAL"):
+            self.assertNotIn(forbidden, source)
+        self.assertEqual(repository_inventory()["real_g3"], "STOP_UNAVAILABLE")
 
 if __name__ == "__main__":
     unittest.main()
