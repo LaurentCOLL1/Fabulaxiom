@@ -65,6 +65,11 @@ mod m32_sqlite_vfs_preopen_tests;
 #[cfg(all(test, windows))]
 mod m32_r3_preopened_readonly_vfs_tests;
 
+// R4 stock SQLite Win32 WAL/SHM reference, disposable Windows tests ONLY.
+// No custom VFS admission or operator writer.
+#[cfg(all(test, windows))]
+mod m32_r4_wal_shm_disposable_tests;
+
 // D3b-5 bounded phase-bracket crash refusal on fresh disposable Windows CI files.
 // Does NOT reopen crashed SQLite, attest xSync/xShmUnmap timing or admit a writer.
 #[cfg(all(test, windows))]

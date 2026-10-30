@@ -85,6 +85,9 @@ EXPECTED = {
     # SQL-open flags: READ_ONLY, READ_WRITE, and an explicit denied CREATE.
     # This is NOT real locking, operator access or a production writer.
     "src-tauri/src/m32_r3_preopened_readonly_vfs_tests.rs": (3, 0, 0, 0, 0, 3, 0),
+    # R4 stock Windows SQLite VFS, freshly invented %TEMP% main, test-only.
+    # One temporary RW fixture and one READ_ONLY reader, no custom xShm* proof.
+    "src-tauri/src/m32_r4_wal_shm_disposable_tests.rs": (2, 0, 0, 0, 0, 1, 0),
     # 2026-10-28: an UNWIRED writer core owns an ALREADY admitted connection.
     # Two RAM-only constructors, migration and ATTACH are confined to its
     # #[cfg(test)] fictional fixture; no production path opening is added.
