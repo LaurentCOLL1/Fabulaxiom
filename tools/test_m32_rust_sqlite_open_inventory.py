@@ -293,7 +293,7 @@ class RustSqliteOpenInventoryTests(unittest.TestCase):
     def test_37_windows_vfs_predelegation_fixture_is_scoped_and_inventory_reviewed(self):
         p = "src-tauri/src/m32_sqlite_vfs_preopen_tests.rs"
         source = self.src[p]
-        self.assertEqual(counts(source), (24, 0, 0, 0, 0, 25, 0))
+        self.assertEqual(counts(source), (25, 0, 0, 0, 0, 26, 0))
         self.assertIn("#[cfg(all(test, windows))]\nmod m32_sqlite_vfs_preopen_tests;",
                       self.src["src-tauri/src/lib.rs"])
         for required in ("sqlite3_vfs_register", "sqlite3_vfs_unregister", "fixture_xopen",
@@ -317,7 +317,7 @@ class RustSqliteOpenInventoryTests(unittest.TestCase):
                        "m32_vfs_fixture_fileid128_precheck_then_internal_name_swap_is_not_atomic"):
             self.assertIn(signal, source)
         self.assertGreaterEqual(source.count("#[test]"), 6)
-        self.assertEqual(counts(source), (24, 0, 0, 0, 0, 25, 0))
+        self.assertEqual(counts(source), (25, 0, 0, 0, 0, 26, 0))
         self.assertNotIn("#[tauri::command]", source)
         self.assertNotIn("run_migrations(", source)
         self.assertEqual(repository_inventory()["real_g3"], "STOP_UNAVAILABLE")
@@ -330,7 +330,7 @@ class RustSqliteOpenInventoryTests(unittest.TestCase):
                        "m32_vfs_fixture_wal_xopen_does_not_cover_shm_mapping"):
             self.assertIn(signal, source)
         self.assertGreaterEqual(source.count("#[test]"), 8)
-        self.assertEqual(counts(source), (24, 0, 0, 0, 0, 25, 0))
+        self.assertEqual(counts(source), (25, 0, 0, 0, 0, 26, 0))
         for forbidden in ("#[tauri::command]", "run_migrations(", "SQLITE_FCNTL_WIN32_SET_HANDLE"):
             self.assertNotIn(forbidden, source)
         self.assertEqual(repository_inventory()["writer_absence"], "NOT_PROVEN")
@@ -344,7 +344,7 @@ class RustSqliteOpenInventoryTests(unittest.TestCase):
                        "m32_vfs_fixture_wrapped_shm_map_delegates_disposable_wal"):
             self.assertIn(signal, source)
         self.assertGreaterEqual(source.count("#[test]"), 18)
-        self.assertEqual(counts(source), (24, 0, 0, 0, 0, 25, 0))
+        self.assertEqual(counts(source), (25, 0, 0, 0, 0, 26, 0))
         for forbidden in ("#[tauri::command]", "run_migrations(", "SQLITE_FCNTL_WIN32_SET_HANDLE"):
             self.assertNotIn(forbidden, source)
         self.assertEqual(repository_inventory()["real_g3"], "STOP_UNAVAILABLE")
@@ -461,7 +461,7 @@ class RustSqliteOpenInventoryTests(unittest.TestCase):
     def test_46_r4_exclusive_before_wal_is_disposable_only_and_does_not_admit_writer(self):
         p = "src-tauri/src/m32_sqlite_vfs_preopen_tests.rs"
         source = self.src[p]
-        self.assertEqual(counts(source), (24, 0, 0, 0, 0, 25, 0))
+        self.assertEqual(counts(source), (25, 0, 0, 0, 0, 26, 0))
         for name in (
             "m32_r4_exclusive_before_wal_avoids_every_wrapped_shm_callback",
             "m32_r4_exclusive_before_wal_succeeds_with_shm_map_veto_armed",
@@ -475,7 +475,7 @@ class RustSqliteOpenInventoryTests(unittest.TestCase):
         # Historical VFS fixtures already contain an OPEN_CREATE policy token.
         # Scope new negative assertions to the added R4 module only, without
         # weakening the existing whole-tree/old-module inventory checks.
-        new_r4 = source.split("// R4 / P1 decision probe", 1)[1]
+        new_r4 = source.split("// R4 / P1 decision probe", 1)[1].split("// R3 preopened HANDLE xOpen veto", 1)[0]
         for forbidden in (
             "#[tauri::command]", "database::open_database(",
             "run_migrations(", "SQLITE_OPEN_CREATE",
@@ -485,10 +485,12 @@ class RustSqliteOpenInventoryTests(unittest.TestCase):
         self.assertEqual(repository_inventory()["real_g3"], "STOP_UNAVAILABLE")
 
 
+    # Historic D2/D3 source assertion preserved for append-only review:
+    # self.assertEqual(counts(source), (24, 0, 0, 0, 0, 25, 0))
     def test_47_r4_p1_no_second_reader_and_sticky_exclusive_is_disposable_only(self):
         src = self.src["src-tauri/src/m32_sqlite_vfs_preopen_tests.rs"]
-        self.assertEqual(counts(src), (24, 0, 0, 0, 0, 25, 0))
-        r4 = src.split("// R4 / P1 decision probe", 1)[1]
+        self.assertEqual(counts(src), (25, 0, 0, 0, 0, 26, 0))
+        r4 = src.split("// R4 / P1 decision probe", 1)[1].split("// R3 preopened HANDLE xOpen veto", 1)[0]
         for name in (
             "m32_r4_exclusive_owner_refuses_second_sqlite_reader_without_ipc",
             "m32_r4_exclusive_wal_owner_policy_refuses_normal_downgrade",
