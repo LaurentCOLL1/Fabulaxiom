@@ -639,3 +639,46 @@ fn m32_r3_two_sqlite_readers_retain_shared_until_last_connection_closes() {
         assert!(!path.with_file_name(format!("invented.sqlite3{suffix}")).exists());
     }
 }
+
+#[test]
+fn m32_r4_readonly_preopened_vfs_without_xshm_refuses_live_wal_disposable() {
+    let root = OwnedRoot::new();
+    let path = root.database();
+    seed_invented_database(&path, 107);
+    // Only a newly invented, CI-owned database uses the stock Win32 writer.
+    // Retain its connection so WAL/SHM still exist when our test-only
+    // read-only v1 io_methods adapter attempts a NORMAL WAL-mode read.
+    let writer = Connection::open(&path).expect("test-only WAL seed connection");
+    let mode: String = writer.query_row("PRAGMA journal_mode=WAL", [], |r| r.get(0)).unwrap();
+    assert_eq!(mode.to_ascii_lowercase(), "wal");
+    writer.execute("INSERT INTO invented_r3(value) VALUES (109)", []).unwrap();
+    let wal = root.0.join("invented.sqlite3-wal");
+    let shm = root.0.join("invented.sqlite3-shm");
+    assert!(fs::metadata(&wal).unwrap().len() > 0);
+    assert!(fs::metadata(&shm).unwrap().len() > 0);
+
+    let held = OpenOptions::new().read(true).share_mode(SHARE_ALL)
+        .open(&path).expect("new CI-owned WAL-mode main, held read-only");
+    let identity = id_of(&held).unwrap();
+    let gate = RegisteredReadOnlyVfs::new(held);
+    // The custom VFS has iVersion=1 and no xShmMap/xShmLock methods.
+    // SQLite may reject at xOpen or at first SELECT. Either is a refusal.
+    let attempt = Connection::open_with_flags_and_vfs(
+        &path, OpenFlags::SQLITE_OPEN_READ_ONLY, gate.name()
+    );
+    if let Ok(reader) = attempt {
+        let result: rusqlite::Result<i64> =
+            reader.query_row("SELECT COUNT(*) FROM invented_r3", [], |r| r.get(0));
+        assert!(result.is_err(), "NORMAL WAL must not silently bypass absent xShm methods");
+        drop(reader);
+    }
+    assert_eq!(id_of(&File::open(&path).unwrap()), Some(identity));
+    let count: i64 = writer.query_row(
+        "SELECT COUNT(*) FROM invented_r3", [], |r| r.get(0)
+    ).unwrap();
+    assert_eq!(count, 2, "failed read-only WAL admission must not mutate the toy database");
+    assert!(wal.exists());
+    assert!(shm.exists());
+    drop(writer);
+    // No custom xShm forwarding, WAL recovery, marker or production admission.
+}
