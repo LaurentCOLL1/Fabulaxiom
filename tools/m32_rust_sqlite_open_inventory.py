@@ -80,6 +80,11 @@ EXPECTED = {
     # followed by actual SQLITE_FCNTL_WIN32_GET_HANDLE FileId128 verification.
     # A post-xOpen check is NOT atomic admission or WAL/SHM ownership.
     "src-tauri/src/m32_r23_sqlite_handle_boundary_tests.rs": (1, 0, 0, 0, 0, 1, 0),
+    # PR234 Windows cfg(test): real read-only sqlite3_file against *fresh* CI
+    # files, 1 seed open + 1 read-only VFS open + 1 refused write-open site;
+    # SQL-open flags: READ_ONLY, READ_WRITE, and an explicit denied CREATE.
+    # This is NOT real locking, operator access or a production writer.
+    "src-tauri/src/m32_r3_preopened_readonly_vfs_tests.rs": (3, 0, 0, 0, 0, 3, 0),
     # 2026-10-28: an UNWIRED writer core owns an ALREADY admitted connection.
     # Two RAM-only constructors, migration and ATTACH are confined to its
     # #[cfg(test)] fictional fixture; no production path opening is added.
