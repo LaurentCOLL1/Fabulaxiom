@@ -8,7 +8,7 @@ use rusqlite::{ffi, Connection, OpenFlags};
 use std::{
     ffi::{c_int, c_void, CString},
     fs::{self, File, OpenOptions},
-    os::windows::{fs::OpenOptionsExt, io::{AsRawHandle, FromRawHandle, FileExt}},
+    os::windows::{fs::{OpenOptionsExt, FileExt}, io::{AsRawHandle, FromRawHandle}},
     path::{Path, PathBuf},
     process, ptr,
     sync::atomic::{AtomicUsize, Ordering},
