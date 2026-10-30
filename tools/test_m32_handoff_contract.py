@@ -4283,7 +4283,7 @@ class HandoffContractTests(unittest.TestCase):
         fixture = (ROOT / candidate["rust_fixture"]).read_text(encoding="utf-8")
         # Historical PR202 12 + qualified #215 6 D2 + 4 D3a + 4 D3b; require exact 26.
         self.assertEqual(fixture.split("// R4 / P1 decision probe", 1)[0].count("#[test]"), 26)
-        self.assertEqual(fixture.split("// R4 / P1 decision probe", 1)[1].count("#[test]"), 5)
+        self.assertEqual(fixture.split("// R4 / P1 decision probe", 1)[1].split("// R3 preopened HANDLE xOpen veto", 1)[0].count("#[test]"), 5)
         self.assertIn("fixture_xshm_map", fixture)
         for filename in ("RESUME_PROMPT_SHORT.md", "RESUME_PROMPT.md", "HANDOFF_CURRENT.md",
                          "HANDOFF_PROTOCOL.md", "HANDOFF_HISTORY.md", "NEXT.md", "STATE.md",
@@ -4858,6 +4858,37 @@ class HandoffContractTests(unittest.TestCase):
             self.assertIn(filename, (DIRECTORY / p).read_text(encoding="utf-8"))
         for p in ("ROADMAP_STATUS_CURRENT.md", "FABULAXIOM_ROADMAP_V1.md"):
             self.assertIn(filename, (ROOT / "docs/roadmap" / p).read_text(encoding="utf-8"))
+
+
+    def test_156_r3_preopened_handle_reaches_actual_xopen_but_denies_sqlite(self):
+        event = self.data["m32_r3_preopened_handle_xopen_veto_candidate_20261030"]
+        self.assertEqual(event["scope"], "WINDOWS_CI_DISPOSABLE_CALLBACK_VETO_ONLY")
+        self.assertEqual(event["source_main_before_pr"], "c9441844db4e897c171cac11b886bc306059acb1")
+        self.assertEqual(event["expected_rust_tests_not_qualified"], 257)
+        self.assertEqual(event["expected_continuity_tests_not_qualified"], 156)
+        for key in ("production_writer_admitted", "r3_complete_io_methods",
+                    "r3_atomic_admission_proven", "operator_data_accessed",
+                    "new_tauri_ipc", "migration_007", "crash_recovery_authorized"):
+            self.assertFalse(event[key], key)
+        fixture = (ROOT / "src-tauri/src/m32_sqlite_vfs_preopen_tests.rs").read_text(encoding="utf-8")
+        marker = "// R3 preopened HANDLE xOpen veto"
+        self.assertEqual(fixture.split(marker, 1)[0].split("// R4 / P1 decision probe", 1)[0].count("#[test]"), 26)
+        self.assertEqual(fixture.split("// R4 / P1 decision probe", 1)[1].split(marker, 1)[0].count("#[test]"), 5)
+        self.assertEqual(fixture.split(marker, 1)[1].count("#[test]"), 2)
+        for signal in ("fn r3_clone_preopened_handle(", "r3_preopened: Option<fs::File>",
+                       "return ffi::SQLITE_CANTOPEN; // io_methods NOT implemented; no fallback!",
+                       "m32_r3_sqlite_xopen_reopens_preheld_handle_without_path_delegation",
+                       "m32_r3_sqlite_xopen_held_handle_survives_replaced_name_but_vetoes"):
+            self.assertIn(signal, fixture)
+        self.assertNotIn("SQLITE_FCNTL_WIN32_SET_HANDLE", fixture)
+        note = "M3_2_P1_R3_VFS_XOPEN_PREOPENED_HANDLE_VETO_20261030.md"
+        self.assertTrue((ROOT / "docs/qualification" / note).is_file())
+        for p in ("RESUME_PROMPT.md", "RESUME_PROMPT_SHORT.md",
+                  "HANDOFF_CURRENT.md", "HANDOFF_PROTOCOL.md", "HANDOFF_HISTORY.md",
+                  "STATE.md", "NEXT.md", "M3_2_GATE_DECISION_CURRENT.md", "README.md"):
+            self.assertIn(note, (DIRECTORY / p).read_text(encoding="utf-8"))
+        for p in ("ROADMAP_STATUS_CURRENT.md", "FABULAXIOM_ROADMAP_V1.md"):
+            self.assertIn(note, (ROOT / "docs/roadmap" / p).read_text(encoding="utf-8"))
 
 if __name__ == "__main__":
     unittest.main()

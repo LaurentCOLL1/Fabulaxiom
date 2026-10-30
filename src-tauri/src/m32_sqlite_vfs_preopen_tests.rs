@@ -59,6 +59,28 @@ fn sqlite_opened_file_id_128(db: &Connection) -> Result<(u64, [u8; 16]), String>
     win_raw_file_id_128(handle)
 }
 
+
+// R3 next step: prove ReOpenFile reaches the actual SQLite xOpen callback.
+// A cloned Win32 HANDLE is NOT a valid sqlite3_file until a complete audited
+// io_methods adapter exists. Every attempt below MUST fail closed.
+fn r3_clone_preopened_handle(held: &fs::File) -> Option<fs::File> {
+    use std::os::windows::io::{AsRawHandle, FromRawHandle};
+    #[link(name = "kernel32")]
+    unsafe extern "system" {
+        fn ReOpenFile(handle: *mut c_void, access: u32, share: u32, flags: u32) -> *mut c_void;
+    }
+    const GENERIC_READ: u32 = 0x8000_0000;
+    const GENERIC_WRITE: u32 = 0x4000_0000;
+    const FILE_SHARE_READ_WRITE_DELETE: u32 = 1 | 2 | 4;
+    let handle = unsafe {
+        ReOpenFile(held.as_raw_handle().cast(),
+            GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ_WRITE_DELETE, 0)
+    };
+    if handle.is_null() || handle as isize == -1 { return None; }
+    // The clone is a *new* HANDLE; File closes only this clone.
+    Some(unsafe { fs::File::from_raw_handle(handle.cast()) })
+}
+
 struct FileIdPrecheckPlan {
     path: PathBuf,
     expected: (u64, [u8; 16]),
@@ -106,6 +128,11 @@ struct FixtureVfs {
     // The default Windows xShmMap path does not pass through this xOpen hook.
     shm_named_xopens: AtomicUsize,
     main_delegations: AtomicUsize,
+    // R3 closed-world callback probe: no default VFS xOpen allowed.
+    r3_preopened: Option<fs::File>,
+    r3_expected: Option<(u64, [u8; 16])>,
+    r3_callback_matches: AtomicUsize,
+    r3_callback_refusals: AtomicUsize,
     precheck: Option<FileIdPrecheckPlan>,
     precheck_acceptances: AtomicUsize,
     precheck_refusals: AtomicUsize,
@@ -249,6 +276,23 @@ unsafe extern "C" fn fixture_xopen(
     out_flags: *mut c_int,
 ) -> c_int {
     let gate = unsafe { &*(vfs as *const FixtureVfs) };
+    // Never delegate a pathname to Win32 SQLite when a preopened HANDLE
+    // is handed to this test-only VFS. Prove callback ownership, then STOP.
+    if let Some(held) = &gate.r3_preopened {
+        if flags & ffi::SQLITE_OPEN_MAIN_DB != 0 {
+            let reopened_id = r3_clone_preopened_handle(held)
+                .and_then(|clone| win_file_id_128(&clone).ok());
+            if reopened_id.is_some() && reopened_id == gate.r3_expected {
+                gate.r3_callback_matches.fetch_add(1, Ordering::SeqCst);
+            } else {
+                gate.r3_callback_refusals.fetch_add(1, Ordering::SeqCst);
+            }
+        } else {
+            gate.r3_callback_refusals.fetch_add(1, Ordering::SeqCst);
+        }
+        unsafe { (*file).pMethods = ptr::null() };
+        return ffi::SQLITE_CANTOPEN; // io_methods NOT implemented; no fallback!
+    }
     if !name.is_null() {
         let bytes = unsafe { CStr::from_ptr(name) }.to_bytes();
         if bytes.ends_with(b"-shm") {
@@ -440,6 +484,15 @@ impl RegisteredFixtureVfs {
         Self::with_precheck_and_wal(allow_main_db, deny_journal, false, None)
     }
 
+    // Main HANDLE must be created by the test fixture; never a path opener.
+    fn with_preopened_r3(held: fs::File) -> Self {
+        let id = win_file_id_128(&held).expect("R3 disposable Win32 FileId128");
+        let mut gate = Self::with_policy(true, false, false, None, None);
+        gate.state.r3_expected = Some(id);
+        gate.state.r3_preopened = Some(held);
+        gate
+    }
+
     fn with_wal_policy(deny_wal: bool) -> Self {
         Self::with_precheck_and_wal(true, false, deny_wal, None)
     }
@@ -514,6 +567,10 @@ impl RegisteredFixtureVfs {
             wal_delegations: AtomicUsize::new(0),
             shm_named_xopens: AtomicUsize::new(0),
             main_delegations: AtomicUsize::new(0),
+            r3_preopened: None,
+            r3_expected: None,
+            r3_callback_matches: AtomicUsize::new(0),
+            r3_callback_refusals: AtomicUsize::new(0),
             precheck,
             precheck_acceptances: AtomicUsize::new(0),
             precheck_refusals: AtomicUsize::new(0),
@@ -1497,4 +1554,60 @@ mod r4_p1_exclusive_wal_disposable {
         assert!(owner.close().is_ok(), "test-only close; no reopening or recovery");
     }
 
+}
+
+
+// R3 preopened HANDLE xOpen veto: separate from the historical 26 VFS and
+// five R4 witnesses. Both tests are Windows CI-only fresh %TEMP% fixtures.
+fn r3_sqlite_callback_probe(path: &std::path::Path, gate: &RegisteredFixtureVfs) {
+    // Exactly one new reviewed SQLite opener site; our xOpen always vetoes.
+    let result = Connection::open_with_flags_and_vfs(
+        path, OpenFlags::SQLITE_OPEN_READ_WRITE, gate.name()
+    );
+    assert!(result.is_err(), "R3 has no sqlite3_file io_methods adapter; STOP");
+}
+
+#[test]
+fn m32_r3_sqlite_xopen_reopens_preheld_handle_without_path_delegation() {
+    let owned = DisposableRoot::new();
+    let path = owned.db();
+    let held = fs::OpenOptions::new().read(true).write(true).create_new(true)
+        .open(&path).expect("new disposable file only");
+    let expected = win_file_id_128(&held).unwrap();
+    let gate = RegisteredFixtureVfs::with_preopened_r3(held);
+    r3_sqlite_callback_probe(&path, &gate);
+    assert_eq!(gate.state.r3_callback_matches.load(Ordering::SeqCst), 1);
+    assert_eq!(gate.state.r3_callback_refusals.load(Ordering::SeqCst), 0);
+    assert_eq!(gate.state.main_delegations.load(Ordering::SeqCst), 0);
+    assert_eq!(win_file_id_128(&fs::File::open(&path).unwrap()).unwrap(), expected);
+    assert_eq!(fs::metadata(&path).unwrap().len(), 0);
+    assert!(!path.with_file_name("new.sqlite3-wal").exists());
+    assert!(!path.with_file_name("new.sqlite3-shm").exists());
+}
+
+#[test]
+fn m32_r3_sqlite_xopen_held_handle_survives_replaced_name_but_vetoes() {
+    use std::os::windows::fs::OpenOptionsExt;
+    let owned = DisposableRoot::new();
+    let path = owned.db();
+    let displaced = owned.0.join("displaced-r3-original.sqlite3");
+    let held = fs::OpenOptions::new().read(true).write(true).create_new(true)
+        .share_mode(1 | 2 | 4).open(&path).expect("new disposable original");
+    let original = win_file_id_128(&held).unwrap();
+    fs::rename(&path, &displaced).expect("owned controlled name replacement");
+    let replacement = fs::OpenOptions::new().read(true).write(true).create_new(true)
+        .share_mode(1 | 2 | 4).open(&path).expect("different disposable replacement");
+    let different = win_file_id_128(&replacement).unwrap();
+    assert_ne!(original, different);
+    let gate = RegisteredFixtureVfs::with_preopened_r3(held);
+    r3_sqlite_callback_probe(&path, &gate);
+    assert_eq!(gate.state.r3_callback_matches.load(Ordering::SeqCst), 1,
+        "xOpen must clone the held original object, not replacement name");
+    assert_eq!(gate.state.main_delegations.load(Ordering::SeqCst), 0);
+    assert_eq!(win_file_id_128(&fs::File::open(&displaced).unwrap()).unwrap(), original);
+    assert_eq!(win_file_id_128(&fs::File::open(&path).unwrap()).unwrap(), different);
+    assert_eq!(fs::metadata(&path).unwrap().len(), 0);
+    assert!(!path.with_file_name("new.sqlite3-wal").exists());
+    assert!(!path.with_file_name("new.sqlite3-shm").exists());
+    drop(replacement);
 }

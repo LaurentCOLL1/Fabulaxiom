@@ -1,4 +1,37 @@
 {
+  "m32_r3_preopened_handle_xopen_veto_candidate_20261030": {
+    "scope": "WINDOWS_CI_DISPOSABLE_CALLBACK_VETO_ONLY",
+    "source_main_before_pr": "c9441844db4e897c171cac11b886bc306059acb1",
+    "qualification": "docs/qualification/M3_2_P1_R3_VFS_XOPEN_PREOPENED_HANDLE_VETO_20261030.md",
+    "expected_rust_tests_not_qualified": 257,
+    "expected_greenfield_tests_not_qualified": 7,
+    "expected_inventory_tests_not_qualified": 47,
+    "expected_continuity_tests_not_qualified": 156,
+    "r3_preopened_handle_callback_reached_expected": true,
+    "r3_completed_sqlite_io_methods": false,
+    "r3_complete_io_methods": false,
+    "r3_atomic_admission_proven": false,
+    "production_writer_admitted": false,
+    "operator_data_accessed": false,
+    "new_tauri_ipc": false,
+    "migration_007": false,
+    "crash_recovery_authorized": false,
+    "existing_profile": "STOP",
+    "m3_2": "IN_PROGRESS_NOT_ACCEPTED",
+    "historical": "PENDING_EXTERNAL_ATTESTATION(21/3/2)",
+    "prospective": "NOT_STARTED",
+    "g2b": "NOT_ACCEPTED",
+    "g2c": "NOT_AUTHORIZED",
+    "g3": "STOP_UNAVAILABLE",
+    "next": [
+      "exact_sha_windows_ci",
+      "review_diff_reviews_threads",
+      "strict_protect_main_expected_head_sha",
+      "independent_postmain_ci",
+      "issue38_append_only",
+      "develop_correct_sqlite3_file_io_methods_without_path_fallback"
+    ]
+  },
   "m32_r5_r6_r8_prepared_owner_ram_candidate_20261029": {
     "scope": "PURE_RAM_UNWIRED_PREPARED_WRITER_TESTS",
     "source_main_before_pr": "fb81eb85ec5842f9d117e9f6c64351c1f107fc23",
