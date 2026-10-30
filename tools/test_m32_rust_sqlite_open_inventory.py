@@ -485,6 +485,8 @@ class RustSqliteOpenInventoryTests(unittest.TestCase):
         self.assertEqual(repository_inventory()["real_g3"], "STOP_UNAVAILABLE")
 
 
+    # Historic D2/D3 source assertion preserved for append-only review:
+    # self.assertEqual(counts(source), (24, 0, 0, 0, 0, 25, 0))
     def test_47_r4_p1_no_second_reader_and_sticky_exclusive_is_disposable_only(self):
         src = self.src["src-tauri/src/m32_sqlite_vfs_preopen_tests.rs"]
         self.assertEqual(counts(src), (25, 0, 0, 0, 0, 26, 0))
