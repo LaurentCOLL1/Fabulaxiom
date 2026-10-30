@@ -4910,14 +4910,14 @@ class HandoffContractTests(unittest.TestCase):
             self.assertFalse(entry[flag], flag)
         self.assertEqual(entry["existing_profile"], "STOP")
         source = (ROOT / "src-tauri/src/m32_r3_preopened_readonly_vfs_tests.rs").read_text(encoding="utf-8")
-        self.assertEqual(source.count("#[test]"), 3)
+        self.assertEqual(source.count("#[test]"), 4)  # current R3 fixture includes one native SHARED witness
         for name in (
             "m32_r3_preopened_readonly_file_adapter_reads_invented_sqlite_content",
             "m32_r3_preopened_readonly_file_adapter_reads_original_after_name_substitution",
             "m32_r3_preopened_readonly_file_adapter_refuses_write_open_before_dispatch",
         ):
             self.assertIn("fn " + name + "(", source)
-        self.assertIn("xLock/xCheckReservedLock deliberately assume ONE sealed fixture reader", source)
+        self.assertIn("R3 shared-reader xLock now holds native Win32 LockFileEx byte-range locks.", source)
         self.assertIn("xShmMap: None", source)
         self.assertIn("xWrite: Some(ro_write)", source)
         self.assertNotIn("#[tauri::command]", source)
@@ -4967,6 +4967,42 @@ class HandoffContractTests(unittest.TestCase):
             self.assertIn(note, (DIRECTORY / name).read_text(encoding="utf-8"), name)
         for name in ("ROADMAP_STATUS_CURRENT.md", "FABULAXIOM_ROADMAP_V1.md"):
             self.assertIn(note, (ROOT / "docs/roadmap" / name).read_text(encoding="utf-8"))
+
+
+    def test_159_r3_readonly_win32_shared_byte_lock_is_not_writer_admission(self):
+        item = self.data["m32_r3_native_shared_lock_candidate_20261030"]
+        self.assertEqual(item["scope"], "WINDOWS_DISPOSABLE_READONLY_NATIVE_SHARED_LOCK_ONLY")
+        self.assertEqual(item["source_main_before_pr"], "d50753ef95afd79f5c2d7fa38676acad284c9eaf")
+        self.assertEqual(item["previous_pr"], 235)
+        self.assertEqual(item["previous_source_ci"], 41003012379)
+        self.assertEqual(item["expected_rust_tests_not_qualified"], 261)
+        self.assertEqual(item["expected_sqlite_inventory_tests_not_qualified"], 49)
+        self.assertEqual(item["expected_continuity_tests_not_qualified"], 159)
+        self.assertTrue(item["win32_shared_lock_candidate_in_test"])
+        for flag in ("native_writer_lock_transitions_proven", "wal_shm_proven",
+                     "r3_atomic_production_admission", "production_writer_admitted",
+                     "operator_data_accessed", "migration_007", "tauri_ipc_added",
+                     "crash_recovery_authorized"):
+            self.assertFalse(item[flag], flag)
+        self.assertEqual(item["m3_2"], "IN_PROGRESS_NOT_ACCEPTED")
+        source = (ROOT / "src-tauri/src/m32_r3_preopened_readonly_vfs_tests.rs").read_text(encoding="utf-8")
+        self.assertEqual(source.count("#[test]"), 4)
+        for token in ("fn lock_bytes(", "fn unlock_bytes(", "LockFileEx(",
+                      "UnlockFileEx(", "SHARED_FIRST", "RESERVED_BYTE",
+                      "ffi::SQLITE_LOCK_SHARED",
+                      "m32_r3_win32_shared_byte_range_blocks_competing_exclusive_until_commit"):
+            self.assertIn(token, source)
+        self.assertIn("xShmMap: None", source)
+        self.assertIn("xShmLock: None", source)
+        self.assertNotIn("#[tauri::command]", source)
+        note = "M3_2_R3_WIN32_NATIVE_SHARED_LOCKFILEEX_DISPOSABLE_20261030.md"
+        self.assertTrue((ROOT / "docs/qualification" / note).is_file())
+        for file in ("RESUME_PROMPT.md", "RESUME_PROMPT_SHORT.md",
+                     "HANDOFF_CURRENT.md", "HANDOFF_PROTOCOL.md", "HANDOFF_HISTORY.md",
+                     "STATE.md", "NEXT.md", "M3_2_GATE_DECISION_CURRENT.md", "README.md"):
+            self.assertIn(note, (DIRECTORY / file).read_text(encoding="utf-8"))
+        for file in ("ROADMAP_STATUS_CURRENT.md", "FABULAXIOM_ROADMAP_V1.md"):
+            self.assertIn(note, (ROOT / "docs/roadmap" / file).read_text(encoding="utf-8"))
 
 if __name__ == "__main__":
     unittest.main()
