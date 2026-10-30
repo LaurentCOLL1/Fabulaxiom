@@ -600,3 +600,42 @@ fn m32_r3_sqlite_close_during_readonly_transaction_releases_native_shared() {
         assert!(!path.with_file_name(format!("invented.sqlite3{suffix}")).exists());
     }
 }
+
+#[test]
+fn m32_r3_two_sqlite_readers_retain_shared_until_last_connection_closes() {
+    let root = OwnedRoot::new();
+    let path = root.database();
+    seed_invented_database(&path, 103);
+    let held = OpenOptions::new().read(true).share_mode(SHARE_ALL)
+        .open(&path).expect("new CI-owned fictional SQLite");
+    let expected = id_of(&held).unwrap();
+    let gate = RegisteredReadOnlyVfs::new(held);
+    let contender = OpenOptions::new().read(true).share_mode(SHARE_ALL)
+        .open(&path).unwrap();
+    assert_eq!(id_of(&contender), Some(expected));
+    let first = open_readonly(&path, &gate);
+    let second = open_readonly(&path, &gate);
+    first.execute_batch("BEGIN").unwrap();
+    second.execute_batch("BEGIN").unwrap();
+    let a: i64 = first.query_row("SELECT value FROM invented_r3", [], |r| r.get(0)).unwrap();
+    let b: i64 = second.query_row("SELECT value FROM invented_r3", [], |r| r.get(0)).unwrap();
+    assert_eq!((a, b), (103, 103));
+    assert_eq!(gate.state.accepted.load(Ordering::SeqCst), 2);
+    // Native SHARED byte ranges on two different ReOpenFile handles coexist,
+    // but neither may be mistaken for a released lock.
+    let both = lock_bytes(&contender, SHARED_FIRST, SHARED_SIZE, true).unwrap_err();
+    assert_eq!(both.raw_os_error(), Some(ERROR_LOCK_VIOLATION));
+    drop(first);
+    let still_shared = lock_bytes(&contender, SHARED_FIRST, SHARED_SIZE, true).unwrap_err();
+    assert_eq!(still_shared.raw_os_error(), Some(ERROR_LOCK_VIOLATION));
+    let remains: i64 = second.query_row("SELECT value FROM invented_r3", [], |r| r.get(0)).unwrap();
+    assert_eq!(remains, 103);
+    drop(second);
+    lock_bytes(&contender, SHARED_FIRST, SHARED_SIZE, true).unwrap();
+    unlock_bytes(&contender, SHARED_FIRST, SHARED_SIZE).unwrap();
+    assert_eq!(readonly_count(&path, &gate), 103);
+    assert_eq!(id_of(&File::open(&path).unwrap()), Some(expected));
+    for suffix in ["-wal", "-shm", "-journal"] {
+        assert!(!path.with_file_name(format!("invented.sqlite3{suffix}")).exists());
+    }
+}
