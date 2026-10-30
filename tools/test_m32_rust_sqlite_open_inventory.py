@@ -475,7 +475,7 @@ class RustSqliteOpenInventoryTests(unittest.TestCase):
         # Historical VFS fixtures already contain an OPEN_CREATE policy token.
         # Scope new negative assertions to the added R4 module only, without
         # weakening the existing whole-tree/old-module inventory checks.
-        new_r4 = source.split("// R4 / P1 decision probe", 1)[1]
+        new_r4 = source.split("// R4 / P1 decision probe", 1)[1].split("// R3 preopened HANDLE xOpen veto", 1)[0]
         for forbidden in (
             "#[tauri::command]", "database::open_database(",
             "run_migrations(", "SQLITE_OPEN_CREATE",
@@ -488,7 +488,7 @@ class RustSqliteOpenInventoryTests(unittest.TestCase):
     def test_47_r4_p1_no_second_reader_and_sticky_exclusive_is_disposable_only(self):
         src = self.src["src-tauri/src/m32_sqlite_vfs_preopen_tests.rs"]
         self.assertEqual(counts(src), (25, 0, 0, 0, 0, 26, 0))
-        r4 = src.split("// R4 / P1 decision probe", 1)[1]
+        r4 = src.split("// R4 / P1 decision probe", 1)[1].split("// R3 preopened HANDLE xOpen veto", 1)[0]
         for name in (
             "m32_r4_exclusive_owner_refuses_second_sqlite_reader_without_ipc",
             "m32_r4_exclusive_wal_owner_policy_refuses_normal_downgrade",
