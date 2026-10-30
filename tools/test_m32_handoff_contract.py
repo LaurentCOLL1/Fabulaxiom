@@ -4884,7 +4884,10 @@ class HandoffContractTests(unittest.TestCase):
         marker = "// R3 preopened HANDLE xOpen veto"
         self.assertEqual(fixture.split(marker, 1)[0].split("// R4 / P1 decision probe", 1)[0].count("#[test]"), 26)
         self.assertEqual(fixture.split("// R4 / P1 decision probe", 1)[1].split(marker, 1)[0].count("#[test]"), 5)
-        self.assertEqual(fixture.split(marker, 1)[1].count("#[test]"), 2)
+        r4_module = "// R4 / D3a live -shm FileId128:"
+        self.assertEqual(fixture.count(r4_module), 1)
+        r3_historical = fixture.split(marker, 1)[1].split(r4_module, 1)[0]
+        self.assertEqual(r3_historical.count("#[test]"), 2)
         for signal in ("fn r3_clone_preopened_handle(", "r3_preopened: Option<fs::File>",
                        "return ffi::SQLITE_CANTOPEN; // io_methods NOT implemented; no fallback!",
                        "m32_r3_sqlite_xopen_reopens_preheld_handle_without_path_delegation",
