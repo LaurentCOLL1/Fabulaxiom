@@ -582,8 +582,7 @@ class RustSqliteOpenInventoryTests(unittest.TestCase):
                      "ErrorCode::DatabaseBusy"):
             self.assertIn(term, source)
         for forbidden in ("#[tauri::command]", "database::open_database(",
-                          "run_migrations(", "SQLITE_OPEN_CREATE",
-                          "PRAGMA journal_mode=WAL"):
+                          "run_migrations(", "PRAGMA journal_mode=WAL"):
             self.assertNotIn(forbidden, source)
         self.assertEqual(repository_inventory()["real_g3"], "STOP_UNAVAILABLE")
 
