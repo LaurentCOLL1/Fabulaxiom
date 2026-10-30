@@ -537,3 +537,66 @@ fn m32_r3_win32_native_reserved_pending_exclusive_phase_matrix_without_sqlite_wr
         assert!(!path.with_file_name(format!("invented.sqlite3{suffix}")).exists());
     }
 }
+
+#[test]
+fn m32_r3_failed_shared_lock_drops_pending_gate_and_retry_succeeds() {
+    let root = OwnedRoot::new();
+    let path = root.database();
+    seed_invented_database(&path, 97);
+    let held = OpenOptions::new().read(true).share_mode(SHARE_ALL)
+        .open(&path).expect("new disposable SQLite main");
+    let identity = id_of(&held).unwrap();
+    let gate = RegisteredReadOnlyVfs::new(held);
+    let competitor = OpenOptions::new().read(true).share_mode(SHARE_ALL)
+        .open(&path).unwrap();
+    assert_eq!(id_of(&competitor), Some(identity));
+    // A different HANDLE prevents a SHARED range lock after PENDING was
+    // briefly acquired. This witnesses the failure cleanup, not a writer.
+    lock_bytes(&competitor, SHARED_FIRST, SHARED_SIZE, true).unwrap();
+    let blocked = open_readonly(&path, &gate);
+    let error = blocked.query_row("SELECT value FROM invented_r3", [], |r| r.get::<_, i64>(0))
+        .unwrap_err();
+    assert!(matches!(error, rusqlite::Error::SqliteFailure(e, _)
+        if e.code == rusqlite::ErrorCode::DatabaseBusy));
+    // The earlier failed acquisition must not leave the temporary
+    // PENDING-byte reader gate held on the VFS handle.
+    lock_bytes(&competitor, PENDING_BYTE, 1, true).unwrap();
+    unlock_bytes(&competitor, PENDING_BYTE, 1).unwrap();
+    drop(blocked);
+    unlock_bytes(&competitor, SHARED_FIRST, SHARED_SIZE).unwrap();
+    assert_eq!(readonly_count(&path, &gate), 97);
+    assert_eq!(id_of(&File::open(&path).unwrap()), Some(identity));
+    for suffix in ["-wal", "-shm", "-journal"] {
+        assert!(!path.with_file_name(format!("invented.sqlite3{suffix}")).exists());
+    }
+}
+
+#[test]
+fn m32_r3_sqlite_close_during_readonly_transaction_releases_native_shared() {
+    let root = OwnedRoot::new();
+    let path = root.database();
+    seed_invented_database(&path, 101);
+    let held = OpenOptions::new().read(true).share_mode(SHARE_ALL)
+        .open(&path).expect("new disposable SQLite main");
+    let identity = id_of(&held).unwrap();
+    let gate = RegisteredReadOnlyVfs::new(held);
+    let other = OpenOptions::new().read(true).share_mode(SHARE_ALL)
+        .open(&path).unwrap();
+    assert_eq!(id_of(&other), Some(identity));
+    let reader = open_readonly(&path, &gate);
+    reader.execute_batch("BEGIN").unwrap();
+    let before: i64 = reader.query_row("SELECT value FROM invented_r3", [], |r| r.get(0)).unwrap();
+    assert_eq!(before, 101);
+    let denied = lock_bytes(&other, SHARED_FIRST, SHARED_SIZE, true).unwrap_err();
+    assert_eq!(denied.raw_os_error(), Some(ERROR_LOCK_VIOLATION));
+    // Dropping the read-only SQLite connection without COMMIT must run
+    // xClose and release the native SHARED byte range.
+    drop(reader);
+    lock_bytes(&other, SHARED_FIRST, SHARED_SIZE, true).unwrap();
+    unlock_bytes(&other, SHARED_FIRST, SHARED_SIZE).unwrap();
+    assert_eq!(readonly_count(&path, &gate), 101);
+    assert_eq!(id_of(&File::open(&path).unwrap()), Some(identity));
+    for suffix in ["-wal", "-shm", "-journal"] {
+        assert!(!path.with_file_name(format!("invented.sqlite3{suffix}")).exists());
+    }
+}
