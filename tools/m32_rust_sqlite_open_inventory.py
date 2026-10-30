@@ -87,7 +87,7 @@ EXPECTED = {
     # R4 negative NORMAL-WAL refusal: one additional test-only stock writer
     # open on a brand-new %TEMP% file. Custom R3 VFS is READ_ONLY and has
     # no xShm* methods; never a production WAL or writer path.
-    "src-tauri/src/m32_r3_preopened_readonly_vfs_tests.rs": (4, 0, 0, 0, 0, 3, 0),
+    "src-tauri/src/m32_r3_preopened_readonly_vfs_tests.rs": (5, 0, 0, 0, 0, 4, 0),
     # R4 stock Windows SQLite VFS, freshly invented %TEMP% main, test-only.
     # One temporary RW fixture and one READ_ONLY reader, no custom xShm* proof.
     "src-tauri/src/m32_r4_wal_shm_disposable_tests.rs": (2, 0, 0, 0, 0, 1, 0),

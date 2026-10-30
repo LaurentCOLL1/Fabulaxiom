@@ -15,3 +15,7 @@ This negative result does **not** prove positive xShm* forwarding, atomic WAL/SH
 **STOP:** M3.2 IN_PROGRESS_NOT_ACCEPTED ; writer/R1–R9 NOT_PROVEN ; G2B NOT_ACCEPTED ; G2C NOT_AUTHORIZED ; G3 STOP_UNAVAILABLE ; historical PENDING_EXTERNAL_ATTESTATION(21/3/2) ; prospective NOT_STARTED. D3b-4/5 and D3b-5 STOP, D3c design only.
 
 **Next:** exact HEAD Windows CI, diff/reviews/threads, active strict Protect main bypass=[], protected expected_head_sha squash if PASS, independent postmain and #38 append-only; then positive xShm* sidecar ownership on new fixtures, never promotion to production.
+
+## CI source, tentative initiale refusée
+
+[Windows CI #41111319310](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/41111319310) completed/FAILURE au HEAD initial `b664240e3ebcb17f2ed1a5a2fd058ccb7f80079c` ; l'inventaire a correctement détecté le nouveau total **5** occurrences `Connection::open*` et **4** `SQLITE_OPEN_*` dans le module, alors que les attentes indiquaient 4/3 et que les contrats R3 conservaient 3/3. Cette défaillance n'est jamais qualifiée PASS. Le commit correctif met à jour tous les comptes source-only à `(5,0,0,0,0,4,0)`, sans nouveau site d'ouverture ni changement de comportement runtime. **CI du HEAD corrigé à vérifier séparément avant tout merge.**
