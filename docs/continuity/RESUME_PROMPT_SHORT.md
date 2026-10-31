@@ -1,6 +1,6 @@
 # Fabulaxiom — reprise courte (31 octobre 2026)
 
-**#247 FUSIONNÉE :** `main=f71952119874b45555fbe9ea6dd2151f52123207` ; source #41204712973 PASS **281/7/59/169**, postmain #41205668071 SUCCESS exact SHA. **R4 NOUVEAU CANDIDAT, PAS QUALIFIÉ :** bytes de région 0 renvoyés par vrai `xShmMap` comparés au -shm tenu d'une base SQLite %TEMP% ; **282/7/60/170 attendus**. Voir `M3_2_R4_XSHM_REGION0_CALLBACK_VS_HELD_FILE_DISPOSABLE_20261031.md`. Pas preuve du HANDLE OS de SQLite, ni custody atomique ni writer. Suite : CI exact-head, diff/reviews/threads, Protect main strict bypass=[], squash `expected_head_sha`, postmain indépendante, #38 append-only.
+**#248 FUSIONNÉE :** `main=86133f85162a9efa189d0241ddd27fef8ad2636e` ; source #41214614517 PASS **282/7/60/170**, postmain #41215651418 SUCCESS. **R4 candidat NON QUALIFIÉ :** noms NT `xShmMap` et mapping HANDLE tenu comparés, contrôle leurre aux mêmes octets ; **282/7/61/171 attendus**. Voir `M3_2_R4_XSHM_MAPPED_NT_FILENAME_DECOY_DISPOSABLE_20261031.md`. Référence #248 : `M3_2_R4_XSHM_REGION0_CALLBACK_VS_HELD_FILE_DISPOSABLE_20261031.md`. Pas preuve du HANDLE privé, custody atomique ni writer. CI exact-head, reviews/threads, Protect main strict bypass=[], squash expected_head_sha, postmain et #38 append-only.
 
 
 **#244 :** CI #41124543182 PASS 269/7/56/166, postmain #41148419366 SUCCESS ; modèle RAM-only `M3_2_R4_SHM_HANDLE_BINDING_GATE_RAM_MODEL_20261031.md` (writer toujours STOP).
