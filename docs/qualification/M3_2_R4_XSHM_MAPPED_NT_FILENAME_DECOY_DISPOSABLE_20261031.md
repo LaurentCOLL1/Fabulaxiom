@@ -1,0 +1,12 @@
+# M3.2 R4 — actual SQLite xShmMap NT mapped backing filename vs held SHM handle
+
+31 October 2026. **CANDIDATE, NOT QUALIFIED until exact-head Windows CI.**
+Protected parent main `86133f85162a9efa189d0241ddd27fef8ad2636e`. PR #248 source [CI #41214614517](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/41214614517) completed/SUCCESS 282 Rust / 7 Greenfield / 60 inventory / 170 continuity; independent [postmain #41215651418](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/41215651418) completed/SUCCESS at exact merged SHA.
+
+The test-only D2/D3a SQLite Win32 VFS already captures the **actual** returned region-0 `xShmMap` pointer. This candidate queries [GetMappedFileNameW](https://learn.microsoft.com/en-us/windows/win32/api/psapi/nf-psapi-getmappedfilenamew) for that live pointer while SQLite is open. Separately, on the NEW test-owned `%TEMP%` database's held native `-shm` file HANDLE, it creates a PAGE_READONLY/FILE_MAP_READ mapping via `CreateFileMappingW` / `MapViewOfFile`. Compare exact NT mapped filenames, along with previous 136-byte header equality and stable FileId128. Adversarial decoy with **the same 136 header bytes** must have different mapped NT path and FileId128. Release separate mappings before SQLite's `xShmUnmap`/close; never dereference stale pointer.
+
+**Strict limitation:** matching NT mapped file **names** and data does not reveal or authenticate the private native HANDLE held inside SQLite's `winShmNode.hSharedShm`. Not an atomic link of main/-wal/-shm, not immunity to reparse/ABA, no multi-process writer admission. For true handle authentication, require source-controlled custom VFS retaining actual mapping and locking HANDLES throughout their lifetime. See [SQLite VFS](https://www.sqlite.org/c3ref/io_methods.html) and [Windows FILE_ID_INFO](https://learn.microsoft.com/en-us/windows/win32/api/winbase/ns-winbase-file_id_info).
+
+**EXPECTED (NOT PASS):** 282 Rust / 7 Greenfield / 61 inventory / 171 continuity. No new SQLite opening site, no production code. Exact-head Windows CI terminal SUCCESS, full diff/reviews/threads, active strict Protect main bypass=[], protected squash expected_head_sha only if qualified, independent postmain and append-only issue #38.
+
+**STOP:** M3.2 IN_PROGRESS_NOT_ACCEPTED ; writer/R1–R9 NOT_PROVEN ; G2B NOT_ACCEPTED ; G2C NOT_AUTHORIZED ; G3 STOP_UNAVAILABLE ; history PENDING_EXTERNAL_ATTESTATION(21/3/2), prospective NOT_STARTED. No operator v6/v7, existing Greenfield profile, backups, native Hello, writer IPC, migration 007, durable marker or recovery.

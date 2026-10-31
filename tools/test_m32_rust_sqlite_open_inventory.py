@@ -775,5 +775,20 @@ class RustSqliteOpenInventoryTests(unittest.TestCase):
         self.assertEqual(repository_inventory()["writer_absence"], "NOT_PROVEN")
         self.assertFalse(repository_inventory()["real_g3_authorized"])
 
+    def test_61_r4_native_nt_mapped_name_correlates_real_xshm_and_refuses_byte_decoy(self):
+        path = "src-tauri/src/m32_sqlite_vfs_preopen_tests.rs"
+        code = self.src[path]
+        self.assertEqual(counts(code), EXPECTED[path])
+        for term in ("GetMappedFileNameW", "r4_mapped_nt_filename",
+                     "CreateFileMappingW", "MapViewOfFile", "UnmapViewOfFile",
+                     "R4HeldReadonlyMap", "sqlite_nt_name",
+                     "same-header-different-file.fixture",
+                     "assert_ne!(sqlite_nt_name, decoy_map.nt_name()",
+                     "held_map.nt_name()"):
+            self.assertIn(term, code)
+        self.assertIn("does NOT authenticate stock SQLite's opaque internal OS HANDLE", code)
+        self.assertNotIn("#[tauri::command]", code)
+        self.assertEqual(repository_inventory()["writer_absence"], "NOT_PROVEN")
+
 if __name__ == "__main__":
     unittest.main()
