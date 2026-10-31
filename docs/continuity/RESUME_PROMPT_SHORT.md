@@ -1,5 +1,7 @@
 # Fabulaxiom — reprise courte (30 octobre 2026)
 
+**#243 FUSIONNÉE sous Protect main** : `main=fd6b7ccfd45d877ea34c5c02668660b3a17ffc27` ; source Windows #41119276800 SUCCESS (268 Rust/7 Greenfield/55 inventaire/165 continuité), postmain #41123096907 à vérifier terminalement. **#244 R4 candidat NON QUALIFIÉ** : identité FileId128 `-shm` observée en direct sous D3a xShm* sur fixture neuve `%TEMP%`; **269/7/56/166 ATTENDUS, PAS PASS**. Voir `M3_2_R4_D3A_LIVE_SHM_FILEID_DISPOSABLE_20261030.md`. Aucune preuve atomique ni writer production.
+
 Reprends Fabulaxiom Windows (React, Tauri v2, Rust, SQLite ; voie C locale, Ollama). Dépôt : https://github.com/LaurentCOLL1/Fabulaxiom
 
 **D'abord :** re-fetch GitHub vivant : `main`, PR, issues, CI Windows au SHA exact, reviews/threads et ruleset **Protect main** (strict, zéro bypass). Ce checkpoint ne remplace jamais la vérification du dépôt.
