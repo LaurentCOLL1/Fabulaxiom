@@ -5265,6 +5265,23 @@ class HandoffContractTests(unittest.TestCase):
         self.assertEqual(e["g2b"], "NOT_ACCEPTED")
         self.assertEqual(e["g2c"], "NOT_AUTHORIZED")
         self.assertEqual(e["g3"], "STOP_UNAVAILABLE")
+        current = self.data["m32_r4_live_sqlite_wal_index_ro_map_candidate_20261031"]
+        self.assertEqual(current["scope"], "WINDOWS_CI_DISPOSABLE_LIVE_SQLITE_WAL_INDEX_READONLY_VIEW_ONLY")
+        self.assertEqual(current["pr246_postmain_status"], "SUCCESS_EXACT_MAIN_SHA")
+        for key, count in (("expected_rust_tests_not_qualified", 281),
+                           ("expected_greenfield_tests_not_qualified", 7),
+                           ("expected_inventory_tests_not_qualified", 59),
+                           ("expected_continuity_tests_not_qualified", 169)):
+            self.assertEqual(current[key], count)
+        for key in ("actual_sqlite_xshm_handle_authenticated", "custom_r3_xshm_implemented",
+                    "atomic_three_file_custody_proven", "writer_admitted",
+                    "operator_data_accessed", "ipc_enabled", "migration_007",
+                    "native_hello", "persistent_marker", "recovery_authorized"):
+            self.assertFalse(current[key], key)
+        self.assertEqual(current["m3_2"], "IN_PROGRESS_NOT_ACCEPTED")
+        self.assertEqual(current["g2b"], "NOT_ACCEPTED")
+        self.assertEqual(current["g2c"], "NOT_AUTHORIZED")
+        self.assertEqual(current["g3"], "STOP_UNAVAILABLE")
         note = "M3_2_R4_NATIVE_HELD_HANDLE_MAP_DISPOSABLE_20261031.md"
         source = (ROOT / "docs/qualification" / note).read_text(encoding="utf-8")
         self.assertIn("Follow-on candidate, 31 October 2026", source)
