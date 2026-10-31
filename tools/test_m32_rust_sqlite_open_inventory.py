@@ -703,5 +703,27 @@ class RustSqliteOpenInventoryTests(unittest.TestCase):
             self.assertNotIn(forbidden, witness)
         self.assertEqual(repository_inventory()["writer_absence"], "NOT_PROVEN")
 
+
+    def test_57_r4_shm_bound_handle_design_contract_ram_only(self):
+        path = "src-tauri/src/m32_r4_xshm_bound_handle_evidence_toy.rs"
+        src = self.src[path]
+        self.assertEqual(EXPECTED[path], (0, 0, 0, 0, 0, 0, 0))
+        self.assertEqual(counts(src), (0, 0, 0, 0, 0, 0, 0))
+        self.assertEqual(src.count("#[test]"), 10)
+        for signal in ("enum Provenance", "HeldNativeHandle",
+                       "ActualXShmMapNativeHandle", "ReopenedNameOnly",
+                       "DelegatedWithoutHandleBinding", "epoch == 0",
+                       "TemplateCompleteButRuntimeStillForbidden",
+                       "RefuseUnboundOrStale", "mapped.identity != shm.identity",
+                       "r4_model_rejects_cross_epoch_fileid_matching_aba"):
+            self.assertIn(signal, src)
+        for forbidden in ("Connection::open(", "sqlite3_open", "run_migrations(",
+                          "#[tauri::command]", "std::env::temp_dir(",
+                          "app_local_data_dir(", "OpenOptions::new("):
+            self.assertNotIn(forbidden, src)
+        lib = self.src["src-tauri/src/lib.rs"]
+        self.assertIn("#[cfg(all(test, windows))]\nmod m32_r4_xshm_bound_handle_evidence_toy;", lib)
+        self.assertFalse(repository_inventory()["real_g3_authorized"])
+
 if __name__ == "__main__":
     unittest.main()

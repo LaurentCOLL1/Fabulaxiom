@@ -69,6 +69,8 @@ mod m32_r3_preopened_readonly_vfs_tests;
 // No custom VFS admission or operator writer.
 #[cfg(all(test, windows))]
 mod m32_r4_wal_shm_disposable_tests;
+#[cfg(all(test, windows))]
+mod m32_r4_xshm_bound_handle_evidence_toy;
 
 // D3b-5 bounded phase-bracket crash refusal on fresh disposable Windows CI files.
 // Does NOT reopen crashed SQLite, attest xSync/xShmUnmap timing or admit a writer.

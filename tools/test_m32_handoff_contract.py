@@ -5205,5 +5205,31 @@ class HandoffContractTests(unittest.TestCase):
         for p in ("ROADMAP_STATUS_CURRENT.md", "FABULAXIOM_ROADMAP_V1.md"):
             self.assertIn(note, (ROOT / "docs/roadmap" / p).read_text(encoding="utf-8"))
 
+
+    def test_167_r4_xshm_native_handle_binding_model_cannot_admit_runtime(self):
+        e = self.data["m32_r4_xshm_native_handle_design_model_candidate_20261031"]
+        self.assertEqual(e["scope"], "RAM_ONLY_WINDOWS_CI_R4_HANDLE_BINDING_MODEL")
+        self.assertEqual(e["expected_rust_tests_not_qualified"], 279)
+        self.assertEqual(e["expected_greenfield_tests_not_qualified"], 7)
+        self.assertEqual(e["expected_inventory_tests_not_qualified"], 57)
+        self.assertEqual(e["expected_continuity_tests_not_qualified"], 167)
+        for k in ("native_handle_implemented", "actual_mapped_shm_handle_verified",
+                  "atomic_three_file_custody_proven", "writer_admitted",
+                  "operator_data_accessed", "ipc_enabled", "migration_007",
+                  "native_hello", "persistent_marker", "recovery_authorized"):
+            self.assertFalse(e[k], k)
+        self.assertEqual(e["m3_2"], "IN_PROGRESS_NOT_ACCEPTED")
+        self.assertEqual(e["g2b"], "NOT_ACCEPTED")
+        self.assertEqual(e["g2c"], "NOT_AUTHORIZED")
+        self.assertEqual(e["g3"], "STOP_UNAVAILABLE")
+        note = "M3_2_R4_SHM_HANDLE_BINDING_GATE_RAM_MODEL_20261031.md"
+        self.assertTrue((ROOT / "docs/qualification" / note).is_file())
+        for p in ("RESUME_PROMPT_SHORT.md", "RESUME_PROMPT.md", "HANDOFF_CURRENT.md",
+                  "HANDOFF_HISTORY.md", "HANDOFF_PROTOCOL.md",
+                  "STATE.md", "NEXT.md", "M3_2_GATE_DECISION_CURRENT.md", "README.md"):
+            self.assertIn(note, (DIRECTORY / p).read_text(encoding="utf-8"))
+        for p in ("ROADMAP_STATUS_CURRENT.md", "FABULAXIOM_ROADMAP_V1.md"):
+            self.assertIn(note, (ROOT / "docs/roadmap" / p).read_text(encoding="utf-8"))
+
 if __name__ == "__main__":
     unittest.main()

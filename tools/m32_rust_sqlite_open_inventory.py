@@ -91,6 +91,9 @@ EXPECTED = {
     # R4 stock Windows SQLite VFS, freshly invented %TEMP% main, test-only.
     # One temporary RW fixture and one READ_ONLY reader, no custom xShm* proof.
     "src-tauri/src/m32_r4_wal_shm_disposable_tests.rs": (2, 0, 0, 0, 0, 1, 0),
+    # R4 design contract only: zero SQLite opens or flags, entirely RAM.
+    # A future native xShmMap handle binding is NOT implemented by this toy.
+    "src-tauri/src/m32_r4_xshm_bound_handle_evidence_toy.rs": (0, 0, 0, 0, 0, 0, 0),
     # 2026-10-28: an UNWIRED writer core owns an ALREADY admitted connection.
     # Two RAM-only constructors, migration and ATTACH are confined to its
     # #[cfg(test)] fictional fixture; no production path opening is added.
