@@ -15,3 +15,16 @@ This **only** proves provenance for the native mapping *this test owns*. It does
 **STOP:** M3.2 IN_PROGRESS_NOT_ACCEPTED ; writer/R1–R9 NOT_PROVEN ; G2B NOT_ACCEPTED ; G2C NOT_AUTHORIZED ; G3 STOP_UNAVAILABLE ; historical PENDING_EXTERNAL_ATTESTATION(21/3/2) ; prospective NOT_STARTED ; D3b-4/5 STOP, D3c design-only. No original data, Greenfield existing profile, native Hello, durable marker or recovery.
 
 **Next:** build/test an actual custom SQLite xShmMap handle-bound VFS lifecycle on brand-new disposable Windows fixtures, never by re-opening a name while assuming it is the handle SQLite mapped; preserve R3, P1, reparse, ABA, identity and epoch refusal.
+
+
+## Follow-on candidate, 31 October 2026 — live stock SQLite WAL-index READ_ONLY (NOT QUALIFIED)
+
+Parent [PR #246](https://github.com/LaurentCOLL1/Fabulaxiom/pull/246) was merged as `a4ef50666af9f0072586c667864a8a432af8b433`. Source Windows [#41154135365](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/41154135365) was SUCCESS (281 Rust / 7 Greenfield / 58 SQLite inventory / 168 continuity); independent postmain [#41173479461](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/41173479461) SUCCESS at the merged SHA.
+
+The next branch `codex/m32-r4-live-sqlite-wal-index-ro-map-disposable-20261031` adds a **READ_ONLY** `CreateFileMappingW` / `MapViewOfFile` on the actual `-shm` created by the existing **disposable stock Win32 SQLite WAL fixture**, while the invented writer/reader are alive. The test checks host-order iVersion=3007000 in both header copies (offsets 0 and 48), isInit=1 at byte 12 and volume+FileId128 on a separately held native HANDLE before/after unmapping. It adds no SQLite connection or production integration, and never reads any operator file.
+
+This proves only an independently held handle on a *live SQLite-created -shm file*. It does **not** prove the same native handle is used inside stock SQLite `xShmMap`, and does not implement native `xShmMap/xShmLock/xShmBarrier/xShmUnmap` in the preopened R3 VFS. Atomic custody of main/-wal/-shm, writer/R1–R9 and production M3.2 remain **NOT_PROVEN / IN_PROGRESS_NOT_ACCEPTED**. G2B NOT_ACCEPTED; G2C NOT_AUTHORIZED; G3 STOP_UNAVAILABLE; historical PENDING_EXTERNAL_ATTESTATION(21/3/2), prospective NOT_STARTED. No existing Greenfield profile, operator v6/v7 DB, backups, native Hello, IPC writer, migration 007, durable marker or recovery.
+
+**Expected, NOT PASS until exact-head Windows CI:** 281 Rust / 7 Greenfield / 59 SQLite inventory / 169 continuity. Require full diff, reviews/threads, strict active Protect main bypass=[], protected squash expected_head_sha only if all gates pass, independent postmain, and append-only issue #38.
+
+References: [SQLite WAL-index layout](https://sqlite.org/walformat.html), [SQLite VFS IO methods](https://sqlite.org/c3ref/io_methods.html).
