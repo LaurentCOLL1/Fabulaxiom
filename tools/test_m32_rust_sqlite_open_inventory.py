@@ -759,5 +759,19 @@ class RustSqliteOpenInventoryTests(unittest.TestCase):
         self.assertEqual(repository_inventory()["writer_absence"], "NOT_PROVEN")
         self.assertFalse(repository_inventory()["real_g3_authorized"])
 
+    def test_60_real_sqlite_xshm_region0_crosscheck_is_disposable_and_bounded(self):
+        path = "src-tauri/src/m32_sqlite_vfs_preopen_tests.rs"
+        code = self.src[path]
+        self.assertEqual(counts(code), EXPECTED[path])
+        for needle in ("r4_actual_xshm_region0_matches_live_held_shm_file_not_native_handle_proof",
+                       "r4_actual_xshm_region0.store", "r4_actual_xshm_region0_size.store",
+                       "actual_callback_region", "held.seek_read(&mut held_file_bytes, 0)",
+                       "assert_eq!(actual_callback_region, held_file_bytes",
+                       "create_new(true)", "with_d3a("):
+            self.assertIn(needle, code)
+        self.assertIn("NOT authenticate the opaque OS HANDLE", code)
+        self.assertEqual(repository_inventory()["writer_absence"], "NOT_PROVEN")
+        self.assertFalse(repository_inventory()["real_g3_authorized"])
+
 if __name__ == "__main__":
     unittest.main()

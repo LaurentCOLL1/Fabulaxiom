@@ -158,6 +158,9 @@ struct FixtureVfs {
     d3a_main_close_successes: AtomicUsize,
     d3a_wal_close_successes: AtomicUsize,
     d3a_close_failures: AtomicUsize,
+    // R4: capture only the actual returned xShmMap region-0 view on a NEW fixture.
+    r4_actual_xshm_region0: AtomicUsize,
+    r4_actual_xshm_region0_size: AtomicUsize,
 }
 
 // The default Win32 sqlite3_file occupies the first default_vfs.szOsFile bytes.
@@ -193,7 +196,13 @@ unsafe extern "C" fn fixture_xshm_map(
         unsafe { *mapped = ptr::null_mut() };
         return ffi::SQLITE_IOERR_SHMMAP;
     };
-    unsafe { original(file, page, page_size, extend, mapped) }
+    let rc = unsafe { original(file, page, page_size, extend, mapped) };
+    if rc == ffi::SQLITE_OK && page == 0 && !mapped.is_null() &&
+        !(unsafe { *mapped }).is_null() && page_size >= 136 {
+        gate.r4_actual_xshm_region0.store(unsafe { *mapped } as usize, Ordering::SeqCst);
+        gate.r4_actual_xshm_region0_size.store(page_size as usize, Ordering::SeqCst);
+    }
+    rc
 }
 
 
@@ -594,6 +603,8 @@ impl RegisteredFixtureVfs {
             d3a_main_close_successes: AtomicUsize::new(0),
             d3a_wal_close_successes: AtomicUsize::new(0),
             d3a_close_failures: AtomicUsize::new(0),
+            r4_actual_xshm_region0: AtomicUsize::new(0),
+            r4_actual_xshm_region0_size: AtomicUsize::new(0),
         });
         state.dispatch.pNext = ptr::null_mut();
         state.dispatch.zName = name.as_ptr();
@@ -1685,4 +1696,76 @@ mod r4_d3a_live_shm_fileid_disposable {
         // NO atomic custody of three handles; NO writer production admission.
     }
 
+}
+
+
+// R4, AFTER the historical D3a and R4 fixture groups. This compares bytes
+// returned by the ACTUAL stock SQLite xShmMap callback through our test-only
+// wrapper with a separately held FileId128-verified SHM file. It DOES NOT
+// authenticate the opaque OS HANDLE that winShmNode used for its mapping.
+mod r4_actual_xshm_region0_crosscheck_disposable {
+    use super::*;
+    use std::os::windows::{fs::{FileExt, OpenOptionsExt}, io::AsRawHandle};
+
+    #[test]
+    fn r4_actual_xshm_region0_matches_live_held_shm_file_not_native_handle_proof() {
+        let owned = DisposableRoot::new();
+        let path = owned.db();
+        fs::OpenOptions::new().write(true).create_new(true)
+            .open(&path).expect("CREATE_NEW in new fixture %TEMP% only");
+        let main_id = win_file_id_128(&fs::File::open(&path).unwrap()).unwrap();
+        let gate = RegisteredFixtureVfs::with_d3a(
+            path.clone(), main_id, None, false, false);
+        // Exactly one new reviewed SQLite opening site; a new disposable path.
+        let db = Connection::open_with_flags_and_vfs(
+            &path, OpenFlags::SQLITE_OPEN_READ_WRITE, gate.name()
+        ).expect("test-only SQLite handle");
+        let mode: String = db.query_row("PRAGMA journal_mode=WAL", [],
+            |row| row.get(0)).unwrap();
+        assert_eq!(mode.to_ascii_lowercase(), "wal");
+        db.execute_batch(
+            "CREATE TABLE invented_r4_crosscheck(v INTEGER NOT NULL);
+             INSERT INTO invented_r4_crosscheck(v) VALUES(1);
+             INSERT INTO invented_r4_crosscheck(v) VALUES(2);"
+        ).unwrap();
+        assert_eq!(db.query_row("SELECT COUNT(*) FROM invented_r4_crosscheck", [],
+            |row| row.get::<_, i64>(0)).unwrap(), 2);
+
+        let address = gate.state.r4_actual_xshm_region0.load(Ordering::SeqCst);
+        let size = gate.state.r4_actual_xshm_region0_size.load(Ordering::SeqCst);
+        assert_ne!(address, 0, "SQLite returned a real region-0 xShmMap address");
+        assert!(size >= 136, "mapped WAL-index header must fit region zero");
+        assert!(gate.state.shm_map_delegations.load(Ordering::SeqCst) >= 1);
+        assert!(gate.state.d3a_shm_lock_delegations.load(Ordering::SeqCst) >= 1);
+        assert!(gate.state.d3a_shm_barrier_delegations.load(Ordering::SeqCst) >= 1);
+
+        let shm = path.with_file_name("new.sqlite3-shm");
+        let held = fs::OpenOptions::new().read(true).share_mode(1|2|4)
+            .open(&shm).expect("only SQLite-created live SHM in new fixture");
+        let held_id_before = win_file_id_128(&held).unwrap();
+        assert_ne!(main_id, held_id_before);
+        // No further SQLite operations until this live view has been read.
+        // SQLite owns this pointer; reading it after db.close would be UAF.
+        let mut actual_callback_region = [0_u8; 136];
+        unsafe {
+            ptr::copy_nonoverlapping(address as *const u8,
+                actual_callback_region.as_mut_ptr(), actual_callback_region.len());
+        }
+        let mut held_file_bytes = [0_u8; 136];
+        assert_eq!(held.seek_read(&mut held_file_bytes, 0).unwrap(), 136);
+        assert_eq!(actual_callback_region, held_file_bytes,
+            "real xShmMap region-0 bytes must match same live named file bytes");
+        assert_eq!(u32::from_ne_bytes(actual_callback_region[0..4].try_into().unwrap()),
+            3_007_000);
+        assert_eq!(u32::from_ne_bytes(actual_callback_region[48..52].try_into().unwrap()),
+            3_007_000);
+        assert_eq!(actual_callback_region[12], 1);
+        assert_eq!(win_file_id_128(&held).unwrap(), held_id_before);
+        drop(held);
+        assert!(db.close().is_ok(), "unmap and close test-only SQLite before cleanup");
+        assert!(gate.state.d3a_shm_unmap_delegations.load(Ordering::SeqCst) >= 1);
+        assert_eq!(gate.state.d3a_shm_unmap_failures.load(Ordering::SeqCst), 0);
+        assert_eq!(gate.state.d3a_close_failures.load(Ordering::SeqCst), 0);
+        // Never dereference the region pointer after close; never production.
+    }
 }

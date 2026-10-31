@@ -72,7 +72,7 @@ EXPECTED = {
     # Historical PR232: "src-tauri/src/m32_sqlite_vfs_preopen_tests.rs": (24, 0, 0, 0, 0, 25, 0)
     # PR233: one more Windows cfg(test) SQLite attempt; callback always
     # clones the preopened handle then refuses before default xOpen.
-    "src-tauri/src/m32_sqlite_vfs_preopen_tests.rs": (26, 0, 0, 0, 0, 27, 0),
+    "src-tauri/src/m32_sqlite_vfs_preopen_tests.rs": (27, 0, 0, 0, 0, 28, 0),
     # D3b-5 distinct Windows test-only phase fixture: one owned-file opener,
     # no successor SQLite open; historical 26 VFS witnesses unchanged.
     "src-tauri/src/m32_d3b5_phase_matrix_tests.rs": (1, 0, 0, 0, 0, 1, 0),
