@@ -5231,5 +5231,30 @@ class HandoffContractTests(unittest.TestCase):
         for p in ("ROADMAP_STATUS_CURRENT.md", "FABULAXIOM_ROADMAP_V1.md"):
             self.assertIn(note, (ROOT / "docs/roadmap" / p).read_text(encoding="utf-8"))
 
+    def test_168_r4_native_held_handle_mapping_never_admits_sqlite(self):
+        e = self.data["m32_r4_native_held_handle_mapping_candidate_20261031"]
+        self.assertEqual(e["scope"], "WINDOWS_CI_DISPOSABLE_NATIVE_HELD_HANDLE_MAPPING_ONLY")
+        for key, expected in (("expected_rust_tests_not_qualified", 281),
+                              ("expected_greenfield_tests_not_qualified", 7),
+                              ("expected_inventory_tests_not_qualified", 58),
+                              ("expected_continuity_tests_not_qualified", 168)):
+            self.assertEqual(e[key], expected)
+        for key in ("sqlite_xshm_actual_handle_proven", "atomic_three_file_custody_proven",
+                    "writer_admitted", "operator_data_accessed", "ipc_enabled",
+                    "migration_007", "native_hello", "persistent_marker", "recovery_authorized"):
+            self.assertFalse(e[key], key)
+        self.assertEqual(e["m3_2"], "IN_PROGRESS_NOT_ACCEPTED")
+        self.assertEqual(e["g2b"], "NOT_ACCEPTED")
+        self.assertEqual(e["g2c"], "NOT_AUTHORIZED")
+        self.assertEqual(e["g3"], "STOP_UNAVAILABLE")
+        note = "M3_2_R4_NATIVE_HELD_HANDLE_MAP_DISPOSABLE_20261031.md"
+        self.assertTrue((ROOT / "docs/qualification" / note).is_file())
+        for path in ("RESUME_PROMPT_SHORT.md", "RESUME_PROMPT.md", "HANDOFF_CURRENT.md",
+                     "HANDOFF_HISTORY.md", "HANDOFF_PROTOCOL.md", "STATE.md", "NEXT.md",
+                     "M3_2_GATE_DECISION_CURRENT.md", "README.md"):
+            self.assertIn(note, (DIRECTORY / path).read_text(encoding="utf-8"))
+        for path in ("ROADMAP_STATUS_CURRENT.md", "FABULAXIOM_ROADMAP_V1.md"):
+            self.assertIn(note, (ROOT / "docs/roadmap" / path).read_text(encoding="utf-8"))
+
 if __name__ == "__main__":
     unittest.main()
