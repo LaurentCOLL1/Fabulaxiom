@@ -707,7 +707,7 @@ class RustSqliteOpenInventoryTests(unittest.TestCase):
     def test_57_r4_shm_bound_handle_design_contract_ram_only(self):
         path = "src-tauri/src/m32_r4_xshm_bound_handle_evidence_toy.rs"
         src = self.src[path]
-        self.assertEqual(EXPECTED[path], (0, 0, 0, 0, 0, 0, 0))
+        self.assertNotIn(path, EXPECTED)  # all-zero Rust files are omitted
         self.assertEqual(counts(src), (0, 0, 0, 0, 0, 0, 0))
         self.assertEqual(src.count("#[test]"), 10)
         for signal in ("enum Provenance", "HeldNativeHandle",
