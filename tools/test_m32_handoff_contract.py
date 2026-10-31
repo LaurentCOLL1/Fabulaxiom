@@ -5256,5 +5256,29 @@ class HandoffContractTests(unittest.TestCase):
         for path in ("ROADMAP_STATUS_CURRENT.md", "FABULAXIOM_ROADMAP_V1.md"):
             self.assertIn(note, (ROOT / "docs/roadmap" / path).read_text(encoding="utf-8"))
 
+    def test_169_r4_live_sqlite_wal_index_native_view_is_not_real_xshm(self):
+        e = self.data["m32_r4_native_held_handle_mapping_candidate_20261031"]
+        self.assertFalse(e["sqlite_xshm_actual_handle_proven"])
+        self.assertFalse(e["atomic_three_file_custody_proven"])
+        self.assertFalse(e["writer_admitted"])
+        self.assertEqual(e["m3_2"], "IN_PROGRESS_NOT_ACCEPTED")
+        self.assertEqual(e["g2b"], "NOT_ACCEPTED")
+        self.assertEqual(e["g2c"], "NOT_AUTHORIZED")
+        self.assertEqual(e["g3"], "STOP_UNAVAILABLE")
+        note = "M3_2_R4_NATIVE_HELD_HANDLE_MAP_DISPOSABLE_20261031.md"
+        source = (ROOT / "docs/qualification" / note).read_text(encoding="utf-8")
+        self.assertIn("Follow-on candidate, 31 October 2026", source)
+        self.assertIn("live stock SQLite WAL-index READ_ONLY", source)
+        self.assertIn("NOT QUALIFIED", source)
+        for path in ("RESUME_PROMPT_SHORT.md", "RESUME_PROMPT.md",
+                     "HANDOFF_CURRENT.md", "HANDOFF_HISTORY.md",
+                     "HANDOFF_PROTOCOL.md", "STATE.md", "NEXT.md",
+                     "M3_2_GATE_DECISION_CURRENT.md", "README.md"):
+            text = (DIRECTORY / path).read_text(encoding="utf-8")
+            self.assertIn(note, text)
+            self.assertIn("live SQLite WAL-index", text)
+        for path in ("ROADMAP_STATUS_CURRENT.md", "FABULAXIOM_ROADMAP_V1.md"):
+            self.assertIn("live SQLite WAL-index", (ROOT / "docs/roadmap" / path).read_text(encoding="utf-8"))
+
 if __name__ == "__main__":
     unittest.main()
