@@ -5256,5 +5256,46 @@ class HandoffContractTests(unittest.TestCase):
         for path in ("ROADMAP_STATUS_CURRENT.md", "FABULAXIOM_ROADMAP_V1.md"):
             self.assertIn(note, (ROOT / "docs/roadmap" / path).read_text(encoding="utf-8"))
 
+    def test_169_r4_live_sqlite_wal_index_native_view_is_not_real_xshm(self):
+        e = self.data["m32_r4_native_held_handle_mapping_candidate_20261031"]
+        self.assertFalse(e["sqlite_xshm_actual_handle_proven"])
+        self.assertFalse(e["atomic_three_file_custody_proven"])
+        self.assertFalse(e["writer_admitted"])
+        self.assertEqual(e["m3_2"], "IN_PROGRESS_NOT_ACCEPTED")
+        self.assertEqual(e["g2b"], "NOT_ACCEPTED")
+        self.assertEqual(e["g2c"], "NOT_AUTHORIZED")
+        self.assertEqual(e["g3"], "STOP_UNAVAILABLE")
+        current = self.data["m32_r4_live_sqlite_wal_index_ro_map_candidate_20261031"]
+        self.assertEqual(current["scope"], "WINDOWS_CI_DISPOSABLE_LIVE_SQLITE_WAL_INDEX_READONLY_VIEW_ONLY")
+        self.assertEqual(current["pr246_postmain_status"], "SUCCESS_EXACT_MAIN_SHA")
+        for key, count in (("expected_rust_tests_not_qualified", 281),
+                           ("expected_greenfield_tests_not_qualified", 7),
+                           ("expected_inventory_tests_not_qualified", 59),
+                           ("expected_continuity_tests_not_qualified", 169)):
+            self.assertEqual(current[key], count)
+        for key in ("actual_sqlite_xshm_handle_authenticated", "custom_r3_xshm_implemented",
+                    "atomic_three_file_custody_proven", "writer_admitted",
+                    "operator_data_accessed", "ipc_enabled", "migration_007",
+                    "native_hello", "persistent_marker", "recovery_authorized"):
+            self.assertFalse(current[key], key)
+        self.assertEqual(current["m3_2"], "IN_PROGRESS_NOT_ACCEPTED")
+        self.assertEqual(current["g2b"], "NOT_ACCEPTED")
+        self.assertEqual(current["g2c"], "NOT_AUTHORIZED")
+        self.assertEqual(current["g3"], "STOP_UNAVAILABLE")
+        note = "M3_2_R4_NATIVE_HELD_HANDLE_MAP_DISPOSABLE_20261031.md"
+        source = (ROOT / "docs/qualification" / note).read_text(encoding="utf-8")
+        self.assertIn("Follow-on candidate, 31 October 2026", source)
+        self.assertIn("live stock SQLite WAL-index READ_ONLY", source)
+        self.assertIn("NOT QUALIFIED", source)
+        for path in ("RESUME_PROMPT_SHORT.md", "RESUME_PROMPT.md",
+                     "HANDOFF_CURRENT.md", "HANDOFF_HISTORY.md",
+                     "HANDOFF_PROTOCOL.md", "STATE.md", "NEXT.md",
+                     "M3_2_GATE_DECISION_CURRENT.md", "README.md"):
+            text = (DIRECTORY / path).read_text(encoding="utf-8")
+            self.assertIn(note, text)
+            self.assertIn("live SQLite WAL-index", text)
+        for path in ("ROADMAP_STATUS_CURRENT.md", "FABULAXIOM_ROADMAP_V1.md"):
+            self.assertIn("live SQLite WAL-index", (ROOT / "docs/roadmap" / path).read_text(encoding="utf-8"))
+
 if __name__ == "__main__":
     unittest.main()

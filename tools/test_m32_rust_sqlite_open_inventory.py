@@ -743,5 +743,21 @@ class RustSqliteOpenInventoryTests(unittest.TestCase):
                       self.src["src-tauri/src/lib.rs"])
         self.assertEqual(repository_inventory()["writer_absence"], "NOT_PROVEN")
 
+    def test_59_r4_live_sqlite_shm_native_view_is_still_disposable_only(self):
+        path = "src-tauri/src/m32_r4_wal_shm_disposable_tests.rs"
+        src = self.src[path]
+        self.assertEqual(counts(src), EXPECTED[path])
+        self.assertEqual(src.count("#[test]"), 1)
+        for token in ("observe_live_sqlite_shm_readonly_view(&shm)",
+                      "CreateFileMappingW", "MapViewOfFile", "UnmapViewOfFile",
+                      "GetFileInformationByHandleEx", "3_007_000",
+                      "std::env::temp_dir()", "create_new(true)",
+                      "held.as_raw_handle().cast()"):
+            self.assertIn(token, src)
+        self.assertIn('reader.execute_batch("COMMIT")', src)
+        self.assertNotIn("#[tauri::command]", src)
+        self.assertEqual(repository_inventory()["writer_absence"], "NOT_PROVEN")
+        self.assertFalse(repository_inventory()["real_g3_authorized"])
+
 if __name__ == "__main__":
     unittest.main()
