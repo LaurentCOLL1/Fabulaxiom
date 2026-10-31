@@ -1701,11 +1701,61 @@ mod r4_d3a_live_shm_fileid_disposable {
 
 // R4, AFTER the historical D3a and R4 fixture groups. This compares bytes
 // returned by the ACTUAL stock SQLite xShmMap callback through our test-only
-// wrapper with a separately held FileId128-verified SHM file. It DOES NOT
-// This does NOT authenticate the opaque OS HANDLE used by winShmNode.
+// wrapper with a separately held FileId128-verified SHM. Matching NT mapping
+// names does NOT authenticate stock SQLite's opaque internal OS HANDLE.
 mod r4_actual_xshm_region0_crosscheck_disposable {
     use super::*;
     use std::os::windows::{fs::{FileExt, OpenOptionsExt}, io::AsRawHandle};
+
+    // Native mapped file NAMES supplement byte-level correlation, but never
+    // authenticate the private HANDLE that stock SQLite used for xShmMap.
+    #[link(name = "kernel32")]
+    unsafe extern "system" {
+        fn GetCurrentProcess() -> *mut c_void;
+        fn CreateFileMappingW(file: *mut c_void, attrs: *mut c_void, protect: u32,
+            high: u32, low: u32, name: *const u16) -> *mut c_void;
+        fn MapViewOfFile(mapping: *mut c_void, access: u32,
+            high: u32, low: u32, size: usize) -> *mut c_void;
+        fn UnmapViewOfFile(view: *const c_void) -> i32;
+        fn CloseHandle(handle: *mut c_void) -> i32;
+    }
+    #[link(name = "psapi")]
+    unsafe extern "system" {
+        fn GetMappedFileNameW(process: *mut c_void, address: *const c_void,
+            buf: *mut u16, capacity: u32) -> u32;
+    }
+    fn r4_mapped_nt_filename(address: *const c_void) -> Vec<u16> {
+        let mut buf = [0_u16; 2048];
+        let count = unsafe {
+            GetMappedFileNameW(GetCurrentProcess(), address, buf.as_mut_ptr(), buf.len() as u32)
+        } as usize;
+        assert!(count > 0 && count < buf.len() - 1,
+            "NT mapped filename must be complete");
+        buf[..count].to_vec()
+    }
+    struct R4HeldReadonlyMap { mapping: *mut c_void, view: *mut c_void }
+    impl R4HeldReadonlyMap {
+        fn new(held: &fs::File) -> Self {
+            let mapping = unsafe {
+                CreateFileMappingW(held.as_raw_handle().cast(), ptr::null_mut(),
+                    0x02, 0, 0, ptr::null())
+            };
+            assert!(!mapping.is_null(), "PAGE_READONLY from held fixture HANDLE");
+            let view = unsafe { MapViewOfFile(mapping, 0x0004, 0, 0, 136) };
+            if view.is_null() {
+                assert_ne!(unsafe { CloseHandle(mapping) }, 0);
+                panic!("FILE_MAP_READ on held fixture");
+            }
+            Self { mapping, view }
+        }
+        fn nt_name(&self) -> Vec<u16> { r4_mapped_nt_filename(self.view.cast_const()) }
+    }
+    impl Drop for R4HeldReadonlyMap {
+        fn drop(&mut self) {
+            assert_ne!(unsafe { UnmapViewOfFile(self.view.cast_const()) }, 0);
+            assert_ne!(unsafe { CloseHandle(self.mapping) }, 0);
+        }
+    }
 
     #[test]
     fn r4_actual_xshm_region0_matches_live_held_shm_file_not_native_handle_proof() {
@@ -1755,6 +1805,26 @@ mod r4_actual_xshm_region0_crosscheck_disposable {
         assert_eq!(held.seek_read(&mut held_file_bytes, 0).unwrap(), 136);
         assert_eq!(actual_callback_region, held_file_bytes,
             "real xShmMap region-0 bytes must match same live named file bytes");
+        // Compare native mapped backing NAMES: the actual SQLite pointer
+        // versus a mapping created directly from our held SHM HANDLE.
+        let held_map = R4HeldReadonlyMap::new(&held);
+        let sqlite_nt_name = r4_mapped_nt_filename(address as *const c_void);
+        assert_eq!(sqlite_nt_name, held_map.nt_name(),
+            "actual xShmMap view and held view should name same backing file");
+        // Adversarial decoy: identical bytes do not imply same file or view.
+        let decoy_path = owned.0.join("same-header-different-file.fixture");
+        let mut decoy = fs::OpenOptions::new().read(true).write(true).create_new(true)
+            .open(&decoy_path).expect("new fixture-owned decoy only");
+        use std::io::Write;
+        decoy.write_all(&held_file_bytes).unwrap();
+        decoy.set_len(32768).unwrap();
+        assert_ne!(win_file_id_128(&decoy).unwrap(), held_id_before);
+        let decoy_map = R4HeldReadonlyMap::new(&decoy);
+        assert_ne!(sqlite_nt_name, decoy_map.nt_name(),
+            "identical WAL header bytes must not spoof backing NT filename");
+        drop(decoy_map);
+        drop(decoy);
+        drop(held_map);
         assert_eq!(u32::from_ne_bytes(actual_callback_region[0..4].try_into().unwrap()),
             3_007_000);
         assert_eq!(u32::from_ne_bytes(actual_callback_region[48..52].try_into().unwrap()),
