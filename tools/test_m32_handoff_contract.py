@@ -5297,5 +5297,31 @@ class HandoffContractTests(unittest.TestCase):
         for path in ("ROADMAP_STATUS_CURRENT.md", "FABULAXIOM_ROADMAP_V1.md"):
             self.assertIn("live SQLite WAL-index", (ROOT / "docs/roadmap" / path).read_text(encoding="utf-8"))
 
+    def test_170_r4_xshm_callback_bytes_are_not_native_handle_admission(self):
+        e = self.data["m32_r4_actual_xshm_region0_crosscheck_candidate_20261031"]
+        self.assertEqual(e["scope"], "WINDOWS_CI_DISPOSABLE_REAL_XSHMMAP_REGION0_BYTES_ONLY")
+        for key, value in (("expected_rust_tests_not_qualified",282),
+                           ("expected_greenfield_tests_not_qualified",7),
+                           ("expected_inventory_tests_not_qualified",60),
+                           ("expected_continuity_tests_not_qualified",170)):
+            self.assertEqual(e[key], value)
+        for key in ("actual_sqlite_internal_shm_os_handle_authenticated",
+                    "atomic_three_file_custody_proven", "writer_admitted",
+                    "operator_data_accessed", "ipc_enabled", "migration_007",
+                    "native_hello", "persistent_marker", "recovery_authorized"):
+            self.assertFalse(e[key], key)
+        self.assertEqual(e["m3_2"], "IN_PROGRESS_NOT_ACCEPTED")
+        self.assertEqual(e["g2b"], "NOT_ACCEPTED")
+        self.assertEqual(e["g2c"], "NOT_AUTHORIZED")
+        self.assertEqual(e["g3"], "STOP_UNAVAILABLE")
+        note = "M3_2_R4_XSHM_REGION0_CALLBACK_VS_HELD_FILE_DISPOSABLE_20261031.md"
+        self.assertTrue((ROOT / "docs/qualification" / note).is_file())
+        for p in ("RESUME_PROMPT_SHORT.md","RESUME_PROMPT.md","HANDOFF_CURRENT.md",
+                  "HANDOFF_HISTORY.md","HANDOFF_PROTOCOL.md","STATE.md","NEXT.md",
+                  "M3_2_GATE_DECISION_CURRENT.md","README.md"):
+            self.assertIn(note,(DIRECTORY/p).read_text(encoding="utf-8"))
+        for p in ("ROADMAP_STATUS_CURRENT.md","FABULAXIOM_ROADMAP_V1.md"):
+            self.assertIn(note,(ROOT/"docs/roadmap"/p).read_text(encoding="utf-8"))
+
 if __name__ == "__main__":
     unittest.main()

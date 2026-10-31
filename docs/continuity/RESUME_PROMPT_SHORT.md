@@ -1,6 +1,6 @@
 # Fabulaxiom — reprise courte (31 octobre 2026)
 
-**#246 FUSIONNÉE :** `main=a4ef50666af9f0072586c667864a8a432af8b433` ; CI source #41154135365 PASS **281/7/58/168** et postmain #41173479461 SUCCESS au SHA exact. **R4 live SQLite WAL-index** en candidat, NON QUALIFIÉ : lecture native READ_ONLY du vrai `-shm` créé par SQLite en `%TEMP%`, en-tête v3007000 et FileId128 stable ; **281/7/59/169 attendus, PAS PASS**. Voir `M3_2_R4_NATIVE_HELD_HANDLE_MAP_DISPOSABLE_20261031.md` (addendum). `xShmMap` réel / custody atomique / writer NOT_PROVEN. Suivre CI exact-head, diff/reviews/threads, Protect main strict bypass=[], squash `expected_head_sha` seulement si admissible, CI postmain indépendante, issue #38 append-only.
+**#247 FUSIONNÉE :** `main=f71952119874b45555fbe9ea6dd2151f52123207` ; source #41204712973 PASS **281/7/59/169**, postmain #41205668071 SUCCESS exact SHA. **R4 NOUVEAU CANDIDAT, PAS QUALIFIÉ :** bytes de région 0 renvoyés par vrai `xShmMap` comparés au -shm tenu d'une base SQLite %TEMP% ; **282/7/60/170 attendus**. Voir `M3_2_R4_XSHM_REGION0_CALLBACK_VS_HELD_FILE_DISPOSABLE_20261031.md`. Pas preuve du HANDLE OS de SQLite, ni custody atomique ni writer. Suite : CI exact-head, diff/reviews/threads, Protect main strict bypass=[], squash `expected_head_sha`, postmain indépendante, #38 append-only.
 
 
 **#244 :** CI #41124543182 PASS 269/7/56/166, postmain #41148419366 SUCCESS ; modèle RAM-only `M3_2_R4_SHM_HANDLE_BINDING_GATE_RAM_MODEL_20261031.md` (writer toujours STOP).
@@ -9,6 +9,8 @@
 Reprends Fabulaxiom Windows (React, Tauri v2, Rust, SQLite ; voie C locale, Ollama). Dépôt : https://github.com/LaurentCOLL1/Fabulaxiom
 
 **D'abord :** re-fetch GitHub vivant : `main`, PR, issues, CI Windows au SHA exact, reviews/threads et ruleset **Protect main** (strict, zéro bypass). Ce checkpoint ne remplace jamais la vérification du dépôt.
+
+Références R4 qualifiées : `M3_2_R4_NATIVE_HELD_HANDLE_MAP_DISPOSABLE_20261031.md` ; live SQLite WAL-index sur fixtures seulement.
 
 ## Dernier checkpoint
 
