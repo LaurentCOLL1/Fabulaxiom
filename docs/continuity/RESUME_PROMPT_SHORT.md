@@ -1,6 +1,6 @@
 # Fabulaxiom — reprise courte (31 octobre 2026)
 
-**#245 FUSIONNÉE :** `main=8f582c2f9cf1a7e0a346d3ef9b5258acc1d1d772`; CI source #41149090126 PASS **279/7/57/167** ; postmain #41151561992 SUCCESS au SHA exact. **#246 DRAFT, NON QUALIFIÉE :** test R4 mapping natif sur le même HANDLE d'un -shm fictif `%TEMP%` ; FileId128, **281/7/58/168 ATTENDUS, PAS PASS**. Voir `M3_2_R4_NATIVE_HELD_HANDLE_MAP_DISPOSABLE_20261031.md`. Aucune preuve de véritable SQLite xShmMap, custody atomique ou writer production. STOP inchangé : CI exact-head, diff/reviews/threads, Protect main strict bypass=[], squash `expected_head_sha` seulement si admissible, CI postmain distincte, #38 append-only.
+**#246 FUSIONNÉE :** `main=a4ef50666af9f0072586c667864a8a432af8b433` ; CI source #41154135365 PASS **281/7/58/168** et postmain #41173479461 SUCCESS au SHA exact. **R4 live SQLite WAL-index** en candidat, NON QUALIFIÉ : lecture native READ_ONLY du vrai `-shm` créé par SQLite en `%TEMP%`, en-tête v3007000 et FileId128 stable ; **281/7/59/169 attendus, PAS PASS**. Voir `M3_2_R4_NATIVE_HELD_HANDLE_MAP_DISPOSABLE_20261031.md` (addendum). `xShmMap` réel / custody atomique / writer NOT_PROVEN. Suivre CI exact-head, diff/reviews/threads, Protect main strict bypass=[], squash `expected_head_sha` seulement si admissible, CI postmain indépendante, issue #38 append-only.
 
 
 **#244 :** CI #41124543182 PASS 269/7/56/166, postmain #41148419366 SUCCESS ; modèle RAM-only `M3_2_R4_SHM_HANDLE_BINDING_GATE_RAM_MODEL_20261031.md` (writer toujours STOP).
@@ -23,7 +23,7 @@ Ne toucher ni aux données opérateur v6/v7 ni aux journaux/sauvegardes ; aucun 
 
 ## Prochaines opérations
 
-1. Vérifier postmain #242, puis qualification CI exact-head de la candidature, diff/reviews/threads, Protect main strict bypass=[], squash `expected_head_sha` si admissible, postmain indépendante et #38 append-only.
+1. Vérifier la qualification CI exact-head du candidat, diff/reviews/threads, Protect main strict bypass=[], squash `expected_head_sha` si admissible, postmain indépendante et #38 append-only.
 2. Continuer **P1, R2/R3, R4 xShm*/WAL/SHM/FileId128**, puis R5/R6/R8 et R7/R9 sur fixtures neuves sans promotion production.
 3. Actualiser les deux prompts, handoffs et roadmaps à chaque PR.
 
