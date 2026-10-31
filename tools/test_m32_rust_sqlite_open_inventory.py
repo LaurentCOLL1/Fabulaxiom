@@ -725,5 +725,23 @@ class RustSqliteOpenInventoryTests(unittest.TestCase):
         self.assertIn("#[cfg(all(test, windows))]\nmod m32_r4_xshm_bound_handle_evidence_toy;", lib)
         self.assertFalse(repository_inventory()["real_g3_authorized"])
 
+    def test_58_r4_native_mapping_is_disposable_only_and_has_no_sqlite_open(self):
+        path = "src-tauri/src/m32_r4_native_shm_mapping_disposable_tests.rs"
+        source = self.src[path]
+        self.assertNotIn(path, EXPECTED)
+        self.assertEqual(counts(source), (0, 0, 0, 0, 0, 0, 0))
+        self.assertEqual(source.count("#[test]"), 2)
+        for token in ("GetFileInformationByHandleEx", "CreateFileMappingW",
+                      "MapViewOfFile", "UnmapViewOfFile", "CloseHandle",
+                      "FILE_ID_INFO_CLASS", "create_new(true)", "std::env::temp_dir()",
+                      "held.as_raw_handle().cast()"):
+            self.assertIn(token, source)
+        for forbidden in ("Connection::open(", "sqlite3_open",
+                          "run_migrations(", "#[tauri::command]", "app_local_data_dir("):
+            self.assertNotIn(forbidden, source)
+        self.assertIn("#[cfg(all(test, windows))]\nmod m32_r4_native_shm_mapping_disposable_tests;",
+                      self.src["src-tauri/src/lib.rs"])
+        self.assertEqual(repository_inventory()["writer_absence"], "NOT_PROVEN")
+
 if __name__ == "__main__":
     unittest.main()
