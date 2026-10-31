@@ -1702,7 +1702,7 @@ mod r4_d3a_live_shm_fileid_disposable {
 // R4, AFTER the historical D3a and R4 fixture groups. This compares bytes
 // returned by the ACTUAL stock SQLite xShmMap callback through our test-only
 // wrapper with a separately held FileId128-verified SHM file. It DOES NOT
-// authenticate the opaque OS HANDLE that winShmNode used for its mapping.
+// This does NOT authenticate the opaque OS HANDLE used by winShmNode.
 mod r4_actual_xshm_region0_crosscheck_disposable {
     use super::*;
     use std::os::windows::{fs::{FileExt, OpenOptionsExt}, io::AsRawHandle};
