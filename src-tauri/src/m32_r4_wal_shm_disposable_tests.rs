@@ -14,6 +14,10 @@ type Identity = (u64, [u8; 16]);
 #[link(name="kernel32")]
 unsafe extern "system" {
     fn GetFileInformationByHandleEx(file:*mut c_void,class:i32,info:*mut c_void,size:u32)->i32;
+    fn CreateFileMappingW(file:*mut c_void, attr:*mut c_void, protect:u32, hi:u32, lo:u32, name:*const u16)->*mut c_void;
+    fn MapViewOfFile(mapping:*mut c_void, access:u32, hi:u32, lo:u32, bytes:usize)->*mut c_void;
+    fn UnmapViewOfFile(view:*const c_void)->i32;
+    fn CloseHandle(h:*mut c_void)->i32;
 }
 struct OwnedFixture(PathBuf);
 impl OwnedFixture {
@@ -50,6 +54,43 @@ fn pinned_identity(path:&Path)->Identity {
     let info=unsafe{info.assume_init()};
     (info.volume,info.id)
 }
+// Only a live SQLite-created disposable SHM file; this is not the opaque
+// handle internally mapped by sqlite3_io_methods.xShmMap.
+fn observe_live_sqlite_shm_readonly_view(shm: &Path) {
+    let held = OpenOptions::new().read(true).share_mode(1|2|4)
+        .open(shm).expect("fresh SQLite-owned WAL-index only");
+    assert!(held.metadata().unwrap().len() >= 136);
+    let file_id = || {
+        let mut info = std::mem::MaybeUninit::<FileIdInfo>::uninit();
+        let ok = unsafe { GetFileInformationByHandleEx(
+            held.as_raw_handle().cast(), 0x12, info.as_mut_ptr().cast(),
+            std::mem::size_of::<FileIdInfo>() as u32) };
+        assert_ne!(ok, 0);
+        let info = unsafe { info.assume_init() };
+        (info.volume, info.id)
+    };
+    let before = file_id();
+    let mapping = unsafe { CreateFileMappingW(held.as_raw_handle().cast(),
+        std::ptr::null_mut(), 0x02, 0, 0, std::ptr::null()) };
+    assert!(!mapping.is_null(), "PAGE_READONLY mapping on held fixture SHM");
+    let view = unsafe { MapViewOfFile(mapping, 0x0004, 0, 0, 136) };
+    if view.is_null() {
+        assert_ne!(unsafe { CloseHandle(mapping) }, 0);
+        panic!("FILE_MAP_READ on live WAL-index");
+    }
+    let version = unsafe { std::ptr::read_unaligned(view.cast::<u32>()) };
+    let copy_version = unsafe {
+        std::ptr::read_unaligned(view.cast::<u8>().add(48).cast::<u32>())
+    };
+    let is_init = unsafe { std::ptr::read_volatile(view.cast::<u8>().add(12)) };
+    assert_ne!(unsafe { UnmapViewOfFile(view) }, 0);
+    assert_ne!(unsafe { CloseHandle(mapping) }, 0);
+    assert_eq!(version, 3_007_000);
+    assert_eq!(copy_version, 3_007_000);
+    assert_eq!(is_init, 1);
+    assert_eq!(before, file_id(), "held native FileId128 remains stable");
+}
+
 #[test]
 fn m32_r4_default_win32_wal_shm_sidecar_identity_and_reader_snapshot_disposable() {
     let owned=OwnedFixture::new();
@@ -85,6 +126,7 @@ fn m32_r4_default_win32_wal_shm_sidecar_identity_and_reader_snapshot_disposable(
     assert_ne!(main_id,wal_id);
     assert_ne!(main_id,shm_id);
     assert_ne!(wal_id,shm_id);
+    observe_live_sqlite_shm_readonly_view(&shm);
     reader.execute_batch("COMMIT").unwrap();
     let new:i64=reader.query_row("SELECT COUNT(*) FROM invented_r4",[],|r|r.get(0)).unwrap();
     assert_eq!(new,2);
