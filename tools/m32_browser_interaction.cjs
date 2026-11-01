@@ -1228,11 +1228,74 @@ async function run() {
       assert.equal(await eventRegion().locator("script").count(), 0);
       assert.equal(await page.evaluate(() => Boolean(window.__fictionInjected)), false);
     });
-    assert.equal(cases.length, 82);
+
+    // P3a product slice: new UI is itself fictional and never enters App.tsx.
+    await caseRun("83-p3a-typed-anchor-relation-and-historical-revision", async () => {
+      await page.getByRole("button", { name: "Ouvrir P3a — commandes fictives typées" }).click();
+      const workshop = page.getByRole("region", {
+        name: "P3a atelier de commandes de chronologie fictive",
+      });
+      const form = page.getByRole("form", { name: "Commande temporelle fictive" });
+      assert.ok((await workshop.innerText()).includes("ne communique pas avec Rust"));
+      await form.getByRole("combobox", { name: /Révision narrative historique/ })
+        .selectOption("invented-rev-A");
+      await form.getByRole("combobox", { name: /Lien temporel facultatif/ })
+        .selectOption("existing_before_new");
+      await form.getByRole("combobox", { name: /Ancre existante explicitement choisie/ })
+        .selectOption("A");
+      await form.getByRole("textbox", { name: "Justification humaine du lien" })
+        .fill("Un témoin inventé situe l'ancre A avant celle-ci");
+      await form.getByRole("button", { name: "Exécuter la commande fictive en mémoire" })
+        .click();
+      const outcome = workshop.getByRole("region", { name: "Résultat des commandes fictives" });
+      assert.ok((await outcome.innerText()).includes("1 commande(s)"));
+      assert.ok((await outcome.innerText()).includes("fiction-draft-0001"));
+      assert.ok((await outcome.innerText()).includes("invented-rev-A"));
+      assert.ok((await outcome.innerText()).includes("Un témoin inventé"));
+      assert.ok((await workshop.getByRole("status").innerText()).includes("aucune écriture SQLite"));
+    });
+    await caseRun("84-p3a-refused-incomplete-relation-rolls-back", async () => {
+      await page.getByRole("button", { name: "Ouvrir P3a — commandes fictives typées" }).click();
+      const workshop = page.getByRole("region", {
+        name: "P3a atelier de commandes de chronologie fictive",
+      });
+      const form = page.getByRole("form", { name: "Commande temporelle fictive" });
+      await form.getByRole("combobox", { name: /Lien temporel facultatif/ })
+        .selectOption("new_before_existing");
+      await form.getByRole("combobox", { name: /Ancre existante explicitement choisie/ })
+        .selectOption("A");
+      await form.getByRole("button", { name: "Exécuter la commande fictive en mémoire" })
+        .click();
+      assert.equal(await workshop.getByRole("alert").count(), 1);
+      assert.ok((await workshop.getByRole("region", {
+        name: "Résultat des commandes fictives",
+      }).innerText()).includes("0 commande(s)"));
+      await form.getByRole("button", { name: "Réinitialiser les données fictives" }).click();
+      assert.ok((await workshop.getByRole("status").innerText()).includes("réinitialisées"));
+    });
+    await caseRun("85-p3a-second-universe-has-no-historical-revision-leak", async () => {
+      await page.getByRole("button", { name: "Charger un autre univers fictif" }).click();
+      await page.getByRole("button", { name: "Ouvrir P3a — commandes fictives typées" }).click();
+      const workshop = page.getByRole("region", {
+        name: "P3a atelier de commandes de chronologie fictive",
+      });
+      const form = page.getByRole("form", { name: "Commande temporelle fictive" });
+      assert.ok((await workshop.innerText()).includes("fiction-world-two"));
+      assert.equal(await form.getByRole("combobox", {
+        name: /Révision narrative historique/,
+      }).locator("option").count(), 1);
+      await form.getByRole("button", { name: "Exécuter la commande fictive en mémoire" })
+        .click();
+      assert.ok((await workshop.getByRole("region", {
+        name: "Résultat des commandes fictives",
+      }).innerText()).includes("1 commande(s)"));
+      assert.equal(await workshop.getByText("invented-rev-A").count(), 0);
+    });
+    assert.equal(cases.length, 85);
     // Historical PR #146 source marker: M32_BROWSER_REAL_CHROMIUM_PASS 62/62
     // Previous PR #156 marker retained: M32_BROWSER_REAL_CHROMIUM_PASS 70/70
     // PR #157 historical marker: M32_BROWSER_REAL_CHROMIUM_PASS 76/76
-    console.log("M32_BROWSER_REAL_CHROMIUM_PASS 82/82");
+    console.log("M32_BROWSER_REAL_CHROMIUM_PASS 85/85");
 
     // Actual Chromium enforced-CSP veto, separate from the 36
     // fictional interaction cases. Never make an off-loopback network call.
@@ -1264,9 +1327,9 @@ async function run() {
       });
       assert.equal(scriptVeto, false, "STOP: inline JS executed under strict CSP");
       console.log("M32_CI_PRECOMPILED_INLINE_SCRIPT_DENIED_PASS");
-      console.log("M32_CI_PRECOMPILED_STRICT_CSP_BROWSER_PASS: 82/82");
+      console.log("M32_CI_PRECOMPILED_STRICT_CSP_BROWSER_PASS: 85/85");
     }
-    console.log("M32_CI_FIXTURE_ONLY_BROWSER_PASS: 82/82; no normal source pages");
+    console.log("M32_CI_FIXTURE_ONLY_BROWSER_PASS: 85/85; no normal source pages");
   } finally {
     if (browser) await browser.close();
     server.kill();
