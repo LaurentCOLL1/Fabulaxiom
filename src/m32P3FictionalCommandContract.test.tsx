@@ -159,7 +159,7 @@ describe("M3.2 P3a browser-only typed chronology command contract",()=>{
     expect(html).toContain("Ordre de narration");
     expect(html).toContain("Ordre de révélation au lecteur");
     expect(html).toContain("Non renseigné");
-    expect(html).toContain("aucune sauvegarde");
+    expect(html).toContain("sans sauvegarde");
   });
   it("13 adds an independent link without inserting an implicit anchor",()=>{
     const before=start();
