@@ -204,7 +204,7 @@ export default function M32P3FictionalCommandWorkshop({
   try {
     startP3FictionalState(initial, revisions);
   } catch {
-    return <section role="alert" aria-label="Atelier P3c refusé">
+    return <section role="alert" aria-label="Atelier P3a refusé">
       Données fictives invalides ou Univers incompatible. Aucune commande possible.
     </section>;
   }
