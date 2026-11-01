@@ -82,14 +82,21 @@ impl Drop for View{
         assert_ne!(unsafe{CloseHandle(self.mapping)},0);
     }
 }
-struct ShmState{held:File,expected:FileIdInfo,view:View,modes:[u32;8]}
+struct ShmState{held:File,expected:FileIdInfo,path:PathBuf,view:View,modes:[u32;8]}
 impl ShmState{
-    fn new(held:File,expected:FileIdInfo)->Option<Self>{
+    fn new(held:File,expected:FileIdInfo,path:PathBuf)->Option<Self>{
         if id(&held)!=Some(expected){return None}
         let view=View::from_held(&held)?;
-        Some(Self{held,expected,view,modes:[0;8]})
+        Some(Self{held,expected,path,view,modes:[0;8]})
     }
-    fn valid(&self)->bool{id(&self.held)==Some(self.expected)}
+    fn valid(&self)->bool{
+        if id(&self.held)!=Some(self.expected){return false}
+        // Non-atomic name revalidation is a deliberate disposable-only STOP
+        // on an observed post-xOpen substitution. It is NOT a custody claim.
+        let observed=OpenOptions::new().read(true).write(true).share_mode(1|2|4)
+            .open(&self.path).ok().and_then(|fresh|id(&fresh));
+        observed==Some(self.expected)
+    }
 }
 #[repr(C)]
 struct Vfs{
@@ -254,7 +261,7 @@ unsafe extern "C" fn xopen(
     }
     let held=OpenOptions::new().read(true).write(true).share_mode(1|2|4)
         .open(&gate.shm).ok();
-    let state=held.and_then(|f|ShmState::new(f,gate.expected));
+    let state=held.and_then(|f|ShmState::new(f,gate.expected,gate.shm.clone()));
     let Some(state)=state else{
         if let Some(close)=unsafe{(*original).xClose}{let _=unsafe{close(file)};}
         unsafe{(*file).pMethods=ptr::null()};
@@ -358,4 +365,58 @@ fn r4_registered_owner_shm_denies_replaced_shm_identity_before_main_xopen(){
     drop(decoy);
     // Unmodified native master remains held through the refusal.
     assert_eq!(id(&gate.state.master),Some(gate.state.expected));
+}
+
+
+#[test]
+fn r4_two_sqlite_connections_share_owned_native_shm_and_serialize_wal_writers(){
+    let root=Scratch::fresh();
+    let gate=Registered::fresh(&root);
+    let first=Connection::open_with_flags_and_vfs(
+        &root.db,OpenFlags::SQLITE_OPEN_READ_WRITE,gate.name()).unwrap();
+    let mode:String=first.query_row("PRAGMA locking_mode=NORMAL",[],|r|r.get(0)).unwrap();
+    assert_eq!(mode.to_ascii_lowercase(),"normal");
+    let journal:String=first.query_row("PRAGMA journal_mode=WAL",[],|r|r.get(0)).unwrap();
+    assert_eq!(journal.to_ascii_lowercase(),"wal");
+    first.execute_batch("CREATE TABLE concurrent_fixture (n INTEGER NOT NULL);").unwrap();
+    let second=Connection::open_with_flags_and_vfs(
+        &root.db,OpenFlags::SQLITE_OPEN_READ_WRITE,gate.name()).unwrap();
+    let second_mode:String=second.query_row("PRAGMA locking_mode=NORMAL",[],|r|r.get(0)).unwrap();
+    assert_eq!(second_mode.to_ascii_lowercase(),"normal");
+    first.execute_batch("BEGIN IMMEDIATE; INSERT INTO concurrent_fixture VALUES(11);").unwrap();
+    assert!(second.execute_batch("BEGIN IMMEDIATE;").is_err(),
+        "independent second SQLite connection cannot acquire WAL writer byte");
+    first.execute_batch("COMMIT;").unwrap();
+    second.execute_batch("BEGIN IMMEDIATE; INSERT INTO concurrent_fixture VALUES(13); COMMIT;").unwrap();
+    let total:i64=first.query_row("SELECT SUM(n) FROM concurrent_fixture",[],|r|r.get(0)).unwrap();
+    assert_eq!(total,24);
+    assert_eq!(gate.state.main_opens.load(Ordering::SeqCst),2);
+    assert!(gate.state.shm_maps.load(Ordering::SeqCst)>=2);
+    assert!(gate.state.shm_locks.load(Ordering::SeqCst)>=2);
+    drop(second);
+    drop(first);
+    assert_eq!(gate.state.closes.load(Ordering::SeqCst),2);
+}
+#[test]
+fn r4_postopen_shm_path_substitution_fails_closed_at_next_wal_lock(){
+    let root=Scratch::fresh();
+    let gate=Registered::fresh(&root);
+    let db=Connection::open_with_flags_and_vfs(
+        &root.db,OpenFlags::SQLITE_OPEN_READ_WRITE,gate.name()).unwrap();
+    let journal:String=db.query_row("PRAGMA journal_mode=WAL",[],|r|r.get(0)).unwrap();
+    assert_eq!(journal.to_ascii_lowercase(),"wal");
+    db.execute_batch("CREATE TABLE before_substitution (n INTEGER);").unwrap();
+    let original=root.dir.join("original-held-shm.fixture");
+    fs::rename(&root.shm,&original).expect("rename owned scratch SHM only");
+    let decoy=OpenOptions::new().read(true).write(true).share_mode(1|2|4)
+        .create_new(true).open(&root.shm).unwrap();
+    decoy.set_len(PAGE_SIZE as u64).unwrap();
+    assert_ne!(id(&decoy),Some(gate.state.expected));
+    assert!(db.execute_batch("BEGIN IMMEDIATE; INSERT INTO before_substitution VALUES(1); COMMIT;").is_err(),
+        "new SHM pathname FileId differs: next native lock must reject");
+    assert!(gate.state.denials.load(Ordering::SeqCst)>=1);
+    assert_eq!(id(&gate.state.master),Some(gate.state.expected));
+    drop(db);
+    drop(decoy);
+    // This non-atomic post-name read cannot prove absence of a racing swap.
 }
