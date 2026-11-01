@@ -1,6 +1,6 @@
 # Fabulaxiom — reprise courte (1er novembre 2026)
 
-**01/11 — #254 FUSIONNÉE :** `main=7185adf3394b6d20d2c81a831c9226e8fa823f47` ; source CI Windows [#41293719994](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/41293719994) SUCCESS **292/7/66/176** au HEAD `d965f883e47b0b60c653f479df1731897e8d656a`, postmain indépendante [#41294534621](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/41294534621) SUCCESS **292/7/66/176**. Handles natifs SQLite main/WAL + veto FileId128 qualifiés **fixtures uniquement**. Custody atomique main/-wal/-shm, SHM régions >0 et multi-processus **NOT_PROVEN**. Nouveau plan CONCEPTION SEULEMENT : `M3_2_R4_MULTIPROCESS_THREE_FILE_CUSTODY_NEXT_GATE_DESIGN_20261101.md`. Protect main ACTIVE strict bypass=[], #38 append-only.
+**01/11 — #254 FUSIONNÉE :** `main=7185adf3394b6d20d2c81a831c9226e8fa823f47` ; CI source #41293719994, postmain #41294534621 : SUCCESS SHA exact **292/7/66/176** chacune. `M3_2_R4_DELEGATED_MAIN_WAL_NATIVE_HANDLE_FILEID_DISPOSABLE_20261101.md` qualifiée **fixtures uniquement**. Suite CONCEPTION NON QUALIFIÉE : `M3_2_R4_MULTIPROCESS_THREE_FILE_CUSTODY_NEXT_GATE_DESIGN_20261101.md` ; custody atomique, multiprocessus, writer NOT_PROVEN. Protect main strict bypass=[], #38 append-only.
 
 Reprends Fabulaxiom Windows (React, Tauri v2, Rust, SQLite ; voie C locale, Ollama). Dépôt : https://github.com/LaurentCOLL1/Fabulaxiom
 
