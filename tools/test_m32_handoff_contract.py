@@ -5515,5 +5515,56 @@ class HandoffContractTests(unittest.TestCase):
         for p in ("ROADMAP_STATUS_CURRENT.md","FABULAXIOM_ROADMAP_V1.md"):
             self.assertIn(note,(ROOT/"docs/roadmap"/p).read_text(encoding="utf-8"))
 
+    def test_178_user_product_first_parallel_safety_decision_is_reversible_and_preserves_stop(self):
+        event=self.data["m32_user_product_first_parallel_safety_decision_20261101"]
+        self.assertEqual(event["kind"],"USER_SELECTED_PRIORITY_DECISION_ONLY")
+        self.assertEqual(event["strategy"],"PRODUCT_FIRST_PARALLEL_SAFETY")
+        for key in ("selected_by_user","active","reversible",
+                    "user_notification_required_before_strategy_change"):
+            self.assertTrue(event[key],key)
+        self.assertEqual(event["current_verified_main"],
+                         "df7171ac99c9f0a6a5e9123de2c8c8168cfb7090")
+        self.assertEqual(event["last_merged_pr"],256)
+        self.assertEqual(event["pr256_source_ci"],41308216274)
+        self.assertEqual(event["pr256_postmain_ci"],41309028506)
+        self.assertEqual(event["pr256_source_status"],"SUCCESS_294_7_67_177")
+        self.assertEqual(event["pr256_postmain_status"],"SUCCESS_294_7_67_177")
+        self.assertGreaterEqual(len(event["reassessment_triggers"]),5)
+        for key in ("new_runtime_writer_authorized",
+                    "operator_v6_v7_access_authorized",
+                    "existing_greenfield_profile_access_authorized",
+                    "migration_007_authorized","writer_admitted",
+                    "windows_hello_native_authorized"):
+            self.assertFalse(event[key],key)
+        self.assertEqual(event["m3_2"],"IN_PROGRESS_NOT_ACCEPTED")
+        self.assertEqual(event["g2b"],"NOT_ACCEPTED")
+        self.assertEqual(event["g2c"],"NOT_AUTHORIZED")
+        self.assertEqual(event["g3"],"STOP_UNAVAILABLE")
+        self.assertEqual(event["historical"],"PENDING_EXTERNAL_ATTESTATION(21/3/2)")
+        self.assertEqual(event["prospective"],"NOT_STARTED")
+        decision="M3_2_PRODUCT_FIRST_PARALLEL_SAFETY_DECISION_20261101.md"
+        matrix="M3_2_PRODUCT_VERTICAL_SLICE_EXISTING_CODE_MATRIX_20261101.md"
+        self.assertEqual(event["decision_document"],f"docs/continuity/{decision}")
+        self.assertEqual(event["p0_matrix"],f"docs/qualification/{matrix}")
+        policy=(DIRECTORY/decision).read_text(encoding="utf-8")
+        proof=(ROOT/"docs/qualification"/matrix).read_text(encoding="utf-8")
+        for term in ("PRODUCT_FIRST_PARALLEL_SAFETY","P1","P2","P3",
+                     "R4","R5/R6/R8","user","CREATE_NEW",
+                     "IN_PROGRESS_NOT_ACCEPTED","NOT_PROVEN","NOT_STARTED"):
+            self.assertIn(term,policy)
+        self.assertIn("m32_new_only_disposable_v7_chronology_survives_reopen_without_touching_prior_v6",policy)
+        self.assertIn("m32_new_only_disposable_v7_chronology_survives_reopen_without_touching_prior_v6",proof)
+        self.assertIn("M32FictionalEventManualWorkshop.tsx",proof)
+        for p in ("RESUME_PROMPT_SHORT.md","RESUME_PROMPT.md","HANDOFF_CURRENT.md",
+                  "HANDOFF_HISTORY.md","HANDOFF_PROTOCOL.md","STATE.md",
+                  "NEXT.md","M3_2_GATE_DECISION_CURRENT.md","README.md"):
+            self.assertIn(decision,(DIRECTORY/p).read_text(encoding="utf-8"))
+        for p in ("ROADMAP_STATUS_CURRENT.md","FABULAXIOM_ROADMAP_V1.md",
+                  "M3_TIME_KNOWLEDGE_RELATIONSHIPS.md"):
+            self.assertIn(decision,(ROOT/"docs/roadmap"/p).read_text(encoding="utf-8"))
+        # Strategy changes alter ONLY scheduling, never authorization.
+        self.assertEqual(event["next_product_slice"],
+                         "EXTEND_EXISTING_NEW_ONLY_V7_FIXTURE_WITH_TEST_ONLY_CHRONOLOGY_WORKFLOW")
+
 if __name__ == "__main__":
     unittest.main()
