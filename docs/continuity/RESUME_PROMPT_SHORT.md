@@ -1,12 +1,12 @@
 # Fabulaxiom — reprise courte (1er novembre 2026)
 
-**01/11 — #258 P1 FUSIONNÉE/QUALIFIÉE** `main=a51b9660d0d5470ed0d2084a0b733ab8e794ace5`, CI #41338290444/#41339303494 SUCCESS. **#259 P2a CANDIDAT** `M3_2_P2_PREOPENED_CHRONOLOGY_FIXTURE_SERVICE_20261101.md` : service Rust `#[cfg(test)]`, v7 RAM préouverte, transaction/rollback, **297/7/68/180 ATTENDUS NON QUALIFIÉS**. `PRODUCT_FIRST_PARALLEL_SAFETY` maintenue, R4–R9 parallèle, glib #1 OPEN, STOP inchangés. Suite P2b acteur test-only, P3 UI isolée ; prévenir AVANT changement.
+**01/11 — #259 P2a FUSIONNÉE** `M3_2_P2_PREOPENED_CHRONOLOGY_FIXTURE_SERVICE_20261101.md` ; `main=8ecf0a9174d00d2f3581e635526ad3941e52117e`, CI source #41342616672 SUCCESS **297/7/68/180**, postmain #41343742102 SUCCESS. **P2b CANDIDAT** `M3_2_P2B_SINGLE_OWNER_CHRONOLOGY_ACTOR_RAM_FIXTURE_20261101.md` : acteur Rust `#[cfg(test)]`, connexion RAM v7 préouverte, file bornée/2 clients, rollback, révocation. **301/7/68/181 ATTENDUS NON QUALIFIÉS** ; P3 UI isolée ensuite. `PRODUCT_FIRST_PARALLEL_SAFETY` maintenue, R4–R9 parallèle, glib #1 OPEN ; alerter AVANT changement ; STOP inchangés.
 
 **#257 historique** `main=6346ebd405345e1cc2447cd28fa679bef7f19490`, CI #41330138838/#41331242603 SUCCESS. Décision `M3_2_PRODUCT_FIRST_PARALLEL_SAFETY_DECISION_20261101.md` ; P1 `M3_2_P1_TWO_NOVELS_HISTORICAL_REVISION_V7_DISPOSABLE_20261101.md` ; alerte `M3_2_GLIB_ALERT1_UPSTREAM_BLOCKER_20261101.md` OPEN. R4 `M3_2_R4_WINDOWS_TWO_PROCESS_WAL_LOCK_DISPOSABLE_20261101.md`, `M3_2_R4_DELEGATED_MAIN_WAL_NATIVE_HANDLE_FILEID_DISPOSABLE_20261101.md`. Protect main strict bypass=[], `expected_head_sha`, #38 append-only.
 
-Fabulaxiom Windows (React/Tauri v2/Rust/SQLite ; voie C + Ollama). Dépôt : https://github.com/LaurentCOLL1/Fabulaxiom
+Fabulaxiom Windows (React/Tauri v2/Rust/SQLite, voie C/Ollama) : https://github.com/LaurentCOLL1/Fabulaxiom
 
-**D'abord :** re-fetch `main`, PR/issues, CI Windows SHA exact, reviews/threads, **Protect main** strict ; GitHub vivant fait autorité.
+**D'abord :** re-fetch `main`/PR/issues/CI Windows SHA exact, reviews/threads, **Protect main** strict.
 
 Archives : `M3_2_R4_TWO_CLIENT_POSTOPEN_SHM_IDENTITY_DISPOSABLE_20261101.md`, `M3_2_R4_REGISTERED_OWNER_SHM_SQLITE_NORMAL_WAL_DISPOSABLE_20261101.md`, `M3_2_R4_OWNED_XSHM_ABI_CALLBACK_REFUSAL_DISPOSABLE_20261101.md`, `M3_2_R4_NATIVE_HELD_SHM_LOCKFILEEX_DISPOSABLE_20261101.md`, `M3_2_R4_SHM_HANDLE_BINDING_GATE_RAM_MODEL_20261031.md`, `M3_2_R4_XSHM_REGION0_CALLBACK_VS_HELD_FILE_DISPOSABLE_20261031.md`, `M3_2_R4_XSHM_MAPPED_NT_FILENAME_DECOY_DISPOSABLE_20261031.md`.
 
@@ -25,7 +25,7 @@ Interdit : données opérateur v6/v7, journaux/sauvegardes, IPC writer, 007, Hel
 
 ## Prochaines opérations
 
-1. P1 validé ; P2a PR #259 à qualifier ; ensuite P2b acteur fixture, P3 UI isolée.
+1. P1/P2a fusionnés ; P2b PR #260 à qualifier ; puis P3 UI isolée.
 2. R2/R4 SHM >0, custody main/WAL/SHM ; R5–R9 STOP ; glib #1 OPEN.
 3. Garder stratégie, prévenir avant changement, actualiser les documents.
 
@@ -35,4 +35,4 @@ Références R4 historiques : `M3_2_R4_D3A_LIVE_SHM_FILEID_DISPOSABLE_20261030.m
 
 Lire `RESUME_PROMPT.md`, `HANDOFF_CURRENT.json`, `HANDOFF_CURRENT.md`, `HANDOFF_PROTOCOL.md`, `HANDOFF_HISTORY.md`, `STATE.md`, `NEXT.md`, `M3_2_GATE_DECISION_CURRENT.md`, `ROADMAP_STATUS_CURRENT.md`, `FABULAXIOM_ROADMAP_V1.md` ; voir R4 cité plus haut.
 
-**Règle :** fixtures et anciennes CI ne valent jamais admission de données réelles ; archives dans prompt complet et handoffs.
+**Règle :** fixtures/CI ≠ admission réelle ; archives dans prompt complet.

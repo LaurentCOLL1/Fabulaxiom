@@ -5670,5 +5670,68 @@ class HandoffContractTests(unittest.TestCase):
                      "M3_TIME_KNOWLEDGE_RELATIONSHIPS.md"):
             self.assertIn(name, (ROOT/"docs/roadmap"/file).read_text(encoding="utf-8"))
 
+
+    def test_181_p2b_single_owner_chronology_actor_ram_only_and_stops(self):
+        e = self.data["m32_p2b_actor_candidate_20261101"]
+        self.assertEqual(e["strategy"], "PRODUCT_FIRST_PARALLEL_SAFETY")
+        self.assertEqual(e["parent_pr"], 259)
+        self.assertEqual(e["parent_main"], "8ecf0a9174d00d2f3581e635526ad3941e52117e")
+        self.assertEqual(e["source_ci_of_pr259"], 41342616672)
+        self.assertEqual(e["postmain_ci_of_pr259"], 41343742102)
+        terminal = self.data["m32_pr259_postmain_terminal_20261101"]
+        self.assertEqual(terminal["merged_pr"], 259)
+        self.assertEqual(terminal["postmain_ci"], 41343742102)
+        self.assertEqual(terminal["postmain_status"], "SUCCESS_297_7_68_180")
+        self.assertFalse(terminal["operator_access"])
+        self.assertFalse(terminal["writer_admitted"])
+        for key in ("actor_compiled_only_in_tests", "single_preopened_invented_ram_connection",
+                    "two_clients_test_only", "atomic_rollback_test_only", "shutdown_revokes_clients",
+                    "borrowed_p2a_service", "schema_v6_rejected", "query_only_rejected",
+                    "user_notification_before_strategy_change"):
+            self.assertTrue(e[key], key)
+        for key in ("operator_access", "existing_profile_access", "production_ipc",
+                    "writer_admitted", "migration_007_production",
+                    "source_ci_qualified", "postmain_ci_qualified"):
+            self.assertFalse(e[key], key)
+        self.assertEqual(e["bounded_queue_capacity"], 8)
+        for key, value in (("expected_rust_tests_not_qualified",301),
+                           ("expected_greenfield_tests_not_qualified",7),
+                           ("expected_inventory_tests_not_qualified",68),
+                           ("expected_continuity_tests_not_qualified",181)):
+            self.assertEqual(e[key], value)
+        self.assertEqual(e["glib_status"], "OPEN_NOT_REMEDIATED")
+        self.assertEqual(e["m3_2"], "IN_PROGRESS_NOT_ACCEPTED")
+        self.assertEqual(e["g2b"], "NOT_ACCEPTED")
+        self.assertEqual(e["g2c"], "NOT_AUTHORIZED")
+        self.assertEqual(e["g3"], "STOP_UNAVAILABLE")
+        self.assertEqual(e["historical"], "PENDING_EXTERNAL_ATTESTATION(21/3/2)")
+        self.assertEqual(e["prospective"], "NOT_STARTED")
+        src = (ROOT/"src-tauri/src/m32_p2b_fixture_chronology_actor.rs").read_text(encoding="utf-8")
+        lib = (ROOT/"src-tauri/src/lib.rs").read_text(encoding="utf-8")
+        self.assertIn("#[cfg(test)]\nmod m32_p2b_fixture_chronology_actor;", lib)
+        for value in ("FixtureChronologyService::from_already_opened_disposable_v7",
+                      "const QUEUE_CAPACITY: usize = 8", "thread::spawn",
+                      "try_send", "Command::Stop", "impl Drop for FixtureChronologyActor",
+                      "p2b_two_clients_serialize_v7_fixture_without_total_order",
+                      "p2b_actor_failed_relation_rolls_back_and_refuses_cycle_and_foreign_world",
+                      "p2b_actor_rejects_unqualified_v6_and_query_only",
+                      "p2b_actor_shutdown_and_drop_revoke_cloned_clients",
+                      "pragma_database_list", "disk-backed database refused"):
+            self.assertIn(value, src)
+        for forbidden in ("#[tauri::command]", "Connection::open(",
+                          "Connection::open_in_memory(", "database::open_database(",
+                          "run_migrations(", "app_local_data_dir(", "V7WriterAdmission {"):
+            self.assertNotIn(forbidden, src)
+        note = "M3_2_P2B_SINGLE_OWNER_CHRONOLOGY_ACTOR_RAM_FIXTURE_20261101.md"
+        self.assertEqual(e["qualification"], f"docs/qualification/{note}")
+        self.assertTrue((ROOT/"docs/qualification"/note).is_file())
+        for file in ("RESUME_PROMPT_SHORT.md", "RESUME_PROMPT.md", "HANDOFF_CURRENT.md",
+                     "HANDOFF_HISTORY.md", "HANDOFF_PROTOCOL.md", "STATE.md", "NEXT.md",
+                     "M3_2_GATE_DECISION_CURRENT.md", "README.md"):
+            self.assertIn(note, (DIRECTORY/file).read_text(encoding="utf-8"))
+        for file in ("ROADMAP_STATUS_CURRENT.md", "FABULAXIOM_ROADMAP_V1.md",
+                     "M3_TIME_KNOWLEDGE_RELATIONSHIPS.md"):
+            self.assertIn(note, (ROOT/"docs/roadmap"/file).read_text(encoding="utf-8"))
+
 if __name__ == "__main__":
     unittest.main()

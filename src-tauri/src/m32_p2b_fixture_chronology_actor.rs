@@ -1,0 +1,331 @@
+//! P2b: single-owner chronology command actor for invented v7 fixtures ONLY.
+//!
+//! Compiled exclusively under #[cfg(test)] in lib.rs. Mirrors the bounded
+//! single-owner queue/teardown pattern of m32_v7_writer_service without
+//! changing PreparedV7Writer, V7WriterAdmission, or the production runtime.
+//! Receives ONE caller-created RAM fixture Connection; no path opener, IPC,
+//! profile resolution, migration registration, backup, or recovery.
+
+use crate::{
+    m32_manual_chronology as chronology,
+    m32_p2_fixture_chronology_service::{
+        FixtureChronologyService, FixtureError, FixtureSnapshot, RelationDraft,
+    },
+};
+use rusqlite::Connection;
+use std::{
+    sync::mpsc::{self, Receiver, Sender, SyncSender, TrySendError},
+    thread::{self, JoinHandle},
+};
+
+const QUEUE_CAPACITY: usize = 8;
+
+#[derive(Debug)]
+pub(crate) enum ActorError {
+    Rejected(FixtureError),
+    Domain(FixtureError),
+    QueueFull,
+    Disconnected,
+    WorkerPanicked,
+}
+
+#[derive(Clone)]
+pub(crate) struct AnchorInput {
+    pub id: String,
+    pub universe_id: String,
+    pub time_kind: String,
+    pub calendar_id: Option<String>,
+    pub event_entity_id: Option<String>,
+    pub source_revision_id: Option<String>,
+    pub exact_label: Option<String>,
+    pub window_start_text: Option<String>,
+    pub window_end_text: Option<String>,
+    pub precision_text: Option<String>,
+}
+impl AnchorInput {
+    fn draft(&self) -> chronology::AnchorDraft<'_> {
+        chronology::AnchorDraft {
+            id: &self.id,
+            universe_id: &self.universe_id,
+            time_kind: &self.time_kind,
+            calendar_id: self.calendar_id.as_deref(),
+            event_entity_id: self.event_entity_id.as_deref(),
+            source_revision_id: self.source_revision_id.as_deref(),
+            exact_label: self.exact_label.as_deref(),
+            window_start_text: self.window_start_text.as_deref(),
+            window_end_text: self.window_end_text.as_deref(),
+            precision_text: self.precision_text.as_deref(),
+        }
+    }
+}
+
+#[derive(Clone)]
+pub(crate) struct RelationInput {
+    pub id: String,
+    pub universe_id: String,
+    pub before_anchor_id: String,
+    pub after_anchor_id: String,
+    pub reason: String,
+    pub source_revision_id: Option<String>,
+}
+impl RelationInput {
+    fn draft(&self) -> RelationDraft<'_> {
+        RelationDraft {
+            id: &self.id,
+            universe_id: &self.universe_id,
+            before_anchor_id: &self.before_anchor_id,
+            after_anchor_id: &self.after_anchor_id,
+            reason: &self.reason,
+            source_revision_id: self.source_revision_id.as_deref(),
+        }
+    }
+}
+
+type Reply<T> = Sender<Result<T, FixtureError>>;
+enum Command {
+    Calendar {
+        id: String, universe: String, name: String, definition: String,
+        reply: Reply<()>,
+    },
+    Anchor {
+        anchor: AnchorInput, relation: Option<RelationInput>, reply: Reply<()>,
+    },
+    Precedence {
+        relation: RelationInput, reply: Reply<()>,
+    },
+    Snapshot {
+        universe: String, reply: Reply<FixtureSnapshot>,
+    },
+    Stop(Sender<()>),
+}
+
+#[derive(Clone)]
+pub(crate) struct FixtureChronologyClient {
+    queue: SyncSender<Command>,
+}
+impl FixtureChronologyClient {
+    fn call<T>(
+        &self, make: impl FnOnce(Reply<T>) -> Command,
+    ) -> Result<T, ActorError> {
+        let (tx, rx) = mpsc::channel();
+        self.queue.try_send(make(tx)).map_err(|error| match error {
+            TrySendError::Full(_) => ActorError::QueueFull,
+            TrySendError::Disconnected(_) => ActorError::Disconnected,
+        })?;
+        rx.recv().map_err(|_| ActorError::Disconnected)?
+            .map_err(ActorError::Domain)
+    }
+
+    pub(crate) fn create_calendar(
+        &self, id: String, universe: String, name: String, definition: String,
+    ) -> Result<(), ActorError> {
+        self.call(|reply| Command::Calendar { id, universe, name, definition, reply })
+    }
+    pub(crate) fn create_anchor(
+        &self, anchor: AnchorInput, relation: Option<RelationInput>,
+    ) -> Result<(), ActorError> {
+        self.call(|reply| Command::Anchor { anchor, relation, reply })
+    }
+    pub(crate) fn create_precedence(&self, relation: RelationInput) -> Result<(), ActorError> {
+        self.call(|reply| Command::Precedence { relation, reply })
+    }
+    pub(crate) fn snapshot(&self, universe: String) -> Result<FixtureSnapshot, ActorError> {
+        self.call(|reply| Command::Snapshot { universe, reply })
+    }
+}
+
+fn run(mut connection: Connection, rx: Receiver<Command>) {
+    // The exclusive fixture was validated BEFORE thread transfer; no reopening.
+    let Ok(mut service) = FixtureChronologyService::from_already_opened_disposable_v7(&mut connection) else {
+        return;
+    };
+    while let Ok(command) = rx.recv() {
+        match command {
+            Command::Calendar { id, universe, name, definition, reply } => {
+                let _ = reply.send(service.create_calendar(&id, &universe, &name, &definition));
+            }
+            Command::Anchor { anchor, relation, reply } => {
+                let _ = reply.send(service.create_anchor_with_optional_relation(
+                    anchor.draft(), relation.as_ref().map(RelationInput::draft),
+                ));
+            }
+            Command::Precedence { relation, reply } => {
+                let _ = reply.send(service.create_precedence(relation.draft()));
+            }
+            Command::Snapshot { universe, reply } => {
+                let _ = reply.send(service.snapshot(&universe));
+            }
+            Command::Stop(ack) => {
+                let _ = ack.send(());
+                break;
+            }
+        }
+    }
+    // SQLite connection dropped on worker, never exported or reopened.
+}
+
+pub(crate) struct FixtureChronologyActor {
+    client: FixtureChronologyClient,
+    worker: Option<JoinHandle<()>>,
+}
+impl FixtureChronologyActor {
+    /// Caller-created fixture only. This is not a source-identity gate.
+    pub(crate) fn from_preopened_invented_v7(mut connection: Connection)
+        -> Result<Self, ActorError>
+    {
+        FixtureChronologyService::from_already_opened_disposable_v7(&mut connection)
+            .map_err(ActorError::Rejected)?;
+        // P2b is RAM-only even in tests: never accept a fixture backed by a
+        // pathname. This is intentionally stricter than the P2a disk contract.
+        let backing: String = connection.query_row(
+            "SELECT file FROM pragma_database_list WHERE name='main'",
+            [], |row| row.get(0),
+        ).map_err(|_| ActorError::Rejected(FixtureError::Stop("cannot verify RAM-only main")))?;
+        if !backing.is_empty() {
+            return Err(ActorError::Rejected(FixtureError::Stop("disk-backed database refused")));
+        }
+        let (queue, rx) = mpsc::sync_channel(QUEUE_CAPACITY);
+        let worker = thread::spawn(move || run(connection, rx));
+        Ok(Self {
+            client: FixtureChronologyClient { queue },
+            worker: Some(worker),
+        })
+    }
+
+    pub(crate) fn client(&self) -> FixtureChronologyClient {
+        self.client.clone()
+    }
+
+    fn stop(&mut self) -> Result<(), ActorError> {
+        let Some(worker) = self.worker.take() else { return Ok(()); };
+        let (tx, rx) = mpsc::channel();
+        let ok = self.client.queue.send(Command::Stop(tx)).is_ok() && rx.recv().is_ok();
+        let joined = worker.join().is_ok();
+        if ok && joined { Ok(()) } else { Err(ActorError::WorkerPanicked) }
+    }
+
+    pub(crate) fn shutdown(mut self) -> Result<(), ActorError> { self.stop() }
+}
+impl Drop for FixtureChronologyActor {
+    fn drop(&mut self) { let _ = self.stop(); }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::database;
+
+    fn invented_v7() -> Connection {
+        let mut db = crate::world_time_schema_tests::v6();
+        db.execute_batch(
+            "INSERT INTO universes(id,name) VALUES ('u1','Invented'),('u2','Other');
+             INSERT INTO novels(id,universe_id,series_id,title,sort_order)
+               VALUES ('n1','u1',NULL,'Novel',0);
+             INSERT INTO chapters(id,novel_id,title,sort_order)
+               VALUES ('c1','n1','Chapter',0);
+             INSERT INTO scenes(id,chapter_id,title,sort_order)
+               VALUES ('s1','c1','Scene',0);
+             INSERT INTO scene_text_revisions(id,scene_id,revision_number,content)
+               VALUES ('r2','s1',1,'old'),('r3','s1',2,'current');
+             INSERT INTO scene_revision_heads(scene_id,revision_id) VALUES ('s1','r3');"
+        ).unwrap();
+        let tx = db.transaction().unwrap();
+        tx.execute_batch(include_str!("../sql/m3_1_world_time_v7_candidate.sql")).unwrap();
+        tx.execute_batch(include_str!("../sql/m3_2_chronology_decisions_candidate.sql")).unwrap();
+        tx.execute("INSERT INTO schema_migrations(version,name)
+                    VALUES (7,'007_create_world_time_foundation')", []).unwrap();
+        tx.commit().unwrap();
+        assert_eq!(database::current_schema_version(&db).unwrap(), 7);
+        db
+    }
+
+    fn anchor(id: &str, universe: &str) -> AnchorInput {
+        AnchorInput {
+            id: id.into(), universe_id: universe.into(), time_kind: "relative".into(),
+            calendar_id: None, event_entity_id: None,
+            source_revision_id: if universe == "u1" { Some("r2".into()) } else { None },
+            exact_label: None, window_start_text: None, window_end_text: None,
+            precision_text: None,
+        }
+    }
+    fn before(id: &str, a: &str, b: &str) -> RelationInput {
+        RelationInput {
+            id: id.into(), universe_id: "u1".into(),
+            before_anchor_id: a.into(), after_anchor_id: b.into(),
+            reason: "Explicit author order".into(), source_revision_id: Some("r2".into()),
+        }
+    }
+
+    #[test]
+    fn p2b_two_clients_serialize_v7_fixture_without_total_order() {
+        let owner = FixtureChronologyActor::from_preopened_invented_v7(invented_v7()).unwrap();
+        let first = owner.client();
+        let second = owner.client();
+        first.create_calendar("cal".into(),"u1".into(),"Cycles".into(),"Fiction".into()).unwrap();
+        let a = thread::spawn(move || first.create_anchor(anchor("a1","u1"), None));
+        let b = thread::spawn(move || second.create_anchor(anchor("a2","u1"), None));
+        a.join().unwrap().unwrap();
+        b.join().unwrap().unwrap();
+        let client=owner.client();
+        client.create_precedence(before("edge", "a1", "a2")).unwrap();
+        let view=client.snapshot("u1".into()).unwrap();
+        assert_eq!(view.current_anchor_ids, vec!["a1","a2"]);
+        assert_eq!(view.precedences.len(), 1);
+        assert!(view.anchors.iter().all(|a| a.source_revision_id.as_deref()==Some("r2")));
+        assert!(client.snapshot("u2".into()).unwrap().anchors.is_empty());
+        owner.shutdown().unwrap();
+    }
+
+    #[test]
+    fn p2b_actor_failed_relation_rolls_back_and_refuses_cycle_and_foreign_world() {
+        let owner=FixtureChronologyActor::from_preopened_invented_v7(invented_v7()).unwrap();
+        let client=owner.client();
+        client.create_anchor(anchor("a1","u1"),None).unwrap();
+        client.create_anchor(anchor("a2","u1"),Some(before("edge12","a1","a2"))).unwrap();
+        assert!(matches!(
+            client.create_anchor(anchor("ghost","u1"),Some(before("bad","missing","ghost"))),
+            Err(ActorError::Domain(_))
+        ));
+        assert!(matches!(
+            client.create_precedence(before("reverse","a2","a1")),
+            Err(ActorError::Domain(_))
+        ));
+        assert!(matches!(
+            client.create_anchor(anchor("foreign","u2"),Some(before("foreignedge","a1","foreign"))),
+            Err(ActorError::Domain(_))
+        ));
+        let view=client.snapshot("u1".into()).unwrap();
+        assert_eq!(view.current_anchor_ids,vec!["a1","a2"]);
+        assert_eq!(view.precedences.len(),1);
+        assert!(client.snapshot("u2".into()).unwrap().anchors.is_empty());
+        owner.shutdown().unwrap();
+    }
+
+    #[test]
+    fn p2b_actor_rejects_unqualified_v6_and_query_only() {
+        let v6=crate::world_time_schema_tests::v6();
+        assert!(matches!(
+            FixtureChronologyActor::from_preopened_invented_v7(v6),
+            Err(ActorError::Rejected(_))
+        ));
+        let db=invented_v7();
+        db.pragma_update(None,"query_only",true).unwrap();
+        assert!(matches!(
+            FixtureChronologyActor::from_preopened_invented_v7(db),
+            Err(ActorError::Rejected(_))
+        ));
+    }
+
+    #[test]
+    fn p2b_actor_shutdown_and_drop_revoke_cloned_clients() {
+        let owner=FixtureChronologyActor::from_preopened_invented_v7(invented_v7()).unwrap();
+        let client=owner.client();
+        assert!(client.snapshot("u1".into()).is_ok());
+        owner.shutdown().unwrap();
+        assert!(matches!(client.snapshot("u1".into()),Err(ActorError::Disconnected)));
+        let next=FixtureChronologyActor::from_preopened_invented_v7(invented_v7()).unwrap();
+        let another=next.client();
+        drop(next);
+        assert!(matches!(another.snapshot("u1".into()),Err(ActorError::Disconnected)));
+    }
+}
