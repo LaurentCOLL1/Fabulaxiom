@@ -91,6 +91,7 @@ impl<'a> FixtureChronologyService<'a> {
         Ok(())
     }
 
+    // A failed precedence causes SQLite transaction rollback of the new anchor.
     pub fn create_anchor_with_optional_relation(
         &mut self,
         anchor: chronology::AnchorDraft<'_>,
