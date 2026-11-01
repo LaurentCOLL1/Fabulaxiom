@@ -2,11 +2,11 @@
 
 **01/11 — #258 P1 FUSIONNÉE/QUALIFIÉE** `main=a51b9660d0d5470ed0d2084a0b733ab8e794ace5`, CI #41338290444/#41339303494 SUCCESS. **#259 P2a CANDIDAT** `M3_2_P2_PREOPENED_CHRONOLOGY_FIXTURE_SERVICE_20261101.md` : service Rust `#[cfg(test)]`, v7 RAM préouverte, transaction/rollback, **297/7/68/180 ATTENDUS NON QUALIFIÉS**. `PRODUCT_FIRST_PARALLEL_SAFETY` maintenue, R4–R9 parallèle, glib #1 OPEN, STOP inchangés. Suite P2b acteur test-only, P3 UI isolée ; prévenir AVANT changement.
 
-**01/11 — #257 FUSIONNÉE** `main=6346ebd405345e1cc2447cd28fa679bef7f19490`, CI #41330138838/#41331242603 SUCCESS **294/7/67/178**. **PRIORITÉ ACTIVE PRODUIT + SÉCURITÉ PARALLÈLE** `M3_2_PRODUCT_FIRST_PARALLEL_SAFETY_DECISION_20261101.md` ; P1 nouveau scénario deux romans/révision historique `M3_2_P1_TWO_NOVELS_HISTORICAL_REVISION_V7_DISPOSABLE_20261101.md` (NON QUALIFIÉ) ; glib 0.18.5 alerte #1 OPEN `M3_2_GLIB_ALERT1_UPSTREAM_BLOCKER_20261101.md` (Linux GTK3, pas de bump direct 0.20). Prévenir AVANT de changer de stratégie. R4 `M3_2_R4_WINDOWS_TWO_PROCESS_WAL_LOCK_DISPOSABLE_20261101.md`, `M3_2_R4_DELEGATED_MAIN_WAL_NATIVE_HANDLE_FILEID_DISPOSABLE_20261101.md` fixtures seulement, writer STOP. Protect main strict bypass=[], `expected_head_sha`, #38 append-only.
+**#257 historique** `main=6346ebd405345e1cc2447cd28fa679bef7f19490`, CI #41330138838/#41331242603 SUCCESS. Décision `M3_2_PRODUCT_FIRST_PARALLEL_SAFETY_DECISION_20261101.md` ; P1 `M3_2_P1_TWO_NOVELS_HISTORICAL_REVISION_V7_DISPOSABLE_20261101.md` ; alerte `M3_2_GLIB_ALERT1_UPSTREAM_BLOCKER_20261101.md` OPEN. R4 `M3_2_R4_WINDOWS_TWO_PROCESS_WAL_LOCK_DISPOSABLE_20261101.md`, `M3_2_R4_DELEGATED_MAIN_WAL_NATIVE_HANDLE_FILEID_DISPOSABLE_20261101.md`. Protect main strict bypass=[], `expected_head_sha`, #38 append-only.
 
 Fabulaxiom Windows (React/Tauri v2/Rust/SQLite ; voie C + Ollama). Dépôt : https://github.com/LaurentCOLL1/Fabulaxiom
 
-**D'abord :** re-fetch GitHub vivant : `main`, PR, issues, CI Windows au SHA exact, reviews/threads et ruleset **Protect main** (strict, zéro bypass). Ne jamais substituer ce checkpoint au dépôt.
+**D'abord :** re-fetch `main`, PR/issues, CI Windows SHA exact, reviews/threads, **Protect main** strict ; GitHub vivant fait autorité.
 
 Archives : `M3_2_R4_TWO_CLIENT_POSTOPEN_SHM_IDENTITY_DISPOSABLE_20261101.md`, `M3_2_R4_REGISTERED_OWNER_SHM_SQLITE_NORMAL_WAL_DISPOSABLE_20261101.md`, `M3_2_R4_OWNED_XSHM_ABI_CALLBACK_REFUSAL_DISPOSABLE_20261101.md`, `M3_2_R4_NATIVE_HELD_SHM_LOCKFILEEX_DISPOSABLE_20261101.md`, `M3_2_R4_SHM_HANDLE_BINDING_GATE_RAM_MODEL_20261031.md`, `M3_2_R4_XSHM_REGION0_CALLBACK_VS_HELD_FILE_DISPOSABLE_20261031.md`, `M3_2_R4_XSHM_MAPPED_NT_FILENAME_DECOY_DISPOSABLE_20261031.md`.
 
@@ -25,14 +25,14 @@ Interdit : données opérateur v6/v7, journaux/sauvegardes, IPC writer, 007, Hel
 
 ## Prochaines opérations
 
-1. P1 : scénario deux romans + r2 historique + r3 courante, SQLite v7 NEW_ONLY jetable ; puis P2 service fixture, P3 UI isolée.
-2. SÉCURITÉ : R2/R4 SHM >0 et custody main/WAL/SHM ; R5–R9 STOP ; suivre glib #1 sans dismiss.
-3. Choix persistant ; alerter avant changement ; prompts/handoffs/roadmaps par PR.
+1. P1 validé ; P2a PR #259 à qualifier ; ensuite P2b acteur fixture, P3 UI isolée.
+2. R2/R4 SHM >0, custody main/WAL/SHM ; R5–R9 STOP ; glib #1 OPEN.
+3. Garder stratégie, prévenir avant changement, actualiser les documents.
 
 Références R4 historiques : `M3_2_R4_D3A_LIVE_SHM_FILEID_DISPOSABLE_20261030.md`.
 
 ## Documents d'autorité
 
-Lire [RESUME_PROMPT.md](RESUME_PROMPT.md), `HANDOFF_CURRENT.json`, `HANDOFF_CURRENT.md`, `HANDOFF_PROTOCOL.md`, `HANDOFF_HISTORY.md`, `STATE.md`, `NEXT.md`, `M3_2_GATE_DECISION_CURRENT.md` et `docs/roadmap/ROADMAP_STATUS_CURRENT.md` / `FABULAXIOM_ROADMAP_V1.md`. Qualification : [M3_2_R4_NO_XSHM_NORMAL_WAL_READ_REFUSAL_DISPOSABLE_20261030.md](../qualification/M3_2_R4_NO_XSHM_NORMAL_WAL_READ_REFUSAL_DISPOSABLE_20261030.md).
+Lire `RESUME_PROMPT.md`, `HANDOFF_CURRENT.json`, `HANDOFF_CURRENT.md`, `HANDOFF_PROTOCOL.md`, `HANDOFF_HISTORY.md`, `STATE.md`, `NEXT.md`, `M3_2_GATE_DECISION_CURRENT.md`, `ROADMAP_STATUS_CURRENT.md`, `FABULAXIOM_ROADMAP_V1.md` ; voir R4 cité plus haut.
 
 **Règle :** fixtures et anciennes CI ne valent jamais admission de données réelles ; archives dans prompt complet et handoffs.
