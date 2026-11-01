@@ -175,6 +175,15 @@ impl FixtureChronologyActor {
     {
         FixtureChronologyService::from_already_opened_disposable_v7(&mut connection)
             .map_err(ActorError::Rejected)?;
+        // P2b is RAM-only even in tests: never accept a fixture backed by a
+        // pathname. This is intentionally stricter than the P2a disk contract.
+        let backing: String = connection.query_row(
+            "SELECT file FROM pragma_database_list WHERE name='main'",
+            [], |row| row.get(0),
+        ).map_err(|_| ActorError::Rejected(FixtureError::Stop("cannot verify RAM-only main")))?;
+        if !backing.is_empty() {
+            return Err(ActorError::Rejected(FixtureError::Stop("disk-backed database refused")));
+        }
         let (queue, rx) = mpsc::sync_channel(QUEUE_CAPACITY);
         let worker = thread::spawn(move || run(connection, rx));
         Ok(Self {
