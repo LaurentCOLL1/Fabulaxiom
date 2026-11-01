@@ -10,7 +10,7 @@ Archives : `M3_2_R4_TWO_CLIENT_POSTOPEN_SHM_IDENTITY_DISPOSABLE_20261101.md`, `M
 
 R4 : `M3_2_R4_NATIVE_HELD_HANDLE_MAP_DISPOSABLE_20261031.md` ; live SQLite WAL-index sur fixtures seulement.
 
-## Antériorité
+## Dernier checkpoint
 
 - **#242 :** `M3_2_R4_DEFAULT_WIN32_WAL_SHM_SNAPSHOT_DISPOSABLE_20261030.md` ; Windows fictif seulement.
 - **R3/R4 :** WAL NORMAL refusé sans xShm* ; `M3_2_R4_NO_XSHM_NORMAL_WAL_READ_REFUSAL_DISPOSABLE_20261030.md`, production STOP. PR #215/#35 DRAFT.
