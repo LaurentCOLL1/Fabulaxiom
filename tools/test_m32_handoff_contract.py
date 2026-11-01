@@ -5733,5 +5733,72 @@ class HandoffContractTests(unittest.TestCase):
                      "M3_TIME_KNOWLEDGE_RELATIONSHIPS.md"):
             self.assertIn(note, (ROOT/"docs/roadmap"/file).read_text(encoding="utf-8"))
 
+
+    def test_182_p3a_synthetic_browser_only_command_contract_keeps_writer_stop(self):
+        e = self.data["m32_p3a_candidate_20261101"]
+        self.assertEqual(e["strategy"], "PRODUCT_FIRST_PARALLEL_SAFETY")
+        self.assertEqual(e["slice"], "P3A_SYNTHETIC_REACT_TYPED_COMMAND_WORKSHOP")
+        self.assertEqual(e["parent_pr"], 260)
+        self.assertEqual(e["parent_main"], "0f2b56dbc07ac2c7db431ab99b93cc653b489341")
+        self.assertEqual(e["pr260_source_ci"], 41345394783)
+        self.assertEqual(e["pr260_source_ci_status"], "SUCCESS_301_7_68_181")
+        self.assertEqual(e["pr260_postmain_ci"], 41347171014)
+        for key in ("browser_lab_only","fixture_world_only",
+                    "explicit_historical_revision","atomic_in_memory_rollback",
+                    "explicit_partial_order","notify_before_strategy_change"):
+            self.assertTrue(e[key], key)
+        for key in ("no_real_rust_bridge","no_production_ipc","no_operator_data",
+                    "no_local_files_or_storage"):
+            self.assertTrue(e[key], key)
+        for key in ("source_ci_qualified","postmain_ci_qualified"):
+            self.assertFalse(e[key], key)
+        self.assertEqual(e["p3a_expected_vitest_new_cases_not_qualified"],11)
+        for key,count in (("expected_rust_tests_not_qualified",301),
+                          ("expected_greenfield_tests_not_qualified",7),
+                          ("expected_inventory_tests_not_qualified",68),
+                          ("expected_continuity_tests_not_qualified",182)):
+            self.assertEqual(e[key],count)
+        for key,value in (("m3_2","IN_PROGRESS_NOT_ACCEPTED"),
+                          ("writer","NOT_PROVEN"),("g2b","NOT_ACCEPTED"),
+                          ("g2c","NOT_AUTHORIZED"),("g3","STOP_UNAVAILABLE"),
+                          ("historical","PENDING_EXTERNAL_ATTESTATION(21/3/2)"),
+                          ("prospective","NOT_STARTED"),
+                          ("glib_status","OPEN_NOT_REMEDIATED")):
+            self.assertEqual(e[key],value)
+        note="M3_2_P3A_SYNTHETIC_TYPED_COMMAND_WORKSHOP_20261101.md"
+        self.assertTrue((ROOT/"docs/qualification"/note).is_file())
+        for file in ("RESUME_PROMPT_SHORT.md","RESUME_PROMPT.md","HANDOFF_CURRENT.md",
+                     "HANDOFF_HISTORY.md","HANDOFF_PROTOCOL.md","STATE.md","NEXT.md",
+                     "M3_2_GATE_DECISION_CURRENT.md","README.md"):
+            self.assertIn(note,(DIRECTORY/file).read_text(encoding="utf-8"))
+        for file in ("ROADMAP_STATUS_CURRENT.md","FABULAXIOM_ROADMAP_V1.md",
+                     "M3_TIME_KNOWLEDGE_RELATIONSHIPS.md"):
+            self.assertIn(note,(ROOT/"docs/roadmap"/file).read_text(encoding="utf-8"))
+        contract=(ROOT/"src/m32P3FictionalCommandContract.ts").read_text(encoding="utf-8")
+        panel=(ROOT/"src/M32P3FictionalCommandWorkshop.tsx").read_text(encoding="utf-8")
+        browser=(ROOT/"src/m32BrowserLab.tsx").read_text(encoding="utf-8")
+        tests=(ROOT/"src/m32P3FictionalCommandContract.test.tsx").read_text(encoding="utf-8")
+        app=(ROOT/"src/App.tsx").read_text(encoding="utf-8")
+        for marker in ("startP3FictionalState","applyP3FictionalCommand",
+                       "readP3FictionalSnapshot","create_anchor_with_optional_relation",
+                       "create_precedence","P3_NEW_ANCHOR","createFictionalPrecedence"):
+            self.assertIn(marker,contract)
+        for marker in ("Simulation navigateur exclusivement","ne communique pas avec Rust",
+                       "Exécuter la commande fictive en mémoire",
+                       "Révision narrative historique","type FormEvent"):
+            self.assertIn(marker,panel)
+        self.assertIn("M32P3FictionalCommandWorkshop",browser)
+        self.assertIn('setMode("p3-commands")',browser)
+        self.assertNotIn("M32P3FictionalCommandWorkshop",app)
+        self.assertNotIn("m32P3FictionalCommandContract",app)
+        for source in (contract,panel):
+            for forbidden in ("@tauri-apps/api","invoke(","fetch(",
+                              "localStorage","sessionStorage",
+                              "indexedDB","sqlite", "writeFile(", "readFile("):
+                # "SQLite" appears in visible safety wording, lowercase "sqlite"
+                # must never be called or imported.
+                self.assertNotIn(forbidden,source)
+        self.assertEqual(tests.count('  it("'),11)
+
 if __name__ == "__main__":
     unittest.main()
