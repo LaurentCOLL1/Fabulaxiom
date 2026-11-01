@@ -1,6 +1,6 @@
 # Fabulaxiom — reprise courte (1er novembre 2026)
 
-**01/11 — #253 FUSIONNÉE :** `main=a52eedc94f6ea1f8391efbe99b7aa03a4eedb11c` ; CI #41268377239 SUCCESS **290/7/65/175**, postmain #41293225238 à vérifier. **R4 #254 candidat NON QUALIFIÉ :** `M3_2_R4_DELEGATED_MAIN_WAL_NATIVE_HANDLE_FILEID_DISPOSABLE_20261101.md` ; `SQLITE_FCNTL_WIN32_GET_HANDLE` sur main/WAL et veto FileId128, **292/7/66/176 ATTENDUS**. Custody atomique, multi-processus, writer NOT_PROVEN. Protect main strict bypass=[], exact-head CI, `expected_head_sha`, postmain, #38 append-only.
+**01/11 — #254 FUSIONNÉE :** `main=7185adf3394b6d20d2c81a831c9226e8fa823f47` ; CI source #41293719994, postmain #41294534621 : SUCCESS SHA exact **292/7/66/176** chacune. `M3_2_R4_DELEGATED_MAIN_WAL_NATIVE_HANDLE_FILEID_DISPOSABLE_20261101.md` qualifiée **fixtures uniquement**. Suite CONCEPTION NON QUALIFIÉE : `M3_2_R4_MULTIPROCESS_THREE_FILE_CUSTODY_NEXT_GATE_DESIGN_20261101.md` ; custody atomique, multiprocessus, writer NOT_PROVEN. Protect main strict bypass=[], squash `expected_head_sha`, #38 append-only.
 
 Reprends Fabulaxiom Windows (React, Tauri v2, Rust, SQLite ; voie C locale, Ollama). Dépôt : https://github.com/LaurentCOLL1/Fabulaxiom
 
@@ -23,8 +23,8 @@ Ne toucher ni aux données opérateur v6/v7 ni aux journaux/sauvegardes ; aucun 
 
 ## Prochaines opérations
 
-1. Vérifier la qualification CI exact-head du candidat, diff/reviews/threads, Protect main strict bypass=[], squash `expected_head_sha` si admissible, postmain indépendante et #38 append-only.
-2. Continuer **P1, R2/R3, R4 xShm*/WAL/SHM/FileId128**, puis R5/R6/R8 et R7/R9 sur fixtures neuves sans promotion production.
+1. #254 déjà fusionnée : vérifier l'état vivant, ne pas refusionner. Préparer le nouveau test R4 multiprocessus/custody avant toute qualification.
+2. Implémenter sur fixtures neuves le plan R4 multi-processus + SHM régions >0 et custody main/WAL/SHM ; ne pas promouvoir en production ; poursuivre P1, R2/R3, R5/R6/R8, R7/R9.
 3. Actualiser les deux prompts, handoffs et roadmaps à chaque PR.
 
 Références R4 historiques : `M3_2_R4_D3A_LIVE_SHM_FILEID_DISPOSABLE_20261030.md`.
