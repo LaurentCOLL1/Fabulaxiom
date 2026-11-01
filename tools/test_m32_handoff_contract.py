@@ -5820,5 +5820,35 @@ class HandoffContractTests(unittest.TestCase):
                       "M32_CI_PRECOMPILED_STRICT_CSP_BROWSER_PASS: 85/85"):
             self.assertIn(label,driver)
 
+
+    def test_182_p3a_synthetic_typed_react_command_workshop(self):
+        e = self.data["m32_p3a_candidate_20261101"]
+        self.assertEqual(e["strategy"], "PRODUCT_FIRST_PARALLEL_SAFETY")
+        self.assertEqual(e["parent_pr"], 260)
+        self.assertFalse(e["no_real_rust_bridge"] is False)
+        for flag in ("browser_lab_only", "no_real_rust_bridge", "no_production_ipc",
+                     "no_operator_data", "no_local_files_or_storage", "fixture_world_only",
+                     "explicit_historical_revision", "atomic_in_memory_rollback",
+                     "explicit_partial_order", "notify_before_strategy_change"):
+            self.assertTrue(e[flag],flag)
+        self.assertEqual(e["expected_continuity_tests_not_qualified"],182)
+        self.assertEqual(e["m3_2"],"IN_PROGRESS_NOT_ACCEPTED")
+        self.assertEqual(e["g3"],"STOP_UNAVAILABLE")
+        note="M3_2_P3A_SYNTHETIC_TYPED_COMMAND_WORKSHOP_20261101.md"
+        self.assertTrue((ROOT/"docs/qualification"/note).is_file())
+        short=(DIRECTORY/"RESUME_PROMPT_SHORT.md").read_text(encoding="utf-8")
+        detailed=(DIRECTORY/"RESUME_PROMPT.md").read_text(encoding="utf-8")
+        self.assertIn(note,short)
+        self.assertIn(note,detailed)
+        lab=(ROOT/"src/m32BrowserLab.tsx").read_text(encoding="utf-8")
+        self.assertIn("M32P3FictionalCommandWorkshop",lab)
+        self.assertNotIn("M32P3FictionalCommandWorkshop",
+                         (ROOT/"src/App.tsx").read_text(encoding="utf-8"))
+        reducer=(ROOT/"src/m32P3FictionalCommandContract.ts").read_text(encoding="utf-8")
+        self.assertIn("create_anchor_with_optional_relation",reducer)
+        for forbidden in ("invoke(", "fetch(", "localStorage", "Connection::open("):
+            self.assertNotIn(forbidden,reducer)
+        self.assertEqual(e["prospective"],"NOT_STARTED")
+
 if __name__ == "__main__":
     unittest.main()
