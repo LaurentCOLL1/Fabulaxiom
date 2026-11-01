@@ -24,7 +24,7 @@ Ne toucher ni aux données opérateur v6/v7 ni aux journaux/sauvegardes ; aucun 
 ## Prochaines opérations
 
 1. PRIORITÉ PRODUIT : P0 matrice acquise ; P1 étendre v7 NEW_ONLY create/list/reopen existant à l'atelier, P2 service fixture, P3 UI isolée.
-2. SÉCURITÉ : R4 SHM >0, custody atomique main/WAL/SHM ; R5–R9 STOP ; données opérateur interdites.
+2. SÉCURITÉ : R2, R4 SHM >0, custody atomique main/WAL/SHM ; R5–R9 STOP ; données opérateur interdites.
 3. Conserver le choix entre conversations, alerter avant changement ; deux prompts/handoffs/roadmaps par PR.
 
 Références R4 historiques : `M3_2_R4_D3A_LIVE_SHM_FILEID_DISPOSABLE_20261030.md`.
