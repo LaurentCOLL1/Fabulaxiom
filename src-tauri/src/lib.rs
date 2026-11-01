@@ -73,6 +73,9 @@ mod m32_r4_wal_shm_disposable_tests;
 mod m32_r4_xshm_bound_handle_evidence_toy;
 #[cfg(all(test, windows))]
 mod m32_r4_native_shm_mapping_disposable_tests;
+// R4 only: native HANDLE+lock primitive on fabricated SHM-like files, NOT SQLite xShm*.
+#[cfg(all(test, windows))]
+mod m32_r4_owned_shm_lock_disposable_tests;
 
 // D3b-5 bounded phase-bracket crash refusal on fresh disposable Windows CI files.
 // Does NOT reopen crashed SQLite, attest xSync/xShmUnmap timing or admit a writer.

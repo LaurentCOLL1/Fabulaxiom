@@ -790,5 +790,22 @@ class RustSqliteOpenInventoryTests(unittest.TestCase):
         self.assertNotIn("#[tauri::command]", code)
         self.assertEqual(repository_inventory()["writer_absence"], "NOT_PROVEN")
 
+
+    def test_62_r4_native_owned_shm_locks_are_still_non_sqlite_disposable(self):
+        path = "src-tauri/src/m32_r4_owned_shm_lock_disposable_tests.rs"
+        code = (ROOT / path).read_text(encoding="utf-8")
+        for token in ("struct HeldShm", "CreateFileMappingW(", "MapViewOfFile(",
+                      "GetFileInformationByHandleEx(", "LockFileEx(", "UnlockFileEx(",
+                      "r4_owned_shm_same_handle_maps_and_contends_on_wal_lock_byte",
+                      "r4_equal_bytes_different_fileid_shm_decoy_has_separate_lock_domain",
+                      "create_new(true)", "std::env::temp_dir()", "assert_ne!(owner.id,decoy.id)"):
+            self.assertIn(token, code)
+        for forbidden in ("Connection::open(", "sqlite3_open",
+                          "run_migrations(", "#[tauri::command]", "app_local_data_dir("):
+            self.assertNotIn(forbidden, code)
+        self.assertIn("#[cfg(all(test, windows))]\nmod m32_r4_owned_shm_lock_disposable_tests;",
+                      self.src["src-tauri/src/lib.rs"])
+        self.assertEqual(repository_inventory()["writer_absence"], "NOT_PROVEN")
+
 if __name__ == "__main__":
     unittest.main()
