@@ -257,9 +257,9 @@ mod owned_shm_abi_refusal {
         assert_eq!(unsafe{xshm_map(p,1,32768,1,&mut output)},ffi::SQLITE_IOERR_SHMMAP);
         assert!(output.is_null());
         assert_eq!(unsafe{xshm_lock(p,0,1,(LOCK|SHARED) as i32)},ffi::SQLITE_OK);
-        assert!(!try_exclusive(&competitor,120),"shared lock prevents competitor exclusive");
+        assert!(!lock(&competitor,120),"shared lock prevents competitor exclusive");
         assert_eq!(unsafe{xshm_lock(p,0,1,(UNLOCK|SHARED) as i32)},ffi::SQLITE_OK);
-        assert!(try_exclusive(&competitor,120));
+        assert!(lock(&competitor,120));
         unlock(&competitor,120);
         assert_eq!(unsafe{xshm_lock(p,7,1,(LOCK|EXCLUSIVE) as i32)},ffi::SQLITE_OK);
         unsafe{xshm_barrier(p)};
