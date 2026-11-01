@@ -1,6 +1,6 @@
 import { useId, useState, type FormEvent, type ReactElement } from "react";
 import type { M32ChronologyProjection, M32TimeKind } from "./M32ChronologyPreview";
-import type { FictionalRevision } from "./m32FictionalManualChronology";
+import { previewFictionalPrecedence, type FictionalRevision } from "./m32FictionalManualChronology";
 import {
   P3_NEW_ANCHOR, applyP3FictionalCommand,
   readP3FictionalSnapshot, startP3FictionalState,
@@ -25,10 +25,14 @@ function FictionalPanel({ initial, revisions }: {
   const [relativeTo, setRelativeTo] = useState("");
   const [direction, setDirection] = useState<"none" | "existing_before_new" | "new_before_existing">("none");
   const [reason, setReason] = useState("");
+  const [edgeBefore, setEdgeBefore] = useState("");
+  const [edgeAfter, setEdgeAfter] = useState("");
+  const [edgeReason, setEdgeReason] = useState("");
   const [message, setMessage] = useState("Aucune commande lancée.");
   const [error, setError] = useState(false);
   const snapshot = readP3FictionalSnapshot(state, initial.universe_id);
   const active = snapshot.anchors.filter(a => a.status === "current");
+  const proposed = previewFictionalPrecedence(state.draft, edgeBefore, edgeAfter);
   function execute(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     try {
@@ -57,6 +61,30 @@ function FictionalPanel({ initial, revisions }: {
     } catch (cause) {
       setError(true);
       setMessage(cause instanceof Error ? cause.message : "Commande fictive refusée");
+    }
+  }
+  function executePrecedence(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    try {
+      if (proposed.verdict !== "allowed" || edgeReason.trim().length === 0)
+        throw new Error("Lien refusé ou justification humaine manquante");
+      const command: P3Command = {
+        kind: "create_precedence",
+        universe_id: initial.universe_id,
+        relation: {
+          before_anchor_id: edgeBefore,
+          after_anchor_id: edgeAfter,
+          reason: edgeReason,
+        },
+      };
+      const next = applyP3FictionalCommand(state, command);
+      setState(next);
+      setError(false);
+      setMessage("Lien temporel fictif ajouté après contrôle : aucune sauvegarde.");
+      setEdgeBefore(""); setEdgeAfter(""); setEdgeReason("");
+    } catch (cause) {
+      setError(true);
+      setMessage(cause instanceof Error ? cause.message : "Lien fictif refusé");
     }
   }
   return <section aria-label="P3a atelier de commandes de chronologie fictive">
@@ -121,8 +149,44 @@ function FictionalPanel({ initial, revisions }: {
         setState(startP3FictionalState(initial, revisions));
         setError(false); setMessage("Données fictives réinitialisées.");
         setRelativeTo(""); setDirection("none"); setReason(""); setRevision("");
+        setEdgeBefore(""); setEdgeAfter(""); setEdgeReason("");
       }}>Réinitialiser les données fictives</button>
     </form>
+    <section aria-label="P3c proposition de précédence fictive">
+      <h3>Relier deux dates déjà créées — vérification avant validation</h3>
+      <p>Seuls les liens déclarés par l’auteur seront enregistrés dans cette simulation.
+        Aucun ordre chronologique implicite n’est créé.</p>
+      <form aria-label="Proposer un lien temporel fictif" onSubmit={executePrecedence}>
+        <label htmlFor={id + "-edge-before"}>Première ancre : avant</label>
+        <select id={id + "-edge-before"} value={edgeBefore}
+          onChange={e => setEdgeBefore(e.currentTarget.value)}>
+          <option value="">Choisir explicitement</option>
+          {active.map(a => <option key={a.id} value={a.id}>{a.id}</option>)}
+        </select>
+        <label htmlFor={id + "-edge-after"}>Deuxième ancre : après</label>
+        <select id={id + "-edge-after"} value={edgeAfter}
+          onChange={e => setEdgeAfter(e.currentTarget.value)}>
+          <option value="">Choisir explicitement</option>
+          {active.map(a => <option key={a.id} value={a.id}>{a.id}</option>)}
+        </select>
+        <label htmlFor={id + "-edge-reason"}>Justification humaine de la précédence</label>
+        <input id={id + "-edge-reason"} value={edgeReason} maxLength={160}
+          onChange={e => setEdgeReason(e.currentTarget.value)} />
+        <p aria-label="Résultat du contrôle avant validation">
+          {proposed.verdict === "allowed" ? "Lien fictif autorisé sous réserve de justification." :
+            proposed.verdict === "blocked" ? "Lien fictif refusé : " + proposed.reason :
+              "Choisir deux ancres distinctes avant de proposer un lien."}
+        </p>
+        {proposed.verdict === "blocked" && proposed.witness_anchor_ids.length > 0 &&
+          <p aria-label="Témoin du refus de précédence">
+            Chemin contradictoire : {proposed.witness_anchor_ids.join(" → ")}
+          </p>}
+        <button type="submit" disabled={proposed.verdict !== "allowed" ||
+          edgeReason.trim().length === 0}>
+          Valider le lien fictif après contrôle
+        </button>
+      </form>
+    </section>
     <p role={error ? "alert" : "status"}>{message}</p>
     <section aria-label="Résultat des commandes fictives">
       <h3>État local non enregistré</h3>
