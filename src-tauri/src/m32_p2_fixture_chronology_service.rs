@@ -130,9 +130,9 @@ impl<'a> FixtureChronologyService<'a> {
 
     pub fn snapshot(&self, universe: &str) -> Result<FixtureSnapshot, FixtureError> {
         Ok(FixtureSnapshot {
-            anchors: chronology::list_anchors(self.db, universe)?,
-            precedences: chronology::list_precedences(self.db, universe)?,
-            current_anchor_ids: chronology::list_current_anchor_ids(self.db, universe)?,
+            anchors: chronology::list_anchors(&*self.db, universe)?,
+            precedences: chronology::list_precedences(&*self.db, universe)?,
+            current_anchor_ids: chronology::list_current_anchor_ids(&*self.db, universe)?,
         })
     }
 }
