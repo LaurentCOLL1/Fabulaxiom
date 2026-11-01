@@ -651,8 +651,24 @@ fn m32_new_only_disposable_v7_chronology_survives_reopen_without_touching_prior_
     assert_eq!(database::current_schema_version(&db).unwrap(), 7);
     db.execute("INSERT INTO universes(id,name) VALUES('u2','Second fictional universe')", [])
         .expect("another brand-new universe");
-    // Baseline the newly authored u2 row too: no subsequent chronology decision
-    // may rewrite even this fixture's established v6-shaped tables.
+    // Product P1: a second novel in the SAME invented universe has two
+    // immutable scene revisions; the first is HISTORICAL, never the head.
+    // Its chronology source must remain stable after a subsequent reopen.
+    db.execute_batch(r#"
+        INSERT INTO novels(id,universe_id,series_id,title,sort_order)
+            VALUES ('n2','u1','series1','Second invented novel',1);
+        INSERT INTO chapters(id,novel_id,title,sort_order)
+            VALUES ('c2','n2','Interlude',0);
+        INSERT INTO scenes(id,chapter_id,title,sort_order)
+            VALUES ('s2','c2','Second novel scene',0);
+        INSERT INTO scene_text_revisions(id,scene_id,revision_number,content)
+            VALUES ('r2','s2',1,'A previous fictional scene draft'),
+                   ('r3','s2',2,'The current fictional scene draft');
+        INSERT INTO scene_revision_heads(scene_id,revision_id)
+            VALUES ('s2','r3');
+    "#).expect("second novel and immutable historical revision in invented v7 only");
+    // Baseline the new u2 and second-novel rows too: chronology operations
+    // must leave every already-existing v6-shaped row unchanged.
     let original_rows = legacy_rows(&db);
     chronology::create_calendar(&db, "m32-cycle", "u1", "Cycles", "Fiction only")
         .expect("manual calendar");
@@ -670,6 +686,29 @@ fn m32_new_only_disposable_v7_chronology_survives_reopen_without_touching_prior_
         precision_text: None,
     };
     chronology::create_anchor(&db, unknown).expect("undated event");
+    let approximate = chronology::AnchorDraft {
+        id: "m32-approx", universe_id: "u1", time_kind: "approximate",
+        calendar_id: Some("m32-cycle"), event_entity_id: None,
+        source_revision_id: Some("r2"), exact_label: None,
+        window_start_text: Some("Frost season"), window_end_text: Some("Thaw season"),
+        precision_text: Some("season"),
+    };
+    chronology::create_anchor(&db, approximate)
+        .expect("second-novel historical revision can anchor an approximate window");
+    let relative = chronology::AnchorDraft {
+        id: "m32-relative", universe_id: "u1", time_kind: "relative",
+        source_revision_id: Some("r2"), ..unknown
+    };
+    chronology::create_anchor(&db, relative)
+        .expect("second-novel historical revision can anchor an undated relative event");
+    chronology::create_precedence(
+        &db, "m32-second-novel-before", "u1", "m32-approx", "m32-relative",
+        "Human declares a partial order across second-novel scenes", Some("r2"),
+    ).expect("second-novel human precedence is persisted");
+    assert!(chronology::create_precedence(
+        &db, "m32-second-novel-cycle", "u1", "m32-relative", "m32-approx",
+        "Cycle must fail", Some("r2"),
+    ).is_err(), "second-novel chronology cycle must fail, even before reopening");
     chronology::create_precedence(
         &db, "m32-before", "u1", "m32-exact", "m32-unknown",
         "Author explicitly placed the event before", Some("r1"),
@@ -682,6 +721,11 @@ fn m32_new_only_disposable_v7_chronology_survives_reopen_without_touching_prior_
         id: "m32-u2", universe_id: "u2", time_kind: "relative", ..unknown
     };
     chronology::create_anchor(&db, foreign).expect("second universe independent");
+    let forbidden_foreign_revision = chronology::AnchorDraft {
+        id: "m32-u2-revision-refused", source_revision_id: Some("r2"), ..foreign
+    };
+    assert!(chronology::create_anchor(&db, forbidden_foreign_revision).is_err(),
+        "second universe cannot cite historical scene revision from another universe");
     assert!(chronology::create_precedence(
         &db, "m32-cross-refused", "u1", "m32-exact", "m32-u2",
         "Wrong universe", None,
@@ -695,8 +739,9 @@ fn m32_new_only_disposable_v7_chronology_survives_reopen_without_touching_prior_
         "Human correction without editing history", Some("r1"),
     ).expect("atomic human correction in new file");
     assert_eq!(chronology::list_current_anchor_ids(&db, "u1").unwrap(),
-               vec!["m32-corrected", "m32-unknown"]);
-    assert_eq!(chronology::list_anchors(&db, "u1").unwrap().len(), 3);
+               vec!["m32-approx", "m32-corrected", "m32-relative", "m32-unknown"]);
+    assert_eq!(chronology::list_anchors(&db, "u1").unwrap().len(), 5);
+    assert_eq!(chronology::list_anchors(&db, "u2").unwrap().len(), 1);
     assert_eq!(checked_m2_snapshot(&db), original_m2);
     assert_eq!(legacy_rows(&db), original_rows);
     integrity(&db);
@@ -708,10 +753,38 @@ fn m32_new_only_disposable_v7_chronology_survives_reopen_without_touching_prior_
         .expect("reopen same candidate path after closing");
     database::configure_connection(&reopened).expect("new connection FK guard");
     assert_eq!(database::current_schema_version(&reopened).unwrap(), 7);
-    assert_eq!(chronology::list_precedences(&reopened, "u1").unwrap().len(), 1);
+    let persisted_edges = chronology::list_precedences(&reopened, "u1").unwrap();
+    assert_eq!(persisted_edges.len(), 2);
+    assert!(persisted_edges.iter().any(|edge|
+        edge.before_anchor_id == "m32-approx"
+        && edge.after_anchor_id == "m32-relative"
+        && edge.source_revision_id.as_deref() == Some("r2")));
+    assert!(!persisted_edges.iter().any(|edge|
+        edge.before_anchor_id == "m32-approx"
+        && edge.after_anchor_id == "m32-unknown"),
+        "do not infer a total order between unrelated fictional events");
+    assert!(chronology::list_precedences(&reopened, "u2").unwrap().is_empty(),
+        "second universe remains isolated");
+    let reopened_anchors = chronology::list_anchors(&reopened, "u1").unwrap();
+    assert_eq!(reopened_anchors.len(), 5);
+    assert!(reopened_anchors.iter().any(|a|
+        a.id == "m32-approx"
+        && a.time_kind == "approximate"
+        && a.source_revision_id.as_deref() == Some("r2")
+        && a.window_start_text.as_deref() == Some("Frost season")));
+    assert!(reopened_anchors.iter().any(|a|
+        a.id == "m32-relative"
+        && a.time_kind == "relative"
+        && a.source_revision_id.as_deref() == Some("r2")));
+    let scene_current_revision: String = reopened.query_row(
+        "SELECT revision_id FROM scene_revision_heads WHERE scene_id='s2'",
+        [], |row| row.get(0),
+    ).expect("second novel scene head survived chronology actions");
+    assert_eq!(scene_current_revision, "r3",
+        "historical r2 source must never replace the live r3 head");
     assert_eq!(chronology::list_anchor_decisions(&reopened, "u1").unwrap().len(), 1);
     assert_eq!(chronology::list_current_anchor_ids(&reopened, "u1").unwrap(),
-               vec!["m32-corrected", "m32-unknown"]);
+               vec!["m32-approx", "m32-corrected", "m32-relative", "m32-unknown"]);
     assert_eq!(checked_m2_snapshot(&reopened), original_m2);
     assert_eq!(legacy_rows(&reopened), original_rows);
     integrity(&reopened);
