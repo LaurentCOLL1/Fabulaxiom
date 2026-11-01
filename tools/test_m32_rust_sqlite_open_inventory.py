@@ -807,5 +807,22 @@ class RustSqliteOpenInventoryTests(unittest.TestCase):
                       self.src["src-tauri/src/lib.rs"])
         self.assertEqual(repository_inventory()["writer_absence"], "NOT_PROVEN")
 
+
+    def test_63_r4_owned_native_xshm_abi_callbacks_are_not_registered_runtime(self):
+        code = (ROOT / "src-tauri/src/m32_r4_owned_shm_lock_disposable_tests.rs").read_text(encoding="utf-8")
+        for token in ("mod owned_shm_abi_refusal", "sqlite3_io_methods",
+                      "unsafe extern \"C\" fn xshm_map", "unsafe extern \"C\" fn xshm_lock",
+                      "unsafe extern \"C\" fn xshm_barrier", "unsafe extern \"C\" fn xshm_unmap",
+                      "LockFileEx", "UnlockFileEx", "held_modes", "revoked",
+                      "r4_xshm_abi_held_handle_shared_exclusive_contention_and_map_refusal",
+                      "r4_xshm_abi_invalid_flags_locked_unmap_delete_and_stale_epoch_refusal"):
+            self.assertIn(token, code)
+        for forbidden in ("sqlite3_vfs_register(", "Connection::open(",
+                          "sqlite3_open(", "run_migrations(", "#[tauri::command]",
+                          "app_local_data_dir("):
+            self.assertNotIn(forbidden, code)
+        self.assertEqual(repository_inventory()["writer_absence"], "NOT_PROVEN")
+        self.assertFalse(repository_inventory()["real_g3_authorized"])
+
 if __name__ == "__main__":
     unittest.main()

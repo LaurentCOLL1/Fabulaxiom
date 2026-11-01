@@ -5378,5 +5378,34 @@ class HandoffContractTests(unittest.TestCase):
         for path in ("ROADMAP_STATUS_CURRENT.md","FABULAXIOM_ROADMAP_V1.md"):
             self.assertIn(note,(ROOT/"docs/roadmap"/path).read_text(encoding="utf-8"))
 
+
+    def test_173_r4_owned_xshm_callback_abi_is_direct_only_and_not_sqlite_wal(self):
+        e = self.data["m32_r4_owned_xshm_abi_refusal_candidate_20261101"]
+        self.assertEqual(e["scope"], "WINDOWS_DISPOSABLE_DIRECT_XSHM_CALLBACK_ABI_ONLY")
+        for key, expected in (("expected_rust_tests_not_qualified",286),
+                              ("expected_greenfield_tests_not_qualified",7),
+                              ("expected_inventory_tests_not_qualified",63),
+                              ("expected_continuity_tests_not_qualified",173)):
+            self.assertEqual(e[key], expected)
+        for key in ("actual_sqlite_connection_using_vfs","stock_sqlite_private_shm_handle_authenticated",
+                    "custom_sqlite_shm_vfs_operational","normal_wal_sql_qualified",
+                    "multi_connection_process_coordination_proven",
+                    "atomic_three_file_custody_proven","writer_admitted","operator_data_accessed",
+                    "ipc_enabled","migration_007","native_hello","persistent_marker",
+                    "recovery_authorized"):
+            self.assertFalse(e[key], key)
+        self.assertEqual(e["m3_2"],"IN_PROGRESS_NOT_ACCEPTED")
+        self.assertEqual(e["g2b"],"NOT_ACCEPTED")
+        self.assertEqual(e["g2c"],"NOT_AUTHORIZED")
+        self.assertEqual(e["g3"],"STOP_UNAVAILABLE")
+        note="M3_2_R4_OWNED_XSHM_ABI_CALLBACK_REFUSAL_DISPOSABLE_20261101.md"
+        self.assertTrue((ROOT/"docs/qualification"/note).is_file())
+        for path in ("RESUME_PROMPT_SHORT.md","RESUME_PROMPT.md",
+                     "HANDOFF_CURRENT.md","HANDOFF_HISTORY.md","HANDOFF_PROTOCOL.md",
+                     "STATE.md","NEXT.md","M3_2_GATE_DECISION_CURRENT.md","README.md"):
+            self.assertIn(note,(DIRECTORY/path).read_text(encoding="utf-8"))
+        for path in ("ROADMAP_STATUS_CURRENT.md","FABULAXIOM_ROADMAP_V1.md"):
+            self.assertIn(note,(ROOT/"docs/roadmap"/path).read_text(encoding="utf-8"))
+
 if __name__ == "__main__":
     unittest.main()
