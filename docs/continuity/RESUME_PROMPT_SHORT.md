@@ -1,12 +1,12 @@
 # Fabulaxiom — reprise courte (1er novembre 2026)
 
-**01/11 — #252 FUSIONNÉE :** `main=aee8ebdaa0a0e40c74114fafb856dc5c8dd0b27d` ; source CI #41267487993 SUCCESS **288/7/64/174**, postmain #41268093939 À VÉRIFIER. **R4 #253 candidat NON QUALIFIÉ :** `M3_2_R4_TWO_CLIENT_POSTOPEN_SHM_IDENTITY_DISPOSABLE_20261101.md` ; 2 connexions SQLite WAL NORMAL et veto SHM substitué post-open, **290/7/65/175 ATTENDUS**. Custody atomique main/-wal/-shm, sécurité multi-processus et writer NOT_PROVEN. Protect main strict bypass=[], CI SHA exact, squash `expected_head_sha`, postmain et issue #38 append-only.
+**01/11 — #253 FUSIONNÉE :** `main=a52eedc94f6ea1f8391efbe99b7aa03a4eedb11c` ; CI #41268377239 SUCCESS **290/7/65/175**, postmain #41293225238 à vérifier. **R4 #254 candidat NON QUALIFIÉ :** `M3_2_R4_DELEGATED_MAIN_WAL_NATIVE_HANDLE_FILEID_DISPOSABLE_20261101.md` ; `SQLITE_FCNTL_WIN32_GET_HANDLE` sur main/WAL et veto FileId128, **292/7/66/176 ATTENDUS**. Custody atomique, multi-processus, writer NOT_PROVEN. Protect main strict bypass=[], exact-head CI, `expected_head_sha`, postmain, #38 append-only.
 
 Reprends Fabulaxiom Windows (React, Tauri v2, Rust, SQLite ; voie C locale, Ollama). Dépôt : https://github.com/LaurentCOLL1/Fabulaxiom
 
 **D'abord :** re-fetch GitHub vivant : `main`, PR, issues, CI Windows au SHA exact, reviews/threads et ruleset **Protect main** (strict, zéro bypass). Ce checkpoint ne remplace jamais la vérification du dépôt.
 
-Archives R4 : `M3_2_R4_REGISTERED_OWNER_SHM_SQLITE_NORMAL_WAL_DISPOSABLE_20261101.md`, `M3_2_R4_OWNED_XSHM_ABI_CALLBACK_REFUSAL_DISPOSABLE_20261101.md`, `M3_2_R4_NATIVE_HELD_SHM_LOCKFILEEX_DISPOSABLE_20261101.md`, `M3_2_R4_SHM_HANDLE_BINDING_GATE_RAM_MODEL_20261031.md`, `M3_2_R4_XSHM_REGION0_CALLBACK_VS_HELD_FILE_DISPOSABLE_20261031.md`, `M3_2_R4_XSHM_MAPPED_NT_FILENAME_DECOY_DISPOSABLE_20261031.md`.
+Archives R4 : `M3_2_R4_TWO_CLIENT_POSTOPEN_SHM_IDENTITY_DISPOSABLE_20261101.md`, `M3_2_R4_REGISTERED_OWNER_SHM_SQLITE_NORMAL_WAL_DISPOSABLE_20261101.md`, `M3_2_R4_OWNED_XSHM_ABI_CALLBACK_REFUSAL_DISPOSABLE_20261101.md`, `M3_2_R4_NATIVE_HELD_SHM_LOCKFILEEX_DISPOSABLE_20261101.md`, `M3_2_R4_SHM_HANDLE_BINDING_GATE_RAM_MODEL_20261031.md`, `M3_2_R4_XSHM_REGION0_CALLBACK_VS_HELD_FILE_DISPOSABLE_20261031.md`, `M3_2_R4_XSHM_MAPPED_NT_FILENAME_DECOY_DISPOSABLE_20261031.md`.
 
 Références R4 qualifiées : `M3_2_R4_NATIVE_HELD_HANDLE_MAP_DISPOSABLE_20261031.md` ; live SQLite WAL-index sur fixtures seulement.
 

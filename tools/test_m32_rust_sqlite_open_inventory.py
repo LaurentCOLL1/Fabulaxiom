@@ -828,7 +828,7 @@ class RustSqliteOpenInventoryTests(unittest.TestCase):
     def test_64_registered_r4_owner_shm_is_disposable_nondefault_only(self):
         p="src-tauri/src/m32_r4_registered_owned_shm_vfs_disposable_tests.rs"
         code=self.src[p]
-        self.assertEqual(EXPECTED[p],(5,0,0,0,0,5,0))
+        self.assertEqual(EXPECTED[p],(8,0,0,0,0,8,0))
         for token in ("sqlite3_vfs_register(&mut state.dispatch,0)",
             "Connection::open_with_flags_and_vfs(","PRAGMA locking_mode=NORMAL",
             "PRAGMA journal_mode=WAL","CreateFileMappingW","MapViewOfFile",
@@ -847,7 +847,7 @@ class RustSqliteOpenInventoryTests(unittest.TestCase):
     def test_65_r4_two_registered_sqlite_clients_and_postopen_shm_veto_only_in_ci(self):
         p="src-tauri/src/m32_r4_registered_owned_shm_vfs_disposable_tests.rs"
         c=self.src[p]
-        self.assertEqual(EXPECTED[p],(5,0,0,0,0,5,0))
+        self.assertEqual(EXPECTED[p],(8,0,0,0,0,8,0))
         for token in ("fn valid(&self)->bool","let observed=OpenOptions::new()",
                       "observed==Some(self.expected)",
                       "r4_two_sqlite_connections_share_owned_native_shm_and_serialize_wal_writers",
@@ -859,6 +859,27 @@ class RustSqliteOpenInventoryTests(unittest.TestCase):
         for forbidden in ("#[tauri::command]","app_local_data_dir(",
                           "database::open_database(","run_migrations("):
             self.assertNotIn(forbidden,c)
+        self.assertEqual(repository_inventory()["writer_absence"],"NOT_PROVEN")
+
+
+    def test_66_sqlite_native_main_wal_delegated_xopen_fileid_is_only_ci(self):
+        p="src-tauri/src/m32_r4_registered_owned_shm_vfs_disposable_tests.rs"
+        c=self.src[p]
+        self.assertEqual(EXPECTED[p],(8,0,0,0,0,8,0))
+        for term in ("ffi::SQLITE_FCNTL_WIN32_GET_HANDLE",
+                     "fn raw_id(handle:*mut c_void)","gate.expected_db",
+                     "gate.native_refusals.fetch_add",
+                     "gate.main_native_matches.fetch_add",
+                     "gate.wal_native_matches.fetch_add",
+                     "deny_main_native_id_for_test","deny_wal_native_id_for_test",
+                     "r4_delegated_native_main_and_wal_handles_match_fresh_fixture_identities",
+                     "r4_delegated_main_and_wal_native_handle_faults_close_and_veto",
+                     "sqlite3_vfs_register(&mut state.dispatch,0)",
+                     "std::env::temp_dir()"):
+            self.assertIn(term,c)
+        for term in ("#[tauri::command]","app_local_data_dir(",
+                     "database::open_database(","run_migrations("):
+            self.assertNotIn(term,c)
         self.assertEqual(repository_inventory()["writer_absence"],"NOT_PROVEN")
 
 if __name__ == "__main__":
