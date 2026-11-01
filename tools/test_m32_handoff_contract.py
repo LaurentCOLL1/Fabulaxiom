@@ -5641,7 +5641,7 @@ class HandoffContractTests(unittest.TestCase):
             self.assertFalse(entry[key], key)
         for key, expected in (("expected_rust_tests_not_qualified", 297),
                               ("expected_greenfield_tests_not_qualified", 7),
-                              ("expected_inventory_tests_not_qualified", 67),
+                              ("expected_inventory_tests_not_qualified", 68),
                               ("expected_continuity_tests_not_qualified", 180)):
             self.assertEqual(entry[key], expected)
         self.assertEqual(entry["glib_status"], "OPEN_NOT_REMEDIATED")
