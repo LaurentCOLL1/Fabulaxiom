@@ -11,11 +11,11 @@ Accélérer l'usage futur de Fabulaxiom, conformément à `PRODUCT_FIRST_PARALLE
 - `src/m32BrowserLab.tsx` : lien vers cet écran **uniquement dans le laboratoire fictif** ; aucune modification du runtime `src/App.tsx`.
 - `src/m32P3FictionalCommandContract.test.tsx` : 11 cas de contrats et SSR : rollback immuable d'ancre + relation, cycles et doublons refusés, refus univers étranger et source forgée, référence historique `r2` conservée distincte de `r3`, absence d'ordre de révélation inféré, refus d'origine/cycle, rendu React accessible et chaîne HTML inerte.
 
-Cette tranche **n'est pas une intégration de Rust à React**, ni une persistance v7. Le vrai service mono-propriétaire `m32_v7_writer_service.rs` reste non branché. Aucun accès au vrai profil `%LOCALAPPDATA%\\com.fabulaxiom.greenfield.v1`, aux données de `M:\\Fabulaxiom`, ni au SQLite opérateur v6/v7. P3b, après qualification, doit clarifier le contrat entre les deux piles exclusivement dans une fixture CI, **sans IPC de production**.
+Le manifeste CI fictif lie exactement 17 blobs Git (15 préexistants + deux nouveaux modules P3a) ; tout import supplémentaire reste refusé. La suite Playwright ajoute trois interactions navigateur réelles : création avec révision historique et relation, rollback sur justification absente, isolation du second Univers. Cette tranche **n'est pas une intégration de Rust à React**, ni une persistance v7. Le vrai service mono-propriétaire `m32_v7_writer_service.rs` reste non branché. Aucun accès au vrai profil `%LOCALAPPDATA%\\com.fabulaxiom.greenfield.v1`, aux données de `M:\\Fabulaxiom`, ni au SQLite opérateur v6/v7. P3b, après qualification, doit clarifier le contrat entre les deux piles exclusivement dans une fixture CI, **sans IPC de production**.
 
 ## Critères de qualification
 
-Tests Vitest projet + 11 tests P3a, CI Windows Chromium/CSP, inventaire SQLite inchangé (68), Rust/Greenfield 301/7, contrat de continuité 182 (valeurs ATTENDUES NON ACQUISES), source SHA exact, diff, reviews/threads, Protect main ACTIVE strict sans bypass, squash `expected_head_sha`, CI postmain indépendante. Aucun changement de stratégie sans prévenir le propriétaire en amont.
+Tests Vitest projet + 11 tests P3a ; 3 scénarios Chromium P3a ajoutés (85/85 attendus, non acquis), sous CSP normale/stricte, inventaire SQLite inchangé (68), Rust/Greenfield 301/7, contrat de continuité 182 (valeurs ATTENDUES NON ACQUISES), source SHA exact, diff, reviews/threads, Protect main ACTIVE strict sans bypass, squash `expected_head_sha`, CI postmain indépendante. Aucun changement de stratégie sans prévenir le propriétaire en amont.
 
 ## Gates et sécurité inchangés
 
