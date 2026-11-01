@@ -1,6 +1,6 @@
 # M3.2 P2b — acteur Rust de chronologie sur fixture v7 RAM
 
-**1er novembre 2026 — CANDIDAT NON QUALIFIÉ avant CI Windows HEAD exact.** Parent protégé : PR #259 P2a fusionnée, main \`8ecf0a9174d00d2f3581e635526ad3941e52117e\`, CI source #41342616672 SUCCESS 297/7/68/180 ; CI postmain #41343742102 à qualifier indépendamment. Stratégie propriétaire \`PRODUCT_FIRST_PARALLEL_SAFETY\` maintenue.
+**1er novembre 2026 — CANDIDAT NON QUALIFIÉ avant CI Windows HEAD exact.** Parent protégé : PR #259 P2a fusionnée, main \`8ecf0a9174d00d2f3581e635526ad3941e52117e\`, CI source #41342616672 SUCCESS 297/7/68/180 ; CI postmain #41343742102 completed/SUCCESS indépendante au SHA exact (297/7/68/180). Stratégie propriétaire \`PRODUCT_FIRST_PARALLEL_SAFETY\` maintenue.
 
 ## Livrable produit
 

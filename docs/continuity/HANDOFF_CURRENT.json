@@ -40,6 +40,20 @@
     "historical": "PENDING_EXTERNAL_ATTESTATION(21/3/2)",
     "prospective": "NOT_STARTED"
   },
+  "m32_pr259_postmain_terminal_20261101": {
+    "kind": "TERMINAL_INDEPENDENT_POSTMAIN_CI_OBSERVATION",
+    "merged_pr": 259,
+    "source_pr_sha": "a1b36794f9def834791b871d35fdc971bb7a7f76",
+    "source_ci": 41342616672,
+    "source_status": "SUCCESS_297_7_68_180",
+    "merged_main_sha": "8ecf0a9174d00d2f3581e635526ad3941e52117e",
+    "postmain_ci": 41343742102,
+    "postmain_status": "SUCCESS_297_7_68_180",
+    "operator_access": false,
+    "writer_admitted": false,
+    "m3_2": "IN_PROGRESS_NOT_ACCEPTED",
+    "g3": "STOP_UNAVAILABLE"
+  },
   "m32_p2a_fixture_service_candidate_20261101": {
     "strategy": "PRODUCT_FIRST_PARALLEL_SAFETY",
     "scope": "P2A_PREOPENED_V7_RAM_ONLY_TYPED_CHRONOLOGY",

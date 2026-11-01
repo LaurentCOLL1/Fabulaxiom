@@ -5678,6 +5678,12 @@ class HandoffContractTests(unittest.TestCase):
         self.assertEqual(e["parent_main"], "8ecf0a9174d00d2f3581e635526ad3941e52117e")
         self.assertEqual(e["source_ci_of_pr259"], 41342616672)
         self.assertEqual(e["postmain_ci_of_pr259"], 41343742102)
+        terminal = self.data["m32_pr259_postmain_terminal_20261101"]
+        self.assertEqual(terminal["merged_pr"], 259)
+        self.assertEqual(terminal["postmain_ci"], 41343742102)
+        self.assertEqual(terminal["postmain_status"], "SUCCESS_297_7_68_180")
+        self.assertFalse(terminal["operator_access"])
+        self.assertFalse(terminal["writer_admitted"])
         for key in ("actor_compiled_only_in_tests", "single_preopened_invented_ram_connection",
                     "two_clients_test_only", "atomic_rollback_test_only", "shutdown_revokes_clients",
                     "borrowed_p2a_service", "schema_v6_rejected", "query_only_rejected",
