@@ -898,5 +898,22 @@ class RustSqliteOpenInventoryTests(unittest.TestCase):
         self.assertNotIn("database::open_database(",c)
         self.assertEqual(repository_inventory()["writer_absence"],"NOT_PROVEN")
 
+
+    def test_68_p2a_typed_preopened_fixture_has_no_new_sqlite_open_site(self):
+        p = "src-tauri/src/m32_p2_fixture_chronology_service.rs"
+        c = self.src[p]
+        self.assertEqual(EXPECTED[p], (0, 0, 0, 0, 1, 0, 0))
+        self.assertEqual(counts(c), (0, 0, 0, 0, 1, 0, 0))
+        self.assertIn("from_already_opened_disposable_v7", c)
+        self.assertIn("crate::world_time_schema_tests::v6()", c)
+        self.assertIn("TransactionBehavior::Immediate", c)
+        self.assertIn("ATTACH DATABASE ':memory:' AS foreign_store", c)
+        self.assertNotIn("Connection::open(", c)
+        self.assertNotIn("Connection::open_in_memory(", c)
+        self.assertNotIn("database::run_migrations(", c)
+        self.assertNotIn("#[tauri::command]", c)
+        self.assertEqual(repository_inventory()["writer_absence"], "NOT_PROVEN")
+        self.assertFalse(repository_inventory()["real_g3_authorized"])
+
 if __name__ == "__main__":
     unittest.main()
