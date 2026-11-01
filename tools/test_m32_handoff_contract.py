@@ -5623,5 +5623,52 @@ class HandoffContractTests(unittest.TestCase):
         self.assertIn("OPEN_NOT_REMEDIATED",
                       (ROOT/"docs/qualification"/glib_note).read_text(encoding="utf-8"))
 
+
+    def test_180_p2a_preopened_chronology_fixture_service_stays_isolated(self):
+        entry = self.data["m32_p2a_fixture_service_candidate_20261101"]
+        self.assertEqual(entry["strategy"], "PRODUCT_FIRST_PARALLEL_SAFETY")
+        self.assertEqual(entry["previous_merged_pr"], 258)
+        self.assertEqual(entry["previous_source_ci"], 41338290444)
+        self.assertEqual(entry["previous_postmain_ci"], 41339303494)
+        for key in ("test_only_module", "only_already_opened_invented_ram_connection",
+                    "bounded_immediate_transaction", "failed_relation_rollback",
+                    "old_revision_keeps_new_head", "two_universes_scoped",
+                    "notify_before_strategy_change"):
+            self.assertTrue(entry[key], key)
+        for key in ("operator_access", "existing_profile_access", "runtime_ipc",
+                    "writer_admitted", "migration_007_production",
+                    "source_ci_qualified", "postmain_ci_qualified"):
+            self.assertFalse(entry[key], key)
+        for key, expected in (("expected_rust_tests_not_qualified", 297),
+                              ("expected_greenfield_tests_not_qualified", 7),
+                              ("expected_inventory_tests_not_qualified", 68),
+                              ("expected_continuity_tests_not_qualified", 180)):
+            self.assertEqual(entry[key], expected)
+        self.assertEqual(entry["glib_status"], "OPEN_NOT_REMEDIATED")
+        self.assertEqual(entry["m3_2"], "IN_PROGRESS_NOT_ACCEPTED")
+        self.assertEqual(entry["g3"], "STOP_UNAVAILABLE")
+        self.assertEqual(entry["prospective"], "NOT_STARTED")
+        self.assertEqual(entry["historical"], "PENDING_EXTERNAL_ATTESTATION(21/3/2)")
+        source = (ROOT/"src-tauri/src/m32_p2_fixture_chronology_service.rs").read_text(encoding="utf-8")
+        lib = (ROOT/"src-tauri/src/lib.rs").read_text(encoding="utf-8")
+        self.assertIn("#[cfg(test)]\nmod m32_p2_fixture_chronology_service;", lib)
+        for term in ("from_already_opened_disposable_v7",
+                     "TransactionBehavior::Immediate", "create_anchor_with_optional_relation",
+                     "FixtureSnapshot", 'source_revision_id: Some("r2")',
+                     "P2a", "query_only", "rollback"):
+            self.assertIn(term, source)
+        self.assertNotIn("tauri::command", source)
+        self.assertNotIn("Connection::open(", source)
+        name = "M3_2_P2_PREOPENED_CHRONOLOGY_FIXTURE_SERVICE_20261101.md"
+        self.assertEqual(entry["qualification"], f"docs/qualification/{name}")
+        self.assertTrue((ROOT/"docs/qualification"/name).is_file())
+        for file in ("RESUME_PROMPT_SHORT.md", "RESUME_PROMPT.md", "HANDOFF_CURRENT.md",
+                     "HANDOFF_HISTORY.md", "HANDOFF_PROTOCOL.md", "STATE.md",
+                     "NEXT.md", "M3_2_GATE_DECISION_CURRENT.md", "README.md"):
+            self.assertIn(name, (DIRECTORY/file).read_text(encoding="utf-8"))
+        for file in ("ROADMAP_STATUS_CURRENT.md", "FABULAXIOM_ROADMAP_V1.md",
+                     "M3_TIME_KNOWLEDGE_RELATIONSHIPS.md"):
+            self.assertIn(name, (ROOT/"docs/roadmap"/file).read_text(encoding="utf-8"))
+
 if __name__ == "__main__":
     unittest.main()

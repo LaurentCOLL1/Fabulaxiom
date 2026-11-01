@@ -37,6 +37,9 @@ mod greenfield_smoke_tests;
 // PR #35 safe first-stage port: *only* compiled in Rust unit tests; never Tauri IPC.
 #[cfg(test)]
 mod m32_manual_chronology;
+// P2a: typed, preopened v7 fixture service; no runtime opener or Tauri IPC.
+#[cfg(test)]
+mod m32_p2_fixture_chronology_service;
 
 // Offline, in-memory-only M3.1 candidate: never run on operator database.
 #[cfg(test)]
