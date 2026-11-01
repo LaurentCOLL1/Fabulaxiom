@@ -1,4 +1,5 @@
 import { useId, useState, type FormEvent, type ReactElement } from "react";
+import M32ChronologyPreview from "./M32ChronologyPreview";
 import type { M32ChronologyProjection, M32TimeKind } from "./M32ChronologyPreview";
 import type { FictionalRevision } from "./m32FictionalManualChronology";
 import {
@@ -25,6 +26,9 @@ function FictionalPanel({ initial, revisions }: {
   const [relativeTo, setRelativeTo] = useState("");
   const [direction, setDirection] = useState<"none" | "existing_before_new" | "new_before_existing">("none");
   const [reason, setReason] = useState("");
+  const [firstAnchor, setFirstAnchor] = useState("");
+  const [secondAnchor, setSecondAnchor] = useState("");
+  const [standaloneReason, setStandaloneReason] = useState("");
   const [message, setMessage] = useState("Aucune commande lancée.");
   const [error, setError] = useState(false);
   const snapshot = readP3FictionalSnapshot(state, initial.universe_id);
@@ -59,7 +63,31 @@ function FictionalPanel({ initial, revisions }: {
       setMessage(cause instanceof Error ? cause.message : "Commande fictive refusée");
     }
   }
-  return <section aria-label="P3a atelier de commandes de chronologie fictive">
+  function executeStandalone(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    try {
+      if (!firstAnchor || !secondAnchor || firstAnchor === secondAnchor) {
+        throw new Error("Choisir deux ancres distinctes du même Univers fictif");
+      }
+      const next = applyP3FictionalCommand(state, {
+        kind: "create_precedence",
+        universe_id: initial.universe_id,
+        relation: {
+          before_anchor_id: firstAnchor,
+          after_anchor_id: secondAnchor,
+          reason: standaloneReason,
+        },
+      });
+      setState(next);
+      setError(false);
+      setMessage("Lien fictif accepté en mémoire ; aucune sauvegarde ni déduction automatique.");
+      setStandaloneReason("");
+    } catch (cause) {
+      setError(true);
+      setMessage(cause instanceof Error ? cause.message : "Lien fictif refusé");
+    }
+  }
+  return <section aria-label="P3c atelier de commandes de chronologie fictive">
     <h2>Créer une date dans le monde fictif — contrat P3a</h2>
     <p><strong>Simulation navigateur exclusivement.</strong> Cette interface
       ne communique pas avec Rust et ne sauvegarde aucune modification.</p>
@@ -121,8 +149,32 @@ function FictionalPanel({ initial, revisions }: {
         setState(startP3FictionalState(initial, revisions));
         setError(false); setMessage("Données fictives réinitialisées.");
         setRelativeTo(""); setDirection("none"); setReason(""); setRevision("");
+        setFirstAnchor(""); setSecondAnchor(""); setStandaloneReason("");
       }}>Réinitialiser les données fictives</button>
     </form>
+    <section aria-label="P3c lien temporel entre deux ancres existantes">
+      <h3>Relier deux dates déjà créées</h3>
+      <p>Le lien avant / après est une décision humaine. Sans lien, leur ordre
+        reste inconnu ; la disposition de la liste ne signifie pas un ordre temporel.</p>
+      <form aria-label="Relation autonome entre ancres fictives" onSubmit={executeStandalone}>
+        <label htmlFor={id + "-before"}>Ancre précédant l'autre</label>
+        <select id={id + "-before"} value={firstAnchor}
+          onChange={e => setFirstAnchor(e.currentTarget.value)}>
+          <option value="">Choisir une ancre</option>
+          {active.map(a => <option key={a.id} value={a.id}>{a.id}</option>)}
+        </select>
+        <label htmlFor={id + "-after"}>Ancre suivante</label>
+        <select id={id + "-after"} value={secondAnchor}
+          onChange={e => setSecondAnchor(e.currentTarget.value)}>
+          <option value="">Choisir une ancre</option>
+          {active.map(a => <option key={a.id} value={a.id}>{a.id}</option>)}
+        </select>
+        <label htmlFor={id + "-why"}>Raison humaine explicite</label>
+        <input id={id + "-why"} value={standaloneReason} maxLength={160}
+          onChange={e => setStandaloneReason(e.currentTarget.value)} />
+        <button type="submit">Créer le lien fictif sans nouvelle date</button>
+      </form>
+    </section>
     <p role={error ? "alert" : "status"}>{message}</p>
     <section aria-label="Résultat des commandes fictives">
       <h3>État local non enregistré</h3>
@@ -138,6 +190,7 @@ function FictionalPanel({ initial, revisions }: {
           {" "}{e.reason}
         </li>)}</ol>
     </section>
+    <M32ChronologyPreview expectedUniverseId={snapshot.universe_id} snapshot={snapshot} />
     <p>Les commandes de cette page sont simulées par un réducteur TypeScript.
       L'acteur Rust P2b reste un test isolé, non raccordé à cette interface.</p>
   </section>;
@@ -151,7 +204,7 @@ export default function M32P3FictionalCommandWorkshop({
   try {
     startP3FictionalState(initial, revisions);
   } catch {
-    return <section role="alert" aria-label="Atelier P3a refusé">
+    return <section role="alert" aria-label="Atelier P3c refusé">
       Données fictives invalides ou Univers incompatible. Aucune commande possible.
     </section>;
   }
