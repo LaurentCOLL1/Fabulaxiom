@@ -1,6 +1,10 @@
 import { useId, useState, type FormEvent, type ReactElement } from "react";
 import type { M32ChronologyProjection, M32TimeKind } from "./M32ChronologyPreview";
 import type { FictionalRevision } from "./m32FictionalManualChronology";
+import M32ChronologyConsultation, {
+  EMPTY_M32_CONSULTATION_SELECTION,
+  type M32ConsultationSelection,
+} from "./M32ChronologyConsultation";
 import {
   P3_NEW_ANCHOR, applyP3FictionalCommand,
   readP3FictionalSnapshot, startP3FictionalState,
@@ -17,6 +21,10 @@ function FictionalPanel({ initial, revisions }: {
 }): ReactElement {
   const id = useId();
   const [state, setState] = useState(() => startP3FictionalState(initial, revisions));
+  // P3b: selection belongs only to this invented browser instance.
+  const [selection, setSelection] = useState<M32ConsultationSelection>(
+    EMPTY_M32_CONSULTATION_SELECTION,
+  );
   const [kind, setKind] = useState<M32TimeKind>("unknown");
   const [calendar, setCalendar] = useState("");
   const [label, setLabel] = useState("");
@@ -121,6 +129,7 @@ function FictionalPanel({ initial, revisions }: {
         setState(startP3FictionalState(initial, revisions));
         setError(false); setMessage("Données fictives réinitialisées.");
         setRelativeTo(""); setDirection("none"); setReason(""); setRevision("");
+        setSelection(EMPTY_M32_CONSULTATION_SELECTION);
       }}>Réinitialiser les données fictives</button>
     </form>
     <p role={error ? "alert" : "status"}>{message}</p>
@@ -137,6 +146,14 @@ function FictionalPanel({ initial, revisions }: {
           <code>{e.before_anchor_id}</code> avant <code>{e.after_anchor_id}</code> :
           {" "}{e.reason}
         </li>)}</ol>
+    </section>
+    <section aria-label="P3b comparaison instantanée des dates fictives">
+      <h3>Comparer les assertions du monde après chaque commande</h3>
+      <p>Seules les relations déclarées explicitement sont prises en compte.
+        Aucun ordre ne sera inféré entre des dates non reliées.</p>
+      <M32ChronologyConsultation expectedUniverseId={snapshot.universe_id}
+        snapshot={snapshot} selection={selection}
+        onSelectionChange={setSelection} />
     </section>
     <p>Les commandes de cette page sont simulées par un réducteur TypeScript.
       L'acteur Rust P2b reste un test isolé, non raccordé à cette interface.</p>
