@@ -824,5 +824,24 @@ class RustSqliteOpenInventoryTests(unittest.TestCase):
         self.assertEqual(repository_inventory()["writer_absence"], "NOT_PROVEN")
         self.assertFalse(repository_inventory()["real_g3_authorized"])
 
+
+    def test_64_registered_r4_owner_shm_is_disposable_nondefault_only(self):
+        p="src-tauri/src/m32_r4_registered_owned_shm_vfs_disposable_tests.rs"
+        code=self.src[p]
+        self.assertEqual(EXPECTED[p],(2,0,0,0,0,2,0))
+        for token in ("sqlite3_vfs_register(&mut state.dispatch,0)",
+            "Connection::open_with_flags_and_vfs(","PRAGMA locking_mode=NORMAL",
+            "PRAGMA journal_mode=WAL","CreateFileMappingW","MapViewOfFile",
+            "LockFileEx","UnlockFileEx","xshm_map","xshm_lock","xshm_barrier",
+            "xshm_unmap","create_new(true)","std::env::temp_dir()",
+            "r4_registered_owner_shm_runs_normal_wal_sql_only_on_disposable_fixture",
+            "r4_registered_owner_shm_denies_replaced_shm_identity_before_main_xopen"):
+            self.assertIn(token,code)
+        for bad in ("#[tauri::command]","app_local_data_dir(",
+                    "database::open_database(","run_migrations(","std::env::var("):
+            self.assertNotIn(bad,code)
+        self.assertIn("mod m32_r4_registered_owned_shm_vfs_disposable_tests;",self.src["src-tauri/src/lib.rs"])
+        self.assertEqual(repository_inventory()["writer_absence"],"NOT_PROVEN")
+
 if __name__ == "__main__":
     unittest.main()

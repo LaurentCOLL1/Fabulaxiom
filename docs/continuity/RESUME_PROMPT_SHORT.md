@@ -1,12 +1,12 @@
 # Fabulaxiom — reprise courte (1er novembre 2026)
 
-**01/11 — #250 FUSIONNÉE :** `main=25f12f4e99d0f09cb0d5996f2f6f78bb31f79b86` ; source CI #41256787739 PASS **284/7/62/172**, postmain #41257752921 SUCCESS SHA exact. **R4 candidat NON QUALIFIÉ :** `M3_2_R4_OWNED_XSHM_ABI_CALLBACK_REFUSAL_DISPOSABLE_20261101.md`, callbacks `xShm*` ABI sur HANDLE tenu, non enregistrés SQLite ; **286/7/63/173 ATTENDUS**. Ni vrai VFS SQLite WAL NORMAL, ni HANDLE privé/custody atomique, ni writer. CI exact-head, Protect main strict bypass=[], squash `expected_head_sha` si qualifié, postmain et #38 append-only.
+**01/11 — #251 FUSIONNÉE :** `main=63a41d184ab2831e039c559e3260cc8672423766` ; CI #41261959583 SUCCESS **286/7/63/173**, postmain #41267004297 À VÉRIFIER. **R4 #252 candidat NON QUALIFIÉ :** `M3_2_R4_REGISTERED_OWNER_SHM_SQLITE_NORMAL_WAL_DISPOSABLE_20261101.md` ; VFS SQLite WAL NORMAL et SHM HANDLE propriétaire sur `%TEMP%` neuf, **288/7/64/174 ATTENDUS**. Custody atomique main/-wal/-shm et writer NOT_PROVEN. Protect main strict bypass=[], CI SHA exact, `expected_head_sha`, postmain et #38 append-only.
 
 Reprends Fabulaxiom Windows (React, Tauri v2, Rust, SQLite ; voie C locale, Ollama). Dépôt : https://github.com/LaurentCOLL1/Fabulaxiom
 
 **D'abord :** re-fetch GitHub vivant : `main`, PR, issues, CI Windows au SHA exact, reviews/threads et ruleset **Protect main** (strict, zéro bypass). Ce checkpoint ne remplace jamais la vérification du dépôt.
 
-Archives R4 : `M3_2_R4_NATIVE_HELD_SHM_LOCKFILEEX_DISPOSABLE_20261101.md`, `M3_2_R4_SHM_HANDLE_BINDING_GATE_RAM_MODEL_20261031.md`, `M3_2_R4_XSHM_REGION0_CALLBACK_VS_HELD_FILE_DISPOSABLE_20261031.md`, `M3_2_R4_XSHM_MAPPED_NT_FILENAME_DECOY_DISPOSABLE_20261031.md`.
+Archives R4 : `M3_2_R4_OWNED_XSHM_ABI_CALLBACK_REFUSAL_DISPOSABLE_20261101.md`, `M3_2_R4_NATIVE_HELD_SHM_LOCKFILEEX_DISPOSABLE_20261101.md`, `M3_2_R4_SHM_HANDLE_BINDING_GATE_RAM_MODEL_20261031.md`, `M3_2_R4_XSHM_REGION0_CALLBACK_VS_HELD_FILE_DISPOSABLE_20261031.md`, `M3_2_R4_XSHM_MAPPED_NT_FILENAME_DECOY_DISPOSABLE_20261031.md`.
 
 Références R4 qualifiées : `M3_2_R4_NATIVE_HELD_HANDLE_MAP_DISPOSABLE_20261031.md` ; live SQLite WAL-index sur fixtures seulement.
 
