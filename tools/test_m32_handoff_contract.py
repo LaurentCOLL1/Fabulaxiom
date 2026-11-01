@@ -5709,7 +5709,8 @@ class HandoffContractTests(unittest.TestCase):
                       "p2b_two_clients_serialize_v7_fixture_without_total_order",
                       "p2b_actor_failed_relation_rolls_back_and_refuses_cycle_and_foreign_world",
                       "p2b_actor_rejects_unqualified_v6_and_query_only",
-                      "p2b_actor_shutdown_and_drop_revoke_cloned_clients"):
+                      "p2b_actor_shutdown_and_drop_revoke_cloned_clients",
+                      "pragma_database_list", "disk-backed database refused"):
             self.assertIn(value, src)
         for forbidden in ("#[tauri::command]", "Connection::open(",
                           "Connection::open_in_memory(", "database::open_database(",
