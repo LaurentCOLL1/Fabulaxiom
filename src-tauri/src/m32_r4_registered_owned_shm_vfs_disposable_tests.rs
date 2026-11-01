@@ -5,7 +5,7 @@
 use rusqlite::{ffi,Connection,OpenFlags};
 use std::{ffi::{c_int,c_void,CStr,CString},fs::{self,File,OpenOptions},
     os::windows::{fs::OpenOptionsExt,io::AsRawHandle},path::{Path,PathBuf},
-    ptr,sync::atomic::{AtomicUsize,Ordering,fence},time::{SystemTime,UNIX_EPOCH},process};
+    ptr,sync::atomic::{AtomicBool,AtomicUsize,Ordering,fence},time::{SystemTime,UNIX_EPOCH},process};
 
 #[repr(C)]
 #[derive(Clone,Copy,Debug,PartialEq,Eq)]
@@ -26,6 +26,13 @@ unsafe extern "system"{
 fn id(file:&File)->Option<FileIdInfo>{
     let mut v=std::mem::MaybeUninit::<FileIdInfo>::uninit();
     let ok=unsafe{GetFileInformationByHandleEx(file.as_raw_handle().cast(),18,
+        v.as_mut_ptr().cast(),std::mem::size_of::<FileIdInfo>() as u32)};
+    (ok!=0).then(||unsafe{v.assume_init()})
+}
+fn raw_id(handle:*mut c_void)->Option<FileIdInfo>{
+    if handle.is_null(){return None}
+    let mut v=std::mem::MaybeUninit::<FileIdInfo>::uninit();
+    let ok=unsafe{GetFileInformationByHandleEx(handle,18,
         v.as_mut_ptr().cast(),std::mem::size_of::<FileIdInfo>() as u32)};
     (ok!=0).then(||unsafe{v.assume_init()})
 }
@@ -106,6 +113,14 @@ struct Vfs{
     shm:PathBuf,
     master:File,
     expected:FileIdInfo,
+    master_db:File,
+    expected_db:FileIdInfo,
+    // Test-only fault flags allow native xOpen HANDLE veto without name swaps.
+    deny_main_native_id_for_test:AtomicBool,
+    deny_wal_native_id_for_test:AtomicBool,
+    main_native_matches:AtomicUsize,
+    wal_native_matches:AtomicUsize,
+    native_refusals:AtomicUsize,
     tail_offset:usize,
     main_opens:AtomicUsize,
     shm_maps:AtomicUsize,
@@ -249,6 +264,46 @@ unsafe extern "C" fn xopen(
     let Some(delegate)=(unsafe{(*gate.default).xOpen})else{return ffi::SQLITE_CANTOPEN};
     let result=unsafe{delegate(gate.default,name,file,flags,outflags)};
     if result!=ffi::SQLITE_OK{return result}
+    // Verify the ACTUAL native Win32 HANDLE returned by the default xOpen.
+    // SQLite's file-control opcode 29 reads that HANDLE from this sqlite3_file.
+    // WAL path observation remains a non-atomic test-only comparison; this
+    // does not bind the custody of main/-wal/-shm as an indivisible unit.
+    let wal=flags&ffi::SQLITE_OPEN_WAL!=0;
+    if main||wal{
+        let original=unsafe{(*file).pMethods};
+        let mut native:*mut c_void=ptr::null_mut();
+        let rc=if original.is_null(){ffi::SQLITE_NOTFOUND}
+            else if let Some(control)=unsafe{(*original).xFileControl}{
+                unsafe{control(file,ffi::SQLITE_FCNTL_WIN32_GET_HANDLE,
+                    (&mut native as *mut *mut c_void).cast())}
+            }else{ffi::SQLITE_NOTFOUND};
+        let observed=if rc==ffi::SQLITE_OK{raw_id(native)}else{None};
+        let expected=if main{Some(gate.expected_db)}else{
+            // The WAL name is observed after the delegate opened it; this
+            // is NOT a preowned, atomically pinned WAL identity.
+            let named=unsafe{CStr::from_ptr(name)}.to_string_lossy();
+            OpenOptions::new().read(true).write(true).share_mode(1|2|4)
+                .open(Path::new(named.as_ref())).ok().and_then(|f|id(&f))
+        };
+        let deny=if main{
+            gate.deny_main_native_id_for_test.load(Ordering::SeqCst)
+        }else{
+            gate.deny_wal_native_id_for_test.load(Ordering::SeqCst)
+        };
+        if observed.is_none()||observed!=expected||deny{
+            gate.native_refusals.fetch_add(1,Ordering::SeqCst);
+            gate.denials.fetch_add(1,Ordering::SeqCst);
+            if !original.is_null(){
+                if let Some(close)=unsafe{(*original).xClose}{
+                    let _=unsafe{close(file)};
+                }
+            }
+            unsafe{(*file).pMethods=ptr::null()};
+            return ffi::SQLITE_CANTOPEN;
+        }
+        if main{gate.main_native_matches.fetch_add(1,Ordering::SeqCst);}
+        if wal{gate.wal_native_matches.fetch_add(1,Ordering::SeqCst);}
+    }
     if !main{return result}
     let original=unsafe{(*file).pMethods};
     if original.is_null()||(unsafe{(*original).iVersion}<2){
@@ -303,9 +358,18 @@ impl Registered{
         let master=OpenOptions::new().read(true).write(true).share_mode(1|2|4)
             .open(&root.shm).expect("SHM fixture must be CREATE_NEW first");
         let expected=id(&master).expect("native FileId128 on fixture");
+        let master_db=OpenOptions::new().read(true).write(true).share_mode(1|2|4)
+            .open(&root.db).expect("main fixture was CREATE_NEW only");
+        let expected_db=id(&master_db).expect("main fixture FileId128");
         let mut state=Box::new(Vfs{
             dispatch:unsafe{ptr::read(default)},default,root:root.dir.clone(),
-            shm:root.shm.clone(),master,expected,tail_offset,
+            shm:root.shm.clone(),master,expected,master_db,expected_db,
+            deny_main_native_id_for_test:AtomicBool::new(false),
+            deny_wal_native_id_for_test:AtomicBool::new(false),
+            main_native_matches:AtomicUsize::new(0),
+            wal_native_matches:AtomicUsize::new(0),
+            native_refusals:AtomicUsize::new(0),
+            tail_offset,
             main_opens:AtomicUsize::new(0),shm_maps:AtomicUsize::new(0),
             shm_locks:AtomicUsize::new(0),shm_unmaps:AtomicUsize::new(0),
             deletes_requested:AtomicUsize::new(0),closes:AtomicUsize::new(0),
@@ -419,4 +483,52 @@ fn r4_postopen_shm_path_substitution_fails_closed_at_next_wal_lock(){
     drop(db);
     drop(decoy);
     // This non-atomic post-name read cannot prove absence of a racing swap.
+}
+
+
+#[test]
+fn r4_delegated_native_main_and_wal_handles_match_fresh_fixture_identities(){
+    let root=Scratch::fresh();
+    let gate=Registered::fresh(&root);
+    let db=Connection::open_with_flags_and_vfs(
+        &root.db,OpenFlags::SQLITE_OPEN_READ_WRITE,gate.name()).unwrap();
+    assert_eq!(gate.state.main_native_matches.load(Ordering::SeqCst),1);
+    assert_eq!(id(&gate.state.master_db),Some(gate.state.expected_db));
+    let journal:String=db.query_row("PRAGMA journal_mode=WAL",[],|r|r.get(0)).unwrap();
+    assert_eq!(journal.to_ascii_lowercase(),"wal");
+    db.execute_batch("CREATE TABLE xopen_fixture(n INTEGER); INSERT INTO xopen_fixture VALUES(9);").unwrap();
+    assert!(gate.state.wal_native_matches.load(Ordering::SeqCst)>=1,
+        "real delegated WAL xOpen HANDLE must be inspected, not guessed from name");
+    assert_eq!(gate.state.native_refusals.load(Ordering::SeqCst),0);
+    drop(db);
+}
+#[test]
+fn r4_delegated_main_and_wal_native_handle_faults_close_and_veto(){
+    {
+        let root=Scratch::fresh();
+        let gate=Registered::fresh(&root);
+        gate.state.deny_main_native_id_for_test.store(true,Ordering::SeqCst);
+        let result=Connection::open_with_flags_and_vfs(
+            &root.db,OpenFlags::SQLITE_OPEN_READ_WRITE,gate.name());
+        assert!(result.is_err(),"actual native main xOpen must fail closed");
+        assert_eq!(gate.state.main_opens.load(Ordering::SeqCst),0);
+        assert!(gate.state.native_refusals.load(Ordering::SeqCst)>=1);
+        assert_eq!(gate.state.main_native_matches.load(Ordering::SeqCst),0);
+        assert_eq!(id(&gate.state.master_db),Some(gate.state.expected_db));
+    }
+    {
+        let root=Scratch::fresh();
+        let gate=Registered::fresh(&root);
+        let db=Connection::open_with_flags_and_vfs(
+            &root.db,OpenFlags::SQLITE_OPEN_READ_WRITE,gate.name()).unwrap();
+        gate.state.deny_wal_native_id_for_test.store(true,Ordering::SeqCst);
+        // Even if PRAGMA falls back to another journal, no WAL write may
+        // proceed when the ACTUAL delegated WAL xOpen HANDLE is vetoed.
+        let attempt=db.execute_batch(
+            "PRAGMA journal_mode=WAL; CREATE TABLE blocked_wal(n INTEGER); INSERT INTO blocked_wal VALUES(5);");
+        assert!(attempt.is_err(),"disposable WAL native-handle veto must fail closed");
+        assert!(gate.state.native_refusals.load(Ordering::SeqCst)>=1);
+        assert_eq!(gate.state.wal_native_matches.load(Ordering::SeqCst),0);
+        drop(db);
+    }
 }

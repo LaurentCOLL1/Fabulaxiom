@@ -5461,5 +5461,31 @@ class HandoffContractTests(unittest.TestCase):
         for p in ("ROADMAP_STATUS_CURRENT.md","FABULAXIOM_ROADMAP_V1.md"):
             self.assertIn(note,(ROOT/"docs/roadmap"/p).read_text(encoding="utf-8"))
 
+
+    def test_176_r4_sqlite_native_main_wal_handle_candidate_never_admits_writer(self):
+        e=self.data["m32_r4_delegated_main_wal_handle_candidate_20261101"]
+        self.assertEqual(e["scope"],"WINDOWS_DISPOSABLE_ACTUAL_DELEGATED_SQLITE_MAIN_WAL_HANDLE_FILEID_ONLY")
+        for k,v in (("expected_rust_tests_not_qualified",292),
+                    ("expected_greenfield_tests_not_qualified",7),
+                    ("expected_inventory_tests_not_qualified",66),
+                    ("expected_continuity_tests_not_qualified",176)):
+            self.assertEqual(e[k],v)
+        for k in ("stock_sqlite_private_shm_handle_authenticated",
+                  "atomic_three_file_custody_proven","hostile_multi_process_locking_qualified",
+                  "writer_admitted","operator_data_accessed","ipc_enabled","migration_007",
+                  "native_hello","persistent_marker","recovery_authorized"):
+            self.assertFalse(e[k],k)
+        for k,v in (("m3_2","IN_PROGRESS_NOT_ACCEPTED"),
+                    ("g2b","NOT_ACCEPTED"),("g2c","NOT_AUTHORIZED"),("g3","STOP_UNAVAILABLE")):
+            self.assertEqual(e[k],v)
+        note="M3_2_R4_DELEGATED_MAIN_WAL_NATIVE_HANDLE_FILEID_DISPOSABLE_20261101.md"
+        self.assertTrue((ROOT/"docs/qualification"/note).is_file())
+        for p in ("RESUME_PROMPT_SHORT.md","RESUME_PROMPT.md","HANDOFF_CURRENT.md",
+                  "HANDOFF_HISTORY.md","HANDOFF_PROTOCOL.md","STATE.md","NEXT.md",
+                  "M3_2_GATE_DECISION_CURRENT.md","README.md"):
+            self.assertIn(note,(DIRECTORY/p).read_text(encoding="utf-8"))
+        for p in ("ROADMAP_STATUS_CURRENT.md","FABULAXIOM_ROADMAP_V1.md"):
+            self.assertIn(note,(ROOT/"docs/roadmap"/p).read_text(encoding="utf-8"))
+
 if __name__ == "__main__":
     unittest.main()
