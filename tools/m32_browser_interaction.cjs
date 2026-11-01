@@ -1294,6 +1294,7 @@ async function run() {
     assert.equal(cases.length, 85);
     // Historical PR #146 source marker: M32_BROWSER_REAL_CHROMIUM_PASS 62/62
     // Previous PR #156 marker retained: M32_BROWSER_REAL_CHROMIUM_PASS 70/70
+    // PR #260 retained baseline (historical only): M32_BROWSER_REAL_CHROMIUM_PASS 82/82
     // PR #157 historical marker: M32_BROWSER_REAL_CHROMIUM_PASS 76/76
     console.log("M32_BROWSER_REAL_CHROMIUM_PASS 85/85");
 
