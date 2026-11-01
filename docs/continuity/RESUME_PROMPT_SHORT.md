@@ -2,12 +2,6 @@
 
 **01/11 — #249 FUSIONNÉE :** `main=4b6165fc9cc5d100febb3207a29b83cfb77e44ac` ; source CI #41218962266 SUCCESS **282/7/61/171**, postmain #41220112250 SUCCESS. **R4 candidat NON QUALIFIÉ :** `M3_2_R4_NATIVE_HELD_SHM_LOCKFILEEX_DISPOSABLE_20261101.md` ; HANDLE SHM fictif tenu, mapping, LockFileEx, contention et leurre ; **284/7/62/172 ATTENDUS**. Ni HANDLE privé SQLite, ni VFS xShm*, custody atomique ou writer. STOP M3.2 IN_PROGRESS_NOT_ACCEPTED ; writer/R1–R9 NOT_PROVEN ; G2B NOT_ACCEPTED ; G2C NOT_AUTHORIZED ; G3 STOP_UNAVAILABLE. CI exact-head, Protect main strict bypass=[], squash `expected_head_sha` si qualifié, postmain puis #38 append-only.
 
-**#248 FUSIONNÉE :** `main=86133f85162a9efa189d0241ddd27fef8ad2636e` ; source #41214614517 PASS **282/7/60/170**, postmain #41215651418 SUCCESS. **R4 candidat NON QUALIFIÉ :** noms NT `xShmMap` et mapping HANDLE tenu comparés, contrôle leurre aux mêmes octets ; **282/7/61/171 attendus**. Voir `M3_2_R4_XSHM_MAPPED_NT_FILENAME_DECOY_DISPOSABLE_20261031.md`. Référence #248 : `M3_2_R4_XSHM_REGION0_CALLBACK_VS_HELD_FILE_DISPOSABLE_20261031.md`. Pas preuve du HANDLE privé, custody atomique ni writer. CI exact-head, reviews/threads, Protect main strict bypass=[], squash expected_head_sha, postmain et #38 append-only.
-
-
-**#244 :** CI #41124543182 PASS 269/7/56/166, postmain #41148419366 SUCCESS ; modèle RAM-only `M3_2_R4_SHM_HANDLE_BINDING_GATE_RAM_MODEL_20261031.md` (writer toujours STOP).
-
-
 Reprends Fabulaxiom Windows (React, Tauri v2, Rust, SQLite ; voie C locale, Ollama). Dépôt : https://github.com/LaurentCOLL1/Fabulaxiom
 
 **D'abord :** re-fetch GitHub vivant : `main`, PR, issues, CI Windows au SHA exact, reviews/threads et ruleset **Protect main** (strict, zéro bypass). Ce checkpoint ne remplace jamais la vérification du dépôt.
