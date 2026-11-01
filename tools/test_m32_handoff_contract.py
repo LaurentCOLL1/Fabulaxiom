@@ -5566,5 +5566,62 @@ class HandoffContractTests(unittest.TestCase):
         self.assertEqual(event["next_product_slice"],
                          "EXTEND_EXISTING_NEW_ONLY_V7_FIXTURE_WITH_TEST_ONLY_CHRONOLOGY_WORKFLOW")
 
+    def test_179_p1_multinovel_v7_historical_revision_and_unfixed_glib_alert(self):
+        e=self.data["m32_p1_multinovel_fixture_glib_alert_20261101"]
+        self.assertEqual(e["strategy"],"PRODUCT_FIRST_PARALLEL_SAFETY")
+        self.assertEqual(e["source_ref_main"],
+                         "6346ebd405345e1cc2447cd28fa679bef7f19490")
+        self.assertEqual(e["glib_alert"],"GHSA-wrw7-89jp-8q8g")
+        self.assertEqual(e["glib_version"],"0.18.5")
+        self.assertEqual(e["glib_status"],"OPEN_NOT_REMEDIATED")
+        self.assertEqual(e["glib_backport_upstream_pr_2009"],"CLOSED_UNMERGED")
+        for key in ("source_ci_qualified","postmain_ci_qualified",
+                    "gtk3_glib_020_direct_bump_allowed",
+                    "full_operator_chronology_usable","operator_access",
+                    "real_writer_admitted","runtime_tauri_ipc",
+                    "migration_007","native_hello","production_marker","recovery"):
+            self.assertFalse(e[key],key)
+        for key in ("existing_v7_disposable_reopen_test_extended",
+                    "two_universes_and_two_novels_test_only",
+                    "historical_revision_source_test_only",
+                    "notify_before_strategy_change"):
+            self.assertTrue(e[key],key)
+        for key,value in (("expected_rust_tests_not_qualified",294),
+                          ("expected_greenfield_tests_not_qualified",7),
+                          ("expected_inventory_tests_not_qualified",67),
+                          ("expected_continuity_tests_not_qualified",179)):
+            self.assertEqual(e[key],value)
+        for key,value in (("m3_2","IN_PROGRESS_NOT_ACCEPTED"),
+                          ("g2b","NOT_ACCEPTED"),("g2c","NOT_AUTHORIZED"),
+                          ("g3","STOP_UNAVAILABLE"),
+                          ("prospective","NOT_STARTED")):
+            self.assertEqual(e[key],value)
+        self.assertEqual(e["historical"],"PENDING_EXTERNAL_ATTESTATION(21/3/2)")
+        rust=(ROOT/"src-tauri/src/world_time_file_migration_tests.rs").read_text(encoding="utf-8")
+        for term in ("fn m32_new_only_disposable_v7_chronology_survives_reopen_without_touching_prior_v6",
+                     "Second invented novel","m32-approx","m32-relative",
+                     "m32-second-novel-before","r2","r3",
+                     "m32-u2-revision-refused","Frost season",
+                     "scene_current_revision"):
+            self.assertIn(term,rust)
+        self.assertIn("source_revision_id: Some(\"r2\")",rust)
+        assert_note="M3_2_P1_TWO_NOVELS_HISTORICAL_REVISION_V7_DISPOSABLE_20261101.md"
+        glib_note="M3_2_GLIB_ALERT1_UPSTREAM_BLOCKER_20261101.md"
+        self.assertEqual(e["product_qualification"],f"docs/qualification/{assert_note}")
+        self.assertEqual(e["glib_security_note"],f"docs/qualification/{glib_note}")
+        for note in (assert_note,glib_note):
+            self.assertTrue((ROOT/"docs/qualification"/note).is_file())
+            for p in ("RESUME_PROMPT_SHORT.md","RESUME_PROMPT.md","HANDOFF_CURRENT.md",
+                      "HANDOFF_HISTORY.md","HANDOFF_PROTOCOL.md","STATE.md","NEXT.md",
+                      "M3_2_GATE_DECISION_CURRENT.md","README.md"):
+                self.assertIn(note,(DIRECTORY/p).read_text(encoding="utf-8"))
+            for p in ("ROADMAP_STATUS_CURRENT.md","FABULAXIOM_ROADMAP_V1.md",
+                      "M3_TIME_KNOWLEDGE_RELATIONSHIPS.md"):
+                self.assertIn(note,(ROOT/"docs/roadmap"/p).read_text(encoding="utf-8"))
+        # No source change authorizes a runtime opener or dependency dismissal.
+        self.assertNotIn("glib = \"0.20\"", (ROOT/"src-tauri/Cargo.toml").read_text(encoding="utf-8"))
+        self.assertIn("OPEN_NOT_REMEDIATED",
+                      (ROOT/"docs/qualification"/glib_note).read_text(encoding="utf-8"))
+
 if __name__ == "__main__":
     unittest.main()
