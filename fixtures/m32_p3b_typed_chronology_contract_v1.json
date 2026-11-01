@@ -1,0 +1,60 @@
+{
+  "contract_version": 1,
+  "data_origin": "fictional_cross_language_test_only",
+  "fixture_name": "invented_isolated_chronology_v1",
+  "universe_id": "fiction-one",
+  "novel_id": "fiction-n1",
+  "scene_id": "fiction-s1",
+  "historical_revision_id": "fiction-r2",
+  "current_head_revision_id": "fiction-r3",
+  "anchor_commands": [
+    {
+      "kind": "create_anchor_with_optional_relation",
+      "anchor_id": "fiction-draft-0001",
+      "time_kind": "relative",
+      "source_revision_id": "fiction-r2",
+      "relation": null
+    },
+    {
+      "kind": "create_anchor_with_optional_relation",
+      "anchor_id": "fiction-draft-0002",
+      "time_kind": "relative",
+      "source_revision_id": "fiction-r2",
+      "relation": {
+        "id": "fiction-draft-0003",
+        "before_anchor_id": "fiction-draft-0001",
+        "after_anchor_id": "$new",
+        "reason": "Avant / après déclaré par l'auteur"
+      }
+    },
+    {
+      "kind": "create_anchor_with_optional_relation",
+      "anchor_id": "fiction-draft-0004",
+      "time_kind": "relative",
+      "source_revision_id": "fiction-r2",
+      "relation": null
+    }
+  ],
+  "expected_current_anchor_ids": [
+    "fiction-draft-0001",
+    "fiction-draft-0002",
+    "fiction-draft-0004"
+  ],
+  "expected_precedences": [
+    {
+      "id": "fiction-draft-0003",
+      "before_anchor_id": "fiction-draft-0001",
+      "after_anchor_id": "fiction-draft-0002"
+    }
+  ],
+  "expected_incomparable_anchor_id": "fiction-draft-0004",
+  "negative_cases": [
+    "missing_predecessor_rollback",
+    "reverse_cycle_refused",
+    "foreign_universe_refused",
+    "wrong_revision_source_refused"
+  ],
+  "production_ipc_authorized": false,
+  "operator_data_authorized": false,
+  "writer_admitted": false
+}
