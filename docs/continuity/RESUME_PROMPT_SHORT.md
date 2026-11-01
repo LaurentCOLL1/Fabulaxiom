@@ -1,6 +1,6 @@
 # Fabulaxiom — reprise courte (1er novembre 2026)
 
-**01/11 — #255 FUSIONNÉE :** `main=c6ed181e80b807eafaa6b96f193555bf873e48e4` ; source CI #41304442868 SUCCESS **292/7/66/176**, postmain #41307543429 à vérifier. **#256 R4 NON QUALIFIÉ** `M3_2_R4_WINDOWS_TWO_PROCESS_WAL_LOCK_DISPOSABLE_20261101.md` : 2 processus WAL, verrou BUSY, HANDLE natifs ; **294/7/67/177 ATTENDUS**. #254 fixtures qualifiées `M3_2_R4_DELEGATED_MAIN_WAL_NATIVE_HANDLE_FILEID_DISPOSABLE_20261101.md`. Custody atomique/writer NOT_PROVEN. Protect main strict bypass=[], `expected_head_sha`, #38 append-only.
+**01/11 — #256 MERGED** `main=df7171ac99c9f0a6a5e9123de2c8c8168cfb7090`, CI #41308216274/#41309028506 SUCCESS **294/7/67/177**. **CHOIX UTILISATEUR ACTIF : PRODUIT D'ABORD + SÉCURITÉ EN PARALLÈLE** `M3_2_PRODUCT_FIRST_PARALLEL_SAFETY_DECISION_20261101.md` ; P0→P1→P2→P3 sur v7 neuve jetable, R4–R9 en parallèle ; prévenir AVANT tout changement. R4 `M3_2_R4_WINDOWS_TWO_PROCESS_WAL_LOCK_DISPOSABLE_20261101.md`, `M3_2_R4_DELEGATED_MAIN_WAL_NATIVE_HANDLE_FILEID_DISPOSABLE_20261101.md` : fixtures seules ; writer STOP. Protect main strict bypass=[], `expected_head_sha`, #38 append-only.
 
 Reprends Fabulaxiom Windows (React, Tauri v2, Rust, SQLite ; voie C locale, Ollama). Dépôt : https://github.com/LaurentCOLL1/Fabulaxiom
 
@@ -8,7 +8,7 @@ Reprends Fabulaxiom Windows (React, Tauri v2, Rust, SQLite ; voie C locale, Olla
 
 Archives R4 : `M3_2_R4_TWO_CLIENT_POSTOPEN_SHM_IDENTITY_DISPOSABLE_20261101.md`, `M3_2_R4_REGISTERED_OWNER_SHM_SQLITE_NORMAL_WAL_DISPOSABLE_20261101.md`, `M3_2_R4_OWNED_XSHM_ABI_CALLBACK_REFUSAL_DISPOSABLE_20261101.md`, `M3_2_R4_NATIVE_HELD_SHM_LOCKFILEEX_DISPOSABLE_20261101.md`, `M3_2_R4_SHM_HANDLE_BINDING_GATE_RAM_MODEL_20261031.md`, `M3_2_R4_XSHM_REGION0_CALLBACK_VS_HELD_FILE_DISPOSABLE_20261031.md`, `M3_2_R4_XSHM_MAPPED_NT_FILENAME_DECOY_DISPOSABLE_20261031.md`.
 
-Références R4 qualifiées : `M3_2_R4_NATIVE_HELD_HANDLE_MAP_DISPOSABLE_20261031.md` ; live SQLite WAL-index sur fixtures seulement.
+R4 qualifiées : `M3_2_R4_NATIVE_HELD_HANDLE_MAP_DISPOSABLE_20261031.md` ; live SQLite WAL-index sur fixtures seulement.
 
 ## Dernier checkpoint
 
@@ -23,9 +23,9 @@ Ne toucher ni aux données opérateur v6/v7 ni aux journaux/sauvegardes ; aucun 
 
 ## Prochaines opérations
 
-1. #255 fusionnée ; vérifier postmain, puis #256 CI SHA exact, diff/reviews/threads, Protect main, squash `expected_head_sha` si qualifiée, postmain et #38.
-2. R4 multiprocessus candidat, SHM régions >0 et custody main/WAL/SHM non prouvées ; poursuivre P1, R2/R3, R5/R6/R8, R7/R9, fixtures seulement.
-3. Actualiser les deux prompts, handoffs et roadmaps à chaque PR.
+1. PRIORITÉ PRODUIT : P0 matrice acquise ; P1 étendre v7 NEW_ONLY create/list/reopen existant à l'atelier, P2 service fixture, P3 UI isolée.
+2. SÉCURITÉ : R4 SHM >0, custody atomique main/WAL/SHM ; R5–R9 STOP ; données opérateur interdites.
+3. Conserver le choix entre conversations, alerter avant changement ; deux prompts/handoffs/roadmaps par PR.
 
 Références R4 historiques : `M3_2_R4_D3A_LIVE_SHM_FILEID_DISPOSABLE_20261030.md`.
 
