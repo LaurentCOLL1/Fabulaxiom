@@ -328,4 +328,146 @@ mod tests {
         drop(next);
         assert!(matches!(another.snapshot("u1".into()),Err(ActorError::Disconnected)));
     }
+    /// P3b consumes the SAME source-controlled fictional golden JSON as the
+    /// TypeScript Vitest test. There is no network, wire transport or IPC.
+    #[test]
+    fn p3b_shared_golden_rust_actor_preserves_exact_historical_provenance() {
+        let spec: serde_json::Value = serde_json::from_str(include_str!(
+            "../../fixtures/m32_p3b_typed_chronology_contract_v1.json"
+        )).unwrap();
+        assert_eq!(spec["contract_version"].as_u64(), Some(1));
+        assert_eq!(spec["data_origin"].as_str(), Some("fictional_cross_language_test_only"));
+        assert_eq!(spec["fixture_name"].as_str(), Some("invented_isolated_chronology_v1"));
+        for key in ["production_ipc_authorized", "operator_data_authorized", "writer_admitted"] {
+            assert_eq!(spec[key].as_bool(), Some(false), "{key}");
+        }
+        let universe = spec["universe_id"].as_str().unwrap();
+        let scene = spec["scene_id"].as_str().unwrap();
+        let historical = spec["historical_revision_id"].as_str().unwrap();
+        let head = spec["current_head_revision_id"].as_str().unwrap();
+        assert_eq!(universe, "fiction-one");
+        assert_eq!(scene, "fiction-s1");
+        assert_eq!(historical, "fiction-r2");
+        assert_eq!(head, "fiction-r3");
+        assert_ne!(historical, head);
+
+        let db = invented_v7();
+        db.execute_batch(
+            "INSERT INTO universes(id,name) VALUES ('fiction-one','Invented P3b world');
+             INSERT INTO novels(id,universe_id,series_id,title,sort_order)
+               VALUES ('fiction-n1','fiction-one',NULL,'Invented novel',0);
+             INSERT INTO chapters(id,novel_id,title,sort_order)
+               VALUES ('fiction-c1','fiction-n1','Invented chapter',0);
+             INSERT INTO scenes(id,chapter_id,title,sort_order)
+               VALUES ('fiction-s1','fiction-c1','Invented scene',0);
+             INSERT INTO scene_text_revisions(id,scene_id,revision_number,content)
+               VALUES ('fiction-r2','fiction-s1',1,'Earlier fiction'),
+                      ('fiction-r3','fiction-s1',2,'Current fiction');
+             INSERT INTO scene_revision_heads(scene_id,revision_id)
+               VALUES ('fiction-s1','fiction-r3');"
+        ).unwrap();
+        let owner = FixtureChronologyActor::from_preopened_invented_v7(db).unwrap();
+        let client = owner.client();
+        let commands = spec["anchor_commands"].as_array().unwrap();
+        assert_eq!(commands.len(), 3);
+        for cmd in commands {
+            assert_eq!(cmd["kind"].as_str(), Some("create_anchor_with_optional_relation"));
+            assert_eq!(cmd["time_kind"].as_str(), Some("relative"));
+            let anchor_id = cmd["anchor_id"].as_str().unwrap();
+            let source = cmd["source_revision_id"].as_str().unwrap();
+            assert_eq!(source, historical);
+            let input = AnchorInput {
+                id: anchor_id.to_owned(), universe_id: universe.to_owned(),
+                time_kind: "relative".into(),
+                calendar_id: None, event_entity_id: None,
+                source_revision_id: Some(source.to_owned()),
+                exact_label: None, window_start_text: None, window_end_text: None,
+                precision_text: None,
+            };
+            let relation = cmd["relation"].as_object().map(|edge| {
+                let after = edge["after_anchor_id"].as_str().unwrap();
+                assert_eq!(after, "$new");
+                RelationInput {
+                    id: edge["id"].as_str().unwrap().into(),
+                    universe_id: universe.into(),
+                    before_anchor_id: edge["before_anchor_id"].as_str().unwrap().into(),
+                    after_anchor_id: anchor_id.into(),
+                    reason: edge["reason"].as_str().unwrap().into(),
+                    source_revision_id: Some(source.into()),
+                }
+            });
+            client.create_anchor(input, relation).unwrap();
+        }
+        let actual = client.snapshot(universe.into()).unwrap();
+        let expected_ids: Vec<String> = spec["expected_current_anchor_ids"]
+            .as_array().unwrap().iter().map(|v| v.as_str().unwrap().to_owned()).collect();
+        assert_eq!(actual.current_anchor_ids, expected_ids);
+        assert!(actual.anchors.iter().all(|a| a.source_revision_id.as_deref() == Some(historical)));
+        let expected_edges = spec["expected_precedences"].as_array().unwrap();
+        assert_eq!(actual.precedences.len(), expected_edges.len());
+        let edge = &actual.precedences[0];
+        assert_eq!(edge.id, expected_edges[0]["id"].as_str().unwrap());
+        assert_eq!(edge.before_anchor_id, expected_edges[0]["before_anchor_id"].as_str().unwrap());
+        assert_eq!(edge.after_anchor_id, expected_edges[0]["after_anchor_id"].as_str().unwrap());
+        let incomparable = spec["expected_incomparable_anchor_id"].as_str().unwrap();
+        assert!(!actual.precedences.iter().any(|e|
+            e.before_anchor_id == incomparable || e.after_anchor_id == incomparable
+        ));
+        assert!(client.snapshot("u2".into()).unwrap().anchors.is_empty());
+
+        // Negative witnesses: relation failure rolls back anchor; no
+        // inferred cycle, foreign-Universe edge or wrong revision source.
+        let invalid_relation = RelationInput {
+            id: "fiction-invalid-edge".into(), universe_id: universe.into(),
+            before_anchor_id: "missing".into(),
+            after_anchor_id: "fiction-ghost".into(),
+            reason: "Explicit invented error".into(),
+            source_revision_id: Some(historical.into()),
+        };
+        let mut ghost = AnchorInput {
+            id: "fiction-ghost".into(), universe_id: universe.into(),
+            time_kind: "relative".into(), calendar_id: None, event_entity_id: None,
+            source_revision_id: Some(historical.into()), exact_label: None,
+            window_start_text: None, window_end_text: None, precision_text: None,
+        };
+        assert!(matches!(
+            client.create_anchor(ghost.clone(), Some(invalid_relation)),
+            Err(ActorError::Domain(_))
+        ));
+        assert!(matches!(
+            client.create_precedence(RelationInput {
+                id: "fiction-reverse-cycle".into(), universe_id: universe.into(),
+                before_anchor_id: expected_ids[1].clone(),
+                after_anchor_id: expected_ids[0].clone(),
+                reason: "Invented cycle".into(), source_revision_id: Some(historical.into()),
+            }),
+            Err(ActorError::Domain(_))
+        ));
+        ghost.universe_id = "u2".into();
+        ghost.source_revision_id = None;
+        assert!(matches!(
+            client.create_anchor(ghost, Some(RelationInput {
+                id: "fiction-cross-world".into(), universe_id: "u2".into(),
+                before_anchor_id: expected_ids[0].clone(), after_anchor_id: "fiction-ghost".into(),
+                reason: "Cross world rejected".into(), source_revision_id: None,
+            })),
+            Err(ActorError::Domain(_))
+        ));
+        let mut wrong_revision = AnchorInput {
+            id: "fiction-bad-revision".into(), universe_id: universe.into(),
+            time_kind: "relative".into(), calendar_id: None, event_entity_id: None,
+            source_revision_id: Some("r2".into()), exact_label: None,
+            window_start_text: None, window_end_text: None, precision_text: None,
+        };
+        assert!(matches!(
+            client.create_anchor(wrong_revision.clone(), None), Err(ActorError::Domain(_))
+        ));
+        wrong_revision.source_revision_id = Some("absent-rev".into());
+        assert!(matches!(
+            client.create_anchor(wrong_revision, None), Err(ActorError::Domain(_))
+        ));
+        assert_eq!(client.snapshot(universe.into()).unwrap().current_anchor_ids, expected_ids);
+        owner.shutdown().unwrap();
+    }
+
 }

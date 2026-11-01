@@ -5820,5 +5820,84 @@ class HandoffContractTests(unittest.TestCase):
                       "M32_CI_PRECOMPILED_STRICT_CSP_BROWSER_PASS: 85/85"):
             self.assertIn(label,driver)
 
+
+    def test_183_p3b_shared_rust_ts_golden_is_fixture_only_and_stops_remain(self):
+        event = self.data["m32_p3b_shared_golden_candidate_20261101"]
+        self.assertEqual(event["strategy"], "PRODUCT_FIRST_PARALLEL_SAFETY")
+        self.assertEqual(event["parent_pr"], 261)
+        self.assertEqual(event["parent_main"], "f08061c578bce1f631ea41c554da8f03811f2110")
+        self.assertEqual(event["p3a_source_ci"], 41349001435)
+        self.assertEqual(event["p3a_postmain_ci"], 41350139797)
+        self.assertEqual(event["p3a_source_ci_status"], "SUCCESS_301_7_68_182")
+        self.assertEqual(event["p3a_postmain_ci_status"], "SUCCESS_301_7_68_182")
+        self.assertEqual(event["p3a_chromium_cases"], 85)
+        for key in ("same_source_blob_json", "independent_rust_ts_execution",
+                    "no_cross_runtime_ipc", "only_invented_ram_fixture",
+                    "historical_revision_not_head", "partial_order_preserved",
+                    "transactional_rollback_test_only", "cross_universe_refusals",
+                    "notify_before_strategy_change"):
+            self.assertTrue(event[key], key)
+        for key in ("operator_access", "existing_profile_access", "production_ipc",
+                    "writer_admitted", "runtime_migration_007",
+                    "source_ci_qualified", "postmain_ci_qualified"):
+            self.assertFalse(event[key], key)
+        for key, value in (("expected_rust_tests_not_qualified",302),
+                           ("expected_greenfield_tests_not_qualified",7),
+                           ("expected_inventory_tests_not_qualified",68),
+                           ("expected_continuity_tests_not_qualified",183),
+                           ("expected_new_vitest_tests_not_qualified",4),
+                           ("expected_chromium_cases_not_qualified",85)):
+            self.assertEqual(event[key], value)
+        for key, value in (("m3_2", "IN_PROGRESS_NOT_ACCEPTED"),
+                           ("writer", "NOT_PROVEN"),
+                           ("g2b", "NOT_ACCEPTED"),
+                           ("g2c", "NOT_AUTHORIZED"),
+                           ("g3", "STOP_UNAVAILABLE"),
+                           ("historical", "PENDING_EXTERNAL_ATTESTATION(21/3/2)"),
+                           ("prospective", "NOT_STARTED"),
+                           ("glib_status", "OPEN_NOT_REMEDIATED")):
+            self.assertEqual(event[key], value)
+        name = "M3_2_P3B_SHARED_RUST_TS_CHRONOLOGY_GOLDEN_20261101.md"
+        self.assertEqual(event["qualification"], "docs/qualification/" + name)
+        self.assertTrue((ROOT/"docs/qualification"/name).is_file())
+        for f in ("RESUME_PROMPT_SHORT.md", "RESUME_PROMPT.md", "HANDOFF_CURRENT.md",
+                  "HANDOFF_HISTORY.md", "HANDOFF_PROTOCOL.md", "STATE.md", "NEXT.md",
+                  "M3_2_GATE_DECISION_CURRENT.md", "README.md"):
+            self.assertIn(name, (DIRECTORY/f).read_text(encoding="utf-8"))
+        for f in ("ROADMAP_STATUS_CURRENT.md", "FABULAXIOM_ROADMAP_V1.md",
+                  "M3_TIME_KNOWLEDGE_RELATIONSHIPS.md"):
+            self.assertIn(name, (ROOT/"docs/roadmap"/f).read_text(encoding="utf-8"))
+        spec = json.loads((ROOT/event["golden_json"]).read_text(encoding="utf-8"))
+        self.assertEqual(spec["contract_version"], 1)
+        self.assertEqual(spec["data_origin"], "fictional_cross_language_test_only")
+        self.assertEqual(spec["universe_id"], "fiction-one")
+        self.assertEqual(spec["historical_revision_id"], "fiction-r2")
+        self.assertEqual(spec["current_head_revision_id"], "fiction-r3")
+        self.assertNotEqual(spec["historical_revision_id"], spec["current_head_revision_id"])
+        self.assertEqual(len(spec["anchor_commands"]), 3)
+        self.assertEqual(len(spec["expected_current_anchor_ids"]), 3)
+        self.assertEqual(len(spec["expected_precedences"]), 1)
+        self.assertEqual(len(spec["negative_cases"]), 4)
+        for key in ("production_ipc_authorized", "operator_data_authorized", "writer_admitted"):
+            self.assertIs(spec[key], False)
+        rust = (ROOT/event["rust_fixture_actor"]).read_text(encoding="utf-8")
+        ts = (ROOT/event["typescript_vitest"]).read_text(encoding="utf-8")
+        json_name = "m32_p3b_typed_chronology_contract_v1.json"
+        self.assertIn(json_name, rust)
+        self.assertIn(json_name, ts)
+        self.assertIn("p3b_shared_golden_rust_actor_preserves_exact_historical_provenance", rust)
+        self.assertIn("FixtureChronologyActor::from_preopened_invented_v7", rust)
+        self.assertIn("include_str!", rust)
+        self.assertIn("applyP3FictionalCommand", ts)
+        self.assertEqual(ts.count('  it("'), 4)
+        self.assertIn("m32_p3b_shared_golden_candidate_20261101", self.data)
+        self.assertNotIn("m32P3bCrossLanguageGolden", (ROOT/"src/App.tsx").read_text(encoding="utf-8"))
+        self.assertNotIn(json_name, (ROOT/"src/App.tsx").read_text(encoding="utf-8"))
+        self.assertNotIn("m32P3bCrossLanguageGolden", (ROOT/"src/m32BrowserLab.tsx").read_text(encoding="utf-8"))
+        self.assertIn("m32_p2b_fixture_chronology_actor",
+                      (ROOT/"src-tauri/src/lib.rs").read_text(encoding="utf-8"))
+        self.assertIn("#[cfg(test)]\nmod m32_p2b_fixture_chronology_actor;",
+                      (ROOT/"src-tauri/src/lib.rs").read_text(encoding="utf-8"))
+
 if __name__ == "__main__":
     unittest.main()
