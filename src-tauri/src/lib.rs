@@ -40,6 +40,9 @@ mod m32_manual_chronology;
 // P2a: typed, preopened v7 fixture service; no runtime opener or Tauri IPC.
 #[cfg(test)]
 mod m32_p2_fixture_chronology_service;
+// P2b fixture-only single-owner Rust actor; no Tauri IPC or real writer admission.
+#[cfg(test)]
+mod m32_p2b_fixture_chronology_actor;
 
 // Offline, in-memory-only M3.1 candidate: never run on operator database.
 #[cfg(test)]
