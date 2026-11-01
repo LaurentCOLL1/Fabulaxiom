@@ -1291,12 +1291,72 @@ async function run() {
       }).innerText()).includes("1 commande(s)"));
       assert.equal(await workshop.getByText("invented-rev-A").count(), 0);
     });
-    assert.equal(cases.length, 85);
+    // P3c: standalone author-entered precedence between already-current anchors.
+    await caseRun("86-p3c-author-declared-link-between-existing-fictional-anchors", async () => {
+      await page.getByRole("button", { name: "Revenir au premier univers fictif" }).click();
+      await page.getByRole("button", { name: "Ouvrir P3a — commandes fictives typées" }).click();
+      const workshop = page.getByRole("region", {
+        name: "P3a atelier de commandes de chronologie fictive",
+      });
+      const form = workshop.getByRole("form", { name: "Proposer un lien temporel fictif" });
+      await form.getByRole("combobox", { name: "Première ancre : avant" }).selectOption("C");
+      await form.getByRole("combobox", { name: "Deuxième ancre : après" }).selectOption("D");
+      assert.ok((await form.innerText()).includes("Lien fictif autorisé"));
+      await form.getByRole("textbox", { name: "Justification humaine de la précédence" })
+        .fill("L'auteur place C avant D");
+      const submit = form.getByRole("button", { name: "Valider le lien fictif après contrôle" });
+      assert.equal(await submit.isDisabled(), false);
+      await submit.click();
+      const output = workshop.getByRole("region", { name: "Résultat des commandes fictives" });
+      assert.ok((await output.innerText()).includes("1 commande(s)"));
+      assert.ok((await output.innerText()).includes("C avant D"));
+      assert.ok((await output.innerText()).includes("L'auteur place C avant D"));
+    });
+    await caseRun("87-p3c-cycle-witness-blocks-submit-without-commit", async () => {
+      const workshop = page.getByRole("region", {
+        name: "P3a atelier de commandes de chronologie fictive",
+      });
+      await workshop.getByRole("button", { name: "Réinitialiser les données fictives" }).click();
+      const form = workshop.getByRole("form", { name: "Proposer un lien temporel fictif" });
+      await form.getByRole("combobox", { name: "Première ancre : avant" }).selectOption("C");
+      await form.getByRole("combobox", { name: "Deuxième ancre : après" }).selectOption("A");
+      await form.getByRole("textbox", { name: "Justification humaine de la précédence" })
+        .fill("Demande contradictoire");
+      assert.ok((await form.innerText()).includes("Lien fictif refusé"));
+      assert.ok((await form.innerText()).includes("cycle temporel"));
+      assert.ok((await form.innerText()).includes("A → B → C"));
+      assert.equal(await form.getByRole("button", {
+        name: "Valider le lien fictif après contrôle",
+      }).isDisabled(), true);
+      assert.ok((await workshop.getByRole("region", {
+        name: "Résultat des commandes fictives",
+      }).innerText()).includes("0 commande(s)"));
+    });
+    await caseRun("88-p3c-second-universe-precedence-isolated", async () => {
+      await page.getByRole("button", { name: "Charger un autre univers fictif" }).click();
+      await page.getByRole("button", { name: "Ouvrir P3a — commandes fictives typées" }).click();
+      const workshop = page.getByRole("region", {
+        name: "P3a atelier de commandes de chronologie fictive",
+      });
+      const form = workshop.getByRole("form", { name: "Proposer un lien temporel fictif" });
+      assert.ok((await workshop.innerText()).includes("fiction-world-two"));
+      await form.getByRole("combobox", { name: "Première ancre : avant" }).selectOption("K");
+      await form.getByRole("combobox", { name: "Deuxième ancre : après" }).selectOption("L");
+      await form.getByRole("textbox", { name: "Justification humaine de la précédence" })
+        .fill("K précède L dans le second univers fictif");
+      await form.getByRole("button", { name: "Valider le lien fictif après contrôle" }).click();
+      const output = workshop.getByRole("region", { name: "Résultat des commandes fictives" });
+      assert.ok((await output.innerText()).includes("K avant L"));
+      assert.ok(!(await output.innerText()).includes("C avant D"));
+      assert.ok((await output.innerText()).includes("1 commande(s)"));
+    });
+    assert.equal(cases.length, 88);
     // Historical PR #146 source marker: M32_BROWSER_REAL_CHROMIUM_PASS 62/62
     // Previous PR #156 marker retained: M32_BROWSER_REAL_CHROMIUM_PASS 70/70
     // PR #260 retained baseline (historical only): M32_BROWSER_REAL_CHROMIUM_PASS 82/82
     // PR #157 historical marker: M32_BROWSER_REAL_CHROMIUM_PASS 76/76
-    console.log("M32_BROWSER_REAL_CHROMIUM_PASS 85/85");
+    // Historical P3a marker: M32_BROWSER_REAL_CHROMIUM_PASS 85/85
+    console.log("M32_BROWSER_REAL_CHROMIUM_PASS 88/88");
 
     // Actual Chromium enforced-CSP veto, separate from the 36
     // fictional interaction cases. Never make an off-loopback network call.
@@ -1328,9 +1388,10 @@ async function run() {
       });
       assert.equal(scriptVeto, false, "STOP: inline JS executed under strict CSP");
       console.log("M32_CI_PRECOMPILED_INLINE_SCRIPT_DENIED_PASS");
-      console.log("M32_CI_PRECOMPILED_STRICT_CSP_BROWSER_PASS: 85/85");
+      // Historical P3a marker: M32_CI_PRECOMPILED_STRICT_CSP_BROWSER_PASS: 85/85
+      console.log("M32_CI_PRECOMPILED_STRICT_CSP_BROWSER_PASS: 88/88");
     }
-    console.log("M32_CI_FIXTURE_ONLY_BROWSER_PASS: 85/85; no normal source pages");
+    console.log("M32_CI_FIXTURE_ONLY_BROWSER_PASS: 88/88; no normal source pages");
   } finally {
     if (browser) await browser.close();
     server.kill();
