@@ -6,7 +6,7 @@
 
 - `src/M32P3FictionalCommandWorkshop.tsx`, **non monté dans App.tsx** : nouveau formulaire distinct « Relier deux dates déjà créées » avec sélection explicite de deux ancres de même Univers et justification humaine. Il utilise la commande existante `create_precedence` et le réducteur TS purement fictif P3a ; pas de création involontaire d'ancre. Les refus (cycle, doublon, identifiants inconnus, motif vide, même ancre) laissent l'ancien état immuable. Le reset remet aussi à zéro les choix du second formulaire.
 - Consultation intégrée de la projection `M32ChronologyPreview` existante, avec trois vues **distinctes** : temps du monde (ancres et seuls liens humains déclarés), narration ordonnée uniquement au sein de chaque roman, révélation au lecteur « non renseignée ». Une liste triée par identifiant n'est jamais présentée comme ordre chronologique.
-- Trois tests Vitest supplémentaires dans `src/m32P3FictionalCommandContract.test.tsx` : étiquettes et vues séparées, création d'une relation sans nouvelle ancre, refus du cycle/de l'auto-lien/de la raison vide sans mutation. `App.tsx`, Tauri, Rust, schémas, lockfiles, IPC et migrations inchangés.
+- Trois tests Vitest dans `src/m32P3cFictionalUx.test.tsx`, séparés des 11 tests P3a d'origine : étiquettes et vues séparées, création d'une relation sans nouvelle ancre, refus du cycle/de l'auto-lien/de la raison vide sans mutation. `App.tsx`, Tauri, Rust, schémas, lockfiles, IPC et migrations inchangés.
 
 ## Qualification attendue — PAS ACQUISE
 
