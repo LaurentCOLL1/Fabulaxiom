@@ -5743,6 +5743,12 @@ class HandoffContractTests(unittest.TestCase):
         self.assertEqual(e["pr260_source_ci"], 41345394783)
         self.assertEqual(e["pr260_source_ci_status"], "SUCCESS_301_7_68_181")
         self.assertEqual(e["pr260_postmain_ci"], 41347171014)
+        terminal = self.data["m32_pr260_postmain_terminal_20261101"]
+        self.assertEqual(terminal["merged_pr"], 260)
+        self.assertEqual(terminal["postmain_ci"], 41347171014)
+        self.assertEqual(terminal["postmain_status"], "SUCCESS_301_7_68_181")
+        self.assertFalse(terminal["production_writer"])
+        self.assertFalse(terminal["operator_access"])
         for key in ("browser_lab_only","fixture_world_only",
                     "explicit_historical_revision","atomic_in_memory_rollback",
                     "explicit_partial_order","notify_before_strategy_change"):

@@ -39,6 +39,19 @@
     "historical": "PENDING_EXTERNAL_ATTESTATION(21/3/2)",
     "prospective": "NOT_STARTED"
   },
+  "m32_pr260_postmain_terminal_20261101": {
+    "merged_pr": 260,
+    "source_pr_sha": "e940e4cee2a1017a9e9c65c2cb5e77af4ebbe0e1",
+    "source_ci": 41345394783,
+    "source_status": "SUCCESS_301_7_68_181",
+    "merged_main": "0f2b56dbc07ac2c7db431ab99b93cc653b489341",
+    "postmain_ci": 41347171014,
+    "postmain_status": "SUCCESS_301_7_68_181",
+    "production_writer": false,
+    "operator_access": false,
+    "m3_2": "IN_PROGRESS_NOT_ACCEPTED",
+    "g3": "STOP_UNAVAILABLE"
+  },
   "m32_p2b_actor_candidate_20261101": {
     "strategy": "PRODUCT_FIRST_PARALLEL_SAFETY",
     "scope": "P2B_SINGLE_OWNER_RAM_ONLY_CHRONOLOGY_ACTOR",
