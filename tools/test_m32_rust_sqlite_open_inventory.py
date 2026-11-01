@@ -882,5 +882,21 @@ class RustSqliteOpenInventoryTests(unittest.TestCase):
             self.assertNotIn(term,c)
         self.assertEqual(repository_inventory()["writer_absence"],"NOT_PROVEN")
 
+    def test_67_two_process_wal_lock_fixture_is_windows_disposable_only(self):
+        p="src-tauri/src/m32_r4_registered_owned_shm_vfs_disposable_tests.rs"
+        c=self.src[p]
+        self.assertEqual(EXPECTED[p],(10,0,0,0,0,10,0))
+        for term in ("fn r4_multiprocess_wal_child_helper()",
+                     "fn r4_two_windows_processes_serialize_wal_writes_on_fresh_owned_shm()",
+                     "std::env::current_exe()", "create_new(true)",
+                     "Some(rusqlite::ErrorCode::DatabaseBusy",
+                     "parent-committed", "child-observed-wal-busy",
+                     "ffi::SQLITE_FCNTL_WIN32_GET_HANDLE"):
+            self.assertIn(term,c)
+        self.assertNotIn("#[tauri::command]",c)
+        self.assertNotIn("app_local_data_dir(",c)
+        self.assertNotIn("database::open_database(",c)
+        self.assertEqual(repository_inventory()["writer_absence"],"NOT_PROVEN")
+
 if __name__ == "__main__":
     unittest.main()
