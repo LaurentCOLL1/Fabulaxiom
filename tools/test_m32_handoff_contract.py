@@ -5487,5 +5487,33 @@ class HandoffContractTests(unittest.TestCase):
         for p in ("ROADMAP_STATUS_CURRENT.md","FABULAXIOM_ROADMAP_V1.md"):
             self.assertIn(note,(ROOT/"docs/roadmap"/p).read_text(encoding="utf-8"))
 
+    def test_177_r4_two_os_process_wal_busy_candidate_stays_disposable(self):
+        e=self.data["m32_r4_two_windows_processes_candidate_20261101"]
+        self.assertEqual(e["scope"],
+                         "WINDOWS_TEST_ONLY_TWO_OS_PROCESS_SQLITE_WAL_NATIVE_SHM")
+        for key,v in (("rust_expected_not_qualified",294),
+                      ("greenfield_expected_not_qualified",7),
+                      ("inventory_expected_not_qualified",67),
+                      ("continuity_expected_not_qualified",177)):
+            self.assertEqual(e[key],v)
+        for key in ("two_windows_os_processes_proven",
+                    "all_shm_regions_proven","atomic_three_file_custody_proven",
+                    "multiprocess_hostile_same_sid_proven","writer_admitted",
+                    "operator_access","ipc","migration_007","native_hello",
+                    "durable_marker","recovery"):
+            self.assertFalse(e[key],key)
+        self.assertEqual(e["m3_2"],"IN_PROGRESS_NOT_ACCEPTED")
+        self.assertEqual(e["g2b"],"NOT_ACCEPTED")
+        self.assertEqual(e["g2c"],"NOT_AUTHORIZED")
+        self.assertEqual(e["g3"],"STOP_UNAVAILABLE")
+        note="M3_2_R4_WINDOWS_TWO_PROCESS_WAL_LOCK_DISPOSABLE_20261101.md"
+        self.assertTrue((ROOT/"docs/qualification"/note).is_file())
+        for p in ("RESUME_PROMPT_SHORT.md","RESUME_PROMPT.md","HANDOFF_CURRENT.md",
+                  "HANDOFF_HISTORY.md","HANDOFF_PROTOCOL.md","STATE.md","NEXT.md",
+                  "M3_2_GATE_DECISION_CURRENT.md","README.md"):
+            self.assertIn(note,(DIRECTORY/p).read_text(encoding="utf-8"))
+        for p in ("ROADMAP_STATUS_CURRENT.md","FABULAXIOM_ROADMAP_V1.md"):
+            self.assertIn(note,(ROOT/"docs/roadmap"/p).read_text(encoding="utf-8"))
+
 if __name__ == "__main__":
     unittest.main()

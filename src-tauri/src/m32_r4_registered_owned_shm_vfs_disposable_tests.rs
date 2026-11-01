@@ -532,3 +532,128 @@ fn r4_delegated_main_and_wal_native_handle_faults_close_and_veto(){
         drop(db);
     }
 }
+
+
+// R4 CI-only successor: two *different Windows OS processes* contend over
+// the same fresh SQLite WAL NORMAL fixture. This is NOT a hostile writer
+// absence proof, NOT atomic main/WAL/SHM custody, and NOT production access.
+const R4_CHILD_ROOT_ENV:&str="FABULAXIOM_R4_TEST_ONLY_CHILD_ROOT";
+const R4_CHILD_NAME:&str=
+    "m32_r4_registered_owned_shm_vfs_disposable_tests::r4_multiprocess_wal_child_helper";
+const R4_PROOF_STAMP:&str="FABULAXIOM_R4_NEW_TEMP_ONLY_V1";
+
+struct StopChildOnDrop(std::process::Child);
+impl Drop for StopChildOnDrop {
+    fn drop(&mut self){
+        if self.0.try_wait().ok().flatten().is_none(){
+            let _=self.0.kill();
+            let _=self.0.wait();
+        }
+    }
+}
+fn r4_new_only_signal(root:&Path,name:&str){
+    use std::io::Write;
+    let mut f=OpenOptions::new().write(true).create_new(true)
+        .open(root.join(name)).expect("signal CREATE_NEW in invented test dir");
+    f.write_all(R4_PROOF_STAMP.as_bytes()).unwrap();
+    f.sync_all().unwrap();
+}
+fn r4_wait_signal(root:&Path,name:&str,mut child:Option<&mut std::process::Child>){
+    let end=std::time::Instant::now()+std::time::Duration::from_secs(20);
+    loop{
+        let signal=root.join(name);
+        if signal.exists(){
+            assert_eq!(fs::read_to_string(signal).unwrap(),R4_PROOF_STAMP);
+            return;
+        }
+        if let Some(ref mut c)=child{
+            if let Some(status)=c.try_wait().expect("child status"){
+                panic!("R4 disposable child exited before {name}: {status}");
+            }
+        }
+        assert!(std::time::Instant::now()<end,
+            "bounded R4 child handshake timed out at {name}");
+        std::thread::sleep(std::time::Duration::from_millis(20));
+    }
+}
+#[test]
+fn r4_multiprocess_wal_child_helper(){
+    // Ordinary cargo test invokes this test but is a strict no-op.
+    // Only a controlled parent sets the per-child root environment.
+    let Some(dir)=std::env::var_os(R4_CHILD_ROOT_ENV).map(PathBuf::from)else{return};
+    let temp=fs::canonicalize(std::env::temp_dir()).unwrap();
+    assert_eq!(fs::canonicalize(&dir).unwrap().parent(),Some(temp.as_path()),
+        "only a direct new %TEMP% test directory is accepted");
+    assert!(dir.file_name().unwrap().to_string_lossy().starts_with(PREFIX));
+    assert!(fs::symlink_metadata(&dir).unwrap().file_type().is_dir());
+    assert_eq!(fs::read_to_string(dir.join("child-proof-stamp")).unwrap(),
+        R4_PROOF_STAMP);
+    // Child must not remove its parent's scratch root on exit.
+    let root=std::mem::ManuallyDrop::new(Scratch{
+        db:dir.join("invented.sqlite3"),
+        shm:dir.join("invented.sqlite3-shm"),
+        dir,
+    });
+    let gate=Registered::fresh(&root);
+    let db=Connection::open_with_flags_and_vfs(
+        &root.db,OpenFlags::SQLITE_OPEN_READ_WRITE,gate.name()).unwrap();
+    let mode:String=db.query_row("PRAGMA journal_mode",[],|r|r.get(0)).unwrap();
+    assert_eq!(mode.to_ascii_lowercase(),"wal");
+    let busy=db.execute_batch("BEGIN IMMEDIATE;");
+    assert!(matches!(busy.as_ref().err().and_then(|e|e.sqlite_error_code()),
+        Some(rusqlite::ErrorCode::DatabaseBusy | rusqlite::ErrorCode::DatabaseLocked)),
+        "the parent must exclusively hold the WAL writer byte: {busy:?}");
+    r4_new_only_signal(&root.dir,"child-observed-wal-busy");
+    r4_wait_signal(&root.dir,"parent-committed",None);
+    db.execute_batch("BEGIN IMMEDIATE; INSERT INTO multi_process_fixture VALUES(13); COMMIT;")
+        .expect("child writes only after parent released WAL writer lock");
+    let sum:i64=db.query_row(
+        "SELECT SUM(n) FROM multi_process_fixture",[],|r|r.get(0)).unwrap();
+    assert_eq!(sum,24);
+    assert_eq!(gate.state.main_native_matches.load(Ordering::SeqCst),1);
+    assert!(gate.state.wal_native_matches.load(Ordering::SeqCst)>=1);
+    assert!(gate.state.shm_maps.load(Ordering::SeqCst)>=1);
+    assert!(gate.state.shm_locks.load(Ordering::SeqCst)>=1);
+    drop(db);
+}
+#[test]
+fn r4_two_windows_processes_serialize_wal_writes_on_fresh_owned_shm(){
+    use std::io::Write;
+    let root=Scratch::fresh();
+    let mut stamp=OpenOptions::new().write(true).create_new(true)
+        .open(root.dir.join("child-proof-stamp")).unwrap();
+    stamp.write_all(R4_PROOF_STAMP.as_bytes()).unwrap();
+    stamp.sync_all().unwrap();
+    drop(stamp);
+    let gate=Registered::fresh(&root);
+    let db=Connection::open_with_flags_and_vfs(
+        &root.db,OpenFlags::SQLITE_OPEN_READ_WRITE,gate.name()).unwrap();
+    let mode:String=db.query_row("PRAGMA locking_mode=NORMAL",[],|r|r.get(0)).unwrap();
+    assert_eq!(mode.to_ascii_lowercase(),"normal");
+    let journal:String=db.query_row("PRAGMA journal_mode=WAL",[],|r|r.get(0)).unwrap();
+    assert_eq!(journal.to_ascii_lowercase(),"wal");
+    db.execute_batch("CREATE TABLE multi_process_fixture(n INTEGER NOT NULL);").unwrap();
+    db.execute_batch("BEGIN IMMEDIATE; INSERT INTO multi_process_fixture VALUES(11);").unwrap();
+    let process=std::process::Command::new(std::env::current_exe().unwrap())
+        .arg("--exact").arg(R4_CHILD_NAME).arg("--nocapture")
+        .env(R4_CHILD_ROOT_ENV,&root.dir).spawn()
+        .expect("spawn only the current Rust test executable on disposable paths");
+    let mut child=StopChildOnDrop(process);
+    r4_wait_signal(&root.dir,"child-observed-wal-busy",Some(&mut child.0));
+    db.execute_batch("COMMIT;").unwrap();
+    r4_new_only_signal(&root.dir,"parent-committed");
+    let deadline=std::time::Instant::now()+std::time::Duration::from_secs(20);
+    let status=loop{
+        if let Some(status)=child.0.try_wait().unwrap(){break status;}
+        assert!(std::time::Instant::now()<deadline,"R4 child bounded completion");
+        std::thread::sleep(std::time::Duration::from_millis(20));
+    };
+    assert!(status.success(),"separate Windows OS child test must PASS");
+    let sum:i64=db.query_row("SELECT SUM(n) FROM multi_process_fixture",[],|r|r.get(0)).unwrap();
+    assert_eq!(sum,24);
+    assert_eq!(gate.state.main_native_matches.load(Ordering::SeqCst),1);
+    assert!(gate.state.wal_native_matches.load(Ordering::SeqCst)>=1);
+    assert!(gate.state.shm_maps.load(Ordering::SeqCst)>=1);
+    assert!(gate.state.shm_locks.load(Ordering::SeqCst)>=1);
+    drop(db);
+}
