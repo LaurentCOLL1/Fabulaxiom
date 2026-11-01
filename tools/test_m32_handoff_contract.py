@@ -5890,7 +5890,7 @@ class HandoffContractTests(unittest.TestCase):
         self.assertIn("include_str!", rust)
         self.assertIn("applyP3FictionalCommand", ts)
         self.assertEqual(ts.count('  it("'), 4)
-        self.assertIn("p3b_shared_golden_candidate_20261101", self.data)
+        self.assertIn("m32_p3b_shared_golden_candidate_20261101", self.data)
         self.assertNotIn("m32P3bCrossLanguageGolden", (ROOT/"src/App.tsx").read_text(encoding="utf-8"))
         self.assertNotIn(json_name, (ROOT/"src/App.tsx").read_text(encoding="utf-8"))
         self.assertNotIn("m32P3bCrossLanguageGolden", (ROOT/"src/m32BrowserLab.tsx").read_text(encoding="utf-8"))
