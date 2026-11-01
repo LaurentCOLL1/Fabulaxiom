@@ -1,3 +1,5 @@
+> **Supersédé pour l'ORDRE DES PRIORITÉS uniquement le 1er novembre 2026 :** choix explicite du propriétaire `PRODUCT_FIRST_PARALLEL_SAFETY`, voir [nouvelle décision réversible](M3_2_PRODUCT_FIRST_PARALLEL_SAFETY_DECISION_20261101.md) et [matrice de réemploi du code](../qualification/M3_2_PRODUCT_VERTICAL_SLICE_EXISTING_CODE_MATRIX_20261101.md). Désormais le parcours produit M3.2 sur **v7 neuve et fixtures jetables** progresse en parallèle de R4–R9, au lieu d'attendre la fin de tous les témoins Win32. Le test de persistance v7 NEW_ONLY avec reopen existe déjà : ne pas le refaire. **Les étapes d'admission réelle S3/S4, IPC writer, profil Greenfield et sources opérateur restent STRICTEMENT STOP.** Ne pas interpréter la question de fin de ce document datée du 28 octobre comme la prochaine question à poser à l'utilisateur. Avant de changer de voie, informer le propriétaire des déclencheurs et lui proposer les alternatives. #256 terminale source/postmain 294/7/67/177, `main=df7171ac99c9f0a6a5e9123de2c8c8168cfb7090`.
+
 # Fabulaxiom M3.2 — Stratégie de reprise après qualification de l'écrivain Rust v7 (28 octobre 2026)
 
 ## Autorité vivante et résultat acquis
