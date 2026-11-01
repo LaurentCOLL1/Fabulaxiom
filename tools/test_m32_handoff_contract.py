@@ -5805,6 +5805,20 @@ class HandoffContractTests(unittest.TestCase):
                 # must never be called or imported.
                 self.assertNotIn(forbidden,source)
         self.assertEqual(tests.count('  it("'),11)
+        stage = (ROOT/"tools/m32_ci_fixture_stage.cjs").read_text(encoding="utf-8")
+        gitbind = (ROOT/"tools/m32_ci_git_source_binding.cjs").read_text(encoding="utf-8")
+        driver = (ROOT/"tools/m32_browser_interaction.cjs").read_text(encoding="utf-8")
+        for module in ("src/M32P3FictionalCommandWorkshop.tsx",
+                       "src/m32P3FictionalCommandContract.ts"):
+            self.assertIn(module,stage)
+            self.assertIn(module,gitbind)
+        self.assertIn("evidence.inventory.length, 17",
+                      (ROOT/"tools/test_m32_ci_git_source_binding.cjs").read_text(encoding="utf-8"))
+        for label in ("83-p3a-typed-anchor-relation-and-historical-revision",
+                      "84-p3a-refused-incomplete-relation-rolls-back",
+                      "85-p3a-second-universe-has-no-historical-revision-leak",
+                      "M32_CI_PRECOMPILED_STRICT_CSP_BROWSER_PASS: 85/85"):
+            self.assertIn(label,driver)
 
 if __name__ == "__main__":
     unittest.main()
