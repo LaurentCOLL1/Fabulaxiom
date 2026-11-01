@@ -149,4 +149,36 @@ describe("M3.2 P3a browser-only typed chronology command contract",()=>{
     expect(html).not.toContain("<script>inert()");
     expect(html).toContain("Simulation navigateur");
   });
+  it("12 presents a separate human-only precedence form and three independent orders",()=>{
+    const html=renderToStaticMarkup(createElement(M32P3FictionalCommandWorkshop,{
+      initial:first,revisions,
+    }));
+    expect(html).toContain("Relation autonome entre ancres fictives");
+    expect(html).toContain("Créer le lien fictif sans nouvelle date");
+    expect(html).toContain("Chronologie du monde");
+    expect(html).toContain("Ordre de narration");
+    expect(html).toContain("Ordre de révélation au lecteur");
+    expect(html).toContain("Non renseigné");
+    expect(html).toContain("aucune sauvegarde");
+  });
+  it("13 adds an independent link without inserting an implicit anchor",()=>{
+    const before=start();
+    const after=applyP3FictionalCommand(before,edge("A","B"));
+    expect(after.commands_committed).toBe(1);
+    expect(after.draft.snapshot.anchors).toEqual(before.draft.snapshot.anchors);
+    expect(after.draft.snapshot.precedences).toHaveLength(1);
+    expect(after.draft.snapshot.reader_reveal_status).toBe("not_authored");
+  });
+  it("14 refuses reversed cycle, same-anchor and missing reasons without state mutation",()=>{
+    const state=applyP3FictionalCommand(start(),edge("A","B"));
+    const original=JSON.stringify(state);
+    expect(()=>applyP3FictionalCommand(state,edge("B","A"))).toThrow(/cycle/);
+    expect(()=>applyP3FictionalCommand(state,edge("A","A"))).toThrow();
+    expect(()=>applyP3FictionalCommand(state,{
+      kind:"create_precedence",universe_id:"fiction-one",
+      relation:{before_anchor_id:"A",after_anchor_id:"B",reason:""},
+    })).toThrow();
+    expect(JSON.stringify(state)).toBe(original);
+  });
+
 });
