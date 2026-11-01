@@ -60,7 +60,7 @@ describe("M3.2 P3a browser-only typed chronology command contract",()=>{
   it("02 accepts an unknown-time anchor without inventing an order",()=>{
     const s=start(), next=applyP3FictionalCommand(s,anchor());
     expect(next.commands_committed).toBe(1);
-    expect(next.draft.snapshot.anchors.at(-1)?.time_kind).toBe("unknown");
+    expect(next.draft.snapshot.anchors.slice(-1)[0]?.time_kind).toBe("unknown");
     expect(next.draft.snapshot.precedences).toHaveLength(0);
     expect(s.draft.snapshot.anchors).toHaveLength(2);
   });
@@ -68,8 +68,8 @@ describe("M3.2 P3a browser-only typed chronology command contract",()=>{
     const next=applyP3FictionalCommand(start(),anchor("fiction-one",{
       before_anchor_id:"A",after_anchor_id:P3_NEW_ANCHOR,reason:"A précède la nouvelle date",
     }));
-    expect(next.draft.snapshot.anchors.at(-1)?.id).toBe("fiction-draft-0001");
-    expect(next.draft.snapshot.precedences.at(-1)?.after_anchor_id).toBe("fiction-draft-0001");
+    expect(next.draft.snapshot.anchors.slice(-1)[0]?.id).toBe("fiction-draft-0001");
+    expect(next.draft.snapshot.precedences.slice(-1)[0]?.after_anchor_id).toBe("fiction-draft-0001");
     expect(next.draft.audit.map(a=>a.action)).toEqual(["anchor_created","precedence_created"]);
     expect(next.commands_committed).toBe(1);
   });
@@ -104,7 +104,7 @@ describe("M3.2 P3a browser-only typed chronology command contract",()=>{
         source_revision_id:"r2",source_scene_id:"s1"},
       relation:null,
     });
-    expect(next.draft.snapshot.anchors.at(-1)?.source_revision_id).toBe("r2");
+    expect(next.draft.snapshot.anchors.slice(-1)[0]?.source_revision_id).toBe("r2");
     expect(next.draft.snapshot.narration.map(x=>x.novel_id)).toEqual(["n1","n2"]);
     expect(next.draft.snapshot.reader_reveal_status).toBe("not_authored");
     expect(()=>applyP3FictionalCommand(start(),{
