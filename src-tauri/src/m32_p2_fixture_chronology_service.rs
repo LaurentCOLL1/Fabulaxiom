@@ -248,9 +248,8 @@ mod tests {
 
     #[test]
     fn p2_preopened_fixture_service_refuses_unqualified_connections() {
-        let mut v6 = Connection::open_in_memory().unwrap();
-        database::configure_connection(&v6).unwrap();
-        database::run_migrations(&mut v6).unwrap();
+        // Existing test-only v6 helper, without an extra SQLite opening site.
+        let mut v6 = crate::world_time_schema_tests::v6();
         assert!(matches!(
             FixtureChronologyService::from_already_opened_disposable_v7(&mut v6),
             Err(FixtureError::Stop(_))
