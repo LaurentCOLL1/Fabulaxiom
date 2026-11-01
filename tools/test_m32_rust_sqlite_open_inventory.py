@@ -828,7 +828,7 @@ class RustSqliteOpenInventoryTests(unittest.TestCase):
     def test_64_registered_r4_owner_shm_is_disposable_nondefault_only(self):
         p="src-tauri/src/m32_r4_registered_owned_shm_vfs_disposable_tests.rs"
         code=self.src[p]
-        self.assertEqual(EXPECTED[p],(2,0,0,0,0,2,0))
+        self.assertEqual(EXPECTED[p],(5,0,0,0,0,5,0))
         for token in ("sqlite3_vfs_register(&mut state.dispatch,0)",
             "Connection::open_with_flags_and_vfs(","PRAGMA locking_mode=NORMAL",
             "PRAGMA journal_mode=WAL","CreateFileMappingW","MapViewOfFile",
@@ -841,6 +841,24 @@ class RustSqliteOpenInventoryTests(unittest.TestCase):
                     "database::open_database(","run_migrations(","std::env::var("):
             self.assertNotIn(bad,code)
         self.assertIn("mod m32_r4_registered_owned_shm_vfs_disposable_tests;",self.src["src-tauri/src/lib.rs"])
+        self.assertEqual(repository_inventory()["writer_absence"],"NOT_PROVEN")
+
+
+    def test_65_r4_two_registered_sqlite_clients_and_postopen_shm_veto_only_in_ci(self):
+        p="src-tauri/src/m32_r4_registered_owned_shm_vfs_disposable_tests.rs"
+        c=self.src[p]
+        self.assertEqual(EXPECTED[p],(5,0,0,0,0,5,0))
+        for token in ("fn valid(&self)->bool","let observed=OpenOptions::new()",
+                      "observed==Some(self.expected)",
+                      "r4_two_sqlite_connections_share_owned_native_shm_and_serialize_wal_writers",
+                      "r4_postopen_shm_path_substitution_fails_closed_at_next_wal_lock",
+                      "BEGIN IMMEDIATE","assert_eq!(total,24)",
+                      "sqlite3_vfs_register(&mut state.dispatch,0)",
+                      "std::env::temp_dir()"):
+            self.assertIn(token,c)
+        for forbidden in ("#[tauri::command]","app_local_data_dir(",
+                          "database::open_database(","run_migrations("):
+            self.assertNotIn(forbidden,c)
         self.assertEqual(repository_inventory()["writer_absence"],"NOT_PROVEN")
 
 if __name__ == "__main__":

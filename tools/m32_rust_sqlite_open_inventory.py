@@ -91,7 +91,7 @@ EXPECTED = {
     # R4 stock Windows SQLite VFS, freshly invented %TEMP% main, test-only.
     # One temporary RW fixture and one READ_ONLY reader, no custom xShm* proof.
     # PR252 scoped registered non-default SQLite VFS on disposable Windows CI only.
-    "src-tauri/src/m32_r4_registered_owned_shm_vfs_disposable_tests.rs": (2, 0, 0, 0, 0, 2, 0),
+    "src-tauri/src/m32_r4_registered_owned_shm_vfs_disposable_tests.rs": (5, 0, 0, 0, 0, 5, 0),
     "src-tauri/src/m32_r4_wal_shm_disposable_tests.rs": (2, 0, 0, 0, 0, 1, 0),
     # R4 RAM-only design contract intentionally ABSENT from EXPECTED:
     # audit_inventory() only lists sources having nonzero SQLite occurrences.
