@@ -5434,5 +5434,32 @@ class HandoffContractTests(unittest.TestCase):
         for p in ("ROADMAP_STATUS_CURRENT.md","FABULAXIOM_ROADMAP_V1.md"):
             self.assertIn(note,(ROOT/"docs/roadmap"/p).read_text(encoding="utf-8"))
 
+
+    def test_175_two_connection_postopen_shm_revalidation_never_admits_writer(self):
+        e=self.data["m32_r4_two_connection_postopen_shm_candidate_20261101"]
+        self.assertEqual(e["scope"],"WINDOWS_DISPOSABLE_TWO_SQLITE_CONNECTIONS_AND_POSTOPEN_SHM_ID_ONLY")
+        for k,v in (("expected_rust_tests_not_qualified",290),
+                    ("expected_greenfield_tests_not_qualified",7),
+                    ("expected_inventory_tests_not_qualified",65),
+                    ("expected_continuity_tests_not_qualified",175)):
+            self.assertEqual(e[k],v)
+        for k in ("atomic_shm_path_revalidation_proven",
+                  "atomic_three_file_custody_proven","hostile_multi_process_locking_qualified",
+                  "all_shm_pages_supported","stock_sqlite_private_shm_handle_authenticated",
+                  "writer_admitted","operator_data_accessed","ipc_enabled","migration_007",
+                  "native_hello","persistent_marker","recovery_authorized"):
+            self.assertFalse(e[k],k)
+        for k,v in (("m3_2","IN_PROGRESS_NOT_ACCEPTED"),
+                    ("g2b","NOT_ACCEPTED"),("g2c","NOT_AUTHORIZED"),("g3","STOP_UNAVAILABLE")):
+            self.assertEqual(e[k],v)
+        note="M3_2_R4_TWO_CLIENT_POSTOPEN_SHM_IDENTITY_DISPOSABLE_20261101.md"
+        self.assertTrue((ROOT/"docs/qualification"/note).is_file())
+        for p in ("RESUME_PROMPT_SHORT.md","RESUME_PROMPT.md","HANDOFF_CURRENT.md",
+                  "HANDOFF_HISTORY.md","HANDOFF_PROTOCOL.md","STATE.md","NEXT.md",
+                  "M3_2_GATE_DECISION_CURRENT.md","README.md"):
+            self.assertIn(note,(DIRECTORY/p).read_text(encoding="utf-8"))
+        for p in ("ROADMAP_STATUS_CURRENT.md","FABULAXIOM_ROADMAP_V1.md"):
+            self.assertIn(note,(ROOT/"docs/roadmap"/p).read_text(encoding="utf-8"))
+
 if __name__ == "__main__":
     unittest.main()
