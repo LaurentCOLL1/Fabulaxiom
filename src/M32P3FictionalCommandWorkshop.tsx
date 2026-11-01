@@ -87,7 +87,7 @@ function FictionalPanel({ initial, revisions }: {
       setMessage(cause instanceof Error ? cause.message : "Lien fictif refusé");
     }
   }
-  return <section aria-label="P3c atelier de commandes de chronologie fictive">
+  return <section aria-label="P3a atelier de commandes de chronologie fictive">
     <h2>Créer une date dans le monde fictif — contrat P3a</h2>
     <p><strong>Simulation navigateur exclusivement.</strong> Cette interface
       ne communique pas avec Rust et ne sauvegarde aucune modification.</p>
