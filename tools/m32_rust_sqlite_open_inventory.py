@@ -41,6 +41,11 @@ EXPECTED = {
     "src-tauri/src/lib.rs": (0, 1, 0, 0, 0, 0, 0),
     "src-tauri/src/m31_readonly_preview.rs": (1, 2, 0, 0, 0, 1, 0),
     "src-tauri/src/m32_manual_chronology.rs": (1, 0, 1, 0, 0, 0, 0),
+    # P2a: one literal ATTACH DATABASE in a #[cfg(test)] RAM-only refusal
+    # witness. All v6/v7 constructors reuse the existing world_time_schema_tests
+    # RAM fixture; zero new SQLite open or migration sites and no runtime IPC.
+    # This explicit occurrence is an inventory acknowledgment, NOT an admission.
+    "src-tauri/src/m32_p2_fixture_chronology_service.rs": (0, 0, 0, 0, 1, 0, 0),
     "src-tauri/src/m32_owned_backup_toy.rs": (14, 0, 0, 0, 2, 0, 0),
     "src-tauri/src/m32_preopened_query_only_toy.rs": (3, 0, 0, 0, 2, 3, 0),
     # Registered explicitly named VFS on disposable Windows test paths only.
