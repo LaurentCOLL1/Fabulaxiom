@@ -146,9 +146,8 @@ mod tests {
     const DECISIONS: &str = include_str!("../sql/m3_2_chronology_decisions_candidate.sql");
 
     fn invented_connection() -> Connection {
-        let mut db = Connection::open_in_memory().expect("RAM only: not an operator path");
-        database::configure_connection(&db).unwrap();
-        assert_eq!(database::run_migrations(&mut db).unwrap(), 6);
+        // Reuse the existing RAM-only fixture helper: zero new SQLite open sites.
+        let mut db = crate::world_time_schema_tests::v6();
         db.execute_batch(
             "INSERT INTO universes(id,name) VALUES('u1','Invented'),('u2','Other');
              INSERT INTO novels(id,universe_id,series_id,title,sort_order)
