@@ -27,6 +27,8 @@ const MANIFEST = Object.freeze([
   "src/m32FictionalRevocationImpact.ts",
   "src/M32ManualChronologyLab.tsx",
   "src/M32FictionalCorrectionHistory.tsx",
+  "src/M32P3FictionalCommandWorkshop.tsx",
+  "src/m32P3FictionalCommandContract.ts",
 ]);
 
 function stageFictionOnly() {

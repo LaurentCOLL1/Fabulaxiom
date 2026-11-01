@@ -4,6 +4,7 @@ import { createRoot } from "react-dom/client";
 import { M32SyntheticConsultationLab } from "./M32ChronologyConsultation";
 import M32SyntheticEventExplorer from "./M32SyntheticEventExplorer";
 import M32ManualChronologyLab from "./M32ManualChronologyLab";
+import M32P3FictionalCommandWorkshop from "./M32P3FictionalCommandWorkshop";
 import type { M32ChronologyProjection } from "./M32ChronologyPreview";
 import { startFictionalDraft, type FictionalRevision } from "./m32FictionalManualChronology";
 import { startFictionalEventNotebook, createFictionalEvent, amendFictionalEvent, withdrawFictionalEvent } from "./m32FictionalEventNotebook";
@@ -139,7 +140,7 @@ function fictionalPairFixture(snapshot: M32ChronologyProjection, revisions: read
 type Scenario = "one" | "two" | "cyclic";
 function BrowserFixture() {
   const [scenario, setScenario] = useState<Scenario>("one");
-  const [mode, setMode] = useState<"consultation" | "explorer" | "editor" | "history" | "event-form" | "version-compare">("consultation");
+  const [mode, setMode] = useState<"consultation" | "explorer" | "editor" | "history" | "event-form" | "version-compare" | "p3-commands">("consultation");
   const snapshot = scenario === "two" ? second : scenario === "cyclic" ? cyclic : first;
   return <main aria-label="Laboratoire navigateur M3.2 exclusivement fictif">
     <h1>Tests navigateur — données imaginaires exclusivement</h1>
@@ -161,6 +162,9 @@ function BrowserFixture() {
       <button type="button" onClick={() => setMode("consultation")}>
         Afficher le parcours de consultation fictif
       </button>
+      <button type="button" onClick={() => setMode("p3-commands")}>
+        Ouvrir P3a — commandes fictives typées
+      </button>
       <button type="button" onClick={() => setMode("editor")}>
         Ouvrir l'atelier manuel fictif
       </button>
@@ -174,7 +178,10 @@ function BrowserFixture() {
         Ouvrir le carnet d'événements fictifs
       </button>
     </section>
-    {mode === "version-compare" ? scenario === "cyclic"
+    {mode === "p3-commands" ? <M32P3FictionalCommandWorkshop
+        key={scenario} initial={snapshot}
+        revisions={scenario === "two" ? [] : fictionalRevisions} />
+      : mode === "version-compare" ? scenario === "cyclic"
       ? <p role="alert">Cycle fictif refusé pour la comparaison de versions.</p>
       : <M32FictionalEventVersionPairLab key={scenario}
           notebook={fictionalPairFixture(snapshot,
