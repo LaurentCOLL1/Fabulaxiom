@@ -5,7 +5,7 @@ use rusqlite::{params, Connection};
 
 const CANDIDATE_SQL: &str = include_str!("../sql/m3_1_world_time_v7_candidate.sql");
 
-fn v6() -> Connection {
+pub(crate) fn v6() -> Connection {
     let mut db = Connection::open_in_memory().expect("memory");
     database::configure_connection(&db).expect("foreign keys");
     assert_eq!(database::run_migrations(&mut db).expect("v6 migrations"), 6);
