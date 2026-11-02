@@ -258,7 +258,7 @@ function FictionalPanel({ initial, revisions }: {
           <option value="">Choisir une ancre</option>
           {active.map(a => <option key={a.id} value={a.id}>{a.id}</option>)}
         </select>
-        <p role="status">Contrôle avant correction : {correctionPreview.reason}</p>
+        <p>Contrôle avant correction : {correctionPreview.reason}</p>
         <label htmlFor={id + "-correct-kind"}>Nouvelle nature du temps</label>
         <select id={id + "-correct-kind"} value={correctionKind}
           onChange={e => setCorrectionKind(e.currentTarget.value as M32TimeKind)}>
