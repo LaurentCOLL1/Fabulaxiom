@@ -6,6 +6,7 @@
  */
 import {
   createFictionalAnchor, createFictionalPrecedence, inspectFictionalDraft,
+  revokeFictionalPrecedence, supersedeFictionalAnchor,
   startFictionalDraft,
   type FictionalDraft, type FictionalRevision, type FictionalTimeInput,
 } from "./m32FictionalManualChronology";
@@ -28,6 +29,18 @@ export type P3Command =
       kind: "create_precedence";
       universe_id: string;
       relation: P3Relation;
+    }>
+  | Readonly<{
+      kind: "revoke_precedence";
+      universe_id: string;
+      precedence_id: string;
+      reason: string;
+    }>
+  | Readonly<{
+      kind: "supersede_anchor";
+      universe_id: string;
+      anchor_id: string;
+      time: FictionalTimeInput;
     }>;
 export type P3State = Readonly<{
   draft: FictionalDraft;
@@ -100,6 +113,19 @@ export function applyP3FictionalCommand(state: P3State, command: P3Command): P3S
       draft = createFictionalPrecedence(prior,
         command.relation.before_anchor_id, command.relation.after_anchor_id,
         command.relation.reason);
+      break;
+    case "revoke_precedence":
+      if (typeof command.precedence_id !== "string" ||
+          typeof command.reason !== "string")
+        return refuse("révocation invalide");
+      draft = revokeFictionalPrecedence(prior, command.precedence_id, command.reason);
+      break;
+    case "supersede_anchor":
+      if (typeof command.anchor_id !== "string")
+        return refuse("correction invalide");
+      // The underlying fictional reducer refuses active dependencies and
+      // preserves historical source provenance when no new source is supplied.
+      draft = supersedeFictionalAnchor(prior, command.anchor_id, command.time);
       break;
     default:
       return refuse("commande inconnue");

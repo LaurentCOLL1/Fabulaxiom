@@ -1,3 +1,5 @@
+**2 novembre 2026 — ADDENDUM TERMINAL PR #264** : source HEAD `cad79d5e479d1d92fcec2abbd4f9e5f6c602c5bb`, CI #41363608420 completed/SUCCESS ; squash sous Protect main strict bypass=[], `main=2ff56d7bbee531990da5644f857517e88e924959` ; CI indépendante postmain #41364545825 completed/SUCCESS, **302/7/68/183 et Chromium 85/85 normal + CSP stricte**. Reviews=[], threads=[], issue #38 commentaire append-only #6565935760. Les annotations « candidat » ci-dessous reflètent uniquement l'état AVANT qualification et restent historiques. Prochaine étape P3d sur fixtures uniquement. M3.2/writer/G3 STOP inchangés.
+
 # M3.2 — P3c atelier React fictif : ergonomie et ordre partiel
 
 **2 novembre 2026 — CANDIDAT NON QUALIFIÉ.** Base vérifiée PR #262 fusionnée : `main=26f189218b82c3ae0567ada9c8ee998f31e8b287`, Windows source CI #41355180008, postmain #41356340682 completed/SUCCESS, 302 Rust / 7 Greenfield / 68 inventaire / 183 continuité. Règle Protect main active stricte, bypass=[].

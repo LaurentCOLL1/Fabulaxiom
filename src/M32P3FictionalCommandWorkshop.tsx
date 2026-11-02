@@ -1,7 +1,7 @@
 import { useId, useState, type FormEvent, type ReactElement } from "react";
 import M32ChronologyPreview from "./M32ChronologyPreview";
 import type { M32ChronologyProjection, M32TimeKind } from "./M32ChronologyPreview";
-import type { FictionalRevision } from "./m32FictionalManualChronology";
+import { previewFictionalCorrection, type FictionalRevision } from "./m32FictionalManualChronology";
 import {
   P3_NEW_ANCHOR, applyP3FictionalCommand,
   readP3FictionalSnapshot, startP3FictionalState,
@@ -29,10 +29,19 @@ function FictionalPanel({ initial, revisions }: {
   const [firstAnchor, setFirstAnchor] = useState("");
   const [secondAnchor, setSecondAnchor] = useState("");
   const [standaloneReason, setStandaloneReason] = useState("");
+  const [revokeId, setRevokeId] = useState("");
+  const [revokeReason, setRevokeReason] = useState("");
+  const [correctionAnchor, setCorrectionAnchor] = useState("");
+  const [correctionKind, setCorrectionKind] = useState<M32TimeKind>("unknown");
+  const [correctionCalendar, setCorrectionCalendar] = useState("");
+  const [correctionLabel, setCorrectionLabel] = useState("");
+  const [correctionPrecision, setCorrectionPrecision] = useState("");
   const [message, setMessage] = useState("Aucune commande lancée.");
   const [error, setError] = useState(false);
   const snapshot = readP3FictionalSnapshot(state, initial.universe_id);
   const active = snapshot.anchors.filter(a => a.status === "current");
+  const activeRelations = snapshot.precedences.filter(e => e.status === "current");
+  const correctionPreview = previewFictionalCorrection(state.draft, correctionAnchor);
   function execute(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     try {
@@ -85,6 +94,48 @@ function FictionalPanel({ initial, revisions }: {
     } catch (cause) {
       setError(true);
       setMessage(cause instanceof Error ? cause.message : "Lien fictif refusé");
+    }
+  }
+  function executeRevocation(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    try {
+      const next = applyP3FictionalCommand(state, {
+        kind: "revoke_precedence", universe_id: initial.universe_id,
+        precedence_id: revokeId, reason: revokeReason,
+      });
+      setState(next);
+      setRevokeId("");
+      setRevokeReason("");
+      setError(false);
+      setMessage("Relation fictive révoquée : historique conservé en mémoire.");
+    } catch (cause) {
+      setError(true);
+      setMessage(cause instanceof Error ? cause.message : "Révocation fictive refusée");
+    }
+  }
+  function executeCorrection(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    try {
+      if (correctionPreview.verdict !== "allowed") {
+        throw new Error(correctionPreview.reason);
+      }
+      const next = applyP3FictionalCommand(state, {
+        kind: "supersede_anchor", universe_id: initial.universe_id,
+        anchor_id: correctionAnchor,
+        time: { kind: correctionKind, calendar: correctionCalendar,
+          label: correctionLabel, precision: correctionPrecision },
+      });
+      setState(next);
+      setCorrectionAnchor("");
+      setCorrectionKind("unknown");
+      setCorrectionCalendar("");
+      setCorrectionLabel("");
+      setCorrectionPrecision("");
+      setError(false);
+      setMessage("Ancre fictive remplacée : ancienne version et provenance conservées.");
+    } catch (cause) {
+      setError(true);
+      setMessage(cause instanceof Error ? cause.message : "Correction fictive refusée");
     }
   }
   return <section aria-label="P3a atelier de commandes de chronologie fictive">
@@ -150,6 +201,9 @@ function FictionalPanel({ initial, revisions }: {
         setError(false); setMessage("Données fictives réinitialisées.");
         setRelativeTo(""); setDirection("none"); setReason(""); setRevision("");
         setFirstAnchor(""); setSecondAnchor(""); setStandaloneReason("");
+        setRevokeId(""); setRevokeReason("");
+        setCorrectionAnchor(""); setCorrectionKind("unknown");
+        setCorrectionCalendar(""); setCorrectionLabel(""); setCorrectionPrecision("");
       }}>Réinitialiser les données fictives</button>
     </form>
     <section aria-label="P3c lien temporel entre deux ancres existantes">
@@ -173,6 +227,64 @@ function FictionalPanel({ initial, revisions }: {
         <input id={id + "-why"} value={standaloneReason} maxLength={160}
           onChange={e => setStandaloneReason(e.currentTarget.value)} />
         <button type="submit">Créer le lien fictif sans nouvelle date</button>
+      </form>
+    </section>
+    <section aria-label="P3d révocation explicite fictive">
+      <h3>Retirer un lien déclaré sans effacer son historique</h3>
+      <p>Une relation est révoquée seulement sur décision humaine motivée.</p>
+      <form aria-label="Révocation de lien temporel fictif" onSubmit={executeRevocation}>
+        <label htmlFor={id + "-revoke"}>Relation en vigueur à révoquer</label>
+        <select id={id + "-revoke"} value={revokeId}
+          onChange={e => setRevokeId(e.currentTarget.value)}>
+          <option value="">Choisir une relation</option>
+          {activeRelations.map(e => <option key={e.id} value={e.id}>
+            {e.before_anchor_id} avant {e.after_anchor_id} ({e.id})
+          </option>)}
+        </select>
+        <label htmlFor={id + "-revoke-reason"}>Justification de la révocation</label>
+        <input id={id + "-revoke-reason"} maxLength={160} value={revokeReason}
+          onChange={e => setRevokeReason(e.currentTarget.value)} />
+        <button type="submit">Révoquer explicitement le lien fictif</button>
+      </form>
+    </section>
+    <section aria-label="P3d correction historique fictive">
+      <h3>Corriger une date sans supprimer l'ancienne version</h3>
+      <p>Les relations actives bloquent la correction : il faut d'abord les révoquer
+        explicitement. La révision narrative source est conservée.</p>
+      <form aria-label="Correction d'ancre temporelle fictive" onSubmit={executeCorrection}>
+        <label htmlFor={id + "-correct-anchor"}>Ancre en vigueur à remplacer</label>
+        <select id={id + "-correct-anchor"} value={correctionAnchor}
+          onChange={e => setCorrectionAnchor(e.currentTarget.value)}>
+          <option value="">Choisir une ancre</option>
+          {active.map(a => <option key={a.id} value={a.id}>{a.id}</option>)}
+        </select>
+        <p>Contrôle avant correction : {correctionPreview.reason}</p>
+        <label htmlFor={id + "-correct-kind"}>Nouvelle nature du temps</label>
+        <select id={id + "-correct-kind"} value={correctionKind}
+          onChange={e => setCorrectionKind(e.currentTarget.value as M32TimeKind)}>
+          <option value="unknown">Inconnue</option>
+          <option value="relative">Relative</option>
+          <option value="approximate">Approximative</option>
+          <option value="exact">Exacte dans un calendrier fictif</option>
+        </select>
+        {(correctionKind === "exact" || correctionKind === "approximate") && <>
+          <label htmlFor={id + "-correct-calendar"}>Calendrier fictif de remplacement</label>
+          <input id={id + "-correct-calendar"} maxLength={160}
+            value={correctionCalendar}
+            onChange={e => setCorrectionCalendar(e.currentTarget.value)} />
+        </>}
+        {correctionKind === "exact" && <>
+          <label htmlFor={id + "-correct-label"}>Nouvelle étiquette de date</label>
+          <input id={id + "-correct-label"} maxLength={160} value={correctionLabel}
+            onChange={e => setCorrectionLabel(e.currentTarget.value)} />
+        </>}
+        {correctionKind === "approximate" && <>
+          <label htmlFor={id + "-correct-precision"}>Nouvelle précision approximative</label>
+          <input id={id + "-correct-precision"} maxLength={160}
+            value={correctionPrecision}
+            onChange={e => setCorrectionPrecision(e.currentTarget.value)} />
+        </>}
+        <button type="submit">Remplacer l'ancre fictive et conserver l'historique</button>
       </form>
     </section>
     <p role={error ? "alert" : "status"}>{message}</p>
