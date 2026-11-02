@@ -54,7 +54,7 @@ describe("M3.2 P3d reversible fictional correction/revocation",()=>{
     for(const text of ["P3d révocation explicite fictive",
       "Révoquer explicitement le lien fictif",
       "P3d correction historique fictive",
-      "Remplacer l'ancre fictive et conserver l'historique",
+      "Remplacer l&#x27;ancre fictive et conserver l&#x27;historique",
       "Contrôle avant correction","Simulation navigateur exclusivement",
       "ne communique pas avec Rust","Ordre de révélation au lecteur"]){
       expect(html).toContain(text);
