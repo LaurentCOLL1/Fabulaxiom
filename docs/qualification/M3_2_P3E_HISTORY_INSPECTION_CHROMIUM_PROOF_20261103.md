@@ -1,3 +1,5 @@
+**3 novembre — ADDENDUM TERMINAL** PR #266 fusionnée sous Protect main ACTIVE strict bypass=[], reviews=[] threads=[] ; source HEAD `77761e16eddc89f75932e5828d82b9111bb3fd03`, CI #41575533833 completed/SUCCESS, squash expected_head_sha `main=36e7bcb209a3ebdec90768c4ac501d7f23b85688`, indépendante postmain #41576857760 completed/SUCCESS : **302/7/68/183, 85/85 Chromium normal et CSP stricte**. Issue #38 commentaire append-only #6595396140. Le statut candidat qui suit demeure historique ; P3e qualifiée sur les fixtures seulement, G3/writer STOP inchangés.
+
 # M3.2 — P3e historique consultable et vraie preuve Chromium du flux réversible
 
 **3 novembre 2026 — CANDIDAT NON QUALIFIÉ.** Parent P3d PR #265 fusionnée `main=d85ef94e4242e578b2f5d756f5cef6842e2ca378`. Windows source CI #41508917914 HEAD `75790e9922b416ba4ae2ad22bf33c55ee787b293` et postmain indépendante #41510862693 exact main completed/SUCCESS, **302 Rust / 7 Greenfield / 68 inventaire / 183 continuité / Chromium 85/85 normal et CSP stricte**.
