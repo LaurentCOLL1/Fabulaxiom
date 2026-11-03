@@ -1382,6 +1382,10 @@ async function run() {
         .fill("Deuxième univers fictif");
       await delta.getByRole("button", { name: "Confirmer en mémoire fictive uniquement" }).click();
       assert.ok((await review.innerText()).includes("confirmées en mémoire : 1"));
+      // Corrupt cyclic fixture must not render a staged approval surface.
+      await page.getByRole("button", { name: "Charger un cycle fictif invalide" }).click();
+      assert.ok((await page.getByRole("alert").innerText()).includes("Cycle fictif refusé pour la revue P4a"));
+      assert.equal(await page.getByRole("region", { name: "P4a revue humaine fictive isolée" }).count(), 0);
     });
     assert.equal(cases.length, 85);
     // Historical PR #146 source marker: M32_BROWSER_REAL_CHROMIUM_PASS 62/62
