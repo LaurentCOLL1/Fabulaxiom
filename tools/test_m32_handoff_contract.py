@@ -5812,7 +5812,7 @@ class HandoffContractTests(unittest.TestCase):
                        "src/m32P3FictionalCommandContract.ts"):
             self.assertIn(module,stage)
             self.assertIn(module,gitbind)
-        self.assertIn("evidence.inventory.length, 17",
+        self.assertIn("evidence.inventory.length, 19",
                       (ROOT/"tools/test_m32_ci_git_source_binding.cjs").read_text(encoding="utf-8"))
         for label in ("83-p3a-typed-anchor-relation-and-historical-revision",
                       "84-p3a-refused-incomplete-relation-rolls-back",
