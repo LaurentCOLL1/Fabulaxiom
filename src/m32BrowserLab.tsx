@@ -5,6 +5,8 @@ import { M32SyntheticConsultationLab } from "./M32ChronologyConsultation";
 import M32SyntheticEventExplorer from "./M32SyntheticEventExplorer";
 import M32ManualChronologyLab from "./M32ManualChronologyLab";
 import M32P3FictionalCommandWorkshop from "./M32P3FictionalCommandWorkshop";
+import M32P4aStageReviewPanel from "./M32P4aStageReviewPanel";
+import { startP3FictionalState } from "./m32P3FictionalCommandContract";
 import type { M32ChronologyProjection } from "./M32ChronologyPreview";
 import { startFictionalDraft, type FictionalRevision } from "./m32FictionalManualChronology";
 import { startFictionalEventNotebook, createFictionalEvent, amendFictionalEvent, withdrawFictionalEvent } from "./m32FictionalEventNotebook";
@@ -140,7 +142,7 @@ function fictionalPairFixture(snapshot: M32ChronologyProjection, revisions: read
 type Scenario = "one" | "two" | "cyclic";
 function BrowserFixture() {
   const [scenario, setScenario] = useState<Scenario>("one");
-  const [mode, setMode] = useState<"consultation" | "explorer" | "editor" | "history" | "event-form" | "version-compare" | "p3-commands">("consultation");
+  const [mode, setMode] = useState<"consultation" | "explorer" | "editor" | "history" | "event-form" | "version-compare" | "p3-commands" | "p4-review">("consultation");
   const snapshot = scenario === "two" ? second : scenario === "cyclic" ? cyclic : first;
   return <main aria-label="Laboratoire navigateur M3.2 exclusivement fictif">
     <h1>Tests navigateur — données imaginaires exclusivement</h1>
@@ -165,6 +167,9 @@ function BrowserFixture() {
       <button type="button" onClick={() => setMode("p3-commands")}>
         Ouvrir P3a — commandes fictives typées
       </button>
+      <button type="button" onClick={() => setMode("p4-review")}>
+        Ouvrir P4a — revue humaine fictive
+      </button>
       <button type="button" onClick={() => setMode("editor")}>
         Ouvrir l'atelier manuel fictif
       </button>
@@ -181,6 +186,19 @@ function BrowserFixture() {
     {mode === "p3-commands" ? <M32P3FictionalCommandWorkshop
         key={scenario} initial={snapshot}
         revisions={scenario === "two" ? [] : fictionalRevisions} />
+      : mode === "p4-review" ? scenario === "cyclic"
+      ? <p role="alert">Cycle fictif refusé pour la revue P4a.</p>
+      : <M32P4aStageReviewPanel key={scenario}
+          initial={startP3FictionalState(snapshot, scenario === "two" ? [] : fictionalRevisions)}
+          command={{
+            kind: "create_precedence",
+            universe_id: snapshot.universe_id,
+            relation: {
+              before_anchor_id: scenario === "two" ? "K" : "A",
+              after_anchor_id: scenario === "two" ? "L" : "D",
+              reason: "Décision temporelle explicite inventée",
+            },
+          }} />
       : mode === "version-compare" ? scenario === "cyclic"
       ? <p role="alert">Cycle fictif refusé pour la comparaison de versions.</p>
       : <M32FictionalEventVersionPairLab key={scenario}
