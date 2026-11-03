@@ -98,7 +98,12 @@ EXPECTED = {
     # PR252 scoped registered non-default SQLite VFS on disposable Windows CI only.
     # PR256 adds two CREATE_NEW %TEMP% only Windows OS-process SQLite opens,
     # both explicit SQLITE_OPEN_READ_WRITE, no runtime writer/admission.
-    "src-tauri/src/m32_r4_registered_owned_shm_vfs_disposable_tests.rs": (10, 0, 0, 0, 0, 10, 0),
+    # R4 region-1 bounded held-SHM Windows fixture: +2 explicit
+    # Connection::open_with_flags_and_vfs calls, +2 SQLITE_OPEN_READ_WRITE
+    # tokens. The callers remain in the ALREADY cfg(all(test,windows))
+    # non-default VFS module, on new CREATE_NEW %TEMP% only. This review
+    # updates a textual tripwire, NOT production writer authorization.
+    "src-tauri/src/m32_r4_registered_owned_shm_vfs_disposable_tests.rs": (12, 0, 0, 0, 0, 12, 0),
     "src-tauri/src/m32_r4_wal_shm_disposable_tests.rs": (2, 0, 0, 0, 0, 1, 0),
     # R4 RAM-only design contract intentionally ABSENT from EXPECTED:
     # audit_inventory() only lists sources having nonzero SQLite occurrences.
