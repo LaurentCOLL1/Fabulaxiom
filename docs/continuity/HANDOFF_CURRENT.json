@@ -6,7 +6,7 @@
     "stage": "P4A_FICTIONAL_STAGED_HUMAN_REVIEW_CANDIDATE_NOT_QUALIFIED",
     "qualification": "docs/qualification/M3_2_P4A_FICTIONAL_STAGED_HUMAN_REVIEW_20261103.md",
     "contract": "src/m32P4aFictionalReview.ts",
-    "ui": "src/M32P4aFictionalReview.tsx",
+    "ui": "src/M32P4aStageReviewPanel.tsx",
     "tests": "src/m32P4aFictionalReview.test.tsx",
     "expected_new_vitest_tests_not_qualified": 6,
     "expected_rust_tests_not_qualified": 303,
