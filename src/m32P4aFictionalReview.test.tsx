@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import M32P4aFictionalReview from "./M32P4aFictionalReview";
+import M32P4aFictionalReview from "./M32P4aStageReviewPanel";
 import type { M32ChronologyProjection } from "./M32ChronologyPreview";
 import {
   applyP3FictionalCommand, startP3FictionalState,
