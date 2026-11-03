@@ -1309,7 +1309,7 @@ async function run() {
       assert.ok((await oldLinks.innerText()).includes("Un témoin inventé"));
       assert.ok((await audit.innerText()).includes("precedence_revoked"));
       assert.ok((await audit.innerText()).includes("anchor_superseded"));
-      assert.equal(await audit.getByRole("listitem").count(), 3);
+      assert.equal(await audit.getByRole("listitem").count(), 4);
     });
     await caseRun("84-p3a-refused-incomplete-relation-rolls-back", async () => {
       await page.getByRole("button", { name: "Ouvrir P3a — commandes fictives typées" }).click();
