@@ -1,3 +1,7 @@
+**03/11 — #268 R4 région-1 FUSIONNÉE, CI source/postmain TERMINALES** : `main=62ec182ba963c4da3fc2db3dfbd55d99f987c70b`, CI exactes #41660006467 et #41664658305 completed/SUCCESS **303 Rust / 7 Greenfield / 68 inventaire / 183 continuité / Chromium 85/85 normal + CSP**. Scope : VFS Windows non-default sur fixtures seulement, SHM 2×32768 octets; R4 global, custody main/WAL/SHM, writer et G3 TOUJOURS NON PROUVÉS. Issue #38 append-only #6609214419.
+
+**P4a REVUE HUMAINE FICTIVE CANDIDATE NON QUALIFIÉE** : `docs/qualification/M3_2_P4A_FICTIONAL_STAGED_HUMAN_REVIEW_20261103.md`. Contrat TS avant/après, motif humain, veto proposition périmée/modifiée, React hors App.tsx ; 6 Vitest attendus NON ACQUIS. P4 admission gate séparé, non ouvert. Stratégie **PRODUCT_FIRST_PARALLEL_SAFETY** inchangée, prévenir AVANT changement ; R4–R9 en parallèle, glib 0.18.5 Linux GTK3 #160 OPEN_NOT_REMEDIATED. **STOP** M3.2 IN_PROGRESS_NOT_ACCEPTED, writer/R1–R9 NOT_PROVEN, G2B NOT_ACCEPTED, G2C NOT_AUTHORIZED, G3 STOP_UNAVAILABLE, historique PENDING_EXTERNAL_ATTESTATION(21/3/2), prospective NOT_STARTED, D3b-4/5 STOP. Aucun accès opérateur/profil existant, aucun IPC writer, migration 007, Hello natif, marqueur ni recovery.
+
 # M3.2 — R4 SHM region 1 (two held native pages) — Windows disposable candidate
 
 **3 November 2026 — CANDIDATE, NOT QUALIFIED.** Parent protected `main=8a87c84647732a710dce5073c060949d95fa8c02`, PR #267 documentation-only squash, Windows postmain #41657918654 pending at candidate creation. No operator, app-runtime or writer admission.
