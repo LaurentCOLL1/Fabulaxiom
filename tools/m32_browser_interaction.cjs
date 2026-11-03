@@ -1253,6 +1253,63 @@ async function run() {
       assert.ok((await outcome.innerText()).includes("invented-rev-A"));
       assert.ok((await outcome.innerText()).includes("Un témoin inventé"));
       assert.ok((await workshop.getByRole("status").innerText()).includes("aucune écriture SQLite"));
+      // P3e real Chromium witness: a blocked correction cannot silently
+      // revoke a link. After a human reasoned revocation, both obsolete
+      // assertions and the immutable source revision remain inspectable.
+      const correct = workshop.getByRole("form", {
+        name: "Correction d'ancre temporelle fictive",
+      });
+      await correct.getByRole("combobox", {
+        name: "Ancre en vigueur à remplacer",
+      }).selectOption("fiction-draft-0001");
+      assert.ok((await correct.innerText()).includes("Il faut révoquer explicitement"));
+      await correct.getByRole("button", {
+        name: "Remplacer l'ancre fictive et conserver l'historique",
+      }).click();
+      assert.ok((await workshop.getByRole("alert").innerText()).includes("révoquer explicitement"));
+      assert.ok((await outcome.innerText()).includes("1 commande(s)"));
+      const revoke = workshop.getByRole("form", {
+        name: "Révocation de lien temporel fictif",
+      });
+      await revoke.getByRole("combobox", {
+        name: "Relation en vigueur à révoquer",
+      }).selectOption("fiction-draft-0002");
+      await revoke.getByRole("textbox", {
+        name: "Justification de la révocation",
+      }).fill("L'auteur fictif retire explicitement ce lien");
+      await revoke.getByRole("button", {
+        name: "Révoquer explicitement le lien fictif",
+      }).click();
+      assert.ok((await workshop.getByRole("status").innerText()).includes("historique conservé"));
+      assert.ok((await outcome.innerText()).includes("2 commande(s)"));
+      await correct.getByRole("combobox", {
+        name: "Nouvelle nature du temps",
+      }).selectOption("relative");
+      await correct.getByRole("button", {
+        name: "Remplacer l'ancre fictive et conserver l'historique",
+      }).click();
+      assert.ok((await workshop.getByRole("status").innerText()).includes("ancienne version"));
+      assert.ok((await outcome.innerText()).includes("3 commande(s)"));
+      assert.ok((await outcome.innerText()).includes("fiction-draft-0003"));
+      const historical = workshop.getByRole("region", {
+        name: "P3e historique consultable des décisions fictives",
+      });
+      const oldAnchors = historical.getByRole("list", {
+        name: "Ancres fictives archivées",
+      });
+      const oldLinks = historical.getByRole("list", {
+        name: "Relations fictives archivées",
+      });
+      const audit = historical.getByRole("list", {
+        name: "Journal fictif des actions acceptées",
+      });
+      assert.ok((await oldAnchors.innerText()).includes("fiction-draft-0001"));
+      assert.ok((await oldAnchors.innerText()).includes("invented-rev-A"));
+      assert.ok((await oldLinks.innerText()).includes("fiction-draft-0002"));
+      assert.ok((await oldLinks.innerText()).includes("Un témoin inventé"));
+      assert.ok((await audit.innerText()).includes("precedence_revoked"));
+      assert.ok((await audit.innerText()).includes("anchor_superseded"));
+      assert.equal(await audit.getByRole("listitem").count(), 4);
     });
     await caseRun("84-p3a-refused-incomplete-relation-rolls-back", async () => {
       await page.getByRole("button", { name: "Ouvrir P3a — commandes fictives typées" }).click();

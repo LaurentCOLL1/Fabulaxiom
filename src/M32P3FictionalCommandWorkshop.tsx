@@ -41,6 +41,9 @@ function FictionalPanel({ initial, revisions }: {
   const snapshot = readP3FictionalSnapshot(state, initial.universe_id);
   const active = snapshot.anchors.filter(a => a.status === "current");
   const activeRelations = snapshot.precedences.filter(e => e.status === "current");
+  const historicalAnchors = snapshot.anchors.filter(a =>
+    a.status === "superseded" || a.status === "revoked");
+  const historicalRelations = snapshot.precedences.filter(e => e.status === "revoked");
   const correctionPreview = previewFictionalCorrection(state.draft, correctionAnchor);
   function execute(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -301,6 +304,33 @@ function FictionalPanel({ initial, revisions }: {
           <code>{e.before_anchor_id}</code> avant <code>{e.after_anchor_id}</code> :
           {" "}{e.reason}
         </li>)}</ol>
+    </section>
+    <section aria-label="P3e historique consultable des décisions fictives">
+      <h3>Historique des corrections et des relations retirées</h3>
+      <p>Consultation seule de la mémoire fictive : les versions remplacées et les
+        liens révoqués restent visibles, sans être présentés comme des faits actuels.
+        Les actions refusées ne sont pas consignées comme des changements acceptés.</p>
+      <h4>Ancres historiques</h4>
+      <ul aria-label="Ancres fictives archivées">
+        {historicalAnchors.map(a => <li key={a.id}>
+          <code>{a.id}</code> — statut historique : {a.status} —
+          révision source conservée : <code>{a.source_revision_id ?? "aucune"}</code>
+        </li>)}
+      </ul>
+      <h4>Relations révoquées</h4>
+      <ul aria-label="Relations fictives archivées">
+        {historicalRelations.map(e => <li key={e.id}>
+          <code>{e.id}</code> — {e.before_anchor_id} avant {e.after_anchor_id} —
+          relation révoquée — justification initiale : {e.reason}
+        </li>)}
+      </ul>
+      <h4>Journal des actions acceptées dans cette session</h4>
+      <ol aria-label="Journal fictif des actions acceptées">
+        {state.draft.audit.map((entry, i) => <li key={i}>
+          <code>{entry.action}</code> — <code>{entry.id}</code> — {entry.explanation}
+        </li>)}
+      </ol>
+      <p>Aucun historique n'est enregistré au-delà de cette session fictive.</p>
     </section>
     <M32ChronologyPreview expectedUniverseId={snapshot.universe_id} snapshot={snapshot} />
     <p>Les commandes de cette page sont simulées par un réducteur TypeScript.

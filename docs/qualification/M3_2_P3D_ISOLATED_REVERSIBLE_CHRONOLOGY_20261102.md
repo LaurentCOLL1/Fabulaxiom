@@ -1,3 +1,5 @@
+**3 novembre — ADDENDUM TERMINAL PR #265** : source HEAD `75790e9922b416ba4ae2ad22bf33c55ee787b293` CI #41508917914 SUCCESS ; squash Protect main strict bypass=[] `main=d85ef94e4242e578b2f5d756f5cef6842e2ca378` ; postmain #41510862693 completed/SUCCESS 302/7/68/183, 85/85 Chromium normal + CSP stricte ; reviews=[] threads=[]. Le statut candidat ci-dessous est un état historique avant fusion ; writer/G3 STOP inchangés.
+
 # M3.2 — P3d : révocation explicite et correction avec historique sur atelier fictif
 
 **2 novembre 2026 — CANDIDAT NON QUALIFIÉ.** Parent PR #264 P3c fusionnée sous Protect main active strict bypass=[] : `main=2ff56d7bbee531990da5644f857517e88e924959`. Windows CI source #41363608420 et postmain #41364545825 completed/SUCCESS sur leurs SHA exacts (302 Rust, 7 Greenfield, 68 inventaire, 183 continuité, Chromium 85/85 normal et CSP stricte).
