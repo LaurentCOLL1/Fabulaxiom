@@ -40,6 +40,9 @@ fn ov(byte:u32)->Overlapped{
     Overlapped{internal:0,internal_high:0,offset:byte,offset_high:0,event:ptr::null_mut()}
 }
 const PAGE_SIZE:usize=32768;
+// CI-only bounded SHM mapping: exactly two 32-KiB pages, never unlimited or runtime.
+const SHM_REGION_COUNT:usize=2;
+const SHM_MAPPING_BYTES:usize=PAGE_SIZE*SHM_REGION_COUNT;
 const SHM_LOCK:u32=2;
 const SHM_UNLOCK:u32=1;
 const SHM_SHARED:u32=4;
@@ -57,7 +60,7 @@ impl Scratch{
         for p in [&db,&shm]{
             let f=OpenOptions::new().read(true).write(true).share_mode(1|2|4)
                 .create_new(true).open(p).expect("CREATE_NEW only");
-            if p==&shm {f.set_len(PAGE_SIZE as u64).unwrap();}
+            if p==&shm {f.set_len(SHM_MAPPING_BYTES as u64).unwrap();}
         }
         Self{dir,db,shm}
     }
@@ -75,7 +78,7 @@ impl View{
         let mapping=unsafe{CreateFileMappingW(held.as_raw_handle().cast(),
             ptr::null_mut(),4,0,0,ptr::null())};
         if mapping.is_null(){return None}
-        let view=unsafe{MapViewOfFile(mapping,2|4,0,0,PAGE_SIZE)};
+        let view=unsafe{MapViewOfFile(mapping,2|4,0,0,SHM_MAPPING_BYTES)};
         if view.is_null(){
             let _=unsafe{CloseHandle(mapping)};
             return None;
@@ -152,12 +155,14 @@ unsafe extern "C" fn xshm_map(
     if t.shm_state.is_null(){return ffi::SQLITE_IOERR_SHMMAP}
     let held=unsafe{&mut *t.shm_state};
     let gate=unsafe{&*t.gate};
-    if !held.valid()||page!=0||sz!=PAGE_SIZE as c_int||(extend!=0&&extend!=1){
+    if !held.valid()||page<0||page as usize>=SHM_REGION_COUNT
+        ||sz!=PAGE_SIZE as c_int||(extend!=0&&extend!=1){
         gate.denials.fetch_add(1,Ordering::SeqCst);
         return ffi::SQLITE_IOERR_SHMMAP;
     }
     gate.shm_maps.fetch_add(1,Ordering::SeqCst);
-    unsafe{*out=held.view.view};
+    // One held FileId128 backs both regions; pointer stays within the 64-KiB view.
+    unsafe{*out=held.view.view.cast::<u8>().add(page as usize*PAGE_SIZE).cast()};
     ffi::SQLITE_OK
 }
 unsafe extern "C" fn xshm_lock(
@@ -656,4 +661,80 @@ fn r4_two_windows_processes_serialize_wal_writes_on_fresh_owned_shm(){
     assert!(gate.state.shm_maps.load(Ordering::SeqCst)>=1);
     assert!(gate.state.shm_locks.load(Ordering::SeqCst)>=1);
     drop(db);
+}
+
+
+// R4 region>0 CI-only qualification: the exact same held native SHM file
+// supplies two independent SQLite connections with the same page-1 bytes.
+// It does NOT implement dynamic growth or atomically bind main/WAL/SHM.
+#[test]
+fn r4_owned_xshm_region_one_shared_native_mapping_and_bounded_veto_disposable(){
+    fn map_region(db:&Connection,page:c_int,size:c_int,extend:c_int)->(c_int,*mut c_void){
+        let mut file:*mut ffi::sqlite3_file=ptr::null_mut();
+        // SQLite returns its actual sqlite3_file, not an unrelated pathname re-open.
+        let rc=unsafe{ffi::sqlite3_file_control(db.handle(),ptr::null(),
+            ffi::SQLITE_FCNTL_FILE_POINTER,(&mut file as *mut *mut ffi::sqlite3_file).cast())};
+        assert_eq!(rc,ffi::SQLITE_OK);
+        assert!(!file.is_null());
+        let methods=unsafe{(*file).pMethods};
+        assert!(!methods.is_null());
+        let callback=unsafe{(*methods).xShmMap}.expect("owned test VFS xShmMap");
+        let mut out:*mut c_void=ptr::null_mut();
+        let code=unsafe{callback(file,page,size,extend,&mut out)};
+        (code,out)
+    }
+    let root=Scratch::fresh();
+    assert_eq!(fs::metadata(&root.shm).unwrap().len(),SHM_MAPPING_BYTES as u64);
+    let gate=Registered::fresh(&root);
+    let first=Connection::open_with_flags_and_vfs(
+        &root.db,OpenFlags::SQLITE_OPEN_READ_WRITE,gate.name()).unwrap();
+    let lock_mode:String=first.query_row("PRAGMA locking_mode=NORMAL",[],|r|r.get(0)).unwrap();
+    assert_eq!(lock_mode.to_ascii_lowercase(),"normal");
+    let journal:String=first.query_row("PRAGMA journal_mode=WAL",[],|r|r.get(0)).unwrap();
+    assert_eq!(journal.to_ascii_lowercase(),"wal");
+    first.execute_batch("CREATE TABLE region_one_fixture(n INTEGER NOT NULL);
+        INSERT INTO region_one_fixture VALUES (3);").unwrap();
+    let second=Connection::open_with_flags_and_vfs(
+        &root.db,OpenFlags::SQLITE_OPEN_READ_WRITE,gate.name()).unwrap();
+    let observed:i64=second.query_row("SELECT SUM(n) FROM region_one_fixture",[],|r|r.get(0)).unwrap();
+    assert_eq!(observed,3);
+    let pinned=id(&gate.state.master).unwrap();
+    let (rc0,page0)=map_region(&first,0,PAGE_SIZE as c_int,0);
+    let (rc1,page1)=map_region(&first,1,PAGE_SIZE as c_int,0);
+    assert_eq!((rc0,rc1),(ffi::SQLITE_OK,ffi::SQLITE_OK));
+    assert!(!page0.is_null()&&!page1.is_null());
+    assert_eq!(page1 as usize-page0 as usize,PAGE_SIZE);
+    let (rc_peer,peer_region1)=map_region(&second,1,PAGE_SIZE as c_int,0);
+    assert_eq!(rc_peer,ffi::SQLITE_OK);
+    assert!(!peer_region1.is_null());
+    const PROBE_OFFSET:usize=127; // within region 1; not the WAL-index region-0 header
+    let before=unsafe{*page1.cast::<u8>().add(PROBE_OFFSET)};
+    unsafe{*page1.cast::<u8>().add(PROBE_OFFSET)=0xA7};
+    assert_eq!(unsafe{*peer_region1.cast::<u8>().add(PROBE_OFFSET)},0xA7,
+        "two SQLite VFS clients must see the same held native SHM page-1 bytes");
+    unsafe{*page1.cast::<u8>().add(PROBE_OFFSET)=before};
+    assert_eq!(id(&gate.state.master),Some(pinned));
+    assert_eq!(id(&gate.state.master_db),Some(gate.state.expected_db));
+    let accepted=gate.state.shm_maps.load(Ordering::SeqCst);
+    let denied=gate.state.denials.load(Ordering::SeqCst);
+    for (region,size,extend) in [
+        (2,PAGE_SIZE as c_int,0),
+        (-1,PAGE_SIZE as c_int,0),
+        (c_int::MAX,PAGE_SIZE as c_int,1),
+        (1,(PAGE_SIZE/2) as c_int,0),
+        (1,PAGE_SIZE as c_int,2),
+    ] {
+        let (code,output)=map_region(&first,region,size,extend);
+        assert_eq!(code,ffi::SQLITE_IOERR_SHMMAP);
+        assert!(output.is_null(),"rejected mapping cannot leak an unbounded pointer");
+    }
+    assert_eq!(gate.state.shm_maps.load(Ordering::SeqCst),accepted);
+    assert!(gate.state.denials.load(Ordering::SeqCst)>=denied+5);
+    let final_count:i64=first.query_row(
+        "SELECT COUNT(*) FROM region_one_fixture",[],|r|r.get(0)).unwrap();
+    assert_eq!(final_count,1,"out-of-bounds probes cannot damage WAL page zero");
+    drop(second);
+    drop(first);
+    assert!(gate.state.shm_unmaps.load(Ordering::SeqCst)>=2);
+    // This is only a two-page borrowed test mapping, NOT all WAL-index regions.
 }
