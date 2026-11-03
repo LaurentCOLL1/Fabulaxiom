@@ -1310,6 +1310,29 @@ async function run() {
       assert.ok((await audit.innerText()).includes("precedence_revoked"));
       assert.ok((await audit.innerText()).includes("anchor_superseded"));
       assert.equal(await audit.getByRole("listitem").count(), 4);
+      // P4b: independently enter the isolated P4a human review.
+      // No P3 in-memory state is exported to production or shared across modes.
+      await page.getByRole("button", { name: "Ouvrir P4a — revue humaine fictive" }).click();
+      const review = page.getByRole("region", { name: "P4a revue humaine fictive isolée" });
+      assert.ok((await review.innerText()).includes("fiction-world-one"));
+      assert.ok((await review.innerText()).includes("confirmées en mémoire : 0"));
+      await review.getByRole("button", { name: "Prévisualiser sans modifier" }).click();
+      const delta = review.getByRole("region", { name: "Différence fictive avant après" });
+      assert.ok((await delta.innerText()).includes("fiction-draft-0001"));
+      assert.ok((await review.innerText()).includes("confirmées en mémoire : 0"));
+      await delta.getByRole("button", { name: "Confirmer en mémoire fictive uniquement" }).click();
+      assert.ok((await review.getByRole("status").innerText())
+        .includes("confirmation humaine motivée obligatoire"));
+      assert.ok((await review.innerText()).includes("confirmées en mémoire : 0"));
+      await delta.getByRole("textbox", { name: "Motif humain de confirmation" })
+        .fill("L'auteur fictif confirme cet ordre");
+      await delta.getByRole("button", { name: "Confirmer en mémoire fictive uniquement" }).click();
+      assert.ok((await review.innerText()).includes("confirmées en mémoire : 1"));
+      assert.equal(await review.getByRole("region", { name: "Différence fictive avant après" }).count(), 0);
+      // The old direct relation must now be refused, not silently duplicated.
+      await review.getByRole("button", { name: "Prévisualiser sans modifier" }).click();
+      assert.ok((await review.getByRole("status").innerText())
+        .includes("Relation directe déjà déclarée"));
     });
     await caseRun("84-p3a-refused-incomplete-relation-rolls-back", async () => {
       await page.getByRole("button", { name: "Ouvrir P3a — commandes fictives typées" }).click();
@@ -1347,6 +1370,22 @@ async function run() {
         name: "Résultat des commandes fictives",
       }).innerText()).includes("1 commande(s)"));
       assert.equal(await workshop.getByText("invented-rev-A").count(), 0);
+      // A second fictional universe stays isolated during staged review.
+      await page.getByRole("button", { name: "Ouvrir P4a — revue humaine fictive" }).click();
+      const review = page.getByRole("region", { name: "P4a revue humaine fictive isolée" });
+      assert.ok((await review.innerText()).includes("fiction-world-two"));
+      await review.getByRole("button", { name: "Prévisualiser sans modifier" }).click();
+      const delta = review.getByRole("region", { name: "Différence fictive avant après" });
+      assert.ok((await delta.innerText()).includes("Révisions source conservées : aucune"));
+      assert.equal(await delta.getByText("invented-rev-A").count(), 0);
+      await delta.getByRole("textbox", { name: "Motif humain de confirmation" })
+        .fill("Deuxième univers fictif");
+      await delta.getByRole("button", { name: "Confirmer en mémoire fictive uniquement" }).click();
+      assert.ok((await review.innerText()).includes("confirmées en mémoire : 1"));
+      // Corrupt cyclic fixture must not render a staged approval surface.
+      await page.getByRole("button", { name: "Charger un cycle fictif invalide" }).click();
+      assert.ok((await page.getByRole("alert").innerText()).includes("Cycle fictif refusé pour la revue P4a"));
+      assert.equal(await page.getByRole("region", { name: "P4a revue humaine fictive isolée" }).count(), 0);
     });
     assert.equal(cases.length, 85);
     // Historical PR #146 source marker: M32_BROWSER_REAL_CHROMIUM_PASS 62/62
