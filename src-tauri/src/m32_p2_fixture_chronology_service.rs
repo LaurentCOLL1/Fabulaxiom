@@ -31,6 +31,7 @@ pub(crate) struct FixtureSnapshot {
     pub anchors: Vec<chronology::ManualAnchor>,
     pub precedences: Vec<chronology::ManualPrecedence>,
     pub current_anchor_ids: Vec<String>,
+    pub current_precedence_ids: Vec<String>,
 }
 
 pub(crate) struct FixtureChronologyService<'a> {
@@ -129,11 +130,27 @@ impl<'a> FixtureChronologyService<'a> {
         Ok(())
     }
 
+    /// Append-only retirement on an already borrowed v7 test fixture.
+    /// The prior relation is preserved; the SQLite decision is not a delete.
+    pub fn revoke_precedence(
+        &mut self, decision_id: &str, universe: &str, prior_id: &str,
+        reason: &str, source_revision_id: Option<&str>,
+    ) -> Result<(), FixtureError> {
+        let tx = self.db.transaction_with_behavior(TransactionBehavior::Immediate)?;
+        chronology::decide_precedence(
+            &tx, decision_id, universe, prior_id,
+            "revoke", None, reason, source_revision_id,
+        )?;
+        tx.commit()?;
+        Ok(())
+    }
+
     pub fn snapshot(&self, universe: &str) -> Result<FixtureSnapshot, FixtureError> {
         Ok(FixtureSnapshot {
             anchors: chronology::list_anchors(&*self.db, universe)?,
             precedences: chronology::list_precedences(&*self.db, universe)?,
             current_anchor_ids: chronology::list_current_anchor_ids(&*self.db, universe)?,
+            current_precedence_ids: chronology::list_current_precedence_ids(&*self.db, universe)?,
         })
     }
 }
@@ -244,6 +261,53 @@ mod tests {
         assert_eq!(snapshot.current_anchor_ids, vec!["a1", "a2"]);
         assert_eq!(snapshot.precedences.len(), 1);
         assert!(service.snapshot("u2").unwrap().anchors.is_empty());
+    }
+
+    #[test]
+    fn p2c_preopened_fixture_revoke_is_append_only_scoped_and_idempotently_refused() {
+        let mut db = invented_connection();
+        {
+            let mut service = FixtureChronologyService::from_already_opened_disposable_v7(&mut db).unwrap();
+            service.create_anchor_with_optional_relation(draft("a1","u1"), None).unwrap();
+            service.create_anchor_with_optional_relation(
+                draft("a2","u1"), Some(relation("edge12","a1","a2")),
+            ).unwrap();
+            assert_eq!(service.snapshot("u1").unwrap().current_precedence_ids, vec!["edge12"]);
+            service.revoke_precedence(
+                "rev-edge12", "u1", "edge12", "Author withdrew this order", Some("r2"),
+            ).unwrap();
+            let after = service.snapshot("u1").unwrap();
+            assert_eq!(after.current_precedence_ids, Vec::<String>::new());
+            assert_eq!(after.precedences.len(), 1, "original immutable relation retained");
+            assert_eq!(after.current_anchor_ids, vec!["a1","a2"]);
+            assert!(matches!(
+                service.revoke_precedence("rev-again","u1","edge12","duplicate",Some("r2")),
+                Err(FixtureError::Sql(_)),
+            ));
+            assert!(matches!(
+                service.revoke_precedence("foreign","u2","edge12","foreign",None),
+                Err(FixtureError::Sql(_)),
+            ));
+            assert!(matches!(
+                service.revoke_precedence("missing","u1","absent","missing",None),
+                Err(FixtureError::Sql(_)),
+            ));
+            assert!(service.snapshot("u2").unwrap().precedences.is_empty());
+        }
+        let (action, reason, source): (String,String,Option<String>) = db.query_row(
+            "SELECT action,reason,source_revision_id
+             FROM world_time_precedence_decisions WHERE id='rev-edge12'",
+            [], |row| Ok((row.get(0)?,row.get(1)?,row.get(2)?)),
+        ).unwrap();
+        assert_eq!(action, "revoke");
+        assert_eq!(reason, "Author withdrew this order");
+        assert_eq!(source.as_deref(), Some("r2"));
+        let historic: i64 = db.query_row(
+            "SELECT COUNT(*) FROM world_time_precedences WHERE id='edge12'",
+            [], |row| row.get(0),
+        ).unwrap();
+        assert_eq!(historic, 1);
+        assert_eq!(db.query_row("PRAGMA integrity_check", [], |row| row.get::<_,String>(0)).unwrap(), "ok");
     }
 
     #[test]
