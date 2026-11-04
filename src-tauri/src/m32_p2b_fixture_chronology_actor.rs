@@ -110,6 +110,14 @@ enum Command {
     ActiveGraph {
         universe: String, reply: Reply<Vec<chronology::ActivePrecedence>>,
     },
+
+    // P2e: one authored revocation + one restatement; single actor command
+    // and a single SQLite IMMEDIATE transaction on the preopened test fixture.
+    CorrectPrecedence {
+        decision_id: String, restatement_id: String, universe: String,
+        prior_id: String, before: String, after: String, reason: String,
+        source_revision_id: Option<String>, reply: Reply<()>,
+    },
     Stop(Sender<()>),
 }
 
@@ -169,6 +177,18 @@ impl FixtureChronologyClient {
     ) -> Result<Vec<chronology::ActivePrecedence>, ActorError> {
         self.call(|reply| Command::ActiveGraph { universe, reply })
     }
+
+    pub(crate) fn correct_precedence_atomically(
+        &self, decision_id: String, restatement_id: String, universe: String,
+        prior_id: String, before: String, after: String, reason: String,
+        source_revision_id: Option<String>,
+    ) -> Result<(), ActorError> {
+        self.call(|reply| Command::CorrectPrecedence {
+            decision_id, restatement_id, universe, prior_id, before, after,
+            reason, source_revision_id, reply,
+        })
+    }
+
 }
 
 fn run(mut connection: Connection, rx: Receiver<Command>) {
@@ -213,6 +233,17 @@ fn run(mut connection: Connection, rx: Receiver<Command>) {
             Command::ActiveGraph { universe, reply } => {
                 let _ = reply.send(service.p2d_active_graph(&universe));
             }
+
+            Command::CorrectPrecedence {
+                decision_id, restatement_id, universe, prior_id, before,
+                after, reason, source_revision_id, reply,
+            } => {
+                let _ = reply.send(service.correct_precedence_atomically(
+                    &decision_id, &restatement_id, &universe, &prior_id,
+                    &before, &after, &reason, source_revision_id.as_deref(),
+                ));
+            }
+
             Command::Stop(ack) => {
                 let _ = ack.send(());
                 break;
@@ -334,6 +365,47 @@ mod tests {
         owner.shutdown().unwrap();
     }
 
+
+
+    #[test]
+    fn p2e_actor_atomic_correction_is_single_command_and_failure_is_non_destructive() {
+        let db = {
+            let db = invented_v7();
+            db.execute_batch(include_str!("../sql/m3_2_active_precedence_candidate.sql"))
+                .expect("P2e inventoried overlay in RAM only");
+            db
+        };
+        let owner = FixtureChronologyActor::from_preopened_invented_v7(db).unwrap();
+        let client = owner.client();
+        client.create_anchor(anchor("a1", "u1"), None).unwrap();
+        client.create_anchor(anchor("a2", "u1"), None).unwrap();
+        client.create_anchor(anchor("a3", "u1"), None).unwrap();
+        client.create_precedence(before("old12", "a1", "a2")).unwrap();
+        client.create_precedence(before("edge23", "a2", "a3")).unwrap();
+        assert!(matches!(client.correct_precedence_atomically(
+            "bad-decision".into(), "bad-cycle".into(), "u1".into(),
+            "old12".into(), "a3".into(), "a2".into(),
+            "Author tried cyclic rewrite".into(), Some("r2".into()),
+        ), Err(ActorError::Domain(_))));
+        assert_eq!(client.snapshot("u1".into()).unwrap().current_precedence_ids,
+                   vec!["edge23", "old12"]);
+        client.correct_precedence_atomically(
+            "decision12".into(), "new21".into(), "u1".into(),
+            "old12".into(), "a2".into(), "a1".into(),
+            "Author revised history ordering".into(), Some("r2".into()),
+        ).unwrap();
+        let current = client.p2d_active_graph("u1".into()).unwrap();
+        assert_eq!(current.len(), 2);
+        let reverse = current.iter().find(|edge| edge.id == "new21").unwrap();
+        assert_eq!((reverse.before_anchor_id.as_str(), reverse.after_anchor_id.as_str(),
+                    reverse.origin.as_str()), ("a2", "a1", "restatement"));
+        assert_eq!(client.snapshot("u1".into()).unwrap().precedences.len(), 2);
+        assert_eq!(client.snapshot("u1".into()).unwrap().current_precedence_ids,
+                   vec!["edge23"]);
+        assert!(client.p2d_active_graph("u2".into()).unwrap().is_empty());
+        owner.shutdown().unwrap();
+        assert!(matches!(client.p2d_active_graph("u1".into()), Err(ActorError::Disconnected)));
+    }
 
     #[test]
     fn p2d_actor_serialized_restatement_preserves_original_and_refuses_duplicates() {
