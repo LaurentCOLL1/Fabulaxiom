@@ -7,7 +7,7 @@ import {
   applyP3FictionalCommand, startP3FictionalState,
   type P3Command,
 } from "./m32P3FictionalCommandContract";
-import { confirmP4aFictionalPlan, stageP4aFictionalPlan } from "./m32P4aFictionalReview";
+import { confirmP4aFictionalPlan, confirmP4cFictionalPlanWithReceipt, stageP4aFictionalPlan } from "./m32P4aFictionalReview";
 
 const fixture: M32ChronologyProjection = {
   universe_id: "fiction-p4a-preview", reader_reveal_status: "not_authored",
@@ -43,6 +43,17 @@ describe("M3.2 P4a staged human review (fiction only)",()=>{
     expect(after.draft.snapshot.precedences).toHaveLength(1);
     expect(state.draft.snapshot.precedences).toHaveLength(0);
     expect(after.real_g3_authorized).toBe(false);
+    const { state: documented, receipt } = confirmP4cFictionalPlanWithReceipt(
+      state, plan, "  Motif personnel inventé  ",
+    );
+    expect(documented).toEqual(after);
+    expect(receipt.human_reason).toBe("Motif personnel inventé");
+    expect(receipt.before_commands).toBe(0);
+    expect(receipt.after_commands).toBe(1);
+    expect(receipt.created_precedence_ids).toEqual(["fiction-draft-0001"]);
+    expect(receipt.data_origin).toBe("fictional_browser_memory_only");
+    expect(receipt.real_g3_authorized).toBe(false);
+    expect(receipt.production_writer_admitted).toBe(false);
   });
   it("03 rejects stale baseline even when a candidate looked valid earlier",()=>{
     const state=initial(),plan=stageP4aFictionalPlan(state,edge);
@@ -59,6 +70,7 @@ describe("M3.2 P4a staged human review (fiction only)",()=>{
     const record=JSON.stringify(before);
     expect(()=>confirmP4aFictionalPlan(before,fake,"Motif")).toThrow(/modifiée/);
     expect(JSON.stringify(before)).toBe(record);
+    expect(()=>confirmP4cFictionalPlanWithReceipt(before,fake,"Motif")).toThrow(/modifiée/);
   });
   it("05 refuses foreign universes, cycles and nonexistent IDs at staging",()=>{
     const before=initial(),original=JSON.stringify(before);
@@ -79,6 +91,9 @@ describe("M3.2 P4a staged human review (fiction only)",()=>{
     }));
     expect(html).toContain("P4a — vérifier avant de confirmer");
     expect(html).toContain("Prévisualiser sans modifier");
+    expect(html).toContain("Journal des confirmations fictives en mémoire");
+    expect(html).toContain("ni signature, ni sauvegarde");
+    expect(html).not.toContain("Annuler la prévisualisation fictive");
     expect(html).toContain("Aucune commande Tauri");
     expect(html).toContain("STOP_UNAVAILABLE");
     expect(html).not.toContain("invoke(");
