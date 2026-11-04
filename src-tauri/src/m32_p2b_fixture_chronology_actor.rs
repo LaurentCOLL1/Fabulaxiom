@@ -118,6 +118,14 @@ enum Command {
         prior_id: String, before: String, after: String, reason: String,
         source_revision_id: Option<String>, reply: Reply<()>,
     },
+
+    // P2f: speculative author review, always rolled back on the worker.
+    PreviewCorrection {
+        decision_id: String, restatement_id: String, universe: String,
+        prior_id: String, before: String, after: String, reason: String,
+        source_revision_id: Option<String>,
+        reply: Reply<crate::m32_p2_fixture_chronology_service::CorrectionPreview>,
+    },
     Stop(Sender<()>),
 }
 
@@ -189,6 +197,18 @@ impl FixtureChronologyClient {
         })
     }
 
+    pub(crate) fn preview_atomic_correction(
+        &self, decision_id: String, restatement_id: String, universe: String,
+        prior_id: String, before: String, after: String, reason: String,
+        source_revision_id: Option<String>,
+    ) -> Result<crate::m32_p2_fixture_chronology_service::CorrectionPreview, ActorError> {
+        self.call(|reply| Command::PreviewCorrection {
+            decision_id, restatement_id, universe, prior_id, before, after,
+            reason, source_revision_id, reply,
+        })
+    }
+
+
 }
 
 fn run(mut connection: Connection, rx: Receiver<Command>) {
@@ -244,6 +264,16 @@ fn run(mut connection: Connection, rx: Receiver<Command>) {
                 ));
             }
 
+
+            Command::PreviewCorrection {
+                decision_id, restatement_id, universe, prior_id,
+                before, after, reason, source_revision_id, reply,
+            } => {
+                let _ = reply.send(service.preview_atomic_correction(
+                    &decision_id, &restatement_id, &universe, &prior_id,
+                    &before, &after, &reason, source_revision_id.as_deref(),
+                ));
+            }
             Command::Stop(ack) => {
                 let _ = ack.send(());
                 break;
@@ -366,6 +396,46 @@ mod tests {
     }
 
 
+
+
+    #[test]
+    fn p2f_actor_preview_is_not_a_confirmation_token_and_detects_intervening_edges() {
+        let db = {
+            let db = invented_v7();
+            db.execute_batch(include_str!("../sql/m3_2_active_precedence_candidate.sql"))
+                .expect("Invented v7 RAM only");
+            db
+        };
+        let owner = FixtureChronologyActor::from_preopened_invented_v7(db).unwrap();
+        let preview_client = owner.client();
+        let other_client = owner.client();
+        for id in ["a1","a2","a3"] {
+            preview_client.create_anchor(anchor(id,"u1"),None).unwrap();
+        }
+        preview_client.create_precedence(before("old12","a1","a2")).unwrap();
+        let dry_run=preview_client.preview_atomic_correction(
+            "decision12".into(),"new21".into(),"u1".into(),"old12".into(),
+            "a2".into(),"a1".into(),"Author must confirm separately".into(),Some("r2".into()),
+        ).unwrap();
+        assert_eq!(dry_run.prior_precedence_id,"old12");
+        assert_eq!(dry_run.proposed.id,"new21");
+        assert_eq!(preview_client.snapshot("u1".into()).unwrap().current_precedence_ids,
+                   vec!["old12"]);
+        // A second serialized client changes the candidate graph AFTER preview.
+        // The dry-run is not a token authorizing a stale write.
+        other_client.create_precedence(before("edge13","a1","a3")).unwrap();
+        other_client.create_precedence(before("edge32","a3","a2")).unwrap();
+        assert!(matches!(preview_client.correct_precedence_atomically(
+            "decision12".into(),"new21".into(),"u1".into(),"old12".into(),
+            "a2".into(),"a1".into(),"Would now form an active cycle".into(),Some("r2".into()),
+        ), Err(ActorError::Domain(_))));
+        assert_eq!(preview_client.snapshot("u1".into()).unwrap().current_precedence_ids,
+                   vec!["edge13","edge32","old12"]);
+        assert_eq!(preview_client.p2d_active_graph("u1".into()).unwrap().len(),3);
+        assert!(preview_client.snapshot("u2".into()).unwrap().anchors.is_empty());
+        owner.shutdown().unwrap();
+        assert!(matches!(preview_client.snapshot("u1".into()), Err(ActorError::Disconnected)));
+    }
 
     #[test]
     fn p2e_actor_atomic_correction_is_single_command_and_failure_is_non_destructive() {
