@@ -192,6 +192,29 @@ impl<'a> FixtureChronologyService<'a> {
         Ok(())
     }
 
+
+    /// P2e fixture-only authored correction: append revocation AND new
+    /// stage-4 restatement in the same transaction. If either INSERT is
+    /// rejected by STRICT scope/cycle/uniqueness guards, rollback both.
+    pub fn correct_precedence_atomically(
+        &mut self, decision_id: &str, restatement_id: &str,
+        universe: &str, prior_id: &str, before: &str, after: &str,
+        reason: &str, source_revision_id: Option<&str>,
+    ) -> Result<(), FixtureError> {
+        self.require_p2d_overlay()?;
+        let tx = self.db.transaction_with_behavior(TransactionBehavior::Immediate)?;
+        chronology::decide_precedence(
+            &tx, decision_id, universe, prior_id,
+            "revoke", None, reason, source_revision_id,
+        )?;
+        chronology::restate_revoked_precedence(
+            &tx, restatement_id, universe, prior_id,
+            before, after, reason, source_revision_id,
+        )?;
+        tx.commit()?;
+        Ok(())
+    }
+
     /// Active partial order is not the historical raw-v7 edge inventory.
     /// This deliberately models only the stage-4 overlay, not later generations.
     pub fn p2d_active_graph(
@@ -351,6 +374,88 @@ mod tests {
         assert!(service.snapshot("u2").unwrap().anchors.is_empty());
     }
 
+
+
+    #[test]
+    fn p2e_atomic_correction_commits_both_assertions_once_with_history() {
+        let mut db = invented_connection();
+        db.execute_batch(include_str!("../sql/m3_2_active_precedence_candidate.sql")).unwrap();
+        {
+            let mut service = FixtureChronologyService::from_already_opened_disposable_v7(&mut db).unwrap();
+            service.create_anchor_with_optional_relation(draft("a1", "u1"), None).unwrap();
+            service.create_anchor_with_optional_relation(draft("a2", "u1"), None).unwrap();
+            service.create_precedence(relation("old12", "a1", "a2")).unwrap();
+            service.correct_precedence_atomically(
+                "decision12", "new21", "u1", "old12", "a2", "a1",
+                "Writer corrected event ordering", Some("r2"),
+            ).unwrap();
+            let active = service.p2d_active_graph("u1").unwrap();
+            assert_eq!(active.len(), 1);
+            assert_eq!((active[0].id.as_str(), active[0].before_anchor_id.as_str(),
+                        active[0].after_anchor_id.as_str(), active[0].origin.as_str()),
+                       ("new21", "a2", "a1", "restatement"));
+            assert_eq!(service.snapshot("u1").unwrap().precedences.len(), 1);
+            assert!(service.snapshot("u1").unwrap().current_precedence_ids.is_empty());
+            assert!(service.p2d_active_graph("u2").unwrap().is_empty());
+        }
+        let decision: (String, String, String) = db.query_row(
+            "SELECT action,reason,source_revision_id
+             FROM world_time_precedence_decisions WHERE id='decision12'",
+            [], |row| Ok((row.get(0)?, row.get(1)?, row.get(2)?)),
+        ).unwrap();
+        assert_eq!(decision, (
+            "revoke".into(), "Writer corrected event ordering".into(), "r2".into(),
+        ));
+        let historic: i64 = db.query_row(
+            "SELECT COUNT(*) FROM world_time_precedences WHERE id='old12'",
+            [], |row| row.get(0),
+        ).unwrap();
+        let head: String = db.query_row(
+            "SELECT revision_id FROM scene_revision_heads WHERE scene_id='s2'",
+            [], |row| row.get(0),
+        ).unwrap();
+        assert_eq!((historic, head.as_str()), (1, "r3"));
+        assert_eq!(db.query_row("PRAGMA integrity_check", [], |row| row.get::<_,String>(0)).unwrap(), "ok");
+    }
+
+    #[test]
+    fn p2e_atomic_correction_rolls_back_decision_on_cycle_or_wrong_scope() {
+        let mut db = invented_connection();
+        db.execute_batch(include_str!("../sql/m3_2_active_precedence_candidate.sql")).unwrap();
+        {
+            let mut service = FixtureChronologyService::from_already_opened_disposable_v7(&mut db).unwrap();
+            for id in ["a1", "a2", "a3"] {
+                service.create_anchor_with_optional_relation(draft(id, "u1"), None).unwrap();
+            }
+            service.create_precedence(relation("old12", "a1", "a2")).unwrap();
+            service.create_precedence(relation("edge23", "a2", "a3")).unwrap();
+            assert!(matches!(service.correct_precedence_atomically(
+                "decision-cycle", "bad32", "u1", "old12", "a3", "a2",
+                "Would cycle with A2 before A3", Some("r2"),
+            ), Err(FixtureError::Sql(_))));
+            assert_eq!(service.snapshot("u1").unwrap().current_precedence_ids,
+                       vec!["edge23", "old12"]);
+            assert_eq!(service.p2d_active_graph("u1").unwrap().len(), 2);
+            assert!(matches!(service.correct_precedence_atomically(
+                "decision-cross", "bad-cross", "u2", "old12", "a2", "a1",
+                "Different invented universe", None,
+            ), Err(FixtureError::Sql(_))));
+            assert!(matches!(service.correct_precedence_atomically(
+                "decision-invalid-source", "bad-source", "u1", "old12",
+                "a2", "a1", "Bad historical provenance", Some("r3-bogus"),
+            ), Err(FixtureError::Sql(_))));
+        }
+        let decisions: i64 = db.query_row(
+            "SELECT COUNT(*) FROM world_time_precedence_decisions",
+            [], |row| row.get(0),
+        ).unwrap();
+        let restatements: i64 = db.query_row(
+            "SELECT COUNT(*) FROM world_time_precedence_restatements",
+            [], |row| row.get(0),
+        ).unwrap();
+        assert_eq!((decisions, restatements), (0, 0), "both inserts rolled back");
+        assert_eq!(db.query_row("PRAGMA integrity_check", [], |row| row.get::<_,String>(0)).unwrap(), "ok");
+    }
 
     #[test]
     fn p2d_preopened_stage4_restatement_reverses_only_active_order() {
