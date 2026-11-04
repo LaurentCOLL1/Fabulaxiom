@@ -1,3 +1,5 @@
+> **État terminal vérifié le 4 novembre 2026 (#273)** : P4c fusionnée et qualifiée sur fixtures uniquement. Source #41746243244 au HEAD `2ed3702fcc64617df9fb88f211a0072a9a1e6296`, postmain indépendante #41747912030 au `main=d17165be5f5d05b585038b476191b6e5ad5b2918`, completed/SUCCESS. 303 Rust / 7 Greenfield / 68 inventaire / 183 continuité / 6 Vitest / Chromium 85/85 normal et CSP stricte / 19 blobs fictifs Git. Protect main strict bypass=[], reviews/threads=[]. Le titre et les critères « candidat » ci-dessous sont archivés et ne sont plus l'état actuel. P4 réel, writer, G3 et opérateur toujours STOP.
+
 # M3.2 — P4c : motif et annulation de la revue humaine fictive (CANDIDAT NON QUALIFIÉ)
 
 **4 novembre 2026 — lot produit test-only, non admis.** Base protégée : `main=b5523330f3fc0d7861eb3fd5291ff830f8dcc065`. #272 source Windows #41710549576 et postmain indépendante #41712621238 completed/SUCCESS aux SHA exacts : **303 Rust / 7 Greenfield / 68 inventaire SQLite / 183 continuité / Chromium 85/85 normal + CSP stricte / 6 Vitest P4a / 19 blobs Git fictifs**. Aucune preuve ne permet d'ouvrir P4 réel ni G3.
