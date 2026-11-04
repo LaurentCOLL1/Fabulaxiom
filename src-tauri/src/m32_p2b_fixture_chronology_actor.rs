@@ -96,6 +96,10 @@ enum Command {
     Snapshot {
         universe: String, reply: Reply<FixtureSnapshot>,
     },
+    RevokePrecedence {
+        decision_id: String, universe: String, prior_id: String,
+        reason: String, source_revision_id: Option<String>, reply: Reply<()>,
+    },
     Stop(Sender<()>),
 }
 
@@ -132,6 +136,14 @@ impl FixtureChronologyClient {
     pub(crate) fn snapshot(&self, universe: String) -> Result<FixtureSnapshot, ActorError> {
         self.call(|reply| Command::Snapshot { universe, reply })
     }
+    pub(crate) fn revoke_precedence(
+        &self, decision_id: String, universe: String, prior_id: String,
+        reason: String, source_revision_id: Option<String>,
+    ) -> Result<(), ActorError> {
+        self.call(|reply| Command::RevokePrecedence {
+            decision_id, universe, prior_id, reason, source_revision_id, reply,
+        })
+    }
 }
 
 fn run(mut connection: Connection, rx: Receiver<Command>) {
@@ -154,6 +166,14 @@ fn run(mut connection: Connection, rx: Receiver<Command>) {
             }
             Command::Snapshot { universe, reply } => {
                 let _ = reply.send(service.snapshot(&universe));
+            }
+            Command::RevokePrecedence {
+                decision_id, universe, prior_id, reason, source_revision_id, reply,
+            } => {
+                let _ = reply.send(service.revoke_precedence(
+                    &decision_id, &universe, &prior_id, &reason,
+                    source_revision_id.as_deref(),
+                ));
             }
             Command::Stop(ack) => {
                 let _ = ack.send(());
@@ -273,6 +293,34 @@ mod tests {
         assert_eq!(view.precedences.len(), 1);
         assert!(view.anchors.iter().all(|a| a.source_revision_id.as_deref()==Some("r2")));
         assert!(client.snapshot("u2".into()).unwrap().anchors.is_empty());
+        owner.shutdown().unwrap();
+    }
+
+    #[test]
+    fn p2c_actor_revoke_is_serialized_and_retains_historical_relation() {
+        let owner = FixtureChronologyActor::from_preopened_invented_v7(invented_v7()).unwrap();
+        let client = owner.client();
+        client.create_anchor(anchor("a1","u1"), None).unwrap();
+        client.create_anchor(anchor("a2","u1"), None).unwrap();
+        client.create_precedence(before("edge12","a1","a2")).unwrap();
+        assert_eq!(client.snapshot("u1".into()).unwrap().current_precedence_ids, vec!["edge12"]);
+        client.revoke_precedence(
+            "decision1".into(),"u1".into(),"edge12".into(),
+            "Author changed the chronology".into(),Some("r2".into()),
+        ).unwrap();
+        let state = client.snapshot("u1".into()).unwrap();
+        assert_eq!(state.current_precedence_ids, Vec::<String>::new());
+        assert_eq!(state.precedences.len(), 1);
+        assert_eq!(state.current_anchor_ids, vec!["a1","a2"]);
+        assert!(matches!(client.revoke_precedence(
+            "decision2".into(),"u1".into(),"edge12".into(),
+            "No duplicate retirements".into(),None,
+        ), Err(ActorError::Domain(_))));
+        assert!(matches!(client.revoke_precedence(
+            "foreign".into(),"u2".into(),"edge12".into(),
+            "Foreign universe".into(),None,
+        ), Err(ActorError::Domain(_))));
+        assert!(client.snapshot("u2".into()).unwrap().precedences.is_empty());
         owner.shutdown().unwrap();
     }
 
