@@ -1346,6 +1346,30 @@ async function run() {
       await review.getByRole("button", { name: "Prévisualiser sans modifier" }).click();
       assert.ok((await review.getByRole("status").innerText())
         .includes("Relation directe déjà déclarée"));
+      // P4d: select a distinct command in the SAME fictional session.
+      // Selection cannot reuse a staged approval; confirmation stays explicit.
+      const chooser = review.getByRole("combobox", { name: "Commande fictive à réviser" });
+      await chooser.selectOption("alternate");
+      assert.equal(await review.getByRole("region", {
+        name: "Différence fictive avant après",
+      }).count(), 0);
+      await review.getByRole("button", { name: "Prévisualiser sans modifier" }).click();
+      const secondPreview = review.getByRole("region", {
+        name: "Différence fictive avant après",
+      });
+      assert.ok((await secondPreview.innerText()).includes("human-ab"));
+      assert.ok((await review.innerText()).includes("confirmées en mémoire : 1"));
+      await secondPreview.getByRole("textbox", { name: "Motif humain de confirmation" })
+        .fill("Retirer l'ancienne relation inventée");
+      await secondPreview.getByRole("button", {
+        name: "Confirmer en mémoire fictive uniquement",
+      }).click();
+      assert.ok((await review.innerText()).includes("confirmées en mémoire : 2"));
+      assert.equal(await decisionLog.getByRole("listitem").count(), 2);
+      assert.ok((await decisionLog.innerText()).includes("L'auteur fictif confirme cet ordre"));
+      assert.ok((await decisionLog.innerText()).includes("Retirer l'ancienne relation inventée"));
+      assert.ok((await decisionLog.innerText()).includes("revoke_precedence"));
+      assert.ok((await decisionLog.innerText()).includes("fiction-world-one"));
     });
     await caseRun("84-p3a-refused-incomplete-relation-rolls-back", async () => {
       await page.getByRole("button", { name: "Ouvrir P3a — commandes fictives typées" }).click();

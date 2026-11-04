@@ -54,6 +54,24 @@ describe("M3.2 P4a staged human review (fiction only)",()=>{
     expect(receipt.data_origin).toBe("fictional_browser_memory_only");
     expect(receipt.real_g3_authorized).toBe(false);
     expect(receipt.production_writer_admitted).toBe(false);
+    // P4d: a second, distinct action is separately reviewed against the updated state.
+    const secondCommand: P3Command = {
+      kind: "create_anchor_with_optional_relation", universe_id: fixture.universe_id,
+      time: { kind: "unknown", calendar: "", label: "", precision: "" },
+      relation: null,
+    };
+    const secondPlan = stageP4aFictionalPlan(documented, secondCommand);
+    const second = confirmP4cFictionalPlanWithReceipt(
+      documented, secondPlan, "Décision humaine fictive distincte",
+    );
+    expect(second.state.commands_committed).toBe(2);
+    expect(second.receipt.before_commands).toBe(1);
+    expect(second.receipt.after_commands).toBe(2);
+    expect(second.receipt.command_kind).toBe("create_anchor_with_optional_relation");
+    expect(second.receipt.created_anchor_ids).toHaveLength(1);
+    expect(receipt.after_commands).toBe(1);
+    expect(state.commands_committed).toBe(0);
+    expect(second.state.real_g3_authorized).toBe(false);
   });
   it("03 rejects stale baseline even when a candidate looked valid earlier",()=>{
     const state=initial(),plan=stageP4aFictionalPlan(state,edge);
@@ -88,9 +106,16 @@ describe("M3.2 P4a staged human review (fiction only)",()=>{
   it("06 renders an isolated, escaped, visibly non-production human review",()=>{
     const html=renderToStaticMarkup(createElement(M32P4aFictionalReview,{
       initial:initial(),command:edge,
+      alternateCommand: {
+        kind: "create_anchor_with_optional_relation", universe_id: fixture.universe_id,
+        time: { kind: "unknown", calendar: "", label: "", precision: "" },
+        relation: null,
+      },
     }));
     expect(html).toContain("P4a — vérifier avant de confirmer");
     expect(html).toContain("Prévisualiser sans modifier");
+    expect(html).toContain("Commande fictive à réviser");
+    expect(html).toContain("Deuxième décision : create_anchor_with_optional_relation");
     expect(html).toContain("Journal des confirmations fictives en mémoire");
     expect(html).toContain("ni signature, ni sauvegarde");
     expect(html).not.toContain("Annuler la prévisualisation fictive");
