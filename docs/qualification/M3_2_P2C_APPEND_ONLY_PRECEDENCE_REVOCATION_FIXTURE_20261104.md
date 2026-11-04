@@ -1,0 +1,21 @@
+# M3.2 — P2c, révocation append-only de précédence sur fixture v7 préouverte (CANDIDAT NON QUALIFIÉ)
+
+**4 novembre 2026.** Parent protégé PR #276 fusionnée `main=67542d540aef3cffb18a1fa4a94625f704b2e1ff`, CI source #41854064697 completed/SUCCESS au HEAD `d7f667c21f91a332d338971299d26643ad997eba`, **303 Rust / 7 Greenfield / 68 inventaire / 183 continuité / 6 Vitest / Chromium 85/85 normal+CSP stricte / 19 blobs**. Sa postmain indépendante #41855989279 **doit être vérifiée séparément**, aucun statut terminal n'en est inféré. Ce P2c est une **nouvelle candidate sans CI acquise**, distincte du parent.
+
+## Lacune et tranche produit limitée
+
+Le service test-only P2a et l'acteur P2b savent créer calendrier, ancre et relation humaine, puis consulter un snapshot, mais ne permettent pas de révoquer une relation dans la même API. Le moteur `m32_manual_chronology::decide_precedence` et les tables v7 de décisions immuables existent déjà. P2c les **réutilise**, sans migration ni nouvel ouvreur SQLite.
+
+- `src-tauri/src/m32_p2_fixture_chronology_service.rs` : méthode `revoke_precedence` utilisant `TransactionBehavior::Immediate` sur la connexion de fixture v7 **déjà empruntée** et `decide_precedence(..., "revoke", None, ...)`. La décision conserve le motif humain et l'identifiant de révision source. En cas de violation de contrainte, la transaction ne conserve aucun effet partiel. Le snapshot expose séparément `current_precedence_ids` tout en gardant la relation historique originale dans `precedences`.
+- `src-tauri/src/m32_p2b_fixture_chronology_actor.rs` : commande typée `RevokePrecedence` ajoutée à la file MPSC bornée du seul propriétaire de la connexion RAM. Le client renvoie l'erreur au lieu de simuler un succès ; aucun chemin opérateur ni IPC Tauri.
+- **Deux tests Rust supplémentaires** en RAM inventée, sans nouvel appel SQLite open : créer deux ancres et un lien, révoquer le lien avec le motif et la source historique `r2`, vérifier la conservation de la relation dans l'historique et l'absence d'ordre courant ; refuser deuxième révocation, cible inexistante et demande sur autre Univers, maintenir la tête narrative `r3`, contrôle `PRAGMA integrity_check` et arrêt du worker.
+
+**Comptes attendus, NON acquis** : **305 Rust / 7 Greenfield / 68 inventaire SQLite / 183 continuité / 6 Vitest P4a–P4d / Chromium 85/85 normal et CSP stricte / 19 blobs fictifs**. Aucune prétention de PASS jusqu'aux journaux Windows au HEAD exact de P2c. Les résultats finaux, et non cette estimation, feront autorité.
+
+## Sécurité parallèle, admission et STOP
+
+Code compilé seulement sous `#[cfg(test)]`, aucune connexion ouverte à partir d'un nom, aucune `App.tsx`, aucun `src-tauri` runtime writer, `PreparedV7Writer`, `V7WriterAdmission` ni commande Tauri, aucune donnée SQLite opérateur, profil Greenfield existant, sauvegarde/journal, marqueur, recovery, migration 007 runtime ou Windows Hello natif. Aucune autorisation de provenance, de custody atomique main/WAL/SHM ou d'absence de writer adversarial n'est démontrée. Aucun ordre temporel total déduit automatiquement.
+
+`PRODUCT_FIRST_PARALLEL_SAFETY` reste actif et réversible ; prévenir propriétaire **AVANT** tout changement de stratégie. R4–R9 continuent en parallèle. `glib 0.18.5` Linux GTK3 / issue #160 / GHSA-wrw7-89jp-8q8g **OPEN_NOT_REMEDIATED**, sans bump incompatible ni dismissal. **STOP** M3.2 IN_PROGRESS_NOT_ACCEPTED, P4 réel/writer/R1–R9 NOT_PROVEN, G2B NOT_ACCEPTED, G2C NOT_AUTHORIZED, G3 STOP_UNAVAILABLE, historique PENDING_EXTERNAL_ATTESTATION(21/3/2), prospective NOT_STARTED, D3b-4/5 STOP.
+
+Gates nécessaires : re-fetch GitHub vivant, revue des fichiers/diff/reviews/threads, `Protect main` ACTIVE strict bypass=[], CI Windows source terminale au SHA exact de P2c, squash protégé avec `expected_head_sha` uniquement après succès, CI postmain indépendante au nouveau `main` et issue #38 append-only. **Fixtures/CI ≠ admission réelle.**
