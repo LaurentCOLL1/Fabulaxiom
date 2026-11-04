@@ -1,8 +1,8 @@
 import { useState, type FormEvent, type ReactElement } from "react";
 import type { P3Command, P3State } from "./m32P3FictionalCommandContract";
 import {
-  confirmP4aFictionalPlan, stageP4aFictionalPlan,
-  type P4aFictionalPlan,
+  confirmP4cFictionalPlanWithReceipt, stageP4aFictionalPlan,
+  type P4aFictionalPlan, type P4cFictionalDecisionReceipt,
 } from "./m32P4aFictionalReview";
 
 /** Standalone P4a fiction-only UX. Intentionally NOT mounted by App.tsx. */
@@ -12,6 +12,7 @@ export default function M32P4aFictionalReview({
   const [state, setState] = useState(initial);
   const [proposal, setProposal] = useState<P4aFictionalPlan | null>(null);
   const [reason, setReason] = useState("");
+  const [receipts, setReceipts] = useState<readonly P4cFictionalDecisionReceipt[]>([]);
   const [message, setMessage] = useState("Aucune proposition prévisualisée.");
   function stage(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -23,11 +24,18 @@ export default function M32P4aFictionalReview({
       setMessage(e instanceof Error ? e.message : "Proposition fictive refusée.");
     }
   }
+  function cancel() {
+    setProposal(null);
+    setReason("");
+    setMessage("Prévisualisation annulée ; aucune décision fictive acceptée.");
+  }
   function confirm(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     try {
       if (!proposal) throw new Error("Aucune proposition fictive à confirmer");
-      setState(confirmP4aFictionalPlan(state, proposal, reason));
+      const accepted = confirmP4cFictionalPlanWithReceipt(state, proposal, reason);
+      setState(accepted.state);
+      setReceipts(previous => [...previous, accepted.receipt]);
       setProposal(null);
       setReason("");
       setMessage("Décision fictive confirmée en RAM ; aucune écriture Rust/SQLite.");
@@ -57,8 +65,17 @@ export default function M32P4aFictionalReview({
         <input id="p4a-human-reason" maxLength={160} value={reason}
           onChange={e => setReason(e.currentTarget.value)} />
         <button type="submit">Confirmer en mémoire fictive uniquement</button>
+        <button type="button" onClick={cancel}>Annuler la prévisualisation fictive</button>
       </form>
     </section>}
+    <section aria-label="Journal des confirmations fictives en mémoire">
+      <h3>Décisions confirmées dans cette session fictive ({receipts.length})</h3>
+      <p>Journal visuel en RAM uniquement : ni identité vérifiée, ni signature, ni sauvegarde.</p>
+      <ol>{receipts.map((entry, index) => <li key={index}>
+        Décision {entry.after_commands} — {entry.command_kind} — motif humain : {entry.human_reason}
+        {" — univers : "}{entry.universe_id}
+      </li>)}</ol>
+    </section>
     <p role="status">{message}</p>
     <p>Admission du writer de production : STOP_UNAVAILABLE.</p>
   </section>;

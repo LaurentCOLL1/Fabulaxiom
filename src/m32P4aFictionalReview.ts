@@ -94,3 +94,45 @@ export function confirmP4aFictionalPlan(
     deny("prévisualisation modifiée : refus");
   return applyP3FictionalCommand(current, staged.command);
 }
+
+/** P4c: an in-memory, non-authoritative display receipt, never a durable audit log. */
+export type P4cFictionalDecisionReceipt = Readonly<{
+  data_origin: "fictional_browser_memory_only";
+  real_g3_authorized: false;
+  production_writer_admitted: false;
+  universe_id: string;
+  command_kind: P3Command["kind"];
+  human_reason: string;
+  before_commands: number;
+  after_commands: number;
+  created_anchor_ids: readonly string[];
+  superseded_anchor_ids: readonly string[];
+  created_precedence_ids: readonly string[];
+  revoked_precedence_ids: readonly string[];
+}>;
+
+/** Retains the already validated human reason for visible RAM-only review.
+ * No timestamps, external identity, signatures, serialization or persistence.
+ */
+export function confirmP4cFictionalPlanWithReceipt(
+  current: P3State, staged: P4aFictionalPlan, human_reason: string,
+): Readonly<{ state: P3State; receipt: P4cFictionalDecisionReceipt }> {
+  const state = confirmP4aFictionalPlan(current, staged, human_reason);
+  return {
+    state,
+    receipt: {
+      data_origin: "fictional_browser_memory_only",
+      real_g3_authorized: false,
+      production_writer_admitted: false,
+      universe_id: staged.command.universe_id,
+      command_kind: staged.command.kind,
+      human_reason: human_reason.trim(),
+      before_commands: current.commands_committed,
+      after_commands: state.commands_committed,
+      created_anchor_ids: [...staged.changes.created_anchor_ids],
+      superseded_anchor_ids: [...staged.changes.superseded_anchor_ids],
+      created_precedence_ids: [...staged.changes.created_precedence_ids],
+      revoked_precedence_ids: [...staged.changes.revoked_precedence_ids],
+    },
+  };
+}

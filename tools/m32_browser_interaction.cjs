@@ -1320,6 +1320,15 @@ async function run() {
       const delta = review.getByRole("region", { name: "Différence fictive avant après" });
       assert.ok((await delta.innerText()).includes("fiction-draft-0001"));
       assert.ok((await review.innerText()).includes("confirmées en mémoire : 0"));
+      const decisionLog = review.getByRole("region", {
+        name: "Journal des confirmations fictives en mémoire",
+      });
+      assert.equal(await decisionLog.getByRole("listitem").count(), 0);
+      await delta.getByRole("button", { name: "Annuler la prévisualisation fictive" }).click();
+      assert.equal(await review.getByRole("region", { name: "Différence fictive avant après" }).count(), 0);
+      assert.equal(await decisionLog.getByRole("listitem").count(), 0);
+      assert.ok((await review.getByRole("status").innerText()).includes("Prévisualisation annulée"));
+      await review.getByRole("button", { name: "Prévisualiser sans modifier" }).click();
       await delta.getByRole("button", { name: "Confirmer en mémoire fictive uniquement" }).click();
       assert.ok((await review.getByRole("status").innerText())
         .includes("confirmation humaine motivée obligatoire"));
@@ -1328,6 +1337,10 @@ async function run() {
         .fill("L'auteur fictif confirme cet ordre");
       await delta.getByRole("button", { name: "Confirmer en mémoire fictive uniquement" }).click();
       assert.ok((await review.innerText()).includes("confirmées en mémoire : 1"));
+      assert.equal(await decisionLog.getByRole("listitem").count(), 1);
+      assert.ok((await decisionLog.innerText()).includes("L'auteur fictif confirme cet ordre"));
+      assert.ok((await decisionLog.innerText()).includes("fiction-world-one"));
+      assert.ok((await decisionLog.innerText()).includes("ni signature, ni sauvegarde"));
       assert.equal(await review.getByRole("region", { name: "Différence fictive avant après" }).count(), 0);
       // The old direct relation must now be refused, not silently duplicated.
       await review.getByRole("button", { name: "Prévisualiser sans modifier" }).click();
@@ -1382,6 +1395,12 @@ async function run() {
         .fill("Deuxième univers fictif");
       await delta.getByRole("button", { name: "Confirmer en mémoire fictive uniquement" }).click();
       assert.ok((await review.innerText()).includes("confirmées en mémoire : 1"));
+      const secondLog = review.getByRole("region", {
+        name: "Journal des confirmations fictives en mémoire",
+      });
+      assert.equal(await secondLog.getByRole("listitem").count(), 1);
+      assert.ok((await secondLog.innerText()).includes("Deuxième univers fictif"));
+      assert.equal(await secondLog.getByText("invented-rev-A").count(), 0);
       // Corrupt cyclic fixture must not render a staged approval surface.
       await page.getByRole("button", { name: "Charger un cycle fictif invalide" }).click();
       assert.ok((await page.getByRole("alert").innerText()).includes("Cycle fictif refusé pour la revue P4a"));
