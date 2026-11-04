@@ -100,6 +100,16 @@ enum Command {
         decision_id: String, universe: String, prior_id: String,
         reason: String, source_revision_id: Option<String>, reply: Reply<()>,
     },
+
+    // P2d typed test-only restatement; stage-4 SQL overlay required.
+    RestatePrecedence {
+        id: String, universe: String, prior_id: String,
+        before: String, after: String, reason: String,
+        source_revision_id: Option<String>, reply: Reply<()>,
+    },
+    ActiveGraph {
+        universe: String, reply: Reply<Vec<chronology::ActivePrecedence>>,
+    },
     Stop(Sender<()>),
 }
 
@@ -144,6 +154,21 @@ impl FixtureChronologyClient {
             decision_id, universe, prior_id, reason, source_revision_id, reply,
         })
     }
+
+    pub(crate) fn restate_precedence(
+        &self, id: String, universe: String, prior_id: String,
+        before: String, after: String, reason: String,
+        source_revision_id: Option<String>,
+    ) -> Result<(), ActorError> {
+        self.call(|reply| Command::RestatePrecedence {
+            id, universe, prior_id, before, after, reason, source_revision_id, reply,
+        })
+    }
+    pub(crate) fn p2d_active_graph(
+        &self, universe: String,
+    ) -> Result<Vec<chronology::ActivePrecedence>, ActorError> {
+        self.call(|reply| Command::ActiveGraph { universe, reply })
+    }
 }
 
 fn run(mut connection: Connection, rx: Receiver<Command>) {
@@ -174,6 +199,19 @@ fn run(mut connection: Connection, rx: Receiver<Command>) {
                     &decision_id, &universe, &prior_id, &reason,
                     source_revision_id.as_deref(),
                 ));
+            }
+
+            Command::RestatePrecedence {
+                id, universe, prior_id, before, after, reason,
+                source_revision_id, reply,
+            } => {
+                let _ = reply.send(service.restate_revoked_precedence(
+                    &id, &universe, &prior_id, &before, &after, &reason,
+                    source_revision_id.as_deref(),
+                ));
+            }
+            Command::ActiveGraph { universe, reply } => {
+                let _ = reply.send(service.p2d_active_graph(&universe));
             }
             Command::Stop(ack) => {
                 let _ = ack.send(());
@@ -293,6 +331,48 @@ mod tests {
         assert_eq!(view.precedences.len(), 1);
         assert!(view.anchors.iter().all(|a| a.source_revision_id.as_deref()==Some("r2")));
         assert!(client.snapshot("u2".into()).unwrap().anchors.is_empty());
+        owner.shutdown().unwrap();
+    }
+
+
+    #[test]
+    fn p2d_actor_serialized_restatement_preserves_original_and_refuses_duplicates() {
+        let db = {
+            let db = invented_v7();
+            db.execute_batch(include_str!("../sql/m3_2_active_precedence_candidate.sql"))
+                .expect("P2d overlay on invented RAM only");
+            db
+        };
+        let owner = FixtureChronologyActor::from_preopened_invented_v7(db).unwrap();
+        let client = owner.client();
+        client.create_anchor(anchor("a1", "u1"), None).unwrap();
+        client.create_anchor(anchor("a2", "u1"), None).unwrap();
+        client.create_precedence(before("old12", "a1", "a2")).unwrap();
+        client.revoke_precedence(
+            "rev12".into(), "u1".into(), "old12".into(),
+            "Explicit author retirement".into(), Some("r2".into()),
+        ).unwrap();
+        client.restate_precedence(
+            "correct21".into(), "u1".into(), "old12".into(),
+            "a2".into(), "a1".into(), "Explicit author reversal".into(),
+            Some("r2".into()),
+        ).unwrap();
+        let current = client.p2d_active_graph("u1".into()).unwrap();
+        assert_eq!(current.len(), 1);
+        assert_eq!(current[0].id, "correct21");
+        assert_eq!(current[0].origin, "restatement");
+        assert_eq!(current[0].before_anchor_id, "a2");
+        assert_eq!(current[0].after_anchor_id, "a1");
+        assert_eq!(client.snapshot("u1".into()).unwrap().precedences.len(), 1);
+        assert!(matches!(client.restate_precedence(
+            "duplicate".into(), "u1".into(), "old12".into(),
+            "a2".into(), "a1".into(), "Duplicate not admitted".into(), None,
+        ), Err(ActorError::Domain(_))));
+        assert!(matches!(client.restate_precedence(
+            "foreign".into(), "u2".into(), "old12".into(),
+            "a2".into(), "a1".into(), "Wrong universe".into(), None,
+        ), Err(ActorError::Domain(_))));
+        assert!(client.p2d_active_graph("u2".into()).unwrap().is_empty());
         owner.shutdown().unwrap();
     }
 

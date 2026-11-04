@@ -1,10 +1,10 @@
 # Fabulaxiom — reprise courte (4 novembre 2026)
 
-**#277 P2c FUSIONNÉE** main=e9cdc7048662c51b5b28e36e3e7a1f6ad4517818 ; source #41857362542, postmain #41885466997 PASS (305/7/68/183, Vitest 6, Chromium 85/85+CSP, 19 blobs). #278 nouveau HEAD CI requise. P2c RAM ; P2d inversion NOT_PROVEN (trigger/UNIQUE). #271 `M3_2_P4B_CHROMIUM_FICTIONAL_STAGED_REVIEW_20261103.md`, P4a `M3_2_P4A_FICTIONAL_STAGED_HUMAN_REVIEW_20261103.md`, P3e `M3_2_P3E_HISTORY_INSPECTION_CHROMIUM_PROOF_20261103.md`, P3a `M3_2_P3A_SYNTHETIC_TYPED_COMMAND_WORKSHOP_20261101.md`, P2a `M3_2_P2_PREOPENED_CHRONOLOGY_FIXTURE_SERVICE_20261101.md`, P2b `M3_2_P2B_SINGLE_OWNER_CHRONOLOGY_ACTOR_RAM_FIXTURE_20261101.md`, P3b `M3_2_P3B_SHARED_RUST_TS_CHRONOLOGY_GOLDEN_20261101.md`. PRODUCT_FIRST_PARALLEL_SAFETY ; prévenir avant changement ; glib #1 OPEN, P4/writer STOP.
+**#279 P2d CANDIDAT** source #41892298800 PASS **308 Rust/7/68/183, six Vitest, Chromium 85/85+CSP, 19 blobs** (HEAD ancien `af1b018e`); rebase + CI SHA exact requis. **#278 fusionnée** `main=58c509416efc7f39b69d7fe90f1c2c33b3bc6023`, postmain #41892590660 PASS. P2d stage4 RAM uniquement, P4 réel/writer STOP. #271 `M3_2_P4B_CHROMIUM_FICTIONAL_STAGED_REVIEW_20261103.md`, P4a `M3_2_P4A_FICTIONAL_STAGED_HUMAN_REVIEW_20261103.md`, P3e `M3_2_P3E_HISTORY_INSPECTION_CHROMIUM_PROOF_20261103.md`, P3a `M3_2_P3A_SYNTHETIC_TYPED_COMMAND_WORKSHOP_20261101.md`, P2a `M3_2_P2_PREOPENED_CHRONOLOGY_FIXTURE_SERVICE_20261101.md`, P2b `M3_2_P2B_SINGLE_OWNER_CHRONOLOGY_ACTOR_RAM_FIXTURE_20261101.md`, P3b `M3_2_P3B_SHARED_RUST_TS_CHRONOLOGY_GOLDEN_20261101.md`. PRODUCT_FIRST_PARALLEL_SAFETY ; prévenir avant changement ; glib #1 OPEN, P4/writer STOP.
 
 **#257 historique** : Décision `M3_2_PRODUCT_FIRST_PARALLEL_SAFETY_DECISION_20261101.md` ; P1 `M3_2_P1_TWO_NOVELS_HISTORICAL_REVISION_V7_DISPOSABLE_20261101.md` ; alerte `M3_2_GLIB_ALERT1_UPSTREAM_BLOCKER_20261101.md` OPEN. R4 `M3_2_R4_WINDOWS_TWO_PROCESS_WAL_LOCK_DISPOSABLE_20261101.md`, `M3_2_R4_DELEGATED_MAIN_WAL_NATIVE_HANDLE_FILEID_DISPOSABLE_20261101.md`. Protect main strict bypass=[], `expected_head_sha`, #38 append-only.
 
-Fabulaxiom Windows (React/Tauri v2/Rust/SQLite, voie C/Ollama) : https://github.com/LaurentCOLL1/Fabulaxiom
+Windows (React/Tauri/Rust/SQLite/Ollama) : https://github.com/LaurentCOLL1/Fabulaxiom
 
 **D'abord :** re-fetch `main`/PR/issues/CI Windows SHA exact, reviews/threads, **Protect main** strict.
 
@@ -14,12 +14,12 @@ R4 : `M3_2_R4_NATIVE_HELD_HANDLE_MAP_DISPOSABLE_20261031.md` ; live SQLite WAL-i
 
 ## Dernier checkpoint
 
-- **#242 :** `M3_2_R4_DEFAULT_WIN32_WAL_SHM_SNAPSHOT_DISPOSABLE_20261030.md` ; Windows fictif seulement.
+- **#242 :** `M3_2_R4_DEFAULT_WIN32_WAL_SHM_SNAPSHOT_DISPOSABLE_20261030.md` ; fixture.
 - **R3/R4 :** WAL NORMAL refusé sans xShm* ; `M3_2_R4_NO_XSHM_NORMAL_WAL_READ_REFUSAL_DISPOSABLE_20261030.md`, production STOP. PR #215/#35 DRAFT.
 
 ## Interdictions actives — STOP
 
-**M3.2 IN_PROGRESS_NOT_ACCEPTED ; writer/R1–R9 NOT_PROVEN ; G2B NOT_ACCEPTED ; G2C NOT_AUTHORIZED ; G3 STOP_UNAVAILABLE.** Historique `PENDING_EXTERNAL_ATTESTATION(21/3/2)`, prospective `NOT_STARTED`. A `UNAVAILABLE_NOT_PROVEN`, B `NOT_PROVEN`. D3b-4/5 et D3b-5 STOP ; D3c conception seulement.
+**M3.2 IN_PROGRESS_NOT_ACCEPTED ; writer/R1–R9 NOT_PROVEN ; G2B NOT_ACCEPTED ; G2C NOT_AUTHORIZED ; G3 STOP_UNAVAILABLE.** Historique `PENDING_EXTERNAL_ATTESTATION(21/3/2)`, prospective `NOT_STARTED`. A `UNAVAILABLE_NOT_PROVEN`, B `NOT_PROVEN`. D3b-4/5 et D3b-5 STOP ; D3c conception.
 
 Interdit : données opérateur v6/v7, journaux/sauvegardes, IPC writer, 007, Hello natif, marqueur et recovery. Dépôt local : `M:\Fabulaxiom` ; profil existant `%LOCALAPPDATA%\com.fabulaxiom.greenfield.v1` : aucun accès.
 
@@ -27,7 +27,7 @@ Interdit : données opérateur v6/v7, journaux/sauvegardes, IPC writer, 007, Hel
 
 1. P1/P2a/P2b/P3a/P3b/P3c/P3d/P3e fusionnés ; P4 gate distinct, R4–R9 parallèle.
 2. R2/R4 SHM >0, custody main/WAL/SHM ; R5–R9 STOP ; glib #1 OPEN.
-3. Garder stratégie, prévenir avant changement, actualiser les documents.
+3. Stratégie inchangée, prévenir avant changement.
 
 Références R4 historiques : `M3_2_R4_D3A_LIVE_SHM_FILEID_DISPOSABLE_20261030.md`.
 
@@ -35,4 +35,4 @@ Références R4 historiques : `M3_2_R4_D3A_LIVE_SHM_FILEID_DISPOSABLE_20261030.m
 
 Lire `RESUME_PROMPT.md`, `HANDOFF_CURRENT.json`, `HANDOFF_CURRENT.md`, `HANDOFF_PROTOCOL.md`, `HANDOFF_HISTORY.md`, `STATE.md`, `NEXT.md`, `M3_2_GATE_DECISION_CURRENT.md`, `ROADMAP_STATUS_CURRENT.md`, `FABULAXIOM_ROADMAP_V1.md`
 
-**Règle :** fixtures/CI ≠ admission réelle ; archives dans prompt complet.
+**Règle :** CI fixtures ≠ admission réelle.

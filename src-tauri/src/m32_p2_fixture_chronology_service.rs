@@ -145,6 +145,94 @@ impl<'a> FixtureChronologyService<'a> {
         Ok(())
     }
 
+
+    // P2d: optional stage-4 SQL only on a disposable v7 fixture. Later
+    // withdrawal/chain overlays have different semantics and fail closed.
+    fn require_p2d_overlay(&self) -> Result<(), FixtureError> {
+        for (kind, name) in [
+            ("table", "world_time_precedence_restatements"),
+            ("trigger", "m32_restatement_guard"),
+            ("trigger", "m32_raw_precedence_active_graph_guard"),
+        ] {
+            let count: i64 = self.db.query_row(
+                "SELECT COUNT(*) FROM sqlite_master WHERE type=?1 AND name=?2",
+                rusqlite::params![kind, name],
+                |row| row.get(0),
+            )?;
+            if count != 1 {
+                return Err(FixtureError::Stop("P2d stage-4 RAM overlay not installed"));
+            }
+        }
+        let later: i64 = self.db.query_row(
+            "SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND
+             name IN ('world_time_restatement_revocations',
+                      'world_time_restatement_successors',
+                      'world_time_successor_revocations')",
+            [], |row| row.get(0),
+        )?;
+        if later != 0 {
+            return Err(FixtureError::Stop("P2d refuses later correction layers"));
+        }
+        Ok(())
+    }
+
+    /// Re-author a previously revoked edge, never by reinserting into the
+    /// immutable v7 raw-edge table whose historical cycle guard still applies.
+    pub fn restate_revoked_precedence(
+        &mut self, id: &str, universe: &str, prior_id: &str,
+        before: &str, after: &str, reason: &str,
+        source_revision_id: Option<&str>,
+    ) -> Result<(), FixtureError> {
+        self.require_p2d_overlay()?;
+        let tx = self.db.transaction_with_behavior(TransactionBehavior::Immediate)?;
+        chronology::restate_revoked_precedence(
+            &tx, id, universe, prior_id, before, after, reason, source_revision_id,
+        )?;
+        tx.commit()?;
+        Ok(())
+    }
+
+    /// Active partial order is not the historical raw-v7 edge inventory.
+    /// This deliberately models only the stage-4 overlay, not later generations.
+    pub fn p2d_active_graph(
+        &self, universe: &str,
+    ) -> Result<Vec<chronology::ActivePrecedence>, FixtureError> {
+        self.require_p2d_overlay()?;
+        let mut stmt = self.db.prepare(
+            "SELECT p.id,p.before_anchor_id,p.after_anchor_id,'original' AS origin
+             FROM world_time_precedences p
+             WHERE p.universe_id=?1
+               AND NOT EXISTS (
+                 SELECT 1 FROM world_time_precedence_decisions d
+                 WHERE d.prior_precedence_id=p.id AND d.universe_id=p.universe_id
+               )
+               AND NOT EXISTS (
+                 SELECT 1 FROM world_time_anchor_decisions d
+                 WHERE d.universe_id=p.universe_id
+                   AND d.prior_anchor_id IN (p.before_anchor_id,p.after_anchor_id)
+               )
+             UNION ALL
+             SELECT t.id,t.before_anchor_id,t.after_anchor_id,'restatement' AS origin
+             FROM world_time_precedence_restatements t
+             WHERE t.universe_id=?1
+               AND NOT EXISTS (
+                 SELECT 1 FROM world_time_anchor_decisions d
+                 WHERE d.universe_id=t.universe_id
+                   AND d.prior_anchor_id IN (t.before_anchor_id,t.after_anchor_id)
+               )
+             ORDER BY id,origin",
+        )?;
+        let entries = stmt.query_map([universe], |row| {
+            Ok(chronology::ActivePrecedence {
+                id: row.get(0)?,
+                before_anchor_id: row.get(1)?,
+                after_anchor_id: row.get(2)?,
+                origin: row.get(3)?,
+            })
+        })?.collect::<rusqlite::Result<Vec<_>>>()?;
+        Ok(entries)
+    }
+
     pub fn snapshot(&self, universe: &str) -> Result<FixtureSnapshot, FixtureError> {
         Ok(FixtureSnapshot {
             anchors: chronology::list_anchors(&*self.db, universe)?,
@@ -261,6 +349,70 @@ mod tests {
         assert_eq!(snapshot.current_anchor_ids, vec!["a1", "a2"]);
         assert_eq!(snapshot.precedences.len(), 1);
         assert!(service.snapshot("u2").unwrap().anchors.is_empty());
+    }
+
+
+    #[test]
+    fn p2d_preopened_stage4_restatement_reverses_only_active_order() {
+        let mut db = invented_connection();
+        db.execute_batch(include_str!("../sql/m3_2_active_precedence_candidate.sql"))
+            .expect("disposable RAM stage-4 overlay only");
+        {
+            let mut service = FixtureChronologyService::from_already_opened_disposable_v7(&mut db).unwrap();
+            for id in ["a1", "a2", "a3"] {
+                service.create_anchor_with_optional_relation(draft(id, "u1"), None).unwrap();
+            }
+            service.create_precedence(relation("old12", "a1", "a2")).unwrap();
+            service.revoke_precedence("rev12", "u1", "old12", "Author corrected order", Some("r2")).unwrap();
+            assert!(service.p2d_active_graph("u1").unwrap().is_empty());
+            service.restate_revoked_precedence(
+                "new21", "u1", "old12", "a2", "a1", "Author: B before A", Some("r2"),
+            ).unwrap();
+            let active = service.p2d_active_graph("u1").unwrap();
+            assert_eq!(active.len(), 1);
+            assert_eq!((active[0].id.as_str(), active[0].before_anchor_id.as_str(),
+                        active[0].after_anchor_id.as_str(), active[0].origin.as_str()),
+                       ("new21", "a2", "a1", "restatement"));
+            assert_eq!(service.snapshot("u1").unwrap().precedences.len(), 1,
+                       "immutable revoked original retained");
+            assert!(service.snapshot("u1").unwrap().current_precedence_ids.is_empty());
+            assert!(service.p2d_active_graph("u2").unwrap().is_empty());
+            assert!(matches!(service.restate_revoked_precedence(
+                "duplicate", "u1", "old12", "a2", "a1", "No second restatement", Some("r2"),
+            ), Err(FixtureError::Sql(_))));
+            assert!(matches!(service.restate_revoked_precedence(
+                "foreign", "u2", "old12", "a2", "a1", "Wrong universe", None,
+            ), Err(FixtureError::Sql(_))));
+            service.create_precedence(relation("ac", "a1", "a3")).unwrap();
+            assert!(matches!(service.create_precedence(relation("cb", "a3", "a2")),
+                             Err(FixtureError::Sql(_))),
+                    "new raw edge must not form cycle via active B->A->C graph");
+            assert_eq!(service.p2d_active_graph("u1").unwrap().len(), 2);
+        }
+        let intact: i64 = db.query_row(
+            "SELECT COUNT(*) FROM world_time_precedences WHERE id='old12'",
+            [], |row| row.get(0),
+        ).unwrap();
+        let restatements: i64 = db.query_row(
+            "SELECT COUNT(*) FROM world_time_precedence_restatements WHERE universe_id='u1'",
+            [], |row| row.get(0),
+        ).unwrap();
+        let head: String = db.query_row(
+            "SELECT revision_id FROM scene_revision_heads WHERE scene_id='s2'",
+            [], |row| row.get(0),
+        ).unwrap();
+        assert_eq!((intact, restatements, head.as_str()), (1, 1, "r3"));
+        assert_eq!(db.query_row("PRAGMA integrity_check", [], |row| row.get::<_, String>(0)).unwrap(), "ok");
+    }
+
+    #[test]
+    fn p2d_restatement_requires_independent_stage4_overlay() {
+        let mut db = invented_connection();
+        let mut service = FixtureChronologyService::from_already_opened_disposable_v7(&mut db).unwrap();
+        assert!(matches!(service.restate_revoked_precedence(
+            "no-overlay", "u1", "missing", "a", "b", "refused", None,
+        ), Err(FixtureError::Stop(_))));
+        assert!(matches!(service.p2d_active_graph("u1"), Err(FixtureError::Stop(_))));
     }
 
     #[test]
