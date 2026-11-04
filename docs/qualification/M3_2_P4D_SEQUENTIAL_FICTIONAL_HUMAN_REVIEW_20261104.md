@@ -1,6 +1,6 @@
 # M3.2 — P4d, revue de plusieurs décisions fictives dans une même session (CANDIDAT NON QUALIFIÉ)
 
-**4 novembre 2026 — PRODUIT D'ABORD / SÉCURITÉ EN PARALLÈLE.** Parent `main=478e5309a5e84f175b820b7e76263ba0a920779c`, PR documentaire #274 fusionnée ; CI Windows source #41770913173 SUCCESS sur HEAD exact `4677702b54a71c80fb3c77bbd6f787b38e32a7d3`, postmain indépendante #41773068146 **À VÉRIFIER** avant qualification du parent. Ancienne P4c #273 source/postmain terminales. Cette tranche P4d est **CANDIDATE**, sans CI acquise à son propre HEAD.
+**4 novembre 2026 — PRODUIT D'ABORD / SÉCURITÉ EN PARALLÈLE.** Parent `main=478e5309a5e84f175b820b7e76263ba0a920779c`, PR documentaire #274 fusionnée ; CI Windows source #41770913173 SUCCESS sur HEAD exact `4677702b54a71c80fb3c77bbd6f787b38e32a7d3`, postmain indépendante #41773068146 completed/SUCCESS au SHA exact (job #126387003761), journaux contrôlés ; parent documentaire qualifié sur fixtures uniquement. Ancienne P4c #273 source/postmain terminales. Cette tranche P4d est **CANDIDATE**, sans CI acquise à son propre HEAD.
 
 ## Lacune produit réellement traitée
 

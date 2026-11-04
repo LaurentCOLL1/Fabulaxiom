@@ -8,7 +8,7 @@
     "parent_docs_source_ci": 41770913173,
     "parent_docs_source_ci_qualified": true,
     "parent_docs_postmain_ci": 41773068146,
-    "parent_docs_postmain_qualified": false,
+    "parent_docs_postmain_qualified": true,
     "qualification": "docs/qualification/M3_2_P4D_SEQUENTIAL_FICTIONAL_HUMAN_REVIEW_20261104.md",
     "review_ui": "src/M32P4aStageReviewPanel.tsx",
     "fictional_lab": "src/m32BrowserLab.tsx",
