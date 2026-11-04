@@ -7,17 +7,19 @@ import {
 
 /** Standalone P4a fiction-only UX. Intentionally NOT mounted by App.tsx. */
 export default function M32P4aFictionalReview({
-  initial, command,
-}: { initial: P3State; command: P3Command }): ReactElement {
+  initial, command, alternateCommand,
+}: { initial: P3State; command: P3Command; alternateCommand?: P3Command }): ReactElement {
   const [state, setState] = useState(initial);
   const [proposal, setProposal] = useState<P4aFictionalPlan | null>(null);
   const [reason, setReason] = useState("");
+  const [choice, setChoice] = useState<"primary" | "alternate">("primary");
   const [receipts, setReceipts] = useState<readonly P4cFictionalDecisionReceipt[]>([]);
   const [message, setMessage] = useState("Aucune proposition prévisualisée.");
   function stage(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     try {
-      setProposal(stageP4aFictionalPlan(state, command));
+      setProposal(stageP4aFictionalPlan(state,
+        choice === "alternate" && alternateCommand ? alternateCommand : command));
       setMessage("Prévisualisation créée ; aucune modification acceptée.");
     } catch (e) {
       setProposal(null);
@@ -49,6 +51,19 @@ export default function M32P4aFictionalReview({
        Aucune commande Tauri, aucun disque, aucune sauvegarde.</p>
     <p>Univers inventé : <code>{state.draft.snapshot.universe_id}</code></p>
     <p>Décisions fictives confirmées en mémoire : {state.commands_committed}</p>
+    {alternateCommand && <div>
+      <label htmlFor="p4d-fictional-command-choice">Commande fictive à réviser</label>
+      <select id="p4d-fictional-command-choice" value={choice}
+        onChange={event => {
+          setChoice(event.currentTarget.value === "alternate" ? "alternate" : "primary");
+          setProposal(null);
+          setReason("");
+          setMessage("Commande fictive changée : prévisualisation précédente annulée.");
+        }}>
+        <option value="primary">Première décision : {command.kind}</option>
+        <option value="alternate">Deuxième décision : {alternateCommand.kind}</option>
+      </select>
+    </div>}
     <form onSubmit={stage} aria-label="Prévisualiser la proposition fictive">
       <button type="submit">Prévisualiser sans modifier</button>
     </form>

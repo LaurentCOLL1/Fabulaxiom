@@ -198,6 +198,16 @@ function BrowserFixture() {
               after_anchor_id: scenario === "two" ? "L" : "D",
               reason: "Décision temporelle explicite inventée",
             },
+          }} alternateCommand={scenario === "two" ? {
+            kind: "create_anchor_with_optional_relation",
+            universe_id: snapshot.universe_id,
+            time: { kind: "unknown", calendar: "", label: "", precision: "" },
+            relation: null,
+          } : {
+            kind: "revoke_precedence",
+            universe_id: snapshot.universe_id,
+            precedence_id: "human-ab",
+            reason: "Ancien lien explicitement retiré par l'auteur inventé",
           }} />
       : mode === "version-compare" ? scenario === "cyclic"
       ? <p role="alert">Cycle fictif refusé pour la comparaison de versions.</p>

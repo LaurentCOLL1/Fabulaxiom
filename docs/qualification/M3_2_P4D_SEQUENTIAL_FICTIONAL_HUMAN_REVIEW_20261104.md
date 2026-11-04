@@ -1,0 +1,22 @@
+# M3.2 — P4d, revue de plusieurs décisions fictives dans une même session (CANDIDAT NON QUALIFIÉ)
+
+**4 novembre 2026 — PRODUIT D'ABORD / SÉCURITÉ EN PARALLÈLE.** Parent `main=478e5309a5e84f175b820b7e76263ba0a920779c`, PR documentaire #274 fusionnée ; CI Windows source #41770913173 SUCCESS sur HEAD exact `4677702b54a71c80fb3c77bbd6f787b38e32a7d3`, postmain indépendante #41773068146 completed/SUCCESS au SHA exact (job #126387003761), journaux contrôlés ; parent documentaire qualifié sur fixtures uniquement. Ancienne P4c #273 source/postmain terminales. Cette tranche P4d est **CANDIDATE**, sans CI acquise à son propre HEAD.
+
+## Lacune produit réellement traitée
+
+P4a/P4c proposaient déjà une prévisualisation et un reçu motivé, mais le laboratoire injectait une seule commande fixée à l'entrée de la session : après un premier lien confirmé, sa répétition était refusée et aucune autre opération ne pouvait être choisie dans la même revue. Ce lot permet **deux commandes typées distinctes dans le même Univers inventé** sans relancer l'écran, sans rendre le simulateur persistant ou opérateur.
+
+- `src/M32P4aStageReviewPanel.tsx` : nouveau choix optionnel entre commande principale et commande alternative. Changer le choix **annule la proposition staged**, efface son ancien motif, conserve les reçus déjà confirmés mais jamais une autorisation en cours ; chaque action repasse par `stageP4aFictionalPlan` puis `confirmP4cFictionalPlanWithReceipt` (veto de proposition périmée/modifiée et motif humain). En absence d'alternative, comportement de P4c inchangé.
+- `src/m32BrowserLab.tsx` : premier Univers fictif : déclaration explicite A→D puis révocation motivée de la relation `human-ab` ; deuxième Univers fictif : lien K→L puis création d'une ancre sans source historique. Toute fixture reste inventée, et le changement de scénario remonte le composant et réinitialise sa RAM.
+- `src/m32P4aFictionalReview.test.tsx` : enrichissement des **six tests existants**, vérifiant deuxième commande, compteur 2, reçus détachés et absence d'admission ou mutation de l'ancien état ; pas de compte artificiellement gonflé.
+- `tools/m32_browser_interaction.cjs` : enrichissement du scénario existant #83 : première décision motivée, doublon refusé, choix alternatif invalidant la prévisualisation, seconde décision motivée avec deux reçus propres à l'Univers. **85 scénarios Chromium** attendus en mode normal et CSP stricte, sans nouveau réseau extérieur.
+
+Aucun ajout à la liste des **19 modules fictifs épinglés** : aucune route `App.tsx`, aucun `src-tauri` Rust/SQLite runtime, aucun IPC, `fetch`, `localStorage` ou fichier opérateur. Les reçus n'ont **aucune signature, identité vérifiée ni valeur d'attestation** et disparaissent à la fin de la session.
+
+## Qualification encore nécessaire
+
+Re-fetch GitHub vivant, PR/diff/reviews/threads, ruleset `Protect main` active, strict, bypass=[] ; qualification Windows au **SHA exact du candidat P4d** avec journaux **303 Rust / 7 Greenfield / 68 inventaire / 183 continuité / six Vitest / Chromium 85/85 normal+CSP stricte / 19 blobs** ; ensuite squash avec `expected_head_sha` seulement si SUCCESS, puis **CI indépendante postmain** au nouveau SHA et #38 append-only. Ces comptes sont **ATTENDUS ET NON ACQUIS** pour P4d à la création de ce document.
+
+## STOP intangibles
+
+**M3.2 IN_PROGRESS_NOT_ACCEPTED ; writer/R1–R9 NOT_PROVEN ; P4 admission réelle distincte STOP ; G2B NOT_ACCEPTED ; G2C NOT_AUTHORIZED ; G3 STOP_UNAVAILABLE ; historique PENDING_EXTERNAL_ATTESTATION(21/3/2), prospective NOT_STARTED ; D3b-4/5 STOP.** Pas de données opérateur v6/v7, profil existant `%LOCALAPPDATA%\\com.fabulaxiom.greenfield.v1`, sauvegardes/journaux, migration 007 runtime, Hello natif, marqueur ou recovery. La piste R4–R9 (garde atomique main/WAL/SHM et processus écrivains adversariaux) continue en parallèle. **PRODUCT_FIRST_PARALLEL_SAFETY reste active** ; prévenir avant tout changement de stratégie. glib 0.18.5 Linux GTK3 GHSA-wrw7-89jp-8q8g / issue #160 **OPEN_NOT_REMEDIATED** ; pas de bump incompatible improvisé. **Fixtures/CI ≠ admission réelle.**
