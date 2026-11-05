@@ -8,6 +8,8 @@ In `src-tauri/src/m32_r4_registered_owned_shm_vfs_disposable_tests.rs` only, for
 
 New Rust Windows test `r4_observed_shm_path_aba_restoration_never_rearms_native_callbacks` opens a brand-new invented SQLite database with WAL and locking mode NORMAL under the registered test VFS, then renames only its fresh `-shm` file and creates a different FileId128 decoy by `CREATE_NEW`. Calling the actual `sqlite3_file` native `xShmLock` callback must refuse and poison. The decoy is removed and the original test-only SHM path restored to its original FileId128; the same callback must **remain refused** and `xShmMap` must return an error with NULL output. All paths are inside the unique test-owned TEMP fixture.
 
+Textual SQLite open inventory review: the extra synthetic test has one explicitly reviewed `Connection::open_with_flags_and_vfs` and one `SQLITE_OPEN_READ_WRITE` token, so the pinned source tripwire changes from **12/12 to 13/13** in `tools/m32_rust_sqlite_open_inventory.py` and its existing negative tests. This remains 68 inventory tests, not a claim of writer absence.
+
 Expected counts **321 Rust / 7 Greenfield / 68 SQLite inventory / 183 continuity / 373 Vitest / Chromium 85/85 normal+CSP / 19 fictional blobs**, **NOT PASS until qualified**. This is an error-path strengthening, not evidence that hostile races or historical access are safe.
 
 ## Unresolved and STOP
