@@ -1,0 +1,21 @@
+# M3.2 R4 — SHM observed-ABA poison latch (strict Windows disposable only)
+
+5 November 2026. **CANDIDATE / NOT QUALIFIED** until new exact-HEAD Windows CI and independent post-merge verification. Parent `main=8daa87ff2474dddc8fc881a0b54bf9a8d3cf045f` after #292 protected squash; its postmain #42112427768 requires terminal exact-SHA qualification before this PR may merge.
+
+## Single bounded safety increment
+
+In `src-tauri/src/m32_r4_registered_owned_shm_vfs_disposable_tests.rs` only, for the existing `#[cfg(all(test,windows))]` uniquely named non-default SQLite VFS, `ShmState` gains a **sticky, per-connection poison flag**. `valid(&mut self)` checks the retained native SHM HANDLE FileId128 and non-atomically observes the disposable SHM pathname FileId128. An observed mismatch or missing path latches `poisoned=true`; all subsequent `xShmLock`, `xShmMap`, `xShmUnmap` identity checks refuse permanently for that file handle. `xClose` still frees fixture-held resources. This changes **no production runtime VFS**.
+
+New Rust Windows test `r4_observed_shm_path_aba_restoration_never_rearms_native_callbacks` opens a brand-new invented SQLite database with WAL and locking mode NORMAL under the registered test VFS, then renames only its fresh `-shm` file and creates a different FileId128 decoy by `CREATE_NEW`. Calling the actual `sqlite3_file` native `xShmLock` callback must refuse and poison. The decoy is removed and the original test-only SHM path restored to its original FileId128; the same callback must **remain refused** and `xShmMap` must return an error with NULL output. All paths are inside the unique test-owned TEMP fixture.
+
+Expected counts **321 Rust / 7 Greenfield / 68 SQLite inventory / 183 continuity / 373 Vitest / Chromium 85/85 normal+CSP / 19 fictional blobs**, **NOT PASS until qualified**. This is an error-path strengthening, not evidence that hostile races or historical access are safe.
+
+## Unresolved and STOP
+
+The detection itself is NON ATOMIC: an ABA that happens entirely between checks is not observed. Default delegated `xOpen` on main/WAL is still pathname based; WAL identification is a post-open by-name observation; no indivisible native custody of main/-wal/-shm, no complete SHM region lifetime, independent source provenance, crash/recovery, new production writer, real P4, G3 or operator data is proved. A poison latch is not a solution to R2/R4 atomic opening.
+
+`PRODUCT_FIRST_PARALLEL_SAFETY` unchanged; notify user before strategy change. `M3.2 IN_PROGRESS_NOT_ACCEPTED`, engineering estimate ~45% (40–50%); writer/R1–R9 `NOT_PROVEN`, G2B `NOT_ACCEPTED`, G2C `NOT_AUTHORIZED`, G3 `STOP_UNAVAILABLE`; historical `PENDING_EXTERNAL_ATTESTATION(21/3/2)`, prospective `NOT_STARTED`; glib 0.18.5 issue #160 `OPEN_NOT_REMEDIATED`.
+
+Do not open `%LOCALAPPDATA%\com.fabulaxiom.greenfield.v1` or operator v6/v7, journals, backups, logs; no real writer IPC, runtime 007, Windows Hello native, marker or recovery. Preserve `Protect main` ACTIVE strict bypass=[], exact-head Windows CI, reviews/threads, guarded squash `expected_head_sha`, independent postmain, issue #38 append-only. Fixtures CI != real production admission.
+
+References: [SQLite WAL](https://www.sqlite.org/wal.html), [SQLite VFS](https://www.sqlite.org/vfs.html).

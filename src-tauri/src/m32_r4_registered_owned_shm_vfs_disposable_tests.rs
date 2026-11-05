@@ -92,20 +92,23 @@ impl Drop for View{
         assert_ne!(unsafe{CloseHandle(self.mapping)},0);
     }
 }
-struct ShmState{held:File,expected:FileIdInfo,path:PathBuf,view:View,modes:[u32;8]}
+struct ShmState{held:File,expected:FileIdInfo,path:PathBuf,view:View,modes:[u32;8],poisoned:bool}
 impl ShmState{
     fn new(held:File,expected:FileIdInfo,path:PathBuf)->Option<Self>{
         if id(&held)!=Some(expected){return None}
         let view=View::from_held(&held)?;
-        Some(Self{held,expected,path,view,modes:[0;8]})
+        Some(Self{held,expected,path,view,modes:[0;8],poisoned:false})
     }
-    fn valid(&self)->bool{
-        if id(&self.held)!=Some(self.expected){return false}
-        // Non-atomic name revalidation is a deliberate disposable-only STOP
-        // on an observed post-xOpen substitution. It is NOT a custody claim.
-        let observed=OpenOptions::new().read(true).write(true).share_mode(1|2|4)
-            .open(&self.path).ok().and_then(|fresh|id(&fresh));
-        observed==Some(self.expected)
+    fn valid(&mut self)->bool{
+        // A mismatched or missing SHM pathname must poison this SQLite file
+        // permanently: returning the old name later must NOT re-arm xShm*.
+        // This still does not remove TOCTOU between successive callbacks.
+        if self.poisoned{return false}
+        let held_ok=id(&self.held)==Some(self.expected);
+        let named_ok=OpenOptions::new().read(true).write(true).share_mode(1|2|4)
+            .open(&self.path).ok().and_then(|fresh|id(&fresh))==Some(self.expected);
+        if !(held_ok&&named_ok){self.poisoned=true;return false}
+        true
     }
 }
 #[repr(C)]
@@ -213,7 +216,7 @@ unsafe extern "C" fn xshm_barrier(_file:*mut ffi::sqlite3_file){fence(Ordering::
 unsafe extern "C" fn xshm_unmap(file:*mut ffi::sqlite3_file,delete_flag:c_int)->c_int{
     let Some(t)=(unsafe{tail(file)})else{return ffi::SQLITE_IOERR_SHMMAP};
     if t.shm_state.is_null(){return ffi::SQLITE_IOERR_SHMMAP}
-    let state=unsafe{&*t.shm_state};
+    let state=unsafe{&mut *t.shm_state};
     let gate=unsafe{&*t.gate};
     if !state.valid()||!(delete_flag==0||delete_flag==1)||
         state.modes.iter().any(|mode|*mode!=0){
@@ -737,4 +740,61 @@ fn r4_owned_xshm_region_one_shared_native_mapping_and_bounded_veto_disposable(){
     drop(first);
     assert!(gate.state.shm_unmaps.load(Ordering::SeqCst)>=2);
     // This is only a two-page borrowed test mapping, NOT all WAL-index regions.
+}
+
+
+// R4 disposable ABA witness: seeing a SHM FileId/path substitution poisons a
+// connection for good, even if the original pathname is later restored.
+// This never establishes atomic main/WAL/SHM custody or writer admission.
+#[test]
+fn r4_observed_shm_path_aba_restoration_never_rearms_native_callbacks(){
+    let root=Scratch::fresh();
+    let gate=Registered::fresh(&root);
+    let db=Connection::open_with_flags_and_vfs(
+        &root.db,OpenFlags::SQLITE_OPEN_READ_WRITE,gate.name()).unwrap();
+    let locking:String=db.query_row("PRAGMA locking_mode=NORMAL",[],|row|row.get(0)).unwrap();
+    assert_eq!(locking.to_ascii_lowercase(),"normal");
+    let journal:String=db.query_row("PRAGMA journal_mode=WAL",[],|row|row.get(0)).unwrap();
+    assert_eq!(journal.to_ascii_lowercase(),"wal");
+    db.execute_batch("CREATE TABLE shm_aba_fixture(n INTEGER NOT NULL);
+        INSERT INTO shm_aba_fixture VALUES (7);").unwrap();
+    let expected=gate.state.expected;
+    let mut file:*mut ffi::sqlite3_file=ptr::null_mut();
+    let file_control=unsafe{ffi::sqlite3_file_control(db.handle(),ptr::null(),
+        ffi::SQLITE_FCNTL_FILE_POINTER,
+        (&mut file as *mut *mut ffi::sqlite3_file).cast())};
+    assert_eq!(file_control,ffi::SQLITE_OK);
+    assert!(!file.is_null());
+    let methods=unsafe{(*file).pMethods};
+    assert!(!methods.is_null());
+    let xlock=unsafe{(*methods).xShmLock}.expect("real test VFS native SHM lock callback");
+    let xmap=unsafe{(*methods).xShmMap}.expect("real test VFS native SHM map callback");
+
+    let original=root.dir.join("original-owned-shm-aba.fixture");
+    fs::rename(&root.shm,&original).expect("rename disposable SHM only");
+    let decoy=OpenOptions::new().read(true).write(true).share_mode(1|2|4)
+        .create_new(true).open(&root.shm).unwrap();
+    decoy.set_len(SHM_MAPPING_BYTES as u64).unwrap();
+    assert_ne!(id(&decoy),Some(expected));
+    assert_eq!(unsafe{xlock(file,0,1,(SHM_LOCK|SHM_SHARED) as c_int)},
+        ffi::SQLITE_IOERR_SHMLOCK,"observed SHM substitution must poison the connection");
+
+    drop(decoy);
+    fs::remove_file(&root.shm).expect("remove test-only decoy");
+    fs::rename(&original,&root.shm).expect("restore original test-only SHM name");
+    assert_eq!(id(&gate.state.master),Some(expected));
+    let named=OpenOptions::new().read(true).write(true).share_mode(1|2|4)
+        .open(&root.shm).unwrap();
+    assert_eq!(id(&named),Some(expected),"native held and named SHM IDs match again");
+    drop(named);
+
+    assert_eq!(unsafe{xlock(file,0,1,(SHM_LOCK|SHM_SHARED) as c_int)},
+        ffi::SQLITE_IOERR_SHMLOCK,"ABA restoration cannot revoke observed poison");
+    let mut output:*mut c_void=ptr::null_mut();
+    assert_eq!(unsafe{xmap(file,1,PAGE_SIZE as c_int,0,&mut output)},
+        ffi::SQLITE_IOERR_SHMMAP,"poisoned connection must not expose mapped SHM");
+    assert!(output.is_null());
+    assert!(gate.state.denials.load(Ordering::SeqCst)>=3);
+    drop(db);
+    // Default SQLite writer, other VFSes and all operator locations unchanged.
 }
