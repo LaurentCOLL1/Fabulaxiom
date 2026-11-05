@@ -27,6 +27,13 @@ pub(crate) struct RelationDraft<'a> {
     pub source_revision_id: Option<&'a str>,
 }
 
+/// A non-persistent P2f author review result; NOT a write admission token.
+#[derive(Debug, PartialEq, Eq)]
+pub(crate) struct CorrectionPreview {
+    pub prior_precedence_id: String,
+    pub proposed: chronology::ActivePrecedence,
+}
+
 pub(crate) struct FixtureSnapshot {
     pub anchors: Vec<chronology::ManualAnchor>,
     pub precedences: Vec<chronology::ManualPrecedence>,
@@ -196,6 +203,26 @@ impl<'a> FixtureChronologyService<'a> {
     /// P2e fixture-only authored correction: append revocation AND new
     /// stage-4 restatement in the same transaction. If either INSERT is
     /// rejected by STRICT scope/cycle/uniqueness guards, rollback both.
+
+    // This exact pair of INSERTs is shared by preview and final confirmation.
+    // No separate validation-only implementation is allowed to drift.
+    fn stage_atomic_correction(
+        db: &Connection, decision_id: &str, restatement_id: &str,
+        universe: &str, prior_id: &str, before: &str, after: &str,
+        reason: &str, source_revision_id: Option<&str>,
+    ) -> Result<(), FixtureError> {
+        chronology::decide_precedence(
+            db, decision_id, universe, prior_id,
+            "revoke", None, reason, source_revision_id,
+        )?;
+        chronology::restate_revoked_precedence(
+            db, restatement_id, universe, prior_id,
+            before, after, reason, source_revision_id,
+        )?;
+        Ok(())
+    }
+
+    /// P2e final action: one transaction, BOTH records commit or both rollback.
     pub fn correct_precedence_atomically(
         &mut self, decision_id: &str, restatement_id: &str,
         universe: &str, prior_id: &str, before: &str, after: &str,
@@ -203,16 +230,38 @@ impl<'a> FixtureChronologyService<'a> {
     ) -> Result<(), FixtureError> {
         self.require_p2d_overlay()?;
         let tx = self.db.transaction_with_behavior(TransactionBehavior::Immediate)?;
-        chronology::decide_precedence(
-            &tx, decision_id, universe, prior_id,
-            "revoke", None, reason, source_revision_id,
-        )?;
-        chronology::restate_revoked_precedence(
-            &tx, restatement_id, universe, prior_id,
-            before, after, reason, source_revision_id,
+        Self::stage_atomic_correction(
+            &tx, decision_id, restatement_id, universe,
+            prior_id, before, after, reason, source_revision_id,
         )?;
         tx.commit()?;
         Ok(())
+    }
+
+    /// P2f test-only speculative preview. Execute the SAME SQL triggers and
+    /// explicitly rollback even when all guards pass. The returned value is a
+    /// draft description, never a confirmation token or reserved write.
+    pub fn preview_atomic_correction(
+        &mut self, decision_id: &str, restatement_id: &str,
+        universe: &str, prior_id: &str, before: &str, after: &str,
+        reason: &str, source_revision_id: Option<&str>,
+    ) -> Result<CorrectionPreview, FixtureError> {
+        self.require_p2d_overlay()?;
+        let tx = self.db.transaction_with_behavior(TransactionBehavior::Immediate)?;
+        Self::stage_atomic_correction(
+            &tx, decision_id, restatement_id, universe,
+            prior_id, before, after, reason, source_revision_id,
+        )?;
+        tx.rollback()?; // Never commits any author claim, on success or failure.
+        Ok(CorrectionPreview {
+            prior_precedence_id: prior_id.to_owned(),
+            proposed: chronology::ActivePrecedence {
+                id: restatement_id.to_owned(),
+                before_anchor_id: before.to_owned(),
+                after_anchor_id: after.to_owned(),
+                origin: "restatement".to_owned(),
+            },
+        })
     }
 
     /// Active partial order is not the historical raw-v7 edge inventory.
@@ -375,6 +424,90 @@ mod tests {
     }
 
 
+
+
+    #[test]
+    fn p2f_success_preview_is_write_free_and_does_not_authorize_commit() {
+        let mut db = invented_connection();
+        db.execute_batch(include_str!("../sql/m3_2_active_precedence_candidate.sql")).unwrap();
+        {
+            let mut service = FixtureChronologyService::from_already_opened_disposable_v7(&mut db).unwrap();
+            service.create_anchor_with_optional_relation(draft("a1", "u1"), None).unwrap();
+            service.create_anchor_with_optional_relation(draft("a2", "u1"), None).unwrap();
+            service.create_precedence(relation("old12", "a1", "a2")).unwrap();
+            let preview = service.preview_atomic_correction(
+                "decision12", "new21", "u1", "old12", "a2", "a1",
+                "Author preview only", Some("r2"),
+            ).unwrap();
+            assert_eq!(preview.prior_precedence_id, "old12");
+            assert_eq!((preview.proposed.id.as_str(),
+                        preview.proposed.before_anchor_id.as_str(),
+                        preview.proposed.after_anchor_id.as_str(),
+                        preview.proposed.origin.as_str()),
+                       ("new21", "a2", "a1", "restatement"));
+            assert_eq!(service.snapshot("u1").unwrap().current_precedence_ids, vec!["old12"]);
+            assert_eq!(service.p2d_active_graph("u1").unwrap().len(), 1);
+            assert!(service.p2d_active_graph("u2").unwrap().is_empty());
+        }
+        let (decisions,restatements): (i64,i64) = (
+            db.query_row("SELECT COUNT(*) FROM world_time_precedence_decisions",[],
+                         |row| row.get(0)).unwrap(),
+            db.query_row("SELECT COUNT(*) FROM world_time_precedence_restatements",[],
+                         |row| row.get(0)).unwrap(),
+        );
+        assert_eq!((decisions,restatements), (0,0), "preview must leave zero writes");
+        assert_eq!(db.query_row("SELECT revision_id FROM scene_revision_heads
+                                 WHERE scene_id='s2'",[],|row| row.get::<_,String>(0)).unwrap(),"r3");
+        {
+            let mut service = FixtureChronologyService::from_already_opened_disposable_v7(&mut db).unwrap();
+            service.correct_precedence_atomically(
+                "decision12", "new21", "u1", "old12", "a2", "a1",
+                "Author confirmed separately", Some("r2"),
+            ).unwrap();
+            assert_eq!(service.p2d_active_graph("u1").unwrap()[0].id,"new21");
+        }
+        assert_eq!(db.query_row("PRAGMA integrity_check",[],|row|row.get::<_,String>(0)).unwrap(),"ok");
+    }
+
+    #[test]
+    fn p2f_invalid_preview_rolls_back_and_needs_stage4_overlay() {
+        let mut db = invented_connection();
+        {
+            let mut service = FixtureChronologyService::from_already_opened_disposable_v7(&mut db).unwrap();
+            assert!(matches!(service.preview_atomic_correction(
+                "missing", "missing-restate", "u1", "old12", "a2", "a1", "No overlay", None,
+            ), Err(FixtureError::Stop(_))));
+        }
+        db.execute_batch(include_str!("../sql/m3_2_active_precedence_candidate.sql")).unwrap();
+        {
+            let mut service = FixtureChronologyService::from_already_opened_disposable_v7(&mut db).unwrap();
+            for id in ["a1","a2","a3"] {
+                service.create_anchor_with_optional_relation(draft(id,"u1"),None).unwrap();
+            }
+            service.create_precedence(relation("old12","a1","a2")).unwrap();
+            service.create_precedence(relation("edge23","a2","a3")).unwrap();
+            assert!(matches!(service.preview_atomic_correction(
+                "bad-cycle","bad32","u1","old12","a3","a2",
+                "Would create an active cycle",Some("r2"),
+            ),Err(FixtureError::Sql(_))));
+            assert!(matches!(service.preview_atomic_correction(
+                "bad-foreign","foreign21","u2","old12","a2","a1",
+                "Wrong universe",None,
+            ),Err(FixtureError::Sql(_))));
+            assert!(matches!(service.preview_atomic_correction(
+                "bad-source","bad-source21","u1","old12","a2","a1",
+                "Wrong source revision",Some("absent-revision"),
+            ),Err(FixtureError::Sql(_))));
+            assert_eq!(service.snapshot("u1").unwrap().current_precedence_ids,
+                       vec!["edge23","old12"]);
+        }
+        let decisions: i64 = db.query_row("SELECT COUNT(*) FROM world_time_precedence_decisions",
+                        [],|row|row.get(0)).unwrap();
+        let restatements: i64 = db.query_row("SELECT COUNT(*) FROM world_time_precedence_restatements",
+                        [],|row|row.get(0)).unwrap();
+        assert_eq!((decisions,restatements),(0,0));
+        assert_eq!(db.query_row("PRAGMA integrity_check",[],|row|row.get::<_,String>(0)).unwrap(),"ok");
+    }
 
     #[test]
     fn p2e_atomic_correction_commits_both_assertions_once_with_history() {
