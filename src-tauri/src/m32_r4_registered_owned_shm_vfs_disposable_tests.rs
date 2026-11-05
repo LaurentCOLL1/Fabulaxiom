@@ -124,6 +124,9 @@ struct Vfs{
     // Test-only fault flags allow native xOpen HANDLE veto without name swaps.
     deny_main_native_id_for_test:AtomicBool,
     deny_wal_native_id_for_test:AtomicBool,
+    // SQLite's WAL xOpen provides the associated live main sqlite3_file.
+    deny_wal_main_owner_for_test:AtomicBool,
+    wal_main_owner_matches:AtomicUsize,
     main_native_matches:AtomicUsize,
     wal_native_matches:AtomicUsize,
     native_refusals:AtomicUsize,
@@ -269,6 +272,30 @@ unsafe extern "C" fn xopen(
         return ffi::SQLITE_CANTOPEN;
     }
     let main=flags&ffi::SQLITE_OPEN_MAIN_DB!=0;
+    let wal=flags&ffi::SQLITE_OPEN_WAL!=0;
+    if wal {
+        // SQLite documents this API ONLY for the untouched filename pointer
+        // supplied to WAL/MAIN_JOURNAL xOpen. Never call it for other flags.
+        // It proves the WAL open was associated with the retained main
+        // sqlite3_file, rather than guessing main identity from WAL pathname.
+        // Delegated WAL xOpen remains by-name: this is NOT atomic custody.
+        let owner=unsafe{ffi::sqlite3_database_file_object(name)};
+        let methods=if owner.is_null(){ptr::null()}else{unsafe{(*owner).pMethods}};
+        let mut native:*mut c_void=ptr::null_mut();
+        let rc=if methods.is_null(){ffi::SQLITE_NOTFOUND}
+            else if let Some(control)=unsafe{(*methods).xFileControl}{
+                unsafe{control(owner,ffi::SQLITE_FCNTL_WIN32_GET_HANDLE,
+                    (&mut native as *mut *mut c_void).cast())}
+            }else{ffi::SQLITE_NOTFOUND};
+        let observed=if rc==ffi::SQLITE_OK{raw_id(native)}else{None};
+        if observed!=Some(gate.expected_db)||
+            gate.deny_wal_main_owner_for_test.load(Ordering::SeqCst){
+            gate.native_refusals.fetch_add(1,Ordering::SeqCst);
+            gate.denials.fetch_add(1,Ordering::SeqCst);
+            return ffi::SQLITE_CANTOPEN;
+        }
+        gate.wal_main_owner_matches.fetch_add(1,Ordering::SeqCst);
+    }
     let Some(delegate)=(unsafe{(*gate.default).xOpen})else{return ffi::SQLITE_CANTOPEN};
     let result=unsafe{delegate(gate.default,name,file,flags,outflags)};
     if result!=ffi::SQLITE_OK{return result}
@@ -276,7 +303,6 @@ unsafe extern "C" fn xopen(
     // SQLite's file-control opcode 29 reads that HANDLE from this sqlite3_file.
     // WAL path observation remains a non-atomic test-only comparison; this
     // does not bind the custody of main/-wal/-shm as an indivisible unit.
-    let wal=flags&ffi::SQLITE_OPEN_WAL!=0;
     if main||wal{
         let original=unsafe{(*file).pMethods};
         let mut native:*mut c_void=ptr::null_mut();
@@ -374,6 +400,8 @@ impl Registered{
             shm:root.shm.clone(),master,expected,master_db,expected_db,
             deny_main_native_id_for_test:AtomicBool::new(false),
             deny_wal_native_id_for_test:AtomicBool::new(false),
+            deny_wal_main_owner_for_test:AtomicBool::new(false),
+            wal_main_owner_matches:AtomicUsize::new(0),
             main_native_matches:AtomicUsize::new(0),
             wal_native_matches:AtomicUsize::new(0),
             native_refusals:AtomicUsize::new(0),
@@ -507,6 +535,8 @@ fn r4_delegated_native_main_and_wal_handles_match_fresh_fixture_identities(){
     db.execute_batch("CREATE TABLE xopen_fixture(n INTEGER); INSERT INTO xopen_fixture VALUES(9);").unwrap();
     assert!(gate.state.wal_native_matches.load(Ordering::SeqCst)>=1,
         "real delegated WAL xOpen HANDLE must be inspected, not guessed from name");
+    assert!(gate.state.wal_main_owner_matches.load(Ordering::SeqCst)>=1,
+        "actual WAL xOpen filename must resolve to the retained main SQLite native FileId");
     assert_eq!(gate.state.native_refusals.load(Ordering::SeqCst),0);
     drop(db);
 }
@@ -797,4 +827,29 @@ fn r4_observed_shm_path_aba_restoration_never_rearms_native_callbacks(){
     assert!(gate.state.denials.load(Ordering::SeqCst)>=3);
     drop(db);
     // Default SQLite writer, other VFSes and all operator locations unchanged.
+}
+
+
+// R4 CI-only negative: WAL xOpen is associated with SQLite's actual main
+// sqlite3_file, not a by-name main re-open. A forced owner veto must occur
+// before the WAL delegate xOpen. Still not a three-file atomic custody proof.
+#[test]
+fn r4_wal_xopen_sqlite_main_file_object_native_owner_veto_disposable(){
+    let root=Scratch::fresh();
+    let gate=Registered::fresh(&root);
+    let db=Connection::open_with_flags_and_vfs(
+        &root.db,OpenFlags::SQLITE_OPEN_READ_WRITE,gate.name()).unwrap();
+    assert_eq!(id(&gate.state.master_db),Some(gate.state.expected_db));
+    gate.state.deny_wal_main_owner_for_test.store(true,Ordering::SeqCst);
+    let attempt=db.execute_batch(
+        "PRAGMA journal_mode=WAL;
+         CREATE TABLE blocked_wal_owner(n INTEGER);
+         INSERT INTO blocked_wal_owner VALUES (9);");
+    assert!(attempt.is_err(),"native SQLite WAL->main owner veto must fail closed");
+    assert_eq!(gate.state.wal_main_owner_matches.load(Ordering::SeqCst),0);
+    assert_eq!(gate.state.wal_native_matches.load(Ordering::SeqCst),0,
+        "veto must precede delegated WAL xOpen");
+    assert!(gate.state.native_refusals.load(Ordering::SeqCst)>=1);
+    assert!(gate.state.denials.load(Ordering::SeqCst)>=1);
+    drop(db);
 }
