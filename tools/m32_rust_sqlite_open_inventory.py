@@ -105,7 +105,9 @@ EXPECTED = {
     # updates a textual tripwire, NOT production writer authorization.
     # R4 observed SHM ABA fixture adds one audited disposable RW open.
     # This text count is NOT production writer admission.
-    "src-tauri/src/m32_r4_registered_owned_shm_vfs_disposable_tests.rs": (13, 0, 0, 0, 0, 13, 0),
+    # R4 WAL xOpen actual owner sqlite3_file FileId128: one more audited
+    # disposable RW open, never an application/runtime opener.
+    "src-tauri/src/m32_r4_registered_owned_shm_vfs_disposable_tests.rs": (14, 0, 0, 0, 0, 14, 0),
     "src-tauri/src/m32_r4_wal_shm_disposable_tests.rs": (2, 0, 0, 0, 0, 1, 0),
     # R4 RAM-only design contract intentionally ABSENT from EXPECTED:
     # audit_inventory() only lists sources having nonzero SQLite occurrences.
