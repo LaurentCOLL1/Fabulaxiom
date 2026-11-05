@@ -32,6 +32,10 @@ pub(crate) struct RelationDraft<'a> {
 pub(crate) struct CorrectionPreview {
     pub prior_precedence_id: String,
     pub proposed: chronology::ActivePrecedence,
+    // Fictional active edges at preview start and after staged correction.
+    // Both are copied values, NOT committed database snapshots or grants.
+    pub active_before: Vec<chronology::ActivePrecedence>,
+    pub active_after: Vec<chronology::ActivePrecedence>,
 }
 
 pub(crate) struct FixtureSnapshot {
@@ -248,10 +252,12 @@ impl<'a> FixtureChronologyService<'a> {
     ) -> Result<CorrectionPreview, FixtureError> {
         self.require_p2d_overlay()?;
         let tx = self.db.transaction_with_behavior(TransactionBehavior::Immediate)?;
+        let active_before = Self::query_active_graph(&tx, universe)?;
         Self::stage_atomic_correction(
             &tx, decision_id, restatement_id, universe,
             prior_id, before, after, reason, source_revision_id,
         )?;
+        let active_after = Self::query_active_graph(&tx, universe)?;
         tx.rollback()?; // Never commits any author claim, on success or failure.
         Ok(CorrectionPreview {
             prior_precedence_id: prior_id.to_owned(),
@@ -261,16 +267,17 @@ impl<'a> FixtureChronologyService<'a> {
                 after_anchor_id: after.to_owned(),
                 origin: "restatement".to_owned(),
             },
+            active_before,
+            active_after,
         })
     }
 
     /// Active partial order is not the historical raw-v7 edge inventory.
     /// This deliberately models only the stage-4 overlay, not later generations.
-    pub fn p2d_active_graph(
-        &self, universe: &str,
+    fn query_active_graph(
+        db: &Connection, universe: &str,
     ) -> Result<Vec<chronology::ActivePrecedence>, FixtureError> {
-        self.require_p2d_overlay()?;
-        let mut stmt = self.db.prepare(
+        let mut stmt = db.prepare(
             "SELECT p.id,p.before_anchor_id,p.after_anchor_id,'original' AS origin
              FROM world_time_precedences p
              WHERE p.universe_id=?1
@@ -303,6 +310,13 @@ impl<'a> FixtureChronologyService<'a> {
             })
         })?.collect::<rusqlite::Result<Vec<_>>>()?;
         Ok(entries)
+    }
+
+    pub fn p2d_active_graph(
+        &self, universe: &str,
+    ) -> Result<Vec<chronology::ActivePrecedence>, FixtureError> {
+        self.require_p2d_overlay()?;
+        Self::query_active_graph(self.db, universe)
     }
 
     pub fn snapshot(&self, universe: &str) -> Result<FixtureSnapshot, FixtureError> {
@@ -425,6 +439,71 @@ mod tests {
 
 
 
+
+
+    #[test]
+    fn p2g_preview_shows_before_after_partial_order_without_persisting() {
+        let mut db = invented_connection();
+        db.execute_batch(include_str!("../sql/m3_2_active_precedence_candidate.sql")).unwrap();
+        {
+            let mut service = FixtureChronologyService::from_already_opened_disposable_v7(&mut db).unwrap();
+            for id in ["a1","a2","a3"] {
+                service.create_anchor_with_optional_relation(draft(id, "u1"), None).unwrap();
+            }
+            service.create_precedence(relation("old12", "a1", "a2")).unwrap();
+            service.create_precedence(relation("edge13", "a1", "a3")).unwrap();
+            let comparison = service.preview_atomic_correction(
+                "decision12", "new21", "u1", "old12", "a2", "a1",
+                "Human review of fictional order", Some("r2"),
+            ).unwrap();
+            assert_eq!(comparison.active_before.len(), 2);
+            assert_eq!(comparison.active_before.iter().map(|e|e.id.as_str()).collect::<Vec<_>>(),
+                       vec!["edge13", "old12"]);
+            assert_eq!(comparison.active_after.len(), 2);
+            assert_eq!(comparison.active_after.iter().map(|e|e.id.as_str()).collect::<Vec<_>>(),
+                       vec!["edge13", "new21"]);
+            assert_eq!(comparison.proposed.id, "new21");
+            assert_eq!(comparison.active_after.iter().find(|e|e.id=="new21").unwrap().origin,
+                       "restatement");
+            assert_eq!(service.p2d_active_graph("u1").unwrap(), comparison.active_before,
+                       "preview is a comparison, never a write");
+            assert!(service.p2d_active_graph("u2").unwrap().is_empty());
+        }
+        let counts: (i64,i64) = (
+            db.query_row("SELECT count(*) FROM world_time_precedence_decisions",[],|r|r.get(0)).unwrap(),
+            db.query_row("SELECT count(*) FROM world_time_precedence_restatements",[],|r|r.get(0)).unwrap()
+        );
+        assert_eq!(counts,(0,0));
+        assert_eq!(db.query_row("SELECT revision_id FROM scene_revision_heads WHERE scene_id='s2'",[],|r|r.get::<_,String>(0)).unwrap(),"r3");
+        assert_eq!(db.query_row("PRAGMA integrity_check",[],|r|r.get::<_,String>(0)).unwrap(),"ok");
+    }
+
+    #[test]
+    fn p2g_failed_preview_preserves_graph_and_refuses_foreign_universe() {
+        let mut db = invented_connection();
+        db.execute_batch(include_str!("../sql/m3_2_active_precedence_candidate.sql")).unwrap();
+        {
+            let mut service = FixtureChronologyService::from_already_opened_disposable_v7(&mut db).unwrap();
+            for id in ["a1","a2","a3"] {
+                service.create_anchor_with_optional_relation(draft(id,"u1"),None).unwrap();
+            }
+            service.create_precedence(relation("old12","a1","a2")).unwrap();
+            service.create_precedence(relation("edge23","a2","a3")).unwrap();
+            let before=service.p2d_active_graph("u1").unwrap();
+            assert!(matches!(service.preview_atomic_correction(
+                "cycle-decision","cycle-restate","u1","old12",
+                "a3","a2","Human proposed cycle",Some("r2"),
+            ),Err(FixtureError::Sql(_))));
+            assert!(matches!(service.preview_atomic_correction(
+                "foreign-decision","foreign-restate","u2","old12",
+                "a2","a1","Wrong universe",None,
+            ),Err(FixtureError::Sql(_))));
+            assert_eq!(service.p2d_active_graph("u1").unwrap(),before);
+            assert!(service.p2d_active_graph("u2").unwrap().is_empty());
+        }
+        let count: i64=db.query_row("SELECT count(*) FROM world_time_precedence_decisions",[],|r|r.get(0)).unwrap();
+        assert_eq!(count,0);
+    }
 
     #[test]
     fn p2f_success_preview_is_write_free_and_does_not_authorize_commit() {

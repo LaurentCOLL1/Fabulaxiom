@@ -398,6 +398,43 @@ mod tests {
 
 
 
+
+    #[test]
+    fn p2g_actor_preview_diff_is_not_committed_and_stale_after_intervening_change() {
+        let db = {
+            let db = invented_v7();
+            db.execute_batch(include_str!("../sql/m3_2_active_precedence_candidate.sql")).unwrap();
+            db
+        };
+        let owner = FixtureChronologyActor::from_preopened_invented_v7(db).unwrap();
+        let author = owner.client();
+        let parallel = owner.client();
+        for id in ["a1","a2","a3"] {
+            author.create_anchor(anchor(id, "u1"), None).unwrap();
+        }
+        author.create_precedence(before("old12","a1","a2")).unwrap();
+        let preview=author.preview_atomic_correction(
+            "decision12".into(),"new21".into(),"u1".into(),"old12".into(),
+            "a2".into(),"a1".into(),"Human review only".into(),Some("r2".into()),
+        ).unwrap();
+        assert_eq!(preview.active_before.iter().map(|e|e.id.as_str()).collect::<Vec<_>>(),
+                   vec!["old12"]);
+        assert_eq!(preview.active_after.iter().map(|e|e.id.as_str()).collect::<Vec<_>>(),
+                   vec!["new21"]);
+        assert_eq!(author.p2d_active_graph("u1".into()).unwrap(),preview.active_before);
+        parallel.create_precedence(before("edge13","a1","a3")).unwrap();
+        parallel.create_precedence(before("edge32","a3","a2")).unwrap();
+        assert!(matches!(author.correct_precedence_atomically(
+            "decision12".into(),"new21".into(),"u1".into(),"old12".into(),
+            "a2".into(),"a1".into(),"Stale proposal is now cycle".into(),Some("r2".into()),
+        ),Err(ActorError::Domain(_))));
+        assert_eq!(author.snapshot("u1".into()).unwrap().current_precedence_ids,
+                   vec!["edge13","edge32","old12"]);
+        assert!(author.p2d_active_graph("u2".into()).unwrap().is_empty());
+        owner.shutdown().unwrap();
+        assert!(matches!(author.p2d_active_graph("u1".into()),Err(ActorError::Disconnected)));
+    }
+
     #[test]
     fn p2f_actor_preview_is_not_a_confirmation_token_and_detects_intervening_edges() {
         let db = {
