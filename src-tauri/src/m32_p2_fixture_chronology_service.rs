@@ -38,6 +38,50 @@ pub(crate) struct CorrectionPreview {
     pub active_after: Vec<chronology::ActivePrecedence>,
 }
 
+// P2h: derived, unprivileged author-facing delta for fictional test previews.
+// This is not a write grant, a cached lock, or a persistent review record.
+#[derive(Debug, PartialEq, Eq)]
+pub(crate) struct PreviewEdgeSummary {
+    pub id: String,
+    pub before_anchor_id: String,
+    pub after_anchor_id: String,
+    pub origin: String,
+}
+
+impl From<&chronology::ActivePrecedence> for PreviewEdgeSummary {
+    fn from(edge: &chronology::ActivePrecedence) -> Self {
+        Self {
+            id: edge.id.clone(),
+            before_anchor_id: edge.before_anchor_id.clone(),
+            after_anchor_id: edge.after_anchor_id.clone(),
+            origin: edge.origin.clone(),
+        }
+    }
+}
+
+#[derive(Debug, PartialEq, Eq)]
+pub(crate) struct PreviewImpact {
+    pub removed: Vec<PreviewEdgeSummary>,
+    pub added: Vec<PreviewEdgeSummary>,
+    pub unchanged: Vec<PreviewEdgeSummary>,
+}
+
+impl CorrectionPreview {
+    pub(crate) fn author_impact(&self) -> PreviewImpact {
+        // Equality includes id, endpoints and origin; never infer a total order.
+        let removed = self.active_before.iter()
+            .filter(|edge| !self.active_after.iter().any(|after| after == *edge))
+            .map(PreviewEdgeSummary::from).collect();
+        let added = self.active_after.iter()
+            .filter(|edge| !self.active_before.iter().any(|before| before == *edge))
+            .map(PreviewEdgeSummary::from).collect();
+        let unchanged = self.active_after.iter()
+            .filter(|edge| self.active_before.iter().any(|before| before == *edge))
+            .map(PreviewEdgeSummary::from).collect();
+        PreviewImpact { removed, added, unchanged }
+    }
+}
+
 pub(crate) struct FixtureSnapshot {
     pub anchors: Vec<chronology::ManualAnchor>,
     pub precedences: Vec<chronology::ManualPrecedence>,
@@ -440,6 +484,68 @@ mod tests {
 
 
 
+
+    #[test]
+    fn p2h_author_impact_distinguishes_added_removed_unchanged_without_commit() {
+        let mut db = invented_connection();
+        db.execute_batch(include_str!("../sql/m3_2_active_precedence_candidate.sql")).unwrap();
+        {
+            let mut service = FixtureChronologyService::from_already_opened_disposable_v7(&mut db).unwrap();
+            for id in ["a1", "a2", "a3"] {
+                service.create_anchor_with_optional_relation(draft(id, "u1"), None).unwrap();
+            }
+            service.create_precedence(relation("old12", "a1", "a2")).unwrap();
+            service.create_precedence(relation("edge13", "a1", "a3")).unwrap();
+            let preview = service.preview_atomic_correction(
+                "decision12", "new21", "u1", "old12", "a2", "a1",
+                "Fictional author's delta summary", Some("r2"),
+            ).unwrap();
+            let impact = preview.author_impact();
+            assert_eq!(impact.removed.iter().map(|edge| edge.id.as_str()).collect::<Vec<_>>(), vec!["old12"]);
+            assert_eq!(impact.added.iter().map(|edge| edge.id.as_str()).collect::<Vec<_>>(), vec!["new21"]);
+            assert_eq!(impact.unchanged.iter().map(|edge| edge.id.as_str()).collect::<Vec<_>>(), vec!["edge13"]);
+            assert_eq!((impact.removed[0].before_anchor_id.as_str(),
+                        impact.added[0].before_anchor_id.as_str()), ("a1", "a2"));
+            assert_eq!(service.p2d_active_graph("u1").unwrap(), preview.active_before);
+            assert!(service.p2d_active_graph("u2").unwrap().is_empty());
+        }
+        let row_count: i64 = db.query_row(
+            "SELECT COUNT(*) FROM world_time_precedence_decisions", [], |row| row.get(0)
+        ).unwrap();
+        assert_eq!(row_count, 0);
+        let row_count: i64 = db.query_row(
+            "SELECT COUNT(*) FROM world_time_precedence_restatements", [], |row| row.get(0)
+        ).unwrap();
+        assert_eq!(row_count, 0);
+        assert_eq!(db.query_row("PRAGMA integrity_check", [], |r| r.get::<_, String>(0)).unwrap(), "ok");
+    }
+
+    #[test]
+    fn p2h_author_impact_detects_changed_endpoints_even_if_id_is_reused() {
+        let before = chronology::ActivePrecedence {
+            id: "same".into(), before_anchor_id: "a1".into(),
+            after_anchor_id: "a2".into(), origin: "original".into(),
+        };
+        let after = chronology::ActivePrecedence {
+            id: "same".into(), before_anchor_id: "a2".into(),
+            after_anchor_id: "a1".into(), origin: "restatement".into(),
+        };
+        let preview = CorrectionPreview {
+            prior_precedence_id: "same".into(),
+            proposed: chronology::ActivePrecedence {
+                id: "same".into(), before_anchor_id: "a2".into(),
+                after_anchor_id: "a1".into(), origin: "restatement".into(),
+            },
+            active_before: vec![before],
+            active_after: vec![after],
+        };
+        let impact = preview.author_impact();
+        assert_eq!(impact.removed.len(), 1);
+        assert_eq!(impact.added.len(), 1);
+        assert!(impact.unchanged.is_empty());
+        assert_eq!(impact.removed[0].origin, "original");
+        assert_eq!(impact.added[0].origin, "restatement");
+    }
 
     #[test]
     fn p2g_preview_shows_before_after_partial_order_without_persisting() {
