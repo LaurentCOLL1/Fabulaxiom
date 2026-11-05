@@ -74,7 +74,7 @@ describe("M3.2 P2j fictional touched-anchor projection (isolated and read-only)"
     expect(html).toContain("STOP_UNAVAILABLE");
     expect(html).not.toContain("<button");
     expect(html).not.toContain("<input");
-    const malicious = { ...input, active_before: [edge("<img src=x onerror=alert(1)>", "A", "B")], active_after: [] };
+    const malicious = { ...input, active_before: [edge("malicious", "<img src=x onerror=alert(1)>", "B")], active_after: [] };
     const escaped = renderToStaticMarkup(createElement(M32P2jFictionalTouchedAnchors, {
       input: malicious, expectedUniverse: universe,
     }));
