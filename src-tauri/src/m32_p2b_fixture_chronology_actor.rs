@@ -400,6 +400,39 @@ mod tests {
 
 
     #[test]
+    fn p2h_actor_author_impact_does_not_authorize_stale_confirmation() {
+        let db = {
+            let db = invented_v7();
+            db.execute_batch(include_str!("../sql/m3_2_active_precedence_candidate.sql")).unwrap();
+            db
+        };
+        let owner = FixtureChronologyActor::from_preopened_invented_v7(db).unwrap();
+        let author = owner.client();
+        let other = owner.client();
+        for id in ["a1", "a2", "a3"] {
+            author.create_anchor(anchor(id, "u1"), None).unwrap();
+        }
+        author.create_precedence(before("old12", "a1", "a2")).unwrap();
+        let preview = author.preview_atomic_correction(
+            "decision12".into(), "new21".into(), "u1".into(), "old12".into(),
+            "a2".into(), "a1".into(), "Review only".into(), Some("r2".into()),
+        ).unwrap();
+        let impact = preview.author_impact();
+        assert_eq!(impact.removed[0].id, "old12");
+        assert_eq!(impact.added[0].id, "new21");
+        assert!(impact.unchanged.is_empty());
+        other.create_precedence(before("edge13", "a1", "a3")).unwrap();
+        other.create_precedence(before("edge32", "a3", "a2")).unwrap();
+        assert!(matches!(author.correct_precedence_atomically(
+            "decision12".into(), "new21".into(), "u1".into(), "old12".into(),
+            "a2".into(), "a1".into(), "Stale candidate".into(), Some("r2".into()),
+        ), Err(ActorError::Domain(_))));
+        assert_eq!(author.snapshot("u1".into()).unwrap().current_precedence_ids,
+                   vec!["edge13", "edge32", "old12"]);
+        owner.shutdown().unwrap();
+    }
+
+    #[test]
     fn p2g_actor_preview_diff_is_not_committed_and_stale_after_intervening_change() {
         let db = {
             let db = invented_v7();
