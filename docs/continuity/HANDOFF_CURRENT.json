@@ -1,4 +1,20 @@
 {
+  "m32_p2j_candidate_20261105": {
+    "pr": 291,
+    "state": "DRAFT_NOT_QUALIFIED",
+    "first_ci": "FAILED_RESUME_HANDOFF_DIFF_GATE",
+    "tests_expected_vitest": 373,
+    "base_main": "3e37487fb5b51fa2d6b87449eecde114dfc1e2f3",
+    "parent_postmain_290": "42095684848_IN_PROGRESS",
+    "p2i_postmain_289": "42085768614_SUCCESS",
+    "strategy": "PRODUCT_FIRST_PARALLEL_SAFETY",
+    "m32": "IN_PROGRESS_NOT_ACCEPTED",
+    "writer": "STOP_NOT_PROVEN",
+    "p4": "STOP",
+    "g3": "STOP_UNAVAILABLE",
+    "glib_160": "OPEN_NOT_REMEDIATED",
+    "next": "CI_EXACT_FINAL_HEAD_PROTECT_MAIN_AUDIT_POSTMAIN"
+  },
   "m32_progress_45pct_p2i_merged_postmain_pending_20261105": {
     "estimated_percentage": 45,
     "uncertainty": "40-50_PERCENT_NON_OFFICIAL",
