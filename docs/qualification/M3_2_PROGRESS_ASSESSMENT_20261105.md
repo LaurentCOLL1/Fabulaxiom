@@ -1,0 +1,26 @@
+# M3.2 — Avancement mesuré et blocages réels, 5 novembre 2026
+
+## Qualification et estimation
+
+M3.2 = IN_PROGRESS_NOT_ACCEPTED. Estimation d'ingénierie NON OFFICIELLE : **environ 45 % (fourchette 40–50 %)** contre **environ 40 % (35–45 %)** au 1er novembre. Le pourcentage synthétise le modèle, les tests, les ateliers et le travail restant d'intégration et de sûreté. Ce chiffre n'est PAS le taux de fonctions actuellement utilisables sur des données opérateur. Le writer réel est toujours NOT_PROVEN.
+
+Checkpoint vérifié : PR #289 P2i protégée fusionnée sur main=152aed989c2ae018c1e5593f9abc999447167f9e, source SHA 37819615bebff80440e95860db759bf6cfc0f11a, Windows #42073950973 SUCCESS : 320 Rust, 7 Greenfield, 68 inventaire, 183 continuité, 367 Vitest dont 7 P2i, Chromium 85/85 normal et CSP, 19 blobs fictifs. Parent #288 postmain #42073817255 SUCCESS au SHA 5927884154f2d0ba39c27f99195314e393c894c1. Source et squash #289 ont le même arbre 4857fc5ab608c75247a6c366c9c072c089976073. #289 postmain indépendante #42085768614 IN_PROGRESS/NOT QUALIFIED au checkpoint : vérifier le résultat terminal avant qualification de fusion.
+
+## Acquis, mais UNIQUEMENT sur fixtures
+
+Schéma chronologique v7 candidat et contraintes, tests de réouverture de bases neuves fictives (plusieurs Univers et romans, sources de révisions historiques), Rust test-only P2a–P2h sur RAM v7 déjà ouverte (correction atomique sur fixture, preview avec ROLLBACK et diff), ateliers React P3/P4 fictifs et panneau P2i en lecture seule hors App.tsx. Aucune preuve de writer production ni de donnée opérateur.
+
+## Six tâches pour terminer M3.2, ordonnées
+
+1. R2–R4 : qualifier la frontière d'ouverture SQLite Windows et la maîtrise atomique des fichiers main/WAL/SHM réels, identité FileId128 des handles, verrouillage et deux processus concurrents sur fichiers strictement jetables, sans TOCTOU ; le WAL NORMAL demande les primitives xShm* selon SQLite. Les preuves partielles R3/R4 ne sont pas une admission. Modèle de menace validé : les autres processus du même utilisateur Windows sont considérés fiables, vérifier néanmoins collisions accidentelles.
+2. R5–R9 : qualifier le service Rust à propriétaire unique, refus de writer concurrent, fermeture, interruption/crash, reconnexion, récupération native et absence de faux succès ; décider une admission explicite AVANT IPC/runtime writer.
+3. Provenance : issue #36 OPEN, cinq rôles externes non indépendamment attestés (3 OBSERVED_SHA256 et 2 UNANCHORED_OBSERVED), historique PENDING_EXTERNAL_ATTESTATION(21/3/2). Soit retrouver des preuves réellement antérieures, soit établir par autorisation séparée un nouveau baseline prospectif sans certifier faussement le passé ; prospective NOT_STARTED, issue #38 OPEN, G2B NOT_ACCEPTED, G2C NOT_AUTHORIZED, G3 STOP_UNAVAILABLE.
+4. Intégration produit réelle : calendrier, ancres, précédences, listes, sources de révisions et vues distinctes monde/narration/révélation dans React/Tauri, branchés à un service Rust admis ; voie C projet neuf uniquement, offline avec Ollama facultatif. Ateliers et P2i non branchés aujourd'hui.
+5. Recette Windows opérateur APRÈS gates : deux Univers, plusieurs romans, dates exactes/approximatives/inconnues/relatives, cycles et erreurs, historique immutable, annulation, lecture après redémarrage, sauvegarde non écrasante, contrôle de l'ancien v6 et de ses pointeurs sans aucune perte ; aucune manipulation des originaux avant autorisation spécifique.
+6. Validation finale : tests exact-head Windows et preuves opérateur, gate formelle du writer et G3, revue threads/ruleset Protect main strict bypass=[], squash expected_head_sha, CI postmain indépendante et normalisation documentée, puis décision M3.2 ACCEPTED seulement si toutes les obligations sont prouvées.
+
+Dépendance glib 0.18.5 Linux GTK3 issue #160 OPEN_NOT_REMEDIATED, GHSA-wrw7-89jp-8q8g : risque transitive Linux distinct, pas de bump direct isolé vers 0.20.0 à travers GTK3 0.18.
+
+Stratégie PRODUCT_FIRST_PARALLEL_SAFETY INCHANGÉE ; informer l'utilisateur AVANT changement. STOP : M3.2 IN_PROGRESS_NOT_ACCEPTED, P4 réel/writer/R1–R9 NOT_PROVEN, G2B NOT_ACCEPTED, G2C NOT_AUTHORIZED, G3 STOP_UNAVAILABLE ; migration 007 runtime, writer IPC, native Hello, accès aux bases/profil/journaux/sauvegardes opérateur, recovery ou nouveau marqueur DURABLE INTERDIT. CI fixtures != admission réelle.
+
+Prochaine action : vérifier terminalement #42085768614 SHA exact, qualifier la présente PR documentaire avec sa propre CI, audit et merge protégé puis postmain. Priorité de travail utile : traiter la preuve atomique R4 et le parcours de projet neuf en parallèle, sans inférer un déblocage automatique.

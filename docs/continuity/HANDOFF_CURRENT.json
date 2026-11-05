@@ -1,4 +1,39 @@
 {
+  "m32_progress_45pct_p2i_merged_postmain_pending_20261105": {
+    "estimated_percentage": 45,
+    "uncertainty": "40-50_PERCENT_NON_OFFICIAL",
+    "prior_estimate_20261101": "ABOUT_40_PERCENT_35_45",
+    "m32": "IN_PROGRESS_NOT_ACCEPTED",
+    "strategy": "PRODUCT_FIRST_PARALLEL_SAFETY",
+    "notify_before_strategy_change": true,
+    "merged_pr": 289,
+    "source_sha": "37819615bebff80440e95860db759bf6cfc0f11a",
+    "source_ci": 42073950973,
+    "source_ci_status": "SUCCESS_320_RUST_7_GREENFIELD_68_INVENTORY_183_CONTINUITY_367_VITEST_85_CHROMIUM_NORMAL_CSP_19_BLOBS",
+    "main": "152aed989c2ae018c1e5593f9abc999447167f9e",
+    "parent_postmain": "42073817255_SUCCESS",
+    "postmain_ci": 42085768614,
+    "postmain_status_at_checkpoint": "IN_PROGRESS_NOT_QUALIFIED",
+    "product_scope": "FICTIONAL_BROWSER_MEMORY_READ_ONLY_NOT_APP_TSX",
+    "production_writer_admitted": false,
+    "operator_data_accessed": false,
+    "r1_r9": "NOT_PROVEN",
+    "g2b": "NOT_ACCEPTED",
+    "g2c": "NOT_AUTHORIZED",
+    "g3": "STOP_UNAVAILABLE",
+    "historical": "PENDING_EXTERNAL_ATTESTATION(21/3/2)",
+    "prospective": "NOT_STARTED",
+    "outstanding": [
+      "R4_MAIN_WAL_SHM_ATOMIC_CUSTODY",
+      "R5_R9_WRITER_LIFECYCLE_CRASH_RECOVERY",
+      "FIVE_HISTORICAL_ATTESTATIONS_OR_NEW_PROSPECTIVE_BASELINE",
+      "REAL_APP_TAURI_RUST_CHRONOLOGY_INTEGRATION",
+      "NON_DESTRUCTIVE_WINDOWS_OPERATOR_ACCEPTANCE",
+      "FINAL_GATE_CI_POSTMAIN_AND_NORMALIZATION"
+    ],
+    "glib": "OPEN_NOT_REMEDIATED",
+    "details": "docs/qualification/M3_2_PROGRESS_ASSESSMENT_20261105.md"
+  },
   "m32_p2i_fictional_browser_impact_candidate_20261105": {
     "slice": "P2I_FICTIONAL_REACT_AUTHOR_EDGE_IMPACT_REVIEW",
     "parent_pr": 288,
@@ -34,7 +69,7 @@
     "glib": "OPEN_NOT_REMEDIATED",
     "next": "QUALIFY_PARENT_288_SOURCE_AND_POSTMAIN;REBASE_P2I_ON_NEW_MAIN;OWN_EXACT_HEAD_WINDOWS_CI"
   },
-"m32_p2h_merged_postmain_pending_20261105": {
+  "m32_p2h_merged_postmain_pending_20261105": {
     "pr": 287,
     "source_sha": "84d03c7cb24836f0c99b869f891eb6e1463f4492",
     "source_ci": 42045435790,
@@ -67,7 +102,7 @@
     "glib": "OPEN_NOT_REMEDIATED",
     "next": "VERIFY_POSTMAIN_42049010729_TERMINAL_EXACT_SHA;DOC_PR;P2I_FICTIONAL_AUTHOR_PRODUCT;R4_R9_PARALLEL"
   },
-"m32_p2h_fictional_author_impact_candidate_20261105": {
+  "m32_p2h_fictional_author_impact_candidate_20261105": {
     "slice": "P2H_TYPED_AUTHOR_EDGE_IMPACT",
     "dependency_pr": 286,
     "parent_pr_head": "098ebc41b9cd58596876c1159910004e8c2df360",
@@ -85,7 +120,11 @@
     "expected_chromium": "85_85_NORMAL_CSP",
     "expected_git_blobs": 19,
     "scope": "TEST_ONLY_FICTIONAL_PREOPENED_RAM_ROLLBACK_PREVIEW_NO_SQL_DDL",
-    "impact_fields": ["removed", "added", "unchanged"],
+    "impact_fields": [
+      "removed",
+      "added",
+      "unchanged"
+    ],
     "operator_data_accessed": false,
     "writer_admitted": false,
     "real_p4_admitted": false,
@@ -102,8 +141,32 @@
     "prospective": "NOT_STARTED",
     "next": "PARENT_286_SOURCE_AND_POSTMAIN_QUALIFIED;P2H_REBASE_EXACT_HEAD_NEW_WINDOWS_CI"
   },
-"m32_p2g_merged_postmain_pending_20261105": {"pr":285,"source_sha":"6852834fe99a15a1719f45a4997641fd3c76ec86","source_ci":41958673635,"source_status":"SUCCESS_317_RUST_7_GREENFIELD_68_INVENTORY_183_CONTINUITY_6_VITEST_85_CHROMIUM_NORMAL_CSP_19_BLOBS","merge_sha":"906ad4103a639eaee94f6cb51e55d96cb87f46e0","merged":true,"parent_283_postmain":"41956730569_SUCCESS","parent_284_postmain":"41958460615_SUCCESS","postmain_run":41967078610,"postmain_status":"IN_PROGRESS_NOT_QUALIFIED_AT_CHECKPOINT","protect_main":"ACTIVE_STRICT_BYPASS_EMPTY","issue38_comment":6649577095,"strategy":"PRODUCT_FIRST_PARALLEL_SAFETY","warn_before_change":true,"m32":"IN_PROGRESS_NOT_ACCEPTED","writer":"NOT_PROVEN","g2b":"NOT_ACCEPTED","g2c":"NOT_AUTHORIZED","g3":"STOP_UNAVAILABLE","historical":"PENDING_EXTERNAL_ATTESTATION(21/3/2)","prospective":"NOT_STARTED","glib":"OPEN_NOT_REMEDIATED","next":"QUALIFY_POSTMAIN_41967078610;DOC_PR;PRODUCT_FICTIONAL_R4_R9_SAFETY"},
-"m32_p2g_active_graph_preview_candidate_20261105": {
+  "m32_p2g_merged_postmain_pending_20261105": {
+    "pr": 285,
+    "source_sha": "6852834fe99a15a1719f45a4997641fd3c76ec86",
+    "source_ci": 41958673635,
+    "source_status": "SUCCESS_317_RUST_7_GREENFIELD_68_INVENTORY_183_CONTINUITY_6_VITEST_85_CHROMIUM_NORMAL_CSP_19_BLOBS",
+    "merge_sha": "906ad4103a639eaee94f6cb51e55d96cb87f46e0",
+    "merged": true,
+    "parent_283_postmain": "41956730569_SUCCESS",
+    "parent_284_postmain": "41958460615_SUCCESS",
+    "postmain_run": 41967078610,
+    "postmain_status": "IN_PROGRESS_NOT_QUALIFIED_AT_CHECKPOINT",
+    "protect_main": "ACTIVE_STRICT_BYPASS_EMPTY",
+    "issue38_comment": 6649577095,
+    "strategy": "PRODUCT_FIRST_PARALLEL_SAFETY",
+    "warn_before_change": true,
+    "m32": "IN_PROGRESS_NOT_ACCEPTED",
+    "writer": "NOT_PROVEN",
+    "g2b": "NOT_ACCEPTED",
+    "g2c": "NOT_AUTHORIZED",
+    "g3": "STOP_UNAVAILABLE",
+    "historical": "PENDING_EXTERNAL_ATTESTATION(21/3/2)",
+    "prospective": "NOT_STARTED",
+    "glib": "OPEN_NOT_REMEDIATED",
+    "next": "QUALIFY_POSTMAIN_41967078610;DOC_PR;PRODUCT_FICTIONAL_R4_R9_SAFETY"
+  },
+  "m32_p2g_active_graph_preview_candidate_20261105": {
     "candidate": "P2G_FICTIONAL_ACTIVE_GRAPH_DIFF_PREVIEW",
     "qualification": "docs/qualification/M3_2_P2G_ACTIVE_GRAPH_PREVIEW_DIFF_FIXTURE_20261105.md",
     "parent_docs_pr": 284,
