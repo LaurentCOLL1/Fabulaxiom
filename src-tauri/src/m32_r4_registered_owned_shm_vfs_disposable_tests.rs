@@ -853,3 +853,58 @@ fn r4_wal_xopen_sqlite_main_file_object_native_owner_veto_disposable(){
     assert!(gate.state.denials.load(Ordering::SeqCst)>=1);
     drop(db);
 }
+
+
+// R4 disposable design witness: independently held, newly invented native
+// main/WAL/SHM file identities; an observed WAL name swap latches a refusal.
+// This is NOT yet integrated into SQLite xOpen, is NOT atomic, and cannot
+// authorize any production writer or access operator data.
+#[test]
+fn r4_preheld_wal_main_shm_native_identity_triad_aba_poison_disposable(){
+    fn path_id(path:&Path)->Option<FileIdInfo>{
+        OpenOptions::new().read(true).write(true).share_mode(1|2|4)
+            .open(path).ok().and_then(|file|id(&file))
+    }
+    let root=Scratch::fresh();
+    let wal=root.dir.join("invented.sqlite3-wal");
+    let held_wal=OpenOptions::new().read(true).write(true).share_mode(1|2|4)
+        .create_new(true).open(&wal).expect("CREATE_NEW WAL only in disposable TEMP");
+    let held_main=OpenOptions::new().read(true).write(true).share_mode(1|2|4)
+        .open(&root.db).expect("fresh main fixture only");
+    let held_shm=OpenOptions::new().read(true).write(true).share_mode(1|2|4)
+        .open(&root.shm).expect("fresh SHM fixture only");
+    let expected_main=id(&held_main).expect("native FileId128 main");
+    let expected_wal=id(&held_wal).expect("native FileId128 WAL");
+    let expected_shm=id(&held_shm).expect("native FileId128 SHM");
+    let mut poisoned=false;
+    let mut check=||{
+        if poisoned{return false}
+        let same=id(&held_main)==Some(expected_main)
+            &&id(&held_wal)==Some(expected_wal)
+            &&id(&held_shm)==Some(expected_shm)
+            &&path_id(&root.db)==Some(expected_main)
+            &&path_id(&wal)==Some(expected_wal)
+            &&path_id(&root.shm)==Some(expected_shm);
+        if !same{poisoned=true}
+        same
+    };
+    assert!(check(),"three fresh native handles and names initially agree");
+    let previous=root.dir.join("original-held-wal.fixture");
+    fs::rename(&wal,&previous).expect("rename only own WAL fixture");
+    let decoy=OpenOptions::new().read(true).write(true).share_mode(1|2|4)
+        .create_new(true).open(&wal).expect("CREATE_NEW decoy");
+    assert_ne!(id(&decoy),Some(expected_wal));
+    assert!(!check(),"substituted WAL pathname must poison the triad");
+    assert_eq!(id(&held_wal),Some(expected_wal),"held WAL identity survives rename");
+    assert_eq!(id(&held_main),Some(expected_main));
+    assert_eq!(id(&held_shm),Some(expected_shm));
+    drop(decoy);
+    fs::remove_file(&wal).expect("remove disposable decoy");
+    fs::rename(&previous,&wal).expect("restore original disposable WAL");
+    assert_eq!(path_id(&wal),Some(expected_wal));
+    assert!(!check(),"restoration cannot undo previously observed refusal");
+    drop(held_wal);
+    drop(held_main);
+    drop(held_shm);
+    // The only cleanup is Scratch::drop on our new TEMP directory.
+}
