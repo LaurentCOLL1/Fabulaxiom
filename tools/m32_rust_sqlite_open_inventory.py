@@ -110,8 +110,11 @@ EXPECTED = {
     # PR301 Windows cfg(test) only: two additional disposable preheld-WAL
     # postdelegate-sticky negative cases use fresh TEMP CREATE_NEW roots.
     # +2 Connection::open_with_flags_and_vfs and +2 SQLITE_OPEN_READ_WRITE.
+    # PR309: one more audited cfg(test) Windows SQLite NORMAL WAL open,
+    # using an invented preheld WAL without FILE_SHARE_DELETE.
+    # No runtime opener and no writer admission.
     # Explicit source inventory acknowledgment; NO writer admission.
-    "src-tauri/src/m32_r4_registered_owned_shm_vfs_disposable_tests.rs": (16, 0, 0, 0, 0, 16, 0),
+    "src-tauri/src/m32_r4_registered_owned_shm_vfs_disposable_tests.rs": (17, 0, 0, 0, 0, 17, 0),
     "src-tauri/src/m32_r4_wal_shm_disposable_tests.rs": (2, 0, 0, 0, 0, 1, 0),
     # R4 RAM-only design contract intentionally ABSENT from EXPECTED:
     # audit_inventory() only lists sources having nonzero SQLite occurrences.
