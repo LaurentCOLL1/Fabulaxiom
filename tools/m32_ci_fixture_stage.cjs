@@ -31,6 +31,12 @@ const MANIFEST = Object.freeze([
   "src/m32P3FictionalCommandContract.ts",
   "src/M32P4aStageReviewPanel.tsx",
   "src/m32P4aFictionalReview.ts",
+  "src/M32P2iFictionalImpactReview.tsx",
+  "src/M32P2jFictionalTouchedAnchors.tsx",
+  "src/M32P2kFictionalAnchorEvidence.tsx",
+  "src/M32P2lFictionalDirectionalEvidence.tsx",
+  "src/M32P2mFictionalSharedEvidence.tsx",
+  "src/M32P3fTwoNovelFictionalReview.tsx",
 ]);
 
 function stageFictionOnly() {

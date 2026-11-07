@@ -9,7 +9,12 @@
 - `src/m32P3fTwoNovelFictionalReview.test.tsx` : six nouveaux Vitest, vérifiant les révisions historiques r2/r4 distinctes des HEAD r3/r5, le tri des assertions directes, les STOP de provenance, les Univers/IDs illégitimes, les cycles/doublons, l'immuabilité des entrées et l'échappement JSX.
 - `tools/m32_browser_interaction.cjs` : trois nouveaux scénarios Chromium sur navigateur réel, y compris deux sources, bascule des directions et refus des Univers étrangers/cycliques sous CSP normale et stricte. L'assertion finale passe de 85 à **88 cas**, avec marqueurs historiques conservés.
 
-**Résultats attendus, NON encore PASS avant CI au HEAD exact : 330 Rust, 7 Greenfield, 69 inventaire SQLite, 183 continuité, 402 Vitest (396+6), 88/88 Chromium normal+CSP, 19 blobs exacts fictifs.** Aucun accès SQL ni pont Rust/TS par P3f, et sa fixture React ne prétend pas provenir du scénario Rust P2n.
+**Résultats attendus, NON encore PASS avant CI au HEAD exact : 330 Rust, 7 Greenfield, 69 inventaire SQLite, 183 continuité, 402 Vitest (396+6), 88/88 Chromium normal+CSP, 25 blobs exacts fictifs.** Aucun accès SQL ni pont Rust/TS par P3f, et sa fixture React ne prétend pas provenir du scénario Rust P2n.
+
+
+## Manifestes exacts de sécurité Chromium
+
+Le manifeste source fictif fermé de 19 fichiers est étendu à **25 chemins précis** : P3f, P2m, P2l, P2k, P2j et P2i. Les deux listes indépendantes `tools/m32_ci_fixture_stage.cjs` et `tools/m32_ci_git_source_binding.cjs` restent identiques, ne couvrent pas `App.tsx`, et refusent tout autre import, fichier, lien symbolique, dérive Git, chemin hors famille ou package externe. Les tests de liaison Git exigent 25 blobs exacts sans assouplir les contrôles négatifs ; le témoin historique P3a de 19 reste documenté. Aucun accès runtime n'est ajouté.
 
 ## STOP et qualification
 
