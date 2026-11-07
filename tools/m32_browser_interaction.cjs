@@ -1456,6 +1456,10 @@ async function run() {
       assert.ok((await review.innerText()).includes("sans liaison Rust"));
     });
     await caseRun("87-p3f-direct-directions-stay-distinct-for-two-novels", async () => {
+      // caseRun reloads a NEW page before every case; enter this screen explicitly.
+      await page.getByRole("button", {
+        name: "Voir deux romans et leurs sources historiques fictives",
+      }).click();
       const review = page.getByRole("region", { name: "Revue chronologique de deux romans fictifs" });
       await review.getByRole("button", { name: "Directions du premier roman" }).click();
       assert.equal(await review.getByRole("heading", { name: "Retirées depuis l’ancre (1)" }).count(), 1);
@@ -1473,6 +1477,9 @@ async function run() {
         .getAttribute("aria-pressed"), "true");
     });
     await caseRun("88-p3f-foreign-and-cyclic-fixture-refused-without-source-leak", async () => {
+      await page.getByRole("button", {
+        name: "Voir deux romans et leurs sources historiques fictives",
+      }).click();
       await page.getByRole("button", { name: "Charger un autre univers fictif" }).click();
       assert.ok((await page.getByRole("alert").innerText())
         .includes("Revue inter-romans fictive refusée pour cet Univers"));
