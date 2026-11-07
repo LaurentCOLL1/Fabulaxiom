@@ -1,3 +1,9 @@
+# Qualification à la fusion protégée du 7 novembre 2026
+
+#309 fusionnée par squash : HEAD source `f15c696e43b0aff2b6f61eb7f14ce8218a33400d`, CI Windows #42395958229 SUCCESS au SHA exact. Deux tests no-delete-share PASS, **328 Rust**, 7 Greenfield, 69 inventaire, 183 continuité, 396 Vitest, 85/85 Chromium normal+CSP, 19 blocs Git fictifs. Parent #308 postmain #42394767935 SUCCESS exact SHA, nouveau `main=7ce867f5bcc008ccd1344cd912b7ae7b78ae1eb0`. Postmain indépendant #42400905337 EN COURS / NON QUALIFIÉ à ce checkpoint. Protect main ACTIVE strict bypass=[], reviews=[] threads=[], `expected_head_sha`, #38 append-only. Test-only Windows jetable ; aucune admission writer/P4. Les hypothèses ci-dessous sont conservées pour traçabilité historique.
+
+---
+
 # M3.2 R4 — WAL preheld sans FILE_SHARE_DELETE : preuve Windows jetable
 
 7 novembre 2026 — **CANDIDAT NON QUALIFIÉ**. Parent protégé `main=1e26526f2f86173b4962b4de7c71d5b504ee9894` (#308). Parent postmain Windows #42394767935 À QUALIFIER.
