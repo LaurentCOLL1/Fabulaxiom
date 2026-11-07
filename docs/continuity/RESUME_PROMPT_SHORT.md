@@ -27,7 +27,7 @@ STOP : v6/v7 opérateur, journaux/backups, IPC writer, 007, Hello natif, marqueu
 
 ## Prochaines opérations
 
-Qualifier #312 postmain puis P3f ; R4–R9/glib ; writer/P4 STOP.
+Qualifier #312 postmain puis P3f ; R2/R4–R9/glib ; writer/P4 STOP.
 
 R4 : `M3_2_R4_D3A_LIVE_SHM_FILEID_DISPOSABLE_20261030.md`.
 

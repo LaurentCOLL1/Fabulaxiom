@@ -1495,6 +1495,8 @@ async function run() {
     // Previous PR #156 marker retained: M32_BROWSER_REAL_CHROMIUM_PASS 70/70
     // PR #260 retained baseline (historical only): M32_BROWSER_REAL_CHROMIUM_PASS 82/82
     // PR #157 historical marker: M32_BROWSER_REAL_CHROMIUM_PASS 76/76
+    // Historical P3a baseline, retained for continuity source-only tests:
+    // M32_CI_PRECOMPILED_STRICT_CSP_BROWSER_PASS: 85/85
     console.log("M32_BROWSER_REAL_CHROMIUM_PASS 88/88");
 
     // Actual Chromium enforced-CSP veto, separate from the 36
