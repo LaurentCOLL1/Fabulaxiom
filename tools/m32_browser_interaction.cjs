@@ -1430,12 +1430,72 @@ async function run() {
       assert.ok((await page.getByRole("alert").innerText()).includes("Cycle fictif refusé pour la revue P4a"));
       assert.equal(await page.getByRole("region", { name: "P4a revue humaine fictive isolée" }).count(), 0);
     });
-    assert.equal(cases.length, 85);
+    await caseRun("86-p3f-two-invented-novels-immutable-revision-witness", async () => {
+      await page.getByRole("button", { name: "Revenir au premier univers fictif" }).click();
+      await page.getByRole("button", {
+        name: "Voir deux romans et leurs sources historiques fictives",
+      }).click();
+      const review = page.getByRole("region", {
+        name: "Revue chronologique de deux romans fictifs",
+      });
+      const sources = review.getByRole("list", { name: "Sources historiques fictives des romans" });
+      assert.equal(await sources.getByRole("listitem").count(), 2);
+      const sourceText = await sources.innerText();
+      for (const label of ["novel-1", "novel-2", "invented-rev-A",
+        "invented-rev-B", "invented-rev-C", "invented-rev-D"]) {
+        assert.ok(sourceText.includes(label), label);
+      }
+      assert.equal(await review.getByRole("heading", {
+        name: "Assertions communes aux deux ancres (2)",
+      }).count(), 1);
+      assert.equal(await review.getByText("old-cross-novel").count(), 1);
+      assert.equal(await review.getByText("new-cross-novel").count(), 1);
+      assert.equal(await review.getByText("unchanged-unrelated").count(), 0);
+      assert.equal(await review.getByRole("button", { name: /Confirmer|Enregistrer|Supprimer/ }).count(), 0);
+      assert.ok((await review.innerText()).includes("aucune liaison Rust") === false);
+      assert.ok((await review.innerText()).includes("sans liaison Rust"));
+    });
+    await caseRun("87-p3f-direct-directions-stay-distinct-for-two-novels", async () => {
+      const review = page.getByRole("region", { name: "Revue chronologique de deux romans fictifs" });
+      await review.getByRole("button", { name: "Directions du premier roman" }).click();
+      assert.equal(await review.getByRole("heading", { name: "Retirées depuis l’ancre (1)" }).count(), 1);
+      assert.equal(await review.getByRole("heading", { name: "Ajoutées vers l’ancre (1)" }).count(), 1);
+      assert.equal(await review.getByRole("heading", { name: "Retirées vers l’ancre (0)" }).count(), 1);
+      await review.getByRole("button", { name: "Directions du second roman" }).click();
+      assert.equal(await review.getByRole("heading", { name: "Retirées vers l’ancre (1)" }).count(), 1);
+      assert.equal(await review.getByRole("heading", { name: "Ajoutées depuis l’ancre (1)" }).count(), 1);
+      assert.equal(await review.getByRole("heading", { name: "Retirées depuis l’ancre (0)" }).count(), 1);
+      await review.getByRole("button", { name: "Comparer les assertions communes" }).click();
+      assert.equal(await review.getByRole("heading", {
+        name: "Assertions communes aux deux ancres (2)",
+      }).count(), 1);
+      assert.equal(await review.getByRole("button", { name: "Comparer les assertions communes" })
+        .getAttribute("aria-pressed"), "true");
+    });
+    await caseRun("88-p3f-foreign-and-cyclic-fixture-refused-without-source-leak", async () => {
+      await page.getByRole("button", { name: "Charger un autre univers fictif" }).click();
+      assert.ok((await page.getByRole("alert").innerText())
+        .includes("Revue inter-romans fictive refusée pour cet Univers"));
+      assert.equal(await page.getByText("invented-rev-A").count(), 0);
+      assert.equal(await page.getByRole("region", {
+        name: "Revue chronologique de deux romans fictifs",
+      }).count(), 0);
+      await page.getByRole("button", { name: "Charger un cycle fictif invalide" }).click();
+      assert.equal(await page.getByText("invented-rev-C").count(), 0);
+      await page.getByRole("button", { name: "Revenir au premier univers fictif" }).click();
+      const review = page.getByRole("region", { name: "Revue chronologique de deux romans fictifs" });
+      assert.equal(await review.getByRole("heading", {
+        name: "Assertions communes aux deux ancres (2)",
+      }).count(), 1);
+      assert.equal(await review.getByRole("button", { name: "Comparer les assertions communes" })
+        .getAttribute("aria-pressed"), "true");
+    });
+    assert.equal(cases.length, 88);
     // Historical PR #146 source marker: M32_BROWSER_REAL_CHROMIUM_PASS 62/62
     // Previous PR #156 marker retained: M32_BROWSER_REAL_CHROMIUM_PASS 70/70
     // PR #260 retained baseline (historical only): M32_BROWSER_REAL_CHROMIUM_PASS 82/82
     // PR #157 historical marker: M32_BROWSER_REAL_CHROMIUM_PASS 76/76
-    console.log("M32_BROWSER_REAL_CHROMIUM_PASS 85/85");
+    console.log("M32_BROWSER_REAL_CHROMIUM_PASS 88/88");
 
     // Actual Chromium enforced-CSP veto, separate from the 36
     // fictional interaction cases. Never make an off-loopback network call.
@@ -1467,9 +1527,9 @@ async function run() {
       });
       assert.equal(scriptVeto, false, "STOP: inline JS executed under strict CSP");
       console.log("M32_CI_PRECOMPILED_INLINE_SCRIPT_DENIED_PASS");
-      console.log("M32_CI_PRECOMPILED_STRICT_CSP_BROWSER_PASS: 85/85");
+      console.log("M32_CI_PRECOMPILED_STRICT_CSP_BROWSER_PASS: 88/88");
     }
-    console.log("M32_CI_FIXTURE_ONLY_BROWSER_PASS: 85/85; no normal source pages");
+    console.log("M32_CI_FIXTURE_ONLY_BROWSER_PASS: 88/88; no normal source pages");
   } finally {
     if (browser) await browser.close();
     server.kill();

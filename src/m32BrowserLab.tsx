@@ -13,6 +13,7 @@ import { startFictionalEventNotebook, createFictionalEvent, amendFictionalEvent,
 import M32FictionalEventVersionPairLab from "./M32FictionalEventVersionPairLab";
 import M32FictionalEventManualWorkshop from "./M32FictionalEventManualWorkshop";
 import M32FictionalCorrectionHistory, { type M32FictionalCorrectionRow } from "./M32FictionalCorrectionHistory";
+import M32P3fTwoNovelFictionalReview, { type P3fFictionalNovelInput } from "./M32P3fTwoNovelFictionalReview";
 
 /** DISPOSABLE FICTITIOUS BROWSER TEST PAGE. NOT an App.tsx import or Tauri route.
  * No original user data, IPC, storage, fetch or filesystem reads.
@@ -139,10 +140,45 @@ function fictionalPairFixture(snapshot: M32ChronologyProjection, revisions: read
   return withdrawFictionalEvent(book, secondId, "Retrait manuel inventé");
 }
 
+
+/** P3f is a SEPARATE invented before/after review, not the Rust P2n DB snapshot. */
+const inventedTwoNovelReview: P3fFictionalNovelInput = {
+  data_origin: "fictional_browser_memory_only",
+  production_writer_admitted: false,
+  real_g3_authorized: false,
+  universe_id: "fiction-world-one",
+  novels: [
+    { universe_id: "fiction-world-one", novel_id: "novel-1",
+      novel_title: "Roman imaginaire", scene_id: "s1", anchor_id: "A",
+      source_revision_id: "invented-rev-A", current_head_revision_id: "invented-rev-B" },
+    { universe_id: "fiction-world-one", novel_id: "novel-2",
+      novel_title: "Deuxième roman imaginaire", scene_id: "s2", anchor_id: "B",
+      source_revision_id: "invented-rev-C", current_head_revision_id: "invented-rev-D" },
+  ],
+  impact: {
+    data_origin: "fictional_browser_memory_only",
+    production_writer_admitted: false,
+    real_g3_authorized: false,
+    universe_id: "fiction-world-one",
+    active_before: [
+      { id: "old-cross-novel", universe_id: "fiction-world-one",
+        before_anchor_id: "A", after_anchor_id: "B", origin: "original" },
+      { id: "unchanged-unrelated", universe_id: "fiction-world-one",
+        before_anchor_id: "C", after_anchor_id: "D", origin: "original" },
+    ],
+    active_after: [
+      { id: "new-cross-novel", universe_id: "fiction-world-one",
+        before_anchor_id: "B", after_anchor_id: "A", origin: "restatement" },
+      { id: "unchanged-unrelated", universe_id: "fiction-world-one",
+        before_anchor_id: "C", after_anchor_id: "D", origin: "original" },
+    ],
+  },
+};
+
 type Scenario = "one" | "two" | "cyclic";
 function BrowserFixture() {
   const [scenario, setScenario] = useState<Scenario>("one");
-  const [mode, setMode] = useState<"consultation" | "explorer" | "editor" | "history" | "event-form" | "version-compare" | "p3-commands" | "p4-review">("consultation");
+  const [mode, setMode] = useState<"consultation" | "explorer" | "editor" | "history" | "event-form" | "version-compare" | "p3-commands" | "p4-review" | "p3f-two-novels">("consultation");
   const snapshot = scenario === "two" ? second : scenario === "cyclic" ? cyclic : first;
   return <main aria-label="Laboratoire navigateur M3.2 exclusivement fictif">
     <h1>Tests navigateur — données imaginaires exclusivement</h1>
@@ -170,6 +206,9 @@ function BrowserFixture() {
       <button type="button" onClick={() => setMode("p4-review")}>
         Ouvrir P4a — revue humaine fictive
       </button>
+      <button type="button" onClick={() => setMode("p3f-two-novels")}>
+        Voir deux romans et leurs sources historiques fictives
+      </button>
       <button type="button" onClick={() => setMode("editor")}>
         Ouvrir l'atelier manuel fictif
       </button>
@@ -183,7 +222,10 @@ function BrowserFixture() {
         Ouvrir le carnet d'événements fictifs
       </button>
     </section>
-    {mode === "p3-commands" ? <M32P3FictionalCommandWorkshop
+    {mode === "p3f-two-novels" ? scenario !== "one"
+      ? <p role="alert">Revue inter-romans fictive refusée pour cet Univers.</p>
+      : <M32P3fTwoNovelFictionalReview key={scenario} input={inventedTwoNovelReview} />
+      : mode === "p3-commands" ? <M32P3FictionalCommandWorkshop
         key={scenario} initial={snapshot}
         revisions={scenario === "two" ? [] : fictionalRevisions} />
       : mode === "p4-review" ? scenario === "cyclic"
