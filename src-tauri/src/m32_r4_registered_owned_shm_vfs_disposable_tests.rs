@@ -121,6 +121,10 @@ struct Vfs{
     expected:FileIdInfo,
     master_db:File,
     expected_db:FileIdInfo,
+    // Only enabled by explicitly selected Windows disposable test fixtures.
+    preheld_wal:Option<(File,FileIdInfo)>,
+    preheld_wal_poisoned:AtomicBool,
+    preheld_wal_xopen_matches:AtomicUsize,
     // Test-only fault flags allow native xOpen HANDLE veto without name swaps.
     deny_main_native_id_for_test:AtomicBool,
     deny_wal_native_id_for_test:AtomicBool,
@@ -138,6 +142,17 @@ struct Vfs{
     deletes_requested:AtomicUsize,
     closes:AtomicUsize,
     denials:AtomicUsize,
+}
+impl Vfs{
+    fn preheld_wal_name_matches(&self,name:&Path)->bool{
+        let Some((held,expected))=self.preheld_wal.as_ref() else{return true};
+        if self.preheld_wal_poisoned.load(Ordering::SeqCst){return false}
+        let observed=OpenOptions::new().read(true).write(true).share_mode(1|2|4)
+            .open(name).ok().and_then(|f|id(&f));
+        let same=id(held)==Some(*expected)&&observed==Some(*expected);
+        if !same{self.preheld_wal_poisoned.store(true,Ordering::SeqCst);}
+        same
+    }
 }
 #[repr(C)]
 struct FileTail{
@@ -295,6 +310,14 @@ unsafe extern "C" fn xopen(
             return ffi::SQLITE_CANTOPEN;
         }
         gate.wal_main_owner_matches.fetch_add(1,Ordering::SeqCst);
+        if gate.preheld_wal.is_some(){
+            let named=unsafe{CStr::from_ptr(name)}.to_string_lossy();
+            if !gate.preheld_wal_name_matches(Path::new(named.as_ref())){
+                gate.native_refusals.fetch_add(1,Ordering::SeqCst);
+                gate.denials.fetch_add(1,Ordering::SeqCst);
+                return ffi::SQLITE_CANTOPEN; // Before WAL delegation.
+            }
+        }
     }
     let Some(delegate)=(unsafe{(*gate.default).xOpen})else{return ffi::SQLITE_CANTOPEN};
     let result=unsafe{delegate(gate.default,name,file,flags,outflags)};
@@ -312,7 +335,8 @@ unsafe extern "C" fn xopen(
                     (&mut native as *mut *mut c_void).cast())}
             }else{ffi::SQLITE_NOTFOUND};
         let observed=if rc==ffi::SQLITE_OK{raw_id(native)}else{None};
-        let expected=if main{Some(gate.expected_db)}else{
+        let expected=if main{Some(gate.expected_db)}else if let Some((_,e))=
+            gate.preheld_wal.as_ref(){Some(*e)}else{
             // The WAL name is observed after the delegate opened it; this
             // is NOT a preowned, atomically pinned WAL identity.
             let named=unsafe{CStr::from_ptr(name)}.to_string_lossy();
@@ -336,7 +360,10 @@ unsafe extern "C" fn xopen(
             return ffi::SQLITE_CANTOPEN;
         }
         if main{gate.main_native_matches.fetch_add(1,Ordering::SeqCst);}
-        if wal{gate.wal_native_matches.fetch_add(1,Ordering::SeqCst);}
+        if wal{
+            gate.wal_native_matches.fetch_add(1,Ordering::SeqCst);
+            if gate.preheld_wal.is_some(){gate.preheld_wal_xopen_matches.fetch_add(1,Ordering::SeqCst);}
+        }
     }
     if !main{return result}
     let original=unsafe{(*file).pMethods};
@@ -378,7 +405,9 @@ struct Registered{
     name:CString,
 }
 impl Registered{
-    fn fresh(root:&Scratch)->Self{
+    fn fresh(root:&Scratch)->Self{Self::fresh_inner(root,false)}
+    fn fresh_with_preheld_wal(root:&Scratch)->Self{Self::fresh_inner(root,true)}
+    fn fresh_inner(root:&Scratch,hold_wal:bool)->Self{
         static SERIAL:AtomicUsize=AtomicUsize::new(0);
         let name=CString::new(format!("r4-owner-shm-vfs-{}-{}",
             process::id(),SERIAL.fetch_add(1,Ordering::Relaxed))).unwrap();
@@ -395,9 +424,18 @@ impl Registered{
         let master_db=OpenOptions::new().read(true).write(true).share_mode(1|2|4)
             .open(&root.db).expect("main fixture was CREATE_NEW only");
         let expected_db=id(&master_db).expect("main fixture FileId128");
+        let preheld_wal=if hold_wal{
+            let wal=root.dir.join("invented.sqlite3-wal");
+            let file=OpenOptions::new().read(true).write(true).share_mode(1|2|4)
+                .create_new(true).open(&wal).expect("disposable WAL CREATE_NEW");
+            let fid=id(&file).expect("preheld WAL FileId128");
+            Some((file,fid))
+        }else{None};
         let mut state=Box::new(Vfs{
             dispatch:unsafe{ptr::read(default)},default,root:root.dir.clone(),
             shm:root.shm.clone(),master,expected,master_db,expected_db,
+            preheld_wal,preheld_wal_poisoned:AtomicBool::new(false),
+            preheld_wal_xopen_matches:AtomicUsize::new(0),
             deny_main_native_id_for_test:AtomicBool::new(false),
             deny_wal_native_id_for_test:AtomicBool::new(false),
             deny_wal_main_owner_for_test:AtomicBool::new(false),
@@ -428,7 +466,7 @@ impl Drop for Registered{
 #[test]
 fn r4_registered_owner_shm_runs_normal_wal_sql_only_on_disposable_fixture(){
     let root=Scratch::fresh();
-    let registered=Registered::fresh(&root);
+    let registered=Registered::fresh_with_preheld_wal(&root);
     let db=Connection::open_with_flags_and_vfs(
         &root.db,OpenFlags::SQLITE_OPEN_READ_WRITE,registered.name()).unwrap();
     let lock_mode:String=db.query_row("PRAGMA locking_mode=NORMAL",[],|r|r.get(0)).unwrap();
@@ -439,6 +477,9 @@ fn r4_registered_owner_shm_runs_normal_wal_sql_only_on_disposable_fixture(){
     let n:i64=db.query_row("SELECT n FROM ephemeral",[],|r|r.get(0)).unwrap();
     assert_eq!(n,7);
     assert!(registered.state.main_opens.load(Ordering::SeqCst)>=1);
+    assert!(registered.state.preheld_wal_xopen_matches.load(Ordering::SeqCst)>=1,
+        "actual delegated WAL HANDLE must equal preheld FileId128");
+    assert!(!registered.state.preheld_wal_poisoned.load(Ordering::SeqCst));
     assert!(registered.state.shm_maps.load(Ordering::SeqCst)>=1,
         "NORMAL WAL must exercise custom native SHM callback, not EXCLUSIVE fallback");
     assert!(registered.state.shm_locks.load(Ordering::SeqCst)>=1);
@@ -907,4 +948,30 @@ fn r4_preheld_wal_main_shm_native_identity_triad_aba_poison_disposable(){
     drop(held_main);
     drop(held_shm);
     // The only cleanup is Scratch::drop on our new TEMP directory.
+}
+
+
+// R4: helper shared with actual test-only WAL xOpen; observed ABA refuses
+// permanently, but unobserved races between check and delegate remain.
+#[test]
+fn r4_preheld_wal_xopen_preflight_observed_aba_veto_disposable(){
+    let root=Scratch::fresh();
+    let gate=Registered::fresh_with_preheld_wal(&root);
+    let wal=root.dir.join("invented.sqlite3-wal");
+    let (held,expected)=gate.state.preheld_wal.as_ref().unwrap();
+    assert_eq!(id(held),Some(*expected));
+    assert!(gate.state.preheld_wal_name_matches(&wal));
+    let original=root.dir.join("preheld-wal-original.fixture");
+    fs::rename(&wal,&original).expect("rename only new WAL fixture");
+    let decoy=OpenOptions::new().read(true).write(true).share_mode(1|2|4)
+        .create_new(true).open(&wal).expect("new WAL decoy only");
+    assert_ne!(id(&decoy),Some(*expected));
+    assert!(!gate.state.preheld_wal_name_matches(&wal));
+    assert!(gate.state.preheld_wal_poisoned.load(Ordering::SeqCst));
+    drop(decoy);
+    fs::remove_file(&wal).expect("remove new decoy only");
+    fs::rename(&original,&wal).expect("restore original fixture only");
+    assert_eq!(id(held),Some(*expected));
+    assert!(!gate.state.preheld_wal_name_matches(&wal),
+        "restoring a name cannot rearm observed ABA");
 }
