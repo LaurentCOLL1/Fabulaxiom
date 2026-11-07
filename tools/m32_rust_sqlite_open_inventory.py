@@ -107,7 +107,11 @@ EXPECTED = {
     # This text count is NOT production writer admission.
     # R4 WAL xOpen actual owner sqlite3_file FileId128: one more audited
     # disposable RW open, never an application/runtime opener.
-    "src-tauri/src/m32_r4_registered_owned_shm_vfs_disposable_tests.rs": (14, 0, 0, 0, 0, 14, 0),
+    # PR301 Windows cfg(test) only: two additional disposable preheld-WAL
+    # postdelegate-sticky negative cases use fresh TEMP CREATE_NEW roots.
+    # +2 Connection::open_with_flags_and_vfs and +2 SQLITE_OPEN_READ_WRITE.
+    # Explicit source inventory acknowledgment; NO writer admission.
+    "src-tauri/src/m32_r4_registered_owned_shm_vfs_disposable_tests.rs": (16, 0, 0, 0, 0, 16, 0),
     "src-tauri/src/m32_r4_wal_shm_disposable_tests.rs": (2, 0, 0, 0, 0, 1, 0),
     # R4 RAM-only design contract intentionally ABSENT from EXPECTED:
     # audit_inventory() only lists sources having nonzero SQLite occurrences.
