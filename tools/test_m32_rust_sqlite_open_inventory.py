@@ -828,7 +828,7 @@ class RustSqliteOpenInventoryTests(unittest.TestCase):
     def test_64_registered_r4_owner_shm_is_disposable_nondefault_only(self):
         p="src-tauri/src/m32_r4_registered_owned_shm_vfs_disposable_tests.rs"
         code=self.src[p]
-        self.assertEqual(EXPECTED[p],(14,0,0,0,0,14,0))
+        self.assertEqual(EXPECTED[p],(16,0,0,0,0,16,0))
         for token in ("sqlite3_vfs_register(&mut state.dispatch,0)",
             "Connection::open_with_flags_and_vfs(","PRAGMA locking_mode=NORMAL",
             "PRAGMA journal_mode=WAL","CreateFileMappingW","MapViewOfFile",
@@ -847,7 +847,7 @@ class RustSqliteOpenInventoryTests(unittest.TestCase):
     def test_65_r4_two_registered_sqlite_clients_and_postopen_shm_veto_only_in_ci(self):
         p="src-tauri/src/m32_r4_registered_owned_shm_vfs_disposable_tests.rs"
         c=self.src[p]
-        self.assertEqual(EXPECTED[p],(14,0,0,0,0,14,0))
+        self.assertEqual(EXPECTED[p],(16,0,0,0,0,16,0))
         for token in ("fn valid(&mut self)->bool","if self.poisoned{return false}",
                       "if !(held_ok&&named_ok){self.poisoned=true;return false}",
                       "r4_two_sqlite_connections_share_owned_native_shm_and_serialize_wal_writers",
@@ -865,7 +865,7 @@ class RustSqliteOpenInventoryTests(unittest.TestCase):
     def test_66_sqlite_native_main_wal_delegated_xopen_fileid_is_only_ci(self):
         p="src-tauri/src/m32_r4_registered_owned_shm_vfs_disposable_tests.rs"
         c=self.src[p]
-        self.assertEqual(EXPECTED[p],(14,0,0,0,0,14,0))
+        self.assertEqual(EXPECTED[p],(16,0,0,0,0,16,0))
         for term in ("ffi::SQLITE_FCNTL_WIN32_GET_HANDLE",
                      "fn raw_id(handle:*mut c_void)","gate.expected_db",
                      "gate.native_refusals.fetch_add",
@@ -885,7 +885,7 @@ class RustSqliteOpenInventoryTests(unittest.TestCase):
     def test_67_two_process_wal_lock_fixture_is_windows_disposable_only(self):
         p="src-tauri/src/m32_r4_registered_owned_shm_vfs_disposable_tests.rs"
         c=self.src[p]
-        self.assertEqual(EXPECTED[p],(14,0,0,0,0,14,0))
+        self.assertEqual(EXPECTED[p],(16,0,0,0,0,16,0))
         for term in ("SHM_REGION_COUNT:usize=2", "SHM_MAPPING_BYTES:usize",
                      "r4_owned_xshm_region_one_shared_native_mapping_and_bounded_veto_disposable",
                      "ffi::SQLITE_FCNTL_FILE_POINTER",
@@ -927,7 +927,7 @@ class RustSqliteOpenInventoryTests(unittest.TestCase):
     def test_69_r4_wal_owner_main_object_only_in_disposable_vfs(self):
         p="src-tauri/src/m32_r4_registered_owned_shm_vfs_disposable_tests.rs"
         code=self.src[p]
-        self.assertEqual(EXPECTED[p], (14,0,0,0,0,14,0))
+        self.assertEqual(EXPECTED[p], (16,0,0,0,0,16,0))
         self.assertEqual(counts(code), EXPECTED[p])
         for token in (
             "if wal {",
