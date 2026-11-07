@@ -1,4 +1,4 @@
-**P2m CANDIDAT** : parent main=799a454903312857cb3dea0d0a29228b6552d93a ; postmain #42371626964 PASS ; 396 Vitest attendus ; `M3_2_P2M_FICTIONAL_SHARED_DIRECT_ASSERTIONS_20261107.md`. P2l #305 : `M3_2_P2L_FICTIONAL_DIRECTIONAL_ANCHOR_EVIDENCE_20261107.md`.
+**P2m #307 FUSIONNÉE** : main=b96e8b99c8e3efcc4508bbe5b57c55bb73cbbbe9 ; CI #42376909413 PASS 396V ; postmain #42377812517 À QUALIFIER. `M3_2_P2M_FICTIONAL_SHARED_DIRECT_ASSERTIONS_20261107.md`. P2l : `M3_2_P2L_FICTIONAL_DIRECTIONAL_ANCHOR_EVIDENCE_20261107.md`.
 
 # Fabulaxiom — reprise courte (7 novembre 2026)
 
@@ -27,7 +27,7 @@ Interdit : données opérateur v6/v7, journaux/sauvegardes, IPC writer, 007, Hel
 
 ## Prochaines opérations
 
-Qualifier P2m CI ; R2/R4–R9 + glib ; writer/P4 STOP, stratégie inchangée.
+Qualifier postmain #307, PR documentaire ; R2/R4–R9 + glib ; writer/P4 STOP.
 
 R4 : `M3_2_R4_D3A_LIVE_SHM_FILEID_DISPOSABLE_20261030.md`.
 
