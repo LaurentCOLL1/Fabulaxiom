@@ -1,3 +1,9 @@
+## Qualification après fusion #311 — 7 novembre 2026
+
+La PR #311 a été fusionnée sous Protect main par squash `expected_head_sha`. HEAD source `78ee54f2b474e282fc95b13aa43fc94d1a190bac`, CI Windows #42407600315 completed/SUCCESS exact SHA, **330 Rust** (dont les deux scénarios P2n), 7 Greenfield, 69 SQLite source inventory, 183 continuity, 396 Vitest, 85/85 Chromium normal + CSP, 19 blobs fictifs. Parent #310 postmain #42406738552 completed/SUCCESS. Nouveau main protégé `2e14cb1fedcfd07091e50802bfe6d804feaf56b5`, postmain indépendante #42409122931 **EN COURS/NON QUALIFIÉE à la rédaction**. Le libellé « CANDIDAT » ci-dessous est conservé pour traçabilité de la preuve avant CI. Aucun opérateur ni production writer/P4 admis.
+
+---
+
 # M3.2 P2n — deux romans, révisions historiques et corrections par acteur v7 fictif
 
 7 novembre 2026 — **CANDIDAT / NON QUALIFIÉ** avant CI Windows au HEAD exact. Parent protégé `main=2034150b6ccef1bfe015a58ce40a51dd193dd58c` (#310), parent postmain Windows #42406738552 à qualifier indépendamment. Décision `PRODUCT_FIRST_PARALLEL_SAFETY` conservée (prévenir avant tout changement).
