@@ -27,7 +27,7 @@ Interdit : données opérateur v6/v7, journaux/sauvegardes, IPC writer, 007, Hel
 
 ## Prochaines opérations
 
-P2l fiction CI ; R4–R9 + glib ; writer/P4 STOP ; stratégie inchangée.
+P2l fiction CI ; R2/R4–R9 + glib ; writer/P4 STOP ; stratégie inchangée.
 
 R4 : `M3_2_R4_D3A_LIVE_SHM_FILEID_DISPOSABLE_20261030.md`.
 
