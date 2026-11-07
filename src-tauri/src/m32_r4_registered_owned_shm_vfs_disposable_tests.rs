@@ -1027,3 +1027,65 @@ fn r4_preheld_wal_latched_refusal_blocks_delegated_xopen_disposable(){
     assert!(gate.state.preheld_wal_poisoned.load(Ordering::SeqCst));
     drop(db);
 }
+
+
+// R4 Windows disposable feasibility: FILE_SHARE_DELETE deliberately absent.
+// NOT a SQLite triad or production custody proof.
+#[test]
+fn r4_preheld_wal_no_delete_share_prevents_name_swap_disposable(){
+    let root=Scratch::fresh();
+    let wal=root.dir.join("invented.sqlite3-wal");
+    let renamed=root.dir.join("wal-rename-attempt.fixture");
+    let held=OpenOptions::new().read(true).write(true).share_mode(1|2)
+        .create_new(true).open(&wal).expect("new no-delete-share WAL fixture");
+    let fid=id(&held).expect("native FileId128");
+    assert!(fs::rename(&wal,&renamed).is_err(),
+        "native held WAL without FILE_SHARE_DELETE must deny name replacement");
+    assert_eq!(id(&held),Some(fid));
+    let named=OpenOptions::new().read(true).write(true).share_mode(1|2|4)
+        .open(&wal).expect("read/write re-open remains permitted");
+    assert_eq!(id(&named),Some(fid));
+    drop(named);
+    drop(held);
+    fs::rename(&wal,&renamed).expect("rename works after releasing guard");
+    let moved=OpenOptions::new().read(true).share_mode(1|2|4)
+        .open(&renamed).expect("disposable moved WAL remains");
+    assert_eq!(id(&moved),Some(fid));
+}
+
+// R4 test-only positive compatibility: SQLite NORMAL WAL with separate WAL
+// guard that permits read/write but denies rename/delete while held.
+#[test]
+fn r4_preheld_wal_no_delete_share_normal_sqlite_wal_compat_disposable(){
+    let root=Scratch::fresh();
+    let wal=root.dir.join("invented.sqlite3-wal");
+    let held=OpenOptions::new().read(true).write(true).share_mode(1|2)
+        .create_new(true).open(&wal).expect("fresh WAL guard");
+    let fid=id(&held).expect("held WAL FileId128");
+    let gate=Registered::fresh(&root);
+    let db=Connection::open_with_flags_and_vfs(
+        &root.db,OpenFlags::SQLITE_OPEN_READ_WRITE,gate.name())
+        .expect("only freshly invented SQLite database");
+    let lock_mode:String=db.query_row("PRAGMA locking_mode=NORMAL",
+        [],|r|r.get(0)).unwrap();
+    assert_eq!(lock_mode.to_ascii_lowercase(),"normal");
+    let mode:String=db.query_row("PRAGMA journal_mode=WAL",
+        [],|r|r.get(0)).expect("probe no-delete-share NORMAL WAL compatibility");
+    assert_eq!(mode.to_ascii_lowercase(),"wal");
+    db.execute_batch("CREATE TABLE wal_guard_fixture(n INTEGER NOT NULL);
+        INSERT INTO wal_guard_fixture VALUES (31);").unwrap();
+    let observed:i64=db.query_row("SELECT SUM(n) FROM wal_guard_fixture",
+        [],|r|r.get(0)).unwrap();
+    assert_eq!(observed,31);
+    assert_eq!(id(&held),Some(fid));
+    assert!(gate.state.wal_native_matches.load(Ordering::SeqCst)>=1,
+        "custom test VFS sees actual delegated WAL native HANDLE");
+    assert!(gate.state.shm_maps.load(Ordering::SeqCst)>=1,
+        "NORMAL WAL must use owned SHM, not EXCLUSIVE fallback");
+    assert!(fs::rename(&wal,root.dir.join("surprise-name.fixture")).is_err(),
+        "held WAL must reject name substitution while SQLite is using it");
+    drop(db);
+    drop(gate);
+    drop(held);
+    // Scratch is the sole owner of the disposable TEMP cleanup.
+}
