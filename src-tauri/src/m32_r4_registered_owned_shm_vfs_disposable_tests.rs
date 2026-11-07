@@ -349,6 +349,11 @@ unsafe extern "C" fn xopen(
             gate.deny_wal_native_id_for_test.load(Ordering::SeqCst)
         };
         if observed.is_none()||observed!=expected||deny{
+            // A test-only post-delegation WAL mismatch must latch refusal.
+            // This does not close the check/delegate TOCTOU window.
+            if wal&&gate.preheld_wal.is_some(){
+                gate.preheld_wal_poisoned.store(true,Ordering::SeqCst);
+            }
             gate.native_refusals.fetch_add(1,Ordering::SeqCst);
             gate.denials.fetch_add(1,Ordering::SeqCst);
             if !original.is_null(){
@@ -974,4 +979,51 @@ fn r4_preheld_wal_xopen_preflight_observed_aba_veto_disposable(){
     assert_eq!(id(held),Some(*expected));
     assert!(!gate.state.preheld_wal_name_matches(&wal),
         "restoring a name cannot rearm observed ABA");
+}
+
+
+// R4: actual SQLite WAL xOpen returns a delegated native HANDLE, and its
+// deliberately injected post-open veto must permanently poison this fixture.
+#[test]
+fn r4_preheld_wal_postdelegate_native_fault_latches_refusal_disposable(){
+    let root=Scratch::fresh();
+    let gate=Registered::fresh_with_preheld_wal(&root);
+    let db=Connection::open_with_flags_and_vfs(
+        &root.db,OpenFlags::SQLITE_OPEN_READ_WRITE,gate.name()).unwrap();
+    assert!(!gate.state.preheld_wal_poisoned.load(Ordering::SeqCst));
+    gate.state.deny_wal_native_id_for_test.store(true,Ordering::SeqCst);
+    let attempt=db.execute_batch("PRAGMA journal_mode=WAL;
+        CREATE TABLE blocked_native_wal(n INTEGER);
+        INSERT INTO blocked_native_wal VALUES (23);");
+    assert!(attempt.is_err(),"post-delegate native WAL veto must refuse SQL");
+    assert_eq!(gate.state.wal_native_matches.load(Ordering::SeqCst),0);
+    assert!(gate.state.wal_main_owner_matches.load(Ordering::SeqCst)>=1);
+    assert!(gate.state.native_refusals.load(Ordering::SeqCst)>=1);
+    assert!(gate.state.preheld_wal_poisoned.load(Ordering::SeqCst));
+    gate.state.deny_wal_native_id_for_test.store(false,Ordering::SeqCst);
+    let wal=root.dir.join("invented.sqlite3-wal");
+    assert!(!gate.state.preheld_wal_name_matches(&wal),
+        "clearing the fault cannot rearm observed native WAL refusal");
+    drop(db);
+}
+
+// R4: pre-poisoned WAL must be denied during SQLite's WAL xOpen before a
+// delegated native WAL HANDLE may be accepted. Only disposable TEMP data.
+#[test]
+fn r4_preheld_wal_latched_refusal_blocks_delegated_xopen_disposable(){
+    let root=Scratch::fresh();
+    let gate=Registered::fresh_with_preheld_wal(&root);
+    let db=Connection::open_with_flags_and_vfs(
+        &root.db,OpenFlags::SQLITE_OPEN_READ_WRITE,gate.name()).unwrap();
+    let wal=root.dir.join("invented.sqlite3-wal");
+    assert!(gate.state.preheld_wal_name_matches(&wal));
+    gate.state.preheld_wal_poisoned.store(true,Ordering::SeqCst);
+    let attempt=db.execute_batch("PRAGMA journal_mode=WAL;
+        CREATE TABLE prepoisoned_wal(n INTEGER);
+        INSERT INTO prepoisoned_wal VALUES (27);");
+    assert!(attempt.is_err(),"latched preheld WAL must fail SQL closed");
+    assert_eq!(gate.state.wal_native_matches.load(Ordering::SeqCst),0);
+    assert!(gate.state.native_refusals.load(Ordering::SeqCst)>=1);
+    assert!(gate.state.preheld_wal_poisoned.load(Ordering::SeqCst));
+    drop(db);
 }
