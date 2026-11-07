@@ -810,4 +810,150 @@ mod tests {
         owner.shutdown().unwrap();
     }
 
+
+    // P2n: two fictional novels contribute different immutable source revisions
+    // to one partial world order. Preopened RAM v7 only; never a runtime writer.
+    fn p2n_two_novels_invented_v7() -> Connection {
+        let db = invented_v7();
+        db.execute_batch(
+            "INSERT INTO novels(id,universe_id,series_id,title,sort_order)
+               VALUES ('n2','u1',NULL,'Other fictional novel',1),
+                      ('n3','u2',NULL,'Foreign world novel',0);
+             INSERT INTO chapters(id,novel_id,title,sort_order)
+               VALUES ('c2','n2','Other fictional chapter',0),
+                      ('c3','n3','Foreign fictional chapter',0);
+             INSERT INTO scenes(id,chapter_id,title,sort_order)
+               VALUES ('s2','c2','Other fictional scene',0),
+                      ('s3','c3','Foreign fictional scene',0);
+             INSERT INTO scene_text_revisions(id,scene_id,revision_number,content)
+               VALUES ('r4','s2',1,'Earlier fiction in novel two'),
+                      ('r5','s2',2,'Current fiction in novel two'),
+                      ('r6','s3',1,'Foreign fiction');
+             INSERT INTO scene_revision_heads(scene_id,revision_id)
+               VALUES ('s2','r5'),('s3','r6');"
+        ).unwrap();
+        let current: String = db.query_row(
+            "SELECT revision_id FROM scene_revision_heads WHERE scene_id='s2'",
+            [], |row| row.get(0),
+        ).unwrap();
+        assert_eq!(current, "r5");
+        db
+    }
+
+    #[test]
+    fn p2n_two_novels_historical_sources_make_one_partial_world_order() {
+        let owner = FixtureChronologyActor::from_preopened_invented_v7(
+            p2n_two_novels_invented_v7(),
+        ).unwrap();
+        let client = owner.client();
+        let first = anchor("novel-one-anchor", "u1");
+        let mut second = anchor("novel-two-anchor", "u1");
+        second.source_revision_id = Some("r4".into()); // r5 remains HEAD.
+        let mut incomparable = anchor("independent-anchor", "u1");
+        incomparable.source_revision_id = Some("r4".into());
+        let mut foreign = anchor("foreign-anchor", "u2");
+        foreign.source_revision_id = Some("r6".into());
+        client.create_anchor(first, None).unwrap();
+        client.create_anchor(second, None).unwrap();
+        client.create_anchor(incomparable, None).unwrap();
+        client.create_anchor(foreign, None).unwrap();
+        let mut authored = before("cross-novel-before", "novel-one-anchor", "novel-two-anchor");
+        authored.source_revision_id = Some("r4".into());
+        client.create_precedence(authored).unwrap();
+
+        let u1 = client.snapshot("u1".into()).unwrap();
+        assert_eq!(u1.current_anchor_ids.len(), 3);
+        assert_eq!(u1.current_precedence_ids, vec!["cross-novel-before"]);
+        assert_eq!(u1.precedences.len(), 1);
+        assert_eq!(u1.precedences[0].source_revision_id.as_deref(), Some("r4"));
+        assert_eq!(u1.anchors.iter().find(|a| a.id=="novel-one-anchor")
+            .unwrap().source_revision_id.as_deref(), Some("r2"));
+        assert_eq!(u1.anchors.iter().find(|a| a.id=="novel-two-anchor")
+            .unwrap().source_revision_id.as_deref(), Some("r4"));
+        assert_eq!(u1.anchors.iter().find(|a| a.id=="independent-anchor")
+            .unwrap().source_revision_id.as_deref(), Some("r4"));
+        assert!(!u1.precedences.iter().any(|e|
+            e.before_anchor_id=="independent-anchor" ||
+            e.after_anchor_id=="independent-anchor"
+        )); // Unrelated events are never made totally ordered.
+        let u2 = client.snapshot("u2".into()).unwrap();
+        assert_eq!(u2.current_anchor_ids, vec!["foreign-anchor"]);
+        assert!(u2.precedences.is_empty());
+        assert_eq!(u2.anchors[0].source_revision_id.as_deref(), Some("r6"));
+
+        // A valid revision ID from ANOTHER universe must still be rejected.
+        let mut wrong_source = anchor("wrong-source", "u1");
+        wrong_source.source_revision_id = Some("r6".into());
+        assert!(matches!(client.create_anchor(wrong_source, None),
+                         Err(ActorError::Domain(_))));
+        let mut foreign_edge = before("forbidden-cross-world",
+                                      "novel-one-anchor","foreign-anchor");
+        foreign_edge.source_revision_id = Some("r4".into());
+        assert!(matches!(client.create_precedence(foreign_edge),
+                         Err(ActorError::Domain(_))));
+        assert_eq!(client.snapshot("u1".into()).unwrap().current_anchor_ids.len(), 3);
+        assert_eq!(client.snapshot("u2".into()).unwrap().current_anchor_ids,
+                   vec!["foreign-anchor"]);
+        owner.shutdown().unwrap();
+    }
+
+    #[test]
+    fn p2n_two_novels_historical_correction_preview_rolls_back_until_confirmed() {
+        let db = p2n_two_novels_invented_v7();
+        db.execute_batch(include_str!("../sql/m3_2_active_precedence_candidate.sql"))
+            .unwrap();
+        let owner = FixtureChronologyActor::from_preopened_invented_v7(db).unwrap();
+        let client = owner.client();
+        client.create_anchor(anchor("a-first-novel","u1"), None).unwrap();
+        let mut second = anchor("b-second-novel","u1");
+        second.source_revision_id = Some("r4".into());
+        client.create_anchor(second, None).unwrap();
+        let mut unrelated = anchor("c-unrelated","u1");
+        unrelated.source_revision_id = Some("r4".into());
+        client.create_anchor(unrelated, None).unwrap();
+        let mut old = before("old-cross-novel","a-first-novel","b-second-novel");
+        old.source_revision_id = Some("r4".into());
+        client.create_precedence(old).unwrap();
+
+        let preview = client.preview_atomic_correction(
+            "preview-decision".into(), "restated-cross-novel".into(),
+            "u1".into(), "old-cross-novel".into(),
+            "b-second-novel".into(), "a-first-novel".into(),
+            "Author-reviewed reverse relation".into(), Some("r4".into()),
+        ).unwrap();
+        let impact = preview.author_impact();
+        assert_eq!(impact.removed.iter().map(|e| e.id.as_str()).collect::<Vec<_>>(),
+                   vec!["old-cross-novel"]);
+        assert_eq!(impact.added.iter().map(|e| e.id.as_str()).collect::<Vec<_>>(),
+                   vec!["restated-cross-novel"]);
+        assert!(impact.unchanged.is_empty());
+        assert_eq!(client.snapshot("u1".into()).unwrap().current_precedence_ids,
+                   vec!["old-cross-novel"]); // Preview cannot write.
+        let before = client.p2d_active_graph("u1".into()).unwrap();
+        assert_eq!(before.len(), 1);
+        assert_eq!(before[0].id, "old-cross-novel");
+
+        client.correct_precedence_atomically(
+            "confirmed-decision".into(), "confirmed-cross-novel".into(),
+            "u1".into(), "old-cross-novel".into(),
+            "b-second-novel".into(), "a-first-novel".into(),
+            "Separate human confirmation".into(), Some("r4".into()),
+        ).unwrap();
+        let after = client.p2d_active_graph("u1".into()).unwrap();
+        assert_eq!(after.len(), 1);
+        assert_eq!(after[0].id, "confirmed-cross-novel");
+        assert_eq!(after[0].origin, "restatement");
+        assert_eq!(after[0].before_anchor_id, "b-second-novel");
+        let retained = client.snapshot("u1".into()).unwrap();
+        assert_eq!(retained.precedences.len(), 1);
+        assert_eq!(retained.precedences[0].id, "old-cross-novel");
+        assert!(retained.current_precedence_ids.is_empty());
+        assert_eq!(retained.current_anchor_ids.len(), 3);
+        assert!(retained.anchors.iter().any(|a|
+            a.id=="b-second-novel" && a.source_revision_id.as_deref()==Some("r4")
+        ));
+        assert_eq!(client.snapshot("u2".into()).unwrap().anchors.len(), 0);
+        owner.shutdown().unwrap();
+    }
+
 }
