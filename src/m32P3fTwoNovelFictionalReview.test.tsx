@@ -2,7 +2,8 @@ import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 import M32P3fTwoNovelFictionalReview, {
-  previewP3fTwoNovelFictionalReview, type P3fFictionalNovelInput,
+  previewP3fTwoNovelFictionalReview, previewP3kFictionalCharacterFocus,
+  type P3fFictionalNovelInput,
 } from "./M32P3fTwoNovelFictionalReview";
 import type { P2iFictionalInput } from "./M32P2iFictionalImpactReview";
 
@@ -299,6 +300,66 @@ describe("P3j one-sided fictional character facts are not coherence proof", () =
     expect(html).toContain("&lt;img");
     expect(html).not.toContain("<img");
     expect(html).not.toContain("alert(7)</script>");
+    expect(html).toContain("STOP_UNAVAILABLE");
+  });
+});
+
+describe("P3k read-only character focus on two invented novels", () => {
+  it("16 selects only the exact declared character without mutating either source", () => {
+    const villain = [
+      { ...p3iClaims[0], assertion_id: "villain-one", entity_id: "villain",
+        literal_value: "north" },
+      { ...p3iClaims[1], assertion_id: "villain-two", entity_id: "villain",
+        literal_value: "north" },
+    ];
+    const input = { ...data, canon_claims: [...p3iClaims, ...villain] };
+    const frozen = JSON.stringify(input);
+    const hero = previewP3kFictionalCharacterFocus(input, "hero");
+    const other = previewP3kFictionalCharacterFocus(input, "villain");
+    expect(hero.total_claims).toBe(4);
+    expect(hero.differences).toHaveLength(1);
+    expect(hero.agreements).toHaveLength(1);
+    expect(other.total_claims).toBe(2);
+    expect(other.differences).toHaveLength(0);
+    expect(other.agreements).toHaveLength(1);
+    expect(hero.differences[0].first.source_revision_id).toBe("r2");
+    expect(hero.differences[0].second.source_revision_id).toBe("r4");
+    expect(hero.production_writer_admitted).toBe(false);
+    expect(hero.real_g3_authorized).toBe(false);
+    expect(JSON.stringify(input)).toBe(frozen);
+  });
+  it("17 refuses unknown or foreign identity and forged historical sources", () => {
+    const valid = { ...data, canon_claims: p3iClaims };
+    expect(() => previewP3kFictionalCharacterFocus(valid, "")).toThrow();
+    expect(() => previewP3kFictionalCharacterFocus(valid, "unknown")).toThrow();
+    const forged = { ...valid, canon_claims: [
+      { ...p3iClaims[0], source_revision_id: "r3" }, ...p3iClaims.slice(1),
+    ] };
+    expect(() => previewP3kFictionalCharacterFocus(forged, "hero")).toThrow();
+    expect(() => previewP3kFictionalCharacterFocus(
+      { ...valid, universe_id: "foreign" }, "hero",
+    )).toThrow();
+    const refused = renderToStaticMarkup(createElement(
+      M32P3fTwoNovelFictionalReview, { input: forged },
+    ));
+    expect(refused).toContain("Revue fictive refusée");
+    expect(refused).not.toContain("Premier roman inventé");
+    expect(refused).not.toContain("north");
+  });
+  it("18 exposes accessible fiction-only selection and escapes hostile IDs", () => {
+    const evil = "<img src=x onerror=alert(8)>";
+    const extra = { ...p3iClaims[0], assertion_id: "hostile-character",
+      entity_id: evil, property_key: "nickname" };
+    const html = renderToStaticMarkup(createElement(
+      M32P3fTwoNovelFictionalReview,
+      { input: { ...data, canon_claims: [...p3iClaims, extra] } },
+    ));
+    expect(html).toContain("Consulter un personnage fictif");
+    expect(html).toContain("Tous les personnages déclarés");
+    expect(html).toContain("Filtre de lecture seule");
+    expect(html).toContain("m32-p3k-fictional-character");
+    expect(html).toContain("&lt;img");
+    expect(html).not.toContain("<img");
     expect(html).toContain("STOP_UNAVAILABLE");
   });
 });
