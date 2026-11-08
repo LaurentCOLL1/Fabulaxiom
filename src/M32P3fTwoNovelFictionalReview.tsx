@@ -289,6 +289,20 @@ export default function M32P3fTwoNovelFictionalReview({
                   ? "premier roman uniquement" : "second roman uniquement"}
               </li>)}
           </ul>
+          <ul aria-label="Accords littéraux déclarés entre romans fictifs">
+            {displayedClaims.agreements.map(pair =>
+              <li key={pair.first.assertion_id + ":" + pair.second.assertion_id}>
+                <code>{pair.first.entity_id}</code> /
+                <code>{pair.first.property_key}</code> :
+                {" "}<code>{pair.first.literal_value}</code> —
+                {" "}premier roman <code>{pair.first.novel_id}</code>,
+                {" "}révision historique <code>{pair.first.source_revision_id}</code> ;
+                {" "}second roman <code>{pair.second.novel_id}</code>,
+                {" "}révision historique <code>{pair.second.source_revision_id}</code>
+                {" "}— accord littéral déclaré, sans preuve de canon
+              </li>,
+            )}
+          </ul>
           <ul aria-label="Écarts de fiches entre romans fictifs">
             {displayedClaims.differences.map(pair =>
               <li key={pair.first.assertion_id + ":" + pair.second.assertion_id}>
