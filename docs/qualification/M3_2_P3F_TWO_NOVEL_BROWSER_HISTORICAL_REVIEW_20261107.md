@@ -1,3 +1,11 @@
+## Qualification source de P3f et fusion sous Protect main (8 novembre 2026)
+
+La PR #313 est **FUSIONNÉE**. Source HEAD `ba0b1be8498161e93495113a6316653a26cc3f18`, Windows CI #42412608232 **SUCCESS terminal au SHA exact** : 330 Rust, 7 Greenfield, 69 inventaire SQLite, 183 continuité, 402 Vitest (6 nouveaux P3f), Chromium 88/88 normal et CSP stricte (3 nouveaux scénarios), 25 blobs Git fictifs exacts. Parent #312 postmain #42410803859 SUCCESS. Import-manifeste fermé élargi 19→25 chemins **exactement listés**, avec vérifications d'intégrité Git et refus source inconnue maintenus. Trois refus initiaux de CI (témoins historiques R2/CSP, manifest exact, réinitialisation Chromium entre cas) corrigés sans relâcher les STOP. Diff 22 chemins seulement browser isolé/CI/doc, reviews=[] threads=[], Protect main actif strict bypass=[], squash `expected_head_sha`. Nouveau main `83f2bb16d07bb57ac6e4e1cb40d74c68f99ff34f` ; postmain #42432894744 **EN COURS/À QUALIFIER** lors de la rédaction.
+
+Le qualificatif « CANDIDAT NON QUALIFIÉ » ci-dessous est conservé pour tracer l'état **avant** l'exécution de CI. L'UI P3f reste fictive, sans accès au writer ni admission P4/G3. M3.2 `IN_PROGRESS_NOT_ACCEPTED` ; atomicité main/WAL/SHM et absence d'ABA invisible `NOT_PROVEN`. Source : issue #38 commentaire #6715435927.
+
+---
+
 # M3.2 P3f — revue de deux romans et de leurs sources historiques dans l'atelier navigateur fictif
 
 7 novembre 2026 — **CANDIDAT NON QUALIFIÉ** (CI Windows finale obligatoire). Parent protégé `main=e3b82c1f1d6ca6b3de1ac889936433306eb3f88d` (PR #312), postmain indépendante #42410803859 à qualifier. Décision `PRODUCT_FIRST_PARALLEL_SAFETY` inchangée (informer AVANT toute réorientation).
