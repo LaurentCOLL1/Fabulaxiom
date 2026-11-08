@@ -1,3 +1,11 @@
+## Qualification source et fusion protégée P3h — 8 novembre 2026
+
+#317 **FUSIONNÉE** par squash sous Protect main. Parent #316 postmain #42445057666 SUCCESS exact SHA. Source final `383d12a6fcc7260980e60f4df225fdde03a2a197`, Windows #42445746027 terminal SUCCESS exact SHA : **331 Rust, 7 Greenfield, 69 inventaire SQLite, 183 continuité, 408 Vitest, Chromium 88/88 normal + 88/88 CSP stricte, 25 blobs Git fictifs exacts**. Initial #42445522594 échec sécurisé du typage tuple TypeScript, intermédiaire #42445613137 échec sécurisé du contrat historique `live SQLite WAL-index` ; les deux réparés sans suppression ni affaiblissement des tests. Diff 18 chemins, reviews=[] threads=[], Protect main ACTIVE strict bypass=[], squash gardé `expected_head_sha`. Nouveau `main=7bbced8319d81435336fa8e7fd020f8eda2d91c8`, postmain indépendant #42468177185 **EN COURS / À QUALIFIER** lors de cette rédaction, #38 append-only #6719930300.
+
+Le statut « CANDIDAT NON QUALIFIÉ » ci-dessous est une trace **historique avant CI** et non le statut de la source fusionnée. Rust vérifie la propriété fictive de révision en SQLite RAM préouverte, TypeScript déduit une projection déclarative de la même fixture Git ; les deux tests ne forment ni IPC, ni admission d'une base réelle. PRODUCT_FIRST_PARALLEL_SAFETY inchangée, prévenir avant toute réorientation. M3.2 IN_PROGRESS_NOT_ACCEPTED ; les STOP R1–R9, P4, G2B/G2C/G3 et glib #160 restent en vigueur.
+
+---
+
 # M3.2 P3h — un golden partagé Rust / TypeScript sur deux romans historiques
 
 8 novembre 2026 — **CANDIDAT NON QUALIFIÉ**. Parent protégé `main=4ac62a3f7c0e2cc7a30983a24e843caf753b6c8d` (#316), postmain Windows #42445057666 à qualifier. La stratégie PRODUCT_FIRST_PARALLEL_SAFETY reste active, prévenir AVANT tout changement.
