@@ -121,6 +121,33 @@ export function compareP3iFictionalCanonClaims(input: P3fFictionalNovelInput) {
   };
 }
 
+/** P3k: select a single invented character only AFTER full source validation. */
+export function previewP3kFictionalCharacterFocus(
+  input: P3fFictionalNovelInput, entityId: string,
+) {
+  const full = previewP3fTwoNovelFictionalReview(input).canon_comparison;
+  const hasEntity = [
+    ...full.agreements.map(pair => pair.first.entity_id),
+    ...full.differences.map(pair => pair.first.entity_id),
+    ...full.first_only.map(claim => claim.entity_id),
+    ...full.second_only.map(claim => claim.entity_id),
+  ].includes(entityId);
+  if (!nonblank(entityId) || !hasEntity) {
+    throw new Error("P3k : personnage fictif inconnu ou ambigu");
+  }
+  const agreements = full.agreements.filter(pair => pair.first.entity_id === entityId);
+  const differences = full.differences.filter(pair => pair.first.entity_id === entityId);
+  const first_only = full.first_only.filter(claim => claim.entity_id === entityId);
+  const second_only = full.second_only.filter(claim => claim.entity_id === entityId);
+  return {
+    ...full,
+    total_claims: 2 * (agreements.length + differences.length) +
+      first_only.length + second_only.length,
+    agreements, differences, first_only, second_only,
+    selected_entity_id: entityId,
+  };
+}
+
 /** Validate a declared FICTIONAL provenance pairing, never a database identity. */
 export function previewP3fTwoNovelFictionalReview(input: P3fFictionalNovelInput) {
   if (!input || input.data_origin !== "fictional_browser_memory_only" ||
@@ -191,6 +218,7 @@ export default function M32P3fTwoNovelFictionalReview({
   input,
 }: { input: P3fFictionalNovelInput }): ReactElement {
   const [mode, setMode] = useState<ReviewMode>("joint");
+  const [characterFocus, setCharacterFocus] = useState("");
   let review: ReturnType<typeof previewP3fTwoNovelFictionalReview>;
   try {
     review = previewP3fTwoNovelFictionalReview(input);
@@ -201,6 +229,17 @@ export default function M32P3fTwoNovelFictionalReview({
       <p>Sources, Univers ou assertions invalides. Aucune commande exécutée.</p>
     </section>;
   }
+
+  const characterIds = [...new Set([
+    ...review.canon_comparison.agreements.map(pair => pair.first.entity_id),
+    ...review.canon_comparison.differences.map(pair => pair.first.entity_id),
+    ...review.canon_comparison.first_only.map(claim => claim.entity_id),
+    ...review.canon_comparison.second_only.map(claim => claim.entity_id),
+  ])].sort();
+  const selectedCharacter = characterIds.includes(characterFocus) ? characterFocus : "";
+  const displayedClaims = selectedCharacter === ""
+    ? review.canon_comparison
+    : previewP3kFictionalCharacterFocus(input, selectedCharacter);
   return <section aria-label="Revue chronologique de deux romans fictifs">
     <h2>Deux romans — sources historiques et relations directes</h2>
     <p>Laboratoire navigateur : métadonnées et assertions inventées, sans liaison Rust,
@@ -225,15 +264,23 @@ export default function M32P3fTwoNovelFictionalReview({
       {review.canon_comparison.total_claims === 0
         ? <p>Aucune fiche fictive fournie : cohérence non évaluée.</p>
         : <>
-          <p>{review.canon_comparison.total_claims} assertions littérales déclarées ;
-            {" "}{review.canon_comparison.differences.length} écarts à examiner ;
-            {" "}{review.canon_comparison.agreements.length} accords déclarés ;
-            {" "}{review.canon_comparison.first_only.length} faits du premier roman sans correspondant ;
-            {" "}{review.canon_comparison.second_only.length} faits du second roman sans correspondant.</p>
+          <label htmlFor="m32-p3k-fictional-character">Consulter un personnage fictif</label>
+          <select id="m32-p3k-fictional-character" value={selectedCharacter}
+            onChange={event => setCharacterFocus(event.target.value)}>
+            <option value="">Tous les personnages déclarés</option>
+            {characterIds.map(id => <option key={id} value={id}>{id}</option>)}
+          </select>
+          <p>Filtre de lecture seule : aucun choix canonique, aucune écriture ou
+            nouvelle preuve de propriété SQLite.</p>
+          <p>{displayedClaims.total_claims} assertions littérales déclarées ;
+            {" "}{displayedClaims.differences.length} écarts à examiner ;
+            {" "}{displayedClaims.agreements.length} accords déclarés ;
+            {" "}{displayedClaims.first_only.length} faits du premier roman sans correspondant ;
+            {" "}{displayedClaims.second_only.length} faits du second roman sans correspondant.</p>
           <p>Un fait absent dans l'autre roman signifie uniquement « non comparable » :
             ce n'est ni un accord, ni un écart établi, ni une erreur de canon.</p>
           <ul aria-label="Faits fictifs non comparables entre romans">
-            {[...review.canon_comparison.first_only, ...review.canon_comparison.second_only]
+            {[...displayedClaims.first_only, ...displayedClaims.second_only]
               .map(claim => <li key={claim.assertion_id}>
                 <code>{claim.entity_id}</code> / <code>{claim.property_key}</code> :
                 {" "}<code>{claim.literal_value}</code> (source
@@ -243,7 +290,7 @@ export default function M32P3fTwoNovelFictionalReview({
               </li>)}
           </ul>
           <ul aria-label="Écarts de fiches entre romans fictifs">
-            {review.canon_comparison.differences.map(pair =>
+            {displayedClaims.differences.map(pair =>
               <li key={pair.first.assertion_id + ":" + pair.second.assertion_id}>
                 <code>{pair.first.entity_id}</code> /
                 <code>{pair.first.property_key}</code> :
