@@ -1,3 +1,11 @@
+## Qualification source et fusion protégée P3g — 8 novembre 2026
+
+#315 **FUSIONNÉE** par squash sous Protect main. Source final `2deab12ff0eff57d0e67652d4d9133f7106edca5`, Windows #42439902466 **SUCCESS terminal exact SHA** : 330 Rust, 7 Greenfield, 69 inventaire SQLite, 183 continuité, 404 Vitest (2 P3g nouveaux), Chromium 88/88 normal+CSP strict, 25 Git blobs fictifs exacts. Parent #314 postmain #42439260349 SUCCESS SHA exact. Initial source #42439778901 échouée fail-closed sur contrat SHA complet du prompt court, corrigée sans modifier les tests. Diff 11 chemins isolés, reviews=[] threads=[], Protect main ACTIVE strict bypass=[], guarded squash `expected_head_sha`. Nouveau `main=a1f664b4c3df5921006b73fbc9306ee11fc821fc`, postmain Windows indépendante #42443420035 **EN COURS / À QUALIFIER** lors de cette rédaction, #38 append-only #6716789116.
+
+Le statut « CANDIDAT NON QUALIFIÉ » ci-dessous est conservé comme trace **historique pré-CI**, et non comme état actuel de la source. P3g apporte quatre témoins déclarés fictifs, **non une preuve de propriété SQLite** ; aucun writer, P4 ou G3 admis. PRODUCT_FIRST_PARALLEL_SAFETY inchangée ; préavis obligatoire avant tout changement. Tous les STOP opérateur et R1–R9 persistent ; glib #160 reste OPEN_NOT_REMEDIATED.
+
+---
+
 # M3.2 P3g — témoins fictifs de révisions historiques pour deux romans
 
 8 novembre 2026 — **CANDIDAT NON QUALIFIÉ**. Parent protégé `main=48e33d3447b8e282acb077647248c5740c100cc7` (#314), postmain #42439260349 à qualifier.
