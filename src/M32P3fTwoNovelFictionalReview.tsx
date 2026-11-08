@@ -15,12 +15,22 @@ export type P3fFictionalNovelSource = Readonly<{
   source_revision_id: string;
   current_head_revision_id: string;
 }>;
+/** P3g: invented declared revision witnesses, never SQL identity. */
+export type P3gFictionalRevisionWitness = Readonly<{
+  universe_id: string;
+  novel_id: string;
+  scene_id: string;
+  revision_id: string;
+  role: "historical_source" | "current_head";
+  anchor_id: string | null;
+}>;
 export type P3fFictionalNovelInput = Readonly<{
   data_origin: "fictional_browser_memory_only";
   production_writer_admitted: false;
   real_g3_authorized: false;
   universe_id: string;
   novels: readonly [P3fFictionalNovelSource, P3fFictionalNovelSource];
+  revision_witnesses: readonly P3gFictionalRevisionWitness[];
   impact: P2iFictionalInput;
 }>;
 
@@ -53,6 +63,30 @@ export function previewP3fTwoNovelFictionalReview(input: P3fFictionalNovelInput)
       !input.impact || input.impact.universe_id !== input.universe_id) {
     throw new Error("P3f : deux sources de romans distincts sont requises");
   }
+  // Self-contained declared witnesses only: no revision is read from SQLite.
+  const witnesses = input.revision_witnesses;
+  if (!Array.isArray(witnesses) || witnesses.length !== 4) {
+    throw new Error("P3g : quatre témoins de révision fictifs requis");
+  }
+  const revisions = new Set<string>();
+  for (const witness of witnesses) {
+    if (!witness || witness.universe_id !== input.universe_id ||
+        !nonblank(witness.novel_id) || !nonblank(witness.scene_id) ||
+        !nonblank(witness.revision_id)) {
+      throw new Error("P3g : provenance fictive étrangère refusée");
+    }
+    const source = [first, second].find(novel =>
+      novel.novel_id === witness.novel_id && novel.scene_id === witness.scene_id);
+    const expectedRevision = witness.role === "historical_source"
+      ? source?.source_revision_id : witness.role === "current_head"
+        ? source?.current_head_revision_id : null;
+    const expectedAnchor = witness.role === "historical_source" ? source?.anchor_id : null;
+    if (!source || !expectedRevision || witness.revision_id !== expectedRevision ||
+        witness.anchor_id !== expectedAnchor || revisions.has(witness.revision_id)) {
+      throw new Error("P3g : attribution de révision fictive refusée");
+    }
+    revisions.add(witness.revision_id);
+  }
   const direct = previewP2mFictionalSharedEvidence(
     input.impact, input.universe_id, first.anchor_id, second.anchor_id,
   );
@@ -60,6 +94,7 @@ export function previewP3fTwoNovelFictionalReview(input: P3fFictionalNovelInput)
     first,
     second,
     direct,
+    declared_revision_witnesses: revisions.size,
     data_origin: "fictional_browser_memory_only" as const,
     production_writer_admitted: false as const,
     real_g3_authorized: false as const,
@@ -96,6 +131,8 @@ export default function M32P3fTwoNovelFictionalReview({
         </li>,
       )}
     </ul>
+    <p>Catalogue fictif déclaré : {review.declared_revision_witnesses} attributions de
+      révision contrôlées entre romans, scènes et ancres. Aucune preuve SQLite.</p>
     <nav aria-label="Choisir une preuve fictive inter-romans">
       <button type="button" aria-pressed={mode === "joint"}
         onClick={() => setMode("joint")}>Comparer les assertions communes</button>
