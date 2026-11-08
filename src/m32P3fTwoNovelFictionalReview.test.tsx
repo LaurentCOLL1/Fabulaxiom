@@ -248,3 +248,57 @@ describe("P3i fictional two-novel character-sheet comparisons", () => {
     expect(refused).not.toContain("hero");
   });
 });
+
+
+describe("P3j one-sided fictional character facts are not coherence proof", () => {
+  it("13 reports missing counterparts separately, preserving both sources", () => {
+    const extra = [
+      { ...p3iClaims[0], assertion_id: "one-only", property_key: "scar",
+        literal_value: "left-scar" },
+      { ...p3iClaims[1], assertion_id: "two-only", property_key: "voice",
+        literal_value: "soft" },
+    ];
+    const input = { ...data, canon_claims: [...p3iClaims, ...extra] };
+    const prior = JSON.stringify(input);
+    const result = previewP3fTwoNovelFictionalReview(input).canon_comparison;
+    expect(result.total_claims).toBe(6);
+    expect(result.agreements).toHaveLength(1);
+    expect(result.differences).toHaveLength(1);
+    expect(result.first_only.map(c => c.assertion_id)).toEqual(["one-only"]);
+    expect(result.second_only.map(c => c.assertion_id)).toEqual(["two-only"]);
+    expect(JSON.stringify(input)).toBe(prior);
+    expect(result.production_writer_admitted).toBe(false);
+  });
+  it("14 distinguishes a one-sided fact from a falsified historical source", () => {
+    const extra = { ...p3iClaims[0], assertion_id: "unique-literal",
+      property_key: "eye", literal_value: "amber" };
+    const valid = { ...data, canon_claims: [...p3iClaims, extra] };
+    const view = previewP3fTwoNovelFictionalReview(valid).canon_comparison;
+    expect(view.first_only).toHaveLength(1);
+    expect(view.second_only).toHaveLength(0);
+    const forged = { ...valid, canon_claims: [...p3iClaims,
+      { ...extra, source_revision_id: "r3" }] };
+    expect(() => previewP3fTwoNovelFictionalReview(forged)).toThrow();
+    const denied = renderToStaticMarkup(createElement(
+      M32P3fTwoNovelFictionalReview, { input: forged },
+    ));
+    expect(denied).toContain("Revue fictive refusée");
+    expect(denied).not.toContain("amber");
+    expect(denied).not.toContain("Premier roman inventé");
+  });
+  it("15 labels unmatched facts as non-comparable and escapes hostile literals", () => {
+    const evil = "<img src=x onerror=alert(7)>";
+    const one = { ...p3iClaims[0], assertion_id: "unique",
+      property_key: "nickname", literal_value: evil };
+    const html = renderToStaticMarkup(createElement(
+      M32P3fTwoNovelFictionalReview,
+      { input: { ...data, canon_claims: [...p3iClaims, one] } },
+    ));
+    expect(html).toContain("non comparable");
+    expect(html).toContain("premier roman uniquement");
+    expect(html).toContain("&lt;img");
+    expect(html).not.toContain("<img");
+    expect(html).not.toContain("alert(7)</script>");
+    expect(html).toContain("STOP_UNAVAILABLE");
+  });
+});

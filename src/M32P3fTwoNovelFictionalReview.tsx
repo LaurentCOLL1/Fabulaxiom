@@ -91,6 +91,15 @@ export function compareP3iFictionalCanonClaims(input: P3fFictionalNovelInput) {
   const right = claims.filter(claim => claim.novel_id === second.novel_id);
   const agreements: P3iFictionalCanonPair[] = [];
   const differences: P3iFictionalCanonPair[] = [];
+  // P3j: absence in the other novel is NOT an agreement or contradiction.
+  const first_only: P3iFictionalCanonClaim[] = [];
+  const second_only: P3iFictionalCanonClaim[] = [];
+  const factKey = (claim: P3iFictionalCanonClaim) =>
+    JSON.stringify([claim.entity_id, claim.property_key]);
+  const firstKeys = new Set(left.map(factKey));
+  const secondKeys = new Set(right.map(factKey));
+  for (const claim of left) if (!secondKeys.has(factKey(claim))) first_only.push(claim);
+  for (const claim of right) if (!firstKeys.has(factKey(claim))) second_only.push(claim);
   for (const a of left) {
     for (const b of right) {
       if (a.entity_id !== b.entity_id || a.property_key !== b.property_key) continue;
@@ -103,6 +112,8 @@ export function compareP3iFictionalCanonClaims(input: P3fFictionalNovelInput) {
     total_claims: claims.length,
     agreements,
     differences,
+    first_only,
+    second_only,
     /** Fictional labels are never canon, truth or SQL provenance claims. */
     data_origin: "fictional_browser_memory_only" as const,
     production_writer_admitted: false as const,
@@ -216,7 +227,21 @@ export default function M32P3fTwoNovelFictionalReview({
         : <>
           <p>{review.canon_comparison.total_claims} assertions littérales déclarées ;
             {" "}{review.canon_comparison.differences.length} écarts à examiner ;
-            {" "}{review.canon_comparison.agreements.length} accords déclarés.</p>
+            {" "}{review.canon_comparison.agreements.length} accords déclarés ;
+            {" "}{review.canon_comparison.first_only.length} faits du premier roman sans correspondant ;
+            {" "}{review.canon_comparison.second_only.length} faits du second roman sans correspondant.</p>
+          <p>Un fait absent dans l'autre roman signifie uniquement « non comparable » :
+            ce n'est ni un accord, ni un écart établi, ni une erreur de canon.</p>
+          <ul aria-label="Faits fictifs non comparables entre romans">
+            {[...review.canon_comparison.first_only, ...review.canon_comparison.second_only]
+              .map(claim => <li key={claim.assertion_id}>
+                <code>{claim.entity_id}</code> / <code>{claim.property_key}</code> :
+                {" "}<code>{claim.literal_value}</code> (source
+                {" "}<code>{claim.source_revision_id}</code>) —
+                {" "}{claim.novel_id === review.first.novel_id
+                  ? "premier roman uniquement" : "second roman uniquement"}
+              </li>)}
+          </ul>
           <ul aria-label="Écarts de fiches entre romans fictifs">
             {review.canon_comparison.differences.map(pair =>
               <li key={pair.first.assertion_id + ":" + pair.second.assertion_id}>
