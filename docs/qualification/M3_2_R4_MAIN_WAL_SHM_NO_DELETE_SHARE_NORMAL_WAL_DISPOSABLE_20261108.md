@@ -1,5 +1,10 @@
 # M3.2 R4 — three file no-delete-share guard during normal SQLite WAL (Windows disposable)
 
+## Premier refus sécurisé de CI et mise à jour ciblée de l'inventaire — 8 novembre 2026
+
+HEAD source initial `f2c73798019933b9f69715ce449719c1c95b4493`, Windows #42469900496 **FAILED (fail-closed)** au contrôle `M3.2 whole-tree Rust SQLite source-only inventory and 21 drift refusals` : ajout réel d'**un** `Connection::open_with_flags_and_vfs` avec `SQLITE_OPEN_READ_WRITE` dans le module R4 Windows `#[cfg(test)]` déjà inventorisé. Le déclenchement a empêché l'intégration silencieuse d'une nouvelle ouverture SQLite. Après revue de la portée strictement jetable, `tools/m32_rust_sqlite_open_inventory.py` reconnaît précisément le comptage du **seul** fichier R4 **(17,0,0,0,0,17,0) → (18,0,0,0,0,18,0)** ; les cinq assertions explicites `tools/test_m32_rust_sqlite_open_inventory.py` sont alignées et vérifient aussi le nom exact du nouveau test. **Aucun pattern de détection, refus de drift, contrôle de production ou test négatif n'a été supprimé ou assoupli.** Tous les autres chemins SQLite gardent leurs comptages exacts. Les CI suivantes doivent être qualifiées au SHA final ; ne pas déduire d'admission writer de ce ré-audit.
+
+
 8 novembre 2026 — **CANDIDAT NON QUALIFIÉ**. Parent protégé `main=7c05704c4da4ac50d5ee34829fb80751a4cc6b83` (#318), parent postmain Windows #42469381416 à qualifier. Stratégie PRODUCT_FIRST_PARALLEL_SAFETY inchangée ; prévenir AVANT changement.
 
 ## Pourquoi cette expérience
