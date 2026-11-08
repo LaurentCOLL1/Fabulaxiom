@@ -59,7 +59,7 @@ const nonblank = (v: unknown): v is string =>
  * A difference is a review prompt, never an inferred contradiction or date.
  */
 export function compareP3iFictionalCanonClaims(input: P3fFictionalNovelInput) {
-  const claims = input.canon_claims ?? [];
+  const claims = input.canon_claims === undefined ? [] : input.canon_claims;
   if (!Array.isArray(claims) || claims.length > 64) {
     throw new Error("P3i : catalogue de fiches fictives refusé");
   }
