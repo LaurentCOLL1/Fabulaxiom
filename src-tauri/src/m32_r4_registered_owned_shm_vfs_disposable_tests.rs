@@ -1089,3 +1089,73 @@ fn r4_preheld_wal_no_delete_share_normal_sqlite_wal_compat_disposable(){
     drop(held);
     // Scratch is the sole owner of the disposable TEMP cleanup.
 }
+
+
+// R4 test-only Win32 feasibility: three independently opened FILE_SHARE_READ|WRITE
+// guards (no FILE_SHARE_DELETE) remain live through a NORMAL WAL transaction.
+// This is NEVER an atomic triad opener: guards were acquired sequentially.
+// It does not qualify a real writer, private SQLite HANDLE, or operator data.
+#[test]
+fn r4_three_preheld_no_delete_share_guards_allow_normal_wal_disposable(){
+    let root=Scratch::fresh();
+    // The registered VFS uses only fresh fixtures; its preheld WAL native
+    // FileId128 is independently compared with SQLite's delegated xOpen HANDLE.
+    let gate=Registered::fresh_with_preheld_wal(&root);
+    let wal=root.dir.join("invented.sqlite3-wal");
+    let names=[root.db.as_path(),wal.as_path(),root.shm.as_path()];
+    let guard_main=OpenOptions::new().read(true).write(true).share_mode(1|2)
+        .open(&root.db).expect("fresh main guard only");
+    let guard_wal=OpenOptions::new().read(true).write(true).share_mode(1|2)
+        .open(&wal).expect("fresh WAL guard only");
+    let guard_shm=OpenOptions::new().read(true).write(true).share_mode(1|2)
+        .open(&root.shm).expect("fresh SHM guard only");
+    let guards=[guard_main,guard_wal,guard_shm];
+    let ids=[
+        id(&guards[0]).expect("held main FileId128"),
+        id(&guards[1]).expect("held WAL FileId128"),
+        id(&guards[2]).expect("held SHM FileId128"),
+    ];
+    assert_eq!(id(&gate.state.master_db),Some(ids[0]));
+    assert_eq!(id(&gate.state.preheld_wal.as_ref().unwrap().0),Some(ids[1]));
+    assert_eq!(id(&gate.state.master),Some(ids[2]));
+    for (index,path) in names.iter().enumerate(){
+        let target=root.dir.join(format!("blocked-pre-sql-{index}.fixture"));
+        assert!(fs::rename(path,target).is_err(),
+            "separate no-delete-share guard must refuse this pathname rename");
+        let reopened=OpenOptions::new().read(true).write(true).share_mode(1|2|4)
+            .open(path).expect("sharing read/write must remain compatible");
+        assert_eq!(id(&reopened),Some(ids[index]));
+    }
+    let db=Connection::open_with_flags_and_vfs(
+        &root.db,OpenFlags::SQLITE_OPEN_READ_WRITE,gate.name())
+        .expect("fresh disposable SQLite only");
+    let lock:String=db.query_row("PRAGMA locking_mode=NORMAL",[],|r|r.get(0))
+        .expect("NORMAL WAL must be requested before first WAL access");
+    assert_eq!(lock.to_ascii_lowercase(),"normal");
+    let mode:String=db.query_row("PRAGMA journal_mode=WAL",[],|r|r.get(0))
+        .expect("three separately held guards must allow actual WAL");
+    assert_eq!(mode.to_ascii_lowercase(),"wal");
+    db.execute_batch("CREATE TABLE triad_fixture(n INTEGER NOT NULL);
+        INSERT INTO triad_fixture VALUES (41);").unwrap();
+    let observed:i64=db.query_row(
+        "SELECT n FROM triad_fixture",[],|r|r.get(0)).unwrap();
+    assert_eq!(observed,41);
+    assert!(gate.state.main_native_matches.load(Ordering::SeqCst)>=1);
+    assert!(gate.state.preheld_wal_xopen_matches.load(Ordering::SeqCst)>=1,
+        "delegated WAL xOpen must still match the preheld native FileId128");
+    assert!(gate.state.shm_maps.load(Ordering::SeqCst)>=1,
+        "NORMAL WAL must actually use the native owned SHM callback");
+    assert!(gate.state.shm_locks.load(Ordering::SeqCst)>=1);
+    for (index,path) in names.iter().enumerate(){
+        let target=root.dir.join(format!("blocked-live-sql-{index}.fixture"));
+        assert!(fs::rename(path,target).is_err(),
+            "live guard prevents observed name substitution, not pre-open ABA");
+        let reopened=OpenOptions::new().read(true).write(true).share_mode(1|2|4)
+            .open(path).expect("live SQLite path must still be present");
+        assert_eq!(id(&reopened),Some(ids[index]));
+    }
+    drop(db);
+    drop(gate);
+    drop(guards);
+    // The guarded handles are now all closed before Scratch removes TEMP.
+}
