@@ -113,8 +113,14 @@ EXPECTED = {
     # PR309: one more audited cfg(test) Windows SQLite NORMAL WAL open,
     # using an invented preheld WAL without FILE_SHARE_DELETE.
     # No runtime opener and no writer admission.
+    # 2026-11-08 R4 follow-on: ONE additional cfg(test,windows) SQLite NORMAL
+    # WAL disposable opening with explicit SQLITE_OPEN_READ_WRITE, as a
+    # native no-delete-share guard for ALL three invented main/WAL/SHM names.
+    # Exactly +1 Connection::open_with_flags_and_vfs and +1 SQLITE_OPEN_READ_WRITE;
+    # no runtime opener, atomic custody or writer admission. Preserve the
+    # unreviewed-drift refusal for any other source occurrence changes.
     # Explicit source inventory acknowledgment; NO writer admission.
-    "src-tauri/src/m32_r4_registered_owned_shm_vfs_disposable_tests.rs": (17, 0, 0, 0, 0, 17, 0),
+    "src-tauri/src/m32_r4_registered_owned_shm_vfs_disposable_tests.rs": (18, 0, 0, 0, 0, 18, 0),
     "src-tauri/src/m32_r4_wal_shm_disposable_tests.rs": (2, 0, 0, 0, 0, 1, 0),
     # R4 RAM-only design contract intentionally ABSENT from EXPECTED:
     # audit_inventory() only lists sources having nonzero SQLite occurrences.
