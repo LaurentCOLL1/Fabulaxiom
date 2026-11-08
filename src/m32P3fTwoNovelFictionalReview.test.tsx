@@ -23,6 +23,16 @@ const data: P3fFictionalNovelInput = {
       scene_id: "scene-2", anchor_id: "B", source_revision_id: "r4",
       current_head_revision_id: "r5" },
   ],
+  revision_witnesses: [
+    { universe_id: world, novel_id: "book-1", scene_id: "scene-1",
+      revision_id: "r2", role: "historical_source", anchor_id: "A" },
+    { universe_id: world, novel_id: "book-1", scene_id: "scene-1",
+      revision_id: "r3", role: "current_head", anchor_id: null },
+    { universe_id: world, novel_id: "book-2", scene_id: "scene-2",
+      revision_id: "r4", role: "historical_source", anchor_id: "B" },
+    { universe_id: world, novel_id: "book-2", scene_id: "scene-2",
+      revision_id: "r5", role: "current_head", anchor_id: null },
+  ],
   impact: {
     data_origin: "fictional_browser_memory_only",
     production_writer_admitted: false,
@@ -38,6 +48,7 @@ describe("P3f browser-only author evidence for two invented novels", () => {
     const old = JSON.stringify(data);
     const view = previewP3fTwoNovelFictionalReview(data);
     expect(view.first.source_revision_id).toBe("r2");
+    expect(view.declared_revision_witnesses).toBe(4);
     expect(view.second.source_revision_id).toBe("r4");
     expect(view.first.current_head_revision_id).toBe("r3");
     expect(view.second.current_head_revision_id).toBe("r5");
@@ -101,6 +112,7 @@ describe("P3f browser-only author evidence for two invented novels", () => {
     expect(html).not.toContain("Confirmer en mémoire");
     expect(html).not.toContain("fetch(");
     expect(html).toContain('aria-pressed="true"');
+    expect(html).toContain("attributions de");
   });
   it("06 JSX escapes hostile fictional labels and refuses without leaking sources", () => {
     const evil = "<img src=x onerror=alert(1)>";
@@ -122,5 +134,31 @@ describe("P3f browser-only author evidence for two invented novels", () => {
     expect(denied).not.toContain(evil);
     expect(denied).not.toContain("Premier roman inventé");
     expect(denied).not.toContain("<li");
+  });
+  it("07 refuses forged declared revision witnesses and foreign attribution", () => {
+    const w = data.revision_witnesses;
+    for (const altered of [
+      w.slice(0, 3),
+      [...w, w[0]],
+      [...w.slice(0, 2), { ...w[2], novel_id: "book-1" }, w[3]],
+      [{ ...w[0], universe_id: "foreign" }, ...w.slice(1)],
+      [{ ...w[0], anchor_id: "B" }, ...w.slice(1)],
+      [{ ...w[0], role: "current_head" as const }, ...w.slice(1)],
+      [{ ...w[0], revision_id: "r3" }, ...w.slice(1)],
+      [{ ...w[0], scene_id: "scene-2" }, ...w.slice(1)],
+    ]) {
+      expect(() => previewP3fTwoNovelFictionalReview({
+        ...data, revision_witnesses: altered,
+      })).toThrow();
+    }
+  });
+  it("08 rejects an absent witness before displaying historical source details", () => {
+    const invalid = { ...data, revision_witnesses: data.revision_witnesses.slice(1) };
+    const html = renderToStaticMarkup(createElement(
+      M32P3fTwoNovelFictionalReview, { input: invalid },
+    ));
+    expect(html).toContain("Revue fictive refusée");
+    expect(html).not.toContain("Premier roman inventé");
+    expect(html).not.toContain("r2");
   });
 });

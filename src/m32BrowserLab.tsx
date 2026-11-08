@@ -155,6 +155,16 @@ const inventedTwoNovelReview: P3fFictionalNovelInput = {
       novel_title: "Deuxième roman imaginaire", scene_id: "s2", anchor_id: "B",
       source_revision_id: "invented-rev-C", current_head_revision_id: "invented-rev-D" },
   ],
+  revision_witnesses: [
+    { universe_id: "fiction-world-one", novel_id: "novel-1", scene_id: "s1",
+      revision_id: "invented-rev-A", role: "historical_source", anchor_id: "A" },
+    { universe_id: "fiction-world-one", novel_id: "novel-1", scene_id: "s1",
+      revision_id: "invented-rev-B", role: "current_head", anchor_id: null },
+    { universe_id: "fiction-world-one", novel_id: "novel-2", scene_id: "s2",
+      revision_id: "invented-rev-C", role: "historical_source", anchor_id: "B" },
+    { universe_id: "fiction-world-one", novel_id: "novel-2", scene_id: "s2",
+      revision_id: "invented-rev-D", role: "current_head", anchor_id: null },
+  ],
   impact: {
     data_origin: "fictional_browser_memory_only",
     production_writer_admitted: false,
