@@ -24,6 +24,22 @@ export type P3gFictionalRevisionWitness = Readonly<{
   role: "historical_source" | "current_head";
   anchor_id: string | null;
 }>;
+/** P3i: explicitly INVENTED character/fact notes tied to historical novel sources. */
+export type P3iFictionalCanonClaim = Readonly<{
+  assertion_id: string;
+  universe_id: string;
+  novel_id: string;
+  scene_id: string;
+  source_revision_id: string;
+  entity_id: string;
+  property_key: string;
+  literal_value: string;
+}>;
+export type P3iFictionalCanonPair = Readonly<{
+  first: P3iFictionalCanonClaim;
+  second: P3iFictionalCanonClaim;
+}>;
+
 export type P3fFictionalNovelInput = Readonly<{
   data_origin: "fictional_browser_memory_only";
   production_writer_admitted: false;
@@ -32,10 +48,67 @@ export type P3fFictionalNovelInput = Readonly<{
   novels: readonly [P3fFictionalNovelSource, P3fFictionalNovelSource];
   revision_witnesses: readonly P3gFictionalRevisionWitness[];
   impact: P2iFictionalInput;
+  /** Optional only for earlier P3f fixtures: absence is NOT a coherence proof. */
+  canon_claims?: readonly P3iFictionalCanonClaim[];
 }>;
 
 const nonblank = (v: unknown): v is string =>
   typeof v === "string" && v.trim().length > 0;
+
+/** Compare ONLY matching explicit keys across the two invented historical sources.
+ * A difference is a review prompt, never an inferred contradiction or date.
+ */
+export function compareP3iFictionalCanonClaims(input: P3fFictionalNovelInput) {
+  const claims = input.canon_claims === undefined ? [] : input.canon_claims;
+  if (!Array.isArray(claims) || claims.length > 64) {
+    throw new Error("P3i : catalogue de fiches fictives refusé");
+  }
+  const ids = new Set<string>();
+  const keys = new Set<string>();
+  for (const claim of claims) {
+    if (!claim || claim.universe_id !== input.universe_id ||
+        !nonblank(claim.assertion_id) || !nonblank(claim.novel_id) ||
+        !nonblank(claim.scene_id) || !nonblank(claim.source_revision_id) ||
+        !nonblank(claim.entity_id) || !nonblank(claim.property_key) ||
+        !nonblank(claim.literal_value) || claim.literal_value.length > 256) {
+      throw new Error("P3i : provenance de fiche fictive refusée");
+    }
+    const declaredOwner = input.novels.find(novel =>
+      novel.novel_id === claim.novel_id &&
+      novel.scene_id === claim.scene_id &&
+      novel.source_revision_id === claim.source_revision_id);
+    const subjectKey = JSON.stringify([
+      claim.novel_id, claim.entity_id, claim.property_key,
+    ]);
+    if (!declaredOwner || ids.has(claim.assertion_id) || keys.has(subjectKey)) {
+      throw new Error("P3i : fiche étrangère ou attribution ambiguë");
+    }
+    ids.add(claim.assertion_id);
+    keys.add(subjectKey);
+  }
+  const [first, second] = input.novels;
+  const left = claims.filter(claim => claim.novel_id === first.novel_id);
+  const right = claims.filter(claim => claim.novel_id === second.novel_id);
+  const agreements: P3iFictionalCanonPair[] = [];
+  const differences: P3iFictionalCanonPair[] = [];
+  for (const a of left) {
+    for (const b of right) {
+      if (a.entity_id !== b.entity_id || a.property_key !== b.property_key) continue;
+      const pair = { first: a, second: b };
+      if (a.literal_value === b.literal_value) agreements.push(pair);
+      else differences.push(pair);
+    }
+  }
+  return {
+    total_claims: claims.length,
+    agreements,
+    differences,
+    /** Fictional labels are never canon, truth or SQL provenance claims. */
+    data_origin: "fictional_browser_memory_only" as const,
+    production_writer_admitted: false as const,
+    real_g3_authorized: false as const,
+  };
+}
 
 /** Validate a declared FICTIONAL provenance pairing, never a database identity. */
 export function previewP3fTwoNovelFictionalReview(input: P3fFictionalNovelInput) {
@@ -95,6 +168,7 @@ export function previewP3fTwoNovelFictionalReview(input: P3fFictionalNovelInput)
     second,
     direct,
     declared_revision_witnesses: revisions.size,
+    canon_comparison: compareP3iFictionalCanonClaims(input),
     data_origin: "fictional_browser_memory_only" as const,
     production_writer_admitted: false as const,
     real_g3_authorized: false as const,
@@ -133,6 +207,33 @@ export default function M32P3fTwoNovelFictionalReview({
     </ul>
     <p>Catalogue fictif déclaré : {review.declared_revision_witnesses} attributions de
       révision contrôlées entre romans, scènes et ancres. Aucune preuve SQLite.</p>
+    <section aria-label="Revue de cohérence de fiches fictives">
+      <h3>Fiches de personnages — comparaison de deux romans fictifs</h3>
+      <p>Comparaison des seules déclarations inventées reliées aux révisions
+        historiques indiquées ; aucune vérité, date ou priorité narrative inférée.</p>
+      {review.canon_comparison.total_claims === 0
+        ? <p>Aucune fiche fictive fournie : cohérence non évaluée.</p>
+        : <>
+          <p>{review.canon_comparison.total_claims} assertions littérales déclarées ;
+            {" "}{review.canon_comparison.differences.length} écarts à examiner ;
+            {" "}{review.canon_comparison.agreements.length} accords déclarés.</p>
+          <ul aria-label="Écarts de fiches entre romans fictifs">
+            {review.canon_comparison.differences.map(pair =>
+              <li key={pair.first.assertion_id + ":" + pair.second.assertion_id}>
+                <code>{pair.first.entity_id}</code> /
+                <code>{pair.first.property_key}</code> :
+                {" "}<code>{pair.first.literal_value}</code> (source
+                {" "}<code>{pair.first.source_revision_id}</code>) contre
+                {" "}<code>{pair.second.literal_value}</code> (source
+                {" "}<code>{pair.second.source_revision_id}</code>)
+                {" "}— à examiner par l'auteur, sans résolution automatique
+              </li>,
+            )}
+          </ul>
+          <p>Les accords sont uniquement des valeurs littérales identiques ;
+            ils ne prouvent ni un canon universel ni une cohérence générale.</p>
+        </>}
+    </section>
     <nav aria-label="Choisir une preuve fictive inter-romans">
       <button type="button" aria-pressed={mode === "joint"}
         onClick={() => setMode("joint")}>Comparer les assertions communes</button>

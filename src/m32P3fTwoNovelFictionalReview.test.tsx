@@ -162,3 +162,89 @@ describe("P3f browser-only author evidence for two invented novels", () => {
     expect(html).not.toContain("r2");
   });
 });
+
+
+const p3iClaims: NonNullable<P3fFictionalNovelInput["canon_claims"]> = [
+  { assertion_id: "home-one", universe_id: world,
+    novel_id: "book-1", scene_id: "scene-1", source_revision_id: "r2",
+    entity_id: "hero", property_key: "home", literal_value: "north" },
+  { assertion_id: "home-two", universe_id: world,
+    novel_id: "book-2", scene_id: "scene-2", source_revision_id: "r4",
+    entity_id: "hero", property_key: "home", literal_value: "south" },
+  { assertion_id: "role-one", universe_id: world,
+    novel_id: "book-1", scene_id: "scene-1", source_revision_id: "r2",
+    entity_id: "hero", property_key: "role", literal_value: "guide" },
+  { assertion_id: "role-two", universe_id: world,
+    novel_id: "book-2", scene_id: "scene-2", source_revision_id: "r4",
+    entity_id: "hero", property_key: "role", literal_value: "guide" },
+];
+describe("P3i fictional two-novel character-sheet comparisons", () => {
+  it("09 compares only literal facts tied to the historical source, no mutation", () => {
+    const input = { ...data, canon_claims: p3iClaims };
+    const before = JSON.stringify(input);
+    const result = previewP3fTwoNovelFictionalReview(input);
+    expect(result.canon_comparison.total_claims).toBe(4);
+    expect(result.canon_comparison.differences).toHaveLength(1);
+    expect(result.canon_comparison.agreements).toHaveLength(1);
+    expect(result.canon_comparison.differences[0].first.literal_value).toBe("north");
+    expect(result.canon_comparison.differences[0].second.literal_value).toBe("south");
+    expect(result.canon_comparison.real_g3_authorized).toBe(false);
+    expect(JSON.stringify(input)).toBe(before);
+    expect(previewP3fTwoNovelFictionalReview(data).canon_comparison.total_claims).toBe(0);
+  });
+  it("10 rejects foreign universe, scene, novel, current HEAD or fabricated source", () => {
+    for (const forged of [
+      { universe_id: "foreign-world" }, { novel_id: "unknown" },
+      { scene_id: "scene-2" }, { source_revision_id: "r3" },
+      { source_revision_id: "made-up" }, { source_revision_id: "r4" },
+      { property_key: "" }, { entity_id: "" },
+    ]) {
+      const broken = [{ ...p3iClaims[0], ...forged }, ...p3iClaims.slice(1)];
+      expect(() => previewP3fTwoNovelFictionalReview({
+        ...data, canon_claims: broken,
+      })).toThrow();
+    }
+  });
+  it("11 rejects duplicate assertion IDs, ambiguous facts and malformed catalogues", () => {
+    for (const broken of [
+      [...p3iClaims, p3iClaims[0]],
+      [...p3iClaims, { ...p3iClaims[0], assertion_id: "different-id" }],
+      [{ ...p3iClaims[0], literal_value: "X".repeat(257) }, ...p3iClaims.slice(1)],
+      Array.from({ length: 65 }, (_, i) => ({
+        ...p3iClaims[0], assertion_id: "extra-" + i,
+      })),
+    ]) {
+      expect(() => previewP3fTwoNovelFictionalReview({
+        ...data, canon_claims: broken,
+      })).toThrow();
+    }
+    expect(() => previewP3fTwoNovelFictionalReview({
+      ...data, canon_claims: {} as unknown as typeof p3iClaims,
+    })).toThrow();
+  });
+  it("12 shows differences as review prompts, escapes HTML and refuses before disclosure", () => {
+    const evil = "<script>fake()</script>";
+    const given = { ...data, canon_claims: [
+      { ...p3iClaims[0], literal_value: evil }, ...p3iClaims.slice(1),
+    ] };
+    const html = renderToStaticMarkup(createElement(
+      M32P3fTwoNovelFictionalReview, { input: given },
+    ));
+    expect(html).toContain("Revue de cohérence de fiches fictives");
+    expect(html).toContain("écarts à examiner");
+    expect(html).toContain("&lt;script&gt;");
+    expect(html).not.toContain("<script>");
+    expect(html).toContain("sans résolution automatique");
+    const invalid = { ...given, canon_claims: [
+      { ...given.canon_claims[0], source_revision_id: "r3" },
+      ...given.canon_claims.slice(1),
+    ] };
+    const refused = renderToStaticMarkup(createElement(
+      M32P3fTwoNovelFictionalReview, { input: invalid },
+    ));
+    expect(refused).toContain("Revue fictive refusée");
+    expect(refused).not.toContain("fake()");
+    expect(refused).not.toContain("Premier roman inventé");
+    expect(refused).not.toContain("hero");
+  });
+});
