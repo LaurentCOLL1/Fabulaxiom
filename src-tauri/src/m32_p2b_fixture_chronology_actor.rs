@@ -956,4 +956,85 @@ mod tests {
         owner.shutdown().unwrap();
     }
 
+
+    // P3h: this same immutable fictional Git JSON is parsed by independent TS
+    // Vitest; Rust exercises a PREOPENED RAM SQLite actor, never an IPC bridge.
+    #[test]
+    fn p3h_shared_two_novel_golden_matches_ram_revision_owners_and_partial_order() {
+        let spec: serde_json::Value = serde_json::from_str(include_str!(
+            "../../fixtures/m32_p3h_two_novel_historical_contract_v1.json"
+        )).unwrap();
+        assert_eq!(spec["contract_version"].as_u64(), Some(1));
+        assert_eq!(spec["data_origin"].as_str(),
+                   Some("fictional_two_novel_cross_language_test_only"));
+        assert_eq!(spec["operator_data_authorized"].as_bool(), Some(false));
+        assert_eq!(spec["production_writer_admitted"].as_bool(), Some(false));
+        assert_eq!(spec["real_g3_authorized"].as_bool(), Some(false));
+        let world=spec["universe_id"].as_str().unwrap();
+        assert_eq!(world,"u1");
+        let novels=spec["novels"].as_array().unwrap();
+        assert_eq!(novels.len(),2);
+        let db=p2n_two_novels_invented_v7();
+        for novel in novels {
+            let history=novel["historical_revision_id"].as_str().unwrap();
+            let (novel_id,scene_id,head):(String,String,String)=db.query_row(
+                "SELECT n.id,s.id,h.revision_id
+                 FROM scene_text_revisions r
+                 JOIN scenes s ON s.id=r.scene_id
+                 JOIN chapters c ON c.id=s.chapter_id
+                 JOIN novels n ON n.id=c.novel_id
+                 JOIN scene_revision_heads h ON h.scene_id=s.id
+                 WHERE r.id=?1",
+                rusqlite::params![history],
+                |row|Ok((row.get(0)?,row.get(1)?,row.get(2)?))
+            ).unwrap();
+            assert_eq!(novel_id,novel["novel_id"].as_str().unwrap());
+            assert_eq!(scene_id,novel["scene_id"].as_str().unwrap());
+            assert_eq!(head,novel["current_head_revision_id"].as_str().unwrap());
+            assert_ne!(head,history,"historical source must differ from HEAD");
+            assert_eq!(novel["universe_id"].as_str(),Some(world));
+        }
+        let owner=FixtureChronologyActor::from_preopened_invented_v7(db).unwrap();
+        let client=owner.client();
+        for novel in novels {
+            let name=novel["anchor_id"].as_str().unwrap();
+            let rev=novel["historical_revision_id"].as_str().unwrap();
+            let mut input=anchor(name,world);
+            input.source_revision_id=Some(rev.into());
+            client.create_anchor(input,None).unwrap();
+        }
+        let independent=spec["incomparable"]["anchor_id"].as_str().unwrap();
+        let mut other=anchor(independent,world);
+        other.source_revision_id=Some(
+            spec["incomparable"]["source_revision_id"].as_str().unwrap().into()
+        );
+        client.create_anchor(other,None).unwrap();
+        let p=&spec["precedence"];
+        let mut relation=before(p["id"].as_str().unwrap(),
+                                p["before_anchor_id"].as_str().unwrap(),
+                                p["after_anchor_id"].as_str().unwrap());
+        relation.source_revision_id=Some(p["source_revision_id"].as_str().unwrap().into());
+        client.create_precedence(relation).unwrap();
+        let view=client.snapshot(world.into()).unwrap();
+        assert_eq!(view.current_anchor_ids.len(),3);
+        assert_eq!(view.precedences.len(),1);
+        assert_eq!(view.current_precedence_ids,vec![p["id"].as_str().unwrap()]);
+        for novel in novels {
+            let name=novel["anchor_id"].as_str().unwrap();
+            let rev=novel["historical_revision_id"].as_str().unwrap();
+            assert_eq!(view.anchors.iter().find(|a|a.id==name).unwrap()
+                       .source_revision_id.as_deref(),Some(rev));
+        }
+        assert!(!view.precedences.iter().any(|edge|
+            edge.before_anchor_id==independent || edge.after_anchor_id==independent
+        ),"an incomparable fictional anchor must remain unordered");
+        let mut forged=anchor("foreign-revision-rejected",world);
+        forged.source_revision_id=Some(
+            spec["foreign"]["source_revision_id"].as_str().unwrap().into()
+        );
+        assert!(matches!(client.create_anchor(forged,None),Err(ActorError::Domain(_))));
+        assert!(client.snapshot(spec["foreign"]["universe_id"].as_str().unwrap().into())
+                .unwrap().anchors.is_empty());
+        owner.shutdown().unwrap();
+    }
 }
