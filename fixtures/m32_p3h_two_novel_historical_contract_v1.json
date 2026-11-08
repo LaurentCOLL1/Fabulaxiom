@@ -1,0 +1,50 @@
+{
+  "contract_version": 1,
+  "data_origin": "fictional_two_novel_cross_language_test_only",
+  "production_writer_admitted": false,
+  "real_g3_authorized": false,
+  "operator_data_authorized": false,
+  "universe_id": "u1",
+  "novels": [
+    {
+      "universe_id": "u1",
+      "novel_id": "n1",
+      "novel_title": "Premier roman inventé",
+      "scene_id": "s1",
+      "anchor_id": "novel-one-anchor",
+      "historical_revision_id": "r2",
+      "current_head_revision_id": "r3"
+    },
+    {
+      "universe_id": "u1",
+      "novel_id": "n2",
+      "novel_title": "Second roman inventé",
+      "scene_id": "s2",
+      "anchor_id": "novel-two-anchor",
+      "historical_revision_id": "r4",
+      "current_head_revision_id": "r5"
+    }
+  ],
+  "incomparable": {
+    "anchor_id": "independent-anchor",
+    "source_revision_id": "r4"
+  },
+  "precedence": {
+    "id": "cross-novel-before",
+    "before_anchor_id": "novel-one-anchor",
+    "after_anchor_id": "novel-two-anchor",
+    "source_revision_id": "r4"
+  },
+  "foreign": {
+    "universe_id": "u2",
+    "novel_id": "n3",
+    "scene_id": "s3",
+    "source_revision_id": "r6"
+  },
+  "forbidden_actions": [
+    "foreign_revision_into_u1",
+    "cross_world_relation",
+    "fabricated_total_order",
+    "production_writer_claim"
+  ]
+}
