@@ -1,3 +1,11 @@
+## Qualification source et fusion protégée P3i — 8 novembre 2026
+
+#321 **FUSIONNÉE** par squash sous Protect main. Parent #320 postmain Windows #42479695823 SUCCESS SHA exact. Source final `d9e5f817e0b1a855483ff8eaf6ed7e013589db35`, Windows #42489171134 **terminal SUCCESS exact SHA** : **332 Rust, 7 Greenfield, 69 inventaire SQLite, 183 continuité, 412 Vitest, 88/88 Chromium normal + 88/88 CSP stricte, 25 blobs Git fictifs exacts**. Source initiale `9510ddd93c6d9df1f17749d0601b67896a51ce83` Windows #42488950858 FAIL sécurisé (marqueur historique `R3` absent dans prompt court), corrigé sans désactiver ni affaiblir le test. Diff 18 chemins, reviews=[] threads=[], Protect main ACTIVE strict bypass=[], squash gardé `expected_head_sha`. Nouveau `main=34695c2d4aa8df46225212d4214b3169da508586`, postmain indépendant #42492553799 **EN COURS / À QUALIFIER** au checkpoint, #38 append-only #6723062267.
+
+« CANDIDAT NON QUALIFIÉ » ci-dessous est une trace **historique pré-CI**, pas le statut actuel de la source fusionnée. P3i n'effectue que des comparaisons littérales de fiches **déclarées fictives** ; les différences sont des invitations à la revue humaine, sans assertion de canon autoritaire, d'identité SQL opérateur ou d'admission du writer. PRODUCT_FIRST_PARALLEL_SAFETY inchangée, prévenir AVANT réorientation ; tous les STOP de M3.2 et l'alerte glib #160 persistent.
+
+---
+
 # M3.2 P3i — revue fictive de cohérence des fiches entre deux romans
 
 8 novembre 2026 — **CANDIDAT NON QUALIFIÉ**. Parent protégé `main=343aadc9800bd6fcaf6ab7250c01d2b6a39e602f` (#320), postmain Windows #42479695823 **SUCCESS exact SHA**. PRODUCT_FIRST_PARALLEL_SAFETY maintenue (prévenir AVANT toute réorientation).
