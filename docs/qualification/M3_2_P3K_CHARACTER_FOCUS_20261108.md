@@ -1,3 +1,5 @@
+> CHECKPOINT P3k #325 FUSIONNÉE : `main=9b17b2dcd37058274da8a4fa08b00ae528a10e09`, source Windows #42521643483 terminal SUCCESS SHA exact (332 Rust/418 Vitest/88 Chromium normal+CSP). Parent #324 postmain #42520814214 terminal SUCCESS. Nouveau postmain #42529004267 EN COURS/NON QUALIFIÉ. Les mentions « CANDIDAT » ci-dessous documentent l'état historique avant fusion ; aucune admission writer/P4. #38 append-only #6727846600. PRODUCT_FIRST_PARALLEL_SAFETY et STOP inchangés.
+
 # M3.2 P3k — filtre personnage fictif en revue de deux romans
 
 8 novembre 2026 — CANDIDAT NON QUALIFIÉ. Parent protégé `main=ce8ccd36d515dc79f34d98cdfef4bb5488c2b13f` (#324), postmain #42520814214 à qualifier. PRODUCT_FIRST_PARALLEL_SAFETY maintenue, prévenir avant changement.
