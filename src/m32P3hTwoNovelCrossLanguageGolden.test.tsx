@@ -9,17 +9,18 @@ import M32P3fTwoNovelFictionalReview, {
 /** Same immutable Git JSON as cfg(test)-only Rust P2n actor; no transport or SQL bridge. */
 function input(): P3fFictionalNovelInput {
   const [first, second] = golden.novels;
+  const source = (novel: typeof first) => ({
+    universe_id: novel.universe_id, novel_id: novel.novel_id,
+    novel_title: novel.novel_title, scene_id: novel.scene_id,
+    anchor_id: novel.anchor_id,
+    source_revision_id: novel.historical_revision_id,
+    current_head_revision_id: novel.current_head_revision_id,
+  });
   return {
     data_origin: "fictional_browser_memory_only",
     production_writer_admitted: false, real_g3_authorized: false,
     universe_id: golden.universe_id,
-    novels: [first, second].map(novel => ({
-      universe_id: novel.universe_id, novel_id: novel.novel_id,
-      novel_title: novel.novel_title, scene_id: novel.scene_id,
-      anchor_id: novel.anchor_id,
-      source_revision_id: novel.historical_revision_id,
-      current_head_revision_id: novel.current_head_revision_id,
-    })) as P3fFictionalNovelInput["novels"],
+    novels: [source(first), source(second)],
     revision_witnesses: [first, second].flatMap(novel => [
       { universe_id: novel.universe_id, novel_id: novel.novel_id,
         scene_id: novel.scene_id, revision_id: novel.historical_revision_id,
