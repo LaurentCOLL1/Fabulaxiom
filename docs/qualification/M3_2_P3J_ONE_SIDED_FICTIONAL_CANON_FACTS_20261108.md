@@ -1,3 +1,5 @@
+> CHECKPOINT 08/11 : P3j #323 FUSIONNÉE sur `262c2490972c6eb60af175d1c9a6b3c9fa5c9420`, source CI #42496887886 SUCCESS au SHA exact ; parent postmain #42496034759 SUCCESS, nouveau postmain #42505241012 NON QUALIFIÉ à ce checkpoint. Les mentions CANDIDAT ci-dessous sont historiques, pas une admission writer/P4. #38 append-only #6724718276 ; PRODUCT_FIRST_PARALLEL_SAFETY et STOP inchangés.
+
 # M3.2 P3j — propriétés de fiches fictives uni-latérales non comparables
 
 8 novembre 2026 — **CANDIDAT NON QUALIFIÉ**. Parent protégé `main=af765376be38d2e34ebff4e8fb2533794d45222e` (#322), independent parent postmain Windows #42496034759 **À QUALIFIER**. Décision PRODUCT_FIRST_PARALLEL_SAFETY maintenue ; prévenir avant toute réorientation.
