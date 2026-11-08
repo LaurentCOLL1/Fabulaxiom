@@ -1,3 +1,11 @@
+## Qualification R4 #319 après fusion protégée — 8 novembre 2026
+
+Source finale `78f57a7e107e1dab95d88884491413242c53f68b`, Windows CI #42470415746 **SUCCESS terminal SHA exact** : 332 Rust, 7 Greenfield, 69 inventaire SQLite, 183 continuité, 408 Vitest, 88/88 Chromium normal et 88/88 CSP stricte, 25 blobs Git fictifs exacts. Parent #318 postmain #42469381416 SUCCESS SHA exact. Quatre premiers essais CI refusés de manière sécurisée (inventaire SQLite notamment), réparations sans supprimer les assertions. Diff source 18 chemins ; reviews=[] threads=[] ; Protect main ACTIVE strict bypass=[] ; guarded squash `expected_head_sha`. Nouveau `main=c90a04f5191a5812d49241de32ae28cbe8a1f837` ; postmain indépendant #42477965014 **EN COURS / NON QUALIFIÉ** au checkpoint ; commentaire issue #38 #6721191017.
+
+Le statut « candidat » plus bas est historique, antérieur à la CI finale. La preuve démontre une compatibilité sur fichiers TEMP créés par le test, handles `main/-wal/-shm` ouverts **successivement**, sans FILE_SHARE_DELETE, avec rejets de renommage lors des instants observés. Ce n'est ni une attestation atomique des trois ouvertures ni une garantie contre un ABA invisible. Le writer/P4 réels restent STOP, glib #160 OPEN et aucune donnée opérateur n'a été consultée.
+
+---
+
 # M3.2 R4 — three file no-delete-share guard during normal SQLite WAL (Windows disposable)
 
 ## Premier refus sécurisé de CI et mise à jour ciblée de l'inventaire — 8 novembre 2026
