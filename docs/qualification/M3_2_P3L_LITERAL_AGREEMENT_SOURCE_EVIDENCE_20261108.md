@@ -1,3 +1,5 @@
+> CHECKPOINT P3l #327 FUSIONNÉE : `main=8d69691d173abda2a6b448171d91833ffdff4445`, source Windows #42532875576 terminal SUCCESS SHA exact (332 Rust/421 Vitest/88 Chromium normal+CSP), parent #326 postmain #42530167231 attempt 2 terminal SUCCESS même SHA après failure transient non expliqué attempt 1. Nouveau postmain #42559103573 EN COURS/NON QUALIFIÉ. Les mentions CANDIDAT ci-dessous restent historiques et ne constituent aucune admission writer/P4. #38 append-only #6731872221 ; PRODUCT_FIRST_PARALLEL_SAFETY et STOP inchangés.
+
 # M3.2 P3l — accords littéraux déclarés, sources historiques visibles
 
 8 novembre 2026 — **CANDIDAT NON QUALIFIÉ**. Parent protégé `main=ba8a21a2e758f25a0240c729797add551358239d` (#326). Postmain indépendant #42530167231 **attempt 1 FAILURE**, `WebSocket closed without opened.` côté Chromium Vite-HMR après 48 scénarios PASS, étapes suivantes SKIPPED ; **attempt 2 completed/SUCCESS au SHA exact, 87 étapes Windows PASS**, même commit et mêmes gates. L'instabilité éventuelle reste tracée dans #38 ; aucune exception ni affaiblissement de tests. PRODUCT_FIRST_PARALLEL_SAFETY maintenue, prévenir AVANT changement.
