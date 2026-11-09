@@ -1,3 +1,11 @@
+## Qualification indépendante après fusion de P3m #329 — 9 novembre 2026
+
+**Statut historique du candidat conservé ci-dessous.** Les contrôles terminaux attestent désormais la fusion P3m sur les seules fixtures fictives : parent #328 `main=0e3c1e1a72d63e9461d5bb836631d06dc3311abf` et postmain Windows #42562006163 SUCCESS SHA exact ; #329 HEAD source `b0b588f896ce698d55dd92205a4b6a93be44182f`, CI Windows #42562972141 SUCCESS terminal SHA exact, 87/87 étapes ; revue du diff 17 chemins, reviews=[] threads=[] ; Protect main ACTIVE strict bypass=[], squash gardé `expected_head_sha` ; fusion `main=a8ff505bc11bf88021ac2a6a1d620a101449217b`, postmain indépendant Windows **#42648352409 SUCCESS terminal exact SHA**. P3m affiche les deux `novel_id`, `assertion_id`, `source_revision_id` pour les écarts littéraux fictifs, sans aucune admission canonique ni écriture. Note documentaire #330 DRAFT/incomplète : le fichier historique `docs/continuity/STATE.md` n'a pas été actualisé après un refus d'écriture par vérification de sécurité ; aucune esquive de ce refus. Ceci ne qualifie pas #330 pour fusion.
+
+PRODUCT_FIRST_PARALLEL_SAFETY inchangée, prévenir AVANT réorientation ; M3.2 IN_PROGRESS_NOT_ACCEPTED (~45% estimation), writer/R1–R9 NOT_PROVEN, réel P4 STOP, G2B NOT_ACCEPTED, G2C NOT_AUTHORIZED, G3 STOP_UNAVAILABLE, historique PENDING_EXTERNAL_ATTESTATION(21/3/2), prospective NOT_STARTED ; garde atomique main/WAL/SHM et ABA invisible NOT PROVEN, glib #160 OPEN_NOT_REMEDIATED. Aucune base opérateur v6/v7, profil Greenfield existant, journaux/backups, IPC writer, migration 007 runtime, Hello ou recovery. CI fictive ≠ admission.
+
+---
+
 # M3.2 P3m — écarts fictifs, identités des deux sources historiques
 
 9 novembre 2026 — **CANDIDAT / DRAFT / NON QUALIFIÉ**.
