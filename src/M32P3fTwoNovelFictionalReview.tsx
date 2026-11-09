@@ -321,7 +321,7 @@ export default function M32P3fTwoNovelFictionalReview({
             <option value="">Toutes les propriétés déclarées</option>
             {propertyKeys.map(key => <option key={key} value={key}>{key}</option>)}
           </select>
-          <p>Filtres de lecture seule par personnage puis propriété : aucun choix canonique,
+          <p>Filtre de lecture seule par personnage puis propriété : aucun choix canonique,
             aucune écriture ou nouvelle preuve de propriété SQLite.</p>
           <p>{displayedClaims.total_claims} assertions littérales déclarées ;
             {" "}{displayedClaims.differences.length} écarts à examiner ;
