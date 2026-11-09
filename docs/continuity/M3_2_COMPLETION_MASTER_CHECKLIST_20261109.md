@@ -1,8 +1,8 @@
 # Fabulaxiom — Liste exhaustive de travail restant pour accepter M3.2
 
-**Référence vivante initiale : 9 novembre 2026** · version 1 · **104 tâches vérifiables**, sans déclaration de PASS automatique.
+**Référence vivante initiale : 9 novembre 2026** · version 1.1 · **104 tâches identifiées : 1 clôturée (#330 postmain), 103 encore ouvertes**, sans autre déclaration de PASS.
 
-**Source d'autorité :** dépôt GitHub `LaurentCOLL1/Fabulaxiom`, protected `main=bef699511ff18e987a4858c797fde7aa88dfc59b` après fusion documentée de [#330](https://github.com/LaurentCOLL1/Fabulaxiom/pull/330). Source #330 SHA `4e04408323af42507fbaf1ef2d474faede503328`, CI Windows #42696145161 SUCCESS exact SHA, 87/87 étapes. CI postmain indépendante [#42699790716](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/42699790716) **IN_PROGRESS / NON QUALIFIÉE à la rédaction**. La PR [#331](https://github.com/LaurentCOLL1/Fabulaxiom/pull/331) P3n est DRAFT (source #42674870251 SUCCESS au SHA précédent `a0a6c3e72656d6b626a50030cf4c63e09f2a4b05`, à requalifier sur nouveau main).
+**Source d'autorité :** dépôt GitHub `LaurentCOLL1/Fabulaxiom`, protected `main=bef699511ff18e987a4858c797fde7aa88dfc59b` après fusion documentée de [#330](https://github.com/LaurentCOLL1/Fabulaxiom/pull/330). Source #330 SHA `4e04408323af42507fbaf1ef2d474faede503328`, CI Windows #42696145161 SUCCESS exact SHA, 87/87 étapes. CI postmain indépendante [#42699790716](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/42699790716) **TERMINALE SUCCESS au SHA exact `bef699511ff18e987a4858c797fde7aa88dfc59b`**, job 129441151373 : 86 étapes SUCCESS, 1 étape propre aux PR ignorée sur push, aucun échec (qualification postérieure à la rédaction initiale, #38 append-only #6751823951). La PR [#331](https://github.com/LaurentCOLL1/Fabulaxiom/pull/331) P3n est DRAFT (source #42674870251 SUCCESS au SHA précédent `a0a6c3e72656d6b626a50030cf4c63e09f2a4b05`, à requalifier sur nouveau main).
 
 **État :** M3.2 `IN_PROGRESS_NOT_ACCEPTED`, estimation d'ingénierie **~45 % (40–50 %)**, **PAS** taux de fonctionnalités utilisables sur des données opérateur. Writer réel et **R1–R9 `NOT_PROVEN`**, P4 réel STOP, G2B NOT_ACCEPTED, G2C NOT_AUTHORIZED, G3 STOP_UNAVAILABLE, G4–G6 NON AUTORISÉS, chaîne historique `PENDING_EXTERNAL_ATTESTATION(21/3/2)`, baseline prospective `NOT_STARTED`. Atomicité main/WAL/SHM et ABA invisible NOT PROVEN ; glib #160 OPEN_NOT_REMEDIATED.
 
@@ -18,8 +18,9 @@
 
 **Priorité :** P0. Priorité immédiate ; la documentation et une CI ne confèrent aucune admission de production.
 
-- [ ] **M32-001** Qualifier la CI postmain indépendante de la fusion #330 au SHA bef699511ff18e987a4858c797fde7aa88dfc59b  
+- [x] **M32-001** Qualifier la CI postmain indépendante de la fusion #330 au SHA bef699511ff18e987a4858c797fde7aa88dfc59b  
   **Preuve de clôture :** Run push Windows #42699790716 terminal SUCCESS exact SHA, journal conservé et commentaire #38 append-only.
+  **Acquis :** #42699790716 terminé/SUCCESS au SHA exact, job Windows 129441151373 86 succès + 1 étape PR-only SKIPPED ; issue #38 #6751823951.
 - [ ] **M32-002** Réconcilier la PR produit #331 P3n après la fusion #330  
   **Preuve de clôture :** Re-fetch base/main, calcul de divergence, éventuelle requalification sur nouveau HEAD ; source précédente #42674870251 SUCCESS seulement à a0a6c3e7… ; aucune fusion transitive.
 - [ ] **M32-003** Revoir le diff, les reviews, threads et le ruleset Protect main pour chaque future PR  
