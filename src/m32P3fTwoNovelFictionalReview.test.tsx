@@ -363,3 +363,59 @@ describe("P3k read-only character focus on two invented novels", () => {
     expect(html).toContain("STOP_UNAVAILABLE");
   });
 });
+
+
+describe("P3l explicit fictional literal agreements and historical evidence", () => {
+  it("19 renders matching literal value with BOTH declared historical sources", () => {
+    const input = { ...data, canon_claims: p3iClaims };
+    const previous = JSON.stringify(input);
+    const html = renderToStaticMarkup(createElement(
+      M32P3fTwoNovelFictionalReview, { input },
+    ));
+    expect(html).toContain("Accords littéraux déclarés entre romans fictifs");
+    expect(html).toContain("accord littéral déclaré, sans preuve de canon");
+    expect(html).toContain("<code>guide</code>");
+    expect(html).toContain("premier roman <code>book-1</code>");
+    expect(html).toContain("second roman <code>book-2</code>");
+    expect(html).toContain("révision historique <code>r2</code>");
+    expect(html).toContain("révision historique <code>r4</code>");
+    expect(JSON.stringify(input)).toBe(previous);
+  });
+  it("20 excludes a non-matching literal from agreements and preserves discrepancy", () => {
+    const input = { ...data, canon_claims: p3iClaims.slice(0, 2) };
+    const result = previewP3fTwoNovelFictionalReview(input);
+    expect(result.canon_comparison.agreements).toHaveLength(0);
+    expect(result.canon_comparison.differences).toHaveLength(1);
+    const html = renderToStaticMarkup(createElement(
+      M32P3fTwoNovelFictionalReview, { input },
+    ));
+    expect(html).not.toContain("accord littéral déclaré, sans preuve de canon");
+    expect(html).toContain("à examiner par l&#x27;auteur");
+    expect(html).toContain("<code>north</code>");
+    expect(html).toContain("<code>south</code>");
+  });
+  it("21 escapes hostile equal literals; forged historical attribution refuses BEFORE detail", () => {
+    const malicious = "<img src=x onerror=alert(9)>";
+    const input = { ...data, canon_claims: [
+      p3iClaims[0], p3iClaims[1],
+      { ...p3iClaims[2], literal_value: malicious },
+      { ...p3iClaims[3], literal_value: malicious },
+    ] };
+    const html = renderToStaticMarkup(createElement(
+      M32P3fTwoNovelFictionalReview, { input },
+    ));
+    expect(html).toContain("&lt;img");
+    expect(html).not.toContain("<img");
+    expect(html).toContain("accord littéral déclaré, sans preuve de canon");
+    const invalid = { ...input, canon_claims: [
+      ...input.canon_claims.slice(0, 3),
+      { ...input.canon_claims[3], source_revision_id: "r5" },
+    ] };
+    const denied = renderToStaticMarkup(createElement(
+      M32P3fTwoNovelFictionalReview, { input: invalid },
+    ));
+    expect(denied).toContain("Revue fictive refusée");
+    expect(denied).not.toContain("alert(9)");
+    expect(denied).not.toContain("accord littéral déclaré");
+  });
+});
