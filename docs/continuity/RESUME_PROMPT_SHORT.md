@@ -19,7 +19,7 @@ main/PR/CI/reviews/threads.
 
 ## Interdictions actives — STOP
 
-**M3.2 IN_PROGRESS_NOT_ACCEPTED ; writer/R1–R9 NOT_PROVEN ; G2B NOT_ACCEPTED ; G2C NOT_AUTHORIZED ; G3 STOP_UNAVAILABLE.** Historique `PENDING_EXTERNAL_ATTESTATION(21/3/2)`, prospective `NOT_STARTED`. A/B NOT_PROVEN. D3b-4/5 STOP; D3c conception.
+**M3.2 IN_PROGRESS_NOT_ACCEPTED ; writer/R1–R9 NOT_PROVEN ; G2B NOT_ACCEPTED ; G2C NOT_AUTHORIZED ; G3 STOP_UNAVAILABLE.** Historique `PENDING_EXTERNAL_ATTESTATION(21/3/2)`, prospective `NOT_STARTED`. A/B NOT_PROVEN. D3b-4/5, D3b-5 STOP; D3c conception.
 
 STOP v6/v7, backups, writer IPC, 007, Hello, recovery ; `M:\Fabulaxiom` ; profil `%LOCALAPPDATA%\com.fabulaxiom.greenfield.v1`.
 
