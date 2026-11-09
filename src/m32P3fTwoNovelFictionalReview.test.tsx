@@ -419,3 +419,64 @@ describe("P3l explicit fictional literal agreements and historical evidence", ()
     expect(denied).not.toContain("accord littéral déclaré");
   });
 });
+
+
+describe("P3m: invented discrepancies retain BOTH assertion and historical source identities", () => {
+  it("22 displays exact declared sources and assertions for both different literals without mutation", () => {
+    const input = { ...data, canon_claims: p3iClaims };
+    const prior = JSON.stringify(input);
+    const html = renderToStaticMarkup(createElement(
+      M32P3fTwoNovelFictionalReview, { input },
+    ));
+    expect(html).toContain("Écarts de fiches entre romans fictifs");
+    expect(html).toContain("premier roman <code>book-1</code>, assertion");
+    expect(html).toContain("<code>home-one</code>, révision historique");
+    expect(html).toContain("<code>r2</code>) contre");
+    expect(html).toContain("second roman <code>book-2</code>, assertion");
+    expect(html).toContain("<code>home-two</code>, révision historique");
+    expect(html).toContain("<code>r4</code>)");
+    expect(html).toContain("sans résolution automatique");
+    expect(JSON.stringify(input)).toBe(prior);
+  });
+  it("23 preserves disagreement, agreement and one-sided classifications under character focus", () => {
+    const one = { ...p3iClaims[0], assertion_id: "one-sided-p3m",
+      property_key: "favorite_song", literal_value: "song-a" };
+    const input = { ...data, canon_claims: [...p3iClaims, one] };
+    const full = previewP3fTwoNovelFictionalReview(input).canon_comparison;
+    const focused = previewP3kFictionalCharacterFocus(input, "hero");
+    expect(full.differences).toHaveLength(1);
+    expect(full.agreements).toHaveLength(1);
+    expect(full.first_only).toHaveLength(1);
+    expect(full.second_only).toHaveLength(0);
+    expect(focused.differences[0].first.assertion_id).toBe("home-one");
+    expect(focused.differences[0].second.assertion_id).toBe("home-two");
+    expect(focused.differences[0].first.novel_id).toBe("book-1");
+    expect(focused.differences[0].second.novel_id).toBe("book-2");
+    expect(focused.production_writer_admitted).toBe(false);
+    expect(focused.real_g3_authorized).toBe(false);
+  });
+  it("24 escapes hostile assertion IDs and refuses forged history BEFORE revealing evidence", () => {
+    const evil = "<img src=x onerror=alert(10)>";
+    const input = { ...data, canon_claims: [
+      { ...p3iClaims[0], assertion_id: evil }, ...p3iClaims.slice(1),
+    ] };
+    const html = renderToStaticMarkup(createElement(
+      M32P3fTwoNovelFictionalReview, { input },
+    ));
+    expect(html).toContain("&lt;img");
+    expect(html).not.toContain("<img");
+    expect(html).toContain("second roman <code>book-2</code>, assertion");
+    const forged = { ...input, canon_claims: [
+      { ...input.canon_claims[0], source_revision_id: "r3" },
+      ...input.canon_claims.slice(1),
+    ] };
+    const denied = renderToStaticMarkup(createElement(
+      M32P3fTwoNovelFictionalReview, { input: forged },
+    ));
+    expect(denied).toContain("Revue fictive refusée");
+    expect(denied).not.toContain("alert(10)");
+    expect(denied).not.toContain("book-1");
+    expect(denied).not.toContain("home-two");
+    expect(denied).not.toContain("r2");
+  });
+});
