@@ -1,3 +1,5 @@
+> **INCIDENT CI SOURCE P3n — 09/11.** Première exécution Windows [#42674233301](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/42674233301) au HEAD `dda02f8f61650267c8b33638ac33481f033f819d` terminée **FAILURE**, et l'API GitHub retourne `total_count=0` jobs (aucun job ni étape de test observable). La cause n'est **PAS PROUVÉE** : ne pas la déclarer transitoire, ne pas inférer de résultat Rust/Vitest, ne pas désactiver de gate. Ce commit ajoute seulement la traçabilité de l'incident ; la CI à son nouveau SHA est à qualifier indépendamment. Maintenir PR DRAFT et tous les STOP.
+
 # M3.2 P3n — filtre de propriété littérale dans la revue de deux romans fictifs
 
 9 novembre 2026 — **CANDIDAT / DRAFT / NON QUALIFIÉ**.
