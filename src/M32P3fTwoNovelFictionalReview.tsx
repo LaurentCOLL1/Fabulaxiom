@@ -148,6 +148,35 @@ export function previewP3kFictionalCharacterFocus(
   };
 }
 
+/** P3n: read-only literal property selection AFTER the whole invented source validates. */
+export function previewP3nFictionalPropertyFocus(
+  input: P3fFictionalNovelInput, propertyKey: string, entityId?: string,
+) {
+  const base = entityId === undefined
+    ? previewP3fTwoNovelFictionalReview(input).canon_comparison
+    : previewP3kFictionalCharacterFocus(input, entityId);
+  const keys = [
+    ...base.agreements.map(pair => pair.first.property_key),
+    ...base.differences.map(pair => pair.first.property_key),
+    ...base.first_only.map(claim => claim.property_key),
+    ...base.second_only.map(claim => claim.property_key),
+  ];
+  if (!nonblank(propertyKey) || !keys.includes(propertyKey)) {
+    throw new Error("P3n : propriété fictive inconnue ou non attribuée");
+  }
+  const agreements = base.agreements.filter(pair => pair.first.property_key === propertyKey);
+  const differences = base.differences.filter(pair => pair.first.property_key === propertyKey);
+  const first_only = base.first_only.filter(claim => claim.property_key === propertyKey);
+  const second_only = base.second_only.filter(claim => claim.property_key === propertyKey);
+  return {
+    ...base,
+    total_claims: 2 * (agreements.length + differences.length) +
+      first_only.length + second_only.length,
+    agreements, differences, first_only, second_only,
+    selected_property_key: propertyKey,
+  };
+}
+
 /** Validate a declared FICTIONAL provenance pairing, never a database identity. */
 export function previewP3fTwoNovelFictionalReview(input: P3fFictionalNovelInput) {
   if (!input || input.data_origin !== "fictional_browser_memory_only" ||
@@ -219,6 +248,7 @@ export default function M32P3fTwoNovelFictionalReview({
 }: { input: P3fFictionalNovelInput }): ReactElement {
   const [mode, setMode] = useState<ReviewMode>("joint");
   const [characterFocus, setCharacterFocus] = useState("");
+  const [propertyFocus, setPropertyFocus] = useState("");
   let review: ReturnType<typeof previewP3fTwoNovelFictionalReview>;
   try {
     review = previewP3fTwoNovelFictionalReview(input);
@@ -237,9 +267,21 @@ export default function M32P3fTwoNovelFictionalReview({
     ...review.canon_comparison.second_only.map(claim => claim.entity_id),
   ])].sort();
   const selectedCharacter = characterIds.includes(characterFocus) ? characterFocus : "";
-  const displayedClaims = selectedCharacter === ""
+  const characterClaims = selectedCharacter === ""
     ? review.canon_comparison
     : previewP3kFictionalCharacterFocus(input, selectedCharacter);
+  const propertyKeys = [...new Set([
+    ...characterClaims.agreements.map(pair => pair.first.property_key),
+    ...characterClaims.differences.map(pair => pair.first.property_key),
+    ...characterClaims.first_only.map(claim => claim.property_key),
+    ...characterClaims.second_only.map(claim => claim.property_key),
+  ])].sort();
+  const selectedProperty = propertyKeys.includes(propertyFocus) ? propertyFocus : "";
+  const displayedClaims = selectedProperty === ""
+    ? characterClaims
+    : previewP3nFictionalPropertyFocus(
+        input, selectedProperty, selectedCharacter || undefined,
+      );
   return <section aria-label="Revue chronologique de deux romans fictifs">
     <h2>Deux romans — sources historiques et relations directes</h2>
     <p>Laboratoire navigateur : métadonnées et assertions inventées, sans liaison Rust,
@@ -266,12 +308,21 @@ export default function M32P3fTwoNovelFictionalReview({
         : <>
           <label htmlFor="m32-p3k-fictional-character">Consulter un personnage fictif</label>
           <select id="m32-p3k-fictional-character" value={selectedCharacter}
-            onChange={event => setCharacterFocus(event.target.value)}>
+            onChange={event => {
+              setCharacterFocus(event.target.value);
+              setPropertyFocus("");
+            }}>
             <option value="">Tous les personnages déclarés</option>
             {characterIds.map(id => <option key={id} value={id}>{id}</option>)}
           </select>
-          <p>Filtre de lecture seule : aucun choix canonique, aucune écriture ou
-            nouvelle preuve de propriété SQLite.</p>
+          <label htmlFor="m32-p3n-fictional-property">Consulter une propriété fictive</label>
+          <select id="m32-p3n-fictional-property" value={selectedProperty}
+            onChange={event => setPropertyFocus(event.target.value)}>
+            <option value="">Toutes les propriétés déclarées</option>
+            {propertyKeys.map(key => <option key={key} value={key}>{key}</option>)}
+          </select>
+          <p>Filtres de lecture seule par personnage puis propriété : aucun choix canonique,
+            aucune écriture ou nouvelle preuve de propriété SQLite.</p>
           <p>{displayedClaims.total_claims} assertions littérales déclarées ;
             {" "}{displayedClaims.differences.length} écarts à examiner ;
             {" "}{displayedClaims.agreements.length} accords déclarés ;
