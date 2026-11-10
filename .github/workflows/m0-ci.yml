@@ -193,6 +193,9 @@ jobs:
       - name: M3.2 master completion checklist 104-item closure evidence contracts
         run: python -m unittest discover -s tools -p "test_m32_completion_master_checklist.py" -v
 
+      - name: M3.2 historic PR35 PR215 source-only reconciliation contracts
+        run: python -m unittest discover -s tools -p "test_m32_legacy_pr_reconciliation.py" -v
+
       - name: M3.2 require both resume prompts on every pull request
         if: github.event_name == 'pull_request'
         shell: pwsh

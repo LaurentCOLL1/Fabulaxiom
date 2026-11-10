@@ -9975,5 +9975,39 @@
     "glib_issue160": "OPEN_NOT_REMEDIATED",
     "operator_data_accessed": false,
     "sql_identity_proven": false
+  },
+  "m32_legacy_pr35_pr215_source_audit_candidate_20261110": {
+    "status": "CANDIDATE_NOT_QUALIFIED",
+    "date": "2026-11-10",
+    "base_main": "7ffd1fb7ae2091dcba05a7c29860b0e11961a093",
+    "qualification": "docs/qualification/M3_2_LEGACY_PR35_PR215_RECONCILIATION_20261110.md",
+    "pr35": {
+      "state": "OPEN_DRAFT",
+      "sha": "41ce7b915e76d22785d53d7fffe288d113dd0bf5",
+      "paths": 84,
+      "same_sha": 5,
+      "different": 11,
+      "absent": 68
+    },
+    "pr215": {
+      "state": "OPEN_DRAFT",
+      "sha": "8203b7323877edc87ffabaad1694c52d2523023d",
+      "paths": 23,
+      "same_sha": 6,
+      "different": 17,
+      "absent": 0,
+      "d3b_block_identical_chars": 10097
+    },
+    "master_checklist_total": 104,
+    "closed": 2,
+    "open": 102,
+    "m32_007": "OPEN_NOT_ACCEPTED",
+    "source_only": true,
+    "production_writer": "NOT_PROVEN",
+    "real_p4": "STOP",
+    "real_g3": "STOP_UNAVAILABLE",
+    "strategy": "PRODUCT_FIRST_PARALLEL_SAFETY",
+    "notify_before_change": true,
+    "operator_access": false
   }
 }

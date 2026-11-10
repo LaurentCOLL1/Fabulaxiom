@@ -28,6 +28,8 @@
 
 ---
 
+**10/11/2026 — Réconciliation des PR historiques : AUCUNE case nouvelle clôturée.** Re-fetch protected `main=7ffd1fb7ae2091dcba05a7c29860b0e11961a093` postmain Windows #42757811330 SUCCESS. Inventaire [#35/#215](../qualification/M3_2_LEGACY_PR35_PR215_RECONCILIATION_20261110.md) : #35 84 fichiers (5 identiques, 11 différents, 68 noms absents de main), #215 23 (6 identiques, 17 différents, 0 absent) ; module Rust D3b byte-identique de 10 097 caractères entre #215 et main. Le suivi **M32-007 reste [ ]** : les 68 chemins de #35 nécessitent triage avant tout portage/abandon décidé, #215 reste brouillon historique. Cette comparaison de source GitHub n'autorise pas writer/R1–R9 ni P4 réel ; **104 obligations, 2 closes / 102 ouvertes**. Les CI nouvelles seront qualifiées sur SHA exact avant toute nouvelle décision.
+
 ## 0. Reprise et gouvernance GitHub
 
 **Priorité :** P0. Priorité immédiate ; la documentation et une CI ne confèrent aucune admission de production.
@@ -48,6 +50,7 @@
   **Preuve de clôture :** SHA, run ID/attempt, résultats adversariaux, changements de périmètre et échecs ; zéro réécriture d'éléments historiques.
 - [ ] **M32-007** Concilier les deux anciennes PR #35 et #215 avant toute décision sur leur devenir  
   **Preuve de clôture :** Vérifier diff de ces brouillons historiques et overlaps avec main ; portage ciblé sur branche actuelle ou clôture explicitement justifiée, jamais merge direct/aveugle.
+  **Avancement partiel (2026-11-10 ; non clôturé) :** Inventaire des 107 chemins et preuves D3b dans `M3_2_LEGACY_PR35_PR215_RECONCILIATION_20261110.md`, main `7ffd1fb7ae2091dcba05a7c29860b0e11961a093` / postmain #42757811330 SUCCESS ; #35 a 68 chemins absents, aucun portage ou abandon global autorisé ; #215 reste DRAFT, pas de fusion transitive. La décision sur chaque ancien module est ouverte.
 - [ ] **M32-008** Faire autoriser séparément toute opération Windows sur machine opérateur  
   **Preuve de clôture :** Soumettre le script exact, effets possibles et STOP (disque/journaux/UAC/réseau, durée, interaction) puis recueillir un nouvel accord spécifique avant exécution.
 

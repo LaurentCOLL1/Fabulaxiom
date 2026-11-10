@@ -1,7 +1,7 @@
 # Reprise Fabulaxiom
 
 ## Dernier checkpoint
-main=da5c64761159fd8fcc22ba541da04a7c54be6691 ; #331 MERGED, CI #42751838279 SUCCESS, postmain #42754285833 SUCCESS. M3.2 IN_PROGRESS_NOT_ACCEPTED (~45 %) ; checklist 104 : 2 closes, 102 ouvertes.
+main=7ffd1fb7ae2091dcba05a7c29860b0e11961a093 ; #333 MERGED, CI #42756589546 SUCCESS, postmain #42757811330 SUCCESS. M3.2 IN_PROGRESS_NOT_ACCEPTED (~45 %) ; checklist 104 : 2 closes, 102 ouvertes.
 
 ## Interdictions actives — STOP
 Writer/R1–R9 NOT_PROVEN ; P4 STOP ; G2B NOT_ACCEPTED ; G2C NOT_AUTHORIZED ; G3 STOP_UNAVAILABLE ; PENDING_EXTERNAL_ATTESTATION(21/3/2), prospective NOT_STARTED ; R2 STOP, R3 partiel, D3c conception, D3b-4/5, D3b-5 STOP ; main/WAL/SHM, live SQLite WAL-index et ABA NOT_PROVEN ; glib #160 OPEN.
@@ -10,7 +10,7 @@ STOP v6/v7, M:\Fabulaxiom, Greenfield, backups, IPC writer, 007, Hello, recovery
 ## Prochaines opérations
 1. Re-fetch main/PR/CI/Protect main bypass=[] ; #42754285833.
 2. Après validation : M3_2_COMPLETION_MASTER_CHECKLIST_20261109.md, [x], date, SHA, CI, portée, compteur.
-3. PRODUCT_FIRST_PARALLEL_SAFETY : P3 fictif + R2–R9 ; prévenir AVANT changement. #35/#215 DRAFT, #36/#160 OPEN, #38 append-only ; expected_head_sha, postmain. CI ≠ admission.
+3. PRODUCT_FIRST_PARALLEL_SAFETY : P3 fictif + R2–R9 ; prévenir AVANT changement. #35/#215 DRAFT (audit), #36/#160 OPEN, #38 append-only ; expected_head_sha, postmain. CI ≠ admission.
 
 ## Documents d'autorité
 RESUME_PROMPT.md ; HANDOFF_CURRENT.md ; HANDOFF_CURRENT.json ; M3_2_GATE_DECISION_CURRENT.md ; ROADMAP_STATUS_CURRENT.md.
