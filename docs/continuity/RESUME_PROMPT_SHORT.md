@@ -1,7 +1,7 @@
 # Reprise Fabulaxiom
 
 ## Dernier checkpoint
-main=e997a239f71d726c67880dd4acc07dfcda80482e ; #335 MERGED, CI #42875150735 SUCCESS, postmain #42877389890 SUCCESS. P3o (cycles actifs fictifs) CANDIDAT. M3.2 NON ACCEPTÉE (~45 %) ; checklist 104 : 2 closes, 102 ouvertes.
+main=e997a239f71d726c67880dd4acc07dfcda80482e ; #335 MERGED, CI #42875150735 SUCCESS, postmain #42877389890 SUCCESS. P3o (cycles actifs fictifs) CANDIDAT. M3.2 IN_PROGRESS_NOT_ACCEPTED (~45 %) ; checklist 104 : 2 closes, 102 ouvertes.
 
 ## Interdictions actives — STOP
 Writer/R1–R9 NOT_PROVEN ; P4 STOP ; G2B NOT_ACCEPTED ; G2C NOT_AUTHORIZED ; G3 STOP_UNAVAILABLE ; PENDING_EXTERNAL_ATTESTATION(21/3/2), prospective NOT_STARTED ; R2 STOP, R3 partiel, D3c conception, D3b-4/5, D3b-5 STOP ; main/WAL/SHM, live SQLite WAL-index et ABA NOT_PROVEN ; glib #160 OPEN.
