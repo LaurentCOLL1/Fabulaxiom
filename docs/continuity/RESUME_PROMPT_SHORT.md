@@ -8,7 +8,7 @@ Writer/R1–R9 NOT_PROVEN ; P4 STOP ; G2B NOT_ACCEPTED ; G2C NOT_AUTHORIZED ; G3
 STOP v6/v7, M:\Fabulaxiom, Greenfield, backups, IPC writer, 007, Hello, recovery.
 
 ## Prochaines opérations
-1. Re-fetch main/PR/CI/issues et Protect main bypass=[] ; qualifier #42754285833.
+1. Re-fetch main/PR/CI/issues et Protect main bypass=[] ; re-vérifier #42754285833.
 2. Après chaque validation : M3_2_COMPLETION_MASTER_CHECKLIST_20261109.md, [x], date, SHA, CI, portée, compteur.
 3. PRODUCT_FIRST_PARALLEL_SAFETY : P3 fictif + R2–R9 ; prévenir AVANT changement. #35/#215 DRAFT, #36/#160 OPEN, #38 append-only ; CI exact-head, expected_head_sha, postmain. CI ≠ admission.
 
