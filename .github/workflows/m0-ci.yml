@@ -345,6 +345,9 @@ jobs:
         working-directory: src-tauri
         run: cargo check --locked --features m32-synthetic-preview
 
+      - name: M3.2 Vite 8.1.7 and Rolldown 1.1.7 security lock contract (10 refusals)
+        run: python -m unittest discover -s tools -p "test_m32_vite_817_security_lock.py" -v
+
       - name: M3.2 Vite resolved network and CSP/shared-root preflight (no server launch)
         run: node tools/m32_vite_csp_nonlaunch_audit.mjs --audit
 
