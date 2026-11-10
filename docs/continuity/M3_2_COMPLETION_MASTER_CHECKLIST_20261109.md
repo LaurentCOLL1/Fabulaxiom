@@ -30,6 +30,8 @@
 
 **10/11/2026 — Réconciliation des PR historiques : AUCUNE case nouvelle clôturée.** Re-fetch protected `main=7ffd1fb7ae2091dcba05a7c29860b0e11961a093` postmain Windows #42757811330 SUCCESS. Inventaire [#35/#215](../qualification/M3_2_LEGACY_PR35_PR215_RECONCILIATION_20261110.md) : #35 84 fichiers (5 identiques, 11 différents, 68 noms absents de main), #215 23 (6 identiques, 17 différents, 0 absent) ; module Rust D3b byte-identique de 10 097 caractères entre #215 et main. Le suivi **M32-007 reste [ ]** : les 68 chemins de #35 nécessitent triage avant tout portage/abandon décidé, #215 reste brouillon historique. Cette comparaison de source GitHub n'autorise pas writer/R1–R9 ni P4 réel ; **104 obligations, 2 closes / 102 ouvertes**. Les CI nouvelles seront qualifiées sur SHA exact avant toute nouvelle décision.
 
+**10/11/2026 — Inventaire unitaire de #35, CANDIDAT non qualifié : AUCUNE case nouvelle clôturée.** Parent `main=425cb621d20b86f66a24aac1d6c1f63ffe479b0c`, CI postmain #334 [#42847268108](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/42847268108) attempt 1 completed/SUCCESS SHA exact (job #129938018079, 88 SUCCESS / 1 PR-only SKIPPED). [Matrice des 84 chemins de #35](../qualification/M3_2_PR35_PER_PATH_DISPOSITION_20261110.md) : 5 conserver identiques, 11 divergents à comparer, **68 absents** triés en étude historique, prototype synthétique, test CI jetable potentiel, outil opérateur retenu, ancienne IPC bloquée. **Chaque chemin reçoit une orientation, mais la preuve d'équivalence de chaque fonctionnalité n'est PAS faite** : M32-007 reste `[ ]`, #35/#215 restent DRAFT, aucune fusion transitive ; 104 tâches, 2 closes, 102 ouvertes. Toute validation ultérieure exige vraie preuve datée/CI SHA exact et #38 append-only. Ni writer ni G3 admis.
+
 ## 0. Reprise et gouvernance GitHub
 
 **Priorité :** P0. Priorité immédiate ; la documentation et une CI ne confèrent aucune admission de production.
@@ -51,6 +53,7 @@
 - [ ] **M32-007** Concilier les deux anciennes PR #35 et #215 avant toute décision sur leur devenir  
   **Preuve de clôture :** Vérifier diff de ces brouillons historiques et overlaps avec main ; portage ciblé sur branche actuelle ou clôture explicitement justifiée, jamais merge direct/aveugle.
   **Avancement partiel (2026-11-10 ; non clôturé) :** Inventaire des 107 chemins et preuves D3b dans `M3_2_LEGACY_PR35_PR215_RECONCILIATION_20261110.md`, main `7ffd1fb7ae2091dcba05a7c29860b0e11961a093` / postmain #42757811330 SUCCESS ; #35 a 68 chemins absents, aucun portage ou abandon global autorisé ; #215 reste DRAFT, pas de fusion transitive. La décision sur chaque ancien module est ouverte.
+  **Lot de triage détaillé (2026-11-10, toujours NON CLOS) :** `M3_2_PR35_PER_PATH_DISPOSITION_20261110.md` classe individuellement les 84 chemins de #35, avec refus de l'ancienne IPC préflight et des outils opérateur. Les 68 chemins absents restent soumis à comparaison de couverture et à décision motivée ; aucune preuve de writer, P4 ou G2B–G6 n'a été gagnée.
 - [ ] **M32-008** Faire autoriser séparément toute opération Windows sur machine opérateur  
   **Preuve de clôture :** Soumettre le script exact, effets possibles et STOP (disque/journaux/UAC/réseau, durée, interaction) puis recueillir un nouvel accord spécifique avant exécution.
 
@@ -285,7 +288,7 @@
 
 ## Ordre de travail recommandé (chemin critique sans changer la stratégie)
 
-1. **Immédiat** : qualifier postmain #331 (#42754285833) sur main exact da5c64761159fd8fcc22ba541da04a7c54be6691, et maintenir checklist, prompts, handoffs et issue #38 à CHAQUE preuve validée ; continuer P3 fictif, sans perdre les témoins historiques.
+1. **Immédiat** : #334 postmain #42847268108 est SUCCESS au SHA exact 425cb621d20b86f66a24aac1d6c1f63ffe479b0c ; qualifier le nouveau lot de triage #35 sur CI HEAD exact, puis porter UN test fictif ciblé seulement si nécessaire ; maintenir checklist, prompts, handoffs et issue #38 à CHAQUE obligation validée.
 2. **En parallèle** : finaliser les preuves P1 R2–R4 sur fichiers Windows jetables et R5–R9 mono-propriétaire ; rechercher les cinq témoins de #36 sans créer de fausse attestation ; suivre #160.
 3. **Après un nouveau consentement explicite** : G2B/C/D, puis une source réellement attestée, G3–G5, sauvegarde cohérente et restauration isolée, puis G6.
 4. **Seulement après les gates correspondants** : admission de session et writer runtime, intégration React/Tauri/Rust, parcours de projet neuf/fixture puis recette opérateur, migration contrôlée seulement si approuvée.

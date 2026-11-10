@@ -10009,5 +10009,51 @@
     "strategy": "PRODUCT_FIRST_PARALLEL_SAFETY",
     "notify_before_change": true,
     "operator_access": false
+  },
+  "m32_pr35_per_path_triage_candidate_20261110": {
+    "date": "2026-11-10",
+    "status": "CANDIDATE_NOT_CI_QUALIFIED",
+    "parent_main": "425cb621d20b86f66a24aac1d6c1f63ffe479b0c",
+    "pr334": {
+      "merged": true,
+      "postmain_run": 42847268108,
+      "postmain_status": "SUCCESS_EXACT_SHA",
+      "postmain_job": 129938018079
+    },
+    "pr35": {
+      "status": "OPEN_DRAFT",
+      "head": "41ce7b915e76d22785d53d7fffe288d113dd0bf5",
+      "total_paths": 84,
+      "same_sha": 5,
+      "different": 11,
+      "absent": 68,
+      "absent_docs": 26,
+      "absent_python_scripts": 20,
+      "absent_python_tests": 20,
+      "absent_rust": 2
+    },
+    "pr215": {
+      "status": "OPEN_DRAFT",
+      "no_merge": true,
+      "source_only_d3b_preserved": true
+    },
+    "qualification_file": "docs/qualification/M3_2_PR35_PER_PATH_DISPOSITION_20261110.md",
+    "master_checklist": "docs/continuity/M3_2_COMPLETION_MASTER_CHECKLIST_20261109.md",
+    "master_total": 104,
+    "master_closed": 2,
+    "master_open": 102,
+    "m32_007": "OPEN_REVIEW_REQUIRED",
+    "strategy": "PRODUCT_FIRST_PARALLEL_SAFETY",
+    "notify_before_strategy_change": true,
+    "writer": "NOT_PROVEN",
+    "real_p4": "STOP",
+    "g2b": "NOT_ACCEPTED",
+    "g2c": "NOT_AUTHORIZED",
+    "g3": "STOP_UNAVAILABLE",
+    "historical": "PENDING_EXTERNAL_ATTESTATION(21/3/2)",
+    "prospective": "NOT_STARTED",
+    "glib160": "OPEN_NOT_REMEDIATED",
+    "operator_access": false,
+    "candidate_ci": "NOT_QUALIFIED"
   }
 }

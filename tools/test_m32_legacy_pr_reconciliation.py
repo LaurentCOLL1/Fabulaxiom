@@ -66,5 +66,68 @@ class LegacyPRReconciliationTests(unittest.TestCase):
                      "PENDING_EXTERNAL_ATTESTATION(21/3/2)"):
             self.assertIn(flag, self.doc)
 
+
+class Pr35UnitDispositionContract(unittest.TestCase):
+    """Pure review contract, never re-fetches a private tree or runs operator code."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.original = REPORT.read_text(encoding="utf-8")
+        cls.triage = (ROOT / "docs/qualification/M3_2_PR35_PER_PATH_DISPOSITION_20261110.md").read_text(encoding="utf-8")
+        cls.master = CHECKLIST.read_text(encoding="utf-8")
+        cls.entries = re.findall(
+            r"^\| \`([^\`]+)\` \| \`([A-Z_]+)\` \|",
+            cls.triage, re.M
+        )
+
+    def original_paths(self, group, next_group):
+        section = self.original.split("### pr35 : " + group)[1]
+        if next_group == "__END__":
+            section = section.split("### pr215 : ")[0]
+        else:
+            section = section.split("### pr35 : " + next_group)[0]
+        return re.findall(r"^- \`([^\`]+)\`$", section, re.M)
+
+    def test_06_complete_84_path_matrix_without_duplicate_or_spoof(self):
+        pairs = dict(self.entries)
+        self.assertEqual(len(self.entries), 84)
+        self.assertEqual(len(pairs), 84)
+        same = self.original_paths("identical (5)", "different (11)")
+        changed = self.original_paths("different (11)", "absent (68)")
+        absent = self.original_paths("absent (68)", "__END__")
+        self.assertEqual((len(same), len(changed), len(absent)), (5, 11, 68))
+        self.assertEqual(set(pairs), set(same + changed + absent))
+        for p in same:
+            self.assertEqual(pairs[p], "KEEP_IDENTICAL")
+        for p in changed:
+            self.assertEqual(pairs[p], "REVIEW_DIVERGENCE")
+        for p in absent:
+            self.assertNotIn(pairs[p], ("KEEP_IDENTICAL", "REVIEW_DIVERGENCE"))
+
+    def test_07_68_absent_paths_are_scoped_and_not_automatically_admitted(self):
+        pairs = dict(self.entries)
+        absent = [p for p, status in pairs.items()
+                  if status not in ("KEEP_IDENTICAL", "REVIEW_DIVERGENCE")]
+        self.assertEqual(len(absent), 68)
+        self.assertEqual(sum(p.startswith("docs/qualification/") for p in absent), 26)
+        self.assertEqual(sum(p.startswith("tools/test_") for p in absent), 20)
+        self.assertEqual(sum(p.startswith("tools/") and not p.startswith("tools/test_")
+                             for p in absent), 20)
+        self.assertEqual(sum(p.startswith("src-tauri/") for p in absent), 2)
+        self.assertEqual(pairs["src-tauri/src/m32_isolated_preflight.rs"],
+                         "BLOCK_RUNTIME_IPC")
+        self.assertEqual(pairs["src-tauri/src/m32_sqlite_concurrency_tests.rs"],
+                         "REVIEW_CI_ONLY")
+
+    def test_08_live_checklist_and_operator_gates_are_not_promoted(self):
+        self.assertIn("- [ ] **M32-007**", self.master)
+        self.assertIn("AUCUNE case nouvelle clôturée", self.triage)
+        self.assertIn("PRODUCT_FIRST_PARALLEL_SAFETY", self.triage)
+        for token in ("IN_PROGRESS_NOT_ACCEPTED", "NOT_PROVEN",
+                      "STOP_UNAVAILABLE", "PENDING_EXTERNAL_ATTESTATION(21/3/2)",
+                      "OPEN_NOT_REMEDIATED", "writer"):
+            self.assertIn(token, self.triage)
+        self.assertNotIn("AUTORISATION DE WRITE", self.triage)
+
 if __name__ == "__main__":
     unittest.main()
