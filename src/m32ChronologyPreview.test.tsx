@@ -186,7 +186,7 @@ describe("M3.2 read-only separated narrative coordinates", () => {
     const second = { ...first, id: "second", reason: "another assertion" };
     const duplicate = { ...fixture, anchors, precedences: [first, second] };
     expect(() => decodeM32ChronologyProjection(duplicate, "u1"))
-      .toThrow("dupliquée");
+      .toThrow("doublonnée");
     expect(render(duplicate)).toContain("Projection de chronologie refusée");
     expect(render(duplicate)).not.toContain("Cycle XII");
 
