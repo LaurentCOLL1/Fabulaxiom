@@ -2269,9 +2269,14 @@ class HandoffContractTests(unittest.TestCase):
             self.assertTrue((ROOT / q[field]).is_file(), field)
         pkg = json.loads((ROOT / q["manifest"]).read_text(encoding="utf-8"))
         npm_lock = json.loads((ROOT / q["lock"]).read_text(encoding="utf-8"))
-        self.assertEqual(pkg["devDependencies"]["vite"], "8.1.6")
-        self.assertEqual(npm_lock["packages"][""]["devDependencies"]["vite"], "8.1.6")
-        self.assertEqual(npm_lock["packages"]["node_modules/vite"]["version"], "8.1.6")
+        # q["patched_vite_version"] is PR #159's immutable historical
+        # snapshot (8.1.6); the current manifest advances independently to
+        # the later GHSA-p4f5-76q4-ffq7 fix without rewriting that checkpoint.
+        self.assertEqual(pkg["devDependencies"]["vite"], "8.1.7")
+        self.assertEqual(npm_lock["packages"][""]["devDependencies"]["vite"],
+                         pkg["devDependencies"]["vite"])
+        self.assertEqual(npm_lock["packages"]["node_modules/vite"]["version"],
+                         pkg["devDependencies"]["vite"])
         self.assertTrue(npm_lock["packages"]["node_modules/vite"]["integrity"].startswith("sha512-"))
         self.assertEqual(pkg["devDependencies"]["vitest"], "5.0.3")
         self.assertEqual(pkg["devDependencies"]["@tauri-apps/cli"], "2.12.1")
