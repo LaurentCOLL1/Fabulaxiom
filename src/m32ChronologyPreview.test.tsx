@@ -159,6 +159,45 @@ describe("M3.2 read-only separated narrative coordinates", () => {
     expect(render(historic)).toContain("Cycle XII");
   });
 
+  it("refuses active precedence touching a superseded or revoked anchor", () => {
+    const current = { ...fixture.precedences[0], status: "current" as const };
+    const forward = { ...fixture, precedences: [current] };
+    const reverse = { ...fixture, precedences: [{
+      ...current, before_anchor_id: "z", after_anchor_id: "a",
+    }] };
+    const revokedAnchor = { ...forward, anchors: [
+      fixture.anchors[0], { ...fixture.anchors[1], status: "revoked" as const },
+    ] };
+    for (const snapshot of [forward, reverse, revokedAnchor]) {
+      expect(() => decodeM32ChronologyProjection(snapshot, "u1"))
+        .toThrow("ancre historique");
+      expect(render(snapshot)).toContain("Projection de chronologie refusée");
+      expect(render(snapshot)).not.toContain("Cycle XII");
+    }
+    // A truly historical relation may still describe retired anchors.
+    expect(() => decodeM32ChronologyProjection(fixture, "u1")).not.toThrow();
+    expect(render(fixture)).toContain("Révoquée (historique)");
+  });
+
+  it("refuses duplicate live directed pairs even when assertion IDs differ", () => {
+    const anchors = fixture.anchors.map(a => ({ ...a, status: "current" as const }));
+    const first = { ...fixture.precedences[0], id: "first",
+      status: "current" as const };
+    const second = { ...first, id: "second", reason: "another assertion" };
+    const duplicate = { ...fixture, anchors, precedences: [first, second] };
+    expect(() => decodeM32ChronologyProjection(duplicate, "u1"))
+      .toThrow("dupliquée");
+    expect(render(duplicate)).toContain("Projection de chronologie refusée");
+    expect(render(duplicate)).not.toContain("Cycle XII");
+
+    const historic = { ...duplicate, precedences: [
+      first, { ...second, status: "revoked" as const },
+    ] };
+    expect(() => decodeM32ChronologyProjection(historic, "u1")).not.toThrow();
+    expect(render(historic)).toContain("Révoquée (historique)");
+    expect(render(historic)).toContain("Cycle XII");
+  });
+
   it("refuses same-anchor links and repeated edge IDs", () => {
     const selfEdge = { ...fixture, precedences: [{
       ...fixture.precedences[0], before_anchor_id: "z", after_anchor_id: "z",
