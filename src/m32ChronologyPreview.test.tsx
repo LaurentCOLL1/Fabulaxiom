@@ -139,6 +139,26 @@ describe("M3.2 read-only separated narrative coordinates", () => {
     }
   });
 
+  it("rejects a current human precedence cycle but preserves revoked history", () => {
+    const current = { ...fixture.precedences[0], id: "a-before-z",
+      status: "current" as const };
+    const reverse = { ...current, id: "z-before-a",
+      before_anchor_id: "z", after_anchor_id: "a" };
+    const anchors = fixture.anchors.map(anchor => ({ ...anchor, status: "current" as const }));
+    const cycle = { ...fixture, anchors, precedences: [current, reverse] };
+    expect(() => decodeM32ChronologyProjection(cycle, "u1"))
+      .toThrow("cycle actif");
+    expect(render(cycle)).toContain("Projection de chronologie refusée");
+    expect(render(cycle)).not.toContain("Cycle XII");
+
+    const historic = { ...cycle, precedences: [
+      current, { ...reverse, status: "revoked" as const },
+    ] };
+    expect(() => decodeM32ChronologyProjection(historic, "u1")).not.toThrow();
+    expect(render(historic)).toContain("Révoquée (historique)");
+    expect(render(historic)).toContain("Cycle XII");
+  });
+
   it("refuses same-anchor links and repeated edge IDs", () => {
     const selfEdge = { ...fixture, precedences: [{
       ...fixture.precedences[0], before_anchor_id: "z", after_anchor_id: "z",
