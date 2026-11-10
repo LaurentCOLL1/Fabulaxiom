@@ -32,6 +32,8 @@
 
 **10/11/2026 — Inventaire unitaire de #35, CANDIDAT non qualifié : AUCUNE case nouvelle clôturée.** Parent `main=425cb621d20b86f66a24aac1d6c1f63ffe479b0c`, CI postmain #334 [#42847268108](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/42847268108) attempt 1 completed/SUCCESS SHA exact (job #129938018079, 88 SUCCESS / 1 PR-only SKIPPED). [Matrice des 84 chemins de #35](../qualification/M3_2_PR35_PER_PATH_DISPOSITION_20261110.md) : 5 conserver identiques, 11 divergents à comparer, **68 absents** triés en étude historique, prototype synthétique, test CI jetable potentiel, outil opérateur retenu, ancienne IPC bloquée. **Chaque chemin reçoit une orientation, mais la preuve d'équivalence de chaque fonctionnalité n'est PAS faite** : M32-007 reste `[ ]`, #35/#215 restent DRAFT, aucune fusion transitive ; 104 tâches, 2 closes, 102 ouvertes. Toute validation ultérieure exige vraie preuve datée/CI SHA exact et #38 append-only. Ni writer ni G3 admis.
 
+**10/11/2026 — #335 QUALIFIÉE POSTMAIN ; P3o CANDIDAT, AUCUNE case nouvelle clôturée.** #335 fusionnée sous Protect main (strict, `bypass_actors=[]`) à `main=e997a239f71d726c67880dd4acc07dfcda80482e`, CI PR #42875150735 SUCCESS au SHA `9764b24e95903c69aba74cf6e620ff26c5b36e1a`, CI push postmain #42877389890 attempt 1 completed/SUCCESS au SHA exact (job Windows #130044224664). La matrice des 84 chemins historiques #35 a désormais une CI postmain qualifiée ; **M32-007 reste [ ]**, aucune décision de clôture de PR #35/#215. P3o est un **nouveau lot candidat** ciblant un cycle de deux précédences courantes dans l'aperçu TS fictif (révoquées conservées) : `M3_2_P3O_SYNTHETIC_CURRENT_PRECEDENCE_CYCLE_REFUSAL_20261110.md`. Les cases **M32-058 et M32-080 restent [ ]**, preuve fixture-only partielle avant qualification CI source et postmain P3o, sans preuve writer/P4 réel. **104 obligations, 2 closes / 102 ouvertes, M3.2 IN_PROGRESS_NOT_ACCEPTED (~45 % estimés).** PRODUCT_FIRST_PARALLEL_SAFETY, R1–R9 NOT_PROVEN, G2B NOT_ACCEPTED, G2C NOT_AUTHORIZED, G3 STOP_UNAVAILABLE, historique PENDING_EXTERNAL_ATTESTATION(21/3/2), prospective NOT_STARTED, main/WAL/SHM et ABA invisible NOT_PROVEN, glib #160 OPEN_NOT_REMEDIATED. Issue #38 append-only à mettre à jour à la décision de PR, sans réécrire l'historique.
+
 ## 0. Reprise et gouvernance GitHub
 
 **Priorité :** P0. Priorité immédiate ; la documentation et une CI ne confèrent aucune admission de production.
@@ -170,6 +172,7 @@
 - [ ] **M32-057** Compléter révocation et correction des précédences  
   **Preuve de clôture :** Lien précédent conservé, révocation datée dans l'histoire, rollback et diff exacts ; pas de suppression en cascade.
 - [ ] **M32-058** Traiter les conflits et cycles sur graphe actif  
+  **Preuve partielle P3o (2026-11-10, NON close) :** décodeur TS read-only fictif refuse les cycles entre relations `current`, préserve les liens historiques, test Vitest ciblé ; CI HEAD P3o et postmain À QUALIFIER. Aucune preuve runtime/writer ni acceptation globale.
   **Preuve de clôture :** Détecter cycles, auto-lien, duplicata, contradictions, bornes impossibles ; afficher témoins directs sans réécriture de la chronologie.
 - [ ] **M32-059** Traiter dates et incertitudes en quatre modes  
   **Preuve de clôture :** Exact calendrier fictif, plage approximative, relatif, inconnu ; bornes/precision saisies et restituées sans coercition Date.parse.
@@ -224,6 +227,7 @@
 - [ ] **M32-079** Valider les quatre temporalités sur deux Universes et plusieurs romans  
   **Preuve de clôture :** Calendrier exact/approx/relative/inconnu, dates sans mapping, undated et scènes anciennes.
 - [ ] **M32-080** Valider prévention des cycles et conflits déterministes  
+  **Preuve partielle P3o (2026-11-10, NON close) :** décodeur TS read-only fictif refuse les cycles entre relations `current`, préserve les liens historiques, test Vitest ciblé ; CI HEAD P3o et postmain À QUALIFIER. Aucune preuve runtime/writer ni acceptation globale.
   **Preuve de clôture :** Chemins cycliques, doublons, exclusions et opposition avant/après ; rollback et données intactes.
 - [ ] **M32-081** Valider revocations, corrections et lecture du passé  
   **Preuve de clôture :** Ancres/revisions historiques demeurent consultables après modifications, sans modifier HEAD des scènes.
