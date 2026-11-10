@@ -3,6 +3,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 import M32P3fTwoNovelFictionalReview, {
   previewP3fTwoNovelFictionalReview, previewP3kFictionalCharacterFocus,
+  previewP3nFictionalPropertyFocus,
   type P3fFictionalNovelInput,
 } from "./M32P3fTwoNovelFictionalReview";
 import type { P2iFictionalInput } from "./M32P2iFictionalImpactReview";
@@ -478,5 +479,73 @@ describe("P3m: invented discrepancies retain BOTH assertion and historical sourc
     expect(denied).not.toContain("book-1");
     expect(denied).not.toContain("home-two");
     expect(denied).not.toContain("r2");
+  });
+});
+
+
+describe("P3n property focus after fictional historical source validation", () => {
+  it("25 filters a single literal property across differences, agreements and unpaired facts", () => {
+    const one = { ...p3iClaims[0], assertion_id: "scar-one-p3n",
+      property_key: "scar", literal_value: "left" };
+    const input = { ...data, canon_claims: [...p3iClaims, one] };
+    const original = JSON.stringify(input);
+    const home = previewP3nFictionalPropertyFocus(input, "home", "hero");
+    const role = previewP3nFictionalPropertyFocus(input, "role", "hero");
+    const scar = previewP3nFictionalPropertyFocus(input, "scar", "hero");
+    expect(home.total_claims).toBe(2);
+    expect(home.differences).toHaveLength(1);
+    expect(home.agreements).toHaveLength(0);
+    expect(home.differences[0].first.source_revision_id).toBe("r2");
+    expect(home.differences[0].second.source_revision_id).toBe("r4");
+    expect(role.total_claims).toBe(2);
+    expect(role.agreements).toHaveLength(1);
+    expect(role.differences).toHaveLength(0);
+    expect(scar.total_claims).toBe(1);
+    expect(scar.first_only).toHaveLength(1);
+    expect(scar.second_only).toHaveLength(0);
+    expect(scar.production_writer_admitted).toBe(false);
+    expect(scar.real_g3_authorized).toBe(false);
+    expect(JSON.stringify(input)).toBe(original);
+  });
+  it("26 refuses missing or unowned properties and forged historical provenance before selecting", () => {
+    const valid = { ...data, canon_claims: p3iClaims };
+    expect(() => previewP3nFictionalPropertyFocus(valid, "")).toThrow();
+    expect(() => previewP3nFictionalPropertyFocus(valid, "unknown")).toThrow();
+    expect(() => previewP3nFictionalPropertyFocus(valid, "home", "villain")).toThrow();
+    const forged = { ...valid, canon_claims: [
+      { ...p3iClaims[0], source_revision_id: "r3" },
+      ...p3iClaims.slice(1),
+    ] };
+    expect(() => previewP3nFictionalPropertyFocus(forged, "role")).toThrow();
+    const denied = renderToStaticMarkup(createElement(
+      M32P3fTwoNovelFictionalReview, { input: forged },
+    ));
+    expect(denied).toContain("Revue fictive refusée");
+    expect(denied).not.toContain("book-1");
+    expect(denied).not.toContain("guide");
+  });
+  it("27 exposes accessible property selection while escaping hostile declared property keys", () => {
+    const evil = "<img src=x onerror=alert(11)>";
+    const input = { ...data, canon_claims: [
+      ...p3iClaims.slice(0, 2),
+      { ...p3iClaims[2], property_key: evil },
+      { ...p3iClaims[3], property_key: evil },
+    ] };
+    const before = JSON.stringify(input);
+    const html = renderToStaticMarkup(createElement(
+      M32P3fTwoNovelFictionalReview, { input },
+    ));
+    expect(html).toContain('id="m32-p3n-fictional-property"');
+    expect(html).toContain("Consulter une propriété fictive");
+    expect(html).toContain("Toutes les propriétés déclarées");
+    expect(html).toContain("&lt;img");
+    expect(html).not.toContain("<img");
+    const filtered = previewP3nFictionalPropertyFocus(input, evil);
+    expect(filtered.agreements).toHaveLength(1);
+    expect(filtered.differences).toHaveLength(0);
+    expect(filtered.selected_property_key).toBe(evil);
+    expect(JSON.stringify(input)).toBe(before);
+    expect(html).toContain("aucune écriture");
+    expect(html).toContain("STOP_UNAVAILABLE");
   });
 });
