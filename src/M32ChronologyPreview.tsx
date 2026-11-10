@@ -128,7 +128,7 @@ export function decodeM32ChronologyProjection(
       // Different assertion IDs must not disguise the same live relationship.
       const targets = activePairs.get(edge.before_anchor_id) ?? new Set<string>();
       if (targets.has(edge.after_anchor_id)) {
-        throw new Error("Projection M3.2 : précédence active dupliquée");
+        throw new Error("Projection M3.2 : précédence active doublonnée");
       }
       targets.add(edge.after_anchor_id);
       activePairs.set(edge.before_anchor_id, targets);
