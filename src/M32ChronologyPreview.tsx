@@ -90,6 +90,7 @@ export function decodeM32ChronologyProjection(
     throw new Error("Projection M3.2 : volume synthétique excessif");
   }
   const ids = new Set<string>();
+  const anchorStatuses = new Map<string, M32AssertionStatus>();
   for (const a of input.anchors) {
     if (a.universe_id !== expectedUniverseId || !validNonblank(a.id) ||
         ids.has(a.id) || !isKind(a.time_kind) ||
@@ -105,8 +106,10 @@ export function decodeM32ChronologyProjection(
       throw new Error("Projection M3.2 : ancre invalide ou étrangère");
     }
     ids.add(a.id);
+    anchorStatuses.set(a.id, a.status);
   }
   const edgeIds = new Set<string>();
+  const activePairs = new Map<string, Set<string>>();
   for (const edge of input.precedences) {
     if (edge.universe_id !== expectedUniverseId ||
         !validNonblank(edge.id) || edgeIds.has(edge.id) ||
@@ -116,6 +119,20 @@ export function decodeM32ChronologyProjection(
       throw new Error("Projection M3.2 : relation invalide ou étrangère");
     }
     edgeIds.add(edge.id);
+    if (edge.status === "current") {
+      // A present-tense assertion cannot use a retired historical anchor.
+      if (anchorStatuses.get(edge.before_anchor_id) !== "current" ||
+          anchorStatuses.get(edge.after_anchor_id) !== "current") {
+        throw new Error("Projection M3.2 : précédence active sur ancre historique");
+      }
+      // Different assertion IDs must not disguise the same live relationship.
+      const targets = activePairs.get(edge.before_anchor_id) ?? new Set<string>();
+      if (targets.has(edge.after_anchor_id)) {
+        throw new Error("Projection M3.2 : précédence active doublonnée");
+      }
+      targets.add(edge.after_anchor_id);
+      activePairs.set(edge.before_anchor_id, targets);
+    }
   }
   // A projection must not present a cycle of currently asserted human
   // precedences as a valid world chronology. Historical/revoked assertions
