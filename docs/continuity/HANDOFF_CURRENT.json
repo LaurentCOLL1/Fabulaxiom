@@ -1,4 +1,44 @@
 {
+  "m32_20261110_resume_readability_and_live_master_checklist": {
+    "status": "READABLE_PROMPTS_MASTER_CHECKLIST_POLICY_CANDIDATE",
+    "checkpoint_date": "2026-11-10",
+    "main": "da5c64761159fd8fcc22ba541da04a7c54be6691",
+    "pr_331": {
+      "state": "MERGED",
+      "source_sha": "fb523abbc05b636d98fd93240872882f4ee57f61",
+      "source_ci": 42751838279,
+      "source_ci_result": "SUCCESS_EXACT_SHA",
+      "postmain_ci": 42754285833,
+      "postmain_ci_result": "SUCCESS_EXACT_SHA",
+      "postmain_job": 129624924853,
+      "merged_main_sha": "da5c64761159fd8fcc22ba541da04a7c54be6691"
+    },
+    "master_checklist": "docs/continuity/M3_2_COMPLETION_MASTER_CHECKLIST_20261109.md",
+    "identified": 104,
+    "closed": 2,
+    "open": 102,
+    "closed_ids": [
+      "M32-001",
+      "M32-002"
+    ],
+    "update_each_validated_item": true,
+    "require_checklist_in_every_material_pr": true,
+    "require_dated_evidence_exact_sha": true,
+    "require_status_note_for_no_new_closed_items": true,
+    "prompt_short_max_bytes": 3599,
+    "strategy": "PRODUCT_FIRST_PARALLEL_SAFETY",
+    "notify_before_strategy_change": true,
+    "m32": "IN_PROGRESS_NOT_ACCEPTED",
+    "writer": "NOT_PROVEN",
+    "p4_real": "STOP",
+    "g2b": "NOT_ACCEPTED",
+    "g2c": "NOT_AUTHORIZED",
+    "g3": "STOP_UNAVAILABLE",
+    "historical": "PENDING_EXTERNAL_ATTESTATION(21/3/2)",
+    "prospective": "NOT_STARTED",
+    "glib_issue_160": "OPEN_NOT_REMEDIATED",
+    "operator_data_accessed": false
+  },
   "m32_p3n_property_focus_candidate_20261109": {
     "status": "DRAFT_RECONCILED_SOURCE_CI_PENDING",
     "stage": "P3n",

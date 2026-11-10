@@ -1,8 +1,10 @@
 # Fabulaxiom — Liste exhaustive de travail restant pour accepter M3.2
 
-**Référence vivante initiale : 9 novembre 2026** · version 1.1 · **104 tâches identifiées : 1 clôturée (#330 postmain), 103 encore ouvertes**, sans autre déclaration de PASS.
+**Référence vivante initiale : 9 novembre 2026** · version 1.2 · **104 tâches identifiées : 2 clôturées (M32-001 et M32-002), 102 encore ouvertes**, sans autre déclaration de PASS.
 
 **Source d'autorité :** dépôt GitHub `LaurentCOLL1/Fabulaxiom`, protected `main=bef699511ff18e987a4858c797fde7aa88dfc59b` après fusion documentée de [#330](https://github.com/LaurentCOLL1/Fabulaxiom/pull/330). Source #330 SHA `4e04408323af42507fbaf1ef2d474faede503328`, CI Windows #42696145161 SUCCESS exact SHA, 87/87 étapes. CI postmain indépendante [#42699790716](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/42699790716) **TERMINALE SUCCESS au SHA exact `bef699511ff18e987a4858c797fde7aa88dfc59b`**, job 129441151373 : 86 étapes SUCCESS, 1 étape propre aux PR ignorée sur push, aucun échec (qualification postérieure à la rédaction initiale, #38 append-only #6751823951). La PR [#331](https://github.com/LaurentCOLL1/Fabulaxiom/pull/331) P3n est DRAFT (source #42674870251 SUCCESS au SHA précédent `a0a6c3e72656d6b626a50030cf4c63e09f2a4b05`, à requalifier sur nouveau main).
+
+**Checkpoint du 10 novembre 2026 (nouveau main) :** PR #331 P3n réconciliée, puis FUSIONNÉE sous Protect main, SHA exact source `fb523abbc05b636d98fd93240872882f4ee57f61`, CI Windows #42751838279 attempt 1 completed/SUCCESS, diff 10 chemins, reviews=[] threads=[], squash avec `expected_head_sha`, protected `main=da5c64761159fd8fcc22ba541da04a7c54be6691`. La CI push postmain #42754285833 était **completed/SUCCESS**, attempt 1, SHA exact `da5c64761159fd8fcc22ba541da04a7c54be6691`, job Windows terminé sans échec ; #38 append-only à actualiser. La clôture **M32-002 concerne seulement la réconciliation de #331**, pas R1–R9, P4 réel ni l'acceptation globale. **2 tâches clôturées, 102 ouvertes sur 104** ; ~45 % reste estimation indépendante. Issue #38 historique append-only #6758458130 documente la réconciliation avant fusion ; ajouter séparément la qualification postmain.
 
 **État :** M3.2 `IN_PROGRESS_NOT_ACCEPTED`, estimation d'ingénierie **~45 % (40–50 %)**, **PAS** taux de fonctionnalités utilisables sur des données opérateur. Writer réel et **R1–R9 `NOT_PROVEN`**, P4 réel STOP, G2B NOT_ACCEPTED, G2C NOT_AUTHORIZED, G3 STOP_UNAVAILABLE, G4–G6 NON AUTORISÉS, chaîne historique `PENDING_EXTERNAL_ATTESTATION(21/3/2)`, baseline prospective `NOT_STARTED`. Atomicité main/WAL/SHM et ABA invisible NOT PROVEN ; glib #160 OPEN_NOT_REMEDIATED.
 
@@ -14,15 +16,26 @@
 
 ---
 
+## Protocole obligatoire de mise à jour après chaque validation
+
+**Ce fichier est la source canonique et VIVANTE des 104 obligations M3.2**. À chaque nouvelle validation réelle d'une tâche `M32-xxx`, mettre à jour **ce même fichier** dans la PR de qualification correspondante, ou, si la preuve n'existe qu'après fusion (CI postmain), via une PR documentaire indépendante immédiatement après son obtention. Il ne faut jamais repousser l'actualisation à une future conversation. La case passe de `[ ]` à `[x]` seulement si l'ensemble du critère d'acceptation propre à cette tâche est démontré ; renseigner **date (AAAA-MM-JJ), PR, SHA exact, CI/run/attempt et statut terminal, portée de la preuve, référence issue #38, décision opérateur si nécessaire**. Garder toutes les preuves partielles sous case `[ ]`, même lorsque les tests fictifs passent.
+
+**Chaque PR matérielle** (source, outil, workflow ou dossier de qualification) doit contenir ce fichier dans son diff, **même si aucune case n'est clôturée**. Ajouter alors une note datée « aucune case nouvelle clôturée ; preuves seulement partielles », sans augmenter artificiellement le total. Les deux prompts, HANDOFF_CURRENT.md/json et NEXT/STATE doivent rester cohérents. La CI contrôle la présence du fichier dans ces PR, l'identité de **104 tâches distinctes**, les compteurs, et les preuves des cases fermées. Le rapport de CI n'est ni une attestation humaine ni une validation des données réelles.
+
+**Distinction importante :** une *étape source qualifiée*, une *CI postmain qualifiée*, une *obligation M3.2 clôturée* et la *phase M3.2 ACCEPTED* ne sont pas équivalentes. La progression des cases n'est pas une métrique de pourcentage : l'estimation ~45 % est suivie séparément. Les changements de stratégie `PRODUCT_FIRST_PARALLEL_SAFETY` nécessitent avertissement préalable de l'opérateur.
+
+---
+
 ## 0. Reprise et gouvernance GitHub
 
 **Priorité :** P0. Priorité immédiate ; la documentation et une CI ne confèrent aucune admission de production.
 
 - [x] **M32-001** Qualifier la CI postmain indépendante de la fusion #330 au SHA bef699511ff18e987a4858c797fde7aa88dfc59b  
   **Preuve de clôture :** Run push Windows #42699790716 terminal SUCCESS exact SHA, journal conservé et commentaire #38 append-only.
-  **Acquis :** #42699790716 terminé/SUCCESS au SHA exact, job Windows 129441151373 86 succès + 1 étape PR-only SKIPPED ; issue #38 #6751823951.
-- [ ] **M32-002** Réconcilier la PR produit #331 P3n après la fusion #330  
+  **Acquis (2026-11-09) :** #42699790716 terminé/SUCCESS au SHA exact, job Windows 129441151373 86 succès + 1 étape PR-only SKIPPED ; issue #38 #6751823951.
+- [x] **M32-002** Réconcilier la PR produit #331 P3n après la fusion #330  
   **Preuve de clôture :** Re-fetch base/main, calcul de divergence, éventuelle requalification sur nouveau HEAD ; source précédente #42674870251 SUCCESS seulement à a0a6c3e7… ; aucune fusion transitive.
+  **Acquis (2026-11-10 ; périmètre GitHub/source seulement) :** réconciliation #331 sur #332, branche ahead=14/behind=0, source Windows #42751838279 attempt 1 completed/SUCCESS au HEAD `fb523abbc05b636d98fd93240872882f4ee57f61` ; dix fichiers conformes, reviews=[], threads=[], Protect main strict bypass=[], squash `expected_head_sha` et main `da5c64761159fd8fcc22ba541da04a7c54be6691` ; issue #38 #6758458130. La CI postmain #42754285833 est une preuve distincte, **completed/SUCCESS sur main au SHA exact** ; ne justifie ni writer ni P4 réel.
 - [ ] **M32-003** Revoir le diff, les reviews, threads et le ruleset Protect main pour chaque future PR  
   **Preuve de clôture :** Required Windows frontend and Rust checks strict, bypass=[], aucune discussion non résolue, squash expected_head_sha.
 - [ ] **M32-004** Éviter que les prompts de reprise et l'historique de handoff divergent  
@@ -267,7 +280,7 @@
 
 ## Ordre de travail recommandé (chemin critique sans changer la stratégie)
 
-1. **Immédiat** : qualifier #330 postmain, réconcilier #331, maintenir les prompts et issue #38 ; continuer P3 produit sur données inventées, sans perdre la preuve historique.
+1. **Immédiat** : qualifier postmain #331 (#42754285833) sur main exact da5c64761159fd8fcc22ba541da04a7c54be6691, et maintenir checklist, prompts, handoffs et issue #38 à CHAQUE preuve validée ; continuer P3 fictif, sans perdre les témoins historiques.
 2. **En parallèle** : finaliser les preuves P1 R2–R4 sur fichiers Windows jetables et R5–R9 mono-propriétaire ; rechercher les cinq témoins de #36 sans créer de fausse attestation ; suivre #160.
 3. **Après un nouveau consentement explicite** : G2B/C/D, puis une source réellement attestée, G3–G5, sauvegarde cohérente et restauration isolée, puis G6.
 4. **Seulement après les gates correspondants** : admission de session et writer runtime, intégration React/Tauri/Rust, parcours de projet neuf/fixture puis recette opérateur, migration contrôlée seulement si approuvée.

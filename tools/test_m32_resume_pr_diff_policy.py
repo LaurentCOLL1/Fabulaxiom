@@ -5,12 +5,12 @@ import sys
 import unittest
 
 from m32_resume_pr_diff_policy import (
-    HANDOFFS, LONG, SHORT, check_changed_paths,
+    HANDOFFS, LONG, SHORT, CHECKLIST, check_changed_paths,
 )
 
 SCRIPT = Path(__file__).with_name("m32_resume_pr_diff_policy.py")
 BOTH = [SHORT, LONG]
-FULL = [SHORT, LONG, *HANDOFFS]
+FULL = [SHORT, LONG, *HANDOFFS, CHECKLIST]
 
 
 class ResumePolicyNegativeMatrix(unittest.TestCase):
@@ -82,6 +82,19 @@ class ResumePolicyNegativeMatrix(unittest.TestCase):
         self.assertFalse(ok)
         self.assertTrue(any(SHORT in line for line in reasons))
 
+    def test_13_material_missing_master_checklist_fails(self):
+        result = self.call(BOTH + [*HANDOFFS, "src/synthetic.tsx"])
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn(CHECKLIST, result.stderr)
+
+    def test_14_material_with_master_checklist_passes(self):
+        result = self.call(FULL + ["tools/synthetic.py"])
+        self.assertEqual(result.returncode, 0, result.stderr)
+
+    def test_15_spoofed_master_checklist_file_fails(self):
+        result = self.call(BOTH + [*HANDOFFS, CHECKLIST + ".bak", "src/synthetic.tsx"])
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn(CHECKLIST, result.stderr)
 
 if __name__ == "__main__":
     unittest.main()

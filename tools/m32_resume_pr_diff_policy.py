@@ -11,6 +11,7 @@ import sys
 
 SHORT = "docs/continuity/RESUME_PROMPT_SHORT.md"
 LONG = "docs/continuity/RESUME_PROMPT.md"
+CHECKLIST = "docs/continuity/M3_2_COMPLETION_MASTER_CHECKLIST_20261109.md"
 HANDOFFS = ("docs/continuity/HANDOFF_CURRENT.md",
             "docs/continuity/HANDOFF_CURRENT.json")
 MATERIAL = re.compile(
@@ -27,6 +28,8 @@ def check_changed_paths(paths: list[str]) -> tuple[bool, tuple[str, ...]]:
         if path not in changed:
             reasons.append(f"STOP missing required resume prompt in this PR: {path}")
     if any(MATERIAL.match(path) for path in changed):
+        if CHECKLIST not in changed:
+            reasons.append(f"STOP M3.2 material PR missing master checklist: {CHECKLIST}")
         for path in HANDOFFS:
             if path not in changed:
                 reasons.append(f"STOP M3.2 handoff missing from material PR: {path}")
