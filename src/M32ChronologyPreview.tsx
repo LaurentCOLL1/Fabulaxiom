@@ -117,6 +117,33 @@ export function decodeM32ChronologyProjection(
     }
     edgeIds.add(edge.id);
   }
+  // A projection must not present a cycle of currently asserted human
+  // precedences as a valid world chronology. Historical/revoked assertions
+  // remain visible but do not participate in the active graph.
+  const incoming = new Map<string, number>([...ids].map(id => [id, 0]));
+  const outgoing = new Map<string, string[]>();
+  for (const edge of input.precedences) {
+    if (edge.status !== "current") continue;
+    incoming.set(edge.after_anchor_id, (incoming.get(edge.after_anchor_id) ?? 0) + 1);
+    const successors = outgoing.get(edge.before_anchor_id) ?? [];
+    successors.push(edge.after_anchor_id);
+    outgoing.set(edge.before_anchor_id, successors);
+  }
+  const pending = [...incoming].filter(([, count]) => count === 0)
+    .map(([id]) => id);
+  let visited = 0;
+  for (let i = 0; i < pending.length; i += 1) {
+    const id = pending[i];
+    visited += 1;
+    for (const next of outgoing.get(id) ?? []) {
+      const remaining = (incoming.get(next) ?? 0) - 1;
+      incoming.set(next, remaining);
+      if (remaining === 0) pending.push(next);
+    }
+  }
+  if (visited !== ids.size) {
+    throw new Error("Projection M3.2 : cycle actif de précédences humaines");
+  }
   const scenes = new Set<string>();
   for (const scene of input.narration) {
     if (scene.universe_id !== expectedUniverseId ||
