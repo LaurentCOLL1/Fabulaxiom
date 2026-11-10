@@ -187,8 +187,11 @@ jobs:
       - name: M3.2 living handoff source-only contract checks
         run: python -m unittest discover -s tools -p "test_m32_handoff_contract.py" -v
 
-      - name: M3.2 resume prompt PR diff policy 12 synthetic negative cases
+      - name: M3.2 resume prompt PR diff policy 15 synthetic negative cases
         run: python -m unittest discover -s tools -p "test_m32_resume_pr_diff_policy.py" -v
+
+      - name: M3.2 master completion checklist 104-item closure evidence contracts
+        run: python -m unittest discover -s tools -p "test_m32_completion_master_checklist.py" -v
 
       - name: M3.2 require both resume prompts on every pull request
         if: github.event_name == 'pull_request'

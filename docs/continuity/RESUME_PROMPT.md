@@ -1,3 +1,46 @@
+# Fabulaxiom — prompt de reprise détaillé
+
+**État du 10 novembre 2026.** Les consignes opérationnelles sont ici en premier ; tous les anciens checkpoints sont conservés *verbatim* dans la section repliable de fin. **CI ≠ admission opérateur.**
+
+## Dernier checkpoint
+
+- Dépôt : https://github.com/LaurentCOLL1/Fabulaxiom ; protected `main=da5c64761159fd8fcc22ba541da04a7c54be6691`.
+- **PR #331 P3n FUSIONNÉE** sous Protect main strict `bypass_actors=[]`, squash avec `expected_head_sha`. P3n ajoute un filtre par propriété aux deux romans fictifs, lecture seule, sans writer. Source HEAD `fb523abbc05b636d98fd93240872882f4ee57f61` : [CI #42751838279](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/42751838279) terminale SUCCESS au SHA exact, diff/reviews/threads vérifiés.
+- **CI postmain indépendante #42754285833 : completed/SUCCESS, attempt 1, SHA exact**, SHA exact `da5c64761159fd8fcc22ba541da04a7c54be6691`. Re-fetch sa preuve lors de chaque nouvelle reprise.
+- [Checklist maître M3.2](M3_2_COMPLETION_MASTER_CHECKLIST_20261109.md) : **104 obligations ; 2 clôturées (M32-001/002), 102 ouvertes**. M32-002 atteste la réconciliation de #331, pas la sécurité du writer ni P4. Ces comptes ne sont **pas** le pourcentage de développement.
+- **M3.2 IN_PROGRESS_NOT_ACCEPTED**, estimation d'ingénierie ~45 % (40–50 %), non admissible en production. Stratégie `PRODUCT_FIRST_PARALLEL_SAFETY` inchangée : produit sur données fictives et sûreté en parallèle ; **prévenir AVANT tout changement de stratégie**. Issue #160 glib 0.18.5 Linux/GTK3 `OPEN_NOT_REMEDIATED`.
+
+## Prochaines opérations — ordre recommandé
+
+1. **Re-fetch GitHub vivant** : `main`, toutes les PR et issues, CI Windows HEAD exact + attempts, reviews/threads, ruleset `Protect main` strict et `bypass_actors=[]`. Le checkpoint n'est jamais une autorité intemporelle.
+2. **Re-vérifier la qualification postmain #42754285833** au SHA `da5c64761159fd8fcc22ba541da04a7c54be6691`, y compris job Windows, conclusion terminale ; si FAILURE/flake, préserver la trace et ne pas en inventer la cause. Journaliser sur [issue #38](https://github.com/LaurentCOLL1/Fabulaxiom/issues/38) append-only et handoff.
+3. **Mettre à jour la checklist au moment de CHAQUE validation d'une obligation M32-xxx**, dans la PR de la preuve ou immédiatement après le postmain par PR documentaire séparée. Passer à `[x]` **seulement** si le critère de clôture réel est démontré ; fournir date ISO, SHA, PR, CI/run et attempt, résultat terminal, périmètre de preuve et décision humaine si nécessaire. Recalculer 104/clos/ouverts et synchroniser les deux prompts, HANDOFF_CURRENT.md/json, STATE/NEXT. Une preuve fictive partielle peut PASS **sans fermer** une case ; noter alors « aucune case clôturée ». Désormais la CI exige que chaque PR matérielle inclue le fichier checklist et en vérifie les invariants.
+4. **Continuer la stratégie sans bifurcation silencieuse** : P3 fictif (aucune base opérateur), R2 ancêtres/ABA, R3/R4 identité atomique main/WAL/SHM et `live SQLite WAL-index`, R5–R9 propriétaire unique ; PR #35 et #215 DRAFT historiques, ne jamais les fusionner aveuglément.
+5. **Maintenir les blocages externes** : issue #36 et cinq attestations historiques manquantes, `PENDING_EXTERNAL_ATTESTATION(21/3/2)` ; baseline prospective `NOT_STARTED`. G2B/C/D–G6 à consentement nouveau et spécifique ; issue #160 glib encore ouverte.
+6. **Pour fusionner** : CI source HEAD exact terminale, périmètre diff/reviews/threads, `Protect main` strict, squash `expected_head_sha`, postmain indépendant puis #38 append-only. Ne prononcer `ACCEPTED + MERGED + NORMALIZED` que lorsque toutes les preuves M3.2, les parcours réels et la décision humaine sont qualifiés.
+
+## Interdictions actives — STOP
+
+- **Writer/R1–R9 NOT_PROVEN**, réel P4 STOP ; G2B `NOT_ACCEPTED`, G2C `NOT_AUTHORIZED`, G3 `STOP_UNAVAILABLE`, G4–G6 non autorisés ; R2 STOP, R3 partiel, D3c conception, D3b-4/5 et D3b-5 STOP ; A/B `NOT_PROVEN`.
+- **Atomicité main/WAL/SHM**, substitution ABA invisible, durée de vie du mapping `live SQLite WAL-index` : `NOT_PROVEN`. Ne pas transformer les tests fictifs en preuve de source SQLite opérateur.
+- **STOP** originaux v6/v7, `M:\Fabulaxiom`, profil existant `%LOCALAPPDATA%\com.fabulaxiom.greenfield.v1`, ACL, sauvegardes/journaux/marqueurs ; pas d'IPC writer, migration 007 runtime, Hello natif, recovery, restauration ni G3 réel sans gate et consentement.
+- Historique `PENDING_EXTERNAL_ATTESTATION(21/3/2)` ; prospective `NOT_STARTED` ; M3.2 `IN_PROGRESS_NOT_ACCEPTED`. Une CI de laboratoire n'autorise aucun acte opérateur.
+
+## Documents d'autorité
+
+- [RESUME_PROMPT_SHORT.md](RESUME_PROMPT_SHORT.md) : reprise courte, puis présent guide.
+- [M3_2_COMPLETION_MASTER_CHECKLIST_20261109.md](M3_2_COMPLETION_MASTER_CHECKLIST_20261109.md) : **104 cases**, mise à jour obligatoire à chaque clôture.
+- [HANDOFF_CURRENT.md](HANDOFF_CURRENT.md), [HANDOFF_CURRENT.json](HANDOFF_CURRENT.json), [HANDOFF_PROTOCOL.md](HANDOFF_PROTOCOL.md), [HANDOFF_HISTORY.md](HANDOFF_HISTORY.md).
+- [STATE.md](STATE.md), [NEXT.md](NEXT.md), [M3_2_GATE_DECISION_CURRENT.md](M3_2_GATE_DECISION_CURRENT.md).
+- [ROADMAP_STATUS_CURRENT.md](../roadmap/ROADMAP_STATUS_CURRENT.md), [FABULAXIOM_ROADMAP_V1.md](../roadmap/FABULAXIOM_ROADMAP_V1.md).
+
+## Archives de preuve — conservées intégralement
+
+Toutes les observations anciennes figurent ci-dessous, sans suppression ni réécriture, pour préserver les références SHA/CI et les vérifications historiques. Les statuts `IN_PROGRESS_AT_CHECKPOINT` d'une date passée ne remplacent pas le statut actuel. Cette section est **repliable dans GitHub** afin de rendre le guide courant lisible.
+
+<details>
+<summary>Déplier l'historique des anciens checkpoints (octobre–novembre 2026)</summary>
+
 **10/11/2026 — P3n #331 : RÉCONCILIATION SUR #332, CANDIDAT / NON QUALIFIÉ.** Base protected `main=42756e21a56010b7bf2e764ca6c574cca1403864`, CI postmain #42716481106 completed/SUCCESS au SHA exact ; #330 également FUSIONNÉE, CI postmain #42699790716 SUCCESS. Ancien source HEAD P3n `a0a6c3e72656d6b626a50030cf4c63e09f2a4b05` / Windows #42674870251 SUCCESS à ce SHA SEULEMENT ; nouvelle CI source SHA exact requise après réconciliation. Filtre de propriété littérale sur deux romans FICTIFS, après validation de provenance historique, sans écriture, canon automatique, SQL opérateur ou writer ; 332 Rust/7 Greenfield/69 SQLite/183 continuité/427 Vitest/88/88 Chromium normal+CSP/25 blobs fictifs ATTENDUS/NON QUALIFIÉS au nouveau HEAD. Checklist canonique `M3_2_COMPLETION_MASTER_CHECKLIST_20261109.md` : 104 obligations, 1 close (M32-001), 103 ouvertes ; M32-002 P3n encore EN COURS. PRODUCT_FIRST_PARALLEL_SAFETY maintenue, prévenir AVANT tout changement. M3.2 IN_PROGRESS_NOT_ACCEPTED (~45 % estimation), writer/R1–R9 NOT_PROVEN, garde atomique main/WAL/SHM et ABA invisible NOT PROVEN, vrai P4 STOP, G2B NOT_ACCEPTED, G2C NOT_AUTHORIZED, G3 STOP_UNAVAILABLE, historique PENDING_EXTERNAL_ATTESTATION(21/3/2), prospective NOT_STARTED, glib #160 OPEN_NOT_REMEDIATED. STOP originaux v6/v7, profil Greenfield existant, backups/journaux, IPC writer, migration 007, Windows Hello natif, marqueur/recovery. Exiger diff/reviews/threads, Protect main strict bypass=[], expected_head_sha, CI source et postmain indépendantes, issue #38 append-only. CI fictive ≠ admission.
 
 **09/11/2026 — Qualification terminale additionnelle, liste M3.2 à jour.** PR #330 fusionnée sous Protect main sur `main=bef699511ff18e987a4858c797fde7aa88dfc59b`, postmain Windows #42699790716 completed/SUCCESS SHA exact (job 129441151373 : 86 étapes PASS + 1 étape PR-only SKIPPED sur push, zéro échec), issue #38 #6751823951. La référence canonique [M3_2_COMPLETION_MASTER_CHECKLIST_20261109.md](M3_2_COMPLETION_MASTER_CHECKLIST_20261109.md) compte désormais **104 obligations identifiées, 1 clôturée (M32-001), 103 ouvertes**. Cela n'est pas une augmentation du pourcentage officiel : M3.2 toujours IN_PROGRESS_NOT_ACCEPTED (~45 % estimation). #331 P3n toujours DRAFT, CI source #42674870251 SUCCESS ancien SHA, nouvelle base à requalifier ; aucune admission. Stratégie PRODUCT_FIRST_PARALLEL_SAFETY inchangée, prévenir AVANT changement. R1–R9/writer NOT_PROVEN, P4 réel STOP, G2B NOT_ACCEPTED, G2C NOT_AUTHORIZED, G3 STOP_UNAVAILABLE, historique PENDING_EXTERNAL_ATTESTATION(21/3/2), prospective NOT_STARTED, main/WAL/SHM atomique et ABA invisible NOT PROVEN, glib #160 OPEN_NOT_REMEDIATED. Pas d'originaux, Greenfield existant, sauvegardes/journaux, writer IPC, migration 007, Hello, marqueur ou recovery. Toujours CI exact SHA, Protect main strict bypass=[], expected_head_sha, postmain et #38 append-only.
@@ -876,3 +919,6 @@ Lis d'abord `docs/continuity/README.md`, `HANDOFF_CURRENT.md`, `HANDOFF_CURRENT.
 
 **22 octobre 2026 — résultat terminal post-main PR #128 vérifié :** [CI #39755042137](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/39755042137) completed/SUCCESS (74 étapes Windows) au SHA exact `main=593b39e531e2a93e2f334220f37f6d8ed9bf9c93`. Cette observation est nouvelle et distincte du checkpoint historique daté `IN_PROGRESS_AT_CHECKPOINT`. Aucune promotion M3.2 ni G2B–G6 ; pas d'autorité Windows opérateur.
 **28 octobre — #212 TERMINALE ; Laurent autorise l'expérience A2+A3 Windows strictement jetable :** #212 source `9c35d205af0efd47505533a47285f2b0ab3bb525`, CI #40694186183 et postmain #40695996216 SUCCESS 203/7/41/143, protected `main=422b17955154085fba0eecee9cdff639d3b0fa14`, #38 terminal 6470411910. Nouvelle [preuve A2+A3](../qualification/M3_2_V7_S1_S2_A2_A3_DISPOSABLE_EXPERIMENT_20261028.md) : mutex nommé Win32 uniquement test avec deux processus coopératifs, abandon STOP ; A3 veto corruption et WAL sentinelle en fixture `%TEMP%`. **208 Rust / 7 Greenfield / 41 gardes / 144 contrats ATTENDUS PAS PASS**, aucune connexion applicative ni admission xOpen atomique. A0 cross-process EXISTING_PROFILE STOP, writer NOT_PROVEN, S3/S4/IPC/CRUD/migration 007/Hello/opérateur interdits. M3.2 IN_PROGRESS_NOT_ACCEPTED, G2B NOT_ACCEPTED, G2C NOT_AUTHORIZED, G3 STOP_UNAVAILABLE, historique PENDING_EXTERNAL_ATTESTATION(21/3/2), prospective NOT_STARTED, #35 OPEN/DRAFT. CI au HEAD nouveau, diff/reviews/threads, Protect main, expected_head_sha, postmain indépendant, #38 append-only requis.
+
+
+</details>
