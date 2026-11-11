@@ -1,6 +1,8 @@
 # Fabulaxiom — Liste exhaustive de travail restant pour accepter M3.2
 
-**Référence vivante initiale : 9 novembre 2026** · version 1.2 · **104 tâches identifiées : 2 clôturées (M32-001 et M32-002), 102 encore ouvertes**, sans autre déclaration de PASS.
+**Référence vivante initiale : 9 novembre 2026** · version 1.2 · **104 tâches identifiées : 7 clôturées (M32-001/002/037/049/051/095/096), 97 encore ouvertes**, sans autre déclaration de PASS.
+
+**11/11/2026 — #342 AUDITS INDÉPENDANTS QUALIFIÉS ; clôture documentaire M32-037/049/051/095/096 CANDIDATE.** Protected `main=4d60613daf19515d9ea63d8c145838998b85186b` ; PR [#342](https://github.com/LaurentCOLL1/Fabulaxiom/pull/342) MERGED sous Protect main ACTIVE strict `bypass_actors=[]`, reviews=[]/threads=[], squash `expected_head_sha=1f5e201d3e7d0ab088a65621411cc911de0472a1`. CI source Windows [#42997104616](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/42997104616) attempt 1 completed/SUCCESS au HEAD exact (job #130443816096 : 91 succès), postmain indépendante [#42998720084](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/42998720084) attempt 1 completed/SUCCESS main exact (job #130449201475, 90 SUCCESS/1 PR-only SKIPPED). Journal #38 [#6807114229](https://github.com/LaurentCOLL1/Fabulaxiom/issues/38#issuecomment-6807114229). **Proposition de cocher 5 cases DOCUMENTAIRES uniquement** : 037 limites historiques, 049 NEW_ONLY ≠ EXISTING_PROFILE, 051 contrat candidat v7 STRICT/FK/index/4 temporalités, 095 décisions sécurité avant distribution, 096 Hello futur. Checklist **104 / 7 closes / 97 ouvertes (candidature, CI propre et postmain non encore acquises)**. Les 5 attestations #36, R1–R9/writer, G2B–G6, P4 réel, M32-092–094 glib #160 et toutes les preuves live restent OPEN/STOP. `PRODUCT_FIRST_PARALLEL_SAFETY` maintenue, prévenir AVANT changement. M3.2 `IN_PROGRESS_NOT_ACCEPTED` (~45% estimation inchangée), writer/R1–R9 `NOT_PROVEN`, G2B `NOT_ACCEPTED`, G2C `NOT_AUTHORIZED`, G3 `STOP_UNAVAILABLE`, historique `PENDING_EXTERNAL_ATTESTATION(21/3/2)`, prospective `NOT_STARTED`, main/WAL/SHM, WAL-index live et ABA `NOT_PROVEN`. STOP v6/v7, `M:\Fabulaxiom`, Greenfield, backups, IPC writer, migration 007, Hello OS, recovery ; CI ≠ admission.
 
 **11/11/2026 — audit PARALLÈLE CANDIDAT, zéro case nouvelle fermée.** Source protected `main=2c10a33425dc2ee3d44e60dd74c0c83ea3cb6eaa`, #341 CI source #42992164901 PASS exact HEAD, postmain #42995139801 À QUALIFIER. Pistes M32-037/049/051/095/096 : `docs/qualification/M3_2_PARALLEL_DOCUMENTARY_AUDIT_20261111.md` + cinq tests source-only et SQLite `:memory:` en CI Windows ; aucun original ni gate autorisé. **104 tâches ; M32-001/002 [x] et 102 [ ]**, dont ces cinq sujets ouverts jusqu'à preuve terminale et référence #38 append-only ; Produit+sécurité parallèle inchangée.
 
@@ -139,8 +141,9 @@
   **Preuve de clôture :** Authentifier les octets et l'identité historiques, non seulement le nom ou la description d'un ancien marqueur.
 - [ ] **M32-036** Résoudre le témoin m25/isolated_v6  
   **Preuve de clôture :** Prouver l'identité du rôle original, distincte des sauvegardes pré-M2.5 et de leurs manifests.
-- [ ] **M32-037** Si des preuves historiques authentiques manquent, enregistrer honnêtement cette limite  
+- [x] **M32-037** Si des preuves historiques authentiques manquent, enregistrer honnêtement cette limite  
   **Preuve de clôture :** Issue #36 ouverte : PENDING_EXTERNAL_ATTESTATION(21/3/2) ne devient jamais PASS par nouvelle signature.
+  **Acquis (2026-11-11 ; documentaire seulement) :** Les cinq attestations indépendantes restent absentes : #36 OPEN, PENDING_EXTERNAL_ATTESTATION(21/3/2) inchangé ; seule la consignation honnête de la limite est acquise, pas la résolution M32-032–036. #342 source HEAD `1f5e201d3e7d0ab088a65621411cc911de0472a1` CI Windows #42997104616 attempt 1 SUCCESS, protected main `4d60613daf19515d9ea63d8c145838998b85186b` postmain #42998720084 attempt 1 SUCCESS, job #130449201475 ; rapport `M3_2_PARALLEL_DOCUMENTARY_AUDIT_20261111.md`, 5 tests CI, issue #38 #6807114229. Fermeture limitée à cette portée ; PR de clôture et son postmain encore à qualifier.
 - [ ] **M32-038** Décider séparément la mise en place d'un baseline prospectif  
   **Preuve de clôture :** SOLO_OPERATOR_COMPENSATING_CONTROLS est une politique documentaire, prospective NOT_STARTED ; le futur baseline n'atteste PAS le passé.
 - [ ] **M32-039** G2-B — prouver l'identité de la source et l'absence d'un écrivain concurrent  
@@ -163,8 +166,9 @@
   **Preuve de clôture :** Périmètre explicitement autorisé, audit Windows Tauri/WebView2, pas de migration ou écriture implicite.
 - [ ] **M32-048** Avant toute migration 007 — sauvegarde cohérente non écrasante de v6  
   **Preuve de clôture :** Emplacements neufs, SHA256, digest de toutes les tables et historique des sauvegardes, contrôle du pointer ; autorisation distincte.
-- [ ] **M32-049** Séparer une éventuelle activation de production de la seule acceptation d'un projet neuf  
+- [x] **M32-049** Séparer une éventuelle activation de production de la seule acceptation d'un projet neuf  
   **Preuve de clôture :** Ne pas fusionner l'admission Greenfield NEW_ONLY avec l'autorité EXISTING_PROFILE ; chaque profil/identité requiert son gate.
+  **Acquis (2026-11-11 ; documentaire seulement) :** NEW_ONLY et EXISTING_PROFILE sont des autorités distinctes et requièrent chacune leur propre gate ; aucune admission de production n'est revendiquée. #342 source HEAD `1f5e201d3e7d0ab088a65621411cc911de0472a1` CI Windows #42997104616 attempt 1 SUCCESS, protected main `4d60613daf19515d9ea63d8c145838998b85186b` postmain #42998720084 attempt 1 SUCCESS, job #130449201475 ; rapport `M3_2_PARALLEL_DOCUMENTARY_AUDIT_20261111.md`, 5 tests CI, issue #38 #6807114229. Fermeture limitée à cette portée ; PR de clôture et son postmain encore à qualifier.
 
 ## 3. Fonctionnalités Rust/SQLite de chronologie persistante
 
@@ -172,8 +176,9 @@
 
 - [ ] **M32-050** Réconcilier la PR historique #35 sans la fusionner en bloc  
   **Preuve de clôture :** Porter uniquement les éléments utiles sur base main moderne ; détecter overlaps SQL/lib.rs/workflow, aucun effet runtime implicite.
-- [ ] **M32-051** Documenter le contrat de données v7 existant  
+- [x] **M32-051** Documenter le contrat de données v7 existant  
   **Preuve de clôture :** Calendriers fictifs scoped Universe, ancres, precedences, précision exacte/approximative/relative/inconnue, STRICT/FK/index, ids immuables.
+  **Acquis (2026-11-11 ; documentaire seulement) :** Contrat SQL candidat v7 décrit et contrôlé sur SQLite :memory: : 3 STRICT, FK, index, immutabilité, quatre temporalités, cycles ; aucune qualification du runtime v7. #342 source HEAD `1f5e201d3e7d0ab088a65621411cc911de0472a1` CI Windows #42997104616 attempt 1 SUCCESS, protected main `4d60613daf19515d9ea63d8c145838998b85186b` postmain #42998720084 attempt 1 SUCCESS, job #130449201475 ; rapport `M3_2_PARALLEL_DOCUMENTARY_AUDIT_20261111.md`, 5 tests CI, issue #38 #6807114229. Fermeture limitée à cette portée ; PR de clôture et son postmain encore à qualifier.
 - [ ] **M32-052** Rendre le service Rust chronologique accessible derrière la seule autorité admise  
   **Preuve de clôture :** API typée pour calendrier, événements, ancres, liens, listes ; refus tant que session gate NON ADMITTED.
 - [ ] **M32-053** Compléter création et lecture de calendriers par univers  
@@ -285,10 +290,12 @@
   **Addendum sécurité (11/11/2026, NON close) :** #338 MERGED, CI source #42918580459 et postmain #42920031454 completed/SUCCESS au SHA exact ; Vite 8.1.7/Rolldown 1.1.7 corrigés pour un avis ciblé. Dépendances GTK3/glib Linux et inventaire Dependabot non clos/non audités intégralement ; issue #160 OPEN_NOT_REMEDIATED.
   **Preuve partielle sécurité (2026-11-10, NON close) :** correctif candidat Vite 8.1.7 / Rolldown 1.1.7, lock officiel régénéré par npm en CI jetable #42916864109 ; PR Windows et résolution Dependabot non qualifiées au checkpoint initial, glib Linux inchangée ; voir M3_2_VITE_817_ROLLDOWN_117_SECURITY_PATCH_20261110.md.
   **Preuve de clôture :** Audit de graphe Windows vs Linux, build Linux jetable si distribution envisagée ; ne pas affirmer exploitabilité Windows sans preuve.
-- [ ] **M32-095** Documenter décisions de sécurité restantes avant distribution  
+- [x] **M32-095** Documenter décisions de sécurité restantes avant distribution  
   **Preuve de clôture :** Ne pas masquer/dismiss une alerte, justifier le périmètre de déploiement, garder #160 OPEN_NOT_REMEDIATED jusqu'au correctif qualifié.
-- [ ] **M32-096** Tenir Windows Hello comme confirmation future des actes sensibles  
+  **Acquis (2026-11-11 ; documentaire seulement) :** Registre de distribution explicite : correctif Vite ciblé, glib Linux 0.18.5 toujours non corrigé, #160 OPEN_NOT_REMEDIATED et distribution Linux NON AUTORISÉE. #342 source HEAD `1f5e201d3e7d0ab088a65621411cc911de0472a1` CI Windows #42997104616 attempt 1 SUCCESS, protected main `4d60613daf19515d9ea63d8c145838998b85186b` postmain #42998720084 attempt 1 SUCCESS, job #130449201475 ; rapport `M3_2_PARALLEL_DOCUMENTARY_AUDIT_20261111.md`, 5 tests CI, issue #38 #6807114229. Fermeture limitée à cette portée ; PR de clôture et son postmain encore à qualifier.
+- [x] **M32-096** Tenir Windows Hello comme confirmation future des actes sensibles  
   **Preuve de clôture :** L'utilisateur ne veut pas de comptes supplémentaires ; pas d'intégration native Hello avant gate propre, ne pas assimiler Hello à une provenance SQLite.
+  **Acquis (2026-11-11 ; documentaire seulement) :** Hello est une future confirmation ponctuelle, aucun compte Fabulaxiom additionnel, aucune API native ou IPC ; Hello ne prouve aucune provenance SQLite. #342 source HEAD `1f5e201d3e7d0ab088a65621411cc911de0472a1` CI Windows #42997104616 attempt 1 SUCCESS, protected main `4d60613daf19515d9ea63d8c145838998b85186b` postmain #42998720084 attempt 1 SUCCESS, job #130449201475 ; rapport `M3_2_PARALLEL_DOCUMENTARY_AUDIT_20261111.md`, 5 tests CI, issue #38 #6807114229. Fermeture limitée à cette portée ; PR de clôture et son postmain encore à qualifier.
 
 ## 7. Acceptation finale, normalisation et sorties de périmètre
 
