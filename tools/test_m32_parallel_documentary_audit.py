@@ -18,14 +18,14 @@ class DocumentaryGates(unittest.TestCase):
                      "acl/pre_repair_json", "production/activation_marker", "m25/isolated_v6"):
             self.assertIn(role, AUDIT)
         self.assertIn("issue #36", AUDIT.lower())
-        self.assertIn("- [ ] **M32-037**", CHECK)
+        self.assertIn("- [x] **M32-037**", CHECK)
 
     def test_049_greenfield_and_existing_have_different_authority(self):
         self.assertIn("NEW_ONLY", AUDIT)
         self.assertIn("EXISTING_PROFILE", AUDIT)
         self.assertIn("NOT_STARTED", (ROOT / "docs/qualification/M3_2_PROSPECTIVE_TRUST_BASELINE_DECISION.md").read_text(encoding="utf-8"))
         self.assertIn("Aucune SQLite originale", (ROOT / "docs/qualification/M3_2_GREENFIELD_NEW_ONLY_DISPOSABLE_V7_CHRONOLOGY_PERSISTENCE_20261027.md").read_text(encoding="utf-8"))
-        self.assertIn("- [ ] **M32-049**", CHECK)
+        self.assertIn("- [x] **M32-049**", CHECK)
 
     def test_051_v7_schema_exact_and_memory_negative_cases(self):
         self.assertIn("DO NOT register in the automatic migration runner", SQL)
@@ -83,7 +83,7 @@ class DocumentaryGates(unittest.TestCase):
             self.assertEqual(db.execute("PRAGMA integrity_check").fetchone()[0], "ok")
         finally:
             db.close()
-        self.assertIn("- [ ] **M32-051**", CHECK)
+        self.assertIn("- [x] **M32-051**", CHECK)
 
     def test_095_security_decisions_keep_glib_open(self):
         pkg = json.loads((ROOT / "package.json").read_text(encoding="utf-8"))
@@ -92,7 +92,7 @@ class DocumentaryGates(unittest.TestCase):
         self.assertRegex(lock, r'name = "glib"\nversion = "0\.18\.5"')
         self.assertIn("OPEN_NOT_REMEDIATED", AUDIT)
         self.assertIn("Distribution Linux NON AUTORISÉE", AUDIT)
-        self.assertIn("- [ ] **M32-095**", CHECK)
+        self.assertIn("- [x] **M32-095**", CHECK)
 
     def test_096_hello_is_future_policy_not_native_runtime(self):
         policy = (ROOT / "docs/qualification/M3_2_SINGLE_USER_WINDOWS_HELLO_SENSITIVE_CONSENT_POLICY_20261027.md").read_text(encoding="utf-8")
@@ -102,7 +102,7 @@ class DocumentaryGates(unittest.TestCase):
         self.assertRegex(lib, r'#\[cfg\(test\)\]\s*mod m32_sensitive_action_consent_tests;')
         self.assertIn("NEVER invokes Windows Hello", rust)
         self.assertNotIn("#[tauri::command]", rust)
-        self.assertIn("- [ ] **M32-096**", CHECK)
+        self.assertIn("- [x] **M32-096**", CHECK)
 
 
 if __name__ == "__main__":
