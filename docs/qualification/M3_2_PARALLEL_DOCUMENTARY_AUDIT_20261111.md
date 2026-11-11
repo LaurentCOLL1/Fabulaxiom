@@ -1,0 +1,26 @@
+# M3.2 — cinq contrôles documentaires indépendants (qualification candidate)
+
+11 novembre 2026. **CANDIDAT SOURCE-ONLY** ; parent `main=2c10a33425dc2ee3d44e60dd74c0c83ea3cb6eaa` (#341 P3r MERGED, source Windows #42992164901 SUCCESS HEAD exact, postmain #42995139801 à qualifier). `PRODUCT_FIRST_PARALLEL_SAFETY` inchangée. **Aucune case M32-xxx nouvellement fermée tant que la preuve exacte et postmain indépendante manquent.**
+
+## M32-037 — limites historiques (sans attestation recréée)
+[Issue #36](https://github.com/LaurentCOLL1/Fabulaxiom/issues/36) ouverte. **PENDING_EXTERNAL_ATTESTATION(21/3/2)** : 21 rôles historiquement épinglés, 3 rôles avec SHA observé uniquement, 2 rôles non ancrés. Cinq témoins non indépendamment attestés : `production/pre_m24_early_manifest`, `acl/original_acls`, `acl/pre_repair_json`, `production/activation_marker`, `m25/isolated_v6`. Aucune nouvelle empreinte, signature actuelle ni copie retrouvée ne répare le passé ; M32-032–036 et G2B–G6 ouverts. Preuve de ce lot : constater et conserver cette **limite** et non « authentifier ».
+
+## M32-049 — acceptations NEW_ONLY et EXISTING_PROFILE séparées
+La persistance dans `M3_2_GREENFIELD_NEW_ONLY_DISPOSABLE_V7_CHRONOLOGY_PERSISTENCE_20261027.md` est un test Windows CI sur fichiers totalement nouveaux et jetables. L'admission `NEW_ONLY` ne certifie ni le profil `EXISTING_PROFILE`, ni l'identité de ses sources, ni une production 007, ni G2B/G3. `M3_2_PROSPECTIVE_TRUST_BASELINE_DECISION.md` conserve ces autorisations et le baseline `NOT_STARTED`. **Aucune exécution du Greenfield existant, aucune activation de production.**
+
+## M32-051 — contrat SQL v7 existant, candidat uniquement
+Source : `src-tauri/sql/m3_1_world_time_v7_candidate.sql` **hors runner de migration automatique**. Trois tables `STRICT` : `fictional_calendars` (id, universe_id, name, definition_text), `world_time_anchors` (id, universe_id, calendar_id, event_entity_id, source_revision_id, time_kind et représentations), `world_time_precedences` (id, universe_id, before_anchor_id, after_anchor_id, reason, source_revision_id). Les identifiants sont uniques/immuables (TRIGGER UPDATE/DELETE abort) et les clés étrangères couvrent Universe, calendrier, événement, révision et couples ancre/Universe. Index sur Universe, calendrier, événement, révision, précédences avant et après. Les triggers vérifient le type événement, le chemin revision→scene→chapitre→roman→Universe et le refus des cycles.
+- `exact` : calendrier + label fictif requis, sans fenêtre ; `approximate` : calendrier + borne(s) et précision ; `relative` et `unknown` : pas de calendrier ou de date inventée.
+- `UNIQUE(before_anchor_id, after_anchor_id)`, `CHECK(before_anchor_id<>after_anchor_id)` ; précédences humaines explicites, ordre **partiel**, aucune conversion grégorienne.
+- Contrôle autonome : charger les seules tables fictives et ce candidat dans SQLite `:memory:` et tester quatre kinds, FK inter-Universe, cycle, UPDATE/DELETE interdits. **Ne prouve pas** admission main/WAL/SHM ni migration v7 réelle.
+
+## M32-095 — registre de décisions avant distribution
+[Issue #160](https://github.com/LaurentCOLL1/Fabulaxiom/issues/160) demeure **OPEN_NOT_REMEDIATED** : Vite 8.1.7/Rolldown 1.1.7 corrigés pour l'avis ciblé #338 mais `glib 0.18.5` transitive Linux GTK3 toujours ouverte. Pas de `Dismiss` de l'alerte, de remplacement manuel `glib 0.18→0.20`, ni de revendication de sécurité Linux. **Distribution Linux NON AUTORISÉE** avant solution amont/compatibilité et audit du graphe/CI Linux ; pas de distribution générale dans M3.2. M32-092/093/094 restent ouvertes.
+
+## M32-096 — confirmation Windows Hello future
+Source : `M3_2_SINGLE_USER_WINDOWS_HELLO_SENSITIVE_CONSENT_POLICY_20261027.md`. Un seul compte Windows utilisateur, **AUCUN compte Fabulaxiom supplémentaire**. Hello n'est qu'une confirmation locale et ponctuelle d'une **action sensible déjà autorisée**, sans PIN collecté par Fabulaxiom et avec revalidation backend ; il ne prouve ni garde SQLite, ni absence d'écrivain. `src-tauri/src/m32_sensitive_action_consent_tests.rs` est `#[cfg(test)]` uniquement, sans commande IPC ni API native Hello. Toute vraie intégration nécessite une nouvelle autorisation.
+
+## Conditions de sortie
+Ces cinq points sont indépendants entre eux et de P3r **uniquement pour l'audit documentaire**. Ce candidat n'attribue aucun `[x]` : checklist **104 identifiants, M32-001/002 [x], 102 [ ]**, M32-037/049/051/095/096 **encore [ ]**. À l'issue des preuves complètes : CI exacte de l'audit, Protect main strict `bypass_actors=[]`, reviews/threads, merge `expected_head_sha`, postmain indépendante et #38 append-only ; puis fermeture des seules obligations véritablement satisfaites dans le fichier vivant avec preuve datée, SHA, run et portée. Les obligations continues M32-003–006 et M32-104 restent ouvertes.
+
+**STOP :** M3.2 IN_PROGRESS_NOT_ACCEPTED (~45 % estimés), writer/R1–R9 NOT_PROVEN, P4 STOP, G2B NOT_ACCEPTED, G2C NOT_AUTHORIZED, G3 STOP_UNAVAILABLE, historique PENDING_EXTERNAL_ATTESTATION(21/3/2), prospective NOT_STARTED, main/WAL/SHM, WAL-index live et ABA NOT_PROVEN. Aucun fichier réel v6/v7, `M:\Fabulaxiom`, Greenfield existant, backup, IPC writer, 007, Hello OS ni recovery.
