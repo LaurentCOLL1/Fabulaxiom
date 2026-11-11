@@ -34,6 +34,11 @@ class TraceabilityAndScope(unittest.TestCase):
         closed = sum(x["status"]=="CLOSED_SCOPED" for x in MATRIX["rows"])
         self.assertEqual((closed,104-closed),(MATRIX["closed"],MATRIX["open"]))
 
+    def test_old_pr331_sha_does_not_substitute_for_final_exact_ci(self):
+        evidence = {x["id"]:x["evidence"] for x in MATRIX["rows"]}["M32-002"]
+        self.assertIn("#42751838279",evidence)
+        self.assertNotIn("#42674870251",evidence)
+
     def test_every_target_is_a_real_repo_file_and_every_gate_is_explicit(self):
         for row in MATRIX["rows"]:
             with self.subTest(row=row["id"]):
