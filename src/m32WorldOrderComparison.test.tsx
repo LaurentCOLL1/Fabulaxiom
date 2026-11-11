@@ -118,16 +118,23 @@ describe("M3.2 invented world-order comparison, no production source", () => {
   it("rejects 257-character selected IDs but permits exactly 256 in fictional data", () => {
     const limit = "x".repeat(256);
     const tooLong = limit + "x";
+    const astral = "💠".repeat(256); // 256 code points, 512 UTF-16 units.
+    const astralTooLong = astral + "💠";
     const withBoundary = { ...original, anchors: [
       ...original.anchors,
       { ...original.anchors[0], id: limit },
       { ...original.anchors[0], id: tooLong },
+      { ...original.anchors[0], id: astral },
+      { ...original.anchors[0], id: astralTooLong },
     ] };
-    expect(read(withBoundary, limit, "B")).toMatchObject({
-      relation: "incomparable", witness: [],
-    });
+    for (const valid of [limit, astral]) {
+      expect(read(withBoundary, valid, "B")).toMatchObject({
+        relation: "incomparable", witness: [],
+      });
+    }
     for (const [left, right] of [
       [tooLong, "B"], ["B", tooLong], [tooLong, tooLong],
+      [astralTooLong, "B"], ["B", astralTooLong],
     ]) {
       expect(() => read(withBoundary, left, right))
         .toThrow("256 caractères maximum");
