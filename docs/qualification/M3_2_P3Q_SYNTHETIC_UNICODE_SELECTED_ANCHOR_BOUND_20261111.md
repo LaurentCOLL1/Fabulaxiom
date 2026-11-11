@@ -1,6 +1,6 @@
 # M3.2 — P3q : borne de sélection Unicode des ancres, rapprochement Stage 25/26
 
-**11 novembre 2026 — CANDIDAT, non qualifié jusqu'à CI Windows SHA exact et postmain indépendante.**
+**11 novembre 2026 — QUALIFIÉ SOURCE ET POSTMAIN (périmètre fictif seul ; contexte initial ci-dessous).**
 Parent protected `main=95cfc9d779af8e5c564d508eb08d84b5cc2d682f` ;
 PR #338 sécurité fusionnée sous Protect main ACTIVE/strict `bypass_actors=[]`.
 CI source #42918580459 attempt 1 completed/SUCCESS au SHA
@@ -66,3 +66,9 @@ prospective `NOT_STARTED`, main/WAL/SHM et ABA invisible `NOT_PROVEN`.
 STOP données v6/v7 et backups opérateur, `M:\\Fabulaxiom`,
 profil Greenfield existant, IPC writer, migration 007, Hello, recovery.
 La CI synthétique ne qualifie pas une admission.
+
+## Qualification indépendante — 11 novembre 2026
+
+[PR #339](https://github.com/LaurentCOLL1/Fabulaxiom/pull/339) MERGED, `expected_head_sha=ae24d7f57c023fbd8ea2c4c963e5b9f5c73b1bcb`, Protect main ACTIVE strict `bypass_actors=[]`, reviews=[]/threads=[]. [CI source #42962049860](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/42962049860) attempt 1 completed/SUCCESS (HEAD exact, 90 étapes) ; main `1c657aa6584bcea1b11f5937728950614d2afed8` ; [CI postmain #42963106729](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/42963106729) attempt 1 completed/SUCCESS sur SHA exact, job Windows #130334040310 (89 SUCCESS, 1 PR-only SKIPPED). [#38 #6787709872](https://github.com/LaurentCOLL1/Fabulaxiom/issues/38#issuecomment-6787709872) déjà enregistré.
+
+**P3q qualifiée pour l'aperçu fictif seulement** ; tie-break, filtres, >512, intégration, R1–R9/P4 et acceptation M3.2 restent ouverts. Checklist 104 : 2 closes, 102 ouvertes, aucun nouveau [x].
