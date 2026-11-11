@@ -25,7 +25,7 @@
       "status": "CLOSED_SCOPED",
       "track": "GH_PROTOCOL",
       "verification_target": "tools/test_m32_handoff_contract.py",
-      "evidence": "CHECKLIST_SCOPED SHA=fb523abbc05b636d98fd93240872882f4ee57f61 RUN=#42674870251",
+      "evidence": "CHECKLIST_SCOPED SHA=fb523abbc05b636d98fd93240872882f4ee57f61 RUN=#42751838279",
       "next_proof": "NO_FURTHER_PROOF_FOR_CLOSED_SCOPE",
       "gate": "SCOPED_EVIDENCE_REQUIRED"
     },
