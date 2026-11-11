@@ -1,4 +1,39 @@
 {
+  "m32_parallel_documentary_audit_20261111": {
+    "status": "FIVE_DOCUMENTARY_TRACKS_CANDIDATE_NOT_QUALIFIED",
+    "date": "2026-11-11",
+    "parent_main": "2c10a33425dc2ee3d44e60dd74c0c83ea3cb6eaa",
+    "parent_source_pr": 341,
+    "parent_source_ci": 42992164901,
+    "parent_postmain_run": 42995139801,
+    "parent_postmain": "PENDING_TERMINAL",
+    "tasks": [
+      "M32-037",
+      "M32-049",
+      "M32-051",
+      "M32-095",
+      "M32-096"
+    ],
+    "report": "docs/qualification/M3_2_PARALLEL_DOCUMENTARY_AUDIT_20261111.md",
+    "test": "tools/test_m32_parallel_documentary_audit.py",
+    "closed_tasks": [
+      "M32-001",
+      "M32-002"
+    ],
+    "remaining_open": 102,
+    "checklist": "docs/continuity/M3_2_COMPLETION_MASTER_CHECKLIST_20261109.md",
+    "strategy": "PRODUCT_FIRST_PARALLEL_SAFETY",
+    "m32": "IN_PROGRESS_NOT_ACCEPTED",
+    "writer_r1_r9": "NOT_PROVEN",
+    "g2b": "NOT_ACCEPTED",
+    "g2c": "NOT_AUTHORIZED",
+    "g3": "STOP_UNAVAILABLE",
+    "historical": "PENDING_EXTERNAL_ATTESTATION(21/3/2)",
+    "prospective": "NOT_STARTED",
+    "atomic_main_wal_shm": "NOT_PROVEN",
+    "issue160": "OPEN_NOT_REMEDIATED",
+    "operator_data_accessed": false
+  },
   "m32_p3r_tiebreak_policy_20261111": {
     "status": "P3R_SYNTHETIC_TIEBREAK_POLICY_CANDIDATE_CI_PENDING",
     "date": "2026-11-11",
