@@ -74,8 +74,12 @@ export function compareM32WorldOrder(
   rightAnchorId: string,
 ): M32WorldComparison {
   const checked = decodeM32ChronologyProjection(snapshot, expectedUniverseId);
-  if (!nonblank(leftAnchorId) || !nonblank(rightAnchorId)) {
-    return refused("deux identifiants explicites sont requis");
+  // Match the historical Stage 25 selection contract on toy data.
+  // This is only a bound on selected IDs, never a permission to inspect
+  // live source records or infer a chronology from identifier text.
+  if (!nonblank(leftAnchorId) || !nonblank(rightAnchorId) ||
+      leftAnchorId.length > 256 || rightAnchorId.length > 256) {
+    return refused("deux identifiants explicites de 256 caractères maximum sont requis");
   }
   const byId = new Map(checked.anchors.map(anchor => [anchor.id, anchor]));
   const left = byId.get(leftAnchorId);
