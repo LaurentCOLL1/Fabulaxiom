@@ -188,7 +188,7 @@ describe("M3.2 invented world-order comparison, no production source", () => {
         .toBe("shortest_active_chain_then_edge_id");
       expect(view(fixture)).toContain("pas par ordre de saisie");
       expect(view(fixture)).not.toContain("0-old-direct");
-      expect(view(fixture)).not.toMatch(/<(button|input|form|textarea)\\b/);
+      expect(view(fixture)).not.toMatch(/<(button|input|form|textarea)\b/);
     }
     expect(JSON.stringify(first)).toBe(originalBytes);
     const shorter = { ...first, precedences: [
