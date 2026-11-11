@@ -34,7 +34,9 @@ function nonblank(v: unknown): v is string {
 function validSelectedId(value: unknown): value is string {
   if (!nonblank(value)) return false;
   let count = 0;
-  for (const _codePoint of value) {
+  for (let offset = 0; offset < value.length;) {
+    const codePoint = value.codePointAt(offset);
+    offset += codePoint !== undefined && codePoint > 0xFFFF ? 2 : 1;
     if (++count > 256) return false;
   }
   return true;
