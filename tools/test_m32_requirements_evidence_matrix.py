@@ -6,13 +6,13 @@ import unittest
 ROOT = Path(__file__).resolve().parents[1]
 CHECK = (ROOT / "docs/continuity/M3_2_COMPLETION_MASTER_CHECKLIST_20261109.md").read_text(encoding="utf-8")
 MATRIX = (ROOT / "docs/qualification/M3_2_REQUIREMENTS_EVIDENCE_MATRIX_CURRENT.md").read_text(encoding="utf-8")
-TASK = re.compile(r"^- \\[([ x])\\] \\*\\*(M32-\\d{3})\\*\\* ([^\\n]+)", re.M)
-ROW = re.compile(r"^\\| (M32-\\d{3}) \\| ([x ]) \\| (.*?) \\| \\x60([^\\x60]+)\\x60 \\| \\x60([^\\x60]+)\\x60 \\| ([A-Z_]+) \\|$", re.M)
+TASK = re.compile(r"^- \[([ x])\] \*\*(M32-\d{3})\*\* ([^\n]+)", re.M)
+ROW = re.compile(r"^\| (M32-\d{3}) \| ([x ]) \| (.*?) \| \x60([^\x60]+)\x60 \| \x60([^\x60]+)\x60 \| ([A-Z_]+) \|$", re.M)
 
 class M32EvidenceMatrixContract(unittest.TestCase):
     def test_01_104_rows_match_current_canonical_checklist(self):
         tasks = [(m.group(2),m.group(1),m.group(3).strip()) for m in TASK.finditer(CHECK)]
-        rows = [(m.group(1),m.group(2),m.group(3).replace(r"\\|", "|").strip()) for m in ROW.finditer(MATRIX)]
+        rows = [(m.group(1),m.group(2),m.group(3).replace(r"\|", "|").strip()) for m in ROW.finditer(MATRIX)]
         self.assertEqual(len(tasks),104)
         self.assertEqual(rows,tasks)
 
