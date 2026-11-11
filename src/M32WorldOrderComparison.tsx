@@ -29,6 +29,16 @@ export type M32WorldComparison = Readonly<{
 function nonblank(v: unknown): v is string {
   return typeof v === "string" && v.trim().length > 0;
 }
+// JS .length counts UTF-16 units; the Stage 25 Python limit counts Unicode
+// code points. Short-circuit beyond 256 without materializing a long array.
+function validSelectedId(value: unknown): value is string {
+  if (!nonblank(value)) return false;
+  let count = 0;
+  for (const _codePoint of value) {
+    if (++count > 256) return false;
+  }
+  return true;
+}
 function refused(message: string): never {
   throw new Error("Comparaison M3.2 refusée : " + message);
 }
@@ -77,8 +87,7 @@ export function compareM32WorldOrder(
   // Match the historical Stage 25 selection contract on toy data.
   // This is only a bound on selected IDs, never a permission to inspect
   // live source records or infer a chronology from identifier text.
-  if (!nonblank(leftAnchorId) || !nonblank(rightAnchorId) ||
-      leftAnchorId.length > 256 || rightAnchorId.length > 256) {
+  if (!validSelectedId(leftAnchorId) || !validSelectedId(rightAnchorId)) {
     return refused("deux identifiants explicites de 256 caractères maximum sont requis");
   }
   const byId = new Map(checked.anchors.map(anchor => [anchor.id, anchor]));
