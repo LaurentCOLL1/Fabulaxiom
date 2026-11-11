@@ -193,6 +193,9 @@ jobs:
       - name: M3.2 five autonomous documentary and SQLite memory audit checks
         run: python -m unittest discover -s tools -p "test_m32_parallel_documentary_audit.py" -v
 
+      - name: M3.2 104 requirements-to-tests-to-evidence source-only matrix
+        run: python -m unittest discover -s tools -p "test_m32_requirements_evidence_matrix.py" -v
+
       - name: M3.2 master completion checklist 104-item closure evidence contracts
         run: python -m unittest discover -s tools -p "test_m32_completion_master_checklist.py" -v
 
