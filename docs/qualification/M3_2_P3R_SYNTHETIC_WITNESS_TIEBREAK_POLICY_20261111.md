@@ -1,6 +1,6 @@
 # M3.2 — P3r : choix déterministe des témoins sur graphe de précédence fictif
 
-**11 novembre 2026 — CANDIDAT / NON QUALIFIÉ jusqu'à CI Windows SHA exact et postmain.** Parent protected `main=ca43ed2012c210c9184b093f6547fb327ee22d46` (#340 documentaire MERGED) ; CI source #340 #42977279125 SUCCESS (90 étapes) ; postmain #42990208545 À QUALIFIER à ce checkpoint. Protect main ACTIVE strict `bypass_actors=[]`.
+**11 novembre 2026 — CANDIDAT / NON QUALIFIÉ jusqu'à CI Windows SHA exact et postmain.** Parent protected `main=ca43ed2012c210c9184b093f6547fb327ee22d46` (#340 documentaire MERGED) ; CI source #340 #42977279125 SUCCESS (90 étapes) ; postmain #42990208545 attempt 1 completed/SUCCESS SHA exact (job Windows #130420945094 : 89 succès, 1 PR-only SKIPPED) ; checkpoint initial réconcilié. Protect main ACTIVE strict `bypass_actors=[]`.
 
 ## Contrat et écart constaté
 

@@ -1,14 +1,14 @@
 # Reprise Fabulaxiom
 
 ## Dernier checkpoint
-main=ca43ed2012c210c9184b093f6547fb327ee22d46 ; #340 MERGED CI #42977279125 PASS, postmain #42990208545 À QUALIFIER ; P3r témoin ID CANDIDAT. M3.2 IN_PROGRESS_NOT_ACCEPTED (~45 %), checklist 104 : 2/102.
+main=ca43ed2012c210c9184b093f6547fb327ee22d46 ; #340 MERGED CI #42977279125 PASS, postmain #42990208545 PASS ; P3r témoin ID CANDIDAT. M3.2 IN_PROGRESS_NOT_ACCEPTED (~45 %), checklist 104 : 2/102.
 
 ## Interdictions actives — STOP
 Writer/R1–R9 NOT_PROVEN ; P4 STOP ; G2B NOT_ACCEPTED ; G2C NOT_AUTHORIZED ; G3 STOP_UNAVAILABLE ; PENDING_EXTERNAL_ATTESTATION(21/3/2), prospective NOT_STARTED ; R2 STOP, R3 partiel, D3c conception, D3b-4/5, D3b-5 STOP ; main/WAL/SHM, live SQLite WAL-index et ABA NOT_PROVEN ; glib #160 OPEN.
 STOP v6/v7, M:\Fabulaxiom, Greenfield, backups, IPC writer, 007, Hello, recovery.
 
 ## Prochaines opérations
-1. Re-fetch main/PR/CI/Protect main bypass=[] ; postmain #42990208545.
+1. Re-fetch main/PR/CI/Protect main bypass=[] ; P3r #341 CI HEAD à qualifier.
 2. P3r tie-break ID fictif : CI HEAD puis postmain ; checklist M32-007/058/080 [ ] sans parité Stage26 globale.
 3. PRODUCT_FIRST_PARALLEL_SAFETY P3 + R2–R9 ; prévenir AVANT changement. #35/#215 DRAFT, #36/#160 OPEN, #38 append-only, expected_head_sha/postmain.
 
