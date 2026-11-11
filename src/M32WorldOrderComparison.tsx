@@ -22,6 +22,7 @@ export type M32WorldComparison = Readonly<{
   right_anchor_id: string;
   relation: M32WorldRelation;
   witness: readonly M32WitnessStep[];
+  witness_selection_policy: "shortest_active_chain_then_edge_id";
   data_origin: "synthetic_in_memory_only";
   edit_controls_available: false;
 }>;
@@ -54,8 +55,8 @@ function witnessStep(edge: M32PrecedenceProjection): M32WitnessStep {
 }
 
 /** A bounded breadth-first proof over ONLY currently active declared edges.
- * Sorted by immutable edge ID so the choice among multiple witnesses is stable.
- * A returned witness is an illustrative authored chain, not an audit signature.
+ * Equal-length chains use immutable edge-ID ordering, NOT historical insertion.
+ * A returned witness is illustrative, not unique chronology or an audit signature.
  */
 function findWitness(
   adjacency: ReadonlyMap<string, readonly M32PrecedenceProjection[]>,
@@ -143,7 +144,9 @@ export function compareM32WorldOrder(
   if (leftAnchorId === rightAnchorId) {
     return {
       left_anchor_id: leftAnchorId, right_anchor_id: rightAnchorId,
-      relation: "same", witness: [], data_origin: "synthetic_in_memory_only",
+      relation: "same", witness: [],
+      witness_selection_policy: "shortest_active_chain_then_edge_id",
+      data_origin: "synthetic_in_memory_only",
       edit_controls_available: false,
     };
   }
@@ -154,6 +157,7 @@ export function compareM32WorldOrder(
     right_anchor_id: rightAnchorId,
     relation: forward ? "before" : reverse ? "after" : "incomparable",
     witness: forward ?? reverse ?? [],
+    witness_selection_policy: "shortest_active_chain_then_edge_id",
     data_origin: "synthetic_in_memory_only",
     edit_controls_available: false,
   };
@@ -198,6 +202,9 @@ export default function M32WorldOrderComparison({
       {" "}<code>{value.left_anchor_id}</code> / <code>{value.right_anchor_id}</code>
     </p>
     <p role="status">{descriptions[value.relation]}</p>
+    <p>Les éventuelles chaînes justificatives sont minimales ; à longueur égale,
+      une chaîne est choisie par identifiants de relations, pas par ordre de saisie.
+      Ce témoin est illustratif et non une chronologie totale.</p>
     {value.witness.length ? <section aria-label="Justification des précédences">
       <h3>Relations humaines justificatives</h3>
       <ol>{value.witness.map(step => <li key={step.precedence_id}>
