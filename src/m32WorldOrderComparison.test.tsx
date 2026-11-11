@@ -172,6 +172,39 @@ describe("M3.2 invented world-order comparison, no production source", () => {
     ] };
     expect(read(extra).witness.map(x => x.precedence_id)).toEqual(["a-edge", "a-end"]);
   });
+  it("documents the stable ID tie-break despite insertion order and revoked shortcuts", () => {
+    const edges = [
+      addedEdge("A", "D", "z-route"), addedEdge("D", "C", "z-tail"),
+      addedEdge("A", "B", "a-route"), addedEdge("B", "C", "a-tail"),
+      { ...addedEdge("A", "C", "0-old-direct"), status: "revoked" as const },
+    ];
+    const first = { ...original, precedences: edges };
+    const reversed = { ...first, precedences: [...edges].reverse() };
+    const originalBytes = JSON.stringify(first);
+    for (const fixture of [first, reversed]) {
+      expect(read(fixture).witness.map(step => step.precedence_id))
+        .toEqual(["a-route", "a-tail"]);
+      expect(read(fixture).witness_selection_policy)
+        .toBe("shortest_active_chain_then_edge_id");
+      expect(view(fixture)).toContain("pas par ordre de saisie");
+      expect(view(fixture)).not.toContain("0-old-direct");
+      expect(view(fixture)).not.toMatch(/<(button|input|form|textarea)\\b/);
+    }
+    expect(JSON.stringify(first)).toBe(originalBytes);
+    const shorter = { ...first, precedences: [
+      ...edges, addedEdge("A", "C", "zz-new-direct"),
+    ] };
+    expect(read(shorter).witness.map(step => step.precedence_id))
+      .toEqual(["zz-new-direct"]);
+    expect(read(original, "B", "B")).toMatchObject({
+      relation: "same", witness: [],
+      witness_selection_policy: "shortest_active_chain_then_edge_id",
+    });
+    expect(read(original, "D", "E")).toMatchObject({
+      relation: "incomparable", witness: [],
+      witness_selection_policy: "shortest_active_chain_then_edge_id",
+    });
+  });
   it("displays the authored justification chain and read-only status", () => {
     const html = view();
     expect(html).toContain("Avant : précédence humaine");
