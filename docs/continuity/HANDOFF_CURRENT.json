@@ -1,4 +1,22 @@
 {
+  "m32_078_stage_provenance_v3_20261112": {
+    "status": "CI_STEP_SCOPED_CANDIDATE_NO_CLOSURE",
+    "date": "2026-11-12",
+    "parent_main": "405977431e20641ad01b7f045d85a285748a8a8c",
+    "parent_merged_pr": 347,
+    "parent_source_run": 43239109454,
+    "parent_postmain_run": 43245292035,
+    "parent_postmain_status": "IN_PROGRESS_NON_QUALIFIED",
+    "task": "M32-078",
+    "task_status": "OPEN_NOT_ACCEPTED",
+    "workflow_step_evidence_count": 8,
+    "individual_test_success_claims": 0,
+    "operator_access": false,
+    "closed": 8,
+    "open": 96,
+    "gate": "IN_PROGRESS_NOT_ACCEPTED",
+    "strategy": "PRODUCT_FIRST_PARALLEL_SAFETY"
+  },
   "m32_078_provenance_v2_20261112": {
     "status": "M32_078_PROVENANCE_V2_CANDIDATE_NO_CLOSURE",
     "parent_main": "c92b291402be956e97b172925232058115c6df39",
