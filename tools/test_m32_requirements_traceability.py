@@ -47,7 +47,7 @@ class TraceabilityAndScope(unittest.TestCase):
 
     def test_r1_r9_g2_and_later_release_not_falsely_closed(self):
         index={x["id"]:x for x in MATRIX["rows"]}
-        for n in list(range(9,37))+list(range(38,49))+[52,63,64,88,89,90,93,94,97,98,99,100,101,102,103,104]:
+        for n in list(range(9,37))+list(range(38,49))+[52,63,64,88,89,90,93,94,97,98,99,100,101,102,103]:
             self.assertEqual(index[f"M32-{n:03d}"]["status"],"OPEN_NOT_ACCEPTED")
         self.assertIn("PENDING_EXTERNAL_ATTESTATION(21/3/2)",CHECK)
         self.assertIn("OPEN_NOT_REMEDIATED",CHECK)
@@ -57,9 +57,26 @@ class TraceabilityAndScope(unittest.TestCase):
             self.assertIn(term,SCOPE)
         for term in ("M3.3","M3.6","M4","M5","M6","M7","M8","M9"):
             self.assertIn(term,ROADMAP)
-        for n in ("078","104"):
+        for n in ("078",):
             self.assertIn(f"- [ ] **M32-{n}**",CHECK)
+        self.assertIn("- [x] **M32-104**",CHECK)
         self.assertIn("PRODUCT_FIRST_PARALLEL_SAFETY",SCOPE)
+
+    def test_104_documentary_boundary_closure_never_grants_deferred_features(self):
+        row = next(x for x in MATRIX["rows"] if x["id"] == "M32-104")
+        self.assertEqual(row["status"], "CLOSED_SCOPED")
+        self.assertIn("SHA=c4a04c59934064832dd7c700dcf39e25e729f88a",row["evidence"])
+        self.assertIn("RUN=#43117900804",row["evidence"])
+        self.assertIn("POSTMAIN_RUN=#43154409245",row["evidence"])
+        self.assertIn("JOURNAL=#6825809694",row["evidence"])
+        for marker in ("M32-104 [x]","M32-078 [ ]","IN_PROGRESS_NOT_ACCEPTED",
+                       "PRODUCT_FIRST_PARALLEL_SAFETY","aucune admission"):
+            self.assertIn(marker,SCOPE)
+        for phrase in ("M3.3", "M3.4", "M3.5", "M3.6", "M4", "M5",
+                       "M6", "M7", "M8", "M9", "Ollama", "ComfyUI"):
+            self.assertIn(phrase,SCOPE)
+        self.assertEqual(MATRIX["gate"], "IN_PROGRESS_NOT_ACCEPTED")
+        self.assertEqual((MATRIX["total"],MATRIX["closed"],MATRIX["open"]),(104,8,96))
 
     def test_metadata_does_not_grant_writer_admission(self):
         self.assertEqual(MATRIX["gate"],"IN_PROGRESS_NOT_ACCEPTED")

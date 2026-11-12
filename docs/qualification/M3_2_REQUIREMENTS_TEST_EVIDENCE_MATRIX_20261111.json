@@ -3,9 +3,9 @@
   "date": "2026-11-11",
   "source_main": "b2b032c0010a9d879103718cfa0786a827c5ac56",
   "total": 104,
-  "closed": 7,
-  "open": 97,
-  "status": "CANDIDATE_SOURCE_ONLY",
+  "closed": 8,
+  "open": 96,
+  "status": "CANDIDATE_SCOPED_104_PENDING_OWN_CI",
   "strategy": "PRODUCT_FIRST_PARALLEL_SAFETY",
   "gate": "IN_PROGRESS_NOT_ACCEPTED",
   "rows": [
@@ -1042,11 +1042,11 @@
     {
       "id": "M32-104",
       "criterion": "Conserver M3.3–M3.6, M4–M9, Ollama créatif, cohérence IA et ComfyUI hors M3.2",
-      "status": "OPEN_NOT_ACCEPTED",
+      "status": "CLOSED_SCOPED",
       "track": "ACCEPTANCE_AND_SCOPE",
       "verification_target": "tools/test_m32_requirements_traceability.py",
-      "evidence": "NONE_ACCEPTED",
-      "next_proof": "Aucun lancement implicite de subdivision suivante, pas de release/production générale attribuée à cette seule étape.",
+      "evidence": "CHECKLIST_SCOPED SHA=c4a04c59934064832dd7c700dcf39e25e729f88a RUN=#43117900804 POSTMAIN_SHA=33d701cc372c50178e8d9b0839761a77a1514652 POSTMAIN_RUN=#43154409245 JOURNAL=#6825809694",
+      "next_proof": "NO_FURTHER_PROOF_FOR_CLOSED_SCOPE",
       "gate": "SCOPED_EVIDENCE_REQUIRED"
     }
   ]
