@@ -78,6 +78,50 @@ class TraceabilityAndScope(unittest.TestCase):
         self.assertEqual(MATRIX["gate"], "IN_PROGRESS_NOT_ACCEPTED")
         self.assertEqual((MATRIX["total"],MATRIX["closed"],MATRIX["open"]),(104,8,96))
 
+    def test_104_provenance_records_never_invent_acceptance(self):
+        """Workflow PASS is not a per-test PASS or operator admission."""
+        expected = {
+            "M32-001": (42699790716, "bef699511ff18e987a4858c797fde7aa88dfc59b", "2026-11-09", "push"),
+            "M32-002": (42751838279, "fb523abbc05b636d98fd93240872882f4ee57f61", "2026-11-10", "pull_request"),
+            **{
+                i: (42997104616, "1f5e201d3e7d0ab088a65621411cc911de0472a1", "2026-11-11", "pull_request")
+                for i in ("M32-037", "M32-049", "M32-051", "M32-095", "M32-096")
+            },
+            "M32-104": (43117900804, "c4a04c59934064832dd7c700dcf39e25e729f88a", "2026-11-11", "pull_request"),
+        }
+        self.assertEqual(MATRIX["provenance_review_date"], "2026-11-12")
+        self.assertEqual(set(expected), {x["id"] for x in MATRIX["rows"] if x["status"]=="CLOSED_SCOPED"})
+        for row in MATRIX["rows"]:
+            proof = row["proof_audit"]
+            with self.subTest(row=row["id"]):
+                self.assertEqual(proof["record_review_date"], "2026-11-12")
+                self.assertEqual(proof["test_target_name"], Path(row["verification_target"]).name)
+                self.assertEqual(proof["target_role"],
+                    "CANDIDATE_VERIFICATION_TARGET_NOT_AN_INDIVIDUAL_TEST_ATTESTATION")
+                self.assertTrue(proof["acceptance_expectation"].strip())
+                self.assertIsNone(proof["individual_test_step_result"])
+                self.assertIs(proof["operator_runtime_acceptance"], False)
+                if row["id"] in expected:
+                    run, sha, date, event = expected[row["id"]]
+                    self.assertEqual(proof["workflow_run_id"], run)
+                    self.assertEqual(proof["workflow_head_sha"], sha)
+                    self.assertEqual(proof["workflow_run_date"], date)
+                    self.assertEqual(proof["workflow_event"], event)
+                    self.assertEqual(proof["workflow_attempt"], 1)
+                    self.assertEqual(proof["workflow_result"], "COMPLETED_SUCCESS_WORKFLOW_ONLY")
+                    self.assertEqual(proof["workflow_log_reference"],
+                        f"https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/{run}")
+                    self.assertIn(sha,row["evidence"])
+                    self.assertIn(f"#{run}",row["evidence"])
+                else:
+                    for key in ("workflow_run_id","workflow_head_sha","workflow_run_date",
+                                "workflow_event","workflow_attempt","workflow_log_reference"):
+                        self.assertIsNone(proof[key])
+                    self.assertEqual(proof["workflow_result"], "NO_ACCEPTED_WORKFLOW")
+                    self.assertEqual(row["evidence"], "NONE_ACCEPTED")
+        self.assertEqual((MATRIX["total"],MATRIX["closed"],MATRIX["open"]),(104,8,96))
+        self.assertIn("- [ ] **M32-078**", CHECK)
+
     def test_metadata_does_not_grant_writer_admission(self):
         self.assertEqual(MATRIX["gate"],"IN_PROGRESS_NOT_ACCEPTED")
         for term in ("R1–R9 NOT_PROVEN","G3 STOP_UNAVAILABLE","P4 STOP","Greenfield"):
