@@ -1,4 +1,18 @@
 {
+  "m32_p3s_unicode_scalar_20261112": {
+    "status": "P3S_CANDIDATE_UNQUALIFIED",
+    "parent_main": "33d701cc372c50178e8d9b0839761a77a1514652",
+    "source_pr": 344,
+    "source_ci": 43117900804,
+    "source_postmain_ci": 43154409245,
+    "source_postmain_state": "IN_PROGRESS",
+    "scope": "SYNTHETIC_ONLY_NONMOUNTED",
+    "checklist_total": 104,
+    "closed": 7,
+    "open": 97,
+    "strategy": "PRODUCT_FIRST_PARALLEL_SAFETY",
+    "gate": "IN_PROGRESS_NOT_ACCEPTED"
+  },
   "m32_parallel_matrix_scope_audits_20261111": {
     "status": "M32_078_AND_104_CANDIDATES_OWN_CI_PENDING",
     "date": "2026-11-11",

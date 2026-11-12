@@ -205,6 +205,32 @@ describe("M3.2 invented world-order comparison, no production source", () => {
       witness_selection_policy: "shortest_active_chain_then_edge_id",
     });
   });
+  it("uses Unicode scalar order for equal-length synthetic witnesses", () => {
+    const ascii = { ...original, precedences: [
+      addedEdge("A", "D", "a-start"), addedEdge("D", "C", "a-end"),
+      addedEdge("A", "B", "Z-start"), addedEdge("B", "C", "Z-end"),
+    ] };
+    // U+005A ('Z') precedes U+0061 ('a'), regardless of locale.
+    for (const edges of [ascii.precedences, [...ascii.precedences].reverse()]) {
+      expect(read({ ...ascii, precedences: edges }).witness.map(x => x.precedence_id))
+        .toEqual(["Z-start", "Z-end"]);
+    }
+    const astral = { ...original, precedences: [
+      addedEdge("A", "D", "💠-start"), addedEdge("D", "C", "💠-end"),
+      addedEdge("A", "B", "\uE000-start"), addedEdge("B", "C", "\uE000-end"),
+    ] };
+    // U+E000 precedes U+1F4A0, unlike UTF-16 code-unit order.
+    const revoked = { ...addedEdge("A", "C", "0-old-direct"), status: "revoked" as const };
+    const fixture = { ...astral, precedences: [revoked, ...astral.precedences] };
+    for (const edges of [fixture.precedences, [...fixture.precedences].reverse()]) {
+      const result = read({ ...fixture, precedences: edges });
+      expect(result.witness.map(x => x.precedence_id))
+        .toEqual(["\uE000-start", "\uE000-end"]);
+      expect(result.witness_selection_policy).toBe("shortest_active_chain_then_edge_id");
+    }
+    expect(view(fixture)).not.toContain("0-old-direct");
+  });
+
   it("displays the authored justification chain and read-only status", () => {
     const html = view();
     expect(html).toContain("Avant : précédence humaine");
