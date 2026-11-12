@@ -1,0 +1,9 @@
+# M3.2 P3u — oracle indépendant des cycles orientés
+
+**12 novembre 2026 : CANDIDAT TEST-ONLY, SANS ADMISSION.** Parent protected `main=e4d4c9f123a9b3eb20357d04c4d3568b4d5c9a0c`, #349 P3t MERGED, CI source Windows #43296795034 attempt 1 completed/SUCCESS HEAD exact `0f158437d27884546b2c1d7e45c701d6a1c35f30` ; postmain indépendante #43301952056 **EN COURS/NON QUALIFIÉE au checkpoint**.
+
+Le test `src/m32WorldOrderComparison.test.tsx` explore **4096 graphes orientés fictifs**, toutes combinaisons de 12 arcs possibles sur quatre ancres A–D (aucune boucle sur soi). Deux permutations des arcs actifs sont soumises au décodeur React non monté. Un oracle distinct détermine les cycles par pile DFS et l'accessibilité avant/après ; il ne reprend ni le tri topologique de production ni le BFS de sélection des témoins. Les cas avec cycles sont refusés, y compris pour une demande E/E sans rapport avec le cycle, sans affichage de conclusion partielle. Les cas acycliques respectent comparabilité, inversion avant/après et incomparabilité ; les anciennes relations révoquées restent historiques et aucun snapshot n'est muté.
+
+**Limites :** banc sur fixtures inventées et de petite taille, pas une preuve de correction universelle, de parité Stage25/26 Python, de transaction/rollback SQLite, ni d'admission réelle. **M32-080 reste [ ]** et M32-078 [ ]. Checklist 104 : 8 closes, 96 ouvertes. M3.2 IN_PROGRESS_NOT_ACCEPTED (~45 %) et PRODUCT_FIRST_PARALLEL_SAFETY inchangées, writer/R1–R9 NOT_PROVEN, P4 STOP, G2B NOT_ACCEPTED, G2C NOT_AUTHORIZED, G3 STOP_UNAVAILABLE, #36 attestations OPEN, #160 glib Linux OPEN.
+
+Qualification requise : CI Windows terminale au HEAD exact, reviews/threads, Protect main ACTIVE strict bypass=[], squash expected_head_sha, postmain indépendante et issue #38 append-only. STOP originaux v6/v7, M:\Fabulaxiom, Greenfield, backups, IPC writer, migration 007, Hello natif et recovery.

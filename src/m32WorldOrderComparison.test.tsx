@@ -363,4 +363,104 @@ describe("M3.2 invented world-order comparison, no production source", () => {
     }
   });
 
+  it("exhaustively refuses cyclic four-vertex directed graphs, with no partial conclusion", () => {
+    // 4 fictitious current anchors, 12 possible non-self directed arcs,
+    // 2^12=4096 finite graphs, including cycles and contradictory directions.
+    const names = ["A", "B", "C", "D"];
+    const oriented = names.flatMap(before => names
+      .filter(after => after !== before)
+      .map(after => ({ before, after })));
+    expect(oriented).toHaveLength(12);
+    const all = oriented.map(({ before, after }) =>
+      addedEdge(before, after, "arc-" + before + "-" + after));
+    const retired = {
+      ...addedEdge("C", "A", "revoked-shortcut"), status: "revoked" as const,
+    };
+
+    // Independent DFS oracle: recursion-stack cycle detection and reachability,
+    // not the product's in-degree/toposort or breadth-first witness algorithm.
+    function graphFrom(edges: typeof all): Map<string, string[]> {
+      const graph = new Map(names.map(n => [n, [] as string[]]));
+      for (const e of edges) graph.get(e.before_anchor_id)!.push(e.after_anchor_id);
+      return graph;
+    }
+    function hasCycle(graph: ReadonlyMap<string, readonly string[]>): boolean {
+      const entered = new Set<string>();
+      const finished = new Set<string>();
+      function visit(node: string): boolean {
+        if (entered.has(node)) return true;
+        if (finished.has(node)) return false;
+        entered.add(node);
+        for (const next of graph.get(node) ?? []) {
+          if (visit(next)) return true;
+        }
+        entered.delete(node);
+        finished.add(node);
+        return false;
+      }
+      return names.some(name => visit(name));
+    }
+    function reaches(graph: ReadonlyMap<string, readonly string[]>,
+      origin: string, destination: string): boolean {
+      const visited = new Set<string>();
+      const pending = [origin];
+      while (pending.length) {
+        const at = pending.pop()!;
+        if (at === destination) return true;
+        if (visited.has(at)) continue;
+        visited.add(at);
+        pending.push(...(graph.get(at) ?? []));
+      }
+      return false;
+    }
+
+    let cyclic = 0;
+    let acyclic = 0;
+    for (let mask = 0; mask < 1 << all.length; mask += 1) {
+      const active = all.filter((_, i) => (mask & (1 << i)) !== 0);
+      const graph = graphFrom(active);
+      const cycle = hasCycle(graph);
+      if (cycle) cyclic += 1;
+      else acyclic += 1;
+      const forward = reaches(graph, "A", "C");
+      const backward = reaches(graph, "C", "A");
+      for (const ordered of [active, [...active].reverse()]) {
+        const fixture: M32ChronologyProjection = {
+          ...original, precedences: [retired, ...ordered],
+        };
+        const before = JSON.stringify(fixture);
+        if (cycle) {
+          expect(() => read(fixture, "A", "C")).toThrow(/cycle/);
+          // Fail closed even if the requested anchors are the same,
+          // or an unrelated E is not part of this directed subgraph.
+          expect(() => read(fixture, "E", "E")).toThrow(/cycle/);
+          const html = view(fixture, "A", "C");
+          expect(html).toContain("Comparaison refusée");
+          expect(html).not.toContain("revoked-shortcut");
+          expect(html).not.toMatch(/<(button|input|form|textarea)\\b/);
+        } else {
+          expect(forward && backward).toBe(false);
+          const left = read(fixture, "A", "C");
+          const right = read(fixture, "C", "A");
+          const relation = forward ? "before" : backward ? "after" : "incomparable";
+          expect(left.relation).toBe(relation);
+          expect(right.relation).toBe(
+            relation === "before" ? "after" :
+            relation === "after" ? "before" : "incomparable");
+          expect(left.witness.every(step =>
+            active.some(edge => edge.id === step.precedence_id))).toBe(true);
+          expect(left.witness.map(step => step.precedence_id))
+            .not.toContain("revoked-shortcut");
+          expect(read(fixture, "E", "E")).toMatchObject({relation: "same", witness: []});
+          expect(left.edit_controls_available).toBe(false);
+          expect(left.data_origin).toBe("synthetic_in_memory_only");
+        }
+        expect(JSON.stringify(fixture)).toBe(before);
+      }
+    }
+    expect(cyclic + acyclic).toBe(4096);
+    expect(cyclic).toBeGreaterThan(0);
+    expect(acyclic).toBeGreaterThan(0);
+  }, 30000);
+
 });
