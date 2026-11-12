@@ -1,4 +1,22 @@
 {
+  "m32_p3u_directed_graph_cycle_oracle_20261112": {
+    "date": "2026-11-12",
+    "status": "P3U_DIRECTED_GRAPH_CYCLE_ORACLE_UNQUALIFIED",
+    "parent_main": "e4d4c9f123a9b3eb20357d04c4d3568b4d5c9a0c",
+    "previous_merged_pr": 349,
+    "previous_source_ci": 43296795034,
+    "previous_postmain_ci": 43301952056,
+    "previous_postmain_status": "IN_PROGRESS_UNQUALIFIED",
+    "scope": "FOUR_ANCHOR_4096_DIRECTED_GRAPHS_TEST_ONLY",
+    "task": "M32-080",
+    "task_status": "OPEN_NOT_ACCEPTED",
+    "operator_data_access": false,
+    "checklist_total": 104,
+    "closed": 8,
+    "open": 96,
+    "gate": "IN_PROGRESS_NOT_ACCEPTED",
+    "strategy": "PRODUCT_FIRST_PARALLEL_SAFETY"
+  },
   "m32_p3t_finite_dag_oracle_20261112": {
     "status": "P3T_EXHAUSTIVE_FINITE_DAG_CANDIDATE_UNQUALIFIED",
     "date": "2026-11-12",
