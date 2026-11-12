@@ -1,4 +1,27 @@
 {
+  "m32_p3v_two_universe_isolation_20261112": {
+    "date": "2026-11-12",
+    "status": "P3V_TWO_UNIVERSES_SYNTHETIC_CANDIDATE_UNQUALIFIED",
+    "parent_main": "1e85594dde1080c43c0a22509d962f732d08a4e2",
+    "previous_merged_pr": 351,
+    "previous_source_ci": 43315035856,
+    "previous_postmain_ci": 43317923849,
+    "previous_postmain_status": "IN_PROGRESS_UNQUALIFIED",
+    "test_file": "src/m32WorldOrderIsolation.test.tsx",
+    "scope": "TWO_UNIVERSES_HOMONYMS_TWO_NOVELS_FOUR_TEMPORAL_KINDS",
+    "task_ids": [
+      "M32-079",
+      "M32-082",
+      "M32-083"
+    ],
+    "task_status": "OPEN_NOT_ACCEPTED",
+    "operator_data_access": false,
+    "checklist_total": 104,
+    "closed": 8,
+    "open": 96,
+    "gate": "IN_PROGRESS_NOT_ACCEPTED",
+    "strategy": "PRODUCT_FIRST_PARALLEL_SAFETY"
+  },
   "m32_p3u_merged_source_ci_20261112": {
     "date": "2026-11-12",
     "status": "P3U_MERGED_SOURCE_QUALIFIED_POSTMAIN_PENDING",
