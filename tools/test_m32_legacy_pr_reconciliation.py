@@ -59,12 +59,14 @@ class LegacyPRReconciliationTests(unittest.TestCase):
         self.assertNotIn("- [x] **M32-007**", self.checklist)
         tasks = re.findall(r"^- \[([ x])\] \*\*(M32-\d{3})\*\*", self.checklist, re.M)
         self.assertEqual(len(tasks), 104)
-        # Only five separately documented obligations closed; historical PR #35/#215 stays OPEN.
+        # Seven previous documentary/protocol closures plus M32-104 scope-only.
+        # Neither the historical #35/#215 source nor R1-R9 writer is admitted.
         actual_closed = {task for state, task in tasks if state == "x"}
         self.assertEqual(actual_closed, {
             "M32-001", "M32-002", "M32-037", "M32-049",
-            "M32-051", "M32-095", "M32-096",
+            "M32-051", "M32-095", "M32-096", "M32-104",
         })
+        self.assertIn("- [ ] **M32-078**", self.checklist)
         self.assertIn("AUCUNE case nouvelle clôturée", self.doc)
         for flag in ("PRODUCT_FIRST_PARALLEL_SAFETY", "IN_PROGRESS_NOT_ACCEPTED",
                      "NOT_PROVEN", "STOP_UNAVAILABLE",
