@@ -283,4 +283,84 @@ describe("M3.2 invented world-order comparison, no production source", () => {
     };
     expect(read(fixture, "fiction-0", "fiction-511").relation).toBe("incomparable");
   });
+  it("exhaustively checks all five-event active DAGs against an independent path oracle", () => {
+    // Five fictional events have ten possible before/after pairs and 2^10
+    // acyclic subsets; no operator data, IPC, dates or persistence.
+    const ids = ["A", "B", "C", "D", "E"];
+    const pairs: { before: string; after: string }[] = [];
+    for (let i = 0; i < ids.length; i += 1) {
+      for (let j = i + 1; j < ids.length; j += 1) {
+        pairs.push({ before: ids[i], after: ids[j] });
+      }
+    }
+    expect(pairs).toHaveLength(10);
+    const allEdges = pairs.map(({ before, after }, index) => ({
+      ...addedEdge(before, after, "edge-" + String(index).padStart(2, "0")),
+      reason: "Motif humain " + String(index),
+    }));
+    // Historical direct assertions must not become a shortcut.
+    const historical = {
+      ...addedEdge("A", "E", "historical-direct"),
+      status: "revoked" as const,
+    };
+
+    // Intentionally independent of breadth-first search or sorting adjacency:
+    // enumerate every A->E simple path, then choose fewest edges and
+    // lexical edge IDs. The DAG structure makes recursion finite.
+    function oracle(edges: typeof allEdges): string[] | null {
+      const successors = new Map<string, typeof allEdges>();
+      for (const edge of edges) {
+        const previous = successors.get(edge.before_anchor_id) ?? [];
+        successors.set(edge.before_anchor_id, [...previous, edge]);
+      }
+      const paths: string[][] = [];
+      function enumerate(at: string, used: string[]): void {
+        if (at === "E") {
+          paths.push(used);
+          return;
+        }
+        for (const edge of successors.get(at) ?? []) {
+          enumerate(edge.after_anchor_id, [...used, edge.id]);
+        }
+      }
+      enumerate("A", []);
+      paths.sort((a, b) => {
+        if (a.length !== b.length) return a.length - b.length;
+        for (let i = 0; i < a.length; i += 1) {
+          if (a[i] !== b[i]) return a[i] < b[i] ? -1 : 1;
+        }
+        return 0;
+      });
+      return paths[0] ?? null;
+    }
+
+    for (let mask = 0; mask < (1 << pairs.length); mask += 1) {
+      const selected = allEdges.filter((_, i) => (mask & (1 << i)) !== 0);
+      const expected = oracle(selected);
+      for (const arranged of [selected, [...selected].reverse()]) {
+        const fixture: M32ChronologyProjection = {
+          ...original, precedences: [...arranged, historical],
+        };
+        const fixtureBytes = JSON.stringify(fixture);
+        const forward = read(fixture, "A", "E");
+        const backward = read(fixture, "E", "A");
+        expect(forward.relation).toBe(expected ? "before" : "incomparable");
+        expect(backward.relation).toBe(expected ? "after" : "incomparable");
+        expect(forward.witness.map(step => step.precedence_id))
+          .toEqual(expected ?? []);
+        expect(backward.witness.map(step => step.precedence_id))
+          .toEqual(expected ?? []);
+        expect(forward.witness.map(step => step.human_reason))
+          .toEqual(expected?.map(id => allEdges.find(e => e.id === id)!.reason) ?? []);
+        expect(forward.witness_selection_policy)
+          .toBe("shortest_active_chain_then_edge_id");
+        expect(forward.data_origin).toBe("synthetic_in_memory_only");
+        expect(forward.edit_controls_available).toBe(false);
+        expect(JSON.stringify(fixture)).toBe(fixtureBytes);
+        expect(forward.witness.map(step => step.precedence_id))
+          .not.toContain("historical-direct");
+      }
+    }
+  });
+
 });

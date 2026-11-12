@@ -1,4 +1,23 @@
 {
+  "m32_p3t_finite_dag_oracle_20261112": {
+    "status": "P3T_EXHAUSTIVE_FINITE_DAG_CANDIDATE_UNQUALIFIED",
+    "date": "2026-11-12",
+    "parent_main": "c2fedec22778812db21486b4c2dbba7cf39b6cb6",
+    "parent_merged_pr": 348,
+    "prior_source_ci": 43246445107,
+    "prior_postmain_ci": 43295484390,
+    "prior_postmain_status": "IN_PROGRESS_UNQUALIFIED",
+    "scope": "1024_SYNTHETIC_FIVE_ANCHOR_DAGS_ONLY",
+    "two_permutations": true,
+    "source_production_access": false,
+    "task": "M32-080",
+    "task_status": "OPEN_NOT_ACCEPTED",
+    "checklist_total": 104,
+    "closed": 8,
+    "open": 96,
+    "gate": "IN_PROGRESS_NOT_ACCEPTED",
+    "strategy": "PRODUCT_FIRST_PARALLEL_SAFETY"
+  },
   "m32_078_stage_provenance_v3_20261112": {
     "status": "CI_STEP_SCOPED_CANDIDATE_NO_CLOSURE",
     "date": "2026-11-12",
