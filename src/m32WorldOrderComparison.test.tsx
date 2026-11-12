@@ -380,7 +380,7 @@ describe("M3.2 invented world-order comparison, no production source", () => {
     // Independent DFS oracle: recursion-stack cycle detection and reachability,
     // not the product's in-degree/toposort or breadth-first witness algorithm.
     function graphFrom(edges: typeof all): Map<string, string[]> {
-      const graph = new Map(names.map(n => [n, [] as string[]]));
+      const graph = new Map<string, string[]>(names.map(n => [n, []]));
       for (const e of edges) graph.get(e.before_anchor_id)!.push(e.after_anchor_id);
       return graph;
     }
