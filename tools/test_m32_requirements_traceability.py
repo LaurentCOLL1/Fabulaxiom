@@ -122,6 +122,45 @@ class TraceabilityAndScope(unittest.TestCase):
         self.assertEqual((MATRIX["total"],MATRIX["closed"],MATRIX["open"]),(104,8,96))
         self.assertIn("- [ ] **M32-078**", CHECK)
 
+    def test_scoped_ci_job_steps_are_not_individual_test_or_operator_proofs(self):
+        expected = {
+            "M32-001": (129441151373, 28, "M3.2 living handoff source-only contract checks"),
+            "M32-002": (129617016279, 28, "M3.2 living handoff source-only contract checks"),
+            **{key: (130443816096, 30, "M3.2 five autonomous documentary and SQLite memory audit checks")
+               for key in ("M32-037", "M32-049", "M32-051")},
+            **{key: (130443816096, 27, "M3.2 V1 roadmap source-only consistency 9 tests")
+               for key in ("M32-095", "M32-096")},
+            "M32-104": (130850528111, 32,
+                "M3.2 requirements test evidence 104-task matrix and deferred phase scope"),
+        }
+        self.assertEqual(MATRIX["workflow_step_review_date"], "2026-11-12")
+        for row in MATRIX["rows"]:
+            stage = row["workflow_step_audit"]
+            with self.subTest(row=row["id"]):
+                self.assertEqual(stage["step_review_date"], "2026-11-12")
+                self.assertIs(stage["CI_step_does_not_equal_individual_test_assertion"], True)
+                self.assertIs(stage["Windows_operator_workflow_admission"], False)
+                self.assertIsNone(row["proof_audit"]["individual_test_step_result"])
+                if row["id"] in expected:
+                    job, number, name = expected[row["id"]]
+                    self.assertEqual((stage["job_id"],stage["step_number"],stage["step_name"]),
+                                     (job,number,name))
+                    self.assertEqual(stage["step_conclusion"],
+                                     "SUCCESS_OBSERVED_IN_TERMINAL_JOB")
+                    self.assertEqual(stage["source_kind"],"GITHUB_ACTIONS_WINDOWS_STEP_ONLY")
+                    self.assertIn(str(row["proof_audit"]["workflow_run_id"]),
+                                  stage["step_log_locator"])
+                    self.assertIn(str(job),stage["step_log_locator"])
+                else:
+                    self.assertEqual(stage["source_kind"],
+                                     "NOT_ATTESTED_FOR_OPEN_REQUIREMENT")
+                    self.assertEqual(stage["step_conclusion"],"NO_ACCEPTED_STEP")
+                    for key in ("job_id","step_number","step_name","step_log_locator"):
+                        self.assertIsNone(stage[key])
+                    self.assertEqual(row["evidence"],"NONE_ACCEPTED")
+        self.assertEqual((MATRIX["total"],MATRIX["closed"],MATRIX["open"]),(104,8,96))
+        self.assertIn("- [ ] **M32-078**",CHECK)
+
     def test_metadata_does_not_grant_writer_admission(self):
         self.assertEqual(MATRIX["gate"],"IN_PROGRESS_NOT_ACCEPTED")
         for term in ("R1–R9 NOT_PROVEN","G3 STOP_UNAVAILABLE","P4 STOP","Greenfield"):
