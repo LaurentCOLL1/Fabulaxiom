@@ -10437,5 +10437,29 @@
     "glib160": "OPEN_NOT_REMEDIATED",
     "operator_access": false,
     "candidate_ci": "NOT_QUALIFIED"
+  },
+  "m32_scope_104_documentary_closure_20261112": {
+    "status": "CANDIDATE_OWN_SOURCE_POSTMAIN_PENDING",
+    "parent_main": "524bca4e557504b8658e371fcb16a68b2b0b43e5",
+    "parent_pr": 345,
+    "parent_ci": 43155435240,
+    "parent_postmain_run": 43233579859,
+    "parent_postmain_state": "IN_PROGRESS_UNQUALIFIED",
+    "supporting_pr": 344,
+    "source_head": "c4a04c59934064832dd7c700dcf39e25e729f88a",
+    "source_ci_run": 43117900804,
+    "source_postmain_main": "33d701cc372c50178e8d9b0839761a77a1514652",
+    "source_postmain_run": 43154409245,
+    "issue38_comment": 6825809694,
+    "closure": "M32-104_DOCUMENTARY_SCOPE_ONLY",
+    "checklist_total": 104,
+    "closed_candidate": 8,
+    "open_candidate": 96,
+    "still_open": [
+      "M32-078"
+    ],
+    "strategy": "PRODUCT_FIRST_PARALLEL_SAFETY",
+    "gate": "IN_PROGRESS_NOT_ACCEPTED",
+    "writer": "NOT_PROVEN"
   }
 }
