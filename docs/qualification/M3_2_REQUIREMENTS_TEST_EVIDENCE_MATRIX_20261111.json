@@ -1,11 +1,11 @@
 {
-  "schema": "m32_traceability_matrix_v1",
-  "date": "2026-11-11",
+  "schema": "m32_traceability_matrix_v2_provenance_scoped",
+  "date": "2026-11-12",
   "source_main": "b2b032c0010a9d879103718cfa0786a827c5ac56",
   "total": 104,
   "closed": 8,
   "open": 96,
-  "status": "CANDIDATE_SCOPED_104_PENDING_OWN_CI",
+  "status": "CANDIDATE_PARTIAL_PROVENANCE_V2_M32_078_OPEN",
   "strategy": "PRODUCT_FIRST_PARALLEL_SAFETY",
   "gate": "IN_PROGRESS_NOT_ACCEPTED",
   "rows": [
@@ -17,7 +17,23 @@
       "verification_target": "tools/test_m32_handoff_contract.py",
       "evidence": "CHECKLIST_SCOPED SHA=bef699511ff18e987a4858c797fde7aa88dfc59b RUN=#42699790716",
       "next_proof": "NO_FURTHER_PROOF_FOR_CLOSED_SCOPE",
-      "gate": "SCOPED_EVIDENCE_REQUIRED"
+      "gate": "SCOPED_EVIDENCE_REQUIRED",
+      "proof_audit": {
+        "record_review_date": "2026-11-12",
+        "test_target_name": "test_m32_handoff_contract.py",
+        "target_role": "CANDIDATE_VERIFICATION_TARGET_NOT_AN_INDIVIDUAL_TEST_ATTESTATION",
+        "acceptance_expectation": "Qualifier la CI postmain indépendante de la fusion #330 au SHA bef699511ff18e987a4858c797fde7aa88dfc59b",
+        "execution_scope": "GITHUB_ACTIONS_CI_SCOPED_DOCUMENTARY_OR_PROTOCOL",
+        "workflow_head_sha": "bef699511ff18e987a4858c797fde7aa88dfc59b",
+        "workflow_run_id": 42699790716,
+        "workflow_run_date": "2026-11-09",
+        "workflow_event": "push",
+        "workflow_attempt": 1,
+        "workflow_result": "COMPLETED_SUCCESS_WORKFLOW_ONLY",
+        "workflow_log_reference": "https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/42699790716",
+        "individual_test_step_result": null,
+        "operator_runtime_acceptance": false
+      }
     },
     {
       "id": "M32-002",
@@ -27,7 +43,23 @@
       "verification_target": "tools/test_m32_handoff_contract.py",
       "evidence": "CHECKLIST_SCOPED SHA=fb523abbc05b636d98fd93240872882f4ee57f61 RUN=#42751838279",
       "next_proof": "NO_FURTHER_PROOF_FOR_CLOSED_SCOPE",
-      "gate": "SCOPED_EVIDENCE_REQUIRED"
+      "gate": "SCOPED_EVIDENCE_REQUIRED",
+      "proof_audit": {
+        "record_review_date": "2026-11-12",
+        "test_target_name": "test_m32_handoff_contract.py",
+        "target_role": "CANDIDATE_VERIFICATION_TARGET_NOT_AN_INDIVIDUAL_TEST_ATTESTATION",
+        "acceptance_expectation": "Réconcilier la PR produit #331 P3n après la fusion #330",
+        "execution_scope": "GITHUB_ACTIONS_CI_SCOPED_DOCUMENTARY_OR_PROTOCOL",
+        "workflow_head_sha": "fb523abbc05b636d98fd93240872882f4ee57f61",
+        "workflow_run_id": 42751838279,
+        "workflow_run_date": "2026-11-10",
+        "workflow_event": "pull_request",
+        "workflow_attempt": 1,
+        "workflow_result": "COMPLETED_SUCCESS_WORKFLOW_ONLY",
+        "workflow_log_reference": "https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/42751838279",
+        "individual_test_step_result": null,
+        "operator_runtime_acceptance": false
+      }
     },
     {
       "id": "M32-003",
@@ -37,7 +69,23 @@
       "verification_target": "tools/test_m32_handoff_contract.py",
       "evidence": "NONE_ACCEPTED",
       "next_proof": "Required Windows frontend and Rust checks strict, bypass=[], aucune discussion non résolue, squash expected_head_sha.",
-      "gate": "SCOPED_EVIDENCE_REQUIRED"
+      "gate": "SCOPED_EVIDENCE_REQUIRED",
+      "proof_audit": {
+        "record_review_date": "2026-11-12",
+        "test_target_name": "test_m32_handoff_contract.py",
+        "target_role": "CANDIDATE_VERIFICATION_TARGET_NOT_AN_INDIVIDUAL_TEST_ATTESTATION",
+        "acceptance_expectation": "Required Windows frontend and Rust checks strict, bypass=[], aucune discussion non résolue, squash expected_head_sha.",
+        "execution_scope": "NOT_QUALIFIED_FOR_ACCEPTANCE",
+        "workflow_head_sha": null,
+        "workflow_run_id": null,
+        "workflow_run_date": null,
+        "workflow_event": null,
+        "workflow_attempt": null,
+        "workflow_result": "NO_ACCEPTED_WORKFLOW",
+        "workflow_log_reference": null,
+        "individual_test_step_result": null,
+        "operator_runtime_acceptance": false
+      }
     },
     {
       "id": "M32-004",
@@ -47,7 +95,23 @@
       "verification_target": "tools/test_m32_handoff_contract.py",
       "evidence": "NONE_ACCEPTED",
       "next_proof": "Modifier les deux RESUME_PROMPT, HANDOFF_CURRENT.md/json et NEXT avec tout changement matériel ; short <3600 octets UTF-8 et R3/D3c/live SQLite WAL-index conservés.",
-      "gate": "SCOPED_EVIDENCE_REQUIRED"
+      "gate": "SCOPED_EVIDENCE_REQUIRED",
+      "proof_audit": {
+        "record_review_date": "2026-11-12",
+        "test_target_name": "test_m32_handoff_contract.py",
+        "target_role": "CANDIDATE_VERIFICATION_TARGET_NOT_AN_INDIVIDUAL_TEST_ATTESTATION",
+        "acceptance_expectation": "Modifier les deux RESUME_PROMPT, HANDOFF_CURRENT.md/json et NEXT avec tout changement matériel ; short <3600 octets UTF-8 et R3/D3c/live SQLite WAL-index conservés.",
+        "execution_scope": "NOT_QUALIFIED_FOR_ACCEPTANCE",
+        "workflow_head_sha": null,
+        "workflow_run_id": null,
+        "workflow_run_date": null,
+        "workflow_event": null,
+        "workflow_attempt": null,
+        "workflow_result": "NO_ACCEPTED_WORKFLOW",
+        "workflow_log_reference": null,
+        "individual_test_step_result": null,
+        "operator_runtime_acceptance": false
+      }
     },
     {
       "id": "M32-005",
@@ -57,7 +121,23 @@
       "verification_target": "tools/test_m32_handoff_contract.py",
       "evidence": "NONE_ACCEPTED",
       "next_proof": "Distinguer candidatures, CI source, postmain, preuve produit, gate opérateur, NOT_PROVEN et ACCEPTED ; anciens checkpoints datés non réécrits rétroactivement.",
-      "gate": "SCOPED_EVIDENCE_REQUIRED"
+      "gate": "SCOPED_EVIDENCE_REQUIRED",
+      "proof_audit": {
+        "record_review_date": "2026-11-12",
+        "test_target_name": "test_m32_handoff_contract.py",
+        "target_role": "CANDIDATE_VERIFICATION_TARGET_NOT_AN_INDIVIDUAL_TEST_ATTESTATION",
+        "acceptance_expectation": "Distinguer candidatures, CI source, postmain, preuve produit, gate opérateur, NOT_PROVEN et ACCEPTED ; anciens checkpoints datés non réécrits rétroactivement.",
+        "execution_scope": "NOT_QUALIFIED_FOR_ACCEPTANCE",
+        "workflow_head_sha": null,
+        "workflow_run_id": null,
+        "workflow_run_date": null,
+        "workflow_event": null,
+        "workflow_attempt": null,
+        "workflow_result": "NO_ACCEPTED_WORKFLOW",
+        "workflow_log_reference": null,
+        "individual_test_step_result": null,
+        "operator_runtime_acceptance": false
+      }
     },
     {
       "id": "M32-006",
@@ -67,7 +147,23 @@
       "verification_target": "tools/test_m32_handoff_contract.py",
       "evidence": "NONE_ACCEPTED",
       "next_proof": "SHA, run ID/attempt, résultats adversariaux, changements de périmètre et échecs ; zéro réécriture d'éléments historiques.",
-      "gate": "SCOPED_EVIDENCE_REQUIRED"
+      "gate": "SCOPED_EVIDENCE_REQUIRED",
+      "proof_audit": {
+        "record_review_date": "2026-11-12",
+        "test_target_name": "test_m32_handoff_contract.py",
+        "target_role": "CANDIDATE_VERIFICATION_TARGET_NOT_AN_INDIVIDUAL_TEST_ATTESTATION",
+        "acceptance_expectation": "SHA, run ID/attempt, résultats adversariaux, changements de périmètre et échecs ; zéro réécriture d'éléments historiques.",
+        "execution_scope": "NOT_QUALIFIED_FOR_ACCEPTANCE",
+        "workflow_head_sha": null,
+        "workflow_run_id": null,
+        "workflow_run_date": null,
+        "workflow_event": null,
+        "workflow_attempt": null,
+        "workflow_result": "NO_ACCEPTED_WORKFLOW",
+        "workflow_log_reference": null,
+        "individual_test_step_result": null,
+        "operator_runtime_acceptance": false
+      }
     },
     {
       "id": "M32-007",
@@ -77,7 +173,23 @@
       "verification_target": "tools/test_m32_legacy_pr_reconciliation.py",
       "evidence": "NONE_ACCEPTED",
       "next_proof": "Vérifier diff de ces brouillons historiques et overlaps avec main ; portage ciblé sur branche actuelle ou clôture explicitement justifiée, jamais merge direct/aveugle.",
-      "gate": "SCOPED_EVIDENCE_REQUIRED"
+      "gate": "SCOPED_EVIDENCE_REQUIRED",
+      "proof_audit": {
+        "record_review_date": "2026-11-12",
+        "test_target_name": "test_m32_legacy_pr_reconciliation.py",
+        "target_role": "CANDIDATE_VERIFICATION_TARGET_NOT_AN_INDIVIDUAL_TEST_ATTESTATION",
+        "acceptance_expectation": "Vérifier diff de ces brouillons historiques et overlaps avec main ; portage ciblé sur branche actuelle ou clôture explicitement justifiée, jamais merge direct/aveugle.",
+        "execution_scope": "NOT_QUALIFIED_FOR_ACCEPTANCE",
+        "workflow_head_sha": null,
+        "workflow_run_id": null,
+        "workflow_run_date": null,
+        "workflow_event": null,
+        "workflow_attempt": null,
+        "workflow_result": "NO_ACCEPTED_WORKFLOW",
+        "workflow_log_reference": null,
+        "individual_test_step_result": null,
+        "operator_runtime_acceptance": false
+      }
     },
     {
       "id": "M32-008",
@@ -87,7 +199,23 @@
       "verification_target": "tools/test_m32_handoff_contract.py",
       "evidence": "NONE_ACCEPTED",
       "next_proof": "Soumettre le script exact, effets possibles et STOP (disque/journaux/UAC/réseau, durée, interaction) puis recueillir un nouvel accord spécifique avant exécution.",
-      "gate": "SCOPED_EVIDENCE_REQUIRED"
+      "gate": "SCOPED_EVIDENCE_REQUIRED",
+      "proof_audit": {
+        "record_review_date": "2026-11-12",
+        "test_target_name": "test_m32_handoff_contract.py",
+        "target_role": "CANDIDATE_VERIFICATION_TARGET_NOT_AN_INDIVIDUAL_TEST_ATTESTATION",
+        "acceptance_expectation": "Soumettre le script exact, effets possibles et STOP (disque/journaux/UAC/réseau, durée, interaction) puis recueillir un nouvel accord spécifique avant exécution.",
+        "execution_scope": "NOT_QUALIFIED_FOR_ACCEPTANCE",
+        "workflow_head_sha": null,
+        "workflow_run_id": null,
+        "workflow_run_date": null,
+        "workflow_event": null,
+        "workflow_attempt": null,
+        "workflow_result": "NO_ACCEPTED_WORKFLOW",
+        "workflow_log_reference": null,
+        "individual_test_step_result": null,
+        "operator_runtime_acceptance": false
+      }
     },
     {
       "id": "M32-009",
@@ -97,7 +225,23 @@
       "verification_target": "tools/test_m32_shared_ram_other_writer_counterexample.py",
       "evidence": "NONE_ACCEPTED",
       "next_proof": "SID, session, propriétaire/DACL/intégrité, portée NEW_ONLY versus EXISTING_PROFILE ; menace same-SID coopérative explicitement bornée.",
-      "gate": "REQUIRES_INDEPENDENT_R1_G2_PROOFS"
+      "gate": "REQUIRES_INDEPENDENT_R1_G2_PROOFS",
+      "proof_audit": {
+        "record_review_date": "2026-11-12",
+        "test_target_name": "test_m32_shared_ram_other_writer_counterexample.py",
+        "target_role": "CANDIDATE_VERIFICATION_TARGET_NOT_AN_INDIVIDUAL_TEST_ATTESTATION",
+        "acceptance_expectation": "SID, session, propriétaire/DACL/intégrité, portée NEW_ONLY versus EXISTING_PROFILE ; menace same-SID coopérative explicitement bornée.",
+        "execution_scope": "NOT_QUALIFIED_FOR_ACCEPTANCE",
+        "workflow_head_sha": null,
+        "workflow_run_id": null,
+        "workflow_run_date": null,
+        "workflow_event": null,
+        "workflow_attempt": null,
+        "workflow_result": "NO_ACCEPTED_WORKFLOW",
+        "workflow_log_reference": null,
+        "individual_test_step_result": null,
+        "operator_runtime_acceptance": false
+      }
     },
     {
       "id": "M32-010",
@@ -107,7 +251,23 @@
       "verification_target": "tools/test_m32_shared_ram_other_writer_counterexample.py",
       "evidence": "NONE_ACCEPTED",
       "next_proof": "Principal différent, conflit de nom de session, héritage de DACL, mutex non possédé : refus reproductible, fixtures Windows.",
-      "gate": "REQUIRES_INDEPENDENT_R1_G2_PROOFS"
+      "gate": "REQUIRES_INDEPENDENT_R1_G2_PROOFS",
+      "proof_audit": {
+        "record_review_date": "2026-11-12",
+        "test_target_name": "test_m32_shared_ram_other_writer_counterexample.py",
+        "target_role": "CANDIDATE_VERIFICATION_TARGET_NOT_AN_INDIVIDUAL_TEST_ATTESTATION",
+        "acceptance_expectation": "Principal différent, conflit de nom de session, héritage de DACL, mutex non possédé : refus reproductible, fixtures Windows.",
+        "execution_scope": "NOT_QUALIFIED_FOR_ACCEPTANCE",
+        "workflow_head_sha": null,
+        "workflow_run_id": null,
+        "workflow_run_date": null,
+        "workflow_event": null,
+        "workflow_attempt": null,
+        "workflow_result": "NO_ACCEPTED_WORKFLOW",
+        "workflow_log_reference": null,
+        "individual_test_step_result": null,
+        "operator_runtime_acceptance": false
+      }
     },
     {
       "id": "M32-011",
@@ -117,7 +277,23 @@
       "verification_target": "tools/test_m32_shared_ram_other_writer_counterexample.py",
       "evidence": "NONE_ACCEPTED",
       "next_proof": "Répertoires parents tenus et identifiés, reparse/junction/ADS/device path refusés et chemins canoniques ancrés au handle réel.",
-      "gate": "REQUIRES_INDEPENDENT_R1_G2_PROOFS"
+      "gate": "REQUIRES_INDEPENDENT_R1_G2_PROOFS",
+      "proof_audit": {
+        "record_review_date": "2026-11-12",
+        "test_target_name": "test_m32_shared_ram_other_writer_counterexample.py",
+        "target_role": "CANDIDATE_VERIFICATION_TARGET_NOT_AN_INDIVIDUAL_TEST_ATTESTATION",
+        "acceptance_expectation": "Répertoires parents tenus et identifiés, reparse/junction/ADS/device path refusés et chemins canoniques ancrés au handle réel.",
+        "execution_scope": "NOT_QUALIFIED_FOR_ACCEPTANCE",
+        "workflow_head_sha": null,
+        "workflow_run_id": null,
+        "workflow_run_date": null,
+        "workflow_event": null,
+        "workflow_attempt": null,
+        "workflow_result": "NO_ACCEPTED_WORKFLOW",
+        "workflow_log_reference": null,
+        "individual_test_step_result": null,
+        "operator_runtime_acceptance": false
+      }
     },
     {
       "id": "M32-012",
@@ -127,7 +303,23 @@
       "verification_target": "tools/test_m32_shared_ram_other_writer_counterexample.py",
       "evidence": "NONE_ACCEPTED",
       "next_proof": "Renommage/remplacement entre observation et xOpen, identité parent FileId128 ; toute fenêtre non couverte explicitement NON PROVEN/STOP.",
-      "gate": "REQUIRES_INDEPENDENT_R1_G2_PROOFS"
+      "gate": "REQUIRES_INDEPENDENT_R1_G2_PROOFS",
+      "proof_audit": {
+        "record_review_date": "2026-11-12",
+        "test_target_name": "test_m32_shared_ram_other_writer_counterexample.py",
+        "target_role": "CANDIDATE_VERIFICATION_TARGET_NOT_AN_INDIVIDUAL_TEST_ATTESTATION",
+        "acceptance_expectation": "Renommage/remplacement entre observation et xOpen, identité parent FileId128 ; toute fenêtre non couverte explicitement NON PROVEN/STOP.",
+        "execution_scope": "NOT_QUALIFIED_FOR_ACCEPTANCE",
+        "workflow_head_sha": null,
+        "workflow_run_id": null,
+        "workflow_run_date": null,
+        "workflow_event": null,
+        "workflow_attempt": null,
+        "workflow_result": "NO_ACCEPTED_WORKFLOW",
+        "workflow_log_reference": null,
+        "individual_test_step_result": null,
+        "operator_runtime_acceptance": false
+      }
     },
     {
       "id": "M32-013",
@@ -137,7 +329,23 @@
       "verification_target": "tools/test_m32_shared_ram_other_writer_counterexample.py",
       "evidence": "NONE_ACCEPTED",
       "next_proof": "sqlite3_file.xFileControl / SQLITE_FCNTL_WIN32_GET_HANDLE et FileId128+volume à la frontière xOpen avant succès, aucun contrôle pathname présenté comme atomique.",
-      "gate": "REQUIRES_INDEPENDENT_R1_G2_PROOFS"
+      "gate": "REQUIRES_INDEPENDENT_R1_G2_PROOFS",
+      "proof_audit": {
+        "record_review_date": "2026-11-12",
+        "test_target_name": "test_m32_shared_ram_other_writer_counterexample.py",
+        "target_role": "CANDIDATE_VERIFICATION_TARGET_NOT_AN_INDIVIDUAL_TEST_ATTESTATION",
+        "acceptance_expectation": "sqlite3_file.xFileControl / SQLITE_FCNTL_WIN32_GET_HANDLE et FileId128+volume à la frontière xOpen avant succès, aucun contrôle pathname présenté comme atomique.",
+        "execution_scope": "NOT_QUALIFIED_FOR_ACCEPTANCE",
+        "workflow_head_sha": null,
+        "workflow_run_id": null,
+        "workflow_run_date": null,
+        "workflow_event": null,
+        "workflow_attempt": null,
+        "workflow_result": "NO_ACCEPTED_WORKFLOW",
+        "workflow_log_reference": null,
+        "individual_test_step_result": null,
+        "operator_runtime_acceptance": false
+      }
     },
     {
       "id": "M32-014",
@@ -147,7 +355,23 @@
       "verification_target": "tools/test_m32_shared_ram_other_writer_counterexample.py",
       "evidence": "NONE_ACCEPTED",
       "next_proof": "SHARED simultanés, blocages opposés, transitions et release, deux processus, tests Windows jetables.",
-      "gate": "REQUIRES_INDEPENDENT_R1_G2_PROOFS"
+      "gate": "REQUIRES_INDEPENDENT_R1_G2_PROOFS",
+      "proof_audit": {
+        "record_review_date": "2026-11-12",
+        "test_target_name": "test_m32_shared_ram_other_writer_counterexample.py",
+        "target_role": "CANDIDATE_VERIFICATION_TARGET_NOT_AN_INDIVIDUAL_TEST_ATTESTATION",
+        "acceptance_expectation": "SHARED simultanés, blocages opposés, transitions et release, deux processus, tests Windows jetables.",
+        "execution_scope": "NOT_QUALIFIED_FOR_ACCEPTANCE",
+        "workflow_head_sha": null,
+        "workflow_run_id": null,
+        "workflow_run_date": null,
+        "workflow_event": null,
+        "workflow_attempt": null,
+        "workflow_result": "NO_ACCEPTED_WORKFLOW",
+        "workflow_log_reference": null,
+        "individual_test_step_result": null,
+        "operator_runtime_acceptance": false
+      }
     },
     {
       "id": "M32-015",
@@ -157,7 +381,23 @@
       "verification_target": "tools/test_m32_shared_ram_other_writer_counterexample.py",
       "evidence": "NONE_ACCEPTED",
       "next_proof": "xClose exact-once, handle nul/méthode manquante, close échoué, libération même sur échec et refus d'ouverture sans fuite.",
-      "gate": "REQUIRES_INDEPENDENT_R1_G2_PROOFS"
+      "gate": "REQUIRES_INDEPENDENT_R1_G2_PROOFS",
+      "proof_audit": {
+        "record_review_date": "2026-11-12",
+        "test_target_name": "test_m32_shared_ram_other_writer_counterexample.py",
+        "target_role": "CANDIDATE_VERIFICATION_TARGET_NOT_AN_INDIVIDUAL_TEST_ATTESTATION",
+        "acceptance_expectation": "xClose exact-once, handle nul/méthode manquante, close échoué, libération même sur échec et refus d'ouverture sans fuite.",
+        "execution_scope": "NOT_QUALIFIED_FOR_ACCEPTANCE",
+        "workflow_head_sha": null,
+        "workflow_run_id": null,
+        "workflow_run_date": null,
+        "workflow_event": null,
+        "workflow_attempt": null,
+        "workflow_result": "NO_ACCEPTED_WORKFLOW",
+        "workflow_log_reference": null,
+        "individual_test_step_result": null,
+        "operator_runtime_acceptance": false
+      }
     },
     {
       "id": "M32-016",
@@ -167,7 +407,23 @@
       "verification_target": "tools/test_m32_shared_ram_other_writer_counterexample.py",
       "evidence": "NONE_ACCEPTED",
       "next_proof": "Pas de transfert de preuve main vers sidecars ; FileId128 et vie du mapping WAL-index vérifiés pour chaque objet pertinent.",
-      "gate": "REQUIRES_INDEPENDENT_R1_G2_PROOFS"
+      "gate": "REQUIRES_INDEPENDENT_R1_G2_PROOFS",
+      "proof_audit": {
+        "record_review_date": "2026-11-12",
+        "test_target_name": "test_m32_shared_ram_other_writer_counterexample.py",
+        "target_role": "CANDIDATE_VERIFICATION_TARGET_NOT_AN_INDIVIDUAL_TEST_ATTESTATION",
+        "acceptance_expectation": "Pas de transfert de preuve main vers sidecars ; FileId128 et vie du mapping WAL-index vérifiés pour chaque objet pertinent.",
+        "execution_scope": "NOT_QUALIFIED_FOR_ACCEPTANCE",
+        "workflow_head_sha": null,
+        "workflow_run_id": null,
+        "workflow_run_date": null,
+        "workflow_event": null,
+        "workflow_attempt": null,
+        "workflow_result": "NO_ACCEPTED_WORKFLOW",
+        "workflow_log_reference": null,
+        "individual_test_step_result": null,
+        "operator_runtime_acceptance": false
+      }
     },
     {
       "id": "M32-017",
@@ -177,7 +433,23 @@
       "verification_target": "tools/test_m32_shared_ram_other_writer_counterexample.py",
       "evidence": "NONE_ACCEPTED",
       "next_proof": "xShmMap/xShmLock/xShmBarrier/xShmUnmap, régions multiples, verrous, barrières, versions des méthodes et cleanup, sur fixture réelle.",
-      "gate": "REQUIRES_INDEPENDENT_R1_G2_PROOFS"
+      "gate": "REQUIRES_INDEPENDENT_R1_G2_PROOFS",
+      "proof_audit": {
+        "record_review_date": "2026-11-12",
+        "test_target_name": "test_m32_shared_ram_other_writer_counterexample.py",
+        "target_role": "CANDIDATE_VERIFICATION_TARGET_NOT_AN_INDIVIDUAL_TEST_ATTESTATION",
+        "acceptance_expectation": "xShmMap/xShmLock/xShmBarrier/xShmUnmap, régions multiples, verrous, barrières, versions des méthodes et cleanup, sur fixture réelle.",
+        "execution_scope": "NOT_QUALIFIED_FOR_ACCEPTANCE",
+        "workflow_head_sha": null,
+        "workflow_run_id": null,
+        "workflow_run_date": null,
+        "workflow_event": null,
+        "workflow_attempt": null,
+        "workflow_result": "NO_ACCEPTED_WORKFLOW",
+        "workflow_log_reference": null,
+        "individual_test_step_result": null,
+        "operator_runtime_acceptance": false
+      }
     },
     {
       "id": "M32-018",
@@ -187,7 +459,23 @@
       "verification_target": "tools/test_m32_shared_ram_other_writer_counterexample.py",
       "evidence": "NONE_ACCEPTED",
       "next_proof": "Interleaving de swap/rename/replace et leurres FileId128 sur chacun ; échec sûr sans risque d'assimiler une race non observée à une preuve générale.",
-      "gate": "REQUIRES_INDEPENDENT_R1_G2_PROOFS"
+      "gate": "REQUIRES_INDEPENDENT_R1_G2_PROOFS",
+      "proof_audit": {
+        "record_review_date": "2026-11-12",
+        "test_target_name": "test_m32_shared_ram_other_writer_counterexample.py",
+        "target_role": "CANDIDATE_VERIFICATION_TARGET_NOT_AN_INDIVIDUAL_TEST_ATTESTATION",
+        "acceptance_expectation": "Interleaving de swap/rename/replace et leurres FileId128 sur chacun ; échec sûr sans risque d'assimiler une race non observée à une preuve générale.",
+        "execution_scope": "NOT_QUALIFIED_FOR_ACCEPTANCE",
+        "workflow_head_sha": null,
+        "workflow_run_id": null,
+        "workflow_run_date": null,
+        "workflow_event": null,
+        "workflow_attempt": null,
+        "workflow_result": "NO_ACCEPTED_WORKFLOW",
+        "workflow_log_reference": null,
+        "individual_test_step_result": null,
+        "operator_runtime_acceptance": false
+      }
     },
     {
       "id": "M32-019",
@@ -197,7 +485,23 @@
       "verification_target": "tools/test_m32_shared_ram_other_writer_counterexample.py",
       "evidence": "NONE_ACCEPTED",
       "next_proof": "A tient BEGIN IMMEDIATE, B est refusé puis admis selon séquencement ; identité native et conservation du WAL/SHM observées des deux côtés.",
-      "gate": "REQUIRES_INDEPENDENT_R1_G2_PROOFS"
+      "gate": "REQUIRES_INDEPENDENT_R1_G2_PROOFS",
+      "proof_audit": {
+        "record_review_date": "2026-11-12",
+        "test_target_name": "test_m32_shared_ram_other_writer_counterexample.py",
+        "target_role": "CANDIDATE_VERIFICATION_TARGET_NOT_AN_INDIVIDUAL_TEST_ATTESTATION",
+        "acceptance_expectation": "A tient BEGIN IMMEDIATE, B est refusé puis admis selon séquencement ; identité native et conservation du WAL/SHM observées des deux côtés.",
+        "execution_scope": "NOT_QUALIFIED_FOR_ACCEPTANCE",
+        "workflow_head_sha": null,
+        "workflow_run_id": null,
+        "workflow_run_date": null,
+        "workflow_event": null,
+        "workflow_attempt": null,
+        "workflow_result": "NO_ACCEPTED_WORKFLOW",
+        "workflow_log_reference": null,
+        "individual_test_step_result": null,
+        "operator_runtime_acceptance": false
+      }
     },
     {
       "id": "M32-020",
@@ -207,7 +511,23 @@
       "verification_target": "tools/test_m32_shared_ram_other_writer_counterexample.py",
       "evidence": "NONE_ACCEPTED",
       "next_proof": "Binding réel du handle et de l'espace de noms/sidecars au moment pertinent ; aucun chemin démontré = writer STOP, sans raccourci EXCLUSIVE/non-SHM non revu.",
-      "gate": "REQUIRES_INDEPENDENT_R1_G2_PROOFS"
+      "gate": "REQUIRES_INDEPENDENT_R1_G2_PROOFS",
+      "proof_audit": {
+        "record_review_date": "2026-11-12",
+        "test_target_name": "test_m32_shared_ram_other_writer_counterexample.py",
+        "target_role": "CANDIDATE_VERIFICATION_TARGET_NOT_AN_INDIVIDUAL_TEST_ATTESTATION",
+        "acceptance_expectation": "Binding réel du handle et de l'espace de noms/sidecars au moment pertinent ; aucun chemin démontré = writer STOP, sans raccourci EXCLUSIVE/non-SHM non revu.",
+        "execution_scope": "NOT_QUALIFIED_FOR_ACCEPTANCE",
+        "workflow_head_sha": null,
+        "workflow_run_id": null,
+        "workflow_run_date": null,
+        "workflow_event": null,
+        "workflow_attempt": null,
+        "workflow_result": "NO_ACCEPTED_WORKFLOW",
+        "workflow_log_reference": null,
+        "individual_test_step_result": null,
+        "operator_runtime_acceptance": false
+      }
     },
     {
       "id": "M32-021",
@@ -217,7 +537,23 @@
       "verification_target": "tools/test_m32_shared_ram_other_writer_counterexample.py",
       "evidence": "NONE_ACCEPTED",
       "next_proof": "Profil, lineage M1.5/v6/v7, schema_migrations, clés, FK, identités immuables, journal état connu ; aucune adoption d'un SQLite seulement « ok ».",
-      "gate": "REQUIRES_INDEPENDENT_R1_G2_PROOFS"
+      "gate": "REQUIRES_INDEPENDENT_R1_G2_PROOFS",
+      "proof_audit": {
+        "record_review_date": "2026-11-12",
+        "test_target_name": "test_m32_shared_ram_other_writer_counterexample.py",
+        "target_role": "CANDIDATE_VERIFICATION_TARGET_NOT_AN_INDIVIDUAL_TEST_ATTESTATION",
+        "acceptance_expectation": "Profil, lineage M1.5/v6/v7, schema_migrations, clés, FK, identités immuables, journal état connu ; aucune adoption d'un SQLite seulement « ok ».",
+        "execution_scope": "NOT_QUALIFIED_FOR_ACCEPTANCE",
+        "workflow_head_sha": null,
+        "workflow_run_id": null,
+        "workflow_run_date": null,
+        "workflow_event": null,
+        "workflow_attempt": null,
+        "workflow_result": "NO_ACCEPTED_WORKFLOW",
+        "workflow_log_reference": null,
+        "individual_test_step_result": null,
+        "operator_runtime_acceptance": false
+      }
     },
     {
       "id": "M32-022",
@@ -227,7 +563,23 @@
       "verification_target": "tools/test_m32_shared_ram_other_writer_counterexample.py",
       "evidence": "NONE_ACCEPTED",
       "next_proof": "Cas négatifs de mauvaise version/clé, WAL incohérent, hot journal, ATTACH/migration et correction automatiques interdits.",
-      "gate": "REQUIRES_INDEPENDENT_R1_G2_PROOFS"
+      "gate": "REQUIRES_INDEPENDENT_R1_G2_PROOFS",
+      "proof_audit": {
+        "record_review_date": "2026-11-12",
+        "test_target_name": "test_m32_shared_ram_other_writer_counterexample.py",
+        "target_role": "CANDIDATE_VERIFICATION_TARGET_NOT_AN_INDIVIDUAL_TEST_ATTESTATION",
+        "acceptance_expectation": "Cas négatifs de mauvaise version/clé, WAL incohérent, hot journal, ATTACH/migration et correction automatiques interdits.",
+        "execution_scope": "NOT_QUALIFIED_FOR_ACCEPTANCE",
+        "workflow_head_sha": null,
+        "workflow_run_id": null,
+        "workflow_run_date": null,
+        "workflow_event": null,
+        "workflow_attempt": null,
+        "workflow_result": "NO_ACCEPTED_WORKFLOW",
+        "workflow_log_reference": null,
+        "individual_test_step_result": null,
+        "operator_runtime_acceptance": false
+      }
     },
     {
       "id": "M32-023",
@@ -237,7 +589,23 @@
       "verification_target": "tools/test_m32_shared_ram_other_writer_counterexample.py",
       "evidence": "NONE_ACCEPTED",
       "next_proof": "Un Rust actor, une seule connexion admissible, registration VFS bornée, autorité privée, mutex/DACL coopératifs explicitement limités.",
-      "gate": "REQUIRES_INDEPENDENT_R1_G2_PROOFS"
+      "gate": "REQUIRES_INDEPENDENT_R1_G2_PROOFS",
+      "proof_audit": {
+        "record_review_date": "2026-11-12",
+        "test_target_name": "test_m32_shared_ram_other_writer_counterexample.py",
+        "target_role": "CANDIDATE_VERIFICATION_TARGET_NOT_AN_INDIVIDUAL_TEST_ATTESTATION",
+        "acceptance_expectation": "Un Rust actor, une seule connexion admissible, registration VFS bornée, autorité privée, mutex/DACL coopératifs explicitement limités.",
+        "execution_scope": "NOT_QUALIFIED_FOR_ACCEPTANCE",
+        "workflow_head_sha": null,
+        "workflow_run_id": null,
+        "workflow_run_date": null,
+        "workflow_event": null,
+        "workflow_attempt": null,
+        "workflow_result": "NO_ACCEPTED_WORKFLOW",
+        "workflow_log_reference": null,
+        "individual_test_step_result": null,
+        "operator_runtime_acceptance": false
+      }
     },
     {
       "id": "M32-024",
@@ -247,7 +615,23 @@
       "verification_target": "tools/test_m32_shared_ram_other_writer_counterexample.py",
       "evidence": "NONE_ACCEPTED",
       "next_proof": "Processus A/B, génération révoquée, double writer, claim abandonné, timeout/WAIT_ABANDONED, refus dès l'entrée et pas de faux succès.",
-      "gate": "REQUIRES_INDEPENDENT_R1_G2_PROOFS"
+      "gate": "REQUIRES_INDEPENDENT_R1_G2_PROOFS",
+      "proof_audit": {
+        "record_review_date": "2026-11-12",
+        "test_target_name": "test_m32_shared_ram_other_writer_counterexample.py",
+        "target_role": "CANDIDATE_VERIFICATION_TARGET_NOT_AN_INDIVIDUAL_TEST_ATTESTATION",
+        "acceptance_expectation": "Processus A/B, génération révoquée, double writer, claim abandonné, timeout/WAIT_ABANDONED, refus dès l'entrée et pas de faux succès.",
+        "execution_scope": "NOT_QUALIFIED_FOR_ACCEPTANCE",
+        "workflow_head_sha": null,
+        "workflow_run_id": null,
+        "workflow_run_date": null,
+        "workflow_event": null,
+        "workflow_attempt": null,
+        "workflow_result": "NO_ACCEPTED_WORKFLOW",
+        "workflow_log_reference": null,
+        "individual_test_step_result": null,
+        "operator_runtime_acceptance": false
+      }
     },
     {
       "id": "M32-025",
@@ -257,7 +641,23 @@
       "verification_target": "tools/test_m32_shared_ram_other_writer_counterexample.py",
       "evidence": "NONE_ACCEPTED",
       "next_proof": "Fermeture contrôlée, COMMIT/checkpoint/interruption, journal/WAL/SHM, preuve de provenance durable et non auto-fabriquée.",
-      "gate": "REQUIRES_INDEPENDENT_R1_G2_PROOFS"
+      "gate": "REQUIRES_INDEPENDENT_R1_G2_PROOFS",
+      "proof_audit": {
+        "record_review_date": "2026-11-12",
+        "test_target_name": "test_m32_shared_ram_other_writer_counterexample.py",
+        "target_role": "CANDIDATE_VERIFICATION_TARGET_NOT_AN_INDIVIDUAL_TEST_ATTESTATION",
+        "acceptance_expectation": "Fermeture contrôlée, COMMIT/checkpoint/interruption, journal/WAL/SHM, preuve de provenance durable et non auto-fabriquée.",
+        "execution_scope": "NOT_QUALIFIED_FOR_ACCEPTANCE",
+        "workflow_head_sha": null,
+        "workflow_run_id": null,
+        "workflow_run_date": null,
+        "workflow_event": null,
+        "workflow_attempt": null,
+        "workflow_result": "NO_ACCEPTED_WORKFLOW",
+        "workflow_log_reference": null,
+        "individual_test_step_result": null,
+        "operator_runtime_acceptance": false
+      }
     },
     {
       "id": "M32-026",
@@ -267,7 +667,23 @@
       "verification_target": "tools/test_m32_shared_ram_other_writer_counterexample.py",
       "evidence": "NONE_ACCEPTED",
       "next_proof": "Crash pendant xOpen/xShm/transaction/close/recovery ; PAS de réadmission au seul motif « SQLite peut récupérer ».",
-      "gate": "REQUIRES_INDEPENDENT_R1_G2_PROOFS"
+      "gate": "REQUIRES_INDEPENDENT_R1_G2_PROOFS",
+      "proof_audit": {
+        "record_review_date": "2026-11-12",
+        "test_target_name": "test_m32_shared_ram_other_writer_counterexample.py",
+        "target_role": "CANDIDATE_VERIFICATION_TARGET_NOT_AN_INDIVIDUAL_TEST_ATTESTATION",
+        "acceptance_expectation": "Crash pendant xOpen/xShm/transaction/close/recovery ; PAS de réadmission au seul motif « SQLite peut récupérer ».",
+        "execution_scope": "NOT_QUALIFIED_FOR_ACCEPTANCE",
+        "workflow_head_sha": null,
+        "workflow_run_id": null,
+        "workflow_run_date": null,
+        "workflow_event": null,
+        "workflow_attempt": null,
+        "workflow_result": "NO_ACCEPTED_WORKFLOW",
+        "workflow_log_reference": null,
+        "individual_test_step_result": null,
+        "operator_runtime_acceptance": false
+      }
     },
     {
       "id": "M32-027",
@@ -277,7 +693,23 @@
       "verification_target": "tools/test_m32_shared_ram_other_writer_counterexample.py",
       "evidence": "NONE_ACCEPTED",
       "next_proof": "Recovery permis seulement après preuve de source et autorisation spécifique ; pas de nouveau marqueur durable ni réouverture EXISTING_PROFILE par défaut.",
-      "gate": "REQUIRES_INDEPENDENT_R1_G2_PROOFS"
+      "gate": "REQUIRES_INDEPENDENT_R1_G2_PROOFS",
+      "proof_audit": {
+        "record_review_date": "2026-11-12",
+        "test_target_name": "test_m32_shared_ram_other_writer_counterexample.py",
+        "target_role": "CANDIDATE_VERIFICATION_TARGET_NOT_AN_INDIVIDUAL_TEST_ATTESTATION",
+        "acceptance_expectation": "Recovery permis seulement après preuve de source et autorisation spécifique ; pas de nouveau marqueur durable ni réouverture EXISTING_PROFILE par défaut.",
+        "execution_scope": "NOT_QUALIFIED_FOR_ACCEPTANCE",
+        "workflow_head_sha": null,
+        "workflow_run_id": null,
+        "workflow_run_date": null,
+        "workflow_event": null,
+        "workflow_attempt": null,
+        "workflow_result": "NO_ACCEPTED_WORKFLOW",
+        "workflow_log_reference": null,
+        "individual_test_step_result": null,
+        "operator_runtime_acceptance": false
+      }
     },
     {
       "id": "M32-028",
@@ -287,7 +719,23 @@
       "verification_target": "tools/test_m32_shared_ram_other_writer_counterexample.py",
       "evidence": "NONE_ACCEPTED",
       "next_proof": "pMethods versions, xFileControl, xClose, mémoire/libération, cancellation, queue bornée, races shutdown, échec avec révocation.",
-      "gate": "REQUIRES_INDEPENDENT_R1_G2_PROOFS"
+      "gate": "REQUIRES_INDEPENDENT_R1_G2_PROOFS",
+      "proof_audit": {
+        "record_review_date": "2026-11-12",
+        "test_target_name": "test_m32_shared_ram_other_writer_counterexample.py",
+        "target_role": "CANDIDATE_VERIFICATION_TARGET_NOT_AN_INDIVIDUAL_TEST_ATTESTATION",
+        "acceptance_expectation": "pMethods versions, xFileControl, xClose, mémoire/libération, cancellation, queue bornée, races shutdown, échec avec révocation.",
+        "execution_scope": "NOT_QUALIFIED_FOR_ACCEPTANCE",
+        "workflow_head_sha": null,
+        "workflow_run_id": null,
+        "workflow_run_date": null,
+        "workflow_event": null,
+        "workflow_attempt": null,
+        "workflow_result": "NO_ACCEPTED_WORKFLOW",
+        "workflow_log_reference": null,
+        "individual_test_step_result": null,
+        "operator_runtime_acceptance": false
+      }
     },
     {
       "id": "M32-029",
@@ -297,7 +745,23 @@
       "verification_target": "tools/test_m32_shared_ram_other_writer_counterexample.py",
       "evidence": "NONE_ACCEPTED",
       "next_proof": "Pas de lock au travers await ou d'inférence Ollama ; timeout, réponses typées, fail-closed, aucun accès direct SQLite donné à l'UI ou au modèle.",
-      "gate": "REQUIRES_INDEPENDENT_R1_G2_PROOFS"
+      "gate": "REQUIRES_INDEPENDENT_R1_G2_PROOFS",
+      "proof_audit": {
+        "record_review_date": "2026-11-12",
+        "test_target_name": "test_m32_shared_ram_other_writer_counterexample.py",
+        "target_role": "CANDIDATE_VERIFICATION_TARGET_NOT_AN_INDIVIDUAL_TEST_ATTESTATION",
+        "acceptance_expectation": "Pas de lock au travers await ou d'inférence Ollama ; timeout, réponses typées, fail-closed, aucun accès direct SQLite donné à l'UI ou au modèle.",
+        "execution_scope": "NOT_QUALIFIED_FOR_ACCEPTANCE",
+        "workflow_head_sha": null,
+        "workflow_run_id": null,
+        "workflow_run_date": null,
+        "workflow_event": null,
+        "workflow_attempt": null,
+        "workflow_result": "NO_ACCEPTED_WORKFLOW",
+        "workflow_log_reference": null,
+        "individual_test_step_result": null,
+        "operator_runtime_acceptance": false
+      }
     },
     {
       "id": "M32-030",
@@ -307,7 +771,23 @@
       "verification_target": "tools/test_m32_shared_ram_other_writer_counterexample.py",
       "evidence": "NONE_ACCEPTED",
       "next_proof": "Tests Windows jetables et provenance complète R1–R8, avis contradictoire, CI SHA exact ; aucune assertion « writer prouvé » sans gate formel.",
-      "gate": "REQUIRES_INDEPENDENT_R1_G2_PROOFS"
+      "gate": "REQUIRES_INDEPENDENT_R1_G2_PROOFS",
+      "proof_audit": {
+        "record_review_date": "2026-11-12",
+        "test_target_name": "test_m32_shared_ram_other_writer_counterexample.py",
+        "target_role": "CANDIDATE_VERIFICATION_TARGET_NOT_AN_INDIVIDUAL_TEST_ATTESTATION",
+        "acceptance_expectation": "Tests Windows jetables et provenance complète R1–R8, avis contradictoire, CI SHA exact ; aucune assertion « writer prouvé » sans gate formel.",
+        "execution_scope": "NOT_QUALIFIED_FOR_ACCEPTANCE",
+        "workflow_head_sha": null,
+        "workflow_run_id": null,
+        "workflow_run_date": null,
+        "workflow_event": null,
+        "workflow_attempt": null,
+        "workflow_result": "NO_ACCEPTED_WORKFLOW",
+        "workflow_log_reference": null,
+        "individual_test_step_result": null,
+        "operator_runtime_acceptance": false
+      }
     },
     {
       "id": "M32-031",
@@ -317,7 +797,23 @@
       "verification_target": "tools/test_m32_shared_ram_other_writer_counterexample.py",
       "evidence": "NONE_ACCEPTED",
       "next_proof": "L'opérateur approuve précisément le périmètre et les risques résiduels ; V7WriterAdmission et IPC interdits avant décision.",
-      "gate": "REQUIRES_INDEPENDENT_R1_G2_PROOFS"
+      "gate": "REQUIRES_INDEPENDENT_R1_G2_PROOFS",
+      "proof_audit": {
+        "record_review_date": "2026-11-12",
+        "test_target_name": "test_m32_shared_ram_other_writer_counterexample.py",
+        "target_role": "CANDIDATE_VERIFICATION_TARGET_NOT_AN_INDIVIDUAL_TEST_ATTESTATION",
+        "acceptance_expectation": "L'opérateur approuve précisément le périmètre et les risques résiduels ; V7WriterAdmission et IPC interdits avant décision.",
+        "execution_scope": "NOT_QUALIFIED_FOR_ACCEPTANCE",
+        "workflow_head_sha": null,
+        "workflow_run_id": null,
+        "workflow_run_date": null,
+        "workflow_event": null,
+        "workflow_attempt": null,
+        "workflow_result": "NO_ACCEPTED_WORKFLOW",
+        "workflow_log_reference": null,
+        "individual_test_step_result": null,
+        "operator_runtime_acceptance": false
+      }
     },
     {
       "id": "M32-032",
@@ -327,7 +823,23 @@
       "verification_target": "tools/m32_historical_evidence_intake.py",
       "evidence": "NONE_ACCEPTED",
       "next_proof": "Source antérieure indépendante authentifiant le rôle et le digest exact ; ne pas confondre avec une sauvegarde SQLite.",
-      "gate": "REQUIRES_INDEPENDENT_R1_G2_PROOFS"
+      "gate": "REQUIRES_INDEPENDENT_R1_G2_PROOFS",
+      "proof_audit": {
+        "record_review_date": "2026-11-12",
+        "test_target_name": "m32_historical_evidence_intake.py",
+        "target_role": "CANDIDATE_VERIFICATION_TARGET_NOT_AN_INDIVIDUAL_TEST_ATTESTATION",
+        "acceptance_expectation": "Source antérieure indépendante authentifiant le rôle et le digest exact ; ne pas confondre avec une sauvegarde SQLite.",
+        "execution_scope": "NOT_QUALIFIED_FOR_ACCEPTANCE",
+        "workflow_head_sha": null,
+        "workflow_run_id": null,
+        "workflow_run_date": null,
+        "workflow_event": null,
+        "workflow_attempt": null,
+        "workflow_result": "NO_ACCEPTED_WORKFLOW",
+        "workflow_log_reference": null,
+        "individual_test_step_result": null,
+        "operator_runtime_acceptance": false
+      }
     },
     {
       "id": "M32-033",
@@ -337,7 +849,23 @@
       "verification_target": "tools/m32_historical_evidence_intake.py",
       "evidence": "NONE_ACCEPTED",
       "next_proof": "Preuve antérieure et indépendante du contenu exact et de son rôle, sans reconstruire les octets historiques.",
-      "gate": "REQUIRES_INDEPENDENT_R1_G2_PROOFS"
+      "gate": "REQUIRES_INDEPENDENT_R1_G2_PROOFS",
+      "proof_audit": {
+        "record_review_date": "2026-11-12",
+        "test_target_name": "m32_historical_evidence_intake.py",
+        "target_role": "CANDIDATE_VERIFICATION_TARGET_NOT_AN_INDIVIDUAL_TEST_ATTESTATION",
+        "acceptance_expectation": "Preuve antérieure et indépendante du contenu exact et de son rôle, sans reconstruire les octets historiques.",
+        "execution_scope": "NOT_QUALIFIED_FOR_ACCEPTANCE",
+        "workflow_head_sha": null,
+        "workflow_run_id": null,
+        "workflow_run_date": null,
+        "workflow_event": null,
+        "workflow_attempt": null,
+        "workflow_result": "NO_ACCEPTED_WORKFLOW",
+        "workflow_log_reference": null,
+        "individual_test_step_result": null,
+        "operator_runtime_acceptance": false
+      }
     },
     {
       "id": "M32-034",
@@ -347,7 +875,23 @@
       "verification_target": "tools/m32_historical_evidence_intake.py",
       "evidence": "NONE_ACCEPTED",
       "next_proof": "Preuve indépendante préalable du JSON, de son digest et de sa chaîne de conservation.",
-      "gate": "REQUIRES_INDEPENDENT_R1_G2_PROOFS"
+      "gate": "REQUIRES_INDEPENDENT_R1_G2_PROOFS",
+      "proof_audit": {
+        "record_review_date": "2026-11-12",
+        "test_target_name": "m32_historical_evidence_intake.py",
+        "target_role": "CANDIDATE_VERIFICATION_TARGET_NOT_AN_INDIVIDUAL_TEST_ATTESTATION",
+        "acceptance_expectation": "Preuve indépendante préalable du JSON, de son digest et de sa chaîne de conservation.",
+        "execution_scope": "NOT_QUALIFIED_FOR_ACCEPTANCE",
+        "workflow_head_sha": null,
+        "workflow_run_id": null,
+        "workflow_run_date": null,
+        "workflow_event": null,
+        "workflow_attempt": null,
+        "workflow_result": "NO_ACCEPTED_WORKFLOW",
+        "workflow_log_reference": null,
+        "individual_test_step_result": null,
+        "operator_runtime_acceptance": false
+      }
     },
     {
       "id": "M32-035",
@@ -357,7 +901,23 @@
       "verification_target": "tools/m32_historical_evidence_intake.py",
       "evidence": "NONE_ACCEPTED",
       "next_proof": "Authentifier les octets et l'identité historiques, non seulement le nom ou la description d'un ancien marqueur.",
-      "gate": "REQUIRES_INDEPENDENT_R1_G2_PROOFS"
+      "gate": "REQUIRES_INDEPENDENT_R1_G2_PROOFS",
+      "proof_audit": {
+        "record_review_date": "2026-11-12",
+        "test_target_name": "m32_historical_evidence_intake.py",
+        "target_role": "CANDIDATE_VERIFICATION_TARGET_NOT_AN_INDIVIDUAL_TEST_ATTESTATION",
+        "acceptance_expectation": "Authentifier les octets et l'identité historiques, non seulement le nom ou la description d'un ancien marqueur.",
+        "execution_scope": "NOT_QUALIFIED_FOR_ACCEPTANCE",
+        "workflow_head_sha": null,
+        "workflow_run_id": null,
+        "workflow_run_date": null,
+        "workflow_event": null,
+        "workflow_attempt": null,
+        "workflow_result": "NO_ACCEPTED_WORKFLOW",
+        "workflow_log_reference": null,
+        "individual_test_step_result": null,
+        "operator_runtime_acceptance": false
+      }
     },
     {
       "id": "M32-036",
@@ -367,7 +927,23 @@
       "verification_target": "tools/m32_historical_evidence_intake.py",
       "evidence": "NONE_ACCEPTED",
       "next_proof": "Prouver l'identité du rôle original, distincte des sauvegardes pré-M2.5 et de leurs manifests.",
-      "gate": "REQUIRES_INDEPENDENT_R1_G2_PROOFS"
+      "gate": "REQUIRES_INDEPENDENT_R1_G2_PROOFS",
+      "proof_audit": {
+        "record_review_date": "2026-11-12",
+        "test_target_name": "m32_historical_evidence_intake.py",
+        "target_role": "CANDIDATE_VERIFICATION_TARGET_NOT_AN_INDIVIDUAL_TEST_ATTESTATION",
+        "acceptance_expectation": "Prouver l'identité du rôle original, distincte des sauvegardes pré-M2.5 et de leurs manifests.",
+        "execution_scope": "NOT_QUALIFIED_FOR_ACCEPTANCE",
+        "workflow_head_sha": null,
+        "workflow_run_id": null,
+        "workflow_run_date": null,
+        "workflow_event": null,
+        "workflow_attempt": null,
+        "workflow_result": "NO_ACCEPTED_WORKFLOW",
+        "workflow_log_reference": null,
+        "individual_test_step_result": null,
+        "operator_runtime_acceptance": false
+      }
     },
     {
       "id": "M32-037",
@@ -377,7 +953,23 @@
       "verification_target": "tools/m32_historical_evidence_intake.py",
       "evidence": "CHECKLIST_SCOPED SHA=1f5e201d3e7d0ab088a65621411cc911de0472a1 RUN=#42997104616",
       "next_proof": "NO_FURTHER_PROOF_FOR_CLOSED_SCOPE",
-      "gate": "REQUIRES_INDEPENDENT_R1_G2_PROOFS"
+      "gate": "REQUIRES_INDEPENDENT_R1_G2_PROOFS",
+      "proof_audit": {
+        "record_review_date": "2026-11-12",
+        "test_target_name": "m32_historical_evidence_intake.py",
+        "target_role": "CANDIDATE_VERIFICATION_TARGET_NOT_AN_INDIVIDUAL_TEST_ATTESTATION",
+        "acceptance_expectation": "Si des preuves historiques authentiques manquent, enregistrer honnêtement cette limite",
+        "execution_scope": "GITHUB_ACTIONS_CI_SCOPED_DOCUMENTARY_OR_PROTOCOL",
+        "workflow_head_sha": "1f5e201d3e7d0ab088a65621411cc911de0472a1",
+        "workflow_run_id": 42997104616,
+        "workflow_run_date": "2026-11-11",
+        "workflow_event": "pull_request",
+        "workflow_attempt": 1,
+        "workflow_result": "COMPLETED_SUCCESS_WORKFLOW_ONLY",
+        "workflow_log_reference": "https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/42997104616",
+        "individual_test_step_result": null,
+        "operator_runtime_acceptance": false
+      }
     },
     {
       "id": "M32-038",
@@ -387,7 +979,23 @@
       "verification_target": "tools/m32_historical_evidence_intake.py",
       "evidence": "NONE_ACCEPTED",
       "next_proof": "SOLO_OPERATOR_COMPENSATING_CONTROLS est une politique documentaire, prospective NOT_STARTED ; le futur baseline n'atteste PAS le passé.",
-      "gate": "REQUIRES_INDEPENDENT_R1_G2_PROOFS"
+      "gate": "REQUIRES_INDEPENDENT_R1_G2_PROOFS",
+      "proof_audit": {
+        "record_review_date": "2026-11-12",
+        "test_target_name": "m32_historical_evidence_intake.py",
+        "target_role": "CANDIDATE_VERIFICATION_TARGET_NOT_AN_INDIVIDUAL_TEST_ATTESTATION",
+        "acceptance_expectation": "SOLO_OPERATOR_COMPENSATING_CONTROLS est une politique documentaire, prospective NOT_STARTED ; le futur baseline n'atteste PAS le passé.",
+        "execution_scope": "NOT_QUALIFIED_FOR_ACCEPTANCE",
+        "workflow_head_sha": null,
+        "workflow_run_id": null,
+        "workflow_run_date": null,
+        "workflow_event": null,
+        "workflow_attempt": null,
+        "workflow_result": "NO_ACCEPTED_WORKFLOW",
+        "workflow_log_reference": null,
+        "individual_test_step_result": null,
+        "operator_runtime_acceptance": false
+      }
     },
     {
       "id": "M32-039",
@@ -397,7 +1005,23 @@
       "verification_target": "tools/test_m32_gate_snapshot.py",
       "evidence": "NONE_ACCEPTED",
       "next_proof": "G2-A PASS_METADATA_ONLY_OWNER_REPORTED n'est pas la preuve d'absence ; procédure Windows exacte/autorisation nouvelle, positive et adversariale.",
-      "gate": "REQUIRES_INDEPENDENT_R1_G2_PROOFS"
+      "gate": "REQUIRES_INDEPENDENT_R1_G2_PROOFS",
+      "proof_audit": {
+        "record_review_date": "2026-11-12",
+        "test_target_name": "test_m32_gate_snapshot.py",
+        "target_role": "CANDIDATE_VERIFICATION_TARGET_NOT_AN_INDIVIDUAL_TEST_ATTESTATION",
+        "acceptance_expectation": "G2-A PASS_METADATA_ONLY_OWNER_REPORTED n'est pas la preuve d'absence ; procédure Windows exacte/autorisation nouvelle, positive et adversariale.",
+        "execution_scope": "NOT_QUALIFIED_FOR_ACCEPTANCE",
+        "workflow_head_sha": null,
+        "workflow_run_id": null,
+        "workflow_run_date": null,
+        "workflow_event": null,
+        "workflow_attempt": null,
+        "workflow_result": "NO_ACCEPTED_WORKFLOW",
+        "workflow_log_reference": null,
+        "individual_test_step_result": null,
+        "operator_runtime_acceptance": false
+      }
     },
     {
       "id": "M32-040",
@@ -407,7 +1031,23 @@
       "verification_target": "tools/test_m32_gate_snapshot.py",
       "evidence": "NONE_ACCEPTED",
       "next_proof": "Autorisation distincte, source réellement identifiée, aucun remplacement d'un ancien accord par un test GitHub.",
-      "gate": "REQUIRES_INDEPENDENT_R1_G2_PROOFS"
+      "gate": "REQUIRES_INDEPENDENT_R1_G2_PROOFS",
+      "proof_audit": {
+        "record_review_date": "2026-11-12",
+        "test_target_name": "test_m32_gate_snapshot.py",
+        "target_role": "CANDIDATE_VERIFICATION_TARGET_NOT_AN_INDIVIDUAL_TEST_ATTESTATION",
+        "acceptance_expectation": "Autorisation distincte, source réellement identifiée, aucun remplacement d'un ancien accord par un test GitHub.",
+        "execution_scope": "NOT_QUALIFIED_FOR_ACCEPTANCE",
+        "workflow_head_sha": null,
+        "workflow_run_id": null,
+        "workflow_run_date": null,
+        "workflow_event": null,
+        "workflow_attempt": null,
+        "workflow_result": "NO_ACCEPTED_WORKFLOW",
+        "workflow_log_reference": null,
+        "individual_test_step_result": null,
+        "operator_runtime_acceptance": false
+      }
     },
     {
       "id": "M32-041",
@@ -417,7 +1057,23 @@
       "verification_target": "tools/test_m32_gate_snapshot.py",
       "evidence": "NONE_ACCEPTED",
       "next_proof": "Absence d'écrivain, WAL/SHM/hot journal et opérations pouvant écrire examinés ; refuser si source non stable.",
-      "gate": "REQUIRES_INDEPENDENT_R1_G2_PROOFS"
+      "gate": "REQUIRES_INDEPENDENT_R1_G2_PROOFS",
+      "proof_audit": {
+        "record_review_date": "2026-11-12",
+        "test_target_name": "test_m32_gate_snapshot.py",
+        "target_role": "CANDIDATE_VERIFICATION_TARGET_NOT_AN_INDIVIDUAL_TEST_ATTESTATION",
+        "acceptance_expectation": "Absence d'écrivain, WAL/SHM/hot journal et opérations pouvant écrire examinés ; refuser si source non stable.",
+        "execution_scope": "NOT_QUALIFIED_FOR_ACCEPTANCE",
+        "workflow_head_sha": null,
+        "workflow_run_id": null,
+        "workflow_run_date": null,
+        "workflow_event": null,
+        "workflow_attempt": null,
+        "workflow_result": "NO_ACCEPTED_WORKFLOW",
+        "workflow_log_reference": null,
+        "individual_test_step_result": null,
+        "operator_runtime_acceptance": false
+      }
     },
     {
       "id": "M32-042",
@@ -427,7 +1083,23 @@
       "verification_target": "tools/test_m32_gate_snapshot.py",
       "evidence": "NONE_ACCEPTED",
       "next_proof": "Owner déjà authentifié non migrant avec API Backup cohérente, ou source froide établie ; destination neuve réservée sans collision.",
-      "gate": "REQUIRES_INDEPENDENT_R1_G2_PROOFS"
+      "gate": "REQUIRES_INDEPENDENT_R1_G2_PROOFS",
+      "proof_audit": {
+        "record_review_date": "2026-11-12",
+        "test_target_name": "test_m32_gate_snapshot.py",
+        "target_role": "CANDIDATE_VERIFICATION_TARGET_NOT_AN_INDIVIDUAL_TEST_ATTESTATION",
+        "acceptance_expectation": "Owner déjà authentifié non migrant avec API Backup cohérente, ou source froide établie ; destination neuve réservée sans collision.",
+        "execution_scope": "NOT_QUALIFIED_FOR_ACCEPTANCE",
+        "workflow_head_sha": null,
+        "workflow_run_id": null,
+        "workflow_run_date": null,
+        "workflow_event": null,
+        "workflow_attempt": null,
+        "workflow_result": "NO_ACCEPTED_WORKFLOW",
+        "workflow_log_reference": null,
+        "individual_test_step_result": null,
+        "operator_runtime_acceptance": false
+      }
     },
     {
       "id": "M32-043",
@@ -437,7 +1109,23 @@
       "verification_target": "tools/test_m32_gate_snapshot.py",
       "evidence": "NONE_ACCEPTED",
       "next_proof": "Source et destination distinctes, aucun close/reopen risqué, ACL et hashes, identité de volume/objet, pas de copie brute de WAL actif.",
-      "gate": "REQUIRES_INDEPENDENT_R1_G2_PROOFS"
+      "gate": "REQUIRES_INDEPENDENT_R1_G2_PROOFS",
+      "proof_audit": {
+        "record_review_date": "2026-11-12",
+        "test_target_name": "test_m32_gate_snapshot.py",
+        "target_role": "CANDIDATE_VERIFICATION_TARGET_NOT_AN_INDIVIDUAL_TEST_ATTESTATION",
+        "acceptance_expectation": "Source et destination distinctes, aucun close/reopen risqué, ACL et hashes, identité de volume/objet, pas de copie brute de WAL actif.",
+        "execution_scope": "NOT_QUALIFIED_FOR_ACCEPTANCE",
+        "workflow_head_sha": null,
+        "workflow_run_id": null,
+        "workflow_run_date": null,
+        "workflow_event": null,
+        "workflow_attempt": null,
+        "workflow_result": "NO_ACCEPTED_WORKFLOW",
+        "workflow_log_reference": null,
+        "individual_test_step_result": null,
+        "operator_runtime_acceptance": false
+      }
     },
     {
       "id": "M32-044",
@@ -447,7 +1135,23 @@
       "verification_target": "tools/test_m32_gate_snapshot.py",
       "evidence": "NONE_ACCEPTED",
       "next_proof": "integrity_check=ok, foreign_key_check vide, tables/compteurs/digests logiques, v6 et révisions exactes, témoins adversariaux et réouverture.",
-      "gate": "REQUIRES_INDEPENDENT_R1_G2_PROOFS"
+      "gate": "REQUIRES_INDEPENDENT_R1_G2_PROOFS",
+      "proof_audit": {
+        "record_review_date": "2026-11-12",
+        "test_target_name": "test_m32_gate_snapshot.py",
+        "target_role": "CANDIDATE_VERIFICATION_TARGET_NOT_AN_INDIVIDUAL_TEST_ATTESTATION",
+        "acceptance_expectation": "integrity_check=ok, foreign_key_check vide, tables/compteurs/digests logiques, v6 et révisions exactes, témoins adversariaux et réouverture.",
+        "execution_scope": "NOT_QUALIFIED_FOR_ACCEPTANCE",
+        "workflow_head_sha": null,
+        "workflow_run_id": null,
+        "workflow_run_date": null,
+        "workflow_event": null,
+        "workflow_attempt": null,
+        "workflow_result": "NO_ACCEPTED_WORKFLOW",
+        "workflow_log_reference": null,
+        "individual_test_step_result": null,
+        "operator_runtime_acceptance": false
+      }
     },
     {
       "id": "M32-045",
@@ -457,7 +1161,23 @@
       "verification_target": "tools/test_m32_gate_snapshot.py",
       "evidence": "NONE_ACCEPTED",
       "next_proof": "L'ancien pointer actif M1.5, sauvegardes, ACL, journaux, révisions/canons et activation marker sont préservés et vérifiés indépendamment.",
-      "gate": "REQUIRES_INDEPENDENT_R1_G2_PROOFS"
+      "gate": "REQUIRES_INDEPENDENT_R1_G2_PROOFS",
+      "proof_audit": {
+        "record_review_date": "2026-11-12",
+        "test_target_name": "test_m32_gate_snapshot.py",
+        "target_role": "CANDIDATE_VERIFICATION_TARGET_NOT_AN_INDIVIDUAL_TEST_ATTESTATION",
+        "acceptance_expectation": "L'ancien pointer actif M1.5, sauvegardes, ACL, journaux, révisions/canons et activation marker sont préservés et vérifiés indépendamment.",
+        "execution_scope": "NOT_QUALIFIED_FOR_ACCEPTANCE",
+        "workflow_head_sha": null,
+        "workflow_run_id": null,
+        "workflow_run_date": null,
+        "workflow_event": null,
+        "workflow_attempt": null,
+        "workflow_result": "NO_ACCEPTED_WORKFLOW",
+        "workflow_log_reference": null,
+        "individual_test_step_result": null,
+        "operator_runtime_acceptance": false
+      }
     },
     {
       "id": "M32-046",
@@ -467,7 +1187,23 @@
       "verification_target": "tools/test_m32_gate_snapshot.py",
       "evidence": "NONE_ACCEPTED",
       "next_proof": "Signature datée prospective, risques résiduels et contrôles compensatoires explicites ; ne jamais la présenter comme une attestation d'un relecteur indépendant.",
-      "gate": "REQUIRES_INDEPENDENT_R1_G2_PROOFS"
+      "gate": "REQUIRES_INDEPENDENT_R1_G2_PROOFS",
+      "proof_audit": {
+        "record_review_date": "2026-11-12",
+        "test_target_name": "test_m32_gate_snapshot.py",
+        "target_role": "CANDIDATE_VERIFICATION_TARGET_NOT_AN_INDIVIDUAL_TEST_ATTESTATION",
+        "acceptance_expectation": "Signature datée prospective, risques résiduels et contrôles compensatoires explicites ; ne jamais la présenter comme une attestation d'un relecteur indépendant.",
+        "execution_scope": "NOT_QUALIFIED_FOR_ACCEPTANCE",
+        "workflow_head_sha": null,
+        "workflow_run_id": null,
+        "workflow_run_date": null,
+        "workflow_event": null,
+        "workflow_attempt": null,
+        "workflow_result": "NO_ACCEPTED_WORKFLOW",
+        "workflow_log_reference": null,
+        "individual_test_step_result": null,
+        "operator_runtime_acceptance": false
+      }
     },
     {
       "id": "M32-047",
@@ -477,7 +1213,23 @@
       "verification_target": "tools/test_m32_gate_snapshot.py",
       "evidence": "NONE_ACCEPTED",
       "next_proof": "Périmètre explicitement autorisé, audit Windows Tauri/WebView2, pas de migration ou écriture implicite.",
-      "gate": "REQUIRES_INDEPENDENT_R1_G2_PROOFS"
+      "gate": "REQUIRES_INDEPENDENT_R1_G2_PROOFS",
+      "proof_audit": {
+        "record_review_date": "2026-11-12",
+        "test_target_name": "test_m32_gate_snapshot.py",
+        "target_role": "CANDIDATE_VERIFICATION_TARGET_NOT_AN_INDIVIDUAL_TEST_ATTESTATION",
+        "acceptance_expectation": "Périmètre explicitement autorisé, audit Windows Tauri/WebView2, pas de migration ou écriture implicite.",
+        "execution_scope": "NOT_QUALIFIED_FOR_ACCEPTANCE",
+        "workflow_head_sha": null,
+        "workflow_run_id": null,
+        "workflow_run_date": null,
+        "workflow_event": null,
+        "workflow_attempt": null,
+        "workflow_result": "NO_ACCEPTED_WORKFLOW",
+        "workflow_log_reference": null,
+        "individual_test_step_result": null,
+        "operator_runtime_acceptance": false
+      }
     },
     {
       "id": "M32-048",
@@ -487,7 +1239,23 @@
       "verification_target": "tools/test_m32_gate_snapshot.py",
       "evidence": "NONE_ACCEPTED",
       "next_proof": "Emplacements neufs, SHA256, digest de toutes les tables et historique des sauvegardes, contrôle du pointer ; autorisation distincte.",
-      "gate": "REQUIRES_INDEPENDENT_R1_G2_PROOFS"
+      "gate": "REQUIRES_INDEPENDENT_R1_G2_PROOFS",
+      "proof_audit": {
+        "record_review_date": "2026-11-12",
+        "test_target_name": "test_m32_gate_snapshot.py",
+        "target_role": "CANDIDATE_VERIFICATION_TARGET_NOT_AN_INDIVIDUAL_TEST_ATTESTATION",
+        "acceptance_expectation": "Emplacements neufs, SHA256, digest de toutes les tables et historique des sauvegardes, contrôle du pointer ; autorisation distincte.",
+        "execution_scope": "NOT_QUALIFIED_FOR_ACCEPTANCE",
+        "workflow_head_sha": null,
+        "workflow_run_id": null,
+        "workflow_run_date": null,
+        "workflow_event": null,
+        "workflow_attempt": null,
+        "workflow_result": "NO_ACCEPTED_WORKFLOW",
+        "workflow_log_reference": null,
+        "individual_test_step_result": null,
+        "operator_runtime_acceptance": false
+      }
     },
     {
       "id": "M32-049",
@@ -497,7 +1265,23 @@
       "verification_target": "tools/test_m32_parallel_documentary_audit.py",
       "evidence": "CHECKLIST_SCOPED SHA=1f5e201d3e7d0ab088a65621411cc911de0472a1 RUN=#42997104616",
       "next_proof": "NO_FURTHER_PROOF_FOR_CLOSED_SCOPE",
-      "gate": "SCOPED_EVIDENCE_REQUIRED"
+      "gate": "SCOPED_EVIDENCE_REQUIRED",
+      "proof_audit": {
+        "record_review_date": "2026-11-12",
+        "test_target_name": "test_m32_parallel_documentary_audit.py",
+        "target_role": "CANDIDATE_VERIFICATION_TARGET_NOT_AN_INDIVIDUAL_TEST_ATTESTATION",
+        "acceptance_expectation": "Séparer une éventuelle activation de production de la seule acceptation d'un projet neuf",
+        "execution_scope": "GITHUB_ACTIONS_CI_SCOPED_DOCUMENTARY_OR_PROTOCOL",
+        "workflow_head_sha": "1f5e201d3e7d0ab088a65621411cc911de0472a1",
+        "workflow_run_id": 42997104616,
+        "workflow_run_date": "2026-11-11",
+        "workflow_event": "pull_request",
+        "workflow_attempt": 1,
+        "workflow_result": "COMPLETED_SUCCESS_WORKFLOW_ONLY",
+        "workflow_log_reference": "https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/42997104616",
+        "individual_test_step_result": null,
+        "operator_runtime_acceptance": false
+      }
     },
     {
       "id": "M32-050",
@@ -507,7 +1291,23 @@
       "verification_target": "tools/test_m32_legacy_pr_reconciliation.py",
       "evidence": "NONE_ACCEPTED",
       "next_proof": "Porter uniquement les éléments utiles sur base main moderne ; détecter overlaps SQL/lib.rs/workflow, aucun effet runtime implicite.",
-      "gate": "SCOPED_EVIDENCE_REQUIRED"
+      "gate": "SCOPED_EVIDENCE_REQUIRED",
+      "proof_audit": {
+        "record_review_date": "2026-11-12",
+        "test_target_name": "test_m32_legacy_pr_reconciliation.py",
+        "target_role": "CANDIDATE_VERIFICATION_TARGET_NOT_AN_INDIVIDUAL_TEST_ATTESTATION",
+        "acceptance_expectation": "Porter uniquement les éléments utiles sur base main moderne ; détecter overlaps SQL/lib.rs/workflow, aucun effet runtime implicite.",
+        "execution_scope": "NOT_QUALIFIED_FOR_ACCEPTANCE",
+        "workflow_head_sha": null,
+        "workflow_run_id": null,
+        "workflow_run_date": null,
+        "workflow_event": null,
+        "workflow_attempt": null,
+        "workflow_result": "NO_ACCEPTED_WORKFLOW",
+        "workflow_log_reference": null,
+        "individual_test_step_result": null,
+        "operator_runtime_acceptance": false
+      }
     },
     {
       "id": "M32-051",
@@ -517,7 +1317,23 @@
       "verification_target": "tools/test_m32_parallel_documentary_audit.py",
       "evidence": "CHECKLIST_SCOPED SHA=1f5e201d3e7d0ab088a65621411cc911de0472a1 RUN=#42997104616",
       "next_proof": "NO_FURTHER_PROOF_FOR_CLOSED_SCOPE",
-      "gate": "SCOPED_EVIDENCE_REQUIRED"
+      "gate": "SCOPED_EVIDENCE_REQUIRED",
+      "proof_audit": {
+        "record_review_date": "2026-11-12",
+        "test_target_name": "test_m32_parallel_documentary_audit.py",
+        "target_role": "CANDIDATE_VERIFICATION_TARGET_NOT_AN_INDIVIDUAL_TEST_ATTESTATION",
+        "acceptance_expectation": "Documenter le contrat de données v7 existant",
+        "execution_scope": "GITHUB_ACTIONS_CI_SCOPED_DOCUMENTARY_OR_PROTOCOL",
+        "workflow_head_sha": "1f5e201d3e7d0ab088a65621411cc911de0472a1",
+        "workflow_run_id": 42997104616,
+        "workflow_run_date": "2026-11-11",
+        "workflow_event": "pull_request",
+        "workflow_attempt": 1,
+        "workflow_result": "COMPLETED_SUCCESS_WORKFLOW_ONLY",
+        "workflow_log_reference": "https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/42997104616",
+        "individual_test_step_result": null,
+        "operator_runtime_acceptance": false
+      }
     },
     {
       "id": "M32-052",
@@ -527,7 +1343,23 @@
       "verification_target": "tools/test_m32_parallel_documentary_audit.py",
       "evidence": "NONE_ACCEPTED",
       "next_proof": "API typée pour calendrier, événements, ancres, liens, listes ; refus tant que session gate NON ADMITTED.",
-      "gate": "RUNTIME_NOT_ADMITTED"
+      "gate": "RUNTIME_NOT_ADMITTED",
+      "proof_audit": {
+        "record_review_date": "2026-11-12",
+        "test_target_name": "test_m32_parallel_documentary_audit.py",
+        "target_role": "CANDIDATE_VERIFICATION_TARGET_NOT_AN_INDIVIDUAL_TEST_ATTESTATION",
+        "acceptance_expectation": "API typée pour calendrier, événements, ancres, liens, listes ; refus tant que session gate NON ADMITTED.",
+        "execution_scope": "NOT_QUALIFIED_FOR_ACCEPTANCE",
+        "workflow_head_sha": null,
+        "workflow_run_id": null,
+        "workflow_run_date": null,
+        "workflow_event": null,
+        "workflow_attempt": null,
+        "workflow_result": "NO_ACCEPTED_WORKFLOW",
+        "workflow_log_reference": null,
+        "individual_test_step_result": null,
+        "operator_runtime_acceptance": false
+      }
     },
     {
       "id": "M32-053",
@@ -537,7 +1369,23 @@
       "verification_target": "tools/test_m32_parallel_documentary_audit.py",
       "evidence": "NONE_ACCEPTED",
       "next_proof": "Universes isolés, calendrier déclaré et références exactes ; aucune hypothèse de calendrier grégorien.",
-      "gate": "RUNTIME_NOT_ADMITTED"
+      "gate": "RUNTIME_NOT_ADMITTED",
+      "proof_audit": {
+        "record_review_date": "2026-11-12",
+        "test_target_name": "test_m32_parallel_documentary_audit.py",
+        "target_role": "CANDIDATE_VERIFICATION_TARGET_NOT_AN_INDIVIDUAL_TEST_ATTESTATION",
+        "acceptance_expectation": "Universes isolés, calendrier déclaré et références exactes ; aucune hypothèse de calendrier grégorien.",
+        "execution_scope": "NOT_QUALIFIED_FOR_ACCEPTANCE",
+        "workflow_head_sha": null,
+        "workflow_run_id": null,
+        "workflow_run_date": null,
+        "workflow_event": null,
+        "workflow_attempt": null,
+        "workflow_result": "NO_ACCEPTED_WORKFLOW",
+        "workflow_log_reference": null,
+        "individual_test_step_result": null,
+        "operator_runtime_acceptance": false
+      }
     },
     {
       "id": "M32-054",
@@ -547,7 +1395,23 @@
       "verification_target": "tools/test_m32_parallel_documentary_audit.py",
       "evidence": "NONE_ACCEPTED",
       "next_proof": "Nom/type, contexte, heure fictive, sources, champs inconnus, pagination/tri déterministe et absence d'horodatage fabriqué.",
-      "gate": "RUNTIME_NOT_ADMITTED"
+      "gate": "RUNTIME_NOT_ADMITTED",
+      "proof_audit": {
+        "record_review_date": "2026-11-12",
+        "test_target_name": "test_m32_parallel_documentary_audit.py",
+        "target_role": "CANDIDATE_VERIFICATION_TARGET_NOT_AN_INDIVIDUAL_TEST_ATTESTATION",
+        "acceptance_expectation": "Nom/type, contexte, heure fictive, sources, champs inconnus, pagination/tri déterministe et absence d'horodatage fabriqué.",
+        "execution_scope": "NOT_QUALIFIED_FOR_ACCEPTANCE",
+        "workflow_head_sha": null,
+        "workflow_run_id": null,
+        "workflow_run_date": null,
+        "workflow_event": null,
+        "workflow_attempt": null,
+        "workflow_result": "NO_ACCEPTED_WORKFLOW",
+        "workflow_log_reference": null,
+        "individual_test_step_result": null,
+        "operator_runtime_acceptance": false
+      }
     },
     {
       "id": "M32-055",
@@ -557,7 +1421,23 @@
       "verification_target": "tools/test_m32_parallel_documentary_audit.py",
       "evidence": "NONE_ACCEPTED",
       "next_proof": "Supersession ou révision append-only avec motif humain ; ancien objet toujours consultable.",
-      "gate": "RUNTIME_NOT_ADMITTED"
+      "gate": "RUNTIME_NOT_ADMITTED",
+      "proof_audit": {
+        "record_review_date": "2026-11-12",
+        "test_target_name": "test_m32_parallel_documentary_audit.py",
+        "target_role": "CANDIDATE_VERIFICATION_TARGET_NOT_AN_INDIVIDUAL_TEST_ATTESTATION",
+        "acceptance_expectation": "Supersession ou révision append-only avec motif humain ; ancien objet toujours consultable.",
+        "execution_scope": "NOT_QUALIFIED_FOR_ACCEPTANCE",
+        "workflow_head_sha": null,
+        "workflow_run_id": null,
+        "workflow_run_date": null,
+        "workflow_event": null,
+        "workflow_attempt": null,
+        "workflow_result": "NO_ACCEPTED_WORKFLOW",
+        "workflow_log_reference": null,
+        "individual_test_step_result": null,
+        "operator_runtime_acceptance": false
+      }
     },
     {
       "id": "M32-056",
@@ -567,7 +1447,23 @@
       "verification_target": "tools/test_m32_parallel_documentary_audit.py",
       "evidence": "NONE_ACCEPTED",
       "next_proof": "IDs exacts de même Universe ; limites de portée, erreurs déterministes, pas d'ordre global inventé.",
-      "gate": "RUNTIME_NOT_ADMITTED"
+      "gate": "RUNTIME_NOT_ADMITTED",
+      "proof_audit": {
+        "record_review_date": "2026-11-12",
+        "test_target_name": "test_m32_parallel_documentary_audit.py",
+        "target_role": "CANDIDATE_VERIFICATION_TARGET_NOT_AN_INDIVIDUAL_TEST_ATTESTATION",
+        "acceptance_expectation": "IDs exacts de même Universe ; limites de portée, erreurs déterministes, pas d'ordre global inventé.",
+        "execution_scope": "NOT_QUALIFIED_FOR_ACCEPTANCE",
+        "workflow_head_sha": null,
+        "workflow_run_id": null,
+        "workflow_run_date": null,
+        "workflow_event": null,
+        "workflow_attempt": null,
+        "workflow_result": "NO_ACCEPTED_WORKFLOW",
+        "workflow_log_reference": null,
+        "individual_test_step_result": null,
+        "operator_runtime_acceptance": false
+      }
     },
     {
       "id": "M32-057",
@@ -577,7 +1473,23 @@
       "verification_target": "tools/test_m32_parallel_documentary_audit.py",
       "evidence": "NONE_ACCEPTED",
       "next_proof": "Lien précédent conservé, révocation datée dans l'histoire, rollback et diff exacts ; pas de suppression en cascade.",
-      "gate": "RUNTIME_NOT_ADMITTED"
+      "gate": "RUNTIME_NOT_ADMITTED",
+      "proof_audit": {
+        "record_review_date": "2026-11-12",
+        "test_target_name": "test_m32_parallel_documentary_audit.py",
+        "target_role": "CANDIDATE_VERIFICATION_TARGET_NOT_AN_INDIVIDUAL_TEST_ATTESTATION",
+        "acceptance_expectation": "Lien précédent conservé, révocation datée dans l'histoire, rollback et diff exacts ; pas de suppression en cascade.",
+        "execution_scope": "NOT_QUALIFIED_FOR_ACCEPTANCE",
+        "workflow_head_sha": null,
+        "workflow_run_id": null,
+        "workflow_run_date": null,
+        "workflow_event": null,
+        "workflow_attempt": null,
+        "workflow_result": "NO_ACCEPTED_WORKFLOW",
+        "workflow_log_reference": null,
+        "individual_test_step_result": null,
+        "operator_runtime_acceptance": false
+      }
     },
     {
       "id": "M32-058",
@@ -587,7 +1499,23 @@
       "verification_target": "src/m32WorldOrderComparison.test.tsx",
       "evidence": "NONE_ACCEPTED",
       "next_proof": "Détecter cycles, auto-lien, duplicata, contradictions, bornes impossibles ; afficher témoins directs sans réécriture de la chronologie.",
-      "gate": "RUNTIME_NOT_ADMITTED"
+      "gate": "RUNTIME_NOT_ADMITTED",
+      "proof_audit": {
+        "record_review_date": "2026-11-12",
+        "test_target_name": "m32WorldOrderComparison.test.tsx",
+        "target_role": "CANDIDATE_VERIFICATION_TARGET_NOT_AN_INDIVIDUAL_TEST_ATTESTATION",
+        "acceptance_expectation": "Détecter cycles, auto-lien, duplicata, contradictions, bornes impossibles ; afficher témoins directs sans réécriture de la chronologie.",
+        "execution_scope": "NOT_QUALIFIED_FOR_ACCEPTANCE",
+        "workflow_head_sha": null,
+        "workflow_run_id": null,
+        "workflow_run_date": null,
+        "workflow_event": null,
+        "workflow_attempt": null,
+        "workflow_result": "NO_ACCEPTED_WORKFLOW",
+        "workflow_log_reference": null,
+        "individual_test_step_result": null,
+        "operator_runtime_acceptance": false
+      }
     },
     {
       "id": "M32-059",
@@ -597,7 +1525,23 @@
       "verification_target": "tools/test_m32_parallel_documentary_audit.py",
       "evidence": "NONE_ACCEPTED",
       "next_proof": "Exact calendrier fictif, plage approximative, relatif, inconnu ; bornes/precision saisies et restituées sans coercition Date.parse.",
-      "gate": "RUNTIME_NOT_ADMITTED"
+      "gate": "RUNTIME_NOT_ADMITTED",
+      "proof_audit": {
+        "record_review_date": "2026-11-12",
+        "test_target_name": "test_m32_parallel_documentary_audit.py",
+        "target_role": "CANDIDATE_VERIFICATION_TARGET_NOT_AN_INDIVIDUAL_TEST_ATTESTATION",
+        "acceptance_expectation": "Exact calendrier fictif, plage approximative, relatif, inconnu ; bornes/precision saisies et restituées sans coercition Date.parse.",
+        "execution_scope": "NOT_QUALIFIED_FOR_ACCEPTANCE",
+        "workflow_head_sha": null,
+        "workflow_run_id": null,
+        "workflow_run_date": null,
+        "workflow_event": null,
+        "workflow_attempt": null,
+        "workflow_result": "NO_ACCEPTED_WORKFLOW",
+        "workflow_log_reference": null,
+        "individual_test_step_result": null,
+        "operator_runtime_acceptance": false
+      }
     },
     {
       "id": "M32-060",
@@ -607,7 +1551,23 @@
       "verification_target": "tools/test_m32_parallel_documentary_audit.py",
       "evidence": "NONE_ACCEPTED",
       "next_proof": "Mapping créé explicitement par auteur ; sans mapping = INDETERMINATE, jamais conversion automatique.",
-      "gate": "RUNTIME_NOT_ADMITTED"
+      "gate": "RUNTIME_NOT_ADMITTED",
+      "proof_audit": {
+        "record_review_date": "2026-11-12",
+        "test_target_name": "test_m32_parallel_documentary_audit.py",
+        "target_role": "CANDIDATE_VERIFICATION_TARGET_NOT_AN_INDIVIDUAL_TEST_ATTESTATION",
+        "acceptance_expectation": "Mapping créé explicitement par auteur ; sans mapping = INDETERMINATE, jamais conversion automatique.",
+        "execution_scope": "NOT_QUALIFIED_FOR_ACCEPTANCE",
+        "workflow_head_sha": null,
+        "workflow_run_id": null,
+        "workflow_run_date": null,
+        "workflow_event": null,
+        "workflow_attempt": null,
+        "workflow_result": "NO_ACCEPTED_WORKFLOW",
+        "workflow_log_reference": null,
+        "individual_test_step_result": null,
+        "operator_runtime_acceptance": false
+      }
     },
     {
       "id": "M32-061",
@@ -617,7 +1577,23 @@
       "verification_target": "tools/test_m32_parallel_documentary_audit.py",
       "evidence": "NONE_ACCEPTED",
       "next_proof": "Novel, Scene, revision ID ; HEAD actuelle distincte de la révision source ; aucune invalidation lors d'édition de scène.",
-      "gate": "RUNTIME_NOT_ADMITTED"
+      "gate": "RUNTIME_NOT_ADMITTED",
+      "proof_audit": {
+        "record_review_date": "2026-11-12",
+        "test_target_name": "test_m32_parallel_documentary_audit.py",
+        "target_role": "CANDIDATE_VERIFICATION_TARGET_NOT_AN_INDIVIDUAL_TEST_ATTESTATION",
+        "acceptance_expectation": "Novel, Scene, revision ID ; HEAD actuelle distincte de la révision source ; aucune invalidation lors d'édition de scène.",
+        "execution_scope": "NOT_QUALIFIED_FOR_ACCEPTANCE",
+        "workflow_head_sha": null,
+        "workflow_run_id": null,
+        "workflow_run_date": null,
+        "workflow_event": null,
+        "workflow_attempt": null,
+        "workflow_result": "NO_ACCEPTED_WORKFLOW",
+        "workflow_log_reference": null,
+        "individual_test_step_result": null,
+        "operator_runtime_acceptance": false
+      }
     },
     {
       "id": "M32-062",
@@ -627,7 +1603,23 @@
       "verification_target": "tools/test_m32_parallel_documentary_audit.py",
       "evidence": "NONE_ACCEPTED",
       "next_proof": "Contraintes cross-novel dans même Universe, rejet cross-Universe avant modification, identités homonymes distinctes.",
-      "gate": "RUNTIME_NOT_ADMITTED"
+      "gate": "RUNTIME_NOT_ADMITTED",
+      "proof_audit": {
+        "record_review_date": "2026-11-12",
+        "test_target_name": "test_m32_parallel_documentary_audit.py",
+        "target_role": "CANDIDATE_VERIFICATION_TARGET_NOT_AN_INDIVIDUAL_TEST_ATTESTATION",
+        "acceptance_expectation": "Contraintes cross-novel dans même Universe, rejet cross-Universe avant modification, identités homonymes distinctes.",
+        "execution_scope": "NOT_QUALIFIED_FOR_ACCEPTANCE",
+        "workflow_head_sha": null,
+        "workflow_run_id": null,
+        "workflow_run_date": null,
+        "workflow_event": null,
+        "workflow_attempt": null,
+        "workflow_result": "NO_ACCEPTED_WORKFLOW",
+        "workflow_log_reference": null,
+        "individual_test_step_result": null,
+        "operator_runtime_acceptance": false
+      }
     },
     {
       "id": "M32-063",
@@ -637,7 +1629,23 @@
       "verification_target": "tools/test_m32_parallel_documentary_audit.py",
       "evidence": "NONE_ACCEPTED",
       "next_proof": "BEGIN IMMEDIATE/commit/rollback, corrections idempotentes, aucun succès partiel après une erreur.",
-      "gate": "RUNTIME_NOT_ADMITTED"
+      "gate": "RUNTIME_NOT_ADMITTED",
+      "proof_audit": {
+        "record_review_date": "2026-11-12",
+        "test_target_name": "test_m32_parallel_documentary_audit.py",
+        "target_role": "CANDIDATE_VERIFICATION_TARGET_NOT_AN_INDIVIDUAL_TEST_ATTESTATION",
+        "acceptance_expectation": "BEGIN IMMEDIATE/commit/rollback, corrections idempotentes, aucun succès partiel après une erreur.",
+        "execution_scope": "NOT_QUALIFIED_FOR_ACCEPTANCE",
+        "workflow_head_sha": null,
+        "workflow_run_id": null,
+        "workflow_run_date": null,
+        "workflow_event": null,
+        "workflow_attempt": null,
+        "workflow_result": "NO_ACCEPTED_WORKFLOW",
+        "workflow_log_reference": null,
+        "individual_test_step_result": null,
+        "operator_runtime_acceptance": false
+      }
     },
     {
       "id": "M32-064",
@@ -647,7 +1655,23 @@
       "verification_target": "tools/test_m32_parallel_documentary_audit.py",
       "evidence": "NONE_ACCEPTED",
       "next_proof": "Parcours create/correct/revoke/list/restart sur fichier jetable : conservation de l'histoire et de toutes les autres données.",
-      "gate": "RUNTIME_NOT_ADMITTED"
+      "gate": "RUNTIME_NOT_ADMITTED",
+      "proof_audit": {
+        "record_review_date": "2026-11-12",
+        "test_target_name": "test_m32_parallel_documentary_audit.py",
+        "target_role": "CANDIDATE_VERIFICATION_TARGET_NOT_AN_INDIVIDUAL_TEST_ATTESTATION",
+        "acceptance_expectation": "Parcours create/correct/revoke/list/restart sur fichier jetable : conservation de l'histoire et de toutes les autres données.",
+        "execution_scope": "NOT_QUALIFIED_FOR_ACCEPTANCE",
+        "workflow_head_sha": null,
+        "workflow_run_id": null,
+        "workflow_run_date": null,
+        "workflow_event": null,
+        "workflow_attempt": null,
+        "workflow_result": "NO_ACCEPTED_WORKFLOW",
+        "workflow_log_reference": null,
+        "individual_test_step_result": null,
+        "operator_runtime_acceptance": false
+      }
     },
     {
       "id": "M32-065",
@@ -657,7 +1681,23 @@
       "verification_target": "tools/test_m32_parallel_documentary_audit.py",
       "evidence": "NONE_ACCEPTED",
       "next_proof": "Aucune élévation automatique au premier démarrage ; code de version et routage de stockage auditables.",
-      "gate": "RUNTIME_NOT_ADMITTED"
+      "gate": "RUNTIME_NOT_ADMITTED",
+      "proof_audit": {
+        "record_review_date": "2026-11-12",
+        "test_target_name": "test_m32_parallel_documentary_audit.py",
+        "target_role": "CANDIDATE_VERIFICATION_TARGET_NOT_AN_INDIVIDUAL_TEST_ATTESTATION",
+        "acceptance_expectation": "Aucune élévation automatique au premier démarrage ; code de version et routage de stockage auditables.",
+        "execution_scope": "NOT_QUALIFIED_FOR_ACCEPTANCE",
+        "workflow_head_sha": null,
+        "workflow_run_id": null,
+        "workflow_run_date": null,
+        "workflow_event": null,
+        "workflow_attempt": null,
+        "workflow_result": "NO_ACCEPTED_WORKFLOW",
+        "workflow_log_reference": null,
+        "individual_test_step_result": null,
+        "operator_runtime_acceptance": false
+      }
     },
     {
       "id": "M32-066",
@@ -667,7 +1707,23 @@
       "verification_target": "tools/test_m32_parallel_documentary_audit.py",
       "evidence": "NONE_ACCEPTED",
       "next_proof": "Sélection Universe/Novel/Scene, calendrier, ancre, lien et sauvegarde, avec identité NEW_ONLY séparée, Ollama désactivable.",
-      "gate": "RUNTIME_NOT_ADMITTED"
+      "gate": "RUNTIME_NOT_ADMITTED",
+      "proof_audit": {
+        "record_review_date": "2026-11-12",
+        "test_target_name": "test_m32_parallel_documentary_audit.py",
+        "target_role": "CANDIDATE_VERIFICATION_TARGET_NOT_AN_INDIVIDUAL_TEST_ATTESTATION",
+        "acceptance_expectation": "Sélection Universe/Novel/Scene, calendrier, ancre, lien et sauvegarde, avec identité NEW_ONLY séparée, Ollama désactivable.",
+        "execution_scope": "NOT_QUALIFIED_FOR_ACCEPTANCE",
+        "workflow_head_sha": null,
+        "workflow_run_id": null,
+        "workflow_run_date": null,
+        "workflow_event": null,
+        "workflow_attempt": null,
+        "workflow_result": "NO_ACCEPTED_WORKFLOW",
+        "workflow_log_reference": null,
+        "individual_test_step_result": null,
+        "operator_runtime_acceptance": false
+      }
     },
     {
       "id": "M32-067",
@@ -677,7 +1733,23 @@
       "verification_target": "src/m32ChronologyPreview.test.tsx",
       "evidence": "NONE_ACCEPTED",
       "next_proof": "L'atelier P3/P4 React fictif n'est pas une fonction App.tsx ; brancher seulement une fois la frontière admise.",
-      "gate": "RUNTIME_NOT_ADMITTED"
+      "gate": "RUNTIME_NOT_ADMITTED",
+      "proof_audit": {
+        "record_review_date": "2026-11-12",
+        "test_target_name": "m32ChronologyPreview.test.tsx",
+        "target_role": "CANDIDATE_VERIFICATION_TARGET_NOT_AN_INDIVIDUAL_TEST_ATTESTATION",
+        "acceptance_expectation": "L'atelier P3/P4 React fictif n'est pas une fonction App.tsx ; brancher seulement une fois la frontière admise.",
+        "execution_scope": "NOT_QUALIFIED_FOR_ACCEPTANCE",
+        "workflow_head_sha": null,
+        "workflow_run_id": null,
+        "workflow_run_date": null,
+        "workflow_event": null,
+        "workflow_attempt": null,
+        "workflow_result": "NO_ACCEPTED_WORKFLOW",
+        "workflow_log_reference": null,
+        "individual_test_step_result": null,
+        "operator_runtime_acceptance": false
+      }
     },
     {
       "id": "M32-068",
@@ -687,7 +1759,23 @@
       "verification_target": "src/m32ChronologyPreview.test.tsx",
       "evidence": "NONE_ACCEPTED",
       "next_proof": "Aucun accès direct DB/path/SQL/admission token, vérification par session/génération, pas de commande de writer avant R9.",
-      "gate": "RUNTIME_NOT_ADMITTED"
+      "gate": "RUNTIME_NOT_ADMITTED",
+      "proof_audit": {
+        "record_review_date": "2026-11-12",
+        "test_target_name": "m32ChronologyPreview.test.tsx",
+        "target_role": "CANDIDATE_VERIFICATION_TARGET_NOT_AN_INDIVIDUAL_TEST_ATTESTATION",
+        "acceptance_expectation": "Aucun accès direct DB/path/SQL/admission token, vérification par session/génération, pas de commande de writer avant R9.",
+        "execution_scope": "NOT_QUALIFIED_FOR_ACCEPTANCE",
+        "workflow_head_sha": null,
+        "workflow_run_id": null,
+        "workflow_run_date": null,
+        "workflow_event": null,
+        "workflow_attempt": null,
+        "workflow_result": "NO_ACCEPTED_WORKFLOW",
+        "workflow_log_reference": null,
+        "individual_test_step_result": null,
+        "operator_runtime_acceptance": false
+      }
     },
     {
       "id": "M32-069",
@@ -697,7 +1785,23 @@
       "verification_target": "src/m32ChronologyPreview.test.tsx",
       "evidence": "NONE_ACCEPTED",
       "next_proof": "Chronologie du monde modifiable, position de narration distincte, ordre de révélation en lecture seule (M3.2) ; aucune conversion silencieuse.",
-      "gate": "RUNTIME_NOT_ADMITTED"
+      "gate": "RUNTIME_NOT_ADMITTED",
+      "proof_audit": {
+        "record_review_date": "2026-11-12",
+        "test_target_name": "m32ChronologyPreview.test.tsx",
+        "target_role": "CANDIDATE_VERIFICATION_TARGET_NOT_AN_INDIVIDUAL_TEST_ATTESTATION",
+        "acceptance_expectation": "Chronologie du monde modifiable, position de narration distincte, ordre de révélation en lecture seule (M3.2) ; aucune conversion silencieuse.",
+        "execution_scope": "NOT_QUALIFIED_FOR_ACCEPTANCE",
+        "workflow_head_sha": null,
+        "workflow_run_id": null,
+        "workflow_run_date": null,
+        "workflow_event": null,
+        "workflow_attempt": null,
+        "workflow_result": "NO_ACCEPTED_WORKFLOW",
+        "workflow_log_reference": null,
+        "individual_test_step_result": null,
+        "operator_runtime_acceptance": false
+      }
     },
     {
       "id": "M32-070",
@@ -707,7 +1811,23 @@
       "verification_target": "src/m32ChronologyPreview.test.tsx",
       "evidence": "NONE_ACCEPTED",
       "next_proof": "Création, saisie précision, validité, estimation, source, révision ; messages explicites sans obligation Ollama.",
-      "gate": "RUNTIME_NOT_ADMITTED"
+      "gate": "RUNTIME_NOT_ADMITTED",
+      "proof_audit": {
+        "record_review_date": "2026-11-12",
+        "test_target_name": "m32ChronologyPreview.test.tsx",
+        "target_role": "CANDIDATE_VERIFICATION_TARGET_NOT_AN_INDIVIDUAL_TEST_ATTESTATION",
+        "acceptance_expectation": "Création, saisie précision, validité, estimation, source, révision ; messages explicites sans obligation Ollama.",
+        "execution_scope": "NOT_QUALIFIED_FOR_ACCEPTANCE",
+        "workflow_head_sha": null,
+        "workflow_run_id": null,
+        "workflow_run_date": null,
+        "workflow_event": null,
+        "workflow_attempt": null,
+        "workflow_result": "NO_ACCEPTED_WORKFLOW",
+        "workflow_log_reference": null,
+        "individual_test_step_result": null,
+        "operator_runtime_acceptance": false
+      }
     },
     {
       "id": "M32-071",
@@ -717,7 +1837,23 @@
       "verification_target": "src/m32ChronologyPreview.test.tsx",
       "evidence": "NONE_ACCEPTED",
       "next_proof": "Filtres Universe/Novel/personnage, versions, pagination, affichage IDs et date fictive, source exacte et statut.",
-      "gate": "RUNTIME_NOT_ADMITTED"
+      "gate": "RUNTIME_NOT_ADMITTED",
+      "proof_audit": {
+        "record_review_date": "2026-11-12",
+        "test_target_name": "m32ChronologyPreview.test.tsx",
+        "target_role": "CANDIDATE_VERIFICATION_TARGET_NOT_AN_INDIVIDUAL_TEST_ATTESTATION",
+        "acceptance_expectation": "Filtres Universe/Novel/personnage, versions, pagination, affichage IDs et date fictive, source exacte et statut.",
+        "execution_scope": "NOT_QUALIFIED_FOR_ACCEPTANCE",
+        "workflow_head_sha": null,
+        "workflow_run_id": null,
+        "workflow_run_date": null,
+        "workflow_event": null,
+        "workflow_attempt": null,
+        "workflow_result": "NO_ACCEPTED_WORKFLOW",
+        "workflow_log_reference": null,
+        "individual_test_step_result": null,
+        "operator_runtime_acceptance": false
+      }
     },
     {
       "id": "M32-072",
@@ -727,7 +1863,23 @@
       "verification_target": "src/m32ChronologyPreview.test.tsx",
       "evidence": "NONE_ACCEPTED",
       "next_proof": "Choix de deux ancres, aperçu de l'impact et témoin de cycle avant confirmation, explication des erreurs.",
-      "gate": "RUNTIME_NOT_ADMITTED"
+      "gate": "RUNTIME_NOT_ADMITTED",
+      "proof_audit": {
+        "record_review_date": "2026-11-12",
+        "test_target_name": "m32ChronologyPreview.test.tsx",
+        "target_role": "CANDIDATE_VERIFICATION_TARGET_NOT_AN_INDIVIDUAL_TEST_ATTESTATION",
+        "acceptance_expectation": "Choix de deux ancres, aperçu de l'impact et témoin de cycle avant confirmation, explication des erreurs.",
+        "execution_scope": "NOT_QUALIFIED_FOR_ACCEPTANCE",
+        "workflow_head_sha": null,
+        "workflow_run_id": null,
+        "workflow_run_date": null,
+        "workflow_event": null,
+        "workflow_attempt": null,
+        "workflow_result": "NO_ACCEPTED_WORKFLOW",
+        "workflow_log_reference": null,
+        "individual_test_step_result": null,
+        "operator_runtime_acceptance": false
+      }
     },
     {
       "id": "M32-073",
@@ -737,7 +1889,23 @@
       "verification_target": "src/m32ChronologyPreview.test.tsx",
       "evidence": "NONE_ACCEPTED",
       "next_proof": "Motif humain, prévisualisation, confirmation, historique inspectable et annulation sans effacer les anciennes lignes.",
-      "gate": "RUNTIME_NOT_ADMITTED"
+      "gate": "RUNTIME_NOT_ADMITTED",
+      "proof_audit": {
+        "record_review_date": "2026-11-12",
+        "test_target_name": "m32ChronologyPreview.test.tsx",
+        "target_role": "CANDIDATE_VERIFICATION_TARGET_NOT_AN_INDIVIDUAL_TEST_ATTESTATION",
+        "acceptance_expectation": "Motif humain, prévisualisation, confirmation, historique inspectable et annulation sans effacer les anciennes lignes.",
+        "execution_scope": "NOT_QUALIFIED_FOR_ACCEPTANCE",
+        "workflow_head_sha": null,
+        "workflow_run_id": null,
+        "workflow_run_date": null,
+        "workflow_event": null,
+        "workflow_attempt": null,
+        "workflow_result": "NO_ACCEPTED_WORKFLOW",
+        "workflow_log_reference": null,
+        "individual_test_step_result": null,
+        "operator_runtime_acceptance": false
+      }
     },
     {
       "id": "M32-074",
@@ -747,7 +1915,23 @@
       "verification_target": "src/m32ChronologyPreview.test.tsx",
       "evidence": "NONE_ACCEPTED",
       "next_proof": "Aucun texte de scène, fiche ou assertion M2 n'est promu canon par l'UI chronologique.",
-      "gate": "RUNTIME_NOT_ADMITTED"
+      "gate": "RUNTIME_NOT_ADMITTED",
+      "proof_audit": {
+        "record_review_date": "2026-11-12",
+        "test_target_name": "m32ChronologyPreview.test.tsx",
+        "target_role": "CANDIDATE_VERIFICATION_TARGET_NOT_AN_INDIVIDUAL_TEST_ATTESTATION",
+        "acceptance_expectation": "Aucun texte de scène, fiche ou assertion M2 n'est promu canon par l'UI chronologique.",
+        "execution_scope": "NOT_QUALIFIED_FOR_ACCEPTANCE",
+        "workflow_head_sha": null,
+        "workflow_run_id": null,
+        "workflow_run_date": null,
+        "workflow_event": null,
+        "workflow_attempt": null,
+        "workflow_result": "NO_ACCEPTED_WORKFLOW",
+        "workflow_log_reference": null,
+        "individual_test_step_result": null,
+        "operator_runtime_acceptance": false
+      }
     },
     {
       "id": "M32-075",
@@ -757,7 +1941,23 @@
       "verification_target": "src/m32ChronologyPreview.test.tsx",
       "evidence": "NONE_ACCEPTED",
       "next_proof": "Navigation clavier, libellés et messages, absence de fuite par HTML hostile, aucune requête externe ni dépendance à Ollama.",
-      "gate": "RUNTIME_NOT_ADMITTED"
+      "gate": "RUNTIME_NOT_ADMITTED",
+      "proof_audit": {
+        "record_review_date": "2026-11-12",
+        "test_target_name": "m32ChronologyPreview.test.tsx",
+        "target_role": "CANDIDATE_VERIFICATION_TARGET_NOT_AN_INDIVIDUAL_TEST_ATTESTATION",
+        "acceptance_expectation": "Navigation clavier, libellés et messages, absence de fuite par HTML hostile, aucune requête externe ni dépendance à Ollama.",
+        "execution_scope": "NOT_QUALIFIED_FOR_ACCEPTANCE",
+        "workflow_head_sha": null,
+        "workflow_run_id": null,
+        "workflow_run_date": null,
+        "workflow_event": null,
+        "workflow_attempt": null,
+        "workflow_result": "NO_ACCEPTED_WORKFLOW",
+        "workflow_log_reference": null,
+        "individual_test_step_result": null,
+        "operator_runtime_acceptance": false
+      }
     },
     {
       "id": "M32-076",
@@ -767,7 +1967,23 @@
       "verification_target": "src/m32ChronologyPreview.test.tsx",
       "evidence": "NONE_ACCEPTED",
       "next_proof": "État « fictif/non persisté » tant que fixture ; si refus du writer, affichage explicite et aucune modification prétendue.",
-      "gate": "RUNTIME_NOT_ADMITTED"
+      "gate": "RUNTIME_NOT_ADMITTED",
+      "proof_audit": {
+        "record_review_date": "2026-11-12",
+        "test_target_name": "m32ChronologyPreview.test.tsx",
+        "target_role": "CANDIDATE_VERIFICATION_TARGET_NOT_AN_INDIVIDUAL_TEST_ATTESTATION",
+        "acceptance_expectation": "État « fictif/non persisté » tant que fixture ; si refus du writer, affichage explicite et aucune modification prétendue.",
+        "execution_scope": "NOT_QUALIFIED_FOR_ACCEPTANCE",
+        "workflow_head_sha": null,
+        "workflow_run_id": null,
+        "workflow_run_date": null,
+        "workflow_event": null,
+        "workflow_attempt": null,
+        "workflow_result": "NO_ACCEPTED_WORKFLOW",
+        "workflow_log_reference": null,
+        "individual_test_step_result": null,
+        "operator_runtime_acceptance": false
+      }
     },
     {
       "id": "M32-077",
@@ -777,7 +1993,23 @@
       "verification_target": "src/m32ChronologyPreview.test.tsx",
       "evidence": "NONE_ACCEPTED",
       "next_proof": "Collision, BUSY, source étrangère, timeout, annulation, fermeture/relance : UI refuse et indique l'action possible.",
-      "gate": "RUNTIME_NOT_ADMITTED"
+      "gate": "RUNTIME_NOT_ADMITTED",
+      "proof_audit": {
+        "record_review_date": "2026-11-12",
+        "test_target_name": "m32ChronologyPreview.test.tsx",
+        "target_role": "CANDIDATE_VERIFICATION_TARGET_NOT_AN_INDIVIDUAL_TEST_ATTESTATION",
+        "acceptance_expectation": "Collision, BUSY, source étrangère, timeout, annulation, fermeture/relance : UI refuse et indique l'action possible.",
+        "execution_scope": "NOT_QUALIFIED_FOR_ACCEPTANCE",
+        "workflow_head_sha": null,
+        "workflow_run_id": null,
+        "workflow_run_date": null,
+        "workflow_event": null,
+        "workflow_attempt": null,
+        "workflow_result": "NO_ACCEPTED_WORKFLOW",
+        "workflow_log_reference": null,
+        "individual_test_step_result": null,
+        "operator_runtime_acceptance": false
+      }
     },
     {
       "id": "M32-078",
@@ -787,7 +2019,23 @@
       "verification_target": "tools/test_m32_requirements_traceability.py",
       "evidence": "NONE_ACCEPTED",
       "next_proof": "Chaque ligne présente nom du test, SHA, date, fixture/Windows réel, attentes, logs et résultat ; pas de PASS hérité d'un HEAD ancien.",
-      "gate": "RUNTIME_NOT_ADMITTED"
+      "gate": "RUNTIME_NOT_ADMITTED",
+      "proof_audit": {
+        "record_review_date": "2026-11-12",
+        "test_target_name": "test_m32_requirements_traceability.py",
+        "target_role": "CANDIDATE_VERIFICATION_TARGET_NOT_AN_INDIVIDUAL_TEST_ATTESTATION",
+        "acceptance_expectation": "Chaque ligne présente nom du test, SHA, date, fixture/Windows réel, attentes, logs et résultat ; pas de PASS hérité d'un HEAD ancien.",
+        "execution_scope": "NOT_QUALIFIED_FOR_ACCEPTANCE",
+        "workflow_head_sha": null,
+        "workflow_run_id": null,
+        "workflow_run_date": null,
+        "workflow_event": null,
+        "workflow_attempt": null,
+        "workflow_result": "NO_ACCEPTED_WORKFLOW",
+        "workflow_log_reference": null,
+        "individual_test_step_result": null,
+        "operator_runtime_acceptance": false
+      }
     },
     {
       "id": "M32-079",
@@ -797,7 +2045,23 @@
       "verification_target": "tools/test_m32_completion_master_checklist.py",
       "evidence": "NONE_ACCEPTED",
       "next_proof": "Calendrier exact/approx/relative/inconnu, dates sans mapping, undated et scènes anciennes.",
-      "gate": "RUNTIME_NOT_ADMITTED"
+      "gate": "RUNTIME_NOT_ADMITTED",
+      "proof_audit": {
+        "record_review_date": "2026-11-12",
+        "test_target_name": "test_m32_completion_master_checklist.py",
+        "target_role": "CANDIDATE_VERIFICATION_TARGET_NOT_AN_INDIVIDUAL_TEST_ATTESTATION",
+        "acceptance_expectation": "Calendrier exact/approx/relative/inconnu, dates sans mapping, undated et scènes anciennes.",
+        "execution_scope": "NOT_QUALIFIED_FOR_ACCEPTANCE",
+        "workflow_head_sha": null,
+        "workflow_run_id": null,
+        "workflow_run_date": null,
+        "workflow_event": null,
+        "workflow_attempt": null,
+        "workflow_result": "NO_ACCEPTED_WORKFLOW",
+        "workflow_log_reference": null,
+        "individual_test_step_result": null,
+        "operator_runtime_acceptance": false
+      }
     },
     {
       "id": "M32-080",
@@ -807,7 +2071,23 @@
       "verification_target": "src/m32WorldOrderComparison.test.tsx",
       "evidence": "NONE_ACCEPTED",
       "next_proof": "Chemins cycliques, doublons, exclusions et opposition avant/après ; rollback et données intactes.",
-      "gate": "RUNTIME_NOT_ADMITTED"
+      "gate": "RUNTIME_NOT_ADMITTED",
+      "proof_audit": {
+        "record_review_date": "2026-11-12",
+        "test_target_name": "m32WorldOrderComparison.test.tsx",
+        "target_role": "CANDIDATE_VERIFICATION_TARGET_NOT_AN_INDIVIDUAL_TEST_ATTESTATION",
+        "acceptance_expectation": "Chemins cycliques, doublons, exclusions et opposition avant/après ; rollback et données intactes.",
+        "execution_scope": "NOT_QUALIFIED_FOR_ACCEPTANCE",
+        "workflow_head_sha": null,
+        "workflow_run_id": null,
+        "workflow_run_date": null,
+        "workflow_event": null,
+        "workflow_attempt": null,
+        "workflow_result": "NO_ACCEPTED_WORKFLOW",
+        "workflow_log_reference": null,
+        "individual_test_step_result": null,
+        "operator_runtime_acceptance": false
+      }
     },
     {
       "id": "M32-081",
@@ -817,7 +2097,23 @@
       "verification_target": "tools/test_m32_completion_master_checklist.py",
       "evidence": "NONE_ACCEPTED",
       "next_proof": "Ancres/revisions historiques demeurent consultables après modifications, sans modifier HEAD des scènes.",
-      "gate": "RUNTIME_NOT_ADMITTED"
+      "gate": "RUNTIME_NOT_ADMITTED",
+      "proof_audit": {
+        "record_review_date": "2026-11-12",
+        "test_target_name": "test_m32_completion_master_checklist.py",
+        "target_role": "CANDIDATE_VERIFICATION_TARGET_NOT_AN_INDIVIDUAL_TEST_ATTESTATION",
+        "acceptance_expectation": "Ancres/revisions historiques demeurent consultables après modifications, sans modifier HEAD des scènes.",
+        "execution_scope": "NOT_QUALIFIED_FOR_ACCEPTANCE",
+        "workflow_head_sha": null,
+        "workflow_run_id": null,
+        "workflow_run_date": null,
+        "workflow_event": null,
+        "workflow_attempt": null,
+        "workflow_result": "NO_ACCEPTED_WORKFLOW",
+        "workflow_log_reference": null,
+        "individual_test_step_result": null,
+        "operator_runtime_acceptance": false
+      }
     },
     {
       "id": "M32-082",
@@ -827,7 +2123,23 @@
       "verification_target": "tools/test_m32_completion_master_checklist.py",
       "evidence": "NONE_ACCEPTED",
       "next_proof": "Homonymes, mauvais foreign keys, cross-Universe et anciennes révisions étrangères refusés.",
-      "gate": "RUNTIME_NOT_ADMITTED"
+      "gate": "RUNTIME_NOT_ADMITTED",
+      "proof_audit": {
+        "record_review_date": "2026-11-12",
+        "test_target_name": "test_m32_completion_master_checklist.py",
+        "target_role": "CANDIDATE_VERIFICATION_TARGET_NOT_AN_INDIVIDUAL_TEST_ATTESTATION",
+        "acceptance_expectation": "Homonymes, mauvais foreign keys, cross-Universe et anciennes révisions étrangères refusés.",
+        "execution_scope": "NOT_QUALIFIED_FOR_ACCEPTANCE",
+        "workflow_head_sha": null,
+        "workflow_run_id": null,
+        "workflow_run_date": null,
+        "workflow_event": null,
+        "workflow_attempt": null,
+        "workflow_result": "NO_ACCEPTED_WORKFLOW",
+        "workflow_log_reference": null,
+        "individual_test_step_result": null,
+        "operator_runtime_acceptance": false
+      }
     },
     {
       "id": "M32-083",
@@ -837,7 +2149,23 @@
       "verification_target": "tools/test_m32_completion_master_checklist.py",
       "evidence": "NONE_ACCEPTED",
       "next_proof": "Flashbacks et divulgations différées sans conversion ni ordre total inféré.",
-      "gate": "RUNTIME_NOT_ADMITTED"
+      "gate": "RUNTIME_NOT_ADMITTED",
+      "proof_audit": {
+        "record_review_date": "2026-11-12",
+        "test_target_name": "test_m32_completion_master_checklist.py",
+        "target_role": "CANDIDATE_VERIFICATION_TARGET_NOT_AN_INDIVIDUAL_TEST_ATTESTATION",
+        "acceptance_expectation": "Flashbacks et divulgations différées sans conversion ni ordre total inféré.",
+        "execution_scope": "NOT_QUALIFIED_FOR_ACCEPTANCE",
+        "workflow_head_sha": null,
+        "workflow_run_id": null,
+        "workflow_run_date": null,
+        "workflow_event": null,
+        "workflow_attempt": null,
+        "workflow_result": "NO_ACCEPTED_WORKFLOW",
+        "workflow_log_reference": null,
+        "individual_test_step_result": null,
+        "operator_runtime_acceptance": false
+      }
     },
     {
       "id": "M32-084",
@@ -847,7 +2175,23 @@
       "verification_target": "tools/test_m32_completion_master_checklist.py",
       "evidence": "NONE_ACCEPTED",
       "next_proof": "TOCTOU, symlinks/reparse, WAL/SHM, ATTACH, processus concurrents, tampering, stale generation et crash.",
-      "gate": "RUNTIME_NOT_ADMITTED"
+      "gate": "RUNTIME_NOT_ADMITTED",
+      "proof_audit": {
+        "record_review_date": "2026-11-12",
+        "test_target_name": "test_m32_completion_master_checklist.py",
+        "target_role": "CANDIDATE_VERIFICATION_TARGET_NOT_AN_INDIVIDUAL_TEST_ATTESTATION",
+        "acceptance_expectation": "TOCTOU, symlinks/reparse, WAL/SHM, ATTACH, processus concurrents, tampering, stale generation et crash.",
+        "execution_scope": "NOT_QUALIFIED_FOR_ACCEPTANCE",
+        "workflow_head_sha": null,
+        "workflow_run_id": null,
+        "workflow_run_date": null,
+        "workflow_event": null,
+        "workflow_attempt": null,
+        "workflow_result": "NO_ACCEPTED_WORKFLOW",
+        "workflow_log_reference": null,
+        "individual_test_step_result": null,
+        "operator_runtime_acceptance": false
+      }
     },
     {
       "id": "M32-085",
@@ -857,7 +2201,23 @@
       "verification_target": "tools/test_m32_completion_master_checklist.py",
       "evidence": "NONE_ACCEPTED",
       "next_proof": "Digests avant/après, manifests, WAL cohérent, copie jetable restaurée, aucune suppression d'originaux.",
-      "gate": "RUNTIME_NOT_ADMITTED"
+      "gate": "RUNTIME_NOT_ADMITTED",
+      "proof_audit": {
+        "record_review_date": "2026-11-12",
+        "test_target_name": "test_m32_completion_master_checklist.py",
+        "target_role": "CANDIDATE_VERIFICATION_TARGET_NOT_AN_INDIVIDUAL_TEST_ATTESTATION",
+        "acceptance_expectation": "Digests avant/après, manifests, WAL cohérent, copie jetable restaurée, aucune suppression d'originaux.",
+        "execution_scope": "NOT_QUALIFIED_FOR_ACCEPTANCE",
+        "workflow_head_sha": null,
+        "workflow_run_id": null,
+        "workflow_run_date": null,
+        "workflow_event": null,
+        "workflow_attempt": null,
+        "workflow_result": "NO_ACCEPTED_WORKFLOW",
+        "workflow_log_reference": null,
+        "individual_test_step_result": null,
+        "operator_runtime_acceptance": false
+      }
     },
     {
       "id": "M32-086",
@@ -867,7 +2227,23 @@
       "verification_target": "tools/test_m32_completion_master_checklist.py",
       "evidence": "NONE_ACCEPTED",
       "next_proof": "Aucune dépendance sur moteur LLM, cloud, FTS/embedding, M4–M7 ; UI chrono manuelle fonctionnelle.",
-      "gate": "RUNTIME_NOT_ADMITTED"
+      "gate": "RUNTIME_NOT_ADMITTED",
+      "proof_audit": {
+        "record_review_date": "2026-11-12",
+        "test_target_name": "test_m32_completion_master_checklist.py",
+        "target_role": "CANDIDATE_VERIFICATION_TARGET_NOT_AN_INDIVIDUAL_TEST_ATTESTATION",
+        "acceptance_expectation": "Aucune dépendance sur moteur LLM, cloud, FTS/embedding, M4–M7 ; UI chrono manuelle fonctionnelle.",
+        "execution_scope": "NOT_QUALIFIED_FOR_ACCEPTANCE",
+        "workflow_head_sha": null,
+        "workflow_run_id": null,
+        "workflow_run_date": null,
+        "workflow_event": null,
+        "workflow_attempt": null,
+        "workflow_result": "NO_ACCEPTED_WORKFLOW",
+        "workflow_log_reference": null,
+        "individual_test_step_result": null,
+        "operator_runtime_acceptance": false
+      }
     },
     {
       "id": "M32-087",
@@ -877,7 +2253,23 @@
       "verification_target": "tools/test_m32_completion_master_checklist.py",
       "evidence": "NONE_ACCEPTED",
       "next_proof": "Reboot, clôture propre, coupure/crash ; toute récupération incertaine STOP, jamais réparation silencieuse.",
-      "gate": "RUNTIME_NOT_ADMITTED"
+      "gate": "RUNTIME_NOT_ADMITTED",
+      "proof_audit": {
+        "record_review_date": "2026-11-12",
+        "test_target_name": "test_m32_completion_master_checklist.py",
+        "target_role": "CANDIDATE_VERIFICATION_TARGET_NOT_AN_INDIVIDUAL_TEST_ATTESTATION",
+        "acceptance_expectation": "Reboot, clôture propre, coupure/crash ; toute récupération incertaine STOP, jamais réparation silencieuse.",
+        "execution_scope": "NOT_QUALIFIED_FOR_ACCEPTANCE",
+        "workflow_head_sha": null,
+        "workflow_run_id": null,
+        "workflow_run_date": null,
+        "workflow_event": null,
+        "workflow_attempt": null,
+        "workflow_result": "NO_ACCEPTED_WORKFLOW",
+        "workflow_log_reference": null,
+        "individual_test_step_result": null,
+        "operator_runtime_acceptance": false
+      }
     },
     {
       "id": "M32-088",
@@ -887,7 +2279,23 @@
       "verification_target": "tools/test_m32_completion_master_checklist.py",
       "evidence": "NONE_ACCEPTED",
       "next_proof": "Identité de profil, fenêtres WebView2, navigation, erreurs et persistance réelle d'un projet autorisé.",
-      "gate": "RUNTIME_NOT_ADMITTED"
+      "gate": "RUNTIME_NOT_ADMITTED",
+      "proof_audit": {
+        "record_review_date": "2026-11-12",
+        "test_target_name": "test_m32_completion_master_checklist.py",
+        "target_role": "CANDIDATE_VERIFICATION_TARGET_NOT_AN_INDIVIDUAL_TEST_ATTESTATION",
+        "acceptance_expectation": "Identité de profil, fenêtres WebView2, navigation, erreurs et persistance réelle d'un projet autorisé.",
+        "execution_scope": "NOT_QUALIFIED_FOR_ACCEPTANCE",
+        "workflow_head_sha": null,
+        "workflow_run_id": null,
+        "workflow_run_date": null,
+        "workflow_event": null,
+        "workflow_attempt": null,
+        "workflow_result": "NO_ACCEPTED_WORKFLOW",
+        "workflow_log_reference": null,
+        "individual_test_step_result": null,
+        "operator_runtime_acceptance": false
+      }
     },
     {
       "id": "M32-089",
@@ -897,7 +2305,23 @@
       "verification_target": "tools/test_m32_completion_master_checklist.py",
       "evidence": "NONE_ACCEPTED",
       "next_proof": "Protocole de tests observés par propriétaire, preuves offline, sauvegardes distinctes, absence de perte ; seulement avec consentement spécifique.",
-      "gate": "RUNTIME_NOT_ADMITTED"
+      "gate": "RUNTIME_NOT_ADMITTED",
+      "proof_audit": {
+        "record_review_date": "2026-11-12",
+        "test_target_name": "test_m32_completion_master_checklist.py",
+        "target_role": "CANDIDATE_VERIFICATION_TARGET_NOT_AN_INDIVIDUAL_TEST_ATTESTATION",
+        "acceptance_expectation": "Protocole de tests observés par propriétaire, preuves offline, sauvegardes distinctes, absence de perte ; seulement avec consentement spécifique.",
+        "execution_scope": "NOT_QUALIFIED_FOR_ACCEPTANCE",
+        "workflow_head_sha": null,
+        "workflow_run_id": null,
+        "workflow_run_date": null,
+        "workflow_event": null,
+        "workflow_attempt": null,
+        "workflow_result": "NO_ACCEPTED_WORKFLOW",
+        "workflow_log_reference": null,
+        "individual_test_step_result": null,
+        "operator_runtime_acceptance": false
+      }
     },
     {
       "id": "M32-090",
@@ -907,7 +2331,23 @@
       "verification_target": "tools/test_m32_completion_master_checklist.py",
       "evidence": "NONE_ACCEPTED",
       "next_proof": "G3–G6 et R1–R9 préalablement franchis ; aucune déduction depuis un projet neuf.",
-      "gate": "RUNTIME_NOT_ADMITTED"
+      "gate": "RUNTIME_NOT_ADMITTED",
+      "proof_audit": {
+        "record_review_date": "2026-11-12",
+        "test_target_name": "test_m32_completion_master_checklist.py",
+        "target_role": "CANDIDATE_VERIFICATION_TARGET_NOT_AN_INDIVIDUAL_TEST_ATTESTATION",
+        "acceptance_expectation": "G3–G6 et R1–R9 préalablement franchis ; aucune déduction depuis un projet neuf.",
+        "execution_scope": "NOT_QUALIFIED_FOR_ACCEPTANCE",
+        "workflow_head_sha": null,
+        "workflow_run_id": null,
+        "workflow_run_date": null,
+        "workflow_event": null,
+        "workflow_attempt": null,
+        "workflow_result": "NO_ACCEPTED_WORKFLOW",
+        "workflow_log_reference": null,
+        "individual_test_step_result": null,
+        "operator_runtime_acceptance": false
+      }
     },
     {
       "id": "M32-091",
@@ -917,7 +2357,23 @@
       "verification_target": "tools/test_m32_completion_master_checklist.py",
       "evidence": "NONE_ACCEPTED",
       "next_proof": "CSP/Vite, handles Win32, shutdown, file descriptors, compat Tauri et traces d'audit sans fuite de récits.",
-      "gate": "RUNTIME_NOT_ADMITTED"
+      "gate": "RUNTIME_NOT_ADMITTED",
+      "proof_audit": {
+        "record_review_date": "2026-11-12",
+        "test_target_name": "test_m32_completion_master_checklist.py",
+        "target_role": "CANDIDATE_VERIFICATION_TARGET_NOT_AN_INDIVIDUAL_TEST_ATTESTATION",
+        "acceptance_expectation": "CSP/Vite, handles Win32, shutdown, file descriptors, compat Tauri et traces d'audit sans fuite de récits.",
+        "execution_scope": "NOT_QUALIFIED_FOR_ACCEPTANCE",
+        "workflow_head_sha": null,
+        "workflow_run_id": null,
+        "workflow_run_date": null,
+        "workflow_event": null,
+        "workflow_attempt": null,
+        "workflow_result": "NO_ACCEPTED_WORKFLOW",
+        "workflow_log_reference": null,
+        "individual_test_step_result": null,
+        "operator_runtime_acceptance": false
+      }
     },
     {
       "id": "M32-092",
@@ -927,7 +2383,23 @@
       "verification_target": "tools/test_m32_vite_817_security_lock.py",
       "evidence": "NONE_ACCEPTED",
       "next_proof": "Issue #160, inventorier avis, correctifs réellement compatibles, npm lock authentique et npm ci/TS/Chromium; aucune réécriture de lock arbitraire.",
-      "gate": "RUNTIME_NOT_ADMITTED"
+      "gate": "RUNTIME_NOT_ADMITTED",
+      "proof_audit": {
+        "record_review_date": "2026-11-12",
+        "test_target_name": "test_m32_vite_817_security_lock.py",
+        "target_role": "CANDIDATE_VERIFICATION_TARGET_NOT_AN_INDIVIDUAL_TEST_ATTESTATION",
+        "acceptance_expectation": "Issue #160, inventorier avis, correctifs réellement compatibles, npm lock authentique et npm ci/TS/Chromium; aucune réécriture de lock arbitraire.",
+        "execution_scope": "NOT_QUALIFIED_FOR_ACCEPTANCE",
+        "workflow_head_sha": null,
+        "workflow_run_id": null,
+        "workflow_run_date": null,
+        "workflow_event": null,
+        "workflow_attempt": null,
+        "workflow_result": "NO_ACCEPTED_WORKFLOW",
+        "workflow_log_reference": null,
+        "individual_test_step_result": null,
+        "operator_runtime_acceptance": false
+      }
     },
     {
       "id": "M32-093",
@@ -937,7 +2409,23 @@
       "verification_target": "tools/m32_glib_target_audit.py",
       "evidence": "NONE_ACCEPTED",
       "next_proof": "Suivre une migration intégrée Tauri/WRY GTK4/WebKit6 ou correctif validé ; ne jamais forcer glib 0.20 seule dans gtk 0.18.",
-      "gate": "RUNTIME_NOT_ADMITTED"
+      "gate": "RUNTIME_NOT_ADMITTED",
+      "proof_audit": {
+        "record_review_date": "2026-11-12",
+        "test_target_name": "m32_glib_target_audit.py",
+        "target_role": "CANDIDATE_VERIFICATION_TARGET_NOT_AN_INDIVIDUAL_TEST_ATTESTATION",
+        "acceptance_expectation": "Suivre une migration intégrée Tauri/WRY GTK4/WebKit6 ou correctif validé ; ne jamais forcer glib 0.20 seule dans gtk 0.18.",
+        "execution_scope": "NOT_QUALIFIED_FOR_ACCEPTANCE",
+        "workflow_head_sha": null,
+        "workflow_run_id": null,
+        "workflow_run_date": null,
+        "workflow_event": null,
+        "workflow_attempt": null,
+        "workflow_result": "NO_ACCEPTED_WORKFLOW",
+        "workflow_log_reference": null,
+        "individual_test_step_result": null,
+        "operator_runtime_acceptance": false
+      }
     },
     {
       "id": "M32-094",
@@ -947,7 +2435,23 @@
       "verification_target": "tools/m32_glib_linux_target_audit.py",
       "evidence": "NONE_ACCEPTED",
       "next_proof": "Audit de graphe Windows vs Linux, build Linux jetable si distribution envisagée ; ne pas affirmer exploitabilité Windows sans preuve.",
-      "gate": "RUNTIME_NOT_ADMITTED"
+      "gate": "RUNTIME_NOT_ADMITTED",
+      "proof_audit": {
+        "record_review_date": "2026-11-12",
+        "test_target_name": "m32_glib_linux_target_audit.py",
+        "target_role": "CANDIDATE_VERIFICATION_TARGET_NOT_AN_INDIVIDUAL_TEST_ATTESTATION",
+        "acceptance_expectation": "Audit de graphe Windows vs Linux, build Linux jetable si distribution envisagée ; ne pas affirmer exploitabilité Windows sans preuve.",
+        "execution_scope": "NOT_QUALIFIED_FOR_ACCEPTANCE",
+        "workflow_head_sha": null,
+        "workflow_run_id": null,
+        "workflow_run_date": null,
+        "workflow_event": null,
+        "workflow_attempt": null,
+        "workflow_result": "NO_ACCEPTED_WORKFLOW",
+        "workflow_log_reference": null,
+        "individual_test_step_result": null,
+        "operator_runtime_acceptance": false
+      }
     },
     {
       "id": "M32-095",
@@ -957,7 +2461,23 @@
       "verification_target": "tools/test_m32_roadmap_traceability.py",
       "evidence": "CHECKLIST_SCOPED SHA=1f5e201d3e7d0ab088a65621411cc911de0472a1 RUN=#42997104616",
       "next_proof": "NO_FURTHER_PROOF_FOR_CLOSED_SCOPE",
-      "gate": "SCOPED_EVIDENCE_REQUIRED"
+      "gate": "SCOPED_EVIDENCE_REQUIRED",
+      "proof_audit": {
+        "record_review_date": "2026-11-12",
+        "test_target_name": "test_m32_roadmap_traceability.py",
+        "target_role": "CANDIDATE_VERIFICATION_TARGET_NOT_AN_INDIVIDUAL_TEST_ATTESTATION",
+        "acceptance_expectation": "Documenter décisions de sécurité restantes avant distribution",
+        "execution_scope": "GITHUB_ACTIONS_CI_SCOPED_DOCUMENTARY_OR_PROTOCOL",
+        "workflow_head_sha": "1f5e201d3e7d0ab088a65621411cc911de0472a1",
+        "workflow_run_id": 42997104616,
+        "workflow_run_date": "2026-11-11",
+        "workflow_event": "pull_request",
+        "workflow_attempt": 1,
+        "workflow_result": "COMPLETED_SUCCESS_WORKFLOW_ONLY",
+        "workflow_log_reference": "https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/42997104616",
+        "individual_test_step_result": null,
+        "operator_runtime_acceptance": false
+      }
     },
     {
       "id": "M32-096",
@@ -967,7 +2487,23 @@
       "verification_target": "tools/test_m32_roadmap_traceability.py",
       "evidence": "CHECKLIST_SCOPED SHA=1f5e201d3e7d0ab088a65621411cc911de0472a1 RUN=#42997104616",
       "next_proof": "NO_FURTHER_PROOF_FOR_CLOSED_SCOPE",
-      "gate": "SCOPED_EVIDENCE_REQUIRED"
+      "gate": "SCOPED_EVIDENCE_REQUIRED",
+      "proof_audit": {
+        "record_review_date": "2026-11-12",
+        "test_target_name": "test_m32_roadmap_traceability.py",
+        "target_role": "CANDIDATE_VERIFICATION_TARGET_NOT_AN_INDIVIDUAL_TEST_ATTESTATION",
+        "acceptance_expectation": "Tenir Windows Hello comme confirmation future des actes sensibles",
+        "execution_scope": "GITHUB_ACTIONS_CI_SCOPED_DOCUMENTARY_OR_PROTOCOL",
+        "workflow_head_sha": "1f5e201d3e7d0ab088a65621411cc911de0472a1",
+        "workflow_run_id": 42997104616,
+        "workflow_run_date": "2026-11-11",
+        "workflow_event": "pull_request",
+        "workflow_attempt": 1,
+        "workflow_result": "COMPLETED_SUCCESS_WORKFLOW_ONLY",
+        "workflow_log_reference": "https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/42997104616",
+        "individual_test_step_result": null,
+        "operator_runtime_acceptance": false
+      }
     },
     {
       "id": "M32-097",
@@ -977,7 +2513,23 @@
       "verification_target": "tools/test_m32_roadmap_traceability.py",
       "evidence": "NONE_ACCEPTED",
       "next_proof": "R1–R9 vérifiés ou risque résiduel explicite accepté après revue humaine ; aucune admission par succès CI seul.",
-      "gate": "SCOPED_EVIDENCE_REQUIRED"
+      "gate": "SCOPED_EVIDENCE_REQUIRED",
+      "proof_audit": {
+        "record_review_date": "2026-11-12",
+        "test_target_name": "test_m32_roadmap_traceability.py",
+        "target_role": "CANDIDATE_VERIFICATION_TARGET_NOT_AN_INDIVIDUAL_TEST_ATTESTATION",
+        "acceptance_expectation": "R1–R9 vérifiés ou risque résiduel explicite accepté après revue humaine ; aucune admission par succès CI seul.",
+        "execution_scope": "NOT_QUALIFIED_FOR_ACCEPTANCE",
+        "workflow_head_sha": null,
+        "workflow_run_id": null,
+        "workflow_run_date": null,
+        "workflow_event": null,
+        "workflow_attempt": null,
+        "workflow_result": "NO_ACCEPTED_WORKFLOW",
+        "workflow_log_reference": null,
+        "individual_test_step_result": null,
+        "operator_runtime_acceptance": false
+      }
     },
     {
       "id": "M32-098",
@@ -987,7 +2539,23 @@
       "verification_target": "tools/test_m32_roadmap_traceability.py",
       "evidence": "NONE_ACCEPTED",
       "next_proof": "Issue #36 traitée honnêtement, baseline prospective vérifiée, G3/G4/G5/G6 attestées selon leurs critères ; sinon M3.2 reste NOT_ACCEPTED.",
-      "gate": "SCOPED_EVIDENCE_REQUIRED"
+      "gate": "SCOPED_EVIDENCE_REQUIRED",
+      "proof_audit": {
+        "record_review_date": "2026-11-12",
+        "test_target_name": "test_m32_roadmap_traceability.py",
+        "target_role": "CANDIDATE_VERIFICATION_TARGET_NOT_AN_INDIVIDUAL_TEST_ATTESTATION",
+        "acceptance_expectation": "Issue #36 traitée honnêtement, baseline prospective vérifiée, G3/G4/G5/G6 attestées selon leurs critères ; sinon M3.2 reste NOT_ACCEPTED.",
+        "execution_scope": "NOT_QUALIFIED_FOR_ACCEPTANCE",
+        "workflow_head_sha": null,
+        "workflow_run_id": null,
+        "workflow_run_date": null,
+        "workflow_event": null,
+        "workflow_attempt": null,
+        "workflow_result": "NO_ACCEPTED_WORKFLOW",
+        "workflow_log_reference": null,
+        "individual_test_step_result": null,
+        "operator_runtime_acceptance": false
+      }
     },
     {
       "id": "M32-099",
@@ -997,7 +2565,23 @@
       "verification_target": "tools/test_m32_roadmap_traceability.py",
       "evidence": "NONE_ACCEPTED",
       "next_proof": "CRUD chronologie persistant, corrections historiques, ordre monde/narration/révélation, UX offline et Windows operator acceptance.",
-      "gate": "SCOPED_EVIDENCE_REQUIRED"
+      "gate": "SCOPED_EVIDENCE_REQUIRED",
+      "proof_audit": {
+        "record_review_date": "2026-11-12",
+        "test_target_name": "test_m32_roadmap_traceability.py",
+        "target_role": "CANDIDATE_VERIFICATION_TARGET_NOT_AN_INDIVIDUAL_TEST_ATTESTATION",
+        "acceptance_expectation": "CRUD chronologie persistant, corrections historiques, ordre monde/narration/révélation, UX offline et Windows operator acceptance.",
+        "execution_scope": "NOT_QUALIFIED_FOR_ACCEPTANCE",
+        "workflow_head_sha": null,
+        "workflow_run_id": null,
+        "workflow_run_date": null,
+        "workflow_event": null,
+        "workflow_attempt": null,
+        "workflow_result": "NO_ACCEPTED_WORKFLOW",
+        "workflow_log_reference": null,
+        "individual_test_step_result": null,
+        "operator_runtime_acceptance": false
+      }
     },
     {
       "id": "M32-100",
@@ -1007,7 +2591,23 @@
       "verification_target": "tools/test_m32_roadmap_traceability.py",
       "evidence": "NONE_ACCEPTED",
       "next_proof": "CI Windows terminal SUCCESS, logs, diff, reviews/threads, bypass=[], squash expected_head_sha ; zéro modification des originaux avant consentement.",
-      "gate": "SCOPED_EVIDENCE_REQUIRED"
+      "gate": "SCOPED_EVIDENCE_REQUIRED",
+      "proof_audit": {
+        "record_review_date": "2026-11-12",
+        "test_target_name": "test_m32_roadmap_traceability.py",
+        "target_role": "CANDIDATE_VERIFICATION_TARGET_NOT_AN_INDIVIDUAL_TEST_ATTESTATION",
+        "acceptance_expectation": "CI Windows terminal SUCCESS, logs, diff, reviews/threads, bypass=[], squash expected_head_sha ; zéro modification des originaux avant consentement.",
+        "execution_scope": "NOT_QUALIFIED_FOR_ACCEPTANCE",
+        "workflow_head_sha": null,
+        "workflow_run_id": null,
+        "workflow_run_date": null,
+        "workflow_event": null,
+        "workflow_attempt": null,
+        "workflow_result": "NO_ACCEPTED_WORKFLOW",
+        "workflow_log_reference": null,
+        "individual_test_step_result": null,
+        "operator_runtime_acceptance": false
+      }
     },
     {
       "id": "M32-101",
@@ -1017,7 +2617,23 @@
       "verification_target": "tools/test_m32_roadmap_traceability.py",
       "evidence": "NONE_ACCEPTED",
       "next_proof": "Run push exact nouveau SHA, résultat terminal, registre #38 ; faux succès et flake non occultés.",
-      "gate": "SCOPED_EVIDENCE_REQUIRED"
+      "gate": "SCOPED_EVIDENCE_REQUIRED",
+      "proof_audit": {
+        "record_review_date": "2026-11-12",
+        "test_target_name": "test_m32_roadmap_traceability.py",
+        "target_role": "CANDIDATE_VERIFICATION_TARGET_NOT_AN_INDIVIDUAL_TEST_ATTESTATION",
+        "acceptance_expectation": "Run push exact nouveau SHA, résultat terminal, registre #38 ; faux succès et flake non occultés.",
+        "execution_scope": "NOT_QUALIFIED_FOR_ACCEPTANCE",
+        "workflow_head_sha": null,
+        "workflow_run_id": null,
+        "workflow_run_date": null,
+        "workflow_event": null,
+        "workflow_attempt": null,
+        "workflow_result": "NO_ACCEPTED_WORKFLOW",
+        "workflow_log_reference": null,
+        "individual_test_step_result": null,
+        "operator_runtime_acceptance": false
+      }
     },
     {
       "id": "M32-102",
@@ -1027,7 +2643,23 @@
       "verification_target": "tools/test_m32_roadmap_traceability.py",
       "evidence": "NONE_ACCEPTED",
       "next_proof": "ROADMAP_STATUS, gate decision, STATE/NEXT/HANDOFF MD+JSON/historique/prompts, critères et provenance à jour, nouvelle CI exacte et postmain.",
-      "gate": "SCOPED_EVIDENCE_REQUIRED"
+      "gate": "SCOPED_EVIDENCE_REQUIRED",
+      "proof_audit": {
+        "record_review_date": "2026-11-12",
+        "test_target_name": "test_m32_roadmap_traceability.py",
+        "target_role": "CANDIDATE_VERIFICATION_TARGET_NOT_AN_INDIVIDUAL_TEST_ATTESTATION",
+        "acceptance_expectation": "ROADMAP_STATUS, gate decision, STATE/NEXT/HANDOFF MD+JSON/historique/prompts, critères et provenance à jour, nouvelle CI exacte et postmain.",
+        "execution_scope": "NOT_QUALIFIED_FOR_ACCEPTANCE",
+        "workflow_head_sha": null,
+        "workflow_run_id": null,
+        "workflow_run_date": null,
+        "workflow_event": null,
+        "workflow_attempt": null,
+        "workflow_result": "NO_ACCEPTED_WORKFLOW",
+        "workflow_log_reference": null,
+        "individual_test_step_result": null,
+        "operator_runtime_acceptance": false
+      }
     },
     {
       "id": "M32-103",
@@ -1037,7 +2669,23 @@
       "verification_target": "tools/test_m32_roadmap_traceability.py",
       "evidence": "NONE_ACCEPTED",
       "next_proof": "Seulement avec signature et synthèse de toutes les preuves, aucun gate STOP ni risque inexpliqué transformé en PASS.",
-      "gate": "SCOPED_EVIDENCE_REQUIRED"
+      "gate": "SCOPED_EVIDENCE_REQUIRED",
+      "proof_audit": {
+        "record_review_date": "2026-11-12",
+        "test_target_name": "test_m32_roadmap_traceability.py",
+        "target_role": "CANDIDATE_VERIFICATION_TARGET_NOT_AN_INDIVIDUAL_TEST_ATTESTATION",
+        "acceptance_expectation": "Seulement avec signature et synthèse de toutes les preuves, aucun gate STOP ni risque inexpliqué transformé en PASS.",
+        "execution_scope": "NOT_QUALIFIED_FOR_ACCEPTANCE",
+        "workflow_head_sha": null,
+        "workflow_run_id": null,
+        "workflow_run_date": null,
+        "workflow_event": null,
+        "workflow_attempt": null,
+        "workflow_result": "NO_ACCEPTED_WORKFLOW",
+        "workflow_log_reference": null,
+        "individual_test_step_result": null,
+        "operator_runtime_acceptance": false
+      }
     },
     {
       "id": "M32-104",
@@ -1047,7 +2695,24 @@
       "verification_target": "tools/test_m32_requirements_traceability.py",
       "evidence": "CHECKLIST_SCOPED SHA=c4a04c59934064832dd7c700dcf39e25e729f88a RUN=#43117900804 POSTMAIN_SHA=33d701cc372c50178e8d9b0839761a77a1514652 POSTMAIN_RUN=#43154409245 JOURNAL=#6825809694",
       "next_proof": "NO_FURTHER_PROOF_FOR_CLOSED_SCOPE",
-      "gate": "SCOPED_EVIDENCE_REQUIRED"
+      "gate": "SCOPED_EVIDENCE_REQUIRED",
+      "proof_audit": {
+        "record_review_date": "2026-11-12",
+        "test_target_name": "test_m32_requirements_traceability.py",
+        "target_role": "CANDIDATE_VERIFICATION_TARGET_NOT_AN_INDIVIDUAL_TEST_ATTESTATION",
+        "acceptance_expectation": "Conserver M3.3–M3.6, M4–M9, Ollama créatif, cohérence IA et ComfyUI hors M3.2",
+        "execution_scope": "GITHUB_ACTIONS_CI_SCOPED_DOCUMENTARY_OR_PROTOCOL",
+        "workflow_head_sha": "c4a04c59934064832dd7c700dcf39e25e729f88a",
+        "workflow_run_id": 43117900804,
+        "workflow_run_date": "2026-11-11",
+        "workflow_event": "pull_request",
+        "workflow_attempt": 1,
+        "workflow_result": "COMPLETED_SUCCESS_WORKFLOW_ONLY",
+        "workflow_log_reference": "https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/43117900804",
+        "individual_test_step_result": null,
+        "operator_runtime_acceptance": false
+      }
     }
-  ]
+  ],
+  "provenance_review_date": "2026-11-12"
 }

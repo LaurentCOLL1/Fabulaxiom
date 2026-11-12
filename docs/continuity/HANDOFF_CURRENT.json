@@ -1,4 +1,22 @@
 {
+  "m32_078_provenance_v2_20261112": {
+    "status": "M32_078_PROVENANCE_V2_CANDIDATE_NO_CLOSURE",
+    "parent_main": "c92b291402be956e97b172925232058115c6df39",
+    "parent_pr": 346,
+    "parent_source_ci": 43235176076,
+    "parent_postmain_run": 43237862494,
+    "parent_postmain_status": "IN_PROGRESS_UNQUALIFIED",
+    "date": "2026-11-12",
+    "task_id": "M32-078",
+    "task_status": "OPEN_NOT_ACCEPTED",
+    "proof_scope": "WORKFLOW_ONLY_NO_INDIVIDUAL_TEST_ATTESTATION",
+    "checklist_total": 104,
+    "closed": 8,
+    "open": 96,
+    "operator_access": false,
+    "gate": "IN_PROGRESS_NOT_ACCEPTED",
+    "strategy": "PRODUCT_FIRST_PARALLEL_SAFETY"
+  },
   "m32_p3s_unicode_scalar_20261112": {
     "status": "P3S_CANDIDATE_UNQUALIFIED",
     "parent_main": "33d701cc372c50178e8d9b0839761a77a1514652",
