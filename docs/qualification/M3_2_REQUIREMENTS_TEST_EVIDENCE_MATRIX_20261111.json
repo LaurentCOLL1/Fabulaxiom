@@ -1,0 +1,1053 @@
+{
+  "schema": "m32_traceability_matrix_v1",
+  "date": "2026-11-11",
+  "source_main": "b2b032c0010a9d879103718cfa0786a827c5ac56",
+  "total": 104,
+  "closed": 7,
+  "open": 97,
+  "status": "CANDIDATE_SOURCE_ONLY",
+  "strategy": "PRODUCT_FIRST_PARALLEL_SAFETY",
+  "gate": "IN_PROGRESS_NOT_ACCEPTED",
+  "rows": [
+    {
+      "id": "M32-001",
+      "criterion": "Qualifier la CI postmain indépendante de la fusion #330 au SHA bef699511ff18e987a4858c797fde7aa88dfc59b",
+      "status": "CLOSED_SCOPED",
+      "track": "GH_PROTOCOL",
+      "verification_target": "tools/test_m32_handoff_contract.py",
+      "evidence": "CHECKLIST_SCOPED SHA=bef699511ff18e987a4858c797fde7aa88dfc59b RUN=#42699790716",
+      "next_proof": "NO_FURTHER_PROOF_FOR_CLOSED_SCOPE",
+      "gate": "SCOPED_EVIDENCE_REQUIRED"
+    },
+    {
+      "id": "M32-002",
+      "criterion": "Réconcilier la PR produit #331 P3n après la fusion #330",
+      "status": "CLOSED_SCOPED",
+      "track": "GH_PROTOCOL",
+      "verification_target": "tools/test_m32_handoff_contract.py",
+      "evidence": "CHECKLIST_SCOPED SHA=fb523abbc05b636d98fd93240872882f4ee57f61 RUN=#42751838279",
+      "next_proof": "NO_FURTHER_PROOF_FOR_CLOSED_SCOPE",
+      "gate": "SCOPED_EVIDENCE_REQUIRED"
+    },
+    {
+      "id": "M32-003",
+      "criterion": "Revoir le diff, les reviews, threads et le ruleset Protect main pour chaque future PR",
+      "status": "OPEN_NOT_ACCEPTED",
+      "track": "GH_PROTOCOL",
+      "verification_target": "tools/test_m32_handoff_contract.py",
+      "evidence": "NONE_ACCEPTED",
+      "next_proof": "Required Windows frontend and Rust checks strict, bypass=[], aucune discussion non résolue, squash expected_head_sha.",
+      "gate": "SCOPED_EVIDENCE_REQUIRED"
+    },
+    {
+      "id": "M32-004",
+      "criterion": "Éviter que les prompts de reprise et l'historique de handoff divergent",
+      "status": "OPEN_NOT_ACCEPTED",
+      "track": "GH_PROTOCOL",
+      "verification_target": "tools/test_m32_handoff_contract.py",
+      "evidence": "NONE_ACCEPTED",
+      "next_proof": "Modifier les deux RESUME_PROMPT, HANDOFF_CURRENT.md/json et NEXT avec tout changement matériel ; short <3600 octets UTF-8 et R3/D3c/live SQLite WAL-index conservés.",
+      "gate": "SCOPED_EVIDENCE_REQUIRED"
+    },
+    {
+      "id": "M32-005",
+      "criterion": "Écrire le statut vrai à la date de chaque checkpoint",
+      "status": "OPEN_NOT_ACCEPTED",
+      "track": "GH_PROTOCOL",
+      "verification_target": "tools/test_m32_handoff_contract.py",
+      "evidence": "NONE_ACCEPTED",
+      "next_proof": "Distinguer candidatures, CI source, postmain, preuve produit, gate opérateur, NOT_PROVEN et ACCEPTED ; anciens checkpoints datés non réécrits rétroactivement.",
+      "gate": "SCOPED_EVIDENCE_REQUIRED"
+    },
+    {
+      "id": "M32-006",
+      "criterion": "Conserver issue #38 comme journal append-only des décisions et refus",
+      "status": "OPEN_NOT_ACCEPTED",
+      "track": "GH_PROTOCOL",
+      "verification_target": "tools/test_m32_handoff_contract.py",
+      "evidence": "NONE_ACCEPTED",
+      "next_proof": "SHA, run ID/attempt, résultats adversariaux, changements de périmètre et échecs ; zéro réécriture d'éléments historiques.",
+      "gate": "SCOPED_EVIDENCE_REQUIRED"
+    },
+    {
+      "id": "M32-007",
+      "criterion": "Concilier les deux anciennes PR #35 et #215 avant toute décision sur leur devenir",
+      "status": "OPEN_NOT_ACCEPTED",
+      "track": "GH_PROTOCOL",
+      "verification_target": "tools/test_m32_legacy_pr_reconciliation.py",
+      "evidence": "NONE_ACCEPTED",
+      "next_proof": "Vérifier diff de ces brouillons historiques et overlaps avec main ; portage ciblé sur branche actuelle ou clôture explicitement justifiée, jamais merge direct/aveugle.",
+      "gate": "SCOPED_EVIDENCE_REQUIRED"
+    },
+    {
+      "id": "M32-008",
+      "criterion": "Faire autoriser séparément toute opération Windows sur machine opérateur",
+      "status": "OPEN_NOT_ACCEPTED",
+      "track": "GH_PROTOCOL",
+      "verification_target": "tools/test_m32_handoff_contract.py",
+      "evidence": "NONE_ACCEPTED",
+      "next_proof": "Soumettre le script exact, effets possibles et STOP (disque/journaux/UAC/réseau, durée, interaction) puis recueillir un nouvel accord spécifique avant exécution.",
+      "gate": "SCOPED_EVIDENCE_REQUIRED"
+    },
+    {
+      "id": "M32-009",
+      "criterion": "R1 — fixer le profil/identité/autorité du propriétaire unique",
+      "status": "OPEN_NOT_ACCEPTED",
+      "track": "WRITER_R1_R9",
+      "verification_target": "tools/test_m32_shared_ram_other_writer_counterexample.py",
+      "evidence": "NONE_ACCEPTED",
+      "next_proof": "SID, session, propriétaire/DACL/intégrité, portée NEW_ONLY versus EXISTING_PROFILE ; menace same-SID coopérative explicitement bornée.",
+      "gate": "REQUIRES_INDEPENDENT_R1_G2_PROOFS"
+    },
+    {
+      "id": "M32-010",
+      "criterion": "R1 — tester refus de propriétaire/profil/ACL étranger",
+      "status": "OPEN_NOT_ACCEPTED",
+      "track": "WRITER_R1_R9",
+      "verification_target": "tools/test_m32_shared_ram_other_writer_counterexample.py",
+      "evidence": "NONE_ACCEPTED",
+      "next_proof": "Principal différent, conflit de nom de session, héritage de DACL, mutex non possédé : refus reproductible, fixtures Windows.",
+      "gate": "REQUIRES_INDEPENDENT_R1_G2_PROOFS"
+    },
+    {
+      "id": "M32-011",
+      "criterion": "R2 — protéger l'arborescence ancêtre jusqu'au fichier ouvert",
+      "status": "OPEN_NOT_ACCEPTED",
+      "track": "WRITER_R1_R9",
+      "verification_target": "tools/test_m32_shared_ram_other_writer_counterexample.py",
+      "evidence": "NONE_ACCEPTED",
+      "next_proof": "Répertoires parents tenus et identifiés, reparse/junction/ADS/device path refusés et chemins canoniques ancrés au handle réel.",
+      "gate": "REQUIRES_INDEPENDENT_R1_G2_PROOFS"
+    },
+    {
+      "id": "M32-012",
+      "criterion": "R2 — rejeter substitutions du nom et ABA sur les ancêtres",
+      "status": "OPEN_NOT_ACCEPTED",
+      "track": "WRITER_R1_R9",
+      "verification_target": "tools/test_m32_shared_ram_other_writer_counterexample.py",
+      "evidence": "NONE_ACCEPTED",
+      "next_proof": "Renommage/remplacement entre observation et xOpen, identité parent FileId128 ; toute fenêtre non couverte explicitement NON PROVEN/STOP.",
+      "gate": "REQUIRES_INDEPENDENT_R1_G2_PROOFS"
+    },
+    {
+      "id": "M32-013",
+      "criterion": "R3 — vérifier l'objet SQLite main effectivement délégué",
+      "status": "OPEN_NOT_ACCEPTED",
+      "track": "WRITER_R1_R9",
+      "verification_target": "tools/test_m32_shared_ram_other_writer_counterexample.py",
+      "evidence": "NONE_ACCEPTED",
+      "next_proof": "sqlite3_file.xFileControl / SQLITE_FCNTL_WIN32_GET_HANDLE et FileId128+volume à la frontière xOpen avant succès, aucun contrôle pathname présenté comme atomique.",
+      "gate": "REQUIRES_INDEPENDENT_R1_G2_PROOFS"
+    },
+    {
+      "id": "M32-014",
+      "criterion": "R3 — qualifier verrous Win32 natifs SHARED/RESERVED/PENDING/EXCLUSIVE",
+      "status": "OPEN_NOT_ACCEPTED",
+      "track": "WRITER_R1_R9",
+      "verification_target": "tools/test_m32_shared_ram_other_writer_counterexample.py",
+      "evidence": "NONE_ACCEPTED",
+      "next_proof": "SHARED simultanés, blocages opposés, transitions et release, deux processus, tests Windows jetables.",
+      "gate": "REQUIRES_INDEPENDENT_R1_G2_PROOFS"
+    },
+    {
+      "id": "M32-015",
+      "criterion": "R3 — qualifier fermeture et erreurs de callbacks",
+      "status": "OPEN_NOT_ACCEPTED",
+      "track": "WRITER_R1_R9",
+      "verification_target": "tools/test_m32_shared_ram_other_writer_counterexample.py",
+      "evidence": "NONE_ACCEPTED",
+      "next_proof": "xClose exact-once, handle nul/méthode manquante, close échoué, libération même sur échec et refus d'ouverture sans fuite.",
+      "gate": "REQUIRES_INDEPENDENT_R1_G2_PROOFS"
+    },
+    {
+      "id": "M32-016",
+      "criterion": "R4 — identifier et gérer journal, -wal et -shm comme objets distincts",
+      "status": "OPEN_NOT_ACCEPTED",
+      "track": "WRITER_R1_R9",
+      "verification_target": "tools/test_m32_shared_ram_other_writer_counterexample.py",
+      "evidence": "NONE_ACCEPTED",
+      "next_proof": "Pas de transfert de preuve main vers sidecars ; FileId128 et vie du mapping WAL-index vérifiés pour chaque objet pertinent.",
+      "gate": "REQUIRES_INDEPENDENT_R1_G2_PROOFS"
+    },
+    {
+      "id": "M32-017",
+      "criterion": "R4 — couvrir toutes les primitives SQLite SHM en mode WAL NORMAL",
+      "status": "OPEN_NOT_ACCEPTED",
+      "track": "WRITER_R1_R9",
+      "verification_target": "tools/test_m32_shared_ram_other_writer_counterexample.py",
+      "evidence": "NONE_ACCEPTED",
+      "next_proof": "xShmMap/xShmLock/xShmBarrier/xShmUnmap, régions multiples, verrous, barrières, versions des méthodes et cleanup, sur fixture réelle.",
+      "gate": "REQUIRES_INDEPENDENT_R1_G2_PROOFS"
+    },
+    {
+      "id": "M32-018",
+      "criterion": "R4 — démontrer que le garde main/WAL/SHM résiste aux substitutions contrôlées",
+      "status": "OPEN_NOT_ACCEPTED",
+      "track": "WRITER_R1_R9",
+      "verification_target": "tools/test_m32_shared_ram_other_writer_counterexample.py",
+      "evidence": "NONE_ACCEPTED",
+      "next_proof": "Interleaving de swap/rename/replace et leurres FileId128 sur chacun ; échec sûr sans risque d'assimiler une race non observée à une preuve générale.",
+      "gate": "REQUIRES_INDEPENDENT_R1_G2_PROOFS"
+    },
+    {
+      "id": "M32-019",
+      "criterion": "R4 — qualification en deux processus OS indépendants",
+      "status": "OPEN_NOT_ACCEPTED",
+      "track": "WRITER_R1_R9",
+      "verification_target": "tools/test_m32_shared_ram_other_writer_counterexample.py",
+      "evidence": "NONE_ACCEPTED",
+      "next_proof": "A tient BEGIN IMMEDIATE, B est refusé puis admis selon séquencement ; identité native et conservation du WAL/SHM observées des deux côtés.",
+      "gate": "REQUIRES_INDEPENDENT_R1_G2_PROOFS"
+    },
+    {
+      "id": "M32-020",
+      "criterion": "R4 — établir la frontière atomique ou admettre explicitement la limite",
+      "status": "OPEN_NOT_ACCEPTED",
+      "track": "WRITER_R1_R9",
+      "verification_target": "tools/test_m32_shared_ram_other_writer_counterexample.py",
+      "evidence": "NONE_ACCEPTED",
+      "next_proof": "Binding réel du handle et de l'espace de noms/sidecars au moment pertinent ; aucun chemin démontré = writer STOP, sans raccourci EXCLUSIVE/non-SHM non revu.",
+      "gate": "REQUIRES_INDEPENDENT_R1_G2_PROOFS"
+    },
+    {
+      "id": "M32-021",
+      "criterion": "R5 — prouver provenance SQLite distincte de integrity_check",
+      "status": "OPEN_NOT_ACCEPTED",
+      "track": "WRITER_R1_R9",
+      "verification_target": "tools/test_m32_shared_ram_other_writer_counterexample.py",
+      "evidence": "NONE_ACCEPTED",
+      "next_proof": "Profil, lineage M1.5/v6/v7, schema_migrations, clés, FK, identités immuables, journal état connu ; aucune adoption d'un SQLite seulement « ok ».",
+      "gate": "REQUIRES_INDEPENDENT_R1_G2_PROOFS"
+    },
+    {
+      "id": "M32-022",
+      "criterion": "R5 — refuser ATTACH étrangère, migration implicite et reprise ambiguë",
+      "status": "OPEN_NOT_ACCEPTED",
+      "track": "WRITER_R1_R9",
+      "verification_target": "tools/test_m32_shared_ram_other_writer_counterexample.py",
+      "evidence": "NONE_ACCEPTED",
+      "next_proof": "Cas négatifs de mauvaise version/clé, WAL incohérent, hot journal, ATTACH/migration et correction automatiques interdits.",
+      "gate": "REQUIRES_INDEPENDENT_R1_G2_PROOFS"
+    },
+    {
+      "id": "M32-023",
+      "criterion": "R6 — implémenter une unique session propriétaire avec génération",
+      "status": "OPEN_NOT_ACCEPTED",
+      "track": "WRITER_R1_R9",
+      "verification_target": "tools/test_m32_shared_ram_other_writer_counterexample.py",
+      "evidence": "NONE_ACCEPTED",
+      "next_proof": "Un Rust actor, une seule connexion admissible, registration VFS bornée, autorité privée, mutex/DACL coopératifs explicitement limités.",
+      "gate": "REQUIRES_INDEPENDENT_R1_G2_PROOFS"
+    },
+    {
+      "id": "M32-024",
+      "criterion": "R6 — refuser writer concurrent et commandes périmées",
+      "status": "OPEN_NOT_ACCEPTED",
+      "track": "WRITER_R1_R9",
+      "verification_target": "tools/test_m32_shared_ram_other_writer_counterexample.py",
+      "evidence": "NONE_ACCEPTED",
+      "next_proof": "Processus A/B, génération révoquée, double writer, claim abandonné, timeout/WAIT_ABANDONED, refus dès l'entrée et pas de faux succès.",
+      "gate": "REQUIRES_INDEPENDENT_R1_G2_PROOFS"
+    },
+    {
+      "id": "M32-025",
+      "criterion": "R7 — définir fermeture, checkpoint, crash, restart et transition RECOVERY_REQUIRED",
+      "status": "OPEN_NOT_ACCEPTED",
+      "track": "WRITER_R1_R9",
+      "verification_target": "tools/test_m32_shared_ram_other_writer_counterexample.py",
+      "evidence": "NONE_ACCEPTED",
+      "next_proof": "Fermeture contrôlée, COMMIT/checkpoint/interruption, journal/WAL/SHM, preuve de provenance durable et non auto-fabriquée.",
+      "gate": "REQUIRES_INDEPENDENT_R1_G2_PROOFS"
+    },
+    {
+      "id": "M32-026",
+      "criterion": "R7 — tester matrice de crash à phases bornées et restart jetable",
+      "status": "OPEN_NOT_ACCEPTED",
+      "track": "WRITER_R1_R9",
+      "verification_target": "tools/test_m32_shared_ram_other_writer_counterexample.py",
+      "evidence": "NONE_ACCEPTED",
+      "next_proof": "Crash pendant xOpen/xShm/transaction/close/recovery ; PAS de réadmission au seul motif « SQLite peut récupérer ».",
+      "gate": "REQUIRES_INDEPENDENT_R1_G2_PROOFS"
+    },
+    {
+      "id": "M32-027",
+      "criterion": "R7 — décider et qualifier séparément la récupération native éventuelle",
+      "status": "OPEN_NOT_ACCEPTED",
+      "track": "WRITER_R1_R9",
+      "verification_target": "tools/test_m32_shared_ram_other_writer_counterexample.py",
+      "evidence": "NONE_ACCEPTED",
+      "next_proof": "Recovery permis seulement après preuve de source et autorisation spécifique ; pas de nouveau marqueur durable ni réouverture EXISTING_PROFILE par défaut.",
+      "gate": "REQUIRES_INDEPENDENT_R1_G2_PROOFS"
+    },
+    {
+      "id": "M32-028",
+      "criterion": "R8 — qualifier durée de vie C ABI, VFS et ressources",
+      "status": "OPEN_NOT_ACCEPTED",
+      "track": "WRITER_R1_R9",
+      "verification_target": "tools/test_m32_shared_ram_other_writer_counterexample.py",
+      "evidence": "NONE_ACCEPTED",
+      "next_proof": "pMethods versions, xFileControl, xClose, mémoire/libération, cancellation, queue bornée, races shutdown, échec avec révocation.",
+      "gate": "REQUIRES_INDEPENDENT_R1_G2_PROOFS"
+    },
+    {
+      "id": "M32-029",
+      "criterion": "R8 — bornage des transactions, lectures et requêtes futures",
+      "status": "OPEN_NOT_ACCEPTED",
+      "track": "WRITER_R1_R9",
+      "verification_target": "tools/test_m32_shared_ram_other_writer_counterexample.py",
+      "evidence": "NONE_ACCEPTED",
+      "next_proof": "Pas de lock au travers await ou d'inférence Ollama ; timeout, réponses typées, fail-closed, aucun accès direct SQLite donné à l'UI ou au modèle.",
+      "gate": "REQUIRES_INDEPENDENT_R1_G2_PROOFS"
+    },
+    {
+      "id": "M32-030",
+      "criterion": "R9 — construire dossier d'admission négatif et positif indépendant",
+      "status": "OPEN_NOT_ACCEPTED",
+      "track": "WRITER_R1_R9",
+      "verification_target": "tools/test_m32_shared_ram_other_writer_counterexample.py",
+      "evidence": "NONE_ACCEPTED",
+      "next_proof": "Tests Windows jetables et provenance complète R1–R8, avis contradictoire, CI SHA exact ; aucune assertion « writer prouvé » sans gate formel.",
+      "gate": "REQUIRES_INDEPENDENT_R1_G2_PROOFS"
+    },
+    {
+      "id": "M32-031",
+      "criterion": "R9 — obtenir une décision explicite et nouvelle avant writer runtime",
+      "status": "OPEN_NOT_ACCEPTED",
+      "track": "WRITER_R1_R9",
+      "verification_target": "tools/test_m32_shared_ram_other_writer_counterexample.py",
+      "evidence": "NONE_ACCEPTED",
+      "next_proof": "L'opérateur approuve précisément le périmètre et les risques résiduels ; V7WriterAdmission et IPC interdits avant décision.",
+      "gate": "REQUIRES_INDEPENDENT_R1_G2_PROOFS"
+    },
+    {
+      "id": "M32-032",
+      "criterion": "Résoudre le témoin production/pre_m24_early_manifest",
+      "status": "OPEN_NOT_ACCEPTED",
+      "track": "HISTORICAL_ATTESTATION",
+      "verification_target": "tools/m32_historical_evidence_intake.py",
+      "evidence": "NONE_ACCEPTED",
+      "next_proof": "Source antérieure indépendante authentifiant le rôle et le digest exact ; ne pas confondre avec une sauvegarde SQLite.",
+      "gate": "REQUIRES_INDEPENDENT_R1_G2_PROOFS"
+    },
+    {
+      "id": "M32-033",
+      "criterion": "Résoudre le témoin acl/original_acls",
+      "status": "OPEN_NOT_ACCEPTED",
+      "track": "HISTORICAL_ATTESTATION",
+      "verification_target": "tools/m32_historical_evidence_intake.py",
+      "evidence": "NONE_ACCEPTED",
+      "next_proof": "Preuve antérieure et indépendante du contenu exact et de son rôle, sans reconstruire les octets historiques.",
+      "gate": "REQUIRES_INDEPENDENT_R1_G2_PROOFS"
+    },
+    {
+      "id": "M32-034",
+      "criterion": "Résoudre le témoin acl/pre_repair_json",
+      "status": "OPEN_NOT_ACCEPTED",
+      "track": "HISTORICAL_ATTESTATION",
+      "verification_target": "tools/m32_historical_evidence_intake.py",
+      "evidence": "NONE_ACCEPTED",
+      "next_proof": "Preuve indépendante préalable du JSON, de son digest et de sa chaîne de conservation.",
+      "gate": "REQUIRES_INDEPENDENT_R1_G2_PROOFS"
+    },
+    {
+      "id": "M32-035",
+      "criterion": "Résoudre le témoin production/activation_marker",
+      "status": "OPEN_NOT_ACCEPTED",
+      "track": "HISTORICAL_ATTESTATION",
+      "verification_target": "tools/m32_historical_evidence_intake.py",
+      "evidence": "NONE_ACCEPTED",
+      "next_proof": "Authentifier les octets et l'identité historiques, non seulement le nom ou la description d'un ancien marqueur.",
+      "gate": "REQUIRES_INDEPENDENT_R1_G2_PROOFS"
+    },
+    {
+      "id": "M32-036",
+      "criterion": "Résoudre le témoin m25/isolated_v6",
+      "status": "OPEN_NOT_ACCEPTED",
+      "track": "HISTORICAL_ATTESTATION",
+      "verification_target": "tools/m32_historical_evidence_intake.py",
+      "evidence": "NONE_ACCEPTED",
+      "next_proof": "Prouver l'identité du rôle original, distincte des sauvegardes pré-M2.5 et de leurs manifests.",
+      "gate": "REQUIRES_INDEPENDENT_R1_G2_PROOFS"
+    },
+    {
+      "id": "M32-037",
+      "criterion": "Si des preuves historiques authentiques manquent, enregistrer honnêtement cette limite",
+      "status": "CLOSED_SCOPED",
+      "track": "HISTORICAL_ATTESTATION",
+      "verification_target": "tools/m32_historical_evidence_intake.py",
+      "evidence": "CHECKLIST_SCOPED SHA=1f5e201d3e7d0ab088a65621411cc911de0472a1 RUN=#42997104616",
+      "next_proof": "NO_FURTHER_PROOF_FOR_CLOSED_SCOPE",
+      "gate": "REQUIRES_INDEPENDENT_R1_G2_PROOFS"
+    },
+    {
+      "id": "M32-038",
+      "criterion": "Décider séparément la mise en place d'un baseline prospectif",
+      "status": "OPEN_NOT_ACCEPTED",
+      "track": "HISTORICAL_ATTESTATION",
+      "verification_target": "tools/m32_historical_evidence_intake.py",
+      "evidence": "NONE_ACCEPTED",
+      "next_proof": "SOLO_OPERATOR_COMPENSATING_CONTROLS est une politique documentaire, prospective NOT_STARTED ; le futur baseline n'atteste PAS le passé.",
+      "gate": "REQUIRES_INDEPENDENT_R1_G2_PROOFS"
+    },
+    {
+      "id": "M32-039",
+      "criterion": "G2-B — prouver l'identité de la source et l'absence d'un écrivain concurrent",
+      "status": "OPEN_NOT_ACCEPTED",
+      "track": "G2_TO_G6",
+      "verification_target": "tools/test_m32_gate_snapshot.py",
+      "evidence": "NONE_ACCEPTED",
+      "next_proof": "G2-A PASS_METADATA_ONLY_OWNER_REPORTED n'est pas la preuve d'absence ; procédure Windows exacte/autorisation nouvelle, positive et adversariale.",
+      "gate": "REQUIRES_INDEPENDENT_R1_G2_PROOFS"
+    },
+    {
+      "id": "M32-040",
+      "criterion": "G2-C — qualifier accord opérateur de source et de périmètre",
+      "status": "OPEN_NOT_ACCEPTED",
+      "track": "G2_TO_G6",
+      "verification_target": "tools/test_m32_gate_snapshot.py",
+      "evidence": "NONE_ACCEPTED",
+      "next_proof": "Autorisation distincte, source réellement identifiée, aucun remplacement d'un ancien accord par un test GitHub.",
+      "gate": "REQUIRES_INDEPENDENT_R1_G2_PROOFS"
+    },
+    {
+      "id": "M32-041",
+      "criterion": "G2-D — examiner quiescence, sidecars, ACL, chemin de backup et préflight",
+      "status": "OPEN_NOT_ACCEPTED",
+      "track": "G2_TO_G6",
+      "verification_target": "tools/test_m32_gate_snapshot.py",
+      "evidence": "NONE_ACCEPTED",
+      "next_proof": "Absence d'écrivain, WAL/SHM/hot journal et opérations pouvant écrire examinés ; refuser si source non stable.",
+      "gate": "REQUIRES_INDEPENDENT_R1_G2_PROOFS"
+    },
+    {
+      "id": "M32-042",
+      "criterion": "G3 — obtenir une méthode sûre de capture prospective depuis une source prouvée",
+      "status": "OPEN_NOT_ACCEPTED",
+      "track": "G2_TO_G6",
+      "verification_target": "tools/test_m32_gate_snapshot.py",
+      "evidence": "NONE_ACCEPTED",
+      "next_proof": "Owner déjà authentifié non migrant avec API Backup cohérente, ou source froide établie ; destination neuve réservée sans collision.",
+      "gate": "REQUIRES_INDEPENDENT_R1_G2_PROOFS"
+    },
+    {
+      "id": "M32-043",
+      "criterion": "G3 — tenir la copie et sa chaîne de conservation",
+      "status": "OPEN_NOT_ACCEPTED",
+      "track": "G2_TO_G6",
+      "verification_target": "tools/test_m32_gate_snapshot.py",
+      "evidence": "NONE_ACCEPTED",
+      "next_proof": "Source et destination distinctes, aucun close/reopen risqué, ACL et hashes, identité de volume/objet, pas de copie brute de WAL actif.",
+      "gate": "REQUIRES_INDEPENDENT_R1_G2_PROOFS"
+    },
+    {
+      "id": "M32-044",
+      "criterion": "G4 — vérifier l'image isolée et un vrai test de restauration",
+      "status": "OPEN_NOT_ACCEPTED",
+      "track": "G2_TO_G6",
+      "verification_target": "tools/test_m32_gate_snapshot.py",
+      "evidence": "NONE_ACCEPTED",
+      "next_proof": "integrity_check=ok, foreign_key_check vide, tables/compteurs/digests logiques, v6 et révisions exactes, témoins adversariaux et réouverture.",
+      "gate": "REQUIRES_INDEPENDENT_R1_G2_PROOFS"
+    },
+    {
+      "id": "M32-045",
+      "criterion": "G4 — démontrer absence de modification des originaux",
+      "status": "OPEN_NOT_ACCEPTED",
+      "track": "G2_TO_G6",
+      "verification_target": "tools/test_m32_gate_snapshot.py",
+      "evidence": "NONE_ACCEPTED",
+      "next_proof": "L'ancien pointer actif M1.5, sauvegardes, ACL, journaux, révisions/canons et activation marker sont préservés et vérifiés indépendamment.",
+      "gate": "REQUIRES_INDEPENDENT_R1_G2_PROOFS"
+    },
+    {
+      "id": "M32-046",
+      "criterion": "G5 — formaliser la décision de risque de l'opérateur unique",
+      "status": "OPEN_NOT_ACCEPTED",
+      "track": "G2_TO_G6",
+      "verification_target": "tools/test_m32_gate_snapshot.py",
+      "evidence": "NONE_ACCEPTED",
+      "next_proof": "Signature datée prospective, risques résiduels et contrôles compensatoires explicites ; ne jamais la présenter comme une attestation d'un relecteur indépendant.",
+      "gate": "REQUIRES_INDEPENDENT_R1_G2_PROOFS"
+    },
+    {
+      "id": "M32-047",
+      "criterion": "G6 — recette isolée du profil admissible et de la lecture v7",
+      "status": "OPEN_NOT_ACCEPTED",
+      "track": "G2_TO_G6",
+      "verification_target": "tools/test_m32_gate_snapshot.py",
+      "evidence": "NONE_ACCEPTED",
+      "next_proof": "Périmètre explicitement autorisé, audit Windows Tauri/WebView2, pas de migration ou écriture implicite.",
+      "gate": "REQUIRES_INDEPENDENT_R1_G2_PROOFS"
+    },
+    {
+      "id": "M32-048",
+      "criterion": "Avant toute migration 007 — sauvegarde cohérente non écrasante de v6",
+      "status": "OPEN_NOT_ACCEPTED",
+      "track": "G2_TO_G6",
+      "verification_target": "tools/test_m32_gate_snapshot.py",
+      "evidence": "NONE_ACCEPTED",
+      "next_proof": "Emplacements neufs, SHA256, digest de toutes les tables et historique des sauvegardes, contrôle du pointer ; autorisation distincte.",
+      "gate": "REQUIRES_INDEPENDENT_R1_G2_PROOFS"
+    },
+    {
+      "id": "M32-049",
+      "criterion": "Séparer une éventuelle activation de production de la seule acceptation d'un projet neuf",
+      "status": "CLOSED_SCOPED",
+      "track": "DATA_AND_CHRONOLOGY",
+      "verification_target": "tools/test_m32_parallel_documentary_audit.py",
+      "evidence": "CHECKLIST_SCOPED SHA=1f5e201d3e7d0ab088a65621411cc911de0472a1 RUN=#42997104616",
+      "next_proof": "NO_FURTHER_PROOF_FOR_CLOSED_SCOPE",
+      "gate": "SCOPED_EVIDENCE_REQUIRED"
+    },
+    {
+      "id": "M32-050",
+      "criterion": "Réconcilier la PR historique #35 sans la fusionner en bloc",
+      "status": "OPEN_NOT_ACCEPTED",
+      "track": "DATA_AND_CHRONOLOGY",
+      "verification_target": "tools/test_m32_legacy_pr_reconciliation.py",
+      "evidence": "NONE_ACCEPTED",
+      "next_proof": "Porter uniquement les éléments utiles sur base main moderne ; détecter overlaps SQL/lib.rs/workflow, aucun effet runtime implicite.",
+      "gate": "SCOPED_EVIDENCE_REQUIRED"
+    },
+    {
+      "id": "M32-051",
+      "criterion": "Documenter le contrat de données v7 existant",
+      "status": "CLOSED_SCOPED",
+      "track": "DATA_AND_CHRONOLOGY",
+      "verification_target": "tools/test_m32_parallel_documentary_audit.py",
+      "evidence": "CHECKLIST_SCOPED SHA=1f5e201d3e7d0ab088a65621411cc911de0472a1 RUN=#42997104616",
+      "next_proof": "NO_FURTHER_PROOF_FOR_CLOSED_SCOPE",
+      "gate": "SCOPED_EVIDENCE_REQUIRED"
+    },
+    {
+      "id": "M32-052",
+      "criterion": "Rendre le service Rust chronologique accessible derrière la seule autorité admise",
+      "status": "OPEN_NOT_ACCEPTED",
+      "track": "DATA_AND_CHRONOLOGY",
+      "verification_target": "tools/test_m32_parallel_documentary_audit.py",
+      "evidence": "NONE_ACCEPTED",
+      "next_proof": "API typée pour calendrier, événements, ancres, liens, listes ; refus tant que session gate NON ADMITTED.",
+      "gate": "RUNTIME_NOT_ADMITTED"
+    },
+    {
+      "id": "M32-053",
+      "criterion": "Compléter création et lecture de calendriers par univers",
+      "status": "OPEN_NOT_ACCEPTED",
+      "track": "DATA_AND_CHRONOLOGY",
+      "verification_target": "tools/test_m32_parallel_documentary_audit.py",
+      "evidence": "NONE_ACCEPTED",
+      "next_proof": "Universes isolés, calendrier déclaré et références exactes ; aucune hypothèse de calendrier grégorien.",
+      "gate": "RUNTIME_NOT_ADMITTED"
+    },
+    {
+      "id": "M32-054",
+      "criterion": "Compléter création et liste d'événements/ancres",
+      "status": "OPEN_NOT_ACCEPTED",
+      "track": "DATA_AND_CHRONOLOGY",
+      "verification_target": "tools/test_m32_parallel_documentary_audit.py",
+      "evidence": "NONE_ACCEPTED",
+      "next_proof": "Nom/type, contexte, heure fictive, sources, champs inconnus, pagination/tri déterministe et absence d'horodatage fabriqué.",
+      "gate": "RUNTIME_NOT_ADMITTED"
+    },
+    {
+      "id": "M32-055",
+      "criterion": "Compléter édition métier non destructive d'ancre",
+      "status": "OPEN_NOT_ACCEPTED",
+      "track": "DATA_AND_CHRONOLOGY",
+      "verification_target": "tools/test_m32_parallel_documentary_audit.py",
+      "evidence": "NONE_ACCEPTED",
+      "next_proof": "Supersession ou révision append-only avec motif humain ; ancien objet toujours consultable.",
+      "gate": "RUNTIME_NOT_ADMITTED"
+    },
+    {
+      "id": "M32-056",
+      "criterion": "Compléter création de précédence « A avant/après B »",
+      "status": "OPEN_NOT_ACCEPTED",
+      "track": "DATA_AND_CHRONOLOGY",
+      "verification_target": "tools/test_m32_parallel_documentary_audit.py",
+      "evidence": "NONE_ACCEPTED",
+      "next_proof": "IDs exacts de même Universe ; limites de portée, erreurs déterministes, pas d'ordre global inventé.",
+      "gate": "RUNTIME_NOT_ADMITTED"
+    },
+    {
+      "id": "M32-057",
+      "criterion": "Compléter révocation et correction des précédences",
+      "status": "OPEN_NOT_ACCEPTED",
+      "track": "DATA_AND_CHRONOLOGY",
+      "verification_target": "tools/test_m32_parallel_documentary_audit.py",
+      "evidence": "NONE_ACCEPTED",
+      "next_proof": "Lien précédent conservé, révocation datée dans l'histoire, rollback et diff exacts ; pas de suppression en cascade.",
+      "gate": "RUNTIME_NOT_ADMITTED"
+    },
+    {
+      "id": "M32-058",
+      "criterion": "Traiter les conflits et cycles sur graphe actif",
+      "status": "OPEN_NOT_ACCEPTED",
+      "track": "DATA_AND_CHRONOLOGY",
+      "verification_target": "src/m32WorldOrderComparison.test.tsx",
+      "evidence": "NONE_ACCEPTED",
+      "next_proof": "Détecter cycles, auto-lien, duplicata, contradictions, bornes impossibles ; afficher témoins directs sans réécriture de la chronologie.",
+      "gate": "RUNTIME_NOT_ADMITTED"
+    },
+    {
+      "id": "M32-059",
+      "criterion": "Traiter dates et incertitudes en quatre modes",
+      "status": "OPEN_NOT_ACCEPTED",
+      "track": "DATA_AND_CHRONOLOGY",
+      "verification_target": "tools/test_m32_parallel_documentary_audit.py",
+      "evidence": "NONE_ACCEPTED",
+      "next_proof": "Exact calendrier fictif, plage approximative, relatif, inconnu ; bornes/precision saisies et restituées sans coercition Date.parse.",
+      "gate": "RUNTIME_NOT_ADMITTED"
+    },
+    {
+      "id": "M32-060",
+      "criterion": "Traiter la comparaison entre calendriers fictifs",
+      "status": "OPEN_NOT_ACCEPTED",
+      "track": "DATA_AND_CHRONOLOGY",
+      "verification_target": "tools/test_m32_parallel_documentary_audit.py",
+      "evidence": "NONE_ACCEPTED",
+      "next_proof": "Mapping créé explicitement par auteur ; sans mapping = INDETERMINATE, jamais conversion automatique.",
+      "gate": "RUNTIME_NOT_ADMITTED"
+    },
+    {
+      "id": "M32-061",
+      "criterion": "Lier un événement à scène et révision historique immuable",
+      "status": "OPEN_NOT_ACCEPTED",
+      "track": "DATA_AND_CHRONOLOGY",
+      "verification_target": "tools/test_m32_parallel_documentary_audit.py",
+      "evidence": "NONE_ACCEPTED",
+      "next_proof": "Novel, Scene, revision ID ; HEAD actuelle distincte de la révision source ; aucune invalidation lors d'édition de scène.",
+      "gate": "RUNTIME_NOT_ADMITTED"
+    },
+    {
+      "id": "M32-062",
+      "criterion": "Gérer plusieurs romans dans un Universe et plusieurs Universes distincts",
+      "status": "OPEN_NOT_ACCEPTED",
+      "track": "DATA_AND_CHRONOLOGY",
+      "verification_target": "tools/test_m32_parallel_documentary_audit.py",
+      "evidence": "NONE_ACCEPTED",
+      "next_proof": "Contraintes cross-novel dans même Universe, rejet cross-Universe avant modification, identités homonymes distinctes.",
+      "gate": "RUNTIME_NOT_ADMITTED"
+    },
+    {
+      "id": "M32-063",
+      "criterion": "Garantir transactions atomiques et refus cohérents",
+      "status": "OPEN_NOT_ACCEPTED",
+      "track": "DATA_AND_CHRONOLOGY",
+      "verification_target": "tools/test_m32_parallel_documentary_audit.py",
+      "evidence": "NONE_ACCEPTED",
+      "next_proof": "BEGIN IMMEDIATE/commit/rollback, corrections idempotentes, aucun succès partiel après une erreur.",
+      "gate": "RUNTIME_NOT_ADMITTED"
+    },
+    {
+      "id": "M32-064",
+      "criterion": "Garantir persistance sur v7 neuve puis réouverture",
+      "status": "OPEN_NOT_ACCEPTED",
+      "track": "DATA_AND_CHRONOLOGY",
+      "verification_target": "tools/test_m32_parallel_documentary_audit.py",
+      "evidence": "NONE_ACCEPTED",
+      "next_proof": "Parcours create/correct/revoke/list/restart sur fichier jetable : conservation de l'histoire et de toutes les autres données.",
+      "gate": "RUNTIME_NOT_ADMITTED"
+    },
+    {
+      "id": "M32-065",
+      "criterion": "Maintenir la v6 restaurée et migration 007 non exécutée sans gate",
+      "status": "OPEN_NOT_ACCEPTED",
+      "track": "DATA_AND_CHRONOLOGY",
+      "verification_target": "tools/test_m32_parallel_documentary_audit.py",
+      "evidence": "NONE_ACCEPTED",
+      "next_proof": "Aucune élévation automatique au premier démarrage ; code de version et routage de stockage auditables.",
+      "gate": "RUNTIME_NOT_ADMITTED"
+    },
+    {
+      "id": "M32-066",
+      "criterion": "Définir le parcours opérateur d'un projet Greenfield réellement neuf",
+      "status": "OPEN_NOT_ACCEPTED",
+      "track": "DATA_AND_CHRONOLOGY",
+      "verification_target": "tools/test_m32_parallel_documentary_audit.py",
+      "evidence": "NONE_ACCEPTED",
+      "next_proof": "Sélection Universe/Novel/Scene, calendrier, ancre, lien et sauvegarde, avec identité NEW_ONLY séparée, Ollama désactivable.",
+      "gate": "RUNTIME_NOT_ADMITTED"
+    },
+    {
+      "id": "M32-067",
+      "criterion": "Intégrer à une vraie navigation l'atelier chrono aujourd'hui isolé",
+      "status": "OPEN_NOT_ACCEPTED",
+      "track": "REACT_FICTIONAL",
+      "verification_target": "src/m32ChronologyPreview.test.tsx",
+      "evidence": "NONE_ACCEPTED",
+      "next_proof": "L'atelier P3/P4 React fictif n'est pas une fonction App.tsx ; brancher seulement une fois la frontière admise.",
+      "gate": "RUNTIME_NOT_ADMITTED"
+    },
+    {
+      "id": "M32-068",
+      "criterion": "Relier l'UI à des commandes Tauri Rust typées et bornées",
+      "status": "OPEN_NOT_ACCEPTED",
+      "track": "REACT_FICTIONAL",
+      "verification_target": "src/m32ChronologyPreview.test.tsx",
+      "evidence": "NONE_ACCEPTED",
+      "next_proof": "Aucun accès direct DB/path/SQL/admission token, vérification par session/génération, pas de commande de writer avant R9.",
+      "gate": "RUNTIME_NOT_ADMITTED"
+    },
+    {
+      "id": "M32-069",
+      "criterion": "Distinguer visuellement les trois ordres indépendants",
+      "status": "OPEN_NOT_ACCEPTED",
+      "track": "REACT_FICTIONAL",
+      "verification_target": "src/m32ChronologyPreview.test.tsx",
+      "evidence": "NONE_ACCEPTED",
+      "next_proof": "Chronologie du monde modifiable, position de narration distincte, ordre de révélation en lecture seule (M3.2) ; aucune conversion silencieuse.",
+      "gate": "RUNTIME_NOT_ADMITTED"
+    },
+    {
+      "id": "M32-070",
+      "criterion": "Concevoir formulaires calendrier et événement utilisables sans IA",
+      "status": "OPEN_NOT_ACCEPTED",
+      "track": "REACT_FICTIONAL",
+      "verification_target": "src/m32ChronologyPreview.test.tsx",
+      "evidence": "NONE_ACCEPTED",
+      "next_proof": "Création, saisie précision, validité, estimation, source, révision ; messages explicites sans obligation Ollama.",
+      "gate": "RUNTIME_NOT_ADMITTED"
+    },
+    {
+      "id": "M32-071",
+      "criterion": "Concevoir liste/consultation et inspection des sources historiques",
+      "status": "OPEN_NOT_ACCEPTED",
+      "track": "REACT_FICTIONAL",
+      "verification_target": "src/m32ChronologyPreview.test.tsx",
+      "evidence": "NONE_ACCEPTED",
+      "next_proof": "Filtres Universe/Novel/personnage, versions, pagination, affichage IDs et date fictive, source exacte et statut.",
+      "gate": "RUNTIME_NOT_ADMITTED"
+    },
+    {
+      "id": "M32-072",
+      "criterion": "Concevoir éditeur humain de précédence avant/après",
+      "status": "OPEN_NOT_ACCEPTED",
+      "track": "REACT_FICTIONAL",
+      "verification_target": "src/m32ChronologyPreview.test.tsx",
+      "evidence": "NONE_ACCEPTED",
+      "next_proof": "Choix de deux ancres, aperçu de l'impact et témoin de cycle avant confirmation, explication des erreurs.",
+      "gate": "RUNTIME_NOT_ADMITTED"
+    },
+    {
+      "id": "M32-073",
+      "criterion": "Concevoir correction/supersession/révocation réversible",
+      "status": "OPEN_NOT_ACCEPTED",
+      "track": "REACT_FICTIONAL",
+      "verification_target": "src/m32ChronologyPreview.test.tsx",
+      "evidence": "NONE_ACCEPTED",
+      "next_proof": "Motif humain, prévisualisation, confirmation, historique inspectable et annulation sans effacer les anciennes lignes.",
+      "gate": "RUNTIME_NOT_ADMITTED"
+    },
+    {
+      "id": "M32-074",
+      "criterion": "Préserver la séparation brouillon/proposé/canon existante",
+      "status": "OPEN_NOT_ACCEPTED",
+      "track": "REACT_FICTIONAL",
+      "verification_target": "src/m32ChronologyPreview.test.tsx",
+      "evidence": "NONE_ACCEPTED",
+      "next_proof": "Aucun texte de scène, fiche ou assertion M2 n'est promu canon par l'UI chronologique.",
+      "gate": "RUNTIME_NOT_ADMITTED"
+    },
+    {
+      "id": "M32-075",
+      "criterion": "Garantir accessibilité/échappement et comportement hors ligne",
+      "status": "OPEN_NOT_ACCEPTED",
+      "track": "REACT_FICTIONAL",
+      "verification_target": "src/m32ChronologyPreview.test.tsx",
+      "evidence": "NONE_ACCEPTED",
+      "next_proof": "Navigation clavier, libellés et messages, absence de fuite par HTML hostile, aucune requête externe ni dépendance à Ollama.",
+      "gate": "RUNTIME_NOT_ADMITTED"
+    },
+    {
+      "id": "M32-076",
+      "criterion": "Ne jamais afficher un faux succès de persistance",
+      "status": "OPEN_NOT_ACCEPTED",
+      "track": "REACT_FICTIONAL",
+      "verification_target": "src/m32ChronologyPreview.test.tsx",
+      "evidence": "NONE_ACCEPTED",
+      "next_proof": "État « fictif/non persisté » tant que fixture ; si refus du writer, affichage explicite et aucune modification prétendue.",
+      "gate": "RUNTIME_NOT_ADMITTED"
+    },
+    {
+      "id": "M32-077",
+      "criterion": "Gérer erreurs de session et de fichiers sans corruption",
+      "status": "OPEN_NOT_ACCEPTED",
+      "track": "REACT_FICTIONAL",
+      "verification_target": "src/m32ChronologyPreview.test.tsx",
+      "evidence": "NONE_ACCEPTED",
+      "next_proof": "Collision, BUSY, source étrangère, timeout, annulation, fermeture/relance : UI refuse et indique l'action possible.",
+      "gate": "RUNTIME_NOT_ADMITTED"
+    },
+    {
+      "id": "M32-078",
+      "criterion": "Construire une matrice exigences→tests→preuves à jour",
+      "status": "OPEN_NOT_ACCEPTED",
+      "track": "EVIDENCE_AND_TESTS",
+      "verification_target": "tools/test_m32_requirements_traceability.py",
+      "evidence": "NONE_ACCEPTED",
+      "next_proof": "Chaque ligne présente nom du test, SHA, date, fixture/Windows réel, attentes, logs et résultat ; pas de PASS hérité d'un HEAD ancien.",
+      "gate": "RUNTIME_NOT_ADMITTED"
+    },
+    {
+      "id": "M32-079",
+      "criterion": "Valider les quatre temporalités sur deux Universes et plusieurs romans",
+      "status": "OPEN_NOT_ACCEPTED",
+      "track": "EVIDENCE_AND_TESTS",
+      "verification_target": "tools/test_m32_completion_master_checklist.py",
+      "evidence": "NONE_ACCEPTED",
+      "next_proof": "Calendrier exact/approx/relative/inconnu, dates sans mapping, undated et scènes anciennes.",
+      "gate": "RUNTIME_NOT_ADMITTED"
+    },
+    {
+      "id": "M32-080",
+      "criterion": "Valider prévention des cycles et conflits déterministes",
+      "status": "OPEN_NOT_ACCEPTED",
+      "track": "EVIDENCE_AND_TESTS",
+      "verification_target": "src/m32WorldOrderComparison.test.tsx",
+      "evidence": "NONE_ACCEPTED",
+      "next_proof": "Chemins cycliques, doublons, exclusions et opposition avant/après ; rollback et données intactes.",
+      "gate": "RUNTIME_NOT_ADMITTED"
+    },
+    {
+      "id": "M32-081",
+      "criterion": "Valider revocations, corrections et lecture du passé",
+      "status": "OPEN_NOT_ACCEPTED",
+      "track": "EVIDENCE_AND_TESTS",
+      "verification_target": "tools/test_m32_completion_master_checklist.py",
+      "evidence": "NONE_ACCEPTED",
+      "next_proof": "Ancres/revisions historiques demeurent consultables après modifications, sans modifier HEAD des scènes.",
+      "gate": "RUNTIME_NOT_ADMITTED"
+    },
+    {
+      "id": "M32-082",
+      "criterion": "Valider isolation Universe et IDs homogènes",
+      "status": "OPEN_NOT_ACCEPTED",
+      "track": "EVIDENCE_AND_TESTS",
+      "verification_target": "tools/test_m32_completion_master_checklist.py",
+      "evidence": "NONE_ACCEPTED",
+      "next_proof": "Homonymes, mauvais foreign keys, cross-Universe et anciennes révisions étrangères refusés.",
+      "gate": "RUNTIME_NOT_ADMITTED"
+    },
+    {
+      "id": "M32-083",
+      "criterion": "Valider monde/narration/révélation indépendants",
+      "status": "OPEN_NOT_ACCEPTED",
+      "track": "EVIDENCE_AND_TESTS",
+      "verification_target": "tools/test_m32_completion_master_checklist.py",
+      "evidence": "NONE_ACCEPTED",
+      "next_proof": "Flashbacks et divulgations différées sans conversion ni ordre total inféré.",
+      "gate": "RUNTIME_NOT_ADMITTED"
+    },
+    {
+      "id": "M32-084",
+      "criterion": "Valider tests négatifs de fichiers et des droits Windows",
+      "status": "OPEN_NOT_ACCEPTED",
+      "track": "EVIDENCE_AND_TESTS",
+      "verification_target": "tools/test_m32_completion_master_checklist.py",
+      "evidence": "NONE_ACCEPTED",
+      "next_proof": "TOCTOU, symlinks/reparse, WAL/SHM, ATTACH, processus concurrents, tampering, stale generation et crash.",
+      "gate": "RUNTIME_NOT_ADMITTED"
+    },
+    {
+      "id": "M32-085",
+      "criterion": "Valider sauvegarde/restauration à destination neuve et pointeur v6 inchangé",
+      "status": "OPEN_NOT_ACCEPTED",
+      "track": "EVIDENCE_AND_TESTS",
+      "verification_target": "tools/test_m32_completion_master_checklist.py",
+      "evidence": "NONE_ACCEPTED",
+      "next_proof": "Digests avant/après, manifests, WAL cohérent, copie jetable restaurée, aucune suppression d'originaux.",
+      "gate": "RUNTIME_NOT_ADMITTED"
+    },
+    {
+      "id": "M32-086",
+      "criterion": "Tester usage hors ligne avec Ollama éteint",
+      "status": "OPEN_NOT_ACCEPTED",
+      "track": "EVIDENCE_AND_TESTS",
+      "verification_target": "tools/test_m32_completion_master_checklist.py",
+      "evidence": "NONE_ACCEPTED",
+      "next_proof": "Aucune dépendance sur moteur LLM, cloud, FTS/embedding, M4–M7 ; UI chrono manuelle fonctionnelle.",
+      "gate": "RUNTIME_NOT_ADMITTED"
+    },
+    {
+      "id": "M32-087",
+      "criterion": "Tester réouverture et récupération selon périmètre autorisé",
+      "status": "OPEN_NOT_ACCEPTED",
+      "track": "EVIDENCE_AND_TESTS",
+      "verification_target": "tools/test_m32_completion_master_checklist.py",
+      "evidence": "NONE_ACCEPTED",
+      "next_proof": "Reboot, clôture propre, coupure/crash ; toute récupération incertaine STOP, jamais réparation silencieuse.",
+      "gate": "RUNTIME_NOT_ADMITTED"
+    },
+    {
+      "id": "M32-088",
+      "criterion": "Valider intégration Rust–Tauri–React Windows hors laboratoire après gate",
+      "status": "OPEN_NOT_ACCEPTED",
+      "track": "EVIDENCE_AND_TESTS",
+      "verification_target": "tools/test_m32_completion_master_checklist.py",
+      "evidence": "NONE_ACCEPTED",
+      "next_proof": "Identité de profil, fenêtres WebView2, navigation, erreurs et persistance réelle d'un projet autorisé.",
+      "gate": "RUNTIME_NOT_ADMITTED"
+    },
+    {
+      "id": "M32-089",
+      "criterion": "Réaliser une recette opérateur sur un profil NEUF admis",
+      "status": "OPEN_NOT_ACCEPTED",
+      "track": "EVIDENCE_AND_TESTS",
+      "verification_target": "tools/test_m32_completion_master_checklist.py",
+      "evidence": "NONE_ACCEPTED",
+      "next_proof": "Protocole de tests observés par propriétaire, preuves offline, sauvegardes distinctes, absence de perte ; seulement avec consentement spécifique.",
+      "gate": "RUNTIME_NOT_ADMITTED"
+    },
+    {
+      "id": "M32-090",
+      "criterion": "Réaliser une recette distincte sur copie authentifiée des données historiques si autorisée",
+      "status": "OPEN_NOT_ACCEPTED",
+      "track": "EVIDENCE_AND_TESTS",
+      "verification_target": "tools/test_m32_completion_master_checklist.py",
+      "evidence": "NONE_ACCEPTED",
+      "next_proof": "G3–G6 et R1–R9 préalablement franchis ; aucune déduction depuis un projet neuf.",
+      "gate": "RUNTIME_NOT_ADMITTED"
+    },
+    {
+      "id": "M32-091",
+      "criterion": "Auditer absence de réseau non voulu et stabilité mémoire/fichiers",
+      "status": "OPEN_NOT_ACCEPTED",
+      "track": "EVIDENCE_AND_TESTS",
+      "verification_target": "tools/test_m32_completion_master_checklist.py",
+      "evidence": "NONE_ACCEPTED",
+      "next_proof": "CSP/Vite, handles Win32, shutdown, file descriptors, compat Tauri et traces d'audit sans fuite de récits.",
+      "gate": "RUNTIME_NOT_ADMITTED"
+    },
+    {
+      "id": "M32-092",
+      "criterion": "Traiter séparément les alertes Dependabot Vite/launch-editor",
+      "status": "OPEN_NOT_ACCEPTED",
+      "track": "EVIDENCE_AND_TESTS",
+      "verification_target": "tools/test_m32_vite_817_security_lock.py",
+      "evidence": "NONE_ACCEPTED",
+      "next_proof": "Issue #160, inventorier avis, correctifs réellement compatibles, npm lock authentique et npm ci/TS/Chromium; aucune réécriture de lock arbitraire.",
+      "gate": "RUNTIME_NOT_ADMITTED"
+    },
+    {
+      "id": "M32-093",
+      "criterion": "Traiter le problème glib 0.18.5 de la chaîne Linux GTK3",
+      "status": "OPEN_NOT_ACCEPTED",
+      "track": "EVIDENCE_AND_TESTS",
+      "verification_target": "tools/m32_glib_target_audit.py",
+      "evidence": "NONE_ACCEPTED",
+      "next_proof": "Suivre une migration intégrée Tauri/WRY GTK4/WebKit6 ou correctif validé ; ne jamais forcer glib 0.20 seule dans gtk 0.18.",
+      "gate": "RUNTIME_NOT_ADMITTED"
+    },
+    {
+      "id": "M32-094",
+      "criterion": "Qualifier Windows et Linux comme deux expositions distinctes",
+      "status": "OPEN_NOT_ACCEPTED",
+      "track": "EVIDENCE_AND_TESTS",
+      "verification_target": "tools/m32_glib_linux_target_audit.py",
+      "evidence": "NONE_ACCEPTED",
+      "next_proof": "Audit de graphe Windows vs Linux, build Linux jetable si distribution envisagée ; ne pas affirmer exploitabilité Windows sans preuve.",
+      "gate": "RUNTIME_NOT_ADMITTED"
+    },
+    {
+      "id": "M32-095",
+      "criterion": "Documenter décisions de sécurité restantes avant distribution",
+      "status": "CLOSED_SCOPED",
+      "track": "ACCEPTANCE_AND_SCOPE",
+      "verification_target": "tools/test_m32_roadmap_traceability.py",
+      "evidence": "CHECKLIST_SCOPED SHA=1f5e201d3e7d0ab088a65621411cc911de0472a1 RUN=#42997104616",
+      "next_proof": "NO_FURTHER_PROOF_FOR_CLOSED_SCOPE",
+      "gate": "SCOPED_EVIDENCE_REQUIRED"
+    },
+    {
+      "id": "M32-096",
+      "criterion": "Tenir Windows Hello comme confirmation future des actes sensibles",
+      "status": "CLOSED_SCOPED",
+      "track": "ACCEPTANCE_AND_SCOPE",
+      "verification_target": "tools/test_m32_roadmap_traceability.py",
+      "evidence": "CHECKLIST_SCOPED SHA=1f5e201d3e7d0ab088a65621411cc911de0472a1 RUN=#42997104616",
+      "next_proof": "NO_FURTHER_PROOF_FOR_CLOSED_SCOPE",
+      "gate": "SCOPED_EVIDENCE_REQUIRED"
+    },
+    {
+      "id": "M32-097",
+      "criterion": "Prendre une décision d'admission writer formelle basée sur R1–R9",
+      "status": "OPEN_NOT_ACCEPTED",
+      "track": "ACCEPTANCE_AND_SCOPE",
+      "verification_target": "tools/test_m32_roadmap_traceability.py",
+      "evidence": "NONE_ACCEPTED",
+      "next_proof": "R1–R9 vérifiés ou risque résiduel explicite accepté après revue humaine ; aucune admission par succès CI seul.",
+      "gate": "SCOPED_EVIDENCE_REQUIRED"
+    },
+    {
+      "id": "M32-098",
+      "criterion": "Prendre décisions explicites G2B–G6 et provenance",
+      "status": "OPEN_NOT_ACCEPTED",
+      "track": "ACCEPTANCE_AND_SCOPE",
+      "verification_target": "tools/test_m32_roadmap_traceability.py",
+      "evidence": "NONE_ACCEPTED",
+      "next_proof": "Issue #36 traitée honnêtement, baseline prospective vérifiée, G3/G4/G5/G6 attestées selon leurs critères ; sinon M3.2 reste NOT_ACCEPTED.",
+      "gate": "SCOPED_EVIDENCE_REQUIRED"
+    },
+    {
+      "id": "M32-099",
+      "criterion": "Accepter les parcours produit complets, pas seulement un démonstrateur",
+      "status": "OPEN_NOT_ACCEPTED",
+      "track": "ACCEPTANCE_AND_SCOPE",
+      "verification_target": "tools/test_m32_roadmap_traceability.py",
+      "evidence": "NONE_ACCEPTED",
+      "next_proof": "CRUD chronologie persistant, corrections historiques, ordre monde/narration/révélation, UX offline et Windows operator acceptance.",
+      "gate": "SCOPED_EVIDENCE_REQUIRED"
+    },
+    {
+      "id": "M32-100",
+      "criterion": "Qualifier la PR d'implémentation finale au HEAD exact et sous Protect main",
+      "status": "OPEN_NOT_ACCEPTED",
+      "track": "ACCEPTANCE_AND_SCOPE",
+      "verification_target": "tools/test_m32_roadmap_traceability.py",
+      "evidence": "NONE_ACCEPTED",
+      "next_proof": "CI Windows terminal SUCCESS, logs, diff, reviews/threads, bypass=[], squash expected_head_sha ; zéro modification des originaux avant consentement.",
+      "gate": "SCOPED_EVIDENCE_REQUIRED"
+    },
+    {
+      "id": "M32-101",
+      "criterion": "Effectuer contrôle postmain indépendant de chaque merge",
+      "status": "OPEN_NOT_ACCEPTED",
+      "track": "ACCEPTANCE_AND_SCOPE",
+      "verification_target": "tools/test_m32_roadmap_traceability.py",
+      "evidence": "NONE_ACCEPTED",
+      "next_proof": "Run push exact nouveau SHA, résultat terminal, registre #38 ; faux succès et flake non occultés.",
+      "gate": "SCOPED_EVIDENCE_REQUIRED"
+    },
+    {
+      "id": "M32-102",
+      "criterion": "Fusionner une PR séparée de normalisation documentaire de M3.2",
+      "status": "OPEN_NOT_ACCEPTED",
+      "track": "ACCEPTANCE_AND_SCOPE",
+      "verification_target": "tools/test_m32_roadmap_traceability.py",
+      "evidence": "NONE_ACCEPTED",
+      "next_proof": "ROADMAP_STATUS, gate decision, STATE/NEXT/HANDOFF MD+JSON/historique/prompts, critères et provenance à jour, nouvelle CI exacte et postmain.",
+      "gate": "SCOPED_EVIDENCE_REQUIRED"
+    },
+    {
+      "id": "M32-103",
+      "criterion": "Prononcer explicitement M3.2 ACCEPTED + MERGED + NORMALIZED",
+      "status": "OPEN_NOT_ACCEPTED",
+      "track": "ACCEPTANCE_AND_SCOPE",
+      "verification_target": "tools/test_m32_roadmap_traceability.py",
+      "evidence": "NONE_ACCEPTED",
+      "next_proof": "Seulement avec signature et synthèse de toutes les preuves, aucun gate STOP ni risque inexpliqué transformé en PASS.",
+      "gate": "SCOPED_EVIDENCE_REQUIRED"
+    },
+    {
+      "id": "M32-104",
+      "criterion": "Conserver M3.3–M3.6, M4–M9, Ollama créatif, cohérence IA et ComfyUI hors M3.2",
+      "status": "OPEN_NOT_ACCEPTED",
+      "track": "ACCEPTANCE_AND_SCOPE",
+      "verification_target": "tools/test_m32_requirements_traceability.py",
+      "evidence": "NONE_ACCEPTED",
+      "next_proof": "Aucun lancement implicite de subdivision suivante, pas de release/production générale attribuée à cette seule étape.",
+      "gate": "SCOPED_EVIDENCE_REQUIRED"
+    }
+  ]
+}
