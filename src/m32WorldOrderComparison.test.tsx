@@ -437,7 +437,7 @@ describe("M3.2 invented world-order comparison, no production source", () => {
           const html = view(fixture, "A", "C");
           expect(html).toContain("Comparaison refusée");
           expect(html).not.toContain("revoked-shortcut");
-          expect(html).not.toMatch(/<(button|input|form|textarea)\\b/);
+          expect(html).not.toMatch(/<(button|input|form|textarea)\b/);
         } else {
           expect(forward && backward).toBe(false);
           const left = read(fixture, "A", "C");
