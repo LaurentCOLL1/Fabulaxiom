@@ -5,7 +5,7 @@
   "total": 104,
   "closed": 8,
   "open": 96,
-  "status": "CANDIDATE_STEP_LEVEL_WORKFLOW_EVIDENCE_ONLY_M32_078_OPEN",
+  "status": "CANDIDATE_TEST_SUITE_LOG_EVIDENCE_ONLY_M32_078_OPEN",
   "strategy": "PRODUCT_FIRST_PARALLEL_SAFETY",
   "gate": "IN_PROGRESS_NOT_ACCEPTED",
   "rows": [
@@ -2782,6 +2782,30 @@
         "step_log_locator": null,
         "CI_step_does_not_equal_individual_test_assertion": true,
         "Windows_operator_workflow_admission": false
+      },
+      "synthetic_suite_observation": {
+        "observation_date": "2026-11-13",
+        "kind": "WINDOWS_GITHUB_ACTIONS_VITEST_SUITE_LOG_ONLY",
+        "pull_request_number": 353,
+        "source_head_sha": "47ee4ac962dd9fbe5a80e59edcf4662cb6429d3f",
+        "workflow_run_id": 43371849171,
+        "workflow_event": "pull_request",
+        "workflow_attempt": 1,
+        "workflow_status": "COMPLETED_SUCCESS_EXACT_HEAD",
+        "job_id": 131709174580,
+        "job_conclusion": "success",
+        "workflow_step_number": 35,
+        "workflow_step_name": "Frontend tests",
+        "workflow_step_conclusion": "success",
+        "suite_file": "src/m32WorldOrderBoundaries.test.tsx",
+        "suite_reported_tests": 5,
+        "suite_log_marker": "src/m32WorldOrderBoundaries.test.tsx (5 tests)",
+        "suite_log_locator": "https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/43371849171/job/131709174580#step:35:1",
+        "observation_result": "SUITE_PASS_OBSERVED_NOT_NAMED_PER_CASE_ATTESTATION",
+        "scope": "SYNTHETIC_READ_ONLY_UNMOUNTED",
+        "requirement_acceptance": false,
+        "sqlite_writer_acceptance": false,
+        "windows_operator_acceptance": false
       }
     },
     {
@@ -2930,6 +2954,30 @@
         "step_log_locator": null,
         "CI_step_does_not_equal_individual_test_assertion": true,
         "Windows_operator_workflow_admission": false
+      },
+      "synthetic_suite_observation": {
+        "observation_date": "2026-11-13",
+        "kind": "WINDOWS_GITHUB_ACTIONS_VITEST_SUITE_LOG_ONLY",
+        "pull_request_number": 352,
+        "source_head_sha": "a3462fa7097d398021a1f4104fe2a19a64c95654",
+        "workflow_run_id": 43318898667,
+        "workflow_event": "pull_request",
+        "workflow_attempt": 1,
+        "workflow_status": "COMPLETED_SUCCESS_EXACT_HEAD",
+        "job_id": 131534076295,
+        "job_conclusion": "success",
+        "workflow_step_number": 35,
+        "workflow_step_name": "Frontend tests",
+        "workflow_step_conclusion": "success",
+        "suite_file": "src/m32WorldOrderIsolation.test.tsx",
+        "suite_reported_tests": 6,
+        "suite_log_marker": "src/m32WorldOrderIsolation.test.tsx (6 tests)",
+        "suite_log_locator": "https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/43318898667/job/131534076295#step:35:1",
+        "observation_result": "SUITE_PASS_OBSERVED_NOT_NAMED_PER_CASE_ATTESTATION",
+        "scope": "SYNTHETIC_READ_ONLY_UNMOUNTED",
+        "requirement_acceptance": false,
+        "sqlite_writer_acceptance": false,
+        "windows_operator_acceptance": false
       }
     },
     {
@@ -2967,6 +3015,30 @@
         "step_log_locator": null,
         "CI_step_does_not_equal_individual_test_assertion": true,
         "Windows_operator_workflow_admission": false
+      },
+      "synthetic_suite_observation": {
+        "observation_date": "2026-11-13",
+        "kind": "WINDOWS_GITHUB_ACTIONS_VITEST_SUITE_LOG_ONLY",
+        "pull_request_number": 353,
+        "source_head_sha": "47ee4ac962dd9fbe5a80e59edcf4662cb6429d3f",
+        "workflow_run_id": 43371849171,
+        "workflow_event": "pull_request",
+        "workflow_attempt": 1,
+        "workflow_status": "COMPLETED_SUCCESS_EXACT_HEAD",
+        "job_id": 131709174580,
+        "job_conclusion": "success",
+        "workflow_step_number": 35,
+        "workflow_step_name": "Frontend tests",
+        "workflow_step_conclusion": "success",
+        "suite_file": "src/m32WorldOrderBoundaries.test.tsx",
+        "suite_reported_tests": 5,
+        "suite_log_marker": "src/m32WorldOrderBoundaries.test.tsx (5 tests)",
+        "suite_log_locator": "https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/43371849171/job/131709174580#step:35:1",
+        "observation_result": "SUITE_PASS_OBSERVED_NOT_NAMED_PER_CASE_ATTESTATION",
+        "scope": "SYNTHETIC_READ_ONLY_UNMOUNTED",
+        "requirement_acceptance": false,
+        "sqlite_writer_acceptance": false,
+        "windows_operator_acceptance": false
       }
     },
     {
@@ -3041,6 +3113,30 @@
         "step_log_locator": null,
         "CI_step_does_not_equal_individual_test_assertion": true,
         "Windows_operator_workflow_admission": false
+      },
+      "synthetic_suite_observation": {
+        "observation_date": "2026-11-13",
+        "kind": "WINDOWS_GITHUB_ACTIONS_VITEST_SUITE_LOG_ONLY",
+        "pull_request_number": 352,
+        "source_head_sha": "a3462fa7097d398021a1f4104fe2a19a64c95654",
+        "workflow_run_id": 43318898667,
+        "workflow_event": "pull_request",
+        "workflow_attempt": 1,
+        "workflow_status": "COMPLETED_SUCCESS_EXACT_HEAD",
+        "job_id": 131534076295,
+        "job_conclusion": "success",
+        "workflow_step_number": 35,
+        "workflow_step_name": "Frontend tests",
+        "workflow_step_conclusion": "success",
+        "suite_file": "src/m32WorldOrderIsolation.test.tsx",
+        "suite_reported_tests": 6,
+        "suite_log_marker": "src/m32WorldOrderIsolation.test.tsx (6 tests)",
+        "suite_log_locator": "https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/43318898667/job/131534076295#step:35:1",
+        "observation_result": "SUITE_PASS_OBSERVED_NOT_NAMED_PER_CASE_ATTESTATION",
+        "scope": "SYNTHETIC_READ_ONLY_UNMOUNTED",
+        "requirement_acceptance": false,
+        "sqlite_writer_acceptance": false,
+        "windows_operator_acceptance": false
       }
     },
     {
@@ -3078,6 +3174,30 @@
         "step_log_locator": null,
         "CI_step_does_not_equal_individual_test_assertion": true,
         "Windows_operator_workflow_admission": false
+      },
+      "synthetic_suite_observation": {
+        "observation_date": "2026-11-13",
+        "kind": "WINDOWS_GITHUB_ACTIONS_VITEST_SUITE_LOG_ONLY",
+        "pull_request_number": 352,
+        "source_head_sha": "a3462fa7097d398021a1f4104fe2a19a64c95654",
+        "workflow_run_id": 43318898667,
+        "workflow_event": "pull_request",
+        "workflow_attempt": 1,
+        "workflow_status": "COMPLETED_SUCCESS_EXACT_HEAD",
+        "job_id": 131534076295,
+        "job_conclusion": "success",
+        "workflow_step_number": 35,
+        "workflow_step_name": "Frontend tests",
+        "workflow_step_conclusion": "success",
+        "suite_file": "src/m32WorldOrderIsolation.test.tsx",
+        "suite_reported_tests": 6,
+        "suite_log_marker": "src/m32WorldOrderIsolation.test.tsx (6 tests)",
+        "suite_log_locator": "https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/43318898667/job/131534076295#step:35:1",
+        "observation_result": "SUITE_PASS_OBSERVED_NOT_NAMED_PER_CASE_ATTESTATION",
+        "scope": "SYNTHETIC_READ_ONLY_UNMOUNTED",
+        "requirement_acceptance": false,
+        "sqlite_writer_acceptance": false,
+        "windows_operator_acceptance": false
       }
     },
     {
@@ -3859,5 +3979,6 @@
     }
   ],
   "provenance_review_date": "2026-11-12",
-  "workflow_step_review_date": "2026-11-12"
+  "workflow_step_review_date": "2026-11-12",
+  "suite_observation_review_date": "2026-11-13"
 }
