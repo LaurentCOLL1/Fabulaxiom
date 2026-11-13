@@ -224,6 +224,22 @@ jobs:
       - name: Frontend tests
         run: npm run test:ci
 
+      - name: M3.2 named fictional Vitest JSON case attestations (no app)
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          node --test tools/test_m32_named_vitest_report.cjs
+          if ($LASTEXITCODE -ne 0) { throw 'M32 named reporter guard tests failed' }
+          $Report = Join-Path $env:RUNNER_TEMP 'm32-named-vitest-synthetic.json'
+          try {
+            npm run test:ci -- src/m32WorldOrderIsolation.test.tsx src/m32WorldOrderBoundaries.test.tsx --reporter=json --outputFile="$Report"
+            if ($LASTEXITCODE -ne 0) { throw 'Named synthetic Vitest run failed' }
+            node tools/m32_named_vitest_report.cjs "$Report"
+            if ($LASTEXITCODE -ne 0) { throw 'Named synthetic Vitest report not qualified' }
+          } finally {
+            Remove-Item -LiteralPath $Report -Force -ErrorAction SilentlyContinue
+          }
+
       - name: M3.2 isolated synthetic chronology React preview tests
         run: npm run test:ci -- src/m32ChronologyPreview.test.tsx
 
