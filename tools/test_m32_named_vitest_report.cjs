@@ -7,7 +7,7 @@ const files = Object.keys(EXPECTED);
 function fakeReport() {
   return {
     success: true,
-    numTotalTestSuites: 2, numPassedTestSuites: 2,
+    numTotalTestSuites: 4, numPassedTestSuites: 4, // two files + two describe blocks
     numFailedTestSuites: 0, numPendingTestSuites: 0,
     numTotalTests: 11, numPassedTests: 11,
     numFailedTests: 0, numPendingTests: 0, numTodoTests: 0,
@@ -23,7 +23,7 @@ function fakeReport() {
 const rejects = report =>
   assert.throws(() => verifyNamedVitestReport(report), /M32_NAMED_VITEST_REFUSAL:/);
 
-test("accepts 11 exact invented named test cases in two suites", () => {
+test("accepts 11 named cases in two files despite nested describe suite counts", () => {
   const names = verifyNamedVitestReport(fakeReport());
   assert.equal(names.length, 11);
   assert.deepEqual(names, [...names].sort());

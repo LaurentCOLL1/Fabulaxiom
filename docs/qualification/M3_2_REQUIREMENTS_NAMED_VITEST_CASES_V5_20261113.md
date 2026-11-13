@@ -1,3 +1,9 @@
+## Correction du 13/11 après échec CI source #43472176258 — pas de qualification
+
+Premier HEAD `b73ba418d32edb194647191934e4eb57b6a552cb` : CI [#43472176258](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/43472176258), job #132046611381, step **36** « M3.2 named fictional Vitest JSON case attestations » **FAIL**. Le log atteste que les **13 tests de garde Node ont réussi**, et que Vitest a écrit son rapport JSON, mais le gardien a refusé `numTotalTestSuites`. Cause : le contrat interne confondait nombre de fichiers Vitest (2) et nombre de suites, lequel inclut les blocs imbriqués `describe`. **AUCUN des 11 cas individuels n'est qualifié par cette première tentative.**
+
+Correctif limité au gardien et sa fixture négative : exiger `numTotalTestSuites >= 2`, `numPassedTestSuites === numTotalTestSuites`, `numFailedTestSuites = numPendingTestSuites = 0`, mais **exactement deux fichiers** `testResults`, les 11 titres exacts, statuts `passed`, `failureMessages=[]` et aucun autre cas. Fixture source-only avec quatre suites (deux fichiers + deux `describe`), 13 tests adversariaux inchangés. CI du nouveau HEAD À QUALIFIER. La tentative FAIL reste conservée dans le journal #38 et ne promeut aucune preuve.
+
 # Fabulaxiom M3.2 — M32-078 V5 : rapport JSON des 11 cas Vitest nominatifs (candidat)
 
 **13 novembre 2026, PAS ENCORE QUALIFIÉ.** Base protégée `main=f70039799a12e27f517cfd08a93852dcaaf39911` après #354 MERGED sous Protect main strict, source CI #43455134802 completed/SUCCESS HEAD `976141af23076dde38e14c18b61bf46d5b2bfb18`. Postmain #354 indépendante [#43470878486](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/43470878486) EN COURS / NON QUALIFIÉE au checkpoint.

@@ -30,11 +30,16 @@ function verifyNamedVitestReport(report) {
   if (!report || typeof report !== "object" || Array.isArray(report)) fail("invalid report");
   if (report.success !== true) fail("report did not succeed");
   for (const [name, exact] of Object.entries({
-    numTotalTestSuites: 2, numPassedTestSuites: 2,
     numFailedTestSuites: 0, numPendingTestSuites: 0,
     numTotalTests: 11, numPassedTests: 11,
     numFailedTests: 0, numPendingTests: 0, numTodoTests: 0,
   })) assertCounter(report, name, exact);
+  // Vitest counts nested describe blocks in suite counters; these are NOT files.
+  // Verify every nested suite passed, while separately pinning exactly two test files.
+  if (!goodInt(report.numTotalTestSuites) || report.numTotalTestSuites < 2 ||
+      !goodInt(report.numPassedTestSuites) ||
+      report.numPassedTestSuites !== report.numTotalTestSuites)
+    fail("nested suite totals not all passed");
   if (!Array.isArray(report.testResults) || report.testResults.length !== 2)
     fail("not exactly two result suites");
 

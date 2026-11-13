@@ -21,7 +21,16 @@
     "closed": 8,
     "open": 96,
     "gate": "IN_PROGRESS_NOT_ACCEPTED",
-    "strategy": "PRODUCT_FIRST_PARALLEL_SAFETY"
+    "strategy": "PRODUCT_FIRST_PARALLEL_SAFETY",
+    "first_source_ci": 43472176258,
+    "first_source_head": "b73ba418d32edb194647191934e4eb57b6a552cb",
+    "first_source_result": "COMPLETED_FAILURE_STEP_36",
+    "first_failure_reason": "VITEST_SUITE_COUNTER_COUNTS_NESTED_DESCRIBE_NOT_TEST_FILES",
+    "negative_guard_tests_result": "13_PASS",
+    "generated_json_report": true,
+    "individual_case_acceptance": false,
+    "guard_fix_status": "NEW_HEAD_CANDIDATE_UNQUALIFIED",
+    "postmain_status": "IN_PROGRESS_UNQUALIFIED"
   },
   "m32_078_v4_suite_logs_20261113": {
     "date": "2026-11-13",
