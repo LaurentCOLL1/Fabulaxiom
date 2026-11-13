@@ -1,16 +1,16 @@
-# Reprise Fabulaxiom
+# Reprise Fabulaxiom ( https://github.com/LaurentCOLL1/Fabulaxiom )
 
 ## Dernier checkpoint
-main=f70039799a12e27f517cfd08a93852dcaaf39911 ; #354 MERGED CI #43455134802 PASS, postmain #43470878486 PENDING. M32-078 V5 #355 CI #43472176258 FAIL, CORRECTIF CANDIDAT [ ] ; M3.2 IN_PROGRESS_NOT_ACCEPTED (~45 %), checklist 104 : 8/96.
+main=27e32ed3d57e30dca2b8d372d4a6fdc9014e893e ; #355 MERGED CI #43473302734 PASS 11 cas P3v/P3w ; postmain #43510425551 PENDING. M32-078 [ ] ; M3.2 IN_PROGRESS_NOT_ACCEPTED (~45 %), checklist 104 : 8/96.
 
 ## Interdictions actives — STOP
 Writer/R1–R9 NOT_PROVEN ; P4 STOP ; G2B NOT_ACCEPTED ; G2C NOT_AUTHORIZED ; G3 STOP_UNAVAILABLE ; PENDING_EXTERNAL_ATTESTATION(21/3/2), prospective NOT_STARTED ; R2 STOP, R3 partiel, D3c conception, D3b-4/5, D3b-5 STOP ; main/WAL/SHM, live SQLite WAL-index et ABA NOT_PROVEN ; glib #160 OPEN.
 STOP v6/v7, M:\Fabulaxiom, Greenfield, backups, IPC writer, 007, Hello, recovery.
 
 ## Prochaines opérations
-1. Re-fetch main/PR/CI/Protect main bypass=[] ; #353 postmain PASS.
-2. #355 V5 : 13 tests de garde PASS, numTotalTestSuites FAIL ; nouveau HEAD à qualifier ; 8/96.
-3. PRODUCT_FIRST_PARALLEL_SAFETY M32-078 + R2–R9 ; prévenir AVANT changement ; #35/#215 DRAFT, #36/#160 OPEN, #38 append-only, expected_head_sha/postmain.
+1. Re-fetch main/PR/CI/Protect main bypass=[] ; #355 postmain #43510425551 à qualifier.
+2. M32-078 V6 : 11 cas nominatifs P3v/P3w synthétiques, 13 gardes ; conserver M32-078 [ ] et 8/96.
+3. PRODUCT_FIRST_PARALLEL_SAFETY M32-078 + R2–R9 ; prévenir AVANT changement ; #35/#215 DRAFT, #36/#160 OPEN, #38 append-only, expected_head_sha/postmain ; #356 CI FAIL séparée.
 
 ## Documents d'autorité
 RESUME_PROMPT.md ; HANDOFF_CURRENT.md ; HANDOFF_CURRENT.json ; M3_2_GATE_DECISION_CURRENT.md ; ROADMAP_STATUS_CURRENT.md.
