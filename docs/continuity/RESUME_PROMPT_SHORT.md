@@ -1,16 +1,16 @@
 # Reprise Fabulaxiom
 
 ## Dernier checkpoint
-main=1e85594dde1080c43c0a22509d962f732d08a4e2 ; #351 MERGED CI #43315035856 PASS, postmain #43317923849 PENDING. P3v DEUX UNIVERS CANDIDAT, M32-082/083 [ ] ; M3.2 IN_PROGRESS_NOT_ACCEPTED (~45 %), checklist 104 : 8/96.
+main=d51505ff8a08d89e5ded7b92ef65a72f7c8e3e90 ; #352 MERGED CI #43318898667 PASS, postmain #43371248337 PENDING. P3w LIMITES 512/2048 CANDIDAT, M32-080 [ ] ; M3.2 IN_PROGRESS_NOT_ACCEPTED (~45 %), checklist 104 : 8/96.
 
 ## Interdictions actives — STOP
 Writer/R1–R9 NOT_PROVEN ; P4 STOP ; G2B NOT_ACCEPTED ; G2C NOT_AUTHORIZED ; G3 STOP_UNAVAILABLE ; PENDING_EXTERNAL_ATTESTATION(21/3/2), prospective NOT_STARTED ; R2 STOP, R3 partiel, D3c conception, D3b-4/5, D3b-5 STOP ; main/WAL/SHM, live SQLite WAL-index et ABA NOT_PROVEN ; glib #160 OPEN.
 STOP v6/v7, M:\Fabulaxiom, Greenfield, backups, IPC writer, 007, Hello, recovery.
 
 ## Prochaines opérations
-1. Re-fetch main/PR/CI/Protect main bypass=[] ; #350 postmain PASS.
-2. P3v deux Universes fictifs ; M32-082/083 [ ] ; CI HEAD/postmain ; M32-078/080 [ ].
-3. PRODUCT_FIRST_PARALLEL_SAFETY P3v + R2–R9 ; prévenir AVANT changement ; #35/#215 DRAFT, #36/#160 OPEN, #38 append-only, expected_head_sha/postmain.
+1. Re-fetch main/PR/CI/Protect main bypass=[] ; #351 postmain PASS.
+2. P3w bornes fictives 512/2048 ; M32-075/080 [ ] ; CI HEAD/postmain.
+3. PRODUCT_FIRST_PARALLEL_SAFETY P3w + R2–R9 ; prévenir AVANT changement ; #35/#215 DRAFT, #36/#160 OPEN, #38 append-only, expected_head_sha/postmain.
 
 ## Documents d'autorité
 RESUME_PROMPT.md ; HANDOFF_CURRENT.md ; HANDOFF_CURRENT.json ; M3_2_GATE_DECISION_CURRENT.md ; ROADMAP_STATUS_CURRENT.md.

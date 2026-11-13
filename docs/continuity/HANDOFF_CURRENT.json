@@ -1,4 +1,27 @@
 {
+  "m32_p3w_bounded_graph_20261113": {
+    "date": "2026-11-13",
+    "status": "P3W_BOUNDARY_GRAPH_TEST_ONLY_CANDIDATE_UNQUALIFIED",
+    "parent_main": "d51505ff8a08d89e5ded7b92ef65a72f7c8e3e90",
+    "previous_merged_pr": 352,
+    "previous_source_ci": 43318898667,
+    "previous_source_status": "COMPLETED_SUCCESS_EXACT_SHA",
+    "previous_postmain_ci": 43371248337,
+    "previous_postmain_status": "IN_PROGRESS_UNQUALIFIED",
+    "test_file": "src/m32WorldOrderBoundaries.test.tsx",
+    "scope": "SYNTHETIC_512_ANCHORS_2048_EDGES_LIMIT_REFUSALS",
+    "task_ids": [
+      "M32-075",
+      "M32-080"
+    ],
+    "task_status": "OPEN_NOT_ACCEPTED",
+    "operator_data_access": false,
+    "checklist_total": 104,
+    "closed": 8,
+    "open": 96,
+    "gate": "IN_PROGRESS_NOT_ACCEPTED",
+    "strategy": "PRODUCT_FIRST_PARALLEL_SAFETY"
+  },
   "m32_p3v_two_universe_isolation_20261112": {
     "date": "2026-11-12",
     "status": "P3V_TWO_UNIVERSES_SYNTHETIC_CANDIDATE_UNQUALIFIED",
