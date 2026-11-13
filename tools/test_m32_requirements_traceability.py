@@ -161,6 +161,70 @@ class TraceabilityAndScope(unittest.TestCase):
         self.assertEqual((MATRIX["total"],MATRIX["closed"],MATRIX["open"]),(104,8,96))
         self.assertIn("- [ ] **M32-078**",CHECK)
 
+
+    def test_five_open_requirements_gain_scoped_vitest_suite_logs_not_acceptance(self):
+        """Observed CI log suite summary is NOT per-case, DB, writer or operator proof."""
+        groups = {
+            "M32-079": (352, 43318898667, "a3462fa7097d398021a1f4104fe2a19a64c95654",
+                        131534076295, "src/m32WorldOrderIsolation.test.tsx", 6),
+            "M32-082": (352, 43318898667, "a3462fa7097d398021a1f4104fe2a19a64c95654",
+                        131534076295, "src/m32WorldOrderIsolation.test.tsx", 6),
+            "M32-083": (352, 43318898667, "a3462fa7097d398021a1f4104fe2a19a64c95654",
+                        131534076295, "src/m32WorldOrderIsolation.test.tsx", 6),
+            "M32-075": (353, 43371849171, "47ee4ac962dd9fbe5a80e59edcf4662cb6429d3f",
+                        131709174580, "src/m32WorldOrderBoundaries.test.tsx", 5),
+            "M32-080": (353, 43371849171, "47ee4ac962dd9fbe5a80e59edcf4662cb6429d3f",
+                        131709174580, "src/m32WorldOrderBoundaries.test.tsx", 5),
+        }
+        self.assertEqual(MATRIX["suite_observation_review_date"], "2026-11-13")
+        self.assertEqual(MATRIX["status"],
+                         "CANDIDATE_TEST_SUITE_LOG_EVIDENCE_ONLY_M32_078_OPEN")
+        actual = {
+            row["id"] for row in MATRIX["rows"]
+            if "synthetic_suite_observation" in row
+        }
+        self.assertEqual(actual, set(groups))
+        for row in MATRIX["rows"]:
+            with self.subTest(requirement=row["id"]):
+                if row["id"] not in groups:
+                    self.assertNotIn("synthetic_suite_observation", row)
+                    continue
+                pr, run, sha, job, suite, count = groups[row["id"]]
+                obs = row["synthetic_suite_observation"]
+                self.assertEqual(row["status"], "OPEN_NOT_ACCEPTED")
+                self.assertEqual(row["evidence"], "NONE_ACCEPTED")
+                self.assertIsNone(row["proof_audit"]["individual_test_step_result"])
+                self.assertIsNone(row["workflow_step_audit"]["job_id"])
+                self.assertEqual(obs["observation_date"], "2026-11-13")
+                self.assertEqual(obs["kind"], "WINDOWS_GITHUB_ACTIONS_VITEST_SUITE_LOG_ONLY")
+                self.assertEqual(obs["pull_request_number"], pr)
+                self.assertEqual(obs["source_head_sha"], sha)
+                self.assertRegex(sha, r"^[0-9a-f]{40}$")
+                self.assertEqual(obs["workflow_run_id"], run)
+                self.assertEqual(obs["workflow_event"], "pull_request")
+                self.assertEqual(obs["workflow_attempt"], 1)
+                self.assertEqual(obs["workflow_status"], "COMPLETED_SUCCESS_EXACT_HEAD")
+                self.assertEqual(obs["job_id"], job)
+                self.assertEqual(obs["job_conclusion"], "success")
+                self.assertEqual(obs["workflow_step_number"], 35)
+                self.assertEqual(obs["workflow_step_name"], "Frontend tests")
+                self.assertEqual(obs["workflow_step_conclusion"], "success")
+                self.assertEqual(obs["suite_file"], suite)
+                self.assertTrue((ROOT / suite).is_file())
+                self.assertEqual(obs["suite_reported_tests"], count)
+                self.assertEqual(obs["suite_log_marker"], f"{suite} ({count} tests)")
+                self.assertEqual(obs["suite_log_locator"],
+                    f"https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/{run}/job/{job}#step:35:1")
+                self.assertEqual(obs["observation_result"],
+                                 "SUITE_PASS_OBSERVED_NOT_NAMED_PER_CASE_ATTESTATION")
+                self.assertEqual(obs["scope"], "SYNTHETIC_READ_ONLY_UNMOUNTED")
+                for flag in ("requirement_acceptance", "sqlite_writer_acceptance",
+                             "windows_operator_acceptance"):
+                    self.assertIs(obs[flag], False)
+        self.assertIn("- [ ] **M32-078**", CHECK)
+        self.assertEqual((MATRIX["total"], MATRIX["closed"], MATRIX["open"]),
+                         (104, 8, 96))
+
     def test_metadata_does_not_grant_writer_admission(self):
         self.assertEqual(MATRIX["gate"],"IN_PROGRESS_NOT_ACCEPTED")
         for term in ("R1–R9 NOT_PROVEN","G3 STOP_UNAVAILABLE","P4 STOP","Greenfield"):
