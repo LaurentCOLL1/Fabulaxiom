@@ -11,6 +11,11 @@ import M32ChronologyConsultation, {
 /** Unmounted synthetic laboratory explorer, NEVER a source reader or Tauri IPC. */
 export type M32ExplorerFilter = "all" | "current" | "historical";
 export const M32_EXPLORER_PAGE_SIZE = 8;
+export type M32ExplorerRevisionChoice = Readonly<{
+  id: string;
+  anchor_count: number;
+  historical_count: number;
+}>;
 export type M32ExplorerRow = Readonly<{
   id: string;
   label: string;
@@ -26,6 +31,7 @@ export type M32ExplorerView = Readonly<{
   source_kind: "invented_only";
   can_write: false;
   source_revision_filter: string;
+  revision_choices: readonly M32ExplorerRevisionChoice[];
 }>;
 
 function refused(): never {
@@ -62,6 +68,22 @@ export function deriveM32Explorer(
   const approved = inspectM32Consultation(snapshot, universeId, selection);
   const normalized = query.trim().toLowerCase();
   const anchors = approved.snapshot?.anchors ?? [];
+  // Identity suggestions use the entire validated fictional graph, not the
+  // currently visible rows; these counts never authenticate provenance.
+  const counts = new Map<string, { anchor_count: number; historical_count: number }>();
+  for (const anchor of anchors) {
+    const revision = anchor.source_revision_id;
+    // The exact search field is bounded to 256 UTF-16 code units.
+    if (revision === null || revision.length > 256) continue;
+    const prior = counts.get(revision) ?? { anchor_count: 0, historical_count: 0 };
+    counts.set(revision, {
+      anchor_count: prior.anchor_count + 1,
+      historical_count: prior.historical_count + (anchor.status === "current" ? 0 : 1),
+    });
+  }
+  const revision_choices: M32ExplorerRevisionChoice[] = [...counts.entries()]
+    .map(([id, value]) => ({ id, ...value }))
+    .sort((a, b) => compareM32IdentityScalars(a.id, b.id));
   const filtered = anchors.filter(a => {
     const statusMatch = status === "all" ||
       (status === "current" ? a.status === "current" : a.status !== "current");
@@ -86,6 +108,7 @@ export function deriveM32Explorer(
     comparison: approved.comparison,
     source_kind: "invented_only", can_write: false,
     source_revision_filter: sourceRevisionId,
+    revision_choices,
   };
 }
 
@@ -130,12 +153,21 @@ function SyntheticExplorerScenario({
     <input id={id + "-query"} type="search" value={query} maxLength={160}
       onChange={event => { setQuery(event.currentTarget.value); setPage(0); }} />
     <label htmlFor={id + "-revision"}>Révision source fictive (identifiant exact)</label>
-    <input id={id + "-revision"} type="search" value={sourceRevisionId}
+    <input id={id + "-revision"} type="search"
+      list={id + "-revision-suggestions"} value={sourceRevisionId}
       maxLength={256}
       onChange={event => {
         setSourceRevisionId(event.currentTarget.value);
         setPage(0);
       }} />
+    <datalist id={id + "-revision-suggestions"}>
+      {model.revision_choices.map(choice => <option key={choice.id}
+        value={choice.id}
+        label={choice.anchor_count + " assertions fictives dont " +
+          choice.historical_count + " historiques"} />)}
+    </datalist>
+    <p>Suggestions issues uniquement des ancres fictives validées ;
+      aucune preuve d’appartenance à un roman ou une scène.</p>
     <label htmlFor={id + "-status"}>Filtre de statut</label>
     <select id={id + "-status"} value={status}
       onChange={event => {
