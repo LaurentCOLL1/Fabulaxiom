@@ -3,6 +3,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 import Explorer, { deriveM32Explorer } from "./M32SyntheticEventExplorer";
 import type { M32ChronologyProjection } from "./M32ChronologyPreview";
+import type { M32ConsultationSelection } from "./M32ChronologyConsultation";
 
 function toy(): M32ChronologyProjection {
   const universe_id = "invented-revision-choices";
@@ -28,7 +29,7 @@ function toy(): M32ChronologyProjection {
     narration: [],
   };
 }
-const empty = { leftAnchorId: null, rightAnchorId: null };
+const empty: M32ConsultationSelection = { leftAnchorId: null, rightAnchorId: null };
 function derive(source: M32ChronologyProjection = toy(), revision = "",
   query = "", status: "all" | "current" | "historical" = "all",
   page = 0, selection = empty) {
