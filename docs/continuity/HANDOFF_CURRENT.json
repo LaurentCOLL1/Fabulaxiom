@@ -1,4 +1,30 @@
 {
+  "m32_p3z_scalar_display_order_20261114": {
+    "date": "2026-11-14",
+    "status": "P3Z_SYNTHETIC_SCALAR_ID_ORDER_CANDIDATE_NOT_QUALIFIED",
+    "parent_main": "978f8ec97c7427f991efabea227bf1d03f9f55a0",
+    "previous_pr_merged": 359,
+    "previous_source_ci": 43574960190,
+    "previous_source_status": "COMPLETED_SUCCESS_EXACT_HEAD",
+    "previous_postmain_ci": 43576329635,
+    "previous_postmain_at_checkpoint": "IN_PROGRESS_UNQUALIFIED",
+    "synthetic_vitest_cases": 9,
+    "source_only_unmounted": true,
+    "scope": [
+      "src/M32ChronologyPreview.tsx",
+      "src/M32ChronologyConsultation.tsx",
+      "src/M32WorldOrderComparison.tsx",
+      "src/m32UnicodeScalarIdentityOrder.test.tsx"
+    ],
+    "writer_admission": false,
+    "requirement_acceptance": false,
+    "operator_data_access": false,
+    "checklist_total": 104,
+    "closed": 8,
+    "open": 96,
+    "gate": "IN_PROGRESS_NOT_ACCEPTED",
+    "strategy": "PRODUCT_FIRST_PARALLEL_SAFETY"
+  },
   "m32_p3y_shared_unicode_projection_20261114": {
     "date": "2026-11-14",
     "status": "P3Y_SHARED_SYNTHETIC_PROJECTION_SCALAR_CHECK_CANDIDATE_UNQUALIFIED",
