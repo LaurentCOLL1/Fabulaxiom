@@ -1,4 +1,24 @@
 {
+  "m32_p3x_unicode_scalar_20261114": {
+    "date": "2026-11-14",
+    "status": "P3X_FICTIONAL_UNICODE_SCALAR_REFUSAL_CANDIDATE_UNQUALIFIED",
+    "parent_main": "615267baf3f61b8093dd36be02cabf48a1e39bf5",
+    "previous_merged_pr": 357,
+    "previous_source_ci": 43512270220,
+    "previous_source_result": "COMPLETED_SUCCESS_EXACT_HEAD",
+    "previous_postmain_ci": 43545677185,
+    "previous_postmain_at_checkpoint": "IN_PROGRESS_UNQUALIFIED",
+    "new_synthetic_tests": 9,
+    "source_only_unmounted": true,
+    "requirement_acceptance": false,
+    "operator_data_access": false,
+    "writer_admission": false,
+    "checklist_total": 104,
+    "closed": 8,
+    "open": 96,
+    "gate": "IN_PROGRESS_NOT_ACCEPTED",
+    "strategy": "PRODUCT_FIRST_PARALLEL_SAFETY"
+  },
   "m32_078_v6_verified_named_case_observation_20261113": {
     "date": "2026-11-13",
     "status": "V6_NAMED_SYNTHETIC_VITEST_CASES_SOURCE_VERIFIED_NO_REQUIREMENT_ACCEPTANCE",
