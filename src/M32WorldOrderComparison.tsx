@@ -1,6 +1,6 @@
 import type { ReactElement } from "react";
 import {
-  decodeM32ChronologyProjection,
+  decodeM32ChronologyProjection, compareM32IdentityScalars,
   type M32ChronologyProjection,
   type M32PrecedenceProjection,
 } from "./M32ChronologyPreview";
@@ -58,23 +58,6 @@ function witnessStep(edge: M32PrecedenceProjection): M32WitnessStep {
 
 // Portable Unicode-scalar ID order, never locale-dependent ICU collation.
 // Only a synthetic illustrative witness; no Python Stage25/26 parity claimed.
-function compareUnicodeScalarIds(a: string, b: string): number {
-  const left = a[Symbol.iterator]();
-  const right = b[Symbol.iterator]();
-  for (;;) {
-    const x = left.next();
-    const y = right.next();
-    if (x.done || y.done) return x.done === y.done ? 0 : x.done ? -1 : 1;
-    const ac = x.value.codePointAt(0)!;
-    const bc = y.value.codePointAt(0)!;
-    if (ac !== bc) return ac < bc ? -1 : 1;
-  }
-}
-
-/** A bounded breadth-first proof over ONLY currently active declared edges.
- * Equal-length chains use Unicode scalar edge-ID ordering, NOT locale collation or insertion.
- * A returned witness is illustrative, not unique chronology or an audit signature.
- */
 function findWitness(
   adjacency: ReadonlyMap<string, readonly M32PrecedenceProjection[]>,
   start: string,
@@ -140,7 +123,7 @@ export function compareM32WorldOrder(
     degrees.set(edge.after_anchor_id, degrees.get(edge.after_anchor_id)! + 1);
   }
   for (const outgoing of adjacency.values()) {
-    outgoing.sort((a, b) => compareUnicodeScalarIds(a.id, b.id));
+    outgoing.sort((a, b) => compareM32IdentityScalars(a.id, b.id));
   }
 
   // Fail closed on a cycle anywhere in the current graph, even if the

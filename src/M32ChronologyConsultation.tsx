@@ -1,6 +1,6 @@
 import { useId, useState, type ReactElement } from "react";
 import M32ChronologyPreview, {
-  decodeM32ChronologyProjection,
+  decodeM32ChronologyProjection, compareM32IdentityScalars,
   type M32ChronologyProjection,
 } from "./M32ChronologyPreview";
 import M32WorldOrderComparison, {
@@ -61,7 +61,7 @@ export function inspectM32Consultation(
   const checked = decodeM32ChronologyProjection(snapshot, expectedUniverseId);
   const current = checked.anchors
     .filter(a => a.status === "current")
-    .sort((a, b) => a.id.localeCompare(b.id));
+    .sort((a, b) => compareM32IdentityScalars(a.id, b.id));
   const valid = new Set(current.map(a => a.id));
   // An active relation has to be attached to at least one current anchor.
   if (current.length === 0 && checked.precedences.some(e => e.status === "current")) {

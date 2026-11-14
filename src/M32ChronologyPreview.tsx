@@ -64,6 +64,22 @@ const statuses: Record<M32AssertionStatus, string> = {
 // Fiction-only projection identities must be Unicode scalar strings. A UTF-16
 // surrogate without its counterpart is never an authored event identity.
 // This source-only rule does NOT establish operator or Stage25/26 parity.
+/** Stable Unicode scalar identity ordering for fictional, prevalidated IDs.
+ * No locale collation or inferred world chronology. No Unicode normalization.
+ */
+export function compareM32IdentityScalars(a: string, b: string): number {
+  const left = a[Symbol.iterator]();
+  const right = b[Symbol.iterator]();
+  for (;;) {
+    const x = left.next();
+    const y = right.next();
+    if (x.done || y.done) return x.done === y.done ? 0 : x.done ? -1 : 1;
+    const ac = x.value.codePointAt(0)!;
+    const bc = y.value.codePointAt(0)!;
+    if (ac !== bc) return ac < bc ? -1 : 1;
+  }
+}
+
 function wellFormedM32Identity(value: string): boolean {
   for (let i = 0; i < value.length;) {
     const scalar = value.codePointAt(i)!;
@@ -231,14 +247,14 @@ export default function M32ChronologyPreview({
       </section>
     );
   }
-  const anchors = [...checked.anchors].sort((a, b) => a.id.localeCompare(b.id));
-  const precedences = [...checked.precedences].sort((a, b) => a.id.localeCompare(b.id));
+  const anchors = [...checked.anchors].sort((a, b) => compareM32IdentityScalars(a.id, b.id));
+  const precedences = [...checked.precedences].sort((a, b) => compareM32IdentityScalars(a.id, b.id));
   // Keep manuscript ordering *inside a novel*; cross-novel ordering is unknown.
   const narration = [...checked.narration].sort((a, b) =>
-    a.novel_id.localeCompare(b.novel_id) ||
+    compareM32IdentityScalars(a.novel_id, b.novel_id) ||
     a.chapter_order - b.chapter_order ||
     a.scene_order - b.scene_order ||
-    a.scene_id.localeCompare(b.scene_id),
+    compareM32IdentityScalars(a.scene_id, b.scene_id),
   );
   return (
     <section aria-label="Chronologie M3.2 isolée">
