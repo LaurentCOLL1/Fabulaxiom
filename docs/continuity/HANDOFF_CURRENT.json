@@ -1,4 +1,39 @@
 {
+  "m32_p3aa_361_merged_postmain_20261114": {
+    "date": "2026-11-14",
+    "status": "P3AA_361_MERGED_POSTMAIN_COMPLETED_SUCCESS_EXACT_SHA",
+    "main_sha": "fc50e9d570609c84876d19173915c19ef87d35f4",
+    "previous_merged_pr": 361,
+    "source_head_sha": "61e392e78499d55e5be489c5a99881387b12b050",
+    "source_ci_run": 43580781801,
+    "source_ci_status": "COMPLETED_SUCCESS_EXACT_HEAD",
+    "source_steps_passed": 93,
+    "source_vitest_files_passed": 37,
+    "source_vitest_cases_passed": 485,
+    "source_p3aa_synthetic_cases": 12,
+    "postmain_ci_run": 43589717137,
+    "postmain_ci_status": "COMPLETED_SUCCESS_EXACT_MAIN",
+    "postmain_steps_passed": 92,
+    "postmain_steps_skipped_conditional": 1,
+    "protect_main": "ACTIVE_STRICT_BYPASS_EMPTY",
+    "checklist": {
+      "total": 104,
+      "closed": 8,
+      "open": 96
+    },
+    "partial_requirements": [
+      "M32-071",
+      "M32-075",
+      "M32-078",
+      "M32-081",
+      "M32-082"
+    ],
+    "requirement_acceptance": false,
+    "operator_data_access": false,
+    "writer_admission": false,
+    "gate": "IN_PROGRESS_NOT_ACCEPTED",
+    "strategy": "PRODUCT_FIRST_PARALLEL_SAFETY"
+  },
   "m32_p3aa_source_revision_filter_20261114": {
     "date": "2026-11-14",
     "status": "P3AA_SYNTHETIC_EXACT_REVISION_FILTER_CANDIDATE_UNQUALIFIED",
