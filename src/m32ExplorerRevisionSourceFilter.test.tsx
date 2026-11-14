@@ -137,14 +137,16 @@ describe("M3.2 P3aa explicit fictional revision source filter", () => {
   it("renders a labeled exact source filter without persistence controls", () => {
     const html = view();
     expect(html).toContain("Révision source fictive (identifiant exact)");
-    expect(html).toContain("maxLength");
+    expect(html).toContain('type="search"');
     expect(html).toContain("aucun rattachement à une scène");
     expect(html).not.toMatch(/<(form|textarea)\b/);
     expect(html).not.toContain("Sauvegarde réussie");
   });
   it("escapes a hostile fictional label and never mutates the original source", () => {
     const s = toy();
-    s.anchors[0].fictional_label = "<script>unsaved()</script>";
+    s.anchors[2].time_kind = "exact";
+    s.anchors[2].calendar_name = "Invented calendar";
+    s.anchors[2].fictional_label = "<script>unsaved()</script>";
     const before = JSON.stringify(s);
     const html = view(s);
     expect(html).not.toContain("<script>");
