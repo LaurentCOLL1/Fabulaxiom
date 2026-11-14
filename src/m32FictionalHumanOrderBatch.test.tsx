@@ -122,15 +122,16 @@ describe("M3.2 P3ac fictional batch of explicit human world-order relations", ()
   it("16 only renders human confirmation after an explicit in-memory preview", () => {
     const html = renderToStaticMarkup(createElement(M32FictionalHumanOrderBatchLab,
       { initial: sample(), revisions: [] }));
-    expect(html).toContain("Préparer");
+    expect(html).toContain("Déclarer plusieurs relations avant/après");
     expect(html).toContain("Vérifier le lot complet");
     expect(html).not.toContain("Confirmer explicitement tout le lot");
     expect(html).toContain("Aucun fichier");
     expect(html).not.toContain("Sauvegarde réussie");
   });
   it("17 never evaluates untrusted ID markup as HTML in initial controls", () => {
-    const x = sample();
-    x.anchors[0].id = "<script>unsafe()</script>";
+    const base = sample();
+    const x = { ...base, anchors: base.anchors.map((a, i) =>
+      i === 0 ? { ...a, id: "<script>unsafe()</script>" } : a) };
     const markup = renderToStaticMarkup(createElement(M32FictionalHumanOrderBatchLab,
       { initial: x, revisions: [] }));
     expect(markup).not.toContain("<script>");
