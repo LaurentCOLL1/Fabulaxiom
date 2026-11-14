@@ -61,6 +61,29 @@ const statuses: Record<M32AssertionStatus, string> = {
   superseded: "Remplacée (historique)",
 };
 
+// Fiction-only projection identities must be Unicode scalar strings. A UTF-16
+// surrogate without its counterpart is never an authored event identity.
+// This source-only rule does NOT establish operator or Stage25/26 parity.
+function wellFormedM32Identity(value: string): boolean {
+  for (let i = 0; i < value.length;) {
+    const scalar = value.codePointAt(i)!;
+    if (scalar >= 0xD800 && scalar <= 0xDFFF) return false;
+    i += scalar > 0xFFFF ? 2 : 1;
+  }
+  return true;
+}
+function wellFormedM32ProjectionIdentities(value: M32ChronologyProjection): boolean {
+  return wellFormedM32Identity(value.universe_id) &&
+    value.anchors.every(a => wellFormedM32Identity(a.id) &&
+      (a.source_revision_id === null || wellFormedM32Identity(a.source_revision_id))) &&
+    value.precedences.every(e => wellFormedM32Identity(e.id) &&
+      wellFormedM32Identity(e.before_anchor_id) &&
+      wellFormedM32Identity(e.after_anchor_id)) &&
+    value.narration.every(s => wellFormedM32Identity(s.scene_id) &&
+      wellFormedM32Identity(s.novel_id) &&
+      wellFormedM32Identity(s.chapter_id));
+}
+
 function validNonblank(value: unknown): value is string {
   return typeof value === "string" && value.trim().length > 0;
 }
@@ -88,6 +111,11 @@ export function decodeM32ChronologyProjection(
   if (input.anchors.length > 512 || input.precedences.length > 2048 ||
       input.narration.length > 2048) {
     throw new Error("Projection M3.2 : volume synthétique excessif");
+  }
+  // Apply before ANY rendering, including all-history and zero-current views.
+  if (!wellFormedM32Identity(expectedUniverseId) ||
+      !wellFormedM32ProjectionIdentities(input)) {
+    throw new Error("Projection M3.2 : identifiant Unicode non scalaire");
   }
   const ids = new Set<string>();
   const anchorStatuses = new Map<string, M32AssertionStatus>();
