@@ -110,12 +110,16 @@ describe("M3.2 P3y shared scalar identity preflight on unmounted read-only views
     const s = toy();
     s.anchors[0].id = "A💠";
     s.anchors[0].source_revision_id = "revision💠";
-    s.anchors[0].fictional_label = null;
+    s.anchors[0].time_kind = "exact";
+    s.anchors[0].calendar_name = "Invented calendar";
+    s.anchors[0].fictional_label = "<img src=x onerror=alert(1)>";
     const before = JSON.stringify(s);
     const model = inspectM32Consultation(s, s.universe_id,
       EMPTY_M32_CONSULTATION_SELECTION);
     expect(model.stage).toBe("no_active_anchors");
     expect(preview(s)).toContain("revision💠");
+    expect(preview(s)).toContain("&lt;img");
+    expect(preview(s)).not.toContain("<img ");
     expect(preview(s)).not.toMatch(/<(button|input|form|textarea)\b/i);
     expect(JSON.stringify(s)).toBe(before);
   });
