@@ -354,7 +354,9 @@
   **Preuve de clôture :** Issue #160, inventorier avis, correctifs réellement compatibles, npm lock authentique et npm ci/TS/Chromium; aucune réécriture de lock arbitraire.
 - [ ] **M32-093** Traiter le problème glib 0.18.5 de la chaîne Linux GTK3  
   **Preuve de clôture :** Suivre une migration intégrée Tauri/WRY GTK4/WebKit6 ou correctif validé ; ne jamais forcer glib 0.20 seule dans gtk 0.18.
-- [ ] **M32-094** Qualifier Windows et Linux comme deux expositions distinctes  
+- [x] **M32-094** Qualifier Windows et Linux comme deux expositions distinctes
+  **CLÔTURE LIMITÉE 14/11/2026 :** graphes Cargo cibles distincts sous CI #43594666828 SUCCESS au SHA `5206bba7f3196c454a22bf85d0d0dca879ee20e3`, job #132446512015 étapes Windows 57 (247 dépendances, sans GTK/glib) et Linux 58 (277 dépendances, glib 0.18.5/gtk 0.18.2/webkit2gtk 2.0.2, avis GHSA-wrw7-89jp-8q8g toujours OPEN_NOT_REMEDIATED) ; postmain #43610824403 completed/SUCCESS au SHA `8cba5e0bd758a39a501a5ee04c3957deec1ad36c`. **Pas** de build Linux, de preuve d'exploitabilité ou de non-exploitabilité runtime, de distribution Linux ni de writer autorisé. M32-093 et issue #160 restent OUVERTES ; qualification Linux complète requise avant toute distribution. Rapport `M3_2_M32_094_TARGET_GRAPH_EXPOSURE_QUALIFICATION_20261114.md`.
+  
   **Addendum sécurité (11/11/2026, NON close) :** #338 MERGED, CI source #42918580459 et postmain #42920031454 completed/SUCCESS au SHA exact ; Vite 8.1.7/Rolldown 1.1.7 corrigés pour un avis ciblé. Dépendances GTK3/glib Linux et inventaire Dependabot non clos/non audités intégralement ; issue #160 OPEN_NOT_REMEDIATED.
   **Preuve partielle sécurité (2026-11-10, NON close) :** correctif candidat Vite 8.1.7 / Rolldown 1.1.7, lock officiel régénéré par npm en CI jetable #42916864109 ; PR Windows et résolution Dependabot non qualifiées au checkpoint initial, glib Linux inchangée ; voir M3_2_VITE_817_ROLLDOWN_117_SECURITY_PATCH_20261110.md.
   **Preuve de clôture :** Audit de graphe Windows vs Linux, build Linux jetable si distribution envisagée ; ne pas affirmer exploitabilité Windows sans preuve.

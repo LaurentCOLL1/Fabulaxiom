@@ -11,6 +11,11 @@ SCOPE = (ROOT / "docs/qualification/M3_2_SCOPE_BOUNDARY_20261111.md").read_text(
 ROADMAP = (ROOT / "docs/roadmap/FABULAXIOM_ROADMAP_V1.md").read_text(encoding="utf-8")
 TASK = re.compile(r"^- \[([ x])\] \*\*(M32-\d{3})\*\* (.+?)\s*$", re.M)
 
+SCOPED_CLOSED_IDS = frozenset({
+    "M32-001", "M32-002", "M32-037", "M32-049", "M32-051",
+    "M32-094", "M32-095", "M32-096", "M32-104",
+})
+
 class TraceabilityAndScope(unittest.TestCase):
     def test_exact_104_criteria_and_unique_order(self):
         declared = [(m.group(2),m.group(3).strip()) for m in TASK.finditer(CHECK)]
@@ -47,10 +52,12 @@ class TraceabilityAndScope(unittest.TestCase):
 
     def test_r1_r9_g2_and_later_release_not_falsely_closed(self):
         index={x["id"]:x for x in MATRIX["rows"]}
-        for n in list(range(9,37))+list(range(38,49))+[52,63,64,88,89,90,93,94,97,98,99,100,101,102,103]:
+        for n in list(range(9,37))+list(range(38,49))+[52,63,64,88,89,90,93,97,98,99,100,101,102,103]:
             self.assertEqual(index[f"M32-{n:03d}"]["status"],"OPEN_NOT_ACCEPTED")
         self.assertIn("PENDING_EXTERNAL_ATTESTATION(21/3/2)",CHECK)
         self.assertIn("OPEN_NOT_REMEDIATED",CHECK)
+        self.assertEqual(index["M32-094"]["status"], "CLOSED_SCOPED")
+        self.assertEqual(index["M32-093"]["status"], "OPEN_NOT_ACCEPTED")
 
     def test_m33_m9_and_comfyui_remain_outside_m32(self):
         for term in ("M3.3","M3.4","M3.5","M3.6","M4","M5","M6","M7","M8","M9","Ollama","ComfyUI"):
@@ -76,7 +83,7 @@ class TraceabilityAndScope(unittest.TestCase):
                        "M6", "M7", "M8", "M9", "Ollama", "ComfyUI"):
             self.assertIn(phrase,SCOPE)
         self.assertEqual(MATRIX["gate"], "IN_PROGRESS_NOT_ACCEPTED")
-        self.assertEqual((MATRIX["total"],MATRIX["closed"],MATRIX["open"]),(104,8,96))
+        self.assertEqual((MATRIX["total"],MATRIX["closed"],MATRIX["open"]),(104,len(SCOPED_CLOSED_IDS),104-len(SCOPED_CLOSED_IDS)))
 
     def test_104_provenance_records_never_invent_acceptance(self):
         """Workflow PASS is not a per-test PASS or operator admission."""
@@ -87,6 +94,7 @@ class TraceabilityAndScope(unittest.TestCase):
                 i: (42997104616, "1f5e201d3e7d0ab088a65621411cc911de0472a1", "2026-11-11", "pull_request")
                 for i in ("M32-037", "M32-049", "M32-051", "M32-095", "M32-096")
             },
+            "M32-094": (43594666828, "5206bba7f3196c454a22bf85d0d0dca879ee20e3", "2026-11-14", "pull_request"),
             "M32-104": (43117900804, "c4a04c59934064832dd7c700dcf39e25e729f88a", "2026-11-11", "pull_request"),
         }
         self.assertEqual(MATRIX["provenance_review_date"], "2026-11-12")
@@ -94,7 +102,8 @@ class TraceabilityAndScope(unittest.TestCase):
         for row in MATRIX["rows"]:
             proof = row["proof_audit"]
             with self.subTest(row=row["id"]):
-                self.assertEqual(proof["record_review_date"], "2026-11-12")
+                self.assertEqual(proof["record_review_date"],
+                                 "2026-11-14" if row["id"] == "M32-094" else "2026-11-12")
                 self.assertEqual(proof["test_target_name"], Path(row["verification_target"]).name)
                 self.assertEqual(proof["target_role"],
                     "CANDIDATE_VERIFICATION_TARGET_NOT_AN_INDIVIDUAL_TEST_ATTESTATION")
@@ -119,7 +128,7 @@ class TraceabilityAndScope(unittest.TestCase):
                         self.assertIsNone(proof[key])
                     self.assertEqual(proof["workflow_result"], "NO_ACCEPTED_WORKFLOW")
                     self.assertEqual(row["evidence"], "NONE_ACCEPTED")
-        self.assertEqual((MATRIX["total"],MATRIX["closed"],MATRIX["open"]),(104,8,96))
+        self.assertEqual((MATRIX["total"],MATRIX["closed"],MATRIX["open"]),(104,len(SCOPED_CLOSED_IDS),104-len(SCOPED_CLOSED_IDS)))
         self.assertIn("- [ ] **M32-078**", CHECK)
 
     def test_scoped_ci_job_steps_are_not_individual_test_or_operator_proofs(self):
@@ -130,6 +139,8 @@ class TraceabilityAndScope(unittest.TestCase):
                for key in ("M32-037", "M32-049", "M32-051")},
             **{key: (130443816096, 27, "M3.2 V1 roadmap source-only consistency 9 tests")
                for key in ("M32-095", "M32-096")},
+            "M32-094": (132446512015, 58,
+                "M3.2 Linux Rust selected GLib/GTK advisory exposure audit (no Linux build)"),
             "M32-104": (130850528111, 32,
                 "M3.2 requirements test evidence 104-task matrix and deferred phase scope"),
         }
@@ -137,7 +148,8 @@ class TraceabilityAndScope(unittest.TestCase):
         for row in MATRIX["rows"]:
             stage = row["workflow_step_audit"]
             with self.subTest(row=row["id"]):
-                self.assertEqual(stage["step_review_date"], "2026-11-12")
+                self.assertEqual(stage["step_review_date"],
+                                 "2026-11-14" if row["id"] == "M32-094" else "2026-11-12")
                 self.assertIs(stage["CI_step_does_not_equal_individual_test_assertion"], True)
                 self.assertIs(stage["Windows_operator_workflow_admission"], False)
                 self.assertIsNone(row["proof_audit"]["individual_test_step_result"])
@@ -158,7 +170,7 @@ class TraceabilityAndScope(unittest.TestCase):
                     for key in ("job_id","step_number","step_name","step_log_locator"):
                         self.assertIsNone(stage[key])
                     self.assertEqual(row["evidence"],"NONE_ACCEPTED")
-        self.assertEqual((MATRIX["total"],MATRIX["closed"],MATRIX["open"]),(104,8,96))
+        self.assertEqual((MATRIX["total"],MATRIX["closed"],MATRIX["open"]),(104,len(SCOPED_CLOSED_IDS),104-len(SCOPED_CLOSED_IDS)))
         self.assertIn("- [ ] **M32-078**",CHECK)
 
 
@@ -223,7 +235,7 @@ class TraceabilityAndScope(unittest.TestCase):
                     self.assertIs(obs[flag], False)
         self.assertIn("- [ ] **M32-078**", CHECK)
         self.assertEqual((MATRIX["total"], MATRIX["closed"], MATRIX["open"]),
-                         (104, 8, 96))
+                         (104,len(SCOPED_CLOSED_IDS),104-len(SCOPED_CLOSED_IDS)))
 
 
     def test_v6_named_cases_in_ci_do_not_close_open_requirements(self):
@@ -265,8 +277,38 @@ class TraceabilityAndScope(unittest.TestCase):
             self.assertEqual(row["evidence"], "NONE_ACCEPTED")
             self.assertIsNone(row["proof_audit"]["individual_test_step_result"])
             self.assertIsNone(row["workflow_step_audit"]["job_id"])
-        self.assertEqual((MATRIX["total"], MATRIX["closed"], MATRIX["open"]), (104, 8, 96))
+        self.assertEqual((MATRIX["total"], MATRIX["closed"], MATRIX["open"]), (104,len(SCOPED_CLOSED_IDS),104-len(SCOPED_CLOSED_IDS)))
         self.assertIn("- [ ] **M32-078**", CHECK)
+
+    def test_094_scoped_graph_proof_preserves_linux_risk_and_writer_stop(self):
+        row = next(r for r in MATRIX["rows"] if r["id"] == "M32-094")
+        proof = row["target_separation_scope"]
+        self.assertEqual(row["status"], "CLOSED_SCOPED")
+        self.assertEqual(proof["scope"], "CARGO_SELECTED_TARGET_GRAPH_ONLY")
+        self.assertEqual(proof["source"], {
+            "head_sha": "5206bba7f3196c454a22bf85d0d0dca879ee20e3",
+            "run": 43594666828, "job": 132446512015})
+        self.assertEqual(proof["windows"], {
+            "target": "x86_64-pc-windows-msvc", "step": 57,
+            "packages": 247, "glib_gtk_selected": False})
+        self.assertEqual(proof["linux"], {
+            "target": "x86_64-unknown-linux-gnu", "step": 58,
+            "packages": 277, "glib": "0.18.5", "gtk": "0.18.2",
+            "webkit2gtk": "2.0.2", "advisory": "GHSA-wrw7-89jp-8q8g",
+            "risk": "OPEN_NOT_REMEDIATED"})
+        self.assertEqual(proof["postmain"], {
+            "head_sha": "8cba5e0bd758a39a501a5ee04c3957deec1ad36c",
+            "run": 43610824403, "conclusion": "success"})
+        for key in ("runtime_reachability_proven", "linux_build_performed",
+                    "linux_distribution_authorized", "operator_data_access",
+                    "writer_admission"):
+            self.assertIs(proof[key], False)
+        self.assertIn("- [x] **M32-094**", CHECK)
+        self.assertIn("- [ ] **M32-093**", CHECK)
+        self.assertIn("- [ ] **M32-092**", CHECK)
+        self.assertEqual(
+            set(SCOPED_CLOSED_IDS),
+            {r["id"] for r in MATRIX["rows"] if r["status"]=="CLOSED_SCOPED"})
 
     def test_metadata_does_not_grant_writer_admission(self):
         self.assertEqual(MATRIX["gate"],"IN_PROGRESS_NOT_ACCEPTED")
