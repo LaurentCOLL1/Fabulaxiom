@@ -1,4 +1,28 @@
 {
+  "m32_p3aa_source_revision_filter_20261114": {
+    "date": "2026-11-14",
+    "status": "P3AA_SYNTHETIC_EXACT_REVISION_FILTER_CANDIDATE_UNQUALIFIED",
+    "parent_main": "811e743040ce2e3681d4b384e18eafdc6afae9bb",
+    "previous_merged_pr": 360,
+    "previous_source_ci": 43577008192,
+    "previous_source_status": "COMPLETED_SUCCESS_EXACT_HEAD",
+    "previous_postmain_ci": 43580142753,
+    "previous_postmain_at_checkpoint": "IN_PROGRESS_UNQUALIFIED",
+    "new_synthetic_vitest_cases": 12,
+    "modified_files": [
+      "src/M32SyntheticEventExplorer.tsx",
+      "src/m32ExplorerRevisionSourceFilter.test.tsx"
+    ],
+    "source_only_unmounted": true,
+    "requirement_acceptance": false,
+    "operator_data_access": false,
+    "writer_admission": false,
+    "checklist_total": 104,
+    "closed": 8,
+    "open": 96,
+    "gate": "IN_PROGRESS_NOT_ACCEPTED",
+    "strategy": "PRODUCT_FIRST_PARALLEL_SAFETY"
+  },
   "m32_p3z_scalar_display_order_20261114": {
     "date": "2026-11-14",
     "status": "P3Z_SYNTHETIC_SCALAR_ID_ORDER_CANDIDATE_NOT_QUALIFIED",
