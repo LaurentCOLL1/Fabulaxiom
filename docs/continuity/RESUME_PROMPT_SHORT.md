@@ -1,15 +1,15 @@
 # Reprise Fabulaxiom ( https://github.com/LaurentCOLL1/Fabulaxiom )
 
 ## Dernier checkpoint
-main=978f8ec97c7427f991efabea227bf1d03f9f55a0 ; #359 MERGED CI #43574960190 PASS (9 P3y), postmain #43576329635 PENDING ; P3z candidat [ ], M3.2 IN_PROGRESS_NOT_ACCEPTED (~45 %), 104 : 8/96.
+main=811e743040ce2e3681d4b384e18eafdc6afae9bb ; #360 MERGED CI #43577008192 PASS (9 P3z), postmain #43580142753 PENDING ; P3aa CANDIDAT [ ], M3.2 IN_PROGRESS_NOT_ACCEPTED (~45 %), 104 : 8/96.
 
 ## Interdictions actives — STOP
 Writer/R1–R9 NOT_PROVEN ; P4 STOP ; G2B NOT_ACCEPTED ; G2C NOT_AUTHORIZED ; G3 STOP_UNAVAILABLE ; PENDING_EXTERNAL_ATTESTATION(21/3/2), prospective NOT_STARTED ; R2 STOP, R3 partiel, D3c conception, D3b-4/5, D3b-5 STOP ; main/WAL/SHM, live SQLite WAL-index et ABA NOT_PROVEN ; glib #160 OPEN.
 STOP v6/v7, M:\Fabulaxiom, Greenfield, backups, IPC writer, 007, Hello, recovery.
 
 ## Prochaines opérations
-1. Re-fetch main/PR/CI/Protect main bypass=[] ; postmain #43576329635.
-2. P3z : tri Unicode des IDs fictifs [ ], M32-075/078/080/082 [ ], 8/96.
+1. Re-fetch main/PR/CI/Protect main bypass=[] ; postmain #43580142753.
+2. P3aa : 12 tests filtre exact révision fictive [ ], M32-071/075/078/081/082 [ ], 8/96.
 3. PRODUCT_FIRST_PARALLEL_SAFETY R2–R9 ; #38 append-only ; expected_head_sha/postmain.
 
 ## Documents d'autorité

@@ -1,5 +1,5 @@
 import { useId, useState, type ReactElement } from "react";
-import { type M32ChronologyProjection } from "./M32ChronologyPreview";
+import { compareM32IdentityScalars, type M32ChronologyProjection } from "./M32ChronologyPreview";
 import M32ChronologyConsultation, {
   EMPTY_M32_CONSULTATION_SELECTION,
   chooseM32ConsultationAnchor,
@@ -25,6 +25,7 @@ export type M32ExplorerView = Readonly<{
   comparison: ReturnType<typeof inspectM32Consultation>["comparison"];
   source_kind: "invented_only";
   can_write: false;
+  source_revision_filter: string;
 }>;
 
 function refused(): never {
@@ -42,23 +43,35 @@ export function deriveM32Explorer(
   query: string,
   status: M32ExplorerFilter,
   requestedPage: number,
+  sourceRevisionId = "",
 ): M32ExplorerView {
+  // This filter is an exact, case-sensitive historical revision ID.
+  // It never creates a join to narration, a scene HEAD or a real SQLite row.
+  if (typeof sourceRevisionId !== "string" || sourceRevisionId.length > 256 ||
+      (sourceRevisionId !== "" && sourceRevisionId.trim().length === 0)) return refused();
+  for (let i = 0; i < sourceRevisionId.length;) {
+    const scalar = sourceRevisionId.codePointAt(i)!;
+    if (scalar >= 0xD800 && scalar <= 0xDFFF) return refused();
+    i += scalar > 0xFFFF ? 2 : 1;
+  }
   if (typeof query !== "string" || query.length > 160 ||
       (status !== "all" && status !== "current" && status !== "historical") ||
       !Number.isSafeInteger(requestedPage) || requestedPage < 0) {
     return refused();
   }
   const approved = inspectM32Consultation(snapshot, universeId, selection);
-  const normalized = query.trim().toLocaleLowerCase("fr");
+  const normalized = query.trim().toLowerCase();
   const anchors = approved.snapshot?.anchors ?? [];
   const filtered = anchors.filter(a => {
     const statusMatch = status === "all" ||
       (status === "current" ? a.status === "current" : a.status !== "current");
+    const revisionMatch = sourceRevisionId === "" ||
+      a.source_revision_id === sourceRevisionId;
     const textMatch = !normalized ||
-      a.id.toLocaleLowerCase("fr").includes(normalized) ||
-      (a.fictional_label ?? "").toLocaleLowerCase("fr").includes(normalized);
-    return statusMatch && textMatch;
-  }).sort((a, b) => a.id.localeCompare(b.id));
+      a.id.toLowerCase().includes(normalized) ||
+      (a.fictional_label ?? "").toLowerCase().includes(normalized);
+    return statusMatch && revisionMatch && textMatch;
+  }).sort((a, b) => compareM32IdentityScalars(a.id, b.id));
   const pageCount = Math.max(1, Math.ceil(filtered.length / M32_EXPLORER_PAGE_SIZE));
   const page = Math.min(requestedPage, pageCount - 1);
   return {
@@ -72,6 +85,7 @@ export function deriveM32Explorer(
     count: filtered.length, page, pageCount,
     comparison: approved.comparison,
     source_kind: "invented_only", can_write: false,
+    source_revision_filter: sourceRevisionId,
   };
 }
 
@@ -86,12 +100,13 @@ function SyntheticExplorerScenario({
     EMPTY_M32_CONSULTATION_SELECTION,
   );
   const [query, setQuery] = useState("");
+  const [sourceRevisionId, setSourceRevisionId] = useState("");
   const [status, setStatus] = useState<M32ExplorerFilter>("all");
   const [page, setPage] = useState(0);
   let model: M32ExplorerView;
   try {
     model = deriveM32Explorer(snapshot, expectedUniverseId, selection,
-      query, status, page);
+      query, status, page, sourceRevisionId);
   } catch {
     return <section role="alert" aria-label="Explorateur M3.2 refusé">
       <h2>Exploration refusée</h2>
@@ -109,11 +124,18 @@ function SyntheticExplorerScenario({
   };
   return <section className="m32-explorer" aria-label="Explorateur M3.2 fictif filtrable">
     <h2>Explorer les assertions fictives</h2>
-    <p>Filtrer cette liste ne modifie pas les relations ni les sélections courantes.</p>
+    <p>Filtrer cette liste ne modifie pas les relations ni les sélections courantes. Les identifiants de révision sont fictifs, non authentifiés.</p>
     <section role="search" aria-label="Recherche dans la chronologie fictive" className="m32-search-controls">
       <label htmlFor={id + "-query"}>Filtrer les événements</label>
     <input id={id + "-query"} type="search" value={query} maxLength={160}
       onChange={event => { setQuery(event.currentTarget.value); setPage(0); }} />
+    <label htmlFor={id + "-revision"}>Révision source fictive (identifiant exact)</label>
+    <input id={id + "-revision"} type="search" value={sourceRevisionId}
+      maxLength={256}
+      onChange={event => {
+        setSourceRevisionId(event.currentTarget.value);
+        setPage(0);
+      }} />
     <label htmlFor={id + "-status"}>Filtre de statut</label>
     <select id={id + "-status"} value={status}
       onChange={event => {
@@ -183,7 +205,7 @@ function SyntheticExplorerScenario({
       selection={selection}
       onSelectionChange={setSelection}
     />
-    <p>Exploration uniquement en mémoire fictive. Aucune modification du monde.</p>
+    <p>Filtre par identifiant exact de révision : aucun rattachement à une scène ou à un roman n’est inféré. Exploration uniquement en mémoire fictive, sans persistance.</p>
   </section>;
 }
 
