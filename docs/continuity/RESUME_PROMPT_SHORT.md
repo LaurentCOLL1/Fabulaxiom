@@ -1,15 +1,15 @@
 # Reprise Fabulaxiom ( https://github.com/LaurentCOLL1/Fabulaxiom )
 
 ## Dernier checkpoint
-main=fc50e9d570609c84876d19173915c19ef87d35f4 ; #361 MERGED, CI #43580781801 PASS (485 Vitest), postmain #43589717137 PASS SHA exact ; M3.2 IN_PROGRESS_NOT_ACCEPTED (~45 %), 104 : 8/96.
+main=8cba5e0bd758a39a501a5ee04c3957deec1ad36c ; #362 MERGED CI #43594666828 PASS, postmain #43610824403 PENDING ; P3ab candidat [ ], M3.2 IN_PROGRESS_NOT_ACCEPTED (~45 %), 104 : 8/96.
 
 ## Interdictions actives — STOP
 Writer/R1–R9 NOT_PROVEN ; P4 STOP ; G2B NOT_ACCEPTED ; G2C NOT_AUTHORIZED ; G3 STOP_UNAVAILABLE ; PENDING_EXTERNAL_ATTESTATION(21/3/2), prospective NOT_STARTED ; R2 STOP, R3 partiel, D3c conception, D3b-4/5, D3b-5 STOP ; main/WAL/SHM, live SQLite WAL-index et ABA NOT_PROVEN ; glib #160 OPEN.
 STOP v6/v7, M:\Fabulaxiom, Greenfield, backups, IPC writer, 007, Hello, recovery.
 
 ## Prochaines opérations
-1. Re-fetch main/PR/CI/Protect main bypass=[] ; postmain #361 PASS.
-2. M32-071/075/078/081/082 [ ] ; matrice M32-078 et produit fictif, 8/96.
+1. Re-fetch main/PR/CI/Protect main bypass=[] ; postmain #43610824403.
+2. P3ab : 10 tests suggestions fictives [ ] ; M32-071/075/078/081/082 [ ], 8/96.
 3. PRODUCT_FIRST_PARALLEL_SAFETY R2–R9 ; #38 append-only ; expected_head_sha/postmain.
 
 ## Documents d'autorité
