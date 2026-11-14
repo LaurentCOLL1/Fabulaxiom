@@ -37,11 +37,33 @@ function validSelectedId(value: unknown): value is string {
   let count = 0;
   for (let offset = 0; offset < value.length;) {
     const codePoint = value.codePointAt(offset);
+    if (codePoint !== undefined && codePoint >= 0xD800 && codePoint <= 0xDFFF)
+      return false;
     offset += codePoint !== undefined && codePoint > 0xFFFF ? 2 : 1;
     if (++count > 256) return false;
   }
   return true;
 }
+// Fiction-only comparison IDs must be Unicode scalars, not isolated UTF-16
+// surrogate code units. No real Stage25/26 or writer parity is claimed.
+function wellFormedScalarId(value: string): boolean {
+  for (let offset = 0; offset < value.length;) {
+    const scalar = value.codePointAt(offset)!;
+    if (scalar >= 0xD800 && scalar <= 0xDFFF) return false;
+    offset += scalar > 0xFFFF ? 2 : 1;
+  }
+  return true;
+}
+function wellFormedProjectionIds(value: M32ChronologyProjection): boolean {
+  return wellFormedScalarId(value.universe_id) &&
+    value.anchors.every(a => wellFormedScalarId(a.id) &&
+      (a.source_revision_id === null || wellFormedScalarId(a.source_revision_id))) &&
+    value.precedences.every(e => wellFormedScalarId(e.id) &&
+      wellFormedScalarId(e.before_anchor_id) && wellFormedScalarId(e.after_anchor_id)) &&
+    value.narration.every(n => wellFormedScalarId(n.scene_id) &&
+      wellFormedScalarId(n.novel_id) && wellFormedScalarId(n.chapter_id));
+}
+
 function refused(message: string): never {
   throw new Error("Comparaison M3.2 refusée : " + message);
 }
@@ -102,6 +124,9 @@ export function compareM32WorldOrder(
   rightAnchorId: string,
 ): M32WorldComparison {
   const checked = decodeM32ChronologyProjection(snapshot, expectedUniverseId);
+  if (!wellFormedProjectionIds(checked)) {
+    return refused("identifiant Unicode non scalaire dans la projection fictive");
+  }
   // Match the historical Stage 25 selection contract on toy data.
   // This is only a bound on selected IDs, never a permission to inspect
   // live source records or infer a chronology from identifier text.
