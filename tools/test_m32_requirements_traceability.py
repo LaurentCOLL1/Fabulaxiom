@@ -225,6 +225,49 @@ class TraceabilityAndScope(unittest.TestCase):
         self.assertEqual((MATRIX["total"], MATRIX["closed"], MATRIX["open"]),
                          (104, 8, 96))
 
+
+    def test_v6_named_cases_in_ci_do_not_close_open_requirements(self):
+        """CI attests 11 synthetic case titles, not SQLite/writer/operator admission."""
+        self.assertEqual(MATRIX["named_case_observation_review_date"], "2026-11-13")
+        source = MATRIX["named_case_observation_source"]
+        self.assertEqual((source["pull_request"], source["workflow_run_id"],
+                          source["job_id"], source["step_number"], source["named_synthetic_cases"]),
+                         (355, 43473302734, 132050546622, 36, 11))
+        self.assertIs(source["requirement_acceptance"], False)
+        self.assertIs(source["writer_acceptance"], False)
+        groups = {"M32-075": ("src/m32WorldOrderBoundaries.test.tsx", 5),
+                  "M32-080": ("src/m32WorldOrderBoundaries.test.tsx", 5),
+                  "M32-079": ("src/m32WorldOrderIsolation.test.tsx", 6),
+                  "M32-082": ("src/m32WorldOrderIsolation.test.tsx", 6),
+                  "M32-083": ("src/m32WorldOrderIsolation.test.tsx", 6)}
+        self.assertEqual({r["id"] for r in MATRIX["rows"]
+                          if "synthetic_named_case_observation" in r}, set(groups))
+        for row in MATRIX["rows"]:
+            if row["id"] not in groups:
+                self.assertNotIn("synthetic_named_case_observation", row)
+                continue
+            suite, count = groups[row["id"]]
+            obs = row["synthetic_named_case_observation"]
+            self.assertEqual((obs["workflow_run_id"], obs["job_id"], obs["workflow_step_number"]),
+                             (43473302734, 132050546622, 36))
+            self.assertEqual(obs["suite_file"], suite)
+            self.assertEqual(obs["named_case_count"], count)
+            self.assertEqual(len(obs["named_case_titles"]), count)
+            self.assertEqual(len(set(obs["named_case_titles"])), count)
+            for title in obs["named_case_titles"]:
+                self.assertIn(title, (ROOT / suite).read_text(encoding="utf-8"))
+            self.assertEqual(obs["negative_guard_cases"], 13)
+            self.assertEqual(obs["workflow_step_conclusion"], "success")
+            self.assertEqual(obs["scope"], "SYNTHETIC_READ_ONLY_UNMOUNTED")
+            for flag in ("requirement_acceptance", "sqlite_writer_acceptance", "windows_operator_acceptance"):
+                self.assertIs(obs[flag], False)
+            self.assertEqual(row["status"], "OPEN_NOT_ACCEPTED")
+            self.assertEqual(row["evidence"], "NONE_ACCEPTED")
+            self.assertIsNone(row["proof_audit"]["individual_test_step_result"])
+            self.assertIsNone(row["workflow_step_audit"]["job_id"])
+        self.assertEqual((MATRIX["total"], MATRIX["closed"], MATRIX["open"]), (104, 8, 96))
+        self.assertIn("- [ ] **M32-078**", CHECK)
+
     def test_metadata_does_not_grant_writer_admission(self):
         self.assertEqual(MATRIX["gate"],"IN_PROGRESS_NOT_ACCEPTED")
         for term in ("R1–R9 NOT_PROVEN","G3 STOP_UNAVAILABLE","P4 STOP","Greenfield"):
