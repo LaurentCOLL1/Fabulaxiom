@@ -7,6 +7,8 @@ import {
   previewFictionalHumanOrderRepair, confirmFictionalHumanOrderRepair,
   type FictionalHumanOrderRepair, type FictionalHumanOrderRepairPreview,
   previewFictionalRepairPairImpact, type FictionalRepairPairImpact,
+  previewFictionalRepairSelectedPairs, type FictionalRepairSelectedPair,
+  type FictionalRepairSelectedPairsImpact,
 } from "./m32FictionalHumanOrderBatch";
 
 /** Unmounted synthetic browser workflow: staged, reviewed and explicitly confirmed. */
@@ -35,10 +37,12 @@ export default function M32FictionalHumanOrderBatchLab({
   const [impactLeft, setImpactLeft] = useState("");
   const [impactRight, setImpactRight] = useState("");
   const [repairImpact, setRepairImpact] = useState<FictionalRepairPairImpact | null>(null);
+  const [selectedImpactPairs, setSelectedImpactPairs] = useState<readonly FictionalRepairSelectedPair[]>([]);
+  const [selectedPairsImpact, setSelectedPairsImpact] = useState<FictionalRepairSelectedPairsImpact | null>(null);
   const activeEdges = draft.snapshot.precedences.filter(e => e.status === "current");
   const active = draft.snapshot.anchors.filter(a => a.status === "current");
 
-  function invalidate() { setPreview(null); setRepairPreview(null); setRepairImpact(null); setFeedback(""); setFailed(false); }
+  function invalidate() { setPreview(null); setRepairPreview(null); setRepairImpact(null); setSelectedPairsImpact(null); setFeedback(""); setFailed(false); }
   function stage() {
     if (staged.length >= 16 || repairs.length > 0) {
       setFeedback("Maximum 16 propositions fictives."); setFailed(true); return;
@@ -81,6 +85,16 @@ export default function M32FictionalHumanOrderBatchLab({
     setRepairEdge(""); setRepairBefore(""); setRepairAfter("");
     setRepairWhy(""); setReplacementWhy(""); invalidate();
   }
+  function stageImpactPair() {
+    if (!impactLeft || !impactRight || selectedImpactPairs.length >= 8 ||
+      selectedImpactPairs.some(pair =>
+        (pair.left_anchor_id === impactLeft && pair.right_anchor_id === impactRight) ||
+        (pair.left_anchor_id === impactRight && pair.right_anchor_id === impactLeft))) {
+      setFeedback("Paire fictive absente, doublonnée ou limite dépassée."); setFailed(true); return;
+    }
+    setSelectedImpactPairs(old => [...old,{left_anchor_id:impactLeft,right_anchor_id:impactRight}]);
+    setImpactLeft("");setImpactRight("");invalidate();
+  }
   function prepareRepair() {
     try {
       const candidate = previewFictionalHumanOrderRepair(draft, repairs);
@@ -90,10 +104,12 @@ export default function M32FictionalHumanOrderBatchLab({
       const compared = impactLeft && impactRight
         ? previewFictionalRepairPairImpact(draft, repairs, impactLeft, impactRight)
         : null;
-      setRepairPreview(candidate); setRepairImpact(compared); setPreview(null);
+      const multiple = selectedImpactPairs.length
+        ? previewFictionalRepairSelectedPairs(draft,repairs,selectedImpactPairs) : null;
+      setRepairPreview(candidate);setRepairImpact(compared);setSelectedPairsImpact(multiple);setPreview(null);
       setFeedback("Révocation/correction fictive cohérente ; rien appliqué."); setFailed(false);
     } catch (error) {
-      setRepairPreview(null); setRepairImpact(null);
+      setRepairPreview(null); setRepairImpact(null); setSelectedPairsImpact(null);
       setFeedback(error instanceof Error ? error.message : "Correction fictive refusée."); setFailed(true);
     }
   }
@@ -102,7 +118,7 @@ export default function M32FictionalHumanOrderBatchLab({
     try {
       const updated = confirmFictionalHumanOrderRepair(draft, repairs, repairPreview, true);
       setDraft(updated); setRepairs([]); setStaged([]); setRepairPreview(null);
-      setRepairImpact(null); setPreview(null);
+      setRepairImpact(null); setSelectedPairsImpact(null);setSelectedImpactPairs([]);setPreview(null);
       setRepairEdge(""); setFeedback("Historique conservé : appliqué en RAM. Aucune sauvegarde.");
       setFailed(false);
     } catch (error) {
@@ -225,12 +241,34 @@ export default function M32FictionalHumanOrderBatchLab({
           {active.map(a => <option key={a.id} value={a.id}>{a.id}</option>)}
         </select>
       </label>
+      <button type="button" disabled={!impactLeft || !impactRight || selectedImpactPairs.length >= 8}
+        onClick={stageImpactPair}>Ajouter cette paire aux comparaisons explicites (8 maximum)</button>
+      <p>Paires choisies par l'auteur ({selectedImpactPairs.length}/8) : aucune exploration globale.</p>
+      <ol>{selectedImpactPairs.map((pair,index)=><li key={index}>
+        <code>{pair.left_anchor_id}</code> / <code>{pair.right_anchor_id}</code>
+        <button type="button" onClick={()=>{setSelectedImpactPairs(old=>old.filter((_,i)=>i!==index));invalidate();}}>
+          Retirer cette paire</button>
+      </li>)}</ol>
       <button type="button" disabled={repairs.length === 0 || staged.length > 0}
         onClick={prepareRepair}>Vérifier toute la correction sans l'appliquer</button>
       {repairPreview && <section aria-label="Prévisualisation de correction fictive" role="status">
         <p>{repairPreview.revoked_edge_ids.length} relations révoquées prévues,
           {repairPreview.created_edge_ids.length} nouveaux liens prévus ;
           aucune suppression historique, aucun succès de persistance.</p>
+        {selectedPairsImpact && <section aria-label="Impacts sur les paires choisies explicitement">
+          <h4>Comparaisons humaines ciblées — huit paires au maximum</h4>
+          <p>{selectedPairsImpact.changed_relation_count} relations modifiées,
+            {selectedPairsImpact.changed_witness_count} témoins modifiés ;
+            aucune chronologie totale ni écriture.</p>
+          <ol>{selectedPairsImpact.selected_pairs.map((pair,index)=><li key={index}>
+            <code>{pair.left_anchor_id}</code> / <code>{pair.right_anchor_id}</code> :
+            avant {pair.before.relation}, après {pair.after.relation} ;
+            lien modifié {pair.relation_changed ? "oui":"non"},
+            témoin modifié {pair.witness_changed ? "oui":"non"}.
+            <p>Témoin avant : {pair.before.witness.map(w=>w.precedence_id).join(", ")||"aucun"} ;
+              témoin après : {pair.after.witness.map(w=>w.precedence_id).join(", ")||"aucun"}.</p>
+          </li>)}</ol>
+        </section>}
         {repairImpact && <section aria-label="Impact temporel sur deux ancres fictives">
           <h4>Impact avant/après sur la paire explicitement choisie</h4>
           <p>Ancres : <code>{repairImpact.left_anchor_id}</code> /
