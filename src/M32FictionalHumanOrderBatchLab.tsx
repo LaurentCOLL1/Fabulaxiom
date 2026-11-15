@@ -6,6 +6,7 @@ import {
   type FictionalHumanOrder, type FictionalHumanOrderBatchPreview,
   previewFictionalHumanOrderRepair, confirmFictionalHumanOrderRepair,
   type FictionalHumanOrderRepair, type FictionalHumanOrderRepairPreview,
+  previewFictionalRepairPairImpact, type FictionalRepairPairImpact,
 } from "./m32FictionalHumanOrderBatch";
 
 /** Unmounted synthetic browser workflow: staged, reviewed and explicitly confirmed. */
@@ -31,10 +32,13 @@ export default function M32FictionalHumanOrderBatchLab({
   const [replacementWhy, setReplacementWhy] = useState("");
   const [repairs, setRepairs] = useState<readonly FictionalHumanOrderRepair[]>([]);
   const [repairPreview, setRepairPreview] = useState<FictionalHumanOrderRepairPreview | null>(null);
+  const [impactLeft, setImpactLeft] = useState("");
+  const [impactRight, setImpactRight] = useState("");
+  const [repairImpact, setRepairImpact] = useState<FictionalRepairPairImpact | null>(null);
   const activeEdges = draft.snapshot.precedences.filter(e => e.status === "current");
   const active = draft.snapshot.anchors.filter(a => a.status === "current");
 
-  function invalidate() { setPreview(null); setRepairPreview(null); setFeedback(""); setFailed(false); }
+  function invalidate() { setPreview(null); setRepairPreview(null); setRepairImpact(null); setFeedback(""); setFailed(false); }
   function stage() {
     if (staged.length >= 16 || repairs.length > 0) {
       setFeedback("Maximum 16 propositions fictives."); setFailed(true); return;
@@ -80,10 +84,16 @@ export default function M32FictionalHumanOrderBatchLab({
   function prepareRepair() {
     try {
       const candidate = previewFictionalHumanOrderRepair(draft, repairs);
-      setRepairPreview(candidate); setPreview(null);
+      if (Boolean(impactLeft) !== Boolean(impactRight)) {
+        throw new Error("Choisir les deux ancres à comparer, ou aucune.");
+      }
+      const compared = impactLeft && impactRight
+        ? previewFictionalRepairPairImpact(draft, repairs, impactLeft, impactRight)
+        : null;
+      setRepairPreview(candidate); setRepairImpact(compared); setPreview(null);
       setFeedback("Révocation/correction fictive cohérente ; rien appliqué."); setFailed(false);
     } catch (error) {
-      setRepairPreview(null);
+      setRepairPreview(null); setRepairImpact(null);
       setFeedback(error instanceof Error ? error.message : "Correction fictive refusée."); setFailed(true);
     }
   }
@@ -91,11 +101,12 @@ export default function M32FictionalHumanOrderBatchLab({
     if (!repairPreview) return;
     try {
       const updated = confirmFictionalHumanOrderRepair(draft, repairs, repairPreview, true);
-      setDraft(updated); setRepairs([]); setStaged([]); setRepairPreview(null); setPreview(null);
+      setDraft(updated); setRepairs([]); setStaged([]); setRepairPreview(null);
+      setRepairImpact(null); setPreview(null);
       setRepairEdge(""); setFeedback("Historique conservé : appliqué en RAM. Aucune sauvegarde.");
       setFailed(false);
     } catch (error) {
-      setRepairPreview(null);
+      setRepairPreview(null); setRepairImpact(null);
       setFeedback(error instanceof Error ? error.message : "Correction fictive refusée."); setFailed(true);
     }
   }
@@ -195,12 +206,52 @@ export default function M32FictionalHumanOrderBatchLab({
           setRepairs(old => old.filter((_, i) => i !== index)); invalidate();
         }}>Retirer cette décision</button>
       </li>)}</ol>
+      <h4>Comparaison ciblée facultative avant/après (lecture seule)</h4>
+      <p>Deux ancres sélectionnées explicitement : aucune chronologie globale n'est déduite.
+        Les témoins concernent cette paire seulement, pas l'intégralité des événements.</p>
+      <label>Première ancre à comparer
+        <select value={impactLeft} onChange={e => {
+          setImpactLeft(e.currentTarget.value); invalidate();
+        }}>
+          <option value="">Aucune comparaison ciblée</option>
+          {active.map(a => <option key={a.id} value={a.id}>{a.id}</option>)}
+        </select>
+      </label>
+      <label>Seconde ancre à comparer
+        <select value={impactRight} onChange={e => {
+          setImpactRight(e.currentTarget.value); invalidate();
+        }}>
+          <option value="">Aucune comparaison ciblée</option>
+          {active.map(a => <option key={a.id} value={a.id}>{a.id}</option>)}
+        </select>
+      </label>
       <button type="button" disabled={repairs.length === 0 || staged.length > 0}
         onClick={prepareRepair}>Vérifier toute la correction sans l'appliquer</button>
       {repairPreview && <section aria-label="Prévisualisation de correction fictive" role="status">
         <p>{repairPreview.revoked_edge_ids.length} relations révoquées prévues,
           {repairPreview.created_edge_ids.length} nouveaux liens prévus ;
           aucune suppression historique, aucun succès de persistance.</p>
+        {repairImpact && <section aria-label="Impact temporel sur deux ancres fictives">
+          <h4>Impact avant/après sur la paire explicitement choisie</h4>
+          <p>Ancres : <code>{repairImpact.left_anchor_id}</code> /
+            <code>{repairImpact.right_anchor_id}</code></p>
+          <p>Avant : {repairImpact.before.relation} ;
+            après : {repairImpact.after.relation}.
+            Relation modifiée : {repairImpact.relation_changed ? "oui" : "non"}.
+            Témoins modifiés : {repairImpact.witness_changed ? "oui" : "non"}.</p>
+          <p>Aucun ordre total, aucun calendrier converti, aucune écriture ou preuve de
+            persistance. Les témoins historiques ne valent pas preuve courante.</p>
+          <h5>Témoins humains avant le projet</h5>
+          {repairImpact.before.witness.length ? <ol>{repairImpact.before.witness.map(w =>
+            <li key={w.precedence_id}><code>{w.precedence_id}</code> :
+              {w.before_anchor_id} avant {w.after_anchor_id} — {w.human_reason}</li>
+          )}</ol> : <p>Aucune chaîne justificative courante avant.</p>}
+          <h5>Témoins humains après le projet</h5>
+          {repairImpact.after.witness.length ? <ol>{repairImpact.after.witness.map(w =>
+            <li key={w.precedence_id}><code>{w.precedence_id}</code> :
+              {w.before_anchor_id} avant {w.after_anchor_id} — {w.human_reason}</li>
+          )}</ol> : <p>Aucune chaîne justificative courante après.</p>}
+        </section>}
         <button type="button" onClick={confirmRepair}>
           Confirmer explicitement toute la correction en mémoire
         </button>

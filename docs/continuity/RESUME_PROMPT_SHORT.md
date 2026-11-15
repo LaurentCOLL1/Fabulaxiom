@@ -1,7 +1,7 @@
 # Reprise Fabulaxiom ( https://github.com/LaurentCOLL1/Fabulaxiom )
 
 ## Dernier checkpoint
-main=533350934590ea367982b50e845154dbdfcb82da ; #366 MERGED CI #43665202152 PASS, postmain #43667623908 PENDING ; P3ad fictif CANDIDAT ; M32-057/073/081 [ ], 9/95 ; M3.2 IN_PROGRESS_NOT_ACCEPTED (~45%).
+main=85c246ce723ca9866935e1226d8e6fb0c0bd9a59 ; #367 MERGED CI #43668424751 PASS, postmain #43695902106 PENDING ; P3ae impact 2 ancres CANDIDAT ; 9/95 ; M3.2 IN_PROGRESS_NOT_ACCEPTED (~45%).
 
 ## Interdictions actives — STOP
 Writer/R1–R9 NOT_PROVEN ; P4 STOP ; G2B NOT_ACCEPTED ; G2C NOT_AUTHORIZED ; G3 STOP_UNAVAILABLE ; PENDING_EXTERNAL_ATTESTATION(21/3/2), prospective NOT_STARTED ; R2 STOP, R3 partiel, D3c conception, D3b-4/5, D3b-5 STOP ; main/WAL/SHM, live SQLite WAL-index et ABA NOT_PROVEN ; glib #160 OPEN.
