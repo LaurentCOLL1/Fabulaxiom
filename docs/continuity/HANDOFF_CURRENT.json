@@ -1,4 +1,33 @@
 {
+  "m32_r4_two_process_shm_barrier_invalid_locks_20261115": {
+    "date": "2026-11-15",
+    "status": "R4_TWO_PROCESS_SHM_BARRIER_LOCK_REFUSAL_SOURCE_CANDIDATE_UNQUALIFIED",
+    "parent_main": "85c246ce723ca9866935e1226d8e6fb0c0bd9a59",
+    "pr367_source_run": 43668424751,
+    "pr367_postmain_run": 43695902106,
+    "pr367_postmain_result": "COMPLETED_SUCCESS_EXACT_MAIN",
+    "disposable_windows_two_process": true,
+    "borrowed_actual_sqlite_file": true,
+    "barrier_invoked": true,
+    "invalid_shared_width_refused": true,
+    "out_of_bounds_lock_refused": true,
+    "native_lock_count_unchanged": true,
+    "main_shm_fileid128_held": true,
+    "full_main_wal_shm_atomicity_proven": false,
+    "unseen_aba_excluded": false,
+    "writer_admission": false,
+    "operator_data_access": false,
+    "requirements_partial": [
+      "M32-017",
+      "M32-019",
+      "M32-020"
+    ],
+    "checklist_total": 104,
+    "closed": 9,
+    "open": 95,
+    "gate": "IN_PROGRESS_NOT_ACCEPTED",
+    "strategy": "PRODUCT_FIRST_PARALLEL_SAFETY"
+  },
   "m32_p3ad_fictional_order_repair_20261115": {
     "date": "2026-11-15",
     "status": "P3AD_REVERSIBLE_FICTIONAL_HUMAN_ORDER_REPAIR_CANDIDATE_UNQUALIFIED",

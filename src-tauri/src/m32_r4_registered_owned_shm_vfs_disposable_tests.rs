@@ -679,6 +679,23 @@ fn r4_assert_owned_multiprocess_region_one(db:&Connection,gate:&Registered){
     assert_eq!(unsafe{map(sqlite_file,1,PAGE_SIZE as c_int,0,&mut region1)},ffi::SQLITE_OK);
     assert!(!region0.is_null()&&!region1.is_null());
     assert_eq!(region1 as usize-region0 as usize,PAGE_SIZE);
+    // Exercise the same actual SQLite sqlite3_file's xShmBarrier ABI in
+    // each OS process. SeqCst is only a local fence, not cross-file custody.
+    let barrier=unsafe{(*methods).xShmBarrier}.expect("actual SQLite xShmBarrier");
+    unsafe{barrier(sqlite_file)};
+    // Invalid shared widths and indices must fail closed without acquiring
+    // any native WAL-index locks. These are disposable callback probes only.
+    let lock=unsafe{(*methods).xShmLock}.expect("actual SQLite xShmLock");
+    let locks_before=gate.state.shm_locks.load(Ordering::SeqCst);
+    let denials_before=gate.state.denials.load(Ordering::SeqCst);
+    assert_eq!(unsafe{lock(sqlite_file,0,2,(SHM_LOCK|SHM_SHARED) as c_int)},
+        ffi::SQLITE_IOERR_SHMLOCK);
+    assert_eq!(unsafe{lock(sqlite_file,8,1,(SHM_LOCK|SHM_EXCLUSIVE) as c_int)},
+        ffi::SQLITE_IOERR_SHMLOCK);
+    assert_eq!(gate.state.shm_locks.load(Ordering::SeqCst),locks_before,
+        "rejected SHM lock parameters must not consume native locks");
+    assert!(gate.state.denials.load(Ordering::SeqCst)>=denials_before+2);
+    unsafe{barrier(sqlite_file)};
     assert_eq!(id(&gate.state.master),Some(gate.state.expected),
         "the process-held SHM native FileId128 must remain stable");
     assert_eq!(id(&gate.state.master_db),Some(gate.state.expected_db),
