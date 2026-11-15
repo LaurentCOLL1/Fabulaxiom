@@ -1,4 +1,35 @@
 {
+  "m32_p3ad_fictional_order_repair_20261115": {
+    "date": "2026-11-15",
+    "status": "P3AD_REVERSIBLE_FICTIONAL_HUMAN_ORDER_REPAIR_CANDIDATE_UNQUALIFIED",
+    "parent_main": "533350934590ea367982b50e845154dbdfcb82da",
+    "pr366_source_ci": 43665202152,
+    "pr366_source_status": "COMPLETED_SUCCESS_EXACT_HEAD",
+    "pr366_postmain_ci": 43667623908,
+    "pr366_postmain_status": "PENDING_UNQUALIFIED",
+    "actions_max": 16,
+    "source_test_cases_candidate": 14,
+    "history_preserved": true,
+    "explicit_confirmation": true,
+    "stale_preview_refused": true,
+    "full_draft_fail_closed": true,
+    "data_origin": "fictional_browser_memory_only",
+    "operator_data_access": false,
+    "writer_admission": false,
+    "sqlite_atomicity_proven": false,
+    "main_wal_shm_atomicity_proven": false,
+    "unseen_aba_excluded": false,
+    "requirements_partial": [
+      "M32-057",
+      "M32-073",
+      "M32-081"
+    ],
+    "checklist_total": 104,
+    "closed": 9,
+    "open": 95,
+    "gate": "IN_PROGRESS_NOT_ACCEPTED",
+    "strategy": "PRODUCT_FIRST_PARALLEL_SAFETY"
+  },
   "m32_r4_two_process_shm_region1_20261115": {
     "date": "2026-11-15",
     "status": "R4_TWO_PROCESS_SHM_REGION1_SOURCE_CANDIDATE_UNQUALIFIED",
