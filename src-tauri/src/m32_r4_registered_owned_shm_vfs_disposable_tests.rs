@@ -660,6 +660,31 @@ fn r4_wait_signal(root:&Path,name:&str,mut child:Option<&mut std::process::Child
         std::thread::sleep(std::time::Duration::from_millis(20));
     }
 }
+// R4 multiprocess fixture: inspect each process's actual SQLite sqlite3_file
+// and xShmMap region 1 while native SHM FileId128 is independently held.
+// This is NOT cross-process atomic main/WAL/SHM custody or a writer gate.
+fn r4_assert_owned_multiprocess_region_one(db:&Connection,gate:&Registered){
+    let mut sqlite_file:*mut ffi::sqlite3_file=ptr::null_mut();
+    let rc=unsafe{ffi::sqlite3_file_control(db.handle(),ptr::null(),
+        ffi::SQLITE_FCNTL_FILE_POINTER,
+        (&mut sqlite_file as *mut *mut ffi::sqlite3_file).cast())};
+    assert_eq!(rc,ffi::SQLITE_OK);
+    assert!(!sqlite_file.is_null());
+    let methods=unsafe{(*sqlite_file).pMethods};
+    assert!(!methods.is_null());
+    let map=unsafe{(*methods).xShmMap}.expect("test VFS xShmMap required");
+    let mut region0:*mut c_void=ptr::null_mut();
+    let mut region1:*mut c_void=ptr::null_mut();
+    assert_eq!(unsafe{map(sqlite_file,0,PAGE_SIZE as c_int,0,&mut region0)},ffi::SQLITE_OK);
+    assert_eq!(unsafe{map(sqlite_file,1,PAGE_SIZE as c_int,0,&mut region1)},ffi::SQLITE_OK);
+    assert!(!region0.is_null()&&!region1.is_null());
+    assert_eq!(region1 as usize-region0 as usize,PAGE_SIZE);
+    assert_eq!(id(&gate.state.master),Some(gate.state.expected),
+        "the process-held SHM native FileId128 must remain stable");
+    assert_eq!(id(&gate.state.master_db),Some(gate.state.expected_db),
+        "the process-held main native FileId128 must remain stable");
+}
+
 #[test]
 fn r4_multiprocess_wal_child_helper(){
     // Ordinary cargo test invokes this test but is a strict no-op.
@@ -687,6 +712,7 @@ fn r4_multiprocess_wal_child_helper(){
     assert!(matches!(busy.as_ref().err().and_then(|e|e.sqlite_error_code()),
         Some(rusqlite::ErrorCode::DatabaseBusy | rusqlite::ErrorCode::DatabaseLocked)),
         "the parent must exclusively hold the WAL writer byte: {busy:?}");
+    r4_assert_owned_multiprocess_region_one(&db,&gate);
     r4_new_only_signal(&root.dir,"child-observed-wal-busy");
     r4_wait_signal(&root.dir,"parent-committed",None);
     db.execute_batch("BEGIN IMMEDIATE; INSERT INTO multi_process_fixture VALUES(13); COMMIT;")
@@ -716,6 +742,7 @@ fn r4_two_windows_processes_serialize_wal_writes_on_fresh_owned_shm(){
     assert_eq!(mode.to_ascii_lowercase(),"normal");
     let journal:String=db.query_row("PRAGMA journal_mode=WAL",[],|r|r.get(0)).unwrap();
     assert_eq!(journal.to_ascii_lowercase(),"wal");
+    r4_assert_owned_multiprocess_region_one(&db,&gate);
     db.execute_batch("CREATE TABLE multi_process_fixture(n INTEGER NOT NULL);").unwrap();
     db.execute_batch("BEGIN IMMEDIATE; INSERT INTO multi_process_fixture VALUES(11);").unwrap();
     let process=std::process::Command::new(std::env::current_exe().unwrap())
@@ -733,6 +760,7 @@ fn r4_two_windows_processes_serialize_wal_writes_on_fresh_owned_shm(){
         std::thread::sleep(std::time::Duration::from_millis(20));
     };
     assert!(status.success(),"separate Windows OS child test must PASS");
+    r4_assert_owned_multiprocess_region_one(&db,&gate);
     let sum:i64=db.query_row("SELECT SUM(n) FROM multi_process_fixture",[],|r|r.get(0)).unwrap();
     assert_eq!(sum,24);
     assert_eq!(gate.state.main_native_matches.load(Ordering::SeqCst),1);
