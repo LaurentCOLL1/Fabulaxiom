@@ -1,3 +1,7 @@
+## 15 novembre 2026 — requalification après fusion de #368
+
+PR #368 P3ae fusionnée sous Protect main : `main=b52db55a3b05129b80c3f33b53a7d8b0e3e8dcc6`, CI Windows source [#43697691761](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/43697691761) SUCCESS au HEAD exact `8304b433148a2a222fa11f184083d435bef7b179`. Postmain [#43699940967](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/43699940967) NON QUALIFIÉE tant que son état n'est pas terminal SUCCESS. La branche R4 #369 a été réconciliée depuis `f55e3838b23ebcb1ccefbac7e2a97b0c68cfbded`, en conservant aussi les preuves produit P3ae, les 104 points de la checklist (9 clos/95 ouverts) et les STOP. Toute CI sur les anciennes têtes de #369 est NON TRANSFÉRABLE : une CI Windows complète sur le HEAD après cette modification documentaire est nécessaire, puis revues/threads, Protect main strict, expected_head_sha et postmain indépendant. R4 main/WAL/SHM, races ABA, writer et G3 restent NOT_PROVEN/STOP.
+
 # R4 — xShmBarrier et refus xShmLock en deux processus Windows (15/11/2026)
 
 ## Source et portée
