@@ -3,6 +3,7 @@ import { startFictionalDraft, type FictionalDraft, type FictionalRevision } from
 import type { M32ChronologyProjection } from "./M32ChronologyPreview";
 import {
   previewFictionalHumanOrderBatch, confirmFictionalHumanOrderBatch,
+  previewFictionalCreatedBatchSelectedPairs,
   type FictionalHumanOrder, type FictionalHumanOrderBatchPreview,
   previewFictionalHumanOrderRepair, confirmFictionalHumanOrderRepair,
   type FictionalHumanOrderRepair, type FictionalHumanOrderRepairPreview,
@@ -24,6 +25,10 @@ export default function M32FictionalHumanOrderBatchLab({
   const [reason, setReason] = useState("");
   const [staged, setStaged] = useState<readonly FictionalHumanOrder[]>([]);
   const [preview, setPreview] = useState<FictionalHumanOrderBatchPreview | null>(null);
+  const [batchCompareLeft, setBatchCompareLeft] = useState("");
+  const [batchCompareRight, setBatchCompareRight] = useState("");
+  const [batchSelectedPairs, setBatchSelectedPairs] = useState<readonly FictionalRepairSelectedPair[]>([]);
+  const [batchImpact, setBatchImpact] = useState<FictionalRepairSelectedPairsImpact | null>(null);
   const [feedback, setFeedback] = useState("");
   const [failed, setFailed] = useState(false);
   const [repairEdge, setRepairEdge] = useState("");
@@ -42,7 +47,7 @@ export default function M32FictionalHumanOrderBatchLab({
   const activeEdges = draft.snapshot.precedences.filter(e => e.status === "current");
   const active = draft.snapshot.anchors.filter(a => a.status === "current");
 
-  function invalidate() { setPreview(null); setRepairPreview(null); setRepairImpact(null); setSelectedPairsImpact(null); setFeedback(""); setFailed(false); }
+  function invalidate() { setPreview(null); setBatchImpact(null); setRepairPreview(null); setRepairImpact(null); setSelectedPairsImpact(null); setFeedback(""); setFailed(false); }
   function stage() {
     if (staged.length >= 16 || repairs.length > 0) {
       setFeedback("Maximum 16 propositions fictives."); setFailed(true); return;
@@ -50,13 +55,29 @@ export default function M32FictionalHumanOrderBatchLab({
     setStaged(old => [...old, { before_anchor_id: before, after_anchor_id: after, reason }]);
     setBefore(""); setAfter(""); setReason(""); invalidate();
   }
+  function stageBatchPair() {
+    if (!batchCompareLeft || !batchCompareRight || batchSelectedPairs.length >= 8 ||
+      batchSelectedPairs.some(pair =>
+        (pair.left_anchor_id===batchCompareLeft && pair.right_anchor_id===batchCompareRight) ||
+        (pair.left_anchor_id===batchCompareRight && pair.right_anchor_id===batchCompareLeft))) {
+      setFeedback("Paire du lot fictif absente, doublonnée ou limite dépassée.");
+      setFailed(true);return;
+    }
+    setBatchSelectedPairs(old=>[...old,{
+      left_anchor_id:batchCompareLeft,right_anchor_id:batchCompareRight}]);
+    setBatchCompareLeft("");setBatchCompareRight("");invalidate();
+  }
   function prepare() {
     try {
       const candidate = previewFictionalHumanOrderBatch(draft, staged);
-      setPreview(candidate); setFeedback("Lot fictif cohérent ; aucune modification appliquée.");
+      const impact = batchSelectedPairs.length ?
+        previewFictionalCreatedBatchSelectedPairs(draft,staged,batchSelectedPairs) : null;
+      setPreview(candidate);setBatchImpact(impact);
+      setFeedback("Lot fictif cohérent ; aucune modification appliquée.");
       setFailed(false);
     } catch (error) {
-      setPreview(null); setFeedback(error instanceof Error ? error.message : "Lot refusé.");
+      setPreview(null);setBatchImpact(null);
+      setFeedback(error instanceof Error ? error.message : "Lot refusé.");
       setFailed(true);
     }
   }
@@ -64,7 +85,9 @@ export default function M32FictionalHumanOrderBatchLab({
     if (!preview) return;
     try {
       const updated = confirmFictionalHumanOrderBatch(draft, staged, preview, true);
-      setDraft(updated); setStaged([]); setRepairs([]); setPreview(null); setRepairPreview(null);
+      setDraft(updated); setStaged([]); setRepairs([]); setPreview(null);setBatchImpact(null);
+      setBatchSelectedPairs([]);setBatchCompareLeft("");setBatchCompareRight("");
+      setRepairPreview(null);
       setFeedback("Lot fictif appliqué en mémoire seulement. Aucune sauvegarde.");
       setFailed(false);
     } catch (error) {
@@ -156,6 +179,37 @@ export default function M32FictionalHumanOrderBatchLab({
         setStaged(old => old.filter((_, i) => i !== index)); invalidate();
       }}>Retirer cette proposition</button>
     </li>)}</ol>
+    <section aria-label="Paires choisies pour le lot de créations fictives">
+      <h3>Impact des nouvelles relations — paires choisies par l'auteur</h3>
+      <p>Jusqu'à huit comparaisons explicites ; ni ordre global ni sauvegarde.</p>
+      <label>Première ancre du lot à comparer
+        <select value={batchCompareLeft} onChange={e=>{
+          setBatchCompareLeft(e.currentTarget.value);invalidate();
+        }}>
+          <option value="">Choisir une ancre fictive</option>
+          {active.map(a=><option key={a.id} value={a.id}>{a.id}</option>)}
+        </select>
+      </label>
+      <label>Seconde ancre du lot à comparer
+        <select value={batchCompareRight} onChange={e=>{
+          setBatchCompareRight(e.currentTarget.value);invalidate();
+        }}>
+          <option value="">Choisir une ancre fictive</option>
+          {active.map(a=><option key={a.id} value={a.id}>{a.id}</option>)}
+        </select>
+      </label>
+      <button type="button" disabled={!batchCompareLeft || !batchCompareRight ||
+        batchSelectedPairs.length>=8} onClick={stageBatchPair}>
+        Ajouter cette paire au lot de créations fictives
+      </button>
+      <p>Paires du lot choisies ({batchSelectedPairs.length}/8)</p>
+      <ol>{batchSelectedPairs.map((pair,index)=><li key={index}>
+        <code>{pair.left_anchor_id}</code> / <code>{pair.right_anchor_id}</code>
+        <button type="button" onClick={()=>{
+          setBatchSelectedPairs(old=>old.filter((_,i)=>i!==index));invalidate();
+        }}>Retirer la paire du lot</button>
+      </li>)}</ol>
+    </section>
     <button type="button" disabled={staged.length === 0 || repairs.length > 0} onClick={prepare}>
       Vérifier le lot complet sans l'appliquer
     </button>
@@ -163,6 +217,18 @@ export default function M32FictionalHumanOrderBatchLab({
       <p>{preview.proposed_edge_ids.length} relations cohérentes proposées,
         aucun succès de persistance.</p>
       <p>Identifiants fictifs prévus : {preview.proposed_edge_ids.join(", ")}</p>
+      {batchImpact && <section aria-label="Impact avant après des nouvelles relations fictives">
+        <h4>Impacts ciblés des nouvelles précédences humaines</h4>
+        <p>{batchImpact.changed_relation_count} relations modifiées et
+          {batchImpact.changed_witness_count} témoins modifiés parmi les paires choisies.</p>
+        <ol>{batchImpact.selected_pairs.map((pair,index)=><li key={index}>
+          <code>{pair.left_anchor_id}</code> / <code>{pair.right_anchor_id}</code> :
+          avant {pair.before.relation}, après {pair.after.relation}.
+          Témoin avant : {pair.before.witness.map(w=>w.precedence_id).join(", ")||"aucun"} ;
+          témoin après : {pair.after.witness.map(w=>w.precedence_id).join(", ")||"aucun"}.
+        </li>)}</ol>
+        <p>Lecture seule ; aucun ordre total, aucune persistance, aucun writer.</p>
+      </section>}
       <button type="button" onClick={confirm}>
         Confirmer explicitement tout le lot en mémoire
       </button>

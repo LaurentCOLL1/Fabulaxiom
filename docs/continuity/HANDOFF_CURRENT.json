@@ -1,4 +1,35 @@
 {
+  "m32_p3ah_created_batch_selected_pairs_20261115": {
+    "date": "2026-11-15",
+    "status": "P3AH_SELECTED_PAIRS_CREATION_SOURCE_CANDIDATE_UNQUALIFIED",
+    "parent_main": "c206d578ca53657ec610f3b197cc3918b27198de",
+    "pr372_source_run": 43724709726,
+    "pr372_postmain_run": 43739867338,
+    "parent_postmain": "PENDING_UNQUALIFIED",
+    "fictional_only": true,
+    "unmounted_react_lab": true,
+    "max_added_human_precedences": 16,
+    "max_explicit_selected_pairs": 8,
+    "candidate_vitest_count": 12,
+    "writer_authorized": false,
+    "operator_data_access": false,
+    "requirements_partial": [
+      "M32-056",
+      "M32-058",
+      "M32-072",
+      "M32-075",
+      "M32-076",
+      "M32-078",
+      "M32-080",
+      "M32-082",
+      "M32-083"
+    ],
+    "checklist_total": 104,
+    "closed": 9,
+    "open": 95,
+    "gate": "IN_PROGRESS_NOT_ACCEPTED",
+    "strategy": "PRODUCT_FIRST_PARALLEL_SAFETY"
+  },
   "m32_r4_two_process_invalid_unmap_20261115": {
     "date": "2026-11-15",
     "status": "R4_TWO_PROCESS_XSHM_UNMAP_INVALID_FLAG_SOURCE_CANDIDATE_UNQUALIFIED",
