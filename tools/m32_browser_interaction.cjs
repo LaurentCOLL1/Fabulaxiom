@@ -1497,14 +1497,86 @@ async function run() {
       assert.equal(await review.getByRole("button", { name: "Comparer les assertions communes" })
         .getAttribute("aria-pressed"), "true");
     });
-    assert.equal(cases.length, 88);
+    // P3ag — real Chromium interaction witnesses for unmounted fictional P3af UI.
+    // Both dev and strict-CSP compiled copies execute this same suite on synthetic RAM.
+    await caseRun("89-p3ag-two-explicit-pairs-changed-and-unchanged-then-ram-confirm", async () => {
+      await page.getByRole("button", { name: "Préparer un lot de précédences humaines fictives" }).click();
+      const lab=page.getByRole("region", { name: "Lot de précédences humaines fictives M3.2" });
+      await lab.getByRole("combobox", { name: "Relation courante à révoquer" }).selectOption("human-bc");
+      await lab.getByRole("textbox", { name: "Motif humain de révocation" })
+        .fill("Retirer le lien humain B avant C");
+      await lab.getByRole("button", { name: "Préparer cette révocation ou correction fictive" }).click();
+      for(const [left,right] of [["A","C"],["A","B"]]) {
+        await lab.getByRole("combobox", { name: "Première ancre à comparer" }).selectOption(left);
+        await lab.getByRole("combobox", { name: "Seconde ancre à comparer" }).selectOption(right);
+        await lab.getByRole("button", { name: /Ajouter cette paire aux comparaisons explicites/ }).click();
+      }
+      assert.ok((await lab.innerText()).includes("Paires choisies par l'auteur (2/8)"));
+      await lab.getByRole("button", { name: "Vérifier toute la correction sans l'appliquer" }).click();
+      const review=lab.getByRole("region", { name: "Impacts sur les paires choisies explicitement" });
+      assert.equal(await review.getByRole("listitem").count(), 2);
+      const output=await review.innerText();
+      for(const piece of ["A / C","A / B","1 relations modifiées","1 témoins modifiés",
+        "avant before, après incomparable","avant before, après before"]) {
+        assert.ok(output.includes(piece), "Missing explicit multi-pair impact: "+piece);
+      }
+      await lab.getByRole("button", { name: "Confirmer explicitement toute la correction en mémoire" }).click();
+      assert.equal(await review.count(),0);
+      assert.ok((await lab.innerText()).includes("Aucune sauvegarde"));
+      assert.equal(await page.getByText("Sauvegarde réussie").count(),0);
+    });
+    await caseRun("90-p3ag-reversed-duplicate-pair-refused-without-extra-selection", async () => {
+      await page.getByRole("button", { name: "Préparer un lot de précédences humaines fictives" }).click();
+      const lab=page.getByRole("region", { name: "Lot de précédences humaines fictives M3.2" });
+      await lab.getByRole("combobox", { name: "Première ancre à comparer" }).selectOption("A");
+      await lab.getByRole("combobox", { name: "Seconde ancre à comparer" }).selectOption("C");
+      await lab.getByRole("button", { name: /Ajouter cette paire aux comparaisons explicites/ }).click();
+      await lab.getByRole("combobox", { name: "Première ancre à comparer" }).selectOption("C");
+      await lab.getByRole("combobox", { name: "Seconde ancre à comparer" }).selectOption("A");
+      await lab.getByRole("button", { name: /Ajouter cette paire aux comparaisons explicites/ }).click();
+      assert.ok((await lab.getByRole("alert").innerText()).includes("doublonnée"));
+      assert.ok((await lab.innerText()).includes("Paires choisies par l'auteur (1/8)"));
+      assert.equal(await lab.getByRole("button", { name: "Confirmer explicitement toute la correction en mémoire" }).count(),0);
+    });
+    await caseRun("91-p3ag-remove-selected-pair-invalidates-stale-repair-preview", async () => {
+      await page.getByRole("button", { name: "Préparer un lot de précédences humaines fictives" }).click();
+      const lab=page.getByRole("region", { name: "Lot de précédences humaines fictives M3.2" });
+      await lab.getByRole("combobox", { name: "Relation courante à révoquer" }).selectOption("human-bc");
+      await lab.getByRole("textbox", { name: "Motif humain de révocation" }).fill("Raison fictive");
+      await lab.getByRole("button", { name: "Préparer cette révocation ou correction fictive" }).click();
+      await lab.getByRole("combobox", { name: "Première ancre à comparer" }).selectOption("A");
+      await lab.getByRole("combobox", { name: "Seconde ancre à comparer" }).selectOption("C");
+      await lab.getByRole("button", { name: /Ajouter cette paire aux comparaisons explicites/ }).click();
+      await lab.getByRole("button", { name: "Vérifier toute la correction sans l'appliquer" }).click();
+      assert.equal(await lab.getByRole("region", { name: "Impacts sur les paires choisies explicitement" }).count(),1);
+      assert.equal(await lab.getByRole("button", { name: "Confirmer explicitement toute la correction en mémoire" }).count(),1);
+      await lab.getByRole("button", { name: "Retirer cette paire" }).click();
+      assert.equal(await lab.getByRole("region", { name: "Impacts sur les paires choisies explicitement" }).count(),0);
+      assert.equal(await lab.getByRole("button", { name: "Confirmer explicitement toute la correction en mémoire" }).count(),0);
+    });
+    await caseRun("92-p3ag-universe-switch-discards-fictional-pair-selection", async () => {
+      await page.getByRole("button", { name: "Préparer un lot de précédences humaines fictives" }).click();
+      const lab=page.getByRole("region", { name: "Lot de précédences humaines fictives M3.2" });
+      await lab.getByRole("combobox", { name: "Première ancre à comparer" }).selectOption("A");
+      await lab.getByRole("combobox", { name: "Seconde ancre à comparer" }).selectOption("C");
+      await lab.getByRole("button", { name: /Ajouter cette paire aux comparaisons explicites/ }).click();
+      await page.getByRole("button", { name: "Charger un autre univers fictif" }).click();
+      assert.ok((await lab.innerText()).includes("fiction-world-two"));
+      assert.ok((await lab.innerText()).includes("Paires choisies par l'auteur (0/8)"));
+      const opts=await lab.getByRole("combobox", { name: "Première ancre à comparer" })
+        .locator("option").allTextContents();
+      assert.ok(opts.includes("K") && opts.includes("L"));
+      assert.ok(!opts.includes("A") && !opts.includes("C"));
+      assert.equal(await lab.getByRole("region", { name: "Impacts sur les paires choisies explicitement" }).count(),0);
+    });
+    assert.equal(cases.length, 92);
     // Historical PR #146 source marker: M32_BROWSER_REAL_CHROMIUM_PASS 62/62
     // Previous PR #156 marker retained: M32_BROWSER_REAL_CHROMIUM_PASS 70/70
     // PR #260 retained baseline (historical only): M32_BROWSER_REAL_CHROMIUM_PASS 82/82
     // PR #157 historical marker: M32_BROWSER_REAL_CHROMIUM_PASS 76/76
     // Historical P3a baseline, retained for continuity source-only tests:
     // M32_CI_PRECOMPILED_STRICT_CSP_BROWSER_PASS: 85/85
-    console.log("M32_BROWSER_REAL_CHROMIUM_PASS 88/88");
+    console.log("M32_BROWSER_REAL_CHROMIUM_PASS 92/92");
 
     // Actual Chromium enforced-CSP veto, separate from the 36
     // fictional interaction cases. Never make an off-loopback network call.
@@ -1536,9 +1608,9 @@ async function run() {
       });
       assert.equal(scriptVeto, false, "STOP: inline JS executed under strict CSP");
       console.log("M32_CI_PRECOMPILED_INLINE_SCRIPT_DENIED_PASS");
-      console.log("M32_CI_PRECOMPILED_STRICT_CSP_BROWSER_PASS: 88/88");
+      console.log("M32_CI_PRECOMPILED_STRICT_CSP_BROWSER_PASS: 92/92");
     }
-    console.log("M32_CI_FIXTURE_ONLY_BROWSER_PASS: 88/88; no normal source pages");
+    console.log("M32_CI_FIXTURE_ONLY_BROWSER_PASS: 92/92; no normal source pages");
   } finally {
     if (browser) await browser.close();
     server.kill();

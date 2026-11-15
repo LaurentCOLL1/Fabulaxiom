@@ -1,3 +1,7 @@
+## Réconciliation du 15 novembre 2026 après #371
+
+PR #371 P3ag MERGED, main `7abf9bae9179628fcc7bf368cc6a74ab86f7a808`, CI Windows source #43723270617 SUCCESS au HEAD exact `a0d059ba44c920740f38765149e43682a788107b`. Postmain #43724388071 PENDING_UNQUALIFIED au checkpoint. Le candidat R4 #372 garde **uniquement** le refus `xShmUnmap(-1/2)` dans deux processus Windows jetables, sans exécuter d'unmap valide sur SQLite vivant. Ancien HEAD R4 `6bca6565316206a8c56930a171e234365bfa7c9a` et CI #43724262869 **NON TRANSFÉRABLES** à ce nouveau HEAD. Source Windows COMPLETE au HEAD réconcilié et postmain indépendante parent terminal SUCCESS requises avant toute fusion. Aucune permission writer ou G3, main/WAL/SHM et ABA NON PROUVÉS. Checklist 9/104, M3.2 IN_PROGRESS_NOT_ACCEPTED (~45%), glib #160 OPEN.
+
 # R4 — refus de deux xShmUnmap invalides et mémoire SHM tenue, 15 novembre 2026
 
 ## Parent
