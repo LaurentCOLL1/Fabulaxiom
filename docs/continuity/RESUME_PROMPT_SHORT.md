@@ -1,15 +1,15 @@
 # Reprise Fabulaxiom ( https://github.com/LaurentCOLL1/Fabulaxiom )
 
 ## Dernier checkpoint
-main=c1435a612c45489f1f6e07b557662fac1b6b5245 ; #364 MERGED CI #43620011103 PASS, postmain #43621231640 PASS ; R4 deux-processus SHM région 1 CANDIDAT [ ] ; 9/95 ; M3.2 IN_PROGRESS_NOT_ACCEPTED.
+main=4fd7b33a9ad774db5bc9b1015cb6616cd490ac79 ; #365 MERGED CI #43654107043 PASS, postmain #43664671981 PENDING ; #366 R4 SHM région 1 CANDIDAT (CI à refaire au nouveau HEAD) ; 9/95 ; M3.2 IN_PROGRESS_NOT_ACCEPTED (~45 %).
 
 ## Interdictions actives — STOP
 Writer/R1–R9 NOT_PROVEN ; P4 STOP ; G2B NOT_ACCEPTED ; G2C NOT_AUTHORIZED ; G3 STOP_UNAVAILABLE ; PENDING_EXTERNAL_ATTESTATION(21/3/2), prospective NOT_STARTED ; R2 STOP, R3 partiel, D3c conception, D3b-4/5, D3b-5 STOP ; main/WAL/SHM, live SQLite WAL-index et ABA NOT_PROVEN ; glib #160 OPEN.
 STOP v6/v7, M:\Fabulaxiom, Greenfield, backups, IPC writer, 007, Hello, recovery.
 
 ## Prochaines opérations
-1. Re-fetch main/PR/CI/Protect main bypass=[] ; postmain #364 PASS.
-2. R4 régions SHM deux processus [ ] ; M32-017/019/020 [ ], 9/95.
+1. Re-fetch main/PR/CI/Protect main bypass=[] ; postmain #43664671981.
+2. #366 R4 SHM page 1 : requalification Windows HEAD exact requise ; M32-017/019/020 [ ], M32-092/093 et glib #160 OPEN ; 9/95.
 3. PRODUCT_FIRST_PARALLEL_SAFETY R2–R9 ; #38 append-only ; expected_head_sha/postmain.
 
 ## Documents d'autorité
