@@ -81,14 +81,14 @@ describe("M3.2 P3ae read-only before/after impact for one selected fictional pai
     expect(()=>previewFictionalRepairPairImpact(draft(),[revoke()],"A","")).toThrow();
   });
   it("08 rejects a globally cyclic replacement even for an unrelated selected pair", () => {
-    expect(()=>previewFictionalRepairPairImpact(draft(),[replace("C","B")],"A","A"))
+    expect(()=>previewFictionalRepairPairImpact(draft(),[replace("B","A")],"A","A"))
       .toThrow(/cycle/);
   });
   it("09 never mutates the original fictional draft on successful or refused preview", () => {
     const d=draft(), original=JSON.stringify(d);
     previewFictionalRepairPairImpact(d,[revoke()],"A","C");
     expect(JSON.stringify(d)).toBe(original);
-    expect(()=>previewFictionalRepairPairImpact(d,[replace("C","B")],"A","C"))
+    expect(()=>previewFictionalRepairPairImpact(d,[replace("B","A")],"A","C"))
       .toThrow();
     expect(JSON.stringify(d)).toBe(original);
   });
