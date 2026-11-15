@@ -1,4 +1,36 @@
 {
+  "m32_p3ae_selected_pair_repair_impact_20261115": {
+    "date": "2026-11-15",
+    "status": "P3AE_SELECTED_PAIR_REPAIR_IMPACT_SOURCE_CANDIDATE_UNQUALIFIED",
+    "parent_main": "85c246ce723ca9866935e1226d8e6fb0c0bd9a59",
+    "pr367_source_run": 43668424751,
+    "pr367_source_result": "COMPLETED_SUCCESS_EXACT_HEAD",
+    "pr367_postmain_run": 43695902106,
+    "pr367_postmain_status": "PENDING_UNQUALIFIED",
+    "synthetic_case_count_candidate": 14,
+    "explicit_selected_pair_only": true,
+    "relation_changed_reported": true,
+    "witness_changed_reported": true,
+    "full_order_inferred": false,
+    "operator_data_access": false,
+    "writer_admitted": false,
+    "sqlite_transaction_qualified": false,
+    "full_main_wal_shm_atomicity_proven": false,
+    "unseen_aba_excluded": false,
+    "requirements_partial": [
+      "M32-072",
+      "M32-073",
+      "M32-078",
+      "M32-080",
+      "M32-081",
+      "M32-083"
+    ],
+    "checklist_total": 104,
+    "closed": 9,
+    "open": 95,
+    "gate": "IN_PROGRESS_NOT_ACCEPTED",
+    "strategy": "PRODUCT_FIRST_PARALLEL_SAFETY"
+  },
   "m32_p3ad_fictional_order_repair_20261115": {
     "date": "2026-11-15",
     "status": "P3AD_REVERSIBLE_FICTIONAL_HUMAN_ORDER_REPAIR_CANDIDATE_UNQUALIFIED",

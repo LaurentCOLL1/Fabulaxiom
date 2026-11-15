@@ -1,3 +1,4 @@
+import { compareM32WorldOrder, type M32WorldComparison } from "./M32WorldOrderComparison";
 import {
   createFictionalPrecedence, revokeFictionalPrecedence, inspectFictionalDraft, type FictionalDraft,
 } from "./m32FictionalManualChronology";
@@ -164,4 +165,42 @@ export function confirmFictionalHumanOrderRepair(
       JSON.stringify(preview.candidate) !== JSON.stringify(checked.candidate))
     return refuse();
   return checked.candidate;
+}
+
+/** Source-only readout of ONE explicitly selected active anchor pair.
+ * A changed relation or witness is not a claim about every possible world order.
+ * This toy is never linked to an operator source, Tauri IPC, SQLite, or writer.
+ */
+export type FictionalRepairPairImpact = Readonly<{
+  left_anchor_id: string;
+  right_anchor_id: string;
+  before: M32WorldComparison;
+  after: M32WorldComparison;
+  relation_changed: boolean;
+  witness_changed: boolean;
+  preview_only: true;
+  can_write: false;
+  world_order_inferred: false;
+}>;
+
+/** Rebuilds the entire candidate from the checked fictional baseline before comparing
+ * precisely the two human-selected active anchors; no implicit global timeline.
+ */
+export function previewFictionalRepairPairImpact(
+  baseline: FictionalDraft, actions: readonly FictionalHumanOrderRepair[],
+  leftAnchorId: string, rightAnchorId: string,
+): FictionalRepairPairImpact {
+  const proposal = previewFictionalHumanOrderRepair(baseline, actions);
+  const universe = baseline.snapshot.universe_id;
+  const before = compareM32WorldOrder(baseline.snapshot, universe, leftAnchorId, rightAnchorId);
+  const after = compareM32WorldOrder(proposal.candidate.snapshot, universe,
+    leftAnchorId, rightAnchorId);
+  return {
+    left_anchor_id: leftAnchorId,
+    right_anchor_id: rightAnchorId,
+    before, after,
+    relation_changed: before.relation !== after.relation,
+    witness_changed: JSON.stringify(before.witness) !== JSON.stringify(after.witness),
+    preview_only: true, can_write: false, world_order_inferred: false,
+  };
 }
