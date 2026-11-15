@@ -1,4 +1,31 @@
 {
+  "m32_p3af_selected_pairs_impact_20261115": {
+    "date": "2026-11-15",
+    "status": "P3AF_SELECTED_PAIRS_SOURCE_CANDIDATE_UNQUALIFIED",
+    "parent_main": "867c02902fbe732a5b89fc06024d0fdfd6c3140c",
+    "pr369_source_run": 43700531238,
+    "pr369_postmain_run": 43718729742,
+    "pr369_postmain": "PENDING_UNQUALIFIED",
+    "synthetic_only": true,
+    "selected_pair_limit": 8,
+    "tests_candidate": 12,
+    "writer_admitted": false,
+    "total_order_inferred": false,
+    "operator_data_access": false,
+    "requirements_partial": [
+      "M32-072",
+      "M32-073",
+      "M32-078",
+      "M32-080",
+      "M32-081",
+      "M32-083"
+    ],
+    "checklist_total": 104,
+    "closed": 9,
+    "open": 95,
+    "gate": "IN_PROGRESS_NOT_ACCEPTED",
+    "strategy": "PRODUCT_FIRST_PARALLEL_SAFETY"
+  },
   "m32_r4_two_process_shm_barrier_invalid_locks_20261115": {
     "date": "2026-11-15",
     "status": "R4_TWO_PROCESS_SHM_BARRIER_LOCK_REFUSAL_SOURCE_CANDIDATE_UNQUALIFIED",

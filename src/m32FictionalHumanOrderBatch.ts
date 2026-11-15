@@ -204,3 +204,45 @@ export function previewFictionalRepairPairImpact(
     preview_only: true, can_write: false, world_order_inferred: false,
   };
 }
+
+/** P3af: up to eight individually selected pairs in invented RAM, never an inferred total order. */
+export type FictionalRepairSelectedPair = Readonly<{ left_anchor_id: string; right_anchor_id: string }>;
+export type FictionalRepairSelectedPairsImpact = Readonly<{
+  selected_pairs: readonly FictionalRepairPairImpact[];
+  changed_relation_count: number;
+  changed_witness_count: number;
+  preview_only: true; can_write: false; world_order_inferred: false;
+}>;
+/** Single checked whole-batch repair; only author-specified active endpoint pairs are compared. */
+export function previewFictionalRepairSelectedPairs(
+  baseline: FictionalDraft, actions: readonly FictionalHumanOrderRepair[],
+  pairs: readonly FictionalRepairSelectedPair[],
+): FictionalRepairSelectedPairsImpact {
+  if (!Array.isArray(pairs) || pairs.length < 1 || pairs.length > 8) return refuse();
+  const seen = new Set<string>();
+  for (const pair of pairs) {
+    if (!pair || typeof pair !== "object" ||
+      Object.keys(pair).sort().join(",") !== "left_anchor_id,right_anchor_id" ||
+      typeof pair.left_anchor_id !== "string" || typeof pair.right_anchor_id !== "string") return refuse();
+    const forward=JSON.stringify([pair.left_anchor_id,pair.right_anchor_id]);
+    const reverse=JSON.stringify([pair.right_anchor_id,pair.left_anchor_id]);
+    if (seen.has(forward) || seen.has(reverse)) return refuse();
+    seen.add(forward);
+  }
+  const proposal=previewFictionalHumanOrderRepair(baseline,actions);
+  const universe=baseline.snapshot.universe_id;
+  const selected=pairs.map(pair=>{
+    const before=compareM32WorldOrder(baseline.snapshot,universe,pair.left_anchor_id,pair.right_anchor_id);
+    const after=compareM32WorldOrder(proposal.candidate.snapshot,universe,pair.left_anchor_id,pair.right_anchor_id);
+    return {
+      left_anchor_id:pair.left_anchor_id,right_anchor_id:pair.right_anchor_id,
+      before,after,relation_changed:before.relation!==after.relation,
+      witness_changed:JSON.stringify(before.witness)!==JSON.stringify(after.witness),
+      preview_only:true as const,can_write:false as const,world_order_inferred:false as const,
+    };
+  });
+  return {selected_pairs:selected,
+    changed_relation_count:selected.filter(p=>p.relation_changed).length,
+    changed_witness_count:selected.filter(p=>p.witness_changed).length,
+    preview_only:true,can_write:false,world_order_inferred:false};
+}
