@@ -1,4 +1,22 @@
 {
+  "m32_checkpoint_coherence_20261115": {
+    "date": "2026-11-15",
+    "status": "M32_004_CHECKPOINT_COHERENCE_SOURCE_CANDIDATE_UNQUALIFIED",
+    "parent_main": "ad6f2314485cc122161ba1d65c2b33c9399868d9",
+    "pr374_source_run": 43742413957,
+    "pr374_postmain_run": 43770680988,
+    "postmain_parent": "PENDING_UNQUALIFIED",
+    "offline_only": true,
+    "new_tests": 5,
+    "documents_checked": 8,
+    "writer_admitted": false,
+    "operator_access": false,
+    "checklist_total": 104,
+    "closed": 9,
+    "open": 95,
+    "gate": "IN_PROGRESS_NOT_ACCEPTED",
+    "strategy": "PRODUCT_FIRST_PARALLEL_SAFETY"
+  },
   "m32_p3ai_created_batch_browser_20261115": {
     "date": "2026-11-15",
     "status": "P3AI_NEW_BATCH_REAL_CHROMIUM_SOURCE_CANDIDATE_UNQUALIFIED",

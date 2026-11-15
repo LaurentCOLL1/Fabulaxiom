@@ -66,5 +66,73 @@ class M32MasterChecklistContract(unittest.TestCase):
         self.assertIn("#42754285833", self.content)
 
 
+
+# M32-004: source-only latest dated checkpoint consistency. No runtime authority.
+import json
+CHECKPOINT_LEADS=(
+ "docs/continuity/RESUME_PROMPT.md", "docs/continuity/HANDOFF_CURRENT.md",
+ "docs/continuity/HANDOFF_HISTORY.md", "docs/continuity/M3_2_GATE_DECISION_CURRENT.md",
+ "docs/continuity/STATE.md", "docs/continuity/NEXT.md",
+ "docs/continuity/M3_2_COMPLETION_MASTER_CHECKLIST_20261109.md",
+ "docs/roadmap/ROADMAP_STATUS_CURRENT.md",
+)
+def guard_checkpoint(short,entry,leads,checklist):
+    match=re.search(r"(?m)^main=([0-9a-f]{40})\s*;[^\n]*postmain #(\d+)",short)
+    if not match: raise ValueError("STOP short malformed")
+    sha,run=match.group(1),int(match.group(2))
+    if entry.get("parent_main")!=sha: raise ValueError("STOP parent mismatch")
+    post=[v for k,v in entry.items() if k.endswith("_postmain_run") and isinstance(v,int)]
+    if post!=[run]: raise ValueError("STOP postmain mismatch")
+    if entry.get("gate")!="IN_PROGRESS_NOT_ACCEPTED" or entry.get("strategy")!="PRODUCT_FIRST_PARALLEL_SAFETY":
+        raise ValueError("STOP gate promotion")
+    if "G3 STOP_UNAVAILABLE" not in short: raise ValueError("STOP short authority")
+    rows=re.findall(r"(?m)^- \[([ x])\] \*\*(M32-\d{3})\*\*",checklist)
+    if [id for _,id in rows]!=[f"M32-{i:03d}" for i in range(1,105)]:
+        raise ValueError("STOP checklist IDs")
+    closed=sum(s=="x" for s,_ in rows)
+    if entry.get("closed")!=closed or entry.get("open")!=104-closed:
+        raise ValueError("STOP counter drift")
+    for path,head in leads.items():
+        if sha not in head or f"#{run}" not in head:
+            raise ValueError("STOP stale lead "+path)
+        if not all(x in head for x in ("IN_PROGRESS_NOT_ACCEPTED","G3 STOP_UNAVAILABLE","PRODUCT_FIRST_PARALLEL_SAFETY")):
+            raise ValueError("STOP authority drift "+path)
+    return sha,run,closed
+class M32CrossFileCoherence(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.short=SHORT.read_text(encoding="utf-8")
+        cls.checklist=MASTER.read_text(encoding="utf-8")
+        data=json.loads((ROOT/"docs/continuity/HANDOFF_CURRENT.json").read_text(encoding="utf-8"))
+        cls.key=next(iter(data));cls.entry=data[cls.key]
+        cls.heads={p:(ROOT/p).read_text(encoding="utf-8").split("\n\n",1)[0]
+                   for p in CHECKPOINT_LEADS}
+    def test_07_eight_document_checkpoint_coherent(self):
+        self.assertTrue(self.key.startswith("m32_"))
+        sha,run,done=guard_checkpoint(self.short,self.entry,self.heads,self.checklist)
+        self.assertRegex(sha,r"^[0-9a-f]{40}$")
+        self.assertGreater(run,0)
+        self.assertEqual(done+self.entry["open"],104)
+    def test_08_stale_short_sha_refused(self):
+        text=re.sub(r"(?m)^main=[0-9a-f]{40}","main="+"f"*40,self.short,count=1)
+        with self.assertRaisesRegex(ValueError,"parent mismatch"):
+            guard_checkpoint(text,self.entry,self.heads,self.checklist)
+    def test_09_mismatched_postmain_run_refused(self):
+        text=re.sub(r"postmain #(\d+)",lambda m:f"postmain #{int(m.group(1))+1}",self.short,count=1)
+        with self.assertRaisesRegex(ValueError,"postmain mismatch"):
+            guard_checkpoint(text,self.entry,self.heads,self.checklist)
+    def test_10_stale_next_refused(self):
+        heads=dict(self.heads);key="docs/continuity/NEXT.md"
+        heads[key]=heads[key].replace(self.entry["parent_main"],"0"*40)
+        with self.assertRaisesRegex(ValueError,"stale lead"):
+            guard_checkpoint(self.short,self.entry,heads,self.checklist)
+    def test_11_false_closure_or_gate_refused(self):
+        fake={**self.entry,"closed":self.entry["closed"]+1}
+        with self.assertRaisesRegex(ValueError,"counter drift"):
+            guard_checkpoint(self.short,fake,self.heads,self.checklist)
+        fake={**self.entry,"gate":"ACCEPTED"}
+        with self.assertRaisesRegex(ValueError,"gate promotion"):
+            guard_checkpoint(self.short,fake,self.heads,self.checklist)
+
 if __name__ == "__main__":
     unittest.main()
