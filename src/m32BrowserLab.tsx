@@ -4,6 +4,7 @@ import { createRoot } from "react-dom/client";
 import { M32SyntheticConsultationLab } from "./M32ChronologyConsultation";
 import M32SyntheticEventExplorer from "./M32SyntheticEventExplorer";
 import M32ManualChronologyLab from "./M32ManualChronologyLab";
+import M32FictionalHumanOrderBatchLab from "./M32FictionalHumanOrderBatchLab";
 import M32P3FictionalCommandWorkshop from "./M32P3FictionalCommandWorkshop";
 import M32P4aStageReviewPanel from "./M32P4aStageReviewPanel";
 import { startP3FictionalState } from "./m32P3FictionalCommandContract";
@@ -202,7 +203,7 @@ const inventedTwoNovelReview: P3fFictionalNovelInput = {
 type Scenario = "one" | "two" | "cyclic";
 function BrowserFixture() {
   const [scenario, setScenario] = useState<Scenario>("one");
-  const [mode, setMode] = useState<"consultation" | "explorer" | "editor" | "history" | "event-form" | "version-compare" | "p3-commands" | "p4-review" | "p3f-two-novels">("consultation");
+  const [mode, setMode] = useState<"consultation" | "explorer" | "editor" | "history" | "event-form" | "version-compare" | "order-batch" | "p3-commands" | "p4-review" | "p3f-two-novels">("consultation");
   const snapshot = scenario === "two" ? second : scenario === "cyclic" ? cyclic : first;
   return <main aria-label="Laboratoire navigateur M3.2 exclusivement fictif">
     <h1>Tests navigateur — données imaginaires exclusivement</h1>
@@ -232,6 +233,9 @@ function BrowserFixture() {
       </button>
       <button type="button" onClick={() => setMode("p3f-two-novels")}>
         Voir deux romans et leurs sources historiques fictives
+      </button>
+      <button type="button" onClick={() => setMode("order-batch")}>
+        Préparer un lot de précédences humaines fictives
       </button>
       <button type="button" onClick={() => setMode("editor")}>
         Ouvrir l'atelier manuel fictif
@@ -275,6 +279,10 @@ function BrowserFixture() {
             precedence_id: "human-ab",
             reason: "Ancien lien explicitement retiré par l'auteur inventé",
           }} />
+      : mode === "order-batch" ? scenario === "cyclic"
+      ? <p role="alert">Lot de précédences refusé : graphe fictif cyclique.</p>
+      : <M32FictionalHumanOrderBatchLab key={scenario} initial={snapshot}
+          revisions={scenario === "two" ? [] : fictionalRevisions} />
       : mode === "version-compare" ? scenario === "cyclic"
       ? <p role="alert">Cycle fictif refusé pour la comparaison de versions.</p>
       : <M32FictionalEventVersionPairLab key={scenario}
