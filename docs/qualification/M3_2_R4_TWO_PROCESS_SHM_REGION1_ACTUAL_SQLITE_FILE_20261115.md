@@ -1,3 +1,7 @@
+## 15 novembre 2026 — synchronisation parallèle post-#365 (source à requalifier)
+
+La PR produit #365 P3ac a été fusionnée par squash sur `main=4fd7b33a9ad774db5bc9b1015cb6616cd490ac79` après Windows CI #43654107043 SUCCESS au SHA exact `f04f9b17b8bdbfe02ac9efa22997284412df47af`. Postmain #43664671981 demeure NON QUALIFIÉE au présent checkpoint. La PR sécurité/test-only #366 a intégré ce parent sans écraser les preuves P3ac via le commit de réconciliation `0dfb86fb80af687875ee29f647477e7f65e3c577`. Son ancienne CI #43653981152 PASS n'est **pas** une preuve du nouveau HEAD : nouvelle CI Windows obligatoire avant toute fusion. Les garde-fous M32-017/019/020 demeurent [ ], main/WAL/SHM non atomique, ABA invisible non prouvé, writer/R1–R9 et G3 STOP ; checklist 9/104 closes, M3.2 IN_PROGRESS_NOT_ACCEPTED, glib #160 OPEN_NOT_REMEDIATED.
+
 # R4 — deux processus Windows : région SHM 1 tenue et inspectée via SQLite
 
 **15 novembre 2026 — CANDIDAT NON QUALIFIÉ, SANS WRITER.** Source parent `main=c1435a612c45489f1f6e07b557662fac1b6b5245` (#364 MERGED), source [#43620011103](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/43620011103) SUCCESS exact HEAD, postmain indépendante [#43621231640](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/43621231640) SUCCESS SHA exact. La CI de la présente modification reste à qualifier à son propre HEAD.
