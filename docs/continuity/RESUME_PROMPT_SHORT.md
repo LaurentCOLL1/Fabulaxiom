@@ -1,14 +1,14 @@
 # Reprise Fabulaxiom ( https://github.com/LaurentCOLL1/Fabulaxiom )
 
 ## Dernier checkpoint
-main=eedf2f571ea3e4e07da4fd992dae515515c016a8 ; #370 MERGED CI #43719583953 PASS, postmain #43722727745 PENDING ; P3ag Chromium 92/92 CANDIDAT ; 9/95 ; M3.2 IN_PROGRESS_NOT_ACCEPTED (~45%).
+main=7abf9bae9179628fcc7bf368cc6a74ab86f7a808 ; #371 MERGED CI #43723270617 PASS, postmain #43724388071 PENDING ; #372 R4 xShmUnmap -1/2 RESYNC CANDIDAT ; 9/95 ; M3.2 IN_PROGRESS_NOT_ACCEPTED (~45%).
 
 ## Interdictions actives — STOP
 Writer/R1–R9 NOT_PROVEN ; P4 STOP ; G2B NOT_ACCEPTED ; G2C NOT_AUTHORIZED ; G3 STOP_UNAVAILABLE ; PENDING_EXTERNAL_ATTESTATION(21/3/2), prospective NOT_STARTED ; R2 STOP, R3 partiel, D3c conception, D3b-4/5, D3b-5 STOP ; main/WAL/SHM, live SQLite WAL-index et ABA NOT_PROVEN ; glib #160 OPEN.
 STOP v6/v7, M:\Fabulaxiom, Greenfield, backups, IPC writer, 007, Hello, recovery.
 
 ## Prochaines opérations
-1. Re-fetch main/PR/CI/Protect main bypass=[] ; postmain #43722727745.
+1. Re-fetch main/PR/CI/Protect main bypass=[] ; postmain #43724388071.
 2. P3ag Chromium interactions réelles 92/92 candidates ; R4 M32-017/019/020 [ ], glib #160 OPEN, 9/95.
 3. PRODUCT_FIRST_PARALLEL_SAFETY R2–R9 ; #38 append-only ; expected_head_sha/postmain.
 

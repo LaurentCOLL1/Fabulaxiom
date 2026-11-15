@@ -695,6 +695,26 @@ fn r4_assert_owned_multiprocess_region_one(db:&Connection,gate:&Registered){
     assert_eq!(gate.state.shm_locks.load(Ordering::SeqCst),locks_before,
         "rejected SHM lock parameters must not consume native locks");
     assert!(gate.state.denials.load(Ordering::SeqCst)>=denials_before+2);
+    // Rejected xShmUnmap flags MUST NOT detach SQLite's actual WAL-index
+    // view, close a native held SHM identity, or count as a successful unmap.
+    // Never call valid xShmUnmap here: SQLite still owns this live connection.
+    let unmap=unsafe{(*methods).xShmUnmap}.expect("actual SQLite xShmUnmap");
+    let unmaps_before=gate.state.shm_unmaps.load(Ordering::SeqCst);
+    let denied_unmap_before=gate.state.denials.load(Ordering::SeqCst);
+    for invalid_delete_flag in [-1,2] {
+        assert_eq!(unsafe{unmap(sqlite_file,invalid_delete_flag)},
+            ffi::SQLITE_IOERR_SHMMAP,
+            "invalid delete flag must never detach SQLite WAL-index");
+    }
+    assert_eq!(gate.state.shm_unmaps.load(Ordering::SeqCst),unmaps_before,
+        "a refused unmap must not increment native unmap count");
+    assert!(gate.state.denials.load(Ordering::SeqCst)>=denied_unmap_before+2);
+    let mut remapped_region1:*mut c_void=ptr::null_mut();
+    assert_eq!(unsafe{map(sqlite_file,1,PAGE_SIZE as c_int,0,&mut remapped_region1)},
+        ffi::SQLITE_OK,
+        "refused unmap must leave the same SQLite SHM region usable");
+    assert_eq!(remapped_region1,region1,
+        "refused unmap must preserve existing region-one native mapping");
     unsafe{barrier(sqlite_file)};
     assert_eq!(id(&gate.state.master),Some(gate.state.expected),
         "the process-held SHM native FileId128 must remain stable");
