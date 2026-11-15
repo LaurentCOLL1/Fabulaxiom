@@ -147,15 +147,18 @@
 - [ ] **M32-016** R4 — identifier et gérer journal, -wal et -shm comme objets distincts  
   **Preuve de clôture :** Pas de transfert de preuve main vers sidecars ; FileId128 et vie du mapping WAL-index vérifiés pour chaque objet pertinent.
 - [ ] **M32-017** R4 — couvrir toutes les primitives SQLite SHM en mode WAL NORMAL  
-  **R4 15/11/2026 — CANDIDAT NON QUALIFIÉ :** appels xShmBarrier + deux refus xShmLock hors bornes depuis chacun des deux sqlite3_file Windows TEMP, FileId128 conservés ; pas de capture atomique main/WAL/SHM, ABA non prouvée. PREUVE PARTIELLE, RESTE OUVERTE.\n  **R4 15/11/2026 — CANDIDAT NON QUALIFIÉ :** l'essai deux-processus Windows SQLite WAL NORMAL exerce explicitement les callbacks xShmMap pages 0/1 depuis chaque véritable sqlite3_file ; ne prouve pas toutes les primitives/lifetimes ni runtime ; tâche ouverte.
+  **R4 15/11/2026 — CANDIDAT NON QUALIFIÉ :** appels xShmBarrier + deux refus xShmLock hors bornes depuis chacun des deux sqlite3_file Windows TEMP, FileId128 conservés ; pas de capture atomique main/WAL/SHM, ABA non prouvée. PREUVE PARTIELLE, RESTE OUVERTE.
+  **R4 15/11/2026 — CANDIDAT NON QUALIFIÉ :** l'essai deux-processus Windows SQLite WAL NORMAL exerce explicitement les callbacks xShmMap pages 0/1 depuis chaque véritable sqlite3_file ; ne prouve pas toutes les primitives/lifetimes ni runtime ; tâche ouverte.
   **Preuve de clôture :** xShmMap/xShmLock/xShmBarrier/xShmUnmap, régions multiples, verrous, barrières, versions des méthodes et cleanup, sur fixture réelle.
 - [ ] **M32-018** R4 — démontrer que le garde main/WAL/SHM résiste aux substitutions contrôlées  
   **Preuve de clôture :** Interleaving de swap/rename/replace et leurres FileId128 sur chacun ; échec sûr sans risque d'assimiler une race non observée à une preuve générale.
 - [ ] **M32-019** R4 — qualification en deux processus OS indépendants  
-  **R4 15/11/2026 — CANDIDAT NON QUALIFIÉ :** appels xShmBarrier + deux refus xShmLock hors bornes depuis chacun des deux sqlite3_file Windows TEMP, FileId128 conservés ; pas de capture atomique main/WAL/SHM, ABA non prouvée. PREUVE PARTIELLE, RESTE OUVERTE.\n  **R4 15/11/2026 — CANDIDAT NON QUALIFIÉ :** renforcement d'un test existant de DEUX PROCESSUS OS : page SHM région 1 exposée dans chaque processus + FileId128 tenus, séquencement BEGIN IMMEDIATE refus/admission déjà présent, sans preuve de custody atomique. Tâche ouverte.
+  **R4 15/11/2026 — CANDIDAT NON QUALIFIÉ :** appels xShmBarrier + deux refus xShmLock hors bornes depuis chacun des deux sqlite3_file Windows TEMP, FileId128 conservés ; pas de capture atomique main/WAL/SHM, ABA non prouvée. PREUVE PARTIELLE, RESTE OUVERTE.
+  **R4 15/11/2026 — CANDIDAT NON QUALIFIÉ :** renforcement d'un test existant de DEUX PROCESSUS OS : page SHM région 1 exposée dans chaque processus + FileId128 tenus, séquencement BEGIN IMMEDIATE refus/admission déjà présent, sans preuve de custody atomique. Tâche ouverte.
   **Preuve de clôture :** A tient BEGIN IMMEDIATE, B est refusé puis admis selon séquencement ; identité native et conservation du WAL/SHM observées des deux côtés.
 - [ ] **M32-020** R4 — établir la frontière atomique ou admettre explicitement la limite  
-  **R4 15/11/2026 — CANDIDAT NON QUALIFIÉ :** appels xShmBarrier + deux refus xShmLock hors bornes depuis chacun des deux sqlite3_file Windows TEMP, FileId128 conservés ; pas de capture atomique main/WAL/SHM, ABA non prouvée. PREUVE PARTIELLE, RESTE OUVERTE.\n  **R4 15/11/2026 — LIMITE EXPLICITE, NON CLOSE :** même si un test multi-processus page 1 passe, la prise des handles main/WAL/SHM reste non atomique et un ABA non observé possible ; writer/R1–R9, G3 STOP. Voir #38 #6885824968.
+  **R4 15/11/2026 — CANDIDAT NON QUALIFIÉ :** appels xShmBarrier + deux refus xShmLock hors bornes depuis chacun des deux sqlite3_file Windows TEMP, FileId128 conservés ; pas de capture atomique main/WAL/SHM, ABA non prouvée. PREUVE PARTIELLE, RESTE OUVERTE.
+  **R4 15/11/2026 — LIMITE EXPLICITE, NON CLOSE :** même si un test multi-processus page 1 passe, la prise des handles main/WAL/SHM reste non atomique et un ABA non observé possible ; writer/R1–R9, G3 STOP. Voir #38 #6885824968.
   **Preuve de clôture :** Binding réel du handle et de l'espace de noms/sidecars au moment pertinent ; aucun chemin démontré = writer STOP, sans raccourci EXCLUSIVE/non-SHM non revu.
 - [ ] **M32-021** R5 — prouver provenance SQLite distincte de integrity_check  
   **Preuve de clôture :** Profil, lineage M1.5/v6/v7, schema_migrations, clés, FK, identités immuables, journal état connu ; aucune adoption d'un SQLite seulement « ok ».
@@ -244,7 +247,8 @@
   **P3ac (15/11/2026 ; CANDIDAT NON QUALIFIÉ) :** création séquentielle d'un lot fictif de relations humaines avant/après, avec un seul accord final en RAM, non persistée. Pas de service Rust réel ni de clôture.
   **Preuve de clôture :** IDs exacts de même Universe ; limites de portée, erreurs déterministes, pas d'ordre global inventé.
 - [ ] **M32-057** Compléter révocation et correction des précédences  
-  **P3ad (15/11/2026, CANDIDAT NON QUALIFIÉ) :** révocation/correction de précédences strictement fictives, historique conservé, prévisualisation entière et confirmation en RAM, 14 tests candidats ; aucune persistance SQLite, preuve partielle seulement. RESTE OUVERTE.\n  **Preuve de clôture :** Lien précédent conservé, révocation datée dans l'histoire, rollback et diff exacts ; pas de suppression en cascade.
+  **P3ad (15/11/2026, CANDIDAT NON QUALIFIÉ) :** révocation/correction de précédences strictement fictives, historique conservé, prévisualisation entière et confirmation en RAM, 14 tests candidats ; aucune persistance SQLite, preuve partielle seulement. RESTE OUVERTE.
+  **Preuve de clôture :** Lien précédent conservé, révocation datée dans l'histoire, rollback et diff exacts ; pas de suppression en cascade.
 - [ ] **M32-058** Traiter les conflits et cycles sur graphe actif  
   **P3ac (15/11/2026 ; CANDIDAT NON QUALIFIÉ) :** refus global d'un cycle apparaissant à la dernière action, des doublons et références étrangères, sans mutation initiale. Pas de preuve de rollback SQLite ni de clôture.
   **P3q partiel (11/11/2026, NON close) :** sélection d'ID Unicode ≤256 points de code sur aperçus fictifs, rapprochement Stage 25/26 PR #35, et divergence insertion/IDs + pagination/filtres encore à décider. CI P3q À QUALIFIER ; aucune admission produit/writer.
@@ -289,7 +293,8 @@
   **P3ac (15/11/2026 ; CANDIDAT NON QUALIFIÉ) :** UI de saisie multiple avec raison humaine explicite, vérification globale et bouton de confirmation distinct, non montée dans App.tsx. RESTE OUVERTE.
   **Preuve de clôture :** Choix de deux ancres, aperçu de l'impact et témoin de cycle avant confirmation, explication des erreurs.
 - [ ] **M32-073** Concevoir correction/supersession/révocation réversible  
-  **P3ad (15/11/2026, CANDIDAT NON QUALIFIÉ) :** révocation/correction de précédences strictement fictives, historique conservé, prévisualisation entière et confirmation en RAM, 14 tests candidats ; aucune persistance SQLite, preuve partielle seulement. RESTE OUVERTE.\n  **Preuve de clôture :** Motif humain, prévisualisation, confirmation, historique inspectable et annulation sans effacer les anciennes lignes.
+  **P3ad (15/11/2026, CANDIDAT NON QUALIFIÉ) :** révocation/correction de précédences strictement fictives, historique conservé, prévisualisation entière et confirmation en RAM, 14 tests candidats ; aucune persistance SQLite, preuve partielle seulement. RESTE OUVERTE.
+  **Preuve de clôture :** Motif humain, prévisualisation, confirmation, historique inspectable et annulation sans effacer les anciennes lignes.
 - [ ] **M32-074** Préserver la séparation brouillon/proposé/canon existante  
   **Preuve de clôture :** Aucun texte de scène, fiche ou assertion M2 n'est promu canon par l'UI chronologique.
 - [ ] **M32-075** Garantir accessibilité/échappement et comportement hors ligne  
@@ -333,7 +338,8 @@
   **Preuve partielle P3o (2026-11-10, NON close) :** décodeur TS read-only fictif refuse les cycles entre relations `current`, préserve les liens historiques, test Vitest ciblé ; CI HEAD P3o et postmain À QUALIFIER. Aucune preuve runtime/writer ni acceptation globale.
   **Preuve de clôture :** Chemins cycliques, doublons, exclusions et opposition avant/après ; rollback et données intactes.
 - [ ] **M32-081** Valider revocations, corrections et lecture du passé  
-  **P3ad (15/11/2026, CANDIDAT NON QUALIFIÉ) :** révocation/correction de précédences strictement fictives, historique conservé, prévisualisation entière et confirmation en RAM, 14 tests candidats ; aucune persistance SQLite, preuve partielle seulement. RESTE OUVERTE.\n  **P3ab 14/11 — CANDIDAT :** compte historique fictif sans modification ni restauration persistante, tâche ouverte.
+  **P3ad (15/11/2026, CANDIDAT NON QUALIFIÉ) :** révocation/correction de précédences strictement fictives, historique conservé, prévisualisation entière et confirmation en RAM, 14 tests candidats ; aucune persistance SQLite, preuve partielle seulement. RESTE OUVERTE.
+  **P3ab 14/11 — CANDIDAT :** compte historique fictif sans modification ni restauration persistante, tâche ouverte.
   **P3aa #361 14/11/2026 — preuve partielle seulement :** statuts révoqué/remplacé et sélection explicite préservée après filtrage fictif. Pas de preuve historique authentifiée ni de persistance. Source/postmain PASS ; tâche ouverte.
   **Preuve de clôture :** Ancres/revisions historiques demeurent consultables après modifications, sans modifier HEAD des scènes.
 - [ ] **M32-082** Valider isolation Universe et IDs homogènes  
