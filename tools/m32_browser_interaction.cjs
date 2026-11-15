@@ -1569,14 +1569,101 @@ async function run() {
       assert.ok(!opts.includes("A") && !opts.includes("C"));
       assert.equal(await lab.getByRole("region", { name: "Impacts sur les paires choisies explicitement" }).count(),0);
     });
-    assert.equal(cases.length, 92);
+
+    // P3ai: REAL Chromium 93-97 on staged new fictional precedences.
+    // No mounted App.tsx, original SQLite, Tauri IPC or external network.
+    await caseRun("93-p3ai-new-relation-batch-selects-two-pair-impacts", async()=>{
+      await page.getByRole("button", { name: "Préparer un lot de précédences humaines fictives" }).click();
+      const lab=page.getByRole("region",{name:"Lot de précédences humaines fictives M3.2"});
+      await lab.getByRole("combobox",{name:"Événement antérieur"}).selectOption("C");
+      await lab.getByRole("combobox",{name:"Événement postérieur"}).selectOption("D");
+      await lab.getByRole("textbox",{name:"Justification de l'ordre humain"})
+        .fill("C avant D est déclaré explicitement");
+      await lab.getByRole("button",{name:"Ajouter au lot fictif"}).click();
+      for(const [left,right] of [["A","D"],["A","B"]]){
+        await lab.getByRole("combobox",{name:"Première ancre du lot à comparer"}).selectOption(left);
+        await lab.getByRole("combobox",{name:"Seconde ancre du lot à comparer"}).selectOption(right);
+        await lab.getByRole("button",{name:"Ajouter cette paire au lot de créations fictives"}).click();
+      }
+      assert.ok((await lab.innerText()).includes("Paires du lot choisies (2/8)"));
+      await lab.getByRole("button",{name:"Vérifier le lot complet sans l'appliquer"}).click();
+      const section=lab.getByRole("region",{name:"Impact avant après des nouvelles relations fictives"});
+      assert.equal(await section.getByRole("listitem").count(),2);
+      const body=await section.innerText();
+      for(const value of ["A / D","A / B","1 relations modifiées","1 témoins modifiés",
+        "avant incomparable, après before","avant before, après before"]){
+        assert.ok(body.includes(value),"Missing authored creation impact: "+value);
+      }
+      await lab.getByRole("button",{name:"Confirmer explicitement tout le lot en mémoire"}).click();
+      assert.equal(await section.count(),0);
+      assert.ok((await lab.innerText()).includes("Lot fictif appliqué en mémoire seulement."));
+      assert.equal(await page.getByText("Sauvegarde réussie").count(),0);
+    });
+    await caseRun("94-p3ai-new-creation-cycle-is-refused-even-with-independent-pair", async()=>{
+      await page.getByRole("button",{name:"Préparer un lot de précédences humaines fictives"}).click();
+      const lab=page.getByRole("region",{name:"Lot de précédences humaines fictives M3.2"});
+      await lab.getByRole("combobox",{name:"Événement antérieur"}).selectOption("C");
+      await lab.getByRole("combobox",{name:"Événement postérieur"}).selectOption("A");
+      await lab.getByRole("textbox",{name:"Justification de l'ordre humain"}).fill("Cycle interdit");
+      await lab.getByRole("button",{name:"Ajouter au lot fictif"}).click();
+      await lab.getByRole("combobox",{name:"Première ancre du lot à comparer"}).selectOption("D");
+      await lab.getByRole("combobox",{name:"Seconde ancre du lot à comparer"}).selectOption("A");
+      await lab.getByRole("button",{name:"Ajouter cette paire au lot de créations fictives"}).click();
+      await lab.getByRole("button",{name:"Vérifier le lot complet sans l'appliquer"}).click();
+      assert.ok((await lab.getByRole("alert").innerText()).toLowerCase().includes("cycle"));
+      assert.equal(await lab.getByRole("region",{name:"Impact avant après des nouvelles relations fictives"}).count(),0);
+      assert.equal(await lab.getByRole("button",{name:"Confirmer explicitement tout le lot en mémoire"}).count(),0);
+    });
+    await caseRun("95-p3ai-reversed-created-batch-pair-refused",async()=>{
+      await page.getByRole("button",{name:"Préparer un lot de précédences humaines fictives"}).click();
+      const lab=page.getByRole("region",{name:"Lot de précédences humaines fictives M3.2"});
+      for(const [left,right] of [["A","D"],["D","A"]]){
+        await lab.getByRole("combobox",{name:"Première ancre du lot à comparer"}).selectOption(left);
+        await lab.getByRole("combobox",{name:"Seconde ancre du lot à comparer"}).selectOption(right);
+        await lab.getByRole("button",{name:"Ajouter cette paire au lot de créations fictives"}).click();
+      }
+      assert.ok((await lab.getByRole("alert").innerText()).includes("doublonnée"));
+      assert.ok((await lab.innerText()).includes("Paires du lot choisies (1/8)"));
+      assert.equal(await lab.getByRole("button",{name:"Confirmer explicitement tout le lot en mémoire"}).count(),0);
+    });
+    await caseRun("96-p3ai-remove-batch-pair-invalidates-creation-preview",async()=>{
+      await page.getByRole("button",{name:"Préparer un lot de précédences humaines fictives"}).click();
+      const lab=page.getByRole("region",{name:"Lot de précédences humaines fictives M3.2"});
+      await lab.getByRole("combobox",{name:"Événement antérieur"}).selectOption("C");
+      await lab.getByRole("combobox",{name:"Événement postérieur"}).selectOption("D");
+      await lab.getByRole("textbox",{name:"Justification de l'ordre humain"}).fill("Relation de test");
+      await lab.getByRole("button",{name:"Ajouter au lot fictif"}).click();
+      await lab.getByRole("combobox",{name:"Première ancre du lot à comparer"}).selectOption("A");
+      await lab.getByRole("combobox",{name:"Seconde ancre du lot à comparer"}).selectOption("D");
+      await lab.getByRole("button",{name:"Ajouter cette paire au lot de créations fictives"}).click();
+      await lab.getByRole("button",{name:"Vérifier le lot complet sans l'appliquer"}).click();
+      assert.equal(await lab.getByRole("region",{name:"Impact avant après des nouvelles relations fictives"}).count(),1);
+      await lab.getByRole("button",{name:"Retirer la paire du lot"}).click();
+      assert.equal(await lab.getByRole("region",{name:"Impact avant après des nouvelles relations fictives"}).count(),0);
+      assert.equal(await lab.getByRole("button",{name:"Confirmer explicitement tout le lot en mémoire"}).count(),0);
+    });
+    await caseRun("97-p3ai-universe-switch-discards-staged-new-batch-pair",async()=>{
+      await page.getByRole("button",{name:"Préparer un lot de précédences humaines fictives"}).click();
+      const lab=page.getByRole("region",{name:"Lot de précédences humaines fictives M3.2"});
+      await lab.getByRole("combobox",{name:"Première ancre du lot à comparer"}).selectOption("A");
+      await lab.getByRole("combobox",{name:"Seconde ancre du lot à comparer"}).selectOption("D");
+      await lab.getByRole("button",{name:"Ajouter cette paire au lot de créations fictives"}).click();
+      await page.getByRole("button",{name:"Charger un autre univers fictif"}).click();
+      assert.ok((await lab.innerText()).includes("fiction-world-two"));
+      assert.ok((await lab.innerText()).includes("Paires du lot choisies (0/8)"));
+      const options=await lab.getByRole("combobox",{name:"Première ancre du lot à comparer"})
+        .locator("option").allTextContents();
+      assert.ok(options.includes("K") && options.includes("L"));
+      assert.ok(!options.includes("A") && !options.includes("D"));
+    });
+    assert.equal(cases.length, 97);
     // Historical PR #146 source marker: M32_BROWSER_REAL_CHROMIUM_PASS 62/62
     // Previous PR #156 marker retained: M32_BROWSER_REAL_CHROMIUM_PASS 70/70
     // PR #260 retained baseline (historical only): M32_BROWSER_REAL_CHROMIUM_PASS 82/82
     // PR #157 historical marker: M32_BROWSER_REAL_CHROMIUM_PASS 76/76
     // Historical P3a baseline, retained for continuity source-only tests:
     // M32_CI_PRECOMPILED_STRICT_CSP_BROWSER_PASS: 85/85
-    console.log("M32_BROWSER_REAL_CHROMIUM_PASS 92/92");
+    console.log("M32_BROWSER_REAL_CHROMIUM_PASS 97/97");
 
     // Actual Chromium enforced-CSP veto, separate from the 36
     // fictional interaction cases. Never make an off-loopback network call.
@@ -1608,9 +1695,9 @@ async function run() {
       });
       assert.equal(scriptVeto, false, "STOP: inline JS executed under strict CSP");
       console.log("M32_CI_PRECOMPILED_INLINE_SCRIPT_DENIED_PASS");
-      console.log("M32_CI_PRECOMPILED_STRICT_CSP_BROWSER_PASS: 92/92");
+      console.log("M32_CI_PRECOMPILED_STRICT_CSP_BROWSER_PASS: 97/97");
     }
-    console.log("M32_CI_FIXTURE_ONLY_BROWSER_PASS: 92/92; no normal source pages");
+    console.log("M32_CI_FIXTURE_ONLY_BROWSER_PASS: 97/97; no normal source pages");
   } finally {
     if (browser) await browser.close();
     server.kill();

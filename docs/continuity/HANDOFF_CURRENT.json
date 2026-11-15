@@ -1,4 +1,35 @@
 {
+  "m32_p3ai_created_batch_browser_20261115": {
+    "date": "2026-11-15",
+    "status": "P3AI_NEW_BATCH_REAL_CHROMIUM_SOURCE_CANDIDATE_UNQUALIFIED",
+    "parent_main": "db1498c6a5ed86e894915b830e17c13dc364abbf",
+    "pr373_source_run": 43740585311,
+    "pr373_postmain_run": 43741895550,
+    "parent_postmain": "PENDING_UNQUALIFIED",
+    "isolated_chromium": true,
+    "dev_and_strict_csp": true,
+    "cases_previous": 92,
+    "cases_candidate": 97,
+    "new_cases": 5,
+    "writer_authorized": false,
+    "operator_access": false,
+    "requirements_partial": [
+      "M32-056",
+      "M32-058",
+      "M32-072",
+      "M32-075",
+      "M32-076",
+      "M32-078",
+      "M32-080",
+      "M32-082",
+      "M32-083"
+    ],
+    "closed": 9,
+    "open": 95,
+    "checklist_total": 104,
+    "gate": "IN_PROGRESS_NOT_ACCEPTED",
+    "strategy": "PRODUCT_FIRST_PARALLEL_SAFETY"
+  },
   "m32_p3ah_created_batch_selected_pairs_20261115": {
     "date": "2026-11-15",
     "status": "P3AH_SELECTED_PAIRS_CREATION_SOURCE_CANDIDATE_UNQUALIFIED",
