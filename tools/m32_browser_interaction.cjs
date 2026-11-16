@@ -717,9 +717,9 @@ async function run() {
       const reviewed=lab.getByRole("status",{name:"Avant après correction d'ancre fictive"});
       assert.ok((await reviewed.innerText()).includes("Version historique conservée"));
       assert.ok((await reviewed.innerText()).includes("Libellé historique"));
-      assert.ok((await reviewed.innerText()).includes("Précision historique"));
+      assert.ok((await reviewed.innerText()).includes("précision historique"));
       assert.ok((await reviewed.innerText()).includes("Libellé proposé"));
-      assert.ok((await reviewed.innerText()).includes("Précision proposée"));
+      assert.ok((await reviewed.innerText()).includes("précision proposée"));
       await reviewed.getByRole("button",{name:"Confirmer la correction fictive en RAM"}).click();
       assert.ok((await lab.innerText()).includes("Sélection historique"));
       assert.equal(await lab.getByRole("region", { name: "Comparaison M3.2 isolée" }).count(), 0);
