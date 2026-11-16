@@ -134,5 +134,107 @@ class M32CrossFileCoherence(unittest.TestCase):
         with self.assertRaisesRegex(ValueError,"gate promotion"):
             guard_checkpoint(self.short,fake,self.heads,self.checklist)
 
+
+# M32-005: reject status/date drift. These tests check source claims, never
+# authenticate GitHub's live run status or accept a writer/operator gate.
+from datetime import date
+
+def guard_dated_status(short, entry, leads, checklist):
+    sha, run, closed = guard_checkpoint(short, entry, leads, checklist)
+    try:
+        day = date.fromisoformat(entry["date"])
+    except (TypeError, KeyError, ValueError) as exc:
+        raise ValueError("STOP invalid checkpoint date") from exc
+    stamp = day.strftime("%d/%m/%Y")
+    line = next((line for line in short.splitlines() if line.startswith("main=")), "")
+    if f"date={day.isoformat()}" not in line:
+        raise ValueError("STOP short date drift")
+    for path, lead in leads.items():
+        if not lead.startswith(f"**{stamp} — "):
+            raise ValueError("STOP checkpoint date drift " + path)
+    if f"{closed}/{104-closed}" not in line:
+        raise ValueError("STOP short count drift")
+    if entry.get("current_phase") != "SOURCE_ONLY_CANDIDATE_UNQUALIFIED":
+        raise ValueError("STOP candidate phase promotion")
+    if entry.get("writer_admitted") is not False or entry.get("operator_accepted") is not False:
+        raise ValueError("STOP false operator or writer admission")
+    if entry.get("source_ci_status") != "COMPLETED_SUCCESS_EXACT_HEAD":
+        raise ValueError("STOP source CI claim")
+    source_head = entry.get("source_ci_head")
+    source_run = entry.get("source_ci_run")
+    if not isinstance(source_head, str) or not re.fullmatch(r"[0-9a-f]{40}", source_head):
+        raise ValueError("STOP source SHA malformed")
+    if type(source_run) is not int or source_run <= 0:
+        raise ValueError("STOP source CI run malformed")
+    if f"CI #{source_run} PASS" not in line:
+        raise ValueError("STOP source CI unlinked")
+    for path, lead in leads.items():
+        if source_head not in lead or f"#{source_run}" not in lead:
+            raise ValueError("STOP source CI proof drift " + path)
+    post_state = entry.get("parent_postmain_status")
+    if post_state == "PENDING_UNQUALIFIED":
+        if f"postmain #{run} PENDING" not in line:
+            raise ValueError("STOP pending CI portrayed as success")
+    elif post_state == "COMPLETED_SUCCESS_EXACT_MAIN":
+        if entry.get("attested_postmain_sha") != sha or f"postmain #{run} PASS" not in line:
+            raise ValueError("STOP postmain success without same SHA attestation")
+    else:
+        raise ValueError("STOP postmain status unrecognized")
+    return sha, run, closed
+
+class M32DatedStatusTruth(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.short=SHORT.read_text(encoding="utf-8")
+        cls.checklist=MASTER.read_text(encoding="utf-8")
+        data=json.loads((ROOT/"docs/continuity/HANDOFF_CURRENT.json").read_text(encoding="utf-8"))
+        cls.entry=next(iter(data.values()))
+        cls.leads={p:(ROOT/p).read_text(encoding="utf-8").split("\n\n",1)[0]
+                   for p in CHECKPOINT_LEADS}
+
+    def test_12_current_date_and_evidence_status_consistent(self):
+        sha,run,closed=guard_dated_status(self.short,self.entry,self.leads,self.checklist)
+        self.assertRegex(sha,r"^[0-9a-f]{40}$")
+        self.assertGreater(run,0)
+        self.assertEqual(closed,9)
+
+    def test_13_falsified_or_stale_date_refused(self):
+        bad=dict(self.entry,date="2026-11-12")
+        with self.assertRaisesRegex(ValueError,"date drift"):
+            guard_dated_status(self.short,bad,self.leads,self.checklist)
+        with self.assertRaisesRegex(ValueError,"short date drift"):
+            guard_dated_status(self.short.replace("date=2026-11-16","date=2026-11-12"),
+                               self.entry,self.leads,self.checklist)
+
+    def test_14_unattested_success_refused(self):
+        forged=dict(self.entry,parent_postmain_status="COMPLETED_SUCCESS_EXACT_MAIN")
+        with self.assertRaisesRegex(ValueError,"postmain success without"):
+            guard_dated_status(self.short,forged,self.leads,self.checklist)
+
+    def test_15_false_writer_operator_or_gate_promotion_refused(self):
+        for patch in ({"writer_admitted":True},{"operator_accepted":True},
+                      {"current_phase":"ACCEPTED"},{"gate":"ACCEPTED"}):
+            with self.subTest(patch=patch),self.assertRaisesRegex(ValueError,
+                    "admission|promotion"):
+                guard_dated_status(self.short,{**self.entry,**patch},
+                                   self.leads,self.checklist)
+
+    def test_16_forged_source_ci_proof_refused(self):
+        with self.assertRaisesRegex(ValueError,"source CI proof drift"):
+            guard_dated_status(self.short,{**self.entry,"source_ci_head":"a"*40},
+                               self.leads,self.checklist)
+        with self.assertRaisesRegex(ValueError,"source CI unlinked"):
+            guard_dated_status(self.short,{**self.entry,"source_ci_run":99999999999},
+                               self.leads,self.checklist)
+
+    def test_17_false_short_counter_or_source_outcome_refused(self):
+        with self.assertRaisesRegex(ValueError,"short count drift"):
+            guard_dated_status(self.short.replace("9/95","10/94",1),
+                               self.entry,self.leads,self.checklist)
+        with self.assertRaisesRegex(ValueError,"source CI claim"):
+            guard_dated_status(self.short,{**self.entry,
+                               "source_ci_status":"PENDING_UNQUALIFIED"},
+                               self.leads,self.checklist)
+
 if __name__ == "__main__":
     unittest.main()

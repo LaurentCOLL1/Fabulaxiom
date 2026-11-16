@@ -1,4 +1,24 @@
 {
+  "m32_005_dated_status_truth_20261116": {
+    "date": "2026-11-16",
+    "status": "M32_005_DATED_STATUS_SOURCE_CANDIDATE_UNQUALIFIED",
+    "parent_main": "3c326c457d7b054c9b9a7e26de86558b6f412ad7",
+    "source_ci_run": 43772456415,
+    "source_ci_head": "10526ef4b2689c549cb901b639e60c084cd45a7e",
+    "source_ci_status": "COMPLETED_SUCCESS_EXACT_HEAD",
+    "pr375_postmain_run": 43803577302,
+    "parent_postmain_status": "PENDING_UNQUALIFIED",
+    "current_phase": "SOURCE_ONLY_CANDIDATE_UNQUALIFIED",
+    "tests_added": 6,
+    "documents_checked": 8,
+    "writer_admitted": false,
+    "operator_accepted": false,
+    "checklist_total": 104,
+    "closed": 9,
+    "open": 95,
+    "gate": "IN_PROGRESS_NOT_ACCEPTED",
+    "strategy": "PRODUCT_FIRST_PARALLEL_SAFETY"
+  },
   "m32_checkpoint_coherence_20261115": {
     "date": "2026-11-15",
     "status": "M32_004_CHECKPOINT_COHERENCE_SOURCE_CANDIDATE_UNQUALIFIED",
