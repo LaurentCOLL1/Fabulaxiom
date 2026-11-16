@@ -1,4 +1,23 @@
 {
+  "m32_20261116_p3aj_short_cycle": {
+    "date": "2026-11-16",
+    "status": "P3AJ_MERGED_POSTMAIN_PENDING_SHORT_CYCLE_SOURCE_CHECKPOINT",
+    "parent_main": "a9c2cd7cd095ec8fb7f0ecad9ede66428dfed991",
+    "source_ci_run": 43908932749,
+    "source_ci_head": "6f60dfdd158fbfa93d75cb95116417c8d8de6c6b",
+    "source_ci_status": "COMPLETED_SUCCESS_EXACT_HEAD",
+    "pr377_postmain_run": 43913712275,
+    "parent_postmain_status": "PENDING_UNQUALIFIED",
+    "current_phase": "SOURCE_ONLY_CANDIDATE_UNQUALIFIED",
+    "writer_admitted": false,
+    "operator_accepted": false,
+    "checklist_total": 104,
+    "closed": 9,
+    "open": 95,
+    "gate": "IN_PROGRESS_NOT_ACCEPTED",
+    "strategy": "PRODUCT_FIRST_PARALLEL_SAFETY",
+    "expected_head_sha": "6f60dfdd158fbfa93d75cb95116417c8d8de6c6b"
+  },
   "m32_p3aj_anchor_supersession_review_20261116": {
     "date": "2026-11-16",
     "status": "P3AJ_FICTIONAL_ANCHOR_SUPERSESSION_SOURCE_CANDIDATE_UNQUALIFIED",
