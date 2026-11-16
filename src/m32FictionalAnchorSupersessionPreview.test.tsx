@@ -157,6 +157,39 @@ describe("P3aj fiction-only dated supersession review and confirmation",()=>{
    expect(after.snapshot.anchors.find(a=>a.id==="A")?.source_revision_id).toBe("rev-a");
    expect(after.snapshot.anchors.find(a=>a.id===reviewed.new_anchor.id)?.source_revision_id).toBeNull();
  });
+ it("20 displays explicit old and new fictional novel and scene identities",()=>{
+   const d=sourced(),i={...input("relative"),source_scene_id:"scene-b",source_revision_id:"rev-b"};
+   const p=previewFictionalAnchorSupersession(d,"A",i);
+   expect(p.old_source).toMatchObject({universe_id,novel_id:"novel-a",scene_id:"scene-a",revision_id:"rev-a"});
+   expect(p.new_source).toMatchObject({universe_id,novel_id:"novel-b",scene_id:"scene-b",revision_id:"rev-b"});
+   expect(p.old_anchor.source_revision_id).toBe("rev-a");
+   expect(p.new_anchor.source_revision_id).toBe("rev-b");
+   expect(p.can_write).toBe(false);
+ });
+ it("21 retains same fictional source identity when only authored date changes",()=>{
+   const p=previewFictionalAnchorSupersession(sourced(),"A",input("unknown"));
+   expect(p.old_source).toMatchObject({novel_id:"novel-a",scene_id:"scene-a"});
+   expect(p.new_source).toEqual(p.old_source);
+   expect(p.old_source).not.toBe(p.new_source);
+ });
+ it("22 explicitly removing source leaves historical identity intact",()=>{
+   const i={...input("relative"),source_scene_id:null,source_revision_id:null};
+   const p=previewFictionalAnchorSupersession(sourced(),"A",i);
+   expect(p.old_source?.revision_id).toBe("rev-a");
+   expect(p.new_source).toBeNull();
+ });
+ it("23 source-free anchors do not fabricate novel or scene identity",()=>{
+   const p=previewFictionalAnchorSupersession(draft(),"B",input("relative"));
+   expect(p.old_source).toBeNull();
+   expect(p.new_source).toBeNull();
+ });
+ it("24 confirmation rejects fabricated novel or scene in reviewed provenance",()=>{
+   const d=sourced(),i={...input("relative"),source_scene_id:"scene-b",source_revision_id:"rev-b"};
+   const p=previewFictionalAnchorSupersession(d,"A",i);
+   const forged={...p,new_source:{...p.new_source!,novel_id:"novel-foreign",scene_id:"scene-foreign"}};
+   expect(()=>confirmFictionalAnchorSupersession(d,"A",i,forged,true)).toThrow();
+   expect(d.snapshot.anchors.find(a=>a.id==="A")?.status).toBe("current");
+ });
  it("13 renders a deliberate review then confirmation entry point, no direct write",()=>{
    const html=renderToStaticMarkup(createElement(M32ManualChronologyLab,{initial:scene(),revisions:[]}));
    expect(html).toContain("Prévisualiser la correction sans l&#x27;appliquer");
