@@ -713,7 +713,8 @@ async function run() {
       await lab.getByRole("combobox", { name: "Correction : remplacer une ancre active" })
         .selectOption("D");
       await lab.getByRole("button", { name: "Prévisualiser la correction sans l'appliquer" }).click();
-      const reviewed=lab.getByRole("region",{name:"Avant après correction d'ancre fictive"});
+      // The review section explicitly has role="status", overriding <section>'s implicit region.
+      const reviewed=lab.getByRole("status",{name:"Avant après correction d'ancre fictive"});
       assert.ok((await reviewed.innerText()).includes("Version historique conservée"));
       await reviewed.getByRole("button",{name:"Confirmer la correction fictive en RAM"}).click();
       assert.ok((await lab.innerText()).includes("Sélection historique"));
@@ -1665,11 +1666,9 @@ async function run() {
       await lab.getByRole("combobox",{name:"Correction : remplacer une ancre active"})
         .selectOption("D");
       await lab.getByRole("button",{name:"Prévisualiser la correction sans l'appliquer"}).click();
-      assert.equal(await lab.getByRole("region",
-        {name:"Avant après correction d'ancre fictive"}).count(),1);
+      assert.equal(await lab.getByRole("status",{name:"Avant après correction d'ancre fictive"}).count(),1);
       await lab.getByRole("combobox",{name:"Type de date"}).selectOption("exact");
-      assert.equal(await lab.getByRole("region",
-        {name:"Avant après correction d'ancre fictive"}).count(),0);
+      assert.equal(await lab.getByRole("status",{name:"Avant après correction d'ancre fictive"}).count(),0);
       assert.equal(await lab.getByRole("button",
         {name:"Confirmer la correction fictive en RAM"}).count(),0);
     });
