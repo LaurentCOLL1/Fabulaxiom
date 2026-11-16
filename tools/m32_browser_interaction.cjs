@@ -712,7 +712,10 @@ async function run() {
         .innerText()).includes("Ordre indéterminé"));
       await lab.getByRole("combobox", { name: "Correction : remplacer une ancre active" })
         .selectOption("D");
-      await lab.getByRole("button", { name: "Remplacer sans effacer l'historique" }).click();
+      await lab.getByRole("button", { name: "Prévisualiser la correction sans l'appliquer" }).click();
+      const reviewed=lab.getByRole("region",{name:"Avant après correction d'ancre fictive"});
+      assert.ok((await reviewed.innerText()).includes("Version historique conservée"));
+      await reviewed.getByRole("button",{name:"Confirmer la correction fictive en RAM"}).click();
       assert.ok((await lab.innerText()).includes("Sélection historique"));
       assert.equal(await lab.getByRole("region", { name: "Comparaison M3.2 isolée" }).count(), 0);
       await lab.getByRole("combobox", { name: "Deuxième ancre à consulter" })
@@ -1656,14 +1659,28 @@ async function run() {
       assert.ok(options.includes("K") && options.includes("L"));
       assert.ok(!options.includes("A") && !options.includes("D"));
     });
-    assert.equal(cases.length, 97);
+    await caseRun("98-p3aj-changing-date-kind-invalidates-stale-anchor-review",async()=>{
+      await page.getByRole("button",{name:"Ouvrir l'atelier manuel fictif"}).click();
+      const lab=page.getByRole("region",{name:"Atelier manuel M3.2 exclusivement fictif"});
+      await lab.getByRole("combobox",{name:"Correction : remplacer une ancre active"})
+        .selectOption("D");
+      await lab.getByRole("button",{name:"Prévisualiser la correction sans l'appliquer"}).click();
+      assert.equal(await lab.getByRole("region",
+        {name:"Avant après correction d'ancre fictive"}).count(),1);
+      await lab.getByRole("combobox",{name:"Type de date"}).selectOption("exact");
+      assert.equal(await lab.getByRole("region",
+        {name:"Avant après correction d'ancre fictive"}).count(),0);
+      assert.equal(await lab.getByRole("button",
+        {name:"Confirmer la correction fictive en RAM"}).count(),0);
+    });
+    assert.equal(cases.length, 98);
     // Historical PR #146 source marker: M32_BROWSER_REAL_CHROMIUM_PASS 62/62
     // Previous PR #156 marker retained: M32_BROWSER_REAL_CHROMIUM_PASS 70/70
     // PR #260 retained baseline (historical only): M32_BROWSER_REAL_CHROMIUM_PASS 82/82
     // PR #157 historical marker: M32_BROWSER_REAL_CHROMIUM_PASS 76/76
     // Historical P3a baseline, retained for continuity source-only tests:
     // M32_CI_PRECOMPILED_STRICT_CSP_BROWSER_PASS: 85/85
-    console.log("M32_BROWSER_REAL_CHROMIUM_PASS 97/97");
+    console.log("M32_BROWSER_REAL_CHROMIUM_PASS 98/98");
 
     // Actual Chromium enforced-CSP veto, separate from the 36
     // fictional interaction cases. Never make an off-loopback network call.
@@ -1695,9 +1712,9 @@ async function run() {
       });
       assert.equal(scriptVeto, false, "STOP: inline JS executed under strict CSP");
       console.log("M32_CI_PRECOMPILED_INLINE_SCRIPT_DENIED_PASS");
-      console.log("M32_CI_PRECOMPILED_STRICT_CSP_BROWSER_PASS: 97/97");
+      console.log("M32_CI_PRECOMPILED_STRICT_CSP_BROWSER_PASS: 98/98");
     }
-    console.log("M32_CI_FIXTURE_ONLY_BROWSER_PASS: 97/97; no normal source pages");
+    console.log("M32_CI_FIXTURE_ONLY_BROWSER_PASS: 98/98; no normal source pages");
   } finally {
     if (browser) await browser.close();
     server.kill();
