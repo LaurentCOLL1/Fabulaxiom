@@ -3,7 +3,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 import { previewFictionalAnchorSupersession, confirmFictionalAnchorSupersession } from "./m32FictionalAnchorSupersessionPreview";
 import { startFictionalDraft, createFictionalAnchor, createFictionalPrecedence } from "./m32FictionalManualChronology";
-import type { FictionalTimeInput } from "./m32FictionalManualChronology";
+import type { FictionalTimeInput, FictionalRevision } from "./m32FictionalManualChronology";
 import type { M32ChronologyProjection, M32TimeKind } from "./M32ChronologyPreview";
 import M32ManualChronologyLab from "./M32ManualChronologyLab";
 
@@ -18,6 +18,25 @@ const scene=():M32ChronologyProjection=>({universe_id,reader_reveal_status:"not_
   anchor("C","approximate","Marées",null,"trois marées"),anchor("D","relative")],
  precedences:[],narration:[]});
 const draft=()=>startFictionalDraft(scene());
+const sourced=()=>{
+ const baseline=scene();
+ const revisions: FictionalRevision[]=[
+  {universe_id,novel_id:"novel-a",scene_id:"scene-a",revision_id:"rev-a",revision_label:"A initiale"},
+  {universe_id,novel_id:"novel-b",scene_id:"scene-b",revision_id:"rev-b",revision_label:"B révisée"},
+ ];
+ const narration=revisions.map((r,index)=>({
+  universe_id,novel_id:r.novel_id,scene_id:r.scene_id,
+  novel_title:index===0?"Roman A":"Roman B",chapter_id:"chapter-"+String(index+1),
+  chapter_title:"Chapitre inventé",chapter_order:1,scene_order:1,
+  scene_title:"Scène inventée "+String(index+1),
+ }));
+ return startFictionalDraft({
+  ...baseline,
+  anchors:baseline.anchors.map(a=>a.id==="A"?{...a,source_revision_id:"rev-a"}:a),
+  narration,
+ },revisions);
+};
+
 const input=(kind:M32TimeKind,calendar="",label="",precision=""):FictionalTimeInput=>({
  kind,calendar,label,precision
 });
@@ -90,6 +109,53 @@ describe("P3aj fiction-only dated supersession review and confirmation",()=>{
    expect(JSON.stringify(d)).toBe(bytes);
    expect(()=>previewFictionalAnchorSupersession(d,"A",input("exact"))).toThrow();
    expect(JSON.stringify(d)).toBe(bytes);
+ });
+ it("14 keeps exact immutable source when author corrects a date without changing source",()=>{
+   const d=sourced(),i=input("approximate","Marées","","deux marées");
+   const p=previewFictionalAnchorSupersession(d,"A",i);
+   expect(p.old_anchor.source_revision_id).toBe("rev-a");
+   expect(p.new_anchor.source_revision_id).toBe("rev-a");
+   const after=confirmFictionalAnchorSupersession(d,"A",i,p,true);
+   expect(after.snapshot.anchors.find(a=>a.id==="A")?.source_revision_id).toBe("rev-a");
+   expect(after.snapshot.anchors.find(a=>a.id===p.new_anchor.id)?.source_revision_id).toBe("rev-a");
+   expect(d.snapshot.anchors.find(a=>a.id==="A")?.status).toBe("current");
+ });
+ it("15 changes source explicitly across fictional novels and preserves original historical provenance",()=>{
+   const d=sourced(),i={...input("relative"),source_scene_id:"scene-b",source_revision_id:"rev-b"};
+   const p=previewFictionalAnchorSupersession(d,"A",i);
+   expect(p.old_anchor.source_revision_id).toBe("rev-a");
+   expect(p.new_anchor.source_revision_id).toBe("rev-b");
+   const after=confirmFictionalAnchorSupersession(d,"A",i,p,true);
+   expect(after.snapshot.anchors.find(a=>a.id==="A")?.source_revision_id).toBe("rev-a");
+   expect(after.snapshot.anchors.find(a=>a.id==="A")?.status).toBe("superseded");
+   expect(after.snapshot.anchors.find(a=>a.id===p.new_anchor.id)?.source_revision_id).toBe("rev-b");
+   expect(after.snapshot.precedences).toHaveLength(0);
+ });
+ it("16 refuses a revision ID paired with the wrong scene ID",()=>{
+   const d=sourced();
+   expect(()=>previewFictionalAnchorSupersession(d,"A",
+     {...input("relative"),source_scene_id:"scene-a",source_revision_id:"rev-b"})).toThrow();
+   expect(d.audit).toHaveLength(0);
+ });
+ it("17 refuses a nonexistent or foreign historical revision",()=>{
+   const d=sourced();
+   expect(()=>previewFictionalAnchorSupersession(d,"A",
+     {...input("relative"),source_scene_id:"scene-b",source_revision_id:"rev-foreign"})).toThrow();
+   expect(d.snapshot.anchors.find(a=>a.id==="A")?.source_revision_id).toBe("rev-a");
+ });
+ it("18 refuses confirmation after a different source revision was selected",()=>{
+   const d=sourced(),first={...input("relative"),source_scene_id:"scene-b",source_revision_id:"rev-b"};
+   const reviewed=previewFictionalAnchorSupersession(d,"A",first);
+   const changed={...input("relative"),source_scene_id:"scene-a",source_revision_id:"rev-a"};
+   expect(()=>confirmFictionalAnchorSupersession(d,"A",changed,reviewed,true)).toThrow();
+   expect(d.snapshot.anchors.find(a=>a.id==="A")?.status).toBe("current");
+ });
+ it("19 requires deliberate null source to detach new version without erasing the old source",()=>{
+   const d=sourced(),i={...input("unknown"),source_scene_id:null,source_revision_id:null};
+   const reviewed=previewFictionalAnchorSupersession(d,"A",i);
+   const after=confirmFictionalAnchorSupersession(d,"A",i,reviewed,true);
+   expect(after.snapshot.anchors.find(a=>a.id==="A")?.source_revision_id).toBe("rev-a");
+   expect(after.snapshot.anchors.find(a=>a.id===reviewed.new_anchor.id)?.source_revision_id).toBeNull();
  });
  it("13 renders a deliberate review then confirmation entry point, no direct write",()=>{
    const html=renderToStaticMarkup(createElement(M32ManualChronologyLab,{initial:scene(),revisions:[]}));
