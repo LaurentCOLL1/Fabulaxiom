@@ -34,12 +34,14 @@ function fixture() {
   return { root, head: git(root, "rev-parse", "HEAD") };
 }
 
-test("01 exact SHA and 27 Git blobs match fictional-only sources", () => {
+test("01 exact SHA and 28 Git blobs match fictional-only sources", () => {
   const f = fixture();
   const evidence = bindSourcesToCheckout(f.root, f.head, MANIFEST);
   assert.equal(evidence.gitHead, f.head);
-  // P3a historical inventory baseline: evidence.inventory.length, 19 (now 27)
-  assert.equal(evidence.inventory.length, 27);
+  // P3a historical inventory baseline: evidence.inventory.length, 19 (now 28)
+  assert.equal(evidence.inventory.length, 28);
+  assert.ok(MANIFEST.includes("src/m32FictionalAnchorSupersessionPreview.ts"));
+  assert.ok(!MANIFEST.includes("src/App.tsx"));
   assert.match(evidence.inventorySha, /^[a-f0-9]{64}$/);
   for (const item of evidence.inventory) {
     assert.equal(item.sha256,

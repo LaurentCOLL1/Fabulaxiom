@@ -1,4 +1,26 @@
 {
+  "m32_p3aj_anchor_supersession_review_20261116": {
+    "date": "2026-11-16",
+    "status": "P3AJ_FICTIONAL_ANCHOR_SUPERSESSION_SOURCE_CANDIDATE_UNQUALIFIED",
+    "parent_main": "729d6860b1bbce9d08f5b464070ea3edb008e273",
+    "source_ci_run": 43804081056,
+    "source_ci_head": "fb63521916281c1e9fdbdfa16f04c8cf3726ee23",
+    "source_ci_status": "COMPLETED_SUCCESS_EXACT_HEAD",
+    "pr376_postmain_run": 43805234690,
+    "parent_postmain_status": "PENDING_UNQUALIFIED",
+    "current_phase": "SOURCE_ONLY_CANDIDATE_UNQUALIFIED",
+    "vitest_cases": 13,
+    "chromium_cases_candidate": 98,
+    "unmounted_react_lab": true,
+    "no_persistence": true,
+    "writer_admitted": false,
+    "operator_accepted": false,
+    "checklist_total": 104,
+    "closed": 9,
+    "open": 95,
+    "gate": "IN_PROGRESS_NOT_ACCEPTED",
+    "strategy": "PRODUCT_FIRST_PARALLEL_SAFETY"
+  },
   "m32_005_dated_status_truth_20261116": {
     "date": "2026-11-16",
     "status": "M32_005_DATED_STATUS_SOURCE_CANDIDATE_UNQUALIFIED",

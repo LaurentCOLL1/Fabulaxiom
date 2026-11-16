@@ -128,10 +128,14 @@ describe("M3.2 manually authored fictional-only chronology laboratory", () => {
   });
   it("12 static form exposes manual actions only in fictional mode", () => {
     const html = renderToStaticMarkup(createElement(M32ManualChronologyLab, { initial: invented, revisions: history }));
-    for (const word of ["Ajouter l'ancre", "Remplacer sans effacer", "Ajouter avant/après",
-      "Révoquer explicitement", "Ordre de narration", "Ordre de révélation"]) {
+    for (const word of ["Ajouter l'ancre", "Prévisualiser la correction sans l'appliquer",
+      "Ajouter avant/après", "Révoquer explicitement",
+      "Ordre de narration", "Ordre de révélation"]) {
       expect(html).toContain(word.replace(/'/g, "&#x27;"));
     }
+    // The old one-click correction was replaced by preview then explicit approval.
+    expect(html).not.toContain("Remplacer sans effacer");
+    expect(html).not.toContain("Confirmer la correction fictive en RAM");
     expect(html).not.toContain("invoke(");
     expect(html).not.toContain("Date.parse");
     expect(html).not.toContain("fetch(");

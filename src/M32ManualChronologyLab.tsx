@@ -3,8 +3,10 @@ import type { M32ChronologyProjection, M32TimeKind } from "./M32ChronologyPrevie
 import M32ChronologyPreview from "./M32ChronologyPreview";
 import M32WorldOrderComparison from "./M32WorldOrderComparison";
 import { previewFictionalRevocationImpact } from "./m32FictionalRevocationImpact";
+import { previewFictionalAnchorSupersession, confirmFictionalAnchorSupersession,
+  type FictionalAnchorSupersessionReview } from "./m32FictionalAnchorSupersessionPreview";
 import {
-  startFictionalDraft, createFictionalAnchor, supersedeFictionalAnchor,
+  startFictionalDraft, createFictionalAnchor,
   createFictionalPrecedence, revokeFictionalPrecedence,
   previewFictionalPrecedence, previewFictionalCorrection, previewFictionalThreeOrders,
   previewFictionalSceneRevisionWorldOrder,
@@ -33,6 +35,7 @@ function Lab({ initial, revisions }: {
   const [sceneId, setSceneId] = useState("");
   const [revisionId, setRevisionId] = useState("");
   const [replace, setReplace] = useState("");
+  const [supersessionPreview, setSupersessionPreview] = useState<FictionalAnchorSupersessionReview|null>(null);
   const [before, setBefore] = useState("");
   const [after, setAfter] = useState("");
   const [reason, setReason] = useState("");
@@ -66,11 +69,23 @@ function Lab({ initial, revisions }: {
   function apply(action: () => FictionalDraft, message: string) {
     try {
       setDraft(action());
+      setSupersessionPreview(null);
       setError(null);
       setNotice(message);
     } catch (err) {
       setError(String(err));
       setNotice(null);
+    }
+  }
+  function reviewCorrection() {
+    try {
+      const candidate = previewFictionalAnchorSupersession(draft,replace,input);
+      setSupersessionPreview(candidate);
+      setNotice("Prévisualisation fictive seulement ; aucune correction appliquée.");
+      setError(null);
+    } catch(err) {
+      setSupersessionPreview(null);
+      setError(String(err));setNotice(null);
     }
   }
   return <section aria-label="Atelier manuel M3.2 exclusivement fictif">
@@ -82,7 +97,7 @@ function Lab({ initial, revisions }: {
       <legend>Créer ou remplacer une ancre temporelle</legend>
       <label htmlFor={id + "-kind"}>Type de date</label>
       <select id={id + "-kind"} value={kind}
-        onChange={e => setKind(e.currentTarget.value as M32TimeKind)}>
+        onChange={e => {setKind(e.currentTarget.value as M32TimeKind);setSupersessionPreview(null);}}>
         <option value="unknown">Inconnue</option>
         <option value="relative">Relative</option>
         <option value="exact">Exacte dans un calendrier fictif</option>
@@ -91,22 +106,23 @@ function Lab({ initial, revisions }: {
       {(kind === "exact" || kind === "approximate") && <>
         <label htmlFor={id + "-calendar"}>Calendrier fictif</label>
         <input id={id + "-calendar"} value={calendar} maxLength={160}
-          onChange={e => setCalendar(e.currentTarget.value)} />
+          onChange={e => {setCalendar(e.currentTarget.value);setSupersessionPreview(null);}} />
       </>}
       {kind === "exact" && <>
         <label htmlFor={id + "-label"}>Date exprimée dans ce calendrier</label>
         <input id={id + "-label"} value={label} maxLength={160}
-          onChange={e => setLabel(e.currentTarget.value)} />
+          onChange={e => {setLabel(e.currentTarget.value);setSupersessionPreview(null);}} />
       </>}
       {kind === "approximate" && <>
         <label htmlFor={id + "-precision"}>Intervalle ou incertitude</label>
         <input id={id + "-precision"} value={precision} maxLength={160}
-          onChange={e => setPrecision(e.currentTarget.value)} />
+          onChange={e => {setPrecision(e.currentTarget.value);setSupersessionPreview(null);}} />
       </>}
       <label htmlFor={id + "-scene"}>Scène inventée à citer (facultatif)</label>
       <select id={id + "-scene"} value={sceneId} onChange={e => {
         setSceneId(e.currentTarget.value);
         setRevisionId("");
+        setSupersessionPreview(null);
       }}>
         <option value="">Sans nouvelle référence de scène</option>
         {scenes.map(r => <option key={r.scene_id} value={r.scene_id}>
@@ -117,7 +133,7 @@ function Lab({ initial, revisions }: {
       {sceneId && <>
         <label htmlFor={id + "-revision"}>Révision exacte et immuable de cette scène</label>
         <select id={id + "-revision"} value={revisionId}
-          onChange={e => setRevisionId(e.currentTarget.value)}>
+          onChange={e => {setRevisionId(e.currentTarget.value);setSupersessionPreview(null);}}>
           <option value="">Choisir la révision exacte</option>
           {availableRevisions.map(r => <option key={r.revision_id} value={r.revision_id}>
             {r.revision_label} — {r.revision_id}
@@ -132,7 +148,7 @@ function Lab({ initial, revisions }: {
       </button>
       <label htmlFor={id + "-replace"}>Correction : remplacer une ancre active</label>
       <select id={id + "-replace"} value={replace}
-        onChange={e => setReplace(e.currentTarget.value)}>
+        onChange={e => {setReplace(e.currentTarget.value);setSupersessionPreview(null);}}>
         <option value="">Sélectionner une ancre</option>
         {active.map(a => <option key={a.id} value={a.id}>{a.id}</option>)}
       </select>
@@ -142,11 +158,40 @@ function Lab({ initial, revisions }: {
           Révision historique conservée : {correctionPreview.historical_revision_id}
         </p>}
       </section>
-      <button type="button" onClick={() => apply(
-        () => supersedeFictionalAnchor(draft, replace, input),
-        "Correction fictive enregistrée, ancienne ancre conservée")}>
-        Remplacer sans effacer l'historique
+      <button type="button" disabled={!replace} onClick={reviewCorrection}>
+        Prévisualiser la correction sans l'appliquer
       </button>
+      {supersessionPreview && <section role="status"
+          aria-label="Avant après correction d'ancre fictive">
+        <h3>Correction proposée — données fictives non enregistrées</h3>
+        <p>Version historique conservée :
+          <code>{supersessionPreview.old_anchor.id}</code> —
+          {supersessionPreview.old_anchor.time_kind} —
+          {supersessionPreview.old_anchor.calendar_name ?? "sans calendrier"}.</p>
+        <p>Libellé historique :
+          {supersessionPreview.old_anchor.fictional_label ?? "aucun"} ;
+          précision historique :
+          {supersessionPreview.old_anchor.precision_text ?? "aucune"}.</p>
+        <p>Nouvelle version envisagée :
+          <code>{supersessionPreview.new_anchor.id}</code> —
+          {supersessionPreview.new_anchor.time_kind} —
+          {supersessionPreview.new_anchor.calendar_name ?? "sans calendrier"}.</p>
+        <p>Libellé proposé :
+          {supersessionPreview.new_anchor.fictional_label ?? "aucun"} ;
+          précision proposée :
+          {supersessionPreview.new_anchor.precision_text ?? "aucune"}.</p>
+        <p>Source historique initiale :
+          {supersessionPreview.old_anchor.source_revision_id ?? "aucune"} ;
+          source envisagée :
+          {supersessionPreview.new_anchor.source_revision_id ?? "aucune"}.</p>
+        <p>Ni date grégorienne déduite, ni ordre total, ni écriture.</p>
+        <button type="button" onClick={() => apply(
+          () => confirmFictionalAnchorSupersession(
+            draft,replace,input,supersessionPreview,true),
+          "Correction fictive confirmée en mémoire ; aucune sauvegarde.")}>
+          Confirmer la correction fictive en RAM
+        </button>
+      </section>}
     </fieldset>
     <fieldset>
       <legend>Déclarer une relation manuelle avant/après</legend>
