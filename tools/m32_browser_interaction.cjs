@@ -1676,14 +1676,38 @@ async function run() {
       assert.equal(await lab.getByRole("button",
         {name:"Confirmer la correction fictive en RAM"}).count(),0);
     });
-    assert.equal(cases.length, 98);
+    await caseRun("99-p3am-explicit-fictional-source-detach-reviews-before-confirm",async()=>{
+      await page.getByRole("button",{name:"Ouvrir l'atelier manuel fictif"}).click();
+      const lab=page.getByRole("region",{name:"Atelier manuel M3.2 exclusivement fictif"});
+      const detach=lab.getByRole("checkbox",
+        {name:"Détacher explicitement la source historique de la version proposée"});
+      assert.equal(await detach.isDisabled(),true);
+      await lab.getByRole("combobox",{name:"Correction : remplacer une ancre active"})
+        .selectOption("D");
+      assert.equal(await detach.isEnabled(),true);
+      await lab.getByRole("button",{name:"Prévisualiser la correction sans l'appliquer"}).click();
+      assert.equal(await lab.getByRole("status",
+        {name:"Avant après correction d'ancre fictive"}).count(),1);
+      await detach.check();
+      assert.equal(await lab.getByRole("status",
+        {name:"Avant après correction d'ancre fictive"}).count(),0);
+      await lab.getByRole("button",{name:"Prévisualiser la correction sans l'appliquer"}).click();
+      const review=lab.getByRole("status",
+        {name:"Avant après correction d'ancre fictive"});
+      assert.ok((await review.innerText()).includes("source envisagée"));
+      await review.getByRole("button",
+        {name:"Confirmer la correction fictive en RAM"}).click();
+      assert.equal(await review.count(),0);
+      assert.ok((await lab.innerText()).includes("aucune sauvegarde"));
+    });
+    assert.equal(cases.length, 99);
     // Historical PR #146 source marker: M32_BROWSER_REAL_CHROMIUM_PASS 62/62
     // Previous PR #156 marker retained: M32_BROWSER_REAL_CHROMIUM_PASS 70/70
     // PR #260 retained baseline (historical only): M32_BROWSER_REAL_CHROMIUM_PASS 82/82
     // PR #157 historical marker: M32_BROWSER_REAL_CHROMIUM_PASS 76/76
     // Historical P3a baseline, retained for continuity source-only tests:
     // M32_CI_PRECOMPILED_STRICT_CSP_BROWSER_PASS: 85/85
-    console.log("M32_BROWSER_REAL_CHROMIUM_PASS 98/98");
+    console.log("M32_BROWSER_REAL_CHROMIUM_PASS 99/99");
 
     // Actual Chromium enforced-CSP veto, separate from the 36
     // fictional interaction cases. Never make an off-loopback network call.

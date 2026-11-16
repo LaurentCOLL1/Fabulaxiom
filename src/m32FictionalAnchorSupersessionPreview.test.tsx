@@ -190,6 +190,13 @@ describe("P3aj fiction-only dated supersession review and confirmation",()=>{
    expect(()=>confirmFictionalAnchorSupersession(d,"A",i,forged,true)).toThrow();
    expect(d.snapshot.anchors.find(a=>a.id==="A")?.status).toBe("current");
  });
+ it("25 renders an explicit source-detachment control without persistence",()=>{
+   const html=renderToStaticMarkup(createElement(M32ManualChronologyLab,
+     {initial:scene(),revisions:[]}));
+   expect(html).toContain("Détacher explicitement la source historique");
+   expect(html).toContain("Ce choix ne modifie pas l&#x27;ancre historique");
+   expect(html).not.toContain("Sauvegarde réussie");
+ });
  it("13 renders a deliberate review then confirmation entry point, no direct write",()=>{
    const html=renderToStaticMarkup(createElement(M32ManualChronologyLab,{initial:scene(),revisions:[]}));
    expect(html).toContain("Prévisualiser la correction sans l&#x27;appliquer");
