@@ -168,10 +168,18 @@ function Lab({ initial, revisions }: {
           <code>{supersessionPreview.old_anchor.id}</code> —
           {supersessionPreview.old_anchor.time_kind} —
           {supersessionPreview.old_anchor.calendar_name ?? "sans calendrier"}.</p>
+        <p>Libellé historique :
+          {supersessionPreview.old_anchor.fictional_label ?? "aucun"} ;
+          précision historique :
+          {supersessionPreview.old_anchor.precision_text ?? "aucune"}.</p>
         <p>Nouvelle version envisagée :
           <code>{supersessionPreview.new_anchor.id}</code> —
           {supersessionPreview.new_anchor.time_kind} —
           {supersessionPreview.new_anchor.calendar_name ?? "sans calendrier"}.</p>
+        <p>Libellé proposé :
+          {supersessionPreview.new_anchor.fictional_label ?? "aucun"} ;
+          précision proposée :
+          {supersessionPreview.new_anchor.precision_text ?? "aucune"}.</p>
         <p>Source historique initiale :
           {supersessionPreview.old_anchor.source_revision_id ?? "aucune"} ;
           source envisagée :
