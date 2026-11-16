@@ -128,6 +128,7 @@ function Lab({ initial, revisions }: {
       <select id={id + "-scene"} value={sceneId} onChange={e => {
         setSceneId(e.currentTarget.value);
         setRevisionId("");
+        setDetachSource(false);
         setSupersessionPreview(null);
       }}>
         <option value="">Sans nouvelle référence de scène</option>
@@ -161,13 +162,20 @@ function Lab({ initial, revisions }: {
       <label htmlFor={id + "-detach-source"}>
         <input id={id + "-detach-source"} type="checkbox" checked={detachSource}
           disabled={!replace} onChange={e=>{
-            setDetachSource(e.currentTarget.checked);
+            const detach = e.currentTarget.checked;
+            setDetachSource(detach);
+            if (detach) {
+              setSceneId("");
+              setRevisionId("");
+            }
             setSupersessionPreview(null);
           }} />
         Détacher explicitement la source historique de la version proposée
       </label>
-      <p>Ce choix ne modifie pas l'ancre historique. Sans ce choix, sa révision est conservée
-        sauf si une nouvelle scène et une révision exacte sont sélectionnées.</p>
+      <p>Ce choix ne modifie pas l'ancre historique. Détacher efface seulement
+        la sélection de scène/révision proposée ; sélectionner une nouvelle scène annule
+        automatiquement le détachement. Sans choix explicite, la révision initiale est
+        conservée.</p>
       <section aria-label="Vérification de correction fictive" role="status">
         <p>{correctionPreview.reason}</p>
         {correctionPreview.historical_revision_id && <p>

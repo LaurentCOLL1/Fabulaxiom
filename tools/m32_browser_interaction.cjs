@@ -1700,14 +1700,54 @@ async function run() {
       assert.equal(await review.count(),0);
       assert.ok((await lab.innerText()).includes("aucune sauvegarde"));
     });
-    assert.equal(cases.length, 99);
+    await caseRun("100-p3an-selecting-scene-cancels-source-detach",async()=>{
+      await page.getByRole("button",{name:"Ouvrir l'atelier manuel fictif"}).click();
+      const lab=page.getByRole("region",{name:"Atelier manuel M3.2 exclusivement fictif"});
+      await lab.getByRole("combobox",{name:"Correction : remplacer une ancre active"})
+        .selectOption("D");
+      const detach=lab.getByRole("checkbox",
+        {name:"Détacher explicitement la source historique de la version proposée"});
+      await detach.check();
+      assert.equal(await detach.isChecked(),true);
+      await lab.getByRole("combobox",{name:"Scène inventée à citer (facultatif)"})
+        .selectOption("s1");
+      assert.equal(await detach.isChecked(),false);
+      await lab.getByRole("combobox",{name:"Révision exacte et immuable de cette scène"})
+        .selectOption("invented-rev-B");
+      await lab.getByRole("button",{name:"Prévisualiser la correction sans l'appliquer"}).click();
+      const reviewed=lab.getByRole("status",{name:"Avant après correction d'ancre fictive"});
+      assert.ok((await reviewed.innerText()).includes("invented-rev-B"));
+    });
+    await caseRun("101-p3an-detaching-clears-new-scene-and-immutable-revision",async()=>{
+      await page.getByRole("button",{name:"Ouvrir l'atelier manuel fictif"}).click();
+      const lab=page.getByRole("region",{name:"Atelier manuel M3.2 exclusivement fictif"});
+      const scene=lab.getByRole("combobox",{name:"Scène inventée à citer (facultatif)"});
+      await scene.selectOption("s2");
+      await lab.getByRole("combobox",{name:"Révision exacte et immuable de cette scène"})
+        .selectOption("invented-rev-C");
+      await lab.getByRole("combobox",{name:"Correction : remplacer une ancre active"})
+        .selectOption("D");
+      const detach=lab.getByRole("checkbox",
+        {name:"Détacher explicitement la source historique de la version proposée"});
+      await detach.check();
+      assert.equal(await scene.inputValue(),"");
+      assert.equal(await lab.getByRole("combobox",
+        {name:"Révision exacte et immuable de cette scène"}).count(),0);
+      await lab.getByRole("button",{name:"Prévisualiser la correction sans l'appliquer"}).click();
+      const reviewed=lab.getByRole("status",{name:"Avant après correction d'ancre fictive"});
+      assert.ok((await reviewed.innerText()).includes("source envisagée"));
+      assert.ok(!(await reviewed.innerText()).includes("invented-rev-C"));
+      await reviewed.getByRole("button",{name:"Confirmer la correction fictive en RAM"}).click();
+      assert.ok((await lab.innerText()).includes("aucune sauvegarde"));
+    });
+    assert.equal(cases.length, 101);
     // Historical PR #146 source marker: M32_BROWSER_REAL_CHROMIUM_PASS 62/62
     // Previous PR #156 marker retained: M32_BROWSER_REAL_CHROMIUM_PASS 70/70
     // PR #260 retained baseline (historical only): M32_BROWSER_REAL_CHROMIUM_PASS 82/82
     // PR #157 historical marker: M32_BROWSER_REAL_CHROMIUM_PASS 76/76
     // Historical P3a baseline, retained for continuity source-only tests:
     // M32_CI_PRECOMPILED_STRICT_CSP_BROWSER_PASS: 85/85
-    console.log("M32_BROWSER_REAL_CHROMIUM_PASS 99/99");
+    console.log("M32_BROWSER_REAL_CHROMIUM_PASS 101/101");
 
     // Actual Chromium enforced-CSP veto, separate from the 36
     // fictional interaction cases. Never make an off-loopback network call.
