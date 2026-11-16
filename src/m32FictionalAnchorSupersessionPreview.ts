@@ -1,5 +1,5 @@
 import { inspectFictionalDraft, supersedeFictionalAnchor,
- type FictionalDraft, type FictionalTimeInput } from "./m32FictionalManualChronology";
+ type FictionalDraft, type FictionalTimeInput, type FictionalRevision } from "./m32FictionalManualChronology";
 import type { M32AnchorProjection } from "./M32ChronologyPreview";
 
 /** P3aj — human-reviewed correction of an invented RAM anchor.
@@ -9,6 +9,9 @@ export type FictionalAnchorSupersessionReview = Readonly<{
   baseline: string;
   old_anchor: M32AnchorProjection;
   new_anchor: M32AnchorProjection;
+  /** Exact, explicitly recorded fictional revision identity; never inferred from a title. */
+  old_source: FictionalRevision | null;
+  new_source: FictionalRevision | null;
   candidate: FictionalDraft;
   preview_only: true;
   can_write: false;
@@ -17,6 +20,18 @@ export type FictionalAnchorSupersessionReview = Readonly<{
 
 function stop(): never {
   throw new Error("Prévisualisation fictive refusée : aucune sauvegarde.");
+}
+
+/** Bind a source to an exact invented revision and its owning scene/novel.
+ * Missing/foreign identity fails closed; source-free anchors remain source-free.
+ */
+function sourceIdentity(d:FictionalDraft,a:M32AnchorProjection):FictionalRevision|null {
+  if(a.source_revision_id===null) return null;
+  const rev=d.revisions.find(r=>r.revision_id===a.source_revision_id);
+  if(!rev || rev.universe_id!==d.snapshot.universe_id ||
+      !d.snapshot.narration.some(n=>n.universe_id===rev.universe_id &&
+        n.novel_id===rev.novel_id && n.scene_id===rev.scene_id)) return stop();
+  return {...rev};
 }
 
 export function previewFictionalAnchorSupersession(
@@ -37,6 +52,8 @@ export function previewFictionalAnchorSupersession(
     baseline:JSON.stringify(baseline),
     old_anchor:{...old},
     new_anchor:{...added[0]},
+    old_source:sourceIdentity(baseline,old),
+    new_source:sourceIdentity(candidate,added[0]),
     candidate,
     preview_only:true,
     can_write:false,

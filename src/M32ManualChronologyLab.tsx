@@ -184,6 +184,12 @@ function Lab({ initial, revisions }: {
           {supersessionPreview.old_anchor.source_revision_id ?? "aucune"} ;
           source envisagée :
           {supersessionPreview.new_anchor.source_revision_id ?? "aucune"}.</p>
+        <p>Roman et scène historiques :
+          <code>{supersessionPreview.old_source?.novel_id ?? "aucun"}</code> /
+          <code>{supersessionPreview.old_source?.scene_id ?? "aucune"}</code>.</p>
+        <p>Roman et scène proposés :
+          <code>{supersessionPreview.new_source?.novel_id ?? "aucun"}</code> /
+          <code>{supersessionPreview.new_source?.scene_id ?? "aucune"}</code>.</p>
         <p>Ni date grégorienne déduite, ni ordre total, ni écriture.</p>
         <button type="button" onClick={() => apply(
           () => confirmFictionalAnchorSupersession(
