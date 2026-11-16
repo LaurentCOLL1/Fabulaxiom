@@ -35,6 +35,7 @@ function Lab({ initial, revisions }: {
   const [sceneId, setSceneId] = useState("");
   const [revisionId, setRevisionId] = useState("");
   const [replace, setReplace] = useState("");
+  const [detachSource, setDetachSource] = useState(false);
   const [supersessionPreview, setSupersessionPreview] = useState<FictionalAnchorSupersessionReview|null>(null);
   const [before, setBefore] = useState("");
   const [after, setAfter] = useState("");
@@ -66,6 +67,11 @@ function Lab({ initial, revisions }: {
     source_scene_id: sceneId || undefined,
     source_revision_id: sceneId ? revisionId : undefined,
   };
+  // Only the deliberate correction can detach; creating an anchor keeps
+  // its independently authored scene/revision selection.
+  const correctionInput: FictionalTimeInput = detachSource && replace
+    ? {...input, source_scene_id:null, source_revision_id:null}
+    : input;
   function apply(action: () => FictionalDraft, message: string) {
     try {
       setDraft(action());
@@ -79,7 +85,7 @@ function Lab({ initial, revisions }: {
   }
   function reviewCorrection() {
     try {
-      const candidate = previewFictionalAnchorSupersession(draft,replace,input);
+      const candidate = previewFictionalAnchorSupersession(draft,replace,correctionInput);
       setSupersessionPreview(candidate);
       setNotice("Prévisualisation fictive seulement ; aucune correction appliquée.");
       setError(null);
@@ -148,10 +154,20 @@ function Lab({ initial, revisions }: {
       </button>
       <label htmlFor={id + "-replace"}>Correction : remplacer une ancre active</label>
       <select id={id + "-replace"} value={replace}
-        onChange={e => {setReplace(e.currentTarget.value);setSupersessionPreview(null);}}>
+        onChange={e => {setReplace(e.currentTarget.value);setDetachSource(false);setSupersessionPreview(null);}}>
         <option value="">Sélectionner une ancre</option>
         {active.map(a => <option key={a.id} value={a.id}>{a.id}</option>)}
       </select>
+      <label htmlFor={id + "-detach-source"}>
+        <input id={id + "-detach-source"} type="checkbox" checked={detachSource}
+          disabled={!replace} onChange={e=>{
+            setDetachSource(e.currentTarget.checked);
+            setSupersessionPreview(null);
+          }} />
+        Détacher explicitement la source historique de la version proposée
+      </label>
+      <p>Ce choix ne modifie pas l'ancre historique. Sans ce choix, sa révision est conservée
+        sauf si une nouvelle scène et une révision exacte sont sélectionnées.</p>
       <section aria-label="Vérification de correction fictive" role="status">
         <p>{correctionPreview.reason}</p>
         {correctionPreview.historical_revision_id && <p>
@@ -190,10 +206,13 @@ function Lab({ initial, revisions }: {
         <p>Roman et scène proposés :
           <code>{supersessionPreview.new_source?.novel_id ?? "aucun"}</code> /
           <code>{supersessionPreview.new_source?.scene_id ?? "aucune"}</code>.</p>
+        {supersessionPreview.old_source && !supersessionPreview.new_source && <p>
+          Détachement explicite de la source proposée ; la révision historique reste conservée.
+        </p>}
         <p>Ni date grégorienne déduite, ni ordre total, ni écriture.</p>
         <button type="button" onClick={() => apply(
           () => confirmFictionalAnchorSupersession(
-            draft,replace,input,supersessionPreview,true),
+            draft,replace,correctionInput,supersessionPreview,true),
           "Correction fictive confirmée en mémoire ; aucune sauvegarde.")}>
           Confirmer la correction fictive en RAM
         </button>
