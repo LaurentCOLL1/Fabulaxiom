@@ -1778,6 +1778,9 @@ async function run() {
       assert.equal(await scene.inputValue(),"");
       assert.equal(await revision.count(),0);
       assert.equal(await reviewed.count(),0);
+      // C has active fictional precedences: its correction correctly remains
+      // blocked. Return to D to prove the prior source was not silently reused.
+      await target.selectOption("D");
       await preview.click();
       assert.equal(await reviewed.count(),1);
       assert.ok(!(await reviewed.innerText()).includes("invented-rev-B"));
