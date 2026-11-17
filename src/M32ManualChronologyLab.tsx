@@ -4,7 +4,8 @@ import M32ChronologyPreview from "./M32ChronologyPreview";
 import M32WorldOrderComparison from "./M32WorldOrderComparison";
 import { previewFictionalRevocationImpact } from "./m32FictionalRevocationImpact";
 import { previewFictionalAnchorSupersession, confirmFictionalAnchorSupersession,
-  type FictionalAnchorSupersessionReview } from "./m32FictionalAnchorSupersessionPreview";
+  type FictionalAnchorSupersessionReview, type FictionalSourceTransition
+} from "./m32FictionalAnchorSupersessionPreview";
 import {
   startFictionalDraft, createFictionalAnchor,
   createFictionalPrecedence, revokeFictionalPrecedence,
@@ -13,6 +14,13 @@ import {
   type FictionalDraft, type FictionalTimeInput, type FictionalRevision,
 } from "./m32FictionalManualChronology";
 
+const fictionalSourceTransitionText: Record<FictionalSourceTransition,string> = {
+  none: "Aucune source historique ni nouvelle.",
+  linked: "Nouvelle source fictive liée à une révision exacte.",
+  retained: "Source historique exacte conservée.",
+  replaced: "Source historique remplacée explicitement ; ancienne source conservée.",
+  detached: "Source proposée détachée ; source historique conservée.",
+};
 /** Pure, scope-local UI preflight: never treat a corrected historical anchor as current. */
 export function fictionalSelectionIsHistorical(
   activeIds: readonly string[], left: string, right: string,
@@ -204,6 +212,8 @@ function Lab({ initial, revisions }: {
           {supersessionPreview.new_anchor.fictional_label ?? "aucun"} ;
           précision proposée :
           {supersessionPreview.new_anchor.precision_text ?? "aucune"}.</p>
+        <p>Décision de provenance : {fictionalSourceTransitionText[
+          supersessionPreview.source_transition]}</p>
         <p>Source historique initiale :
           {supersessionPreview.old_anchor.source_revision_id ?? "aucune"} ;
           source envisagée :

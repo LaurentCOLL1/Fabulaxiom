@@ -205,6 +205,45 @@ describe("P3aj fiction-only dated supersession review and confirmation",()=>{
    expect(html).toContain("Détacher explicitement la source historique");
    expect(html).not.toContain("Sauvegarde réussie");
  });
+
+ it("27 preserves explicit immutable fictional provenance",()=>{
+   const p=previewFictionalAnchorSupersession(sourced(),"A",input("unknown"));
+   expect(p.source_transition).toBe("retained");
+   expect(p.new_source?.revision_id).toBe("rev-a");
+ });
+ it("28 reports cross-novel fictional source replacement",()=>{
+   const p=previewFictionalAnchorSupersession(sourced(),"A",
+     {...input("relative"),source_scene_id:"scene-b",source_revision_id:"rev-b"});
+   expect(p.source_transition).toBe("replaced");
+   expect(p.old_source?.novel_id).toBe("novel-a");
+   expect(p.new_source?.novel_id).toBe("novel-b");
+ });
+ it("29 reports deliberate source detachment and retained historical evidence",()=>{
+   const p=previewFictionalAnchorSupersession(sourced(),"A",
+     {...input("unknown"),source_scene_id:null,source_revision_id:null});
+   expect(p.source_transition).toBe("detached");
+   expect(p.old_source?.revision_id).toBe("rev-a");
+   expect(p.new_source).toBeNull();
+ });
+ it("30 reports linking a source to a previously unsourced anchor",()=>{
+   const p=previewFictionalAnchorSupersession(sourced(),"B",
+     {...input("relative"),source_scene_id:"scene-b",source_revision_id:"rev-b"});
+   expect(p.source_transition).toBe("linked");
+   expect(p.old_source).toBeNull();
+ });
+ it("31 refuses to invent source identity on two source-free versions",()=>{
+   const p=previewFictionalAnchorSupersession(sourced(),"B",input("relative"));
+   expect(p.source_transition).toBe("none");
+   expect(p.old_source).toBeNull();
+   expect(p.new_source).toBeNull();
+ });
+ it("32 rejects forged source-transition decision at RAM confirmation",()=>{
+   const d=sourced(),i=input("unknown");
+   const p=previewFictionalAnchorSupersession(d,"A",i);
+   expect(()=>confirmFictionalAnchorSupersession(d,"A",i,
+     {...p,source_transition:"detached"},true)).toThrow();
+   expect(d.snapshot.anchors.find(a=>a.id==="A")?.status).toBe("current");
+ });
  it("13 renders a deliberate review then confirmation entry point, no direct write",()=>{
    const html=renderToStaticMarkup(createElement(M32ManualChronologyLab,{initial:scene(),revisions:[]}));
    expect(html).toContain("Prévisualiser la correction sans l&#x27;appliquer");
