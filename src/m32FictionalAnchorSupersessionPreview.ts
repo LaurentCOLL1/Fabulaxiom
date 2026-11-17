@@ -12,12 +12,28 @@ export type FictionalAnchorSupersessionReview = Readonly<{
   /** Exact, explicitly recorded fictional revision identity; never inferred from a title. */
   old_source: FictionalRevision | null;
   new_source: FictionalRevision | null;
+  source_transition: FictionalSourceTransition;
   candidate: FictionalDraft;
   preview_only: true;
   can_write: false;
   total_world_order_inferred: false;
 }>;
 
+export type FictionalSourceTransition =
+  "none" | "linked" | "retained" | "replaced" | "detached";
+
+/** Exact fictional revision identity only, with no inferred titles or current revision. */
+function sourceTransition(
+  oldSource: FictionalRevision | null, newSource: FictionalRevision | null,
+): FictionalSourceTransition {
+  if (!oldSource) return newSource ? "linked" : "none";
+  if (!newSource) return "detached";
+  if (oldSource.universe_id === newSource.universe_id &&
+      oldSource.novel_id === newSource.novel_id &&
+      oldSource.scene_id === newSource.scene_id &&
+      oldSource.revision_id === newSource.revision_id) return "retained";
+  return "replaced";
+}
 function stop(): never {
   throw new Error("Prévisualisation fictive refusée : aucune sauvegarde.");
 }
@@ -48,12 +64,15 @@ export function previewFictionalAnchorSupersession(
     candidate.audit.length !== baseline.audit.length+1) return stop();
   if (input.source_revision_id === undefined &&
     old.source_revision_id !== added[0].source_revision_id) return stop();
+  const oldSource = sourceIdentity(baseline,old);
+  const newSource = sourceIdentity(candidate,added[0]);
   return {
     baseline:JSON.stringify(baseline),
     old_anchor:{...old},
     new_anchor:{...added[0]},
-    old_source:sourceIdentity(baseline,old),
-    new_source:sourceIdentity(candidate,added[0]),
+    old_source:oldSource,
+    new_source:newSource,
+    source_transition:sourceTransition(oldSource,newSource),
     candidate,
     preview_only:true,
     can_write:false,
