@@ -80,9 +80,12 @@ function Lab({ initial, revisions }: {
   const correctionInput: FictionalTimeInput = detachSource && replace
     ? {...input, source_scene_id:null, source_revision_id:null}
     : input;
-  function apply(action: () => FictionalDraft, message: string) {
+  function apply(action: () => FictionalDraft, message: string, onSuccess?: () => void) {
     try {
-      setDraft(action());
+      const updated = action();
+      setDraft(updated);
+      // Reset correction-specific controls only after a successful RAM action.
+      onSuccess?.();
       setSupersessionPreview(null);
       setError(null);
       setNotice(message);
@@ -178,6 +181,8 @@ function Lab({ initial, revisions }: {
       <p>Changer d'ancre à corriger efface la sélection de source proposée
         (scène et révision exactes) et impose une nouvelle prévisualisation.
         Aucune version historique n'est modifiée.</p>
+      <p>Après confirmation fictive réussie, la cible et la source proposées
+        sont effacées ; la version historique reste consultable.</p>
       <label htmlFor={id + "-detach-source"}>
         <input id={id + "-detach-source"} type="checkbox" checked={detachSource}
           disabled={!replace} onChange={e=>{
@@ -242,7 +247,13 @@ function Lab({ initial, revisions }: {
         <button type="button" onClick={() => apply(
           () => confirmFictionalAnchorSupersession(
             draft,replace,correctionInput,supersessionPreview,true),
-          "Correction fictive confirmée en mémoire ; aucune sauvegarde.")}>
+          "Correction fictive confirmée en mémoire ; aucune sauvegarde.",
+          () => {
+            setReplace("");
+            setSceneId("");
+            setRevisionId("");
+            setDetachSource(false);
+          })}>
           Confirmer la correction fictive en RAM
         </button>
       </section>}
