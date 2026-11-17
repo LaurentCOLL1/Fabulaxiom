@@ -203,11 +203,12 @@ class M32DatedStatusTruth(unittest.TestCase):
         with self.assertRaisesRegex(ValueError,"date drift"):
             guard_dated_status(self.short,bad,self.leads,self.checklist)
         with self.assertRaisesRegex(ValueError,"short date drift"):
-            guard_dated_status(self.short.replace("date=2026-11-16","date=2026-11-12"),
+            guard_dated_status(self.short.replace(f"date={self.entry['date']}","date=2026-11-12"),
                                self.entry,self.leads,self.checklist)
 
     def test_14_unattested_success_refused(self):
-        forged=dict(self.entry,parent_postmain_status="COMPLETED_SUCCESS_EXACT_MAIN")
+        forged=dict(self.entry,parent_postmain_status="COMPLETED_SUCCESS_EXACT_MAIN",
+                    attested_postmain_sha="0"*40)
         with self.assertRaisesRegex(ValueError,"postmain success without"):
             guard_dated_status(self.short,forged,self.leads,self.checklist)
 
