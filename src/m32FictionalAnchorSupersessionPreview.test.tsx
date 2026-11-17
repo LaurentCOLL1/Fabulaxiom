@@ -252,6 +252,13 @@ describe("P3aj fiction-only dated supersession review and confirmation",()=>{
    expect(html).toContain("nouvelle prévisualisation");
    expect(html).not.toContain("Sauvegarde réussie");
  });
+ it("34 explains post-confirmation fictional source reset without claiming persistence",()=>{
+   const html=renderToStaticMarkup(createElement(M32ManualChronologyLab,
+     {initial:scene(),revisions:[]}));
+   expect(html).toContain("Après confirmation fictive réussie");
+   expect(html).toContain("la version historique reste consultable");
+   expect(html).not.toContain("Sauvegarde réussie");
+ });
  it("13 renders a deliberate review then confirmation entry point, no direct write",()=>{
    const html=renderToStaticMarkup(createElement(M32ManualChronologyLab,{initial:scene(),revisions:[]}));
    expect(html).toContain("Prévisualiser la correction sans l&#x27;appliquer");
