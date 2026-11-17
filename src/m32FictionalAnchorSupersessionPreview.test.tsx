@@ -197,6 +197,14 @@ describe("P3aj fiction-only dated supersession review and confirmation",()=>{
    expect(html).toContain("Ce choix ne modifie pas l&#x27;ancre historique");
    expect(html).not.toContain("Sauvegarde réussie");
  });
+ it("26 explains exclusive fictional source choice without hidden save",()=>{
+   const html=renderToStaticMarkup(createElement(M32ManualChronologyLab,
+     {initial:scene(),revisions:[]}));
+   expect(html).toContain("sélection de scène/révision proposée");
+   expect(html).toContain("annule");
+   expect(html).toContain("Détacher explicitement la source historique");
+   expect(html).not.toContain("Sauvegarde réussie");
+ });
  it("13 renders a deliberate review then confirmation entry point, no direct write",()=>{
    const html=renderToStaticMarkup(createElement(M32ManualChronologyLab,{initial:scene(),revisions:[]}));
    expect(html).toContain("Prévisualiser la correction sans l&#x27;appliquer");
