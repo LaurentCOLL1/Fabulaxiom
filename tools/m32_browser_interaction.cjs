@@ -1760,14 +1760,40 @@ async function run() {
       assert.notEqual(next,first);
       assert.ok((await reviewed.innerText()).includes("aucune"));
     });
-    assert.equal(cases.length, 102);
+
+    await caseRun("103-p3ap-changing-anchor-target-clears-proposed-source-and-review",async()=>{
+      await page.getByRole("button",{name:"Ouvrir l'atelier manuel fictif"}).click();
+      const lab=page.getByRole("region",{name:"Atelier manuel M3.2 exclusivement fictif"});
+      const target=lab.getByRole("combobox",{name:"Correction : remplacer une ancre active"});
+      const scene=lab.getByRole("combobox",{name:"Scène inventée à citer (facultatif)"});
+      const preview=lab.getByRole("button",{name:"Prévisualiser la correction sans l'appliquer"});
+      const reviewed=lab.getByRole("status",{name:"Avant après correction d'ancre fictive"});
+      await target.selectOption("D");
+      await scene.selectOption("s1");
+      const revision=lab.getByRole("combobox",{name:"Révision exacte et immuable de cette scène"});
+      await revision.selectOption("invented-rev-B");
+      await preview.click();
+      assert.ok((await reviewed.innerText()).includes("invented-rev-B"));
+      await target.selectOption("C");
+      assert.equal(await scene.inputValue(),"");
+      assert.equal(await revision.count(),0);
+      assert.equal(await reviewed.count(),0);
+      // C has active fictional precedences: its correction correctly remains
+      // blocked. Return to D to prove the prior source was not silently reused.
+      await target.selectOption("D");
+      await preview.click();
+      assert.equal(await reviewed.count(),1);
+      assert.ok(!(await reviewed.innerText()).includes("invented-rev-B"));
+      assert.ok((await lab.innerText()).includes("Aucune version historique n'est modifiée"));
+    });
+    assert.equal(cases.length, 103);
     // Historical PR #146 source marker: M32_BROWSER_REAL_CHROMIUM_PASS 62/62
     // Previous PR #156 marker retained: M32_BROWSER_REAL_CHROMIUM_PASS 70/70
     // PR #260 retained baseline (historical only): M32_BROWSER_REAL_CHROMIUM_PASS 82/82
     // PR #157 historical marker: M32_BROWSER_REAL_CHROMIUM_PASS 76/76
     // Historical P3a baseline, retained for continuity source-only tests:
     // M32_CI_PRECOMPILED_STRICT_CSP_BROWSER_PASS: 85/85
-    console.log("M32_BROWSER_REAL_CHROMIUM_PASS 102/102");
+    console.log("M32_BROWSER_REAL_CHROMIUM_PASS 103/103");
 
     // Actual Chromium enforced-CSP veto, separate from the 36
     // fictional interaction cases. Never make an off-loopback network call.

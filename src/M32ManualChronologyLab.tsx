@@ -163,10 +163,21 @@ function Lab({ initial, revisions }: {
       </button>
       <label htmlFor={id + "-replace"}>Correction : remplacer une ancre active</label>
       <select id={id + "-replace"} value={replace}
-        onChange={e => {setReplace(e.currentTarget.value);setDetachSource(false);setSupersessionPreview(null);}}>
+        onChange={e => {
+          setReplace(e.currentTarget.value);
+          // A new correction target must never inherit a different target's
+          // proposed immutable scene/revision source.
+          setSceneId("");
+          setRevisionId("");
+          setDetachSource(false);
+          setSupersessionPreview(null);
+        }}>
         <option value="">Sélectionner une ancre</option>
         {active.map(a => <option key={a.id} value={a.id}>{a.id}</option>)}
       </select>
+      <p>Changer d'ancre à corriger efface la sélection de source proposée
+        (scène et révision exactes) et impose une nouvelle prévisualisation.
+        Aucune version historique n'est modifiée.</p>
       <label htmlFor={id + "-detach-source"}>
         <input id={id + "-detach-source"} type="checkbox" checked={detachSource}
           disabled={!replace} onChange={e=>{
