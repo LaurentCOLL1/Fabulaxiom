@@ -244,6 +244,14 @@ describe("P3aj fiction-only dated supersession review and confirmation",()=>{
      {...p,source_transition:"detached"},true)).toThrow();
    expect(d.snapshot.anchors.find(a=>a.id==="A")?.status).toBe("current");
  });
+
+ it("33 explains that changing a fictional correction target resets proposed source",()=>{
+   const html=renderToStaticMarkup(createElement(M32ManualChronologyLab,
+     {initial:scene(),revisions:[]}));
+   expect(html).toContain("Changer d&#x27;ancre à corriger efface");
+   expect(html).toContain("nouvelle prévisualisation");
+   expect(html).not.toContain("Sauvegarde réussie");
+ });
  it("13 renders a deliberate review then confirmation entry point, no direct write",()=>{
    const html=renderToStaticMarkup(createElement(M32ManualChronologyLab,{initial:scene(),revisions:[]}));
    expect(html).toContain("Prévisualiser la correction sans l&#x27;appliquer");
