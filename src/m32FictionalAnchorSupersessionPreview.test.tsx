@@ -3,7 +3,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 import { previewFictionalAnchorSupersession, confirmFictionalAnchorSupersession } from "./m32FictionalAnchorSupersessionPreview";
 import { startFictionalDraft, createFictionalAnchor, createFictionalPrecedence,
-  previewFictionalCorrection } from "./m32FictionalManualChronology";
+  previewFictionalCorrection, revokeFictionalPrecedence } from "./m32FictionalManualChronology";
 import type { FictionalTimeInput, FictionalRevision } from "./m32FictionalManualChronology";
 import type { M32ChronologyProjection, M32TimeKind } from "./M32ChronologyPreview";
 import M32ManualChronologyLab from "./M32ManualChronologyLab";
@@ -277,6 +277,21 @@ describe("P3aj fiction-only dated supersession review and confirmation",()=>{
    expect(d.snapshot.precedences.map(e=>e.reason))
      .toEqual(["A avant B","C avant A"]);
    expect(d.audit.map(e=>e.action)).toEqual(["precedence_created","precedence_created"]);
+ });
+ it("37 requires independent revocation reason and preserves audit on refusal",()=>{
+   const d=createFictionalPrecedence(draft(),"A","B","Motif de création");
+   expect(()=>revokeFictionalPrecedence(d,"fiction-draft-0001","")).toThrow();
+   expect(d.snapshot.precedences[0].status).toBe("current");
+   expect(d.audit.map(e=>e.action)).toEqual(["precedence_created"]);
+   const done=revokeFictionalPrecedence(d,"fiction-draft-0001",
+     "Motif volontaire de révocation distinct");
+   expect(done.snapshot.precedences[0].status).toBe("revoked");
+   expect(done.audit[done.audit.length - 1]?.action).toBe("precedence_revoked");
+   const html=renderToStaticMarkup(createElement(M32ManualChronologyLab,
+     {initial:scene(),revisions:[]}));
+   expect(html).toContain("Justification de révocation fictive");
+   expect(html).toContain("Une révocation exige une nouvelle justification distincte");
+   expect(html).not.toContain("Sauvegarde réussie");
  });
  it("13 renders a deliberate review then confirmation entry point, no direct write",()=>{
    const html=renderToStaticMarkup(createElement(M32ManualChronologyLab,{initial:scene(),revisions:[]}));

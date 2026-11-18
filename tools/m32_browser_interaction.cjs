@@ -601,7 +601,7 @@ async function run() {
       assert.ok((await preview.innerText()).includes("invented-rev-A"));
       await lab.getByRole("combobox", { name: "Relation à révoquer (historique conservé)" })
         .selectOption("human-ab");
-      await lab.getByRole("textbox", { name: "Justification humaine fictive" }).fill("Révocation humaine fictive");
+      await lab.getByRole("textbox", { name: "Justification de révocation fictive" }).fill("Révocation humaine fictive");
       await lab.getByRole("button", { name: "Révoquer explicitement" }).click();
       assert.ok((await preview.innerText()).includes("Correction possible"));
       assert.ok(!(await preview.innerText()).includes("Révoquer explicitement les liens actifs"));
@@ -696,7 +696,7 @@ async function run() {
       assert.ok((await proof.innerText()).includes("human-ab"));
       await lab.getByRole("combobox", { name: "Relation à révoquer (historique conservé)" })
         .selectOption("human-ab");
-      await lab.getByRole("textbox", { name: "Justification humaine fictive" })
+      await lab.getByRole("textbox", { name: "Justification de révocation fictive" })
         .fill("Révocation volontaire du lien humain");
       await lab.getByRole("button", { name: "Révoquer explicitement" }).click();
       assert.ok((await proof.innerText()).includes("Ordre indéterminé"));
@@ -1857,7 +1857,7 @@ async function run() {
       await lab.getByRole("combobox",{name:"Relation à révoquer (historique conservé)"})
         .selectOption("human-ab");
       assert.equal(await audit.innerText(),before);
-      await lab.getByRole("textbox",{name:"Justification humaine fictive"})
+      await lab.getByRole("textbox",{name:"Justification de révocation fictive"})
         .fill("Décision de révocation fictive explicite");
       await lab.getByRole("button",{name:"Révoquer explicitement"}).click();
       assert.equal(await blockers.count(),0);
@@ -1866,14 +1866,42 @@ async function run() {
       assert.ok((await lab.innerText()).includes("aucune sauvegarde") ||
         (await lab.innerText()).includes("simulation sans sauvegarde"));
     });
-    assert.equal(cases.length, 106);
+    await caseRun("107-p3at-stage-only-and-require-revocation-reason",async()=>{
+      await page.getByRole("button",{name:"Ouvrir l'atelier manuel fictif"}).click();
+      const lab=page.getByRole("region",{name:"Atelier manuel M3.2 exclusivement fictif"});
+      await lab.getByRole("combobox",{name:"Correction : remplacer une ancre active"}).selectOption("A");
+      const blockers=lab.getByRole("status",
+        {name:"Relations humaines actives empêchant la correction"});
+      const audit=lab.getByRole("region",{name:"Journal des modifications fictives"});
+      const auditBefore=await audit.innerText();
+      await lab.getByRole("textbox",{name:"Justification humaine fictive"})
+        .fill("Motif ancien réservé à la création");
+      await blockers.getByRole("button",
+        {name:"Préparer la révocation de human-ab (sans l'appliquer)"}).click();
+      assert.equal(await lab.getByRole("combobox",
+        {name:"Relation à révoquer (historique conservé)"}).inputValue(),"human-ab");
+      const why=lab.getByRole("textbox",{name:"Justification de révocation fictive"});
+      assert.equal(await why.inputValue(),"");
+      assert.equal(await audit.innerText(),auditBefore);
+      assert.equal(await blockers.count(),1);
+      await lab.getByRole("button",{name:"Révoquer explicitement"}).click();
+      assert.equal(await lab.getByRole("alert").count(),1);
+      assert.equal(await audit.innerText(),auditBefore);
+      await why.fill("Motif humain distinct, explicitement saisi");
+      await lab.getByRole("button",{name:"Révoquer explicitement"}).click();
+      assert.equal(await blockers.count(),0);
+      assert.ok((await audit.innerText()).includes("precedence_revoked"));
+      assert.equal(await why.inputValue(),"");
+      assert.ok((await lab.innerText()).includes("simulation sans sauvegarde"));
+    });
+    assert.equal(cases.length, 107);
     // Historical PR #146 source marker: M32_BROWSER_REAL_CHROMIUM_PASS 62/62
     // Previous PR #156 marker retained: M32_BROWSER_REAL_CHROMIUM_PASS 70/70
     // PR #260 retained baseline (historical only): M32_BROWSER_REAL_CHROMIUM_PASS 82/82
     // PR #157 historical marker: M32_BROWSER_REAL_CHROMIUM_PASS 76/76
     // Historical P3a baseline, retained for continuity source-only tests:
     // M32_CI_PRECOMPILED_STRICT_CSP_BROWSER_PASS: 85/85
-    console.log("M32_BROWSER_REAL_CHROMIUM_PASS 106/106");
+    console.log("M32_BROWSER_REAL_CHROMIUM_PASS 107/107");
 
     // Actual Chromium enforced-CSP veto, separate from the 36
     // fictional interaction cases. Never make an off-loopback network call.

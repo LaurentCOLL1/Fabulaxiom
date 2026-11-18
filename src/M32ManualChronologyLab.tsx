@@ -49,6 +49,7 @@ function Lab({ initial, revisions }: {
   const [after, setAfter] = useState("");
   const [reason, setReason] = useState("");
   const [revoke, setRevoke] = useState("");
+  const [revokeReason, setRevokeReason] = useState("");
   const [firstScene, setFirstScene] = useState("");
   const [secondScene, setSecondScene] = useState("");
   const [firstWorldRevision, setFirstWorldRevision] = useState("");
@@ -214,7 +215,11 @@ function Lab({ initial, revisions }: {
             const edge = edges.find(e => e.id === edgeId);
             return <li key={edgeId}><code>{edgeId}</code> : {edge
               ? <><code>{edge.before_anchor_id}</code> avant
-                   <code>{edge.after_anchor_id}</code> — {edge.reason}</>
+                   <code>{edge.after_anchor_id}</code> — {edge.reason}
+                   <button type="button" onClick={() => {
+                     setRevoke(edgeId);
+                     setRevokeReason("");
+                   }}>Préparer la révocation de {edgeId} (sans l'appliquer)</button></>
               : "relation non retrouvée : correction refusée"}</li>;
           })}</ul>
         </section>}
@@ -304,12 +309,17 @@ function Lab({ initial, revisions }: {
       </button>
       <label htmlFor={id + "-revoke"}>Relation à révoquer (historique conservé)</label>
       <select id={id + "-revoke"} value={revoke}
-        onChange={e => setRevoke(e.currentTarget.value)}>
+        onChange={e => {setRevoke(e.currentTarget.value);setRevokeReason("");}}>
         <option value="">Choisir</option>
         {edges.map(e => <option key={e.id} value={e.id}>
           {e.before_anchor_id} avant {e.after_anchor_id}
         </option>)}
       </select>
+      <label htmlFor={id + "-revoke-reason"}>Justification de révocation fictive</label>
+      <input id={id + "-revoke-reason"} value={revokeReason} maxLength={160}
+        onChange={e => setRevokeReason(e.currentTarget.value)} />
+      <p>Une révocation exige une nouvelle justification distincte de celle
+        utilisée pour déclarer une relation ; aucune révocation n'est automatique.</p>
       <section role="status" aria-label="Prévisualisation de révocation fictive">
         <p>{revocationImpact.reason}</p>
         {revocationImpact.witness_after.length > 0 && <p>
@@ -318,8 +328,9 @@ function Lab({ initial, revisions }: {
         <p>Cette prévisualisation ne révoque rien et n'invente aucune date.</p>
       </section>
       <button type="button" onClick={() => apply(
-        () => revokeFictionalPrecedence(draft, revoke, reason),
-        "Relation fictive révoquée, historique conservé")}>
+        () => revokeFictionalPrecedence(draft, revoke, revokeReason),
+        "Relation fictive révoquée, historique conservé",
+        () => {setRevoke("");setRevokeReason("");})}>
         Révoquer explicitement
       </button>
     </fieldset>
