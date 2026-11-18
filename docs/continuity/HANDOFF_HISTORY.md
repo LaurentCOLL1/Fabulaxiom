@@ -1,4 +1,4 @@
-## 18/11/2026 — #387 P3as MERGED / POSTMAIN SUCCESS ; P3at CANDIDAT
+**18/11/2026 — #387 P3as MERGED / POSTMAIN SUCCESS ; P3at CANDIDAT.**
 - Protected parent `main=eaa9965dd80617fe1989eeaa9631126b08eb937a` ; #387 source Windows CI #44225434422 completed/SUCCESS HEAD exact `32dce29ac3b0b8bcff9c04de897e71aabad3a7b4` ; postmain indépendante #44235808595 completed/SUCCESS au SHA exact `eaa9965dd80617fe1989eeaa9631126b08eb937a`. Protect main ACTIVE, strict, bypass=[].
 - P3at : préparation d'une révocation depuis un témoin humain actif sans changer le brouillon RAM ; la justification de révocation est distincte et obligatoire. Vitest #37 et Chromium #107 CANDIDATS, non qualifiés avant CI P3at sur SHA propre. Atelier fictif React non monté, aucune écriture opérateur.
 - Checklist M3.2 104 : **9 closes / 95 ouvertes** ; M3.2 **IN_PROGRESS_NOT_ACCEPTED** (~45% indicatif) ; PRODUCT_FIRST_PARALLEL_SAFETY. Aucun point accepté par simulation.

@@ -1,5 +1,8 @@
 {
   "m32_20261118_p3at_after_pr387_short_cycle": {
+    "current_phase": "SOURCE_ONLY_CANDIDATE_UNQUALIFIED",
+    "parent_postmain_status": "COMPLETED_SUCCESS_EXACT_MAIN",
+    "attested_postmain_sha": "eaa9965dd80617fe1989eeaa9631126b08eb937a",
     "date": "2026-11-18",
     "status": "PR387_MERGED_POSTMAIN_SUCCESS_P3AT_CANDIDATE_UNQUALIFIED",
     "parent_main": "eaa9965dd80617fe1989eeaa9631126b08eb937a",
