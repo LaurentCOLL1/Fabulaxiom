@@ -756,6 +756,48 @@ mod tests {
         assert!(decide_precedence(&db,"wrong-action","u1","p","approve",None,"invalid",None).is_err());
     }
 
+    // Historical PR #35 had this authored reversal witness; port its *behavior*
+    // to current main without importing its implementation or runtime gates.
+    // This fixture remains SQLite :memory: and the schema version stays v6.
+    #[test]
+    fn p3au_explicit_reverse_restatement_keeps_legacy_history_in_ram() {
+        let db=fixture();
+        for id in ["a","b","c"] {
+            create_anchor(&db,draft(id,"u1","unknown")).unwrap();
+        }
+        create_anchor(&db,draft("foreign","u2","unknown")).unwrap();
+        create_precedence(&db,"ab","u1","a","b","Auteur : A avant B",None).unwrap();
+        decide_precedence(&db,"withdraw-ab","u1","ab","revoke",None,
+            "Auteur : ancienne relation retirée",None).unwrap();
+
+        // The old immutable row cannot be overwritten via the legacy insert
+        // path, even after human revocation; only a *new* authored restatement
+        // of the exact revoked edge can reverse the current direction.
+        assert!(create_precedence(&db,"ba-legacy","u1","b","a",
+            "No legacy bypass",None).is_err());
+        restate_revoked_precedence(&db,"ba-restated","u1","ab","b","a",
+            "Auteur : inversion explicite",None).unwrap();
+
+        let historical=list_precedences(&db,"u1").unwrap();
+        assert_eq!(historical.len(),1);
+        assert_eq!(historical[0].id,"ab");
+        assert_eq!((&historical[0].before_anchor_id,&historical[0].after_anchor_id),
+                   (&"a".to_string(),&"b".to_string()));
+        assert!(list_current_precedence_ids(&db,"u1").unwrap().is_empty());
+        assert_eq!(list_active_precedence_graph(&db,"u1").unwrap(),vec![
+            ActivePrecedence{id:"ba-restated".into(),before_anchor_id:"b".into(),
+                after_anchor_id:"a".into(),origin:"restatement".into()}
+        ]);
+        assert!(list_active_precedence_graph(&db,"u2").unwrap().is_empty());
+
+        // Corrected history is immutable and a second rewrite cannot fork it.
+        assert!(db.execute("DELETE FROM world_time_precedence_restatements WHERE id='ba-restated'",[]).is_err());
+        assert!(db.execute("UPDATE world_time_precedence_restatements SET reason='tampered' WHERE id='ba-restated'",[]).is_err());
+        assert!(restate_revoked_precedence(&db,"another","u1","ab","a","c",
+            "No unreviewed fork",None).is_err());
+        assert_eq!(database::current_schema_version(&db).unwrap(),6);
+    }
+
     #[test]
     fn restatement_requires_explicit_same_universe_revoked_edge() {
         let db=fixture();
