@@ -1894,14 +1894,44 @@ async function run() {
       assert.equal(await why.inputValue(),"");
       assert.ok((await lab.innerText()).includes("simulation sans sauvegarde"));
     });
-    assert.equal(cases.length, 107);
+    await caseRun("108-p3aw-restaging-requires-a-fresh-human-reason",async()=>{
+      await page.getByRole("button",{name:"Ouvrir P4a — revue humaine fictive"}).click();
+      const review=page.getByRole("region",{name:"P4a revue humaine fictive isolée"});
+      const stage=review.getByRole("button",{name:"Prévisualiser sans modifier"});
+      await stage.click();
+      const approval=review.getByRole("textbox",{name:"Motif humain de confirmation"});
+      await approval.fill("Motif ancien à ne jamais réutiliser");
+      await stage.click();
+      assert.equal(await approval.inputValue(),"",
+        "Restaging silently retained an earlier human confirmation reason");
+      await review.getByRole("button",{name:"Confirmer en mémoire fictive uniquement"}).click();
+      assert.ok((await review.getByRole("status").innerText())
+        .includes("confirmation humaine motivée obligatoire"));
+      assert.ok((await review.innerText()).includes("confirmées en mémoire : 0"));
+      await approval.fill("Motif nouveau pour cette proposition fictive");
+      await review.getByRole("button",{name:"Confirmer en mémoire fictive uniquement"}).click();
+      assert.ok((await review.innerText()).includes("confirmées en mémoire : 1"));
+      const journal=review.getByRole("region",{name:"Journal des confirmations fictives en mémoire"});
+      assert.equal(await journal.getByRole("listitem").count(),1);
+      assert.ok((await journal.innerText()).includes("Motif nouveau pour cette proposition fictive"));
+      assert.ok(!(await journal.innerText()).includes("Motif ancien"));
+      const chooser=review.getByRole("combobox",{name:"Commande fictive à réviser"});
+      await chooser.selectOption("alternate");
+      await stage.click();
+      await approval.fill("Motif réservé à une autre prévisualisation");
+      await stage.click();
+      assert.equal(await approval.inputValue(),"");
+      assert.equal(await journal.getByRole("listitem").count(),1);
+      assert.ok((await review.innerText()).includes("ni signature, ni sauvegarde"));
+    });
+    assert.equal(cases.length, 108);
     // Historical PR #146 source marker: M32_BROWSER_REAL_CHROMIUM_PASS 62/62
     // Previous PR #156 marker retained: M32_BROWSER_REAL_CHROMIUM_PASS 70/70
     // PR #260 retained baseline (historical only): M32_BROWSER_REAL_CHROMIUM_PASS 82/82
     // PR #157 historical marker: M32_BROWSER_REAL_CHROMIUM_PASS 76/76
     // Historical P3a baseline, retained for continuity source-only tests:
     // M32_CI_PRECOMPILED_STRICT_CSP_BROWSER_PASS: 85/85
-    console.log("M32_BROWSER_REAL_CHROMIUM_PASS 107/107");
+    console.log("M32_BROWSER_REAL_CHROMIUM_PASS 108/108");
 
     // Actual Chromium enforced-CSP veto, separate from the 36
     // fictional interaction cases. Never make an off-loopback network call.

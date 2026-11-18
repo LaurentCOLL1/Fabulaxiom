@@ -1,16 +1,16 @@
 # Reprise Fabulaxiom (https://github.com/LaurentCOLL1/Fabulaxiom)
 
 ## Dernier checkpoint
-main=7e29f3900187ad58d2a129308a962a2a46742f17 ; #389 MERGED CI #44335035324 PASS, postmain #44338089528 PASS ; date=2026-11-18 ; P3av provenance et non-cascade Rust RAM depuis #35 CANDIDATS ; 9/95 ; M3.2 IN_PROGRESS_NOT_ACCEPTED (~45%).
+main=c2d1c2531d7552621f9906255ee8d1712c463f34 ; #390 MERGED CI #44365835407 PASS, postmain #44384175643 PASS ; date=2026-11-18 ; P3aw motif de confirmation réinitialisé à chaque nouveau staging fictif CANDIDAT ; 9/95 ; M3.2 IN_PROGRESS_NOT_ACCEPTED (~45%).
 
 ## Interdictions actives — STOP
 Writer/R1–R9 NOT_PROVEN ; P4 STOP ; G2B NOT_ACCEPTED ; G2C NOT_AUTHORIZED ; G3 STOP_UNAVAILABLE ; PENDING_EXTERNAL_ATTESTATION(21/3/2), prospective NOT_STARTED ; R2 STOP, R3 partiel, D3c conception, D3b-4/5, D3b-5 STOP ; main/WAL/SHM, live SQLite WAL-index et ABA NOT_PROVEN ; glib #160 OPEN_NOT_REMEDIATED.
 STOP v6/v7, M:\Fabulaxiom, Greenfield, backups, IPC writer, 007, Hello, recovery.
 
 ## Prochaines opérations
-1. Postmain #44338089528 completed/SUCCESS SHA exact 7e29f3900187ad58d2a129308a962a2a46742f17 ; qualifier CI P3av au HEAD exact en DRAFT.
-2. P3av : refuser la provenance de révision d'un autre Universe pour révoquer ancre/précédence et conserver la relation indépendante après une révocation ; 2 nouveaux tests Rust RAM candidats issus de #35. M32-007/M32-050/M32-081 [ ] PARTIELS ; checklist M3_2_COMPLETION_MASTER_CHECKLIST_20261109.md 104=9/95.
-3. CI HEAD exacte, diff/reviews/threads, Protect main ACTIVE bypass=[], squash expected_head_sha, postmain indépendante, issue #38 append-only ; PRODUCT_FIRST_PARALLEL_SAFETY.
+1. Postmain #44384175643 completed/SUCCESS au SHA exact c2d1c2531d7552621f9906255ee8d1712c463f34 ; P3aw motif humain effacé à tout nouveau staging fictif, preuve Chromium #108 CANDIDAT NON QUALIFIÉ.
+2. M32-007/050/075/081 [ ] PARTIELS ; checklist M3_2_COMPLETION_MASTER_CHECKLIST_20261109.md 104=9/95, #35/#215 DRAFT ; aucune admission P4.
+3. CI HEAD exacte P3aw, diff/reviews/threads, Protect main ACTIVE bypass=[], squash expected_head_sha, postmain indépendante, issue #38 append-only ; PRODUCT_FIRST_PARALLEL_SAFETY.
 
 ## Documents d'autorité
 RESUME_PROMPT.md ; HANDOFF_CURRENT.md ; HANDOFF_CURRENT.json ; STATE.md ; NEXT.md ; M3_2_GATE_DECISION_CURRENT.md ; ROADMAP_STATUS_CURRENT.md ; M3_2_SHORT_CYCLE_DELIVERY_20261116.md. Historique : RESUME_PROMPT.md / docs/qualification.
