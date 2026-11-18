@@ -1,0 +1,13 @@
+# P3as — relations humaines actives empêchant la correction d'une ancre fictive (18 novembre 2026)
+
+## Besoin utilisateur et décision
+Une correction d'ancre peut être refusée parce qu'une relation de précédence humaine active la référence. Le laboratoire React fictif doit expliquer clairement **quelles relations déclarées** sont concernées, et comment l'auteur peut les traiter sans conversion automatique. P3as présente l'identifiant exact des relations actives, l'ancre « avant », l'ancre « après » et la justification humaine enregistrée. L'affichage est fondé exclusivement sur `previewFictionalCorrection(...).active_edge_ids` triés et les relations réellement actives du brouillon contrôlé, jamais sur un tri de narration ou une date inférée. Aucune révocation automatique, aucun saut de validation.
+
+## Témoins candidats
+Vitest #36 : deux liens actifs créés uniquement en mémoire autour d'A, IDs explicites stables `fiction-draft-0001` et `fiction-draft-0002`, verdict `blocked`, audit inchangé et raisons humaines intactes. Chromium #106 : affichage du lien préexistant `human-ab` bloquant la correction de A, consultation sans mutation, puis **révocation volontaire** de cette relation fictive avec justification ; le témoin disparaît, la correction devient admissible, l'audit `precedence_revoked` subsiste. **CANDIDAT NON QUALIFIÉ** tant que la CI Windows P3as n'est pas terminale completed/SUCCESS au HEAD exact, avec Chromium 106/106 et CSP strict.
+
+## Frontières
+Labo React non monté, aucune donnée opérateur, aucun writer/runtime, Tauri IPC, migration, sauvegarde, Windows Hello ni recovery. Parent protégé `main=a28db62c172a09ba8c829748f325f8bc989dba61` après #386 MERGED, source Windows CI #44219373831 completed/SUCCESS HEAD exact `147ceba27ebdff7d7eba5be72435b3b32c6ea04e` (600 Vitest, Chromium 105/105, CSP strict 98/98, Rust 332/332) ; postmain indépendante #44224404413 **PENDING_UNQUALIFIED au checkpoint préparatoire**. Protect main ACTIVE strict bypass=[]. Checklist 104=9 closes/95 ouvertes, M3.2 IN_PROGRESS_NOT_ACCEPTED (~45% indicatif), PRODUCT_FIRST_PARALLEL_SAFETY. STOP writer/R1–R9 NOT_PROVEN, P4, G2B NOT_ACCEPTED, G2C NOT_AUTHORIZED, G3 STOP_UNAVAILABLE, PENDING_EXTERNAL_ATTESTATION(21/3/2) prospective NOT_STARTED, R2 STOP, R3 partiel, D3c conception, D3b-4/5 et D3b-5 STOP, main/WAL/SHM, live WAL-index/ABA NOT_PROVEN et glib #160 OPEN_NOT_REMEDIATED.
+
+## Validation avant fusion
+DRAFT/STOP MERGE jusqu'au postmain parent terminal SUCCESS SHA exact et CI propre P3as completed/SUCCESS HEAD exact ; relecture diff/reviews/threads, Protect main strict bypass=[], guarded squash `expected_head_sha` identique à la source, postmain indépendante et journal issue #38 append-only. Aucun point de checklist clos par un test fictif.

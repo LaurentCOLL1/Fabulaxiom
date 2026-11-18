@@ -1,4 +1,27 @@
 {
+  "m32_20261118_p3as_after_pr386_short_cycle": {
+    "date": "2026-11-18",
+    "status": "PR386_MERGED_POSTMAIN_PENDING_P3AS_CANDIDATE_UNQUALIFIED",
+    "parent_main": "a28db62c172a09ba8c829748f325f8bc989dba61",
+    "source_ci_run": 44219373831,
+    "source_ci_head": "147ceba27ebdff7d7eba5be72435b3b32c6ea04e",
+    "source_ci_status": "COMPLETED_SUCCESS_EXACT_HEAD",
+    "pr386_merged": true,
+    "pr386_postmain_run": 44224404413,
+    "parent_postmain_status": "PENDING_UNQUALIFIED",
+    "current_phase": "SOURCE_ONLY_CANDIDATE_UNQUALIFIED",
+    "p3as_vitest_cases": 1,
+    "p3as_chromium_cases": 1,
+    "p3as_source_qualified": false,
+    "writer_admitted": false,
+    "operator_accepted": false,
+    "checklist_total": 104,
+    "closed": 9,
+    "open": 95,
+    "gate": "IN_PROGRESS_NOT_ACCEPTED",
+    "strategy": "PRODUCT_FIRST_PARALLEL_SAFETY",
+    "previous_pr_expected_head_sha": "147ceba27ebdff7d7eba5be72435b3b32c6ea04e"
+  },
   "m32_20261117_p3ar_after_pr385_short_cycle": {
     "date": "2026-11-17",
     "status": "PR385_MERGED_POSTMAIN_PENDING_P3AR_CANDIDATE_UNQUALIFIED",

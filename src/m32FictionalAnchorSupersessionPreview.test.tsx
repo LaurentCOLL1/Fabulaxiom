@@ -2,7 +2,8 @@ import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 import { previewFictionalAnchorSupersession, confirmFictionalAnchorSupersession } from "./m32FictionalAnchorSupersessionPreview";
-import { startFictionalDraft, createFictionalAnchor, createFictionalPrecedence } from "./m32FictionalManualChronology";
+import { startFictionalDraft, createFictionalAnchor, createFictionalPrecedence,
+  previewFictionalCorrection } from "./m32FictionalManualChronology";
 import type { FictionalTimeInput, FictionalRevision } from "./m32FictionalManualChronology";
 import type { M32ChronologyProjection, M32TimeKind } from "./M32ChronologyPreview";
 import M32ManualChronologyLab from "./M32ManualChronologyLab";
@@ -265,6 +266,17 @@ describe("P3aj fiction-only dated supersession review and confirmation",()=>{
    expect(html).toContain("Une action fictive refusée annule la prévisualisation précédente");
    expect(html).toContain("Une nouvelle vérification est nécessaire");
    expect(html).not.toContain("Sauvegarde réussie");
+ });
+ it("36 reports exact human-authored blocker IDs without altering fictitious audit",()=>{
+   const d=createFictionalPrecedence(
+     createFictionalPrecedence(draft(),"A","B","A avant B"),
+     "C","A","C avant A");
+   const preview=previewFictionalCorrection(d,"A");
+   expect(preview.verdict).toBe("blocked");
+   expect(preview.active_edge_ids).toEqual(["fiction-draft-0001","fiction-draft-0002"]);
+   expect(d.snapshot.precedences.map(e=>e.reason))
+     .toEqual(["A avant B","C avant A"]);
+   expect(d.audit.map(e=>e.action)).toEqual(["precedence_created","precedence_created"]);
  });
  it("13 renders a deliberate review then confirmation entry point, no direct write",()=>{
    const html=renderToStaticMarkup(createElement(M32ManualChronologyLab,{initial:scene(),revisions:[]}));
