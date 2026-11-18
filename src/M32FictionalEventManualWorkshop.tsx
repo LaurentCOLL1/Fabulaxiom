@@ -6,6 +6,22 @@ import {
   type FictionalEventInput, type FictionalEventNotebook,
 } from "./m32FictionalEventNotebook";
 import M32FictionalEventVersionPairLab from "./M32FictionalEventVersionPairLab";
+import type { FictionalRevision } from "./m32FictionalManualChronology";
+
+/** Offer only an active anchor's exact historical source, without choosing it.
+ * Fictional browser memory only; neither a source authority nor a persistence gate.
+ */
+export function eligibleFictionalEventRevisions(
+  notebook: FictionalEventNotebook, selectedAnchorId: string,
+): readonly FictionalRevision[] {
+  inspectFictionalEventNotebook(notebook);
+  const universe = notebook.draft.snapshot.universe_id;
+  const anchor = notebook.draft.snapshot.anchors.find(a =>
+    a.id === selectedAnchorId && a.universe_id === universe && a.status === "current");
+  if (!anchor?.source_revision_id) return [];
+  return notebook.draft.revisions.filter(revision =>
+    revision.universe_id === universe && revision.revision_id === anchor.source_revision_id);
+}
 
 /** One action, one invented in-memory state transition; never persisted. */
 export type FictionalWorkshopAction =
@@ -45,6 +61,7 @@ export default function M32FictionalEventManualWorkshop({ initial }: {
   const [historicalVersion, setHistoricalVersion] = useState("");
 
   const activeAnchors = book.draft.snapshot.anchors.filter(a => a.status === "current");
+  const eligibleRevisions = eligibleFictionalEventRevisions(book, anchor);
   const currentEvents = currentFictionalEvents(book);
   const editableEvent = currentEvents.find(e => e.event_id === selectedId);
   const olderVersions = editableEvent && editableEvent.version > 1
@@ -128,14 +145,17 @@ export default function M32FictionalEventManualWorkshop({ initial }: {
         </select>
       </label>
       <label>Révision historique explicitement choisie
-        <select value={revision} onChange={e => setRevision(e.target.value)}>
+        <select value={revision} disabled={eligibleRevisions.length === 0}
+          onChange={e => setRevision(e.target.value)}>
           <option value="">Aucune révision</option>
-          {book.draft.revisions.map(r =>
+          {eligibleRevisions.map(r =>
             <option key={r.revision_id} value={r.revision_id}>
               {r.revision_label} ({r.revision_id})
             </option>)}
         </select>
       </label>
+      <small role="note">Seule la révision associée à l’ancre active est proposée.
+        Aucune source historique n’est sélectionnée automatiquement.</small>
       <label>Justification de correction ou de retrait
         <input value={reason} onChange={e => setReason(e.target.value)}
           maxLength={240} required={Boolean(selectedId)} />

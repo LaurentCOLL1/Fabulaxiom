@@ -1924,14 +1924,42 @@ async function run() {
       assert.equal(await journal.getByRole("listitem").count(),1);
       assert.ok((await review.innerText()).includes("ni signature, ni sauvegarde"));
     });
-    assert.equal(cases.length, 108);
+    await caseRun("109-fictional-event-revisions-match-explicit-active-anchor",async()=>{
+      await openEventForm();
+      const form=eventForm();
+      const anchor=form.getByRole("combobox",{name:"Ancre temporelle explicitement choisie"});
+      const revision=form.getByRole("combobox",{name:"Révision historique explicitement choisie"});
+      assert.equal(await revision.isDisabled(),true);
+      assert.equal(await revision.inputValue(),"");
+      await anchor.selectOption("A");
+      assert.equal(await revision.isDisabled(),false);
+      assert.deepEqual(await revision.locator("option").evaluateAll(options =>
+        options.map(option => option.getAttribute("value"))),["","invented-rev-A"]);
+      assert.equal(await revision.inputValue(),"");
+      await form.getByRole("textbox",{name:"Titre de l'événement (obligatoire)"})
+        .fill("Événement sourcé explicitement");
+      await form.getByRole("button",{name:"Créer en mémoire"}).click();
+      assert.equal(await eventRegion().getByRole("alert").count(),1);
+      assert.ok((await eventRegion().innerText()).includes("Événements courants (0)"));
+      await revision.selectOption("invented-rev-A");
+      await anchor.selectOption("B");
+      assert.equal(await revision.isDisabled(),true);
+      assert.equal(await revision.inputValue(),"");
+      await anchor.selectOption("A");
+      assert.equal(await revision.inputValue(),"");
+      await revision.selectOption("invented-rev-A");
+      await form.getByRole("button",{name:"Créer en mémoire"}).click();
+      assert.ok((await eventRegion().innerText()).includes("Événements courants (1)"));
+      assert.ok((await eventRegion().getByRole("status").innerText()).includes("Aucune sauvegarde"));
+    });
+    assert.equal(cases.length, 109);
     // Historical PR #146 source marker: M32_BROWSER_REAL_CHROMIUM_PASS 62/62
     // Previous PR #156 marker retained: M32_BROWSER_REAL_CHROMIUM_PASS 70/70
     // PR #260 retained baseline (historical only): M32_BROWSER_REAL_CHROMIUM_PASS 82/82
     // PR #157 historical marker: M32_BROWSER_REAL_CHROMIUM_PASS 76/76
     // Historical P3a baseline, retained for continuity source-only tests:
     // M32_CI_PRECOMPILED_STRICT_CSP_BROWSER_PASS: 85/85
-    console.log("M32_BROWSER_REAL_CHROMIUM_PASS 108/108");
+    console.log("M32_BROWSER_REAL_CHROMIUM_PASS 109/109");
 
     // Actual Chromium enforced-CSP veto, separate from the 36
     // fictional interaction cases. Never make an off-loopback network call.
