@@ -153,9 +153,9 @@ export default function M32FictionalEventManualWorkshop({ initial }: {
               {r.revision_label} ({r.revision_id})
             </option>)}
         </select>
-        <small role="note">Seule la révision associée à l’ancre active est proposée.
-          Aucune source historique n’est sélectionnée automatiquement.</small>
       </label>
+      <small role="note">Seule la révision associée à l’ancre active est proposée.
+        Aucune source historique n’est sélectionnée automatiquement.</small>
       <label>Justification de correction ou de retrait
         <input value={reason} onChange={e => setReason(e.target.value)}
           maxLength={240} required={Boolean(selectedId)} />

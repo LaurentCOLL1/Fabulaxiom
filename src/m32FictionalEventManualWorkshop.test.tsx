@@ -159,6 +159,10 @@ describe("M3.2 manual fictional event workshop source-only", () => {
     })).toThrow();
     expect(JSON.stringify(a)).toBe(before);
   });
+  it("18 controller only has 3 human edit actions, not filesystem/IPC", () => {
+    const kinds: FictionalWorkshopAction["kind"][] = ["create", "amend", "withdraw"];
+    expect(kinds).toEqual(["create", "amend", "withdraw"]);
+  });
   it("19 offers only the exact current anchor revision, without implicit selection", () => {
     const book = invented();
     const unrelated = { ...book.draft.revisions[0],
@@ -175,8 +179,5 @@ describe("M3.2 manual fictional event workshop source-only", () => {
       .map(revision => revision.revision_id)).toEqual(["fiction-alpha-rev-1"]);
     expect(JSON.stringify(withUnrelated)).toBe(before);
   });
-  it("18 controller only has 3 human edit actions, not filesystem/IPC", () => {
-    const kinds: FictionalWorkshopAction["kind"][] = ["create", "amend", "withdraw"];
-    expect(kinds).toEqual(["create", "amend", "withdraw"]);
-  });
+
 });
