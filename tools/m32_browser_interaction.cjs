@@ -601,7 +601,7 @@ async function run() {
       assert.ok((await preview.innerText()).includes("invented-rev-A"));
       await lab.getByRole("combobox", { name: "Relation à révoquer (historique conservé)" })
         .selectOption("human-ab");
-      await lab.getByRole("textbox", { name: "Justification humaine fictive" }).fill("Révocation humaine fictive");
+      await lab.getByRole("textbox", { name: "Justification de révocation fictive" }).fill("Révocation humaine fictive");
       await lab.getByRole("button", { name: "Révoquer explicitement" }).click();
       assert.ok((await preview.innerText()).includes("Correction possible"));
       assert.ok(!(await preview.innerText()).includes("Révoquer explicitement les liens actifs"));
@@ -696,7 +696,7 @@ async function run() {
       assert.ok((await proof.innerText()).includes("human-ab"));
       await lab.getByRole("combobox", { name: "Relation à révoquer (historique conservé)" })
         .selectOption("human-ab");
-      await lab.getByRole("textbox", { name: "Justification humaine fictive" })
+      await lab.getByRole("textbox", { name: "Justification de révocation fictive" })
         .fill("Révocation volontaire du lien humain");
       await lab.getByRole("button", { name: "Révoquer explicitement" }).click();
       assert.ok((await proof.innerText()).includes("Ordre indéterminé"));
@@ -1857,7 +1857,7 @@ async function run() {
       await lab.getByRole("combobox",{name:"Relation à révoquer (historique conservé)"})
         .selectOption("human-ab");
       assert.equal(await audit.innerText(),before);
-      await lab.getByRole("textbox",{name:"Justification humaine fictive"})
+      await lab.getByRole("textbox",{name:"Justification de révocation fictive"})
         .fill("Décision de révocation fictive explicite");
       await lab.getByRole("button",{name:"Révoquer explicitement"}).click();
       assert.equal(await blockers.count(),0);
