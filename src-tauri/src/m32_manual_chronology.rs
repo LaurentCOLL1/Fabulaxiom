@@ -759,6 +759,78 @@ mod tests {
     // Historical PR #35 had this authored reversal witness; port its *behavior*
     // to current main without importing its implementation or runtime gates.
     // This fixture remains SQLite :memory: and the schema version stays v6.
+    // P3av: targeted behavior from legacy PR #35. Both tests are isolated
+    // in the v6+candidate-v7 :memory: fixture; no operator profile is opened.
+    #[test]
+    fn p3av_foreign_revision_cannot_authorize_local_anchor_or_edge_revocation() {
+        let db=fixture();
+        db.execute_batch(
+            "INSERT INTO novels(id,universe_id,title,sort_order) VALUES
+                ('n-local','u1','First',0),('n-foreign','u2','Other',0);
+             INSERT INTO chapters(id,novel_id,title,sort_order) VALUES
+                ('c-local','n-local','One',0),('c-foreign','n-foreign','Other',0);
+             INSERT INTO scenes(id,chapter_id,title,sort_order) VALUES
+                ('s-local','c-local','First',0),('s-foreign','c-foreign','Other',0);
+             INSERT INTO scene_text_revisions(id,scene_id,revision_number,content) VALUES
+                ('r-local','s-local',1,'Authored local source'),
+                ('r-foreign','s-foreign',1,'Unrelated foreign source')",
+        ).unwrap();
+        for id in ["a","b"] {
+            create_anchor(&db,draft(id,"u1","unknown")).unwrap();
+        }
+        create_precedence(&db,"ab","u1","a","b","Original author",None).unwrap();
+
+        assert!(decide_anchor(&db,"bad-a","u1","a","revoke",None,
+            "Wrong source",Some("r-foreign")).is_err());
+        assert_eq!(list_current_anchor_ids(&db,"u1").unwrap().len(),2);
+        assert!(list_anchor_decisions(&db,"u1").unwrap().is_empty());
+        decide_anchor(&db,"good-a","u1","a","revoke",None,
+            "Author supplied local source",Some("r-local")).unwrap();
+        assert_eq!(list_anchor_decisions(&db,"u1").unwrap()[0].source_revision_id.as_deref(),
+                   Some("r-local"));
+
+        assert!(decide_precedence(&db,"bad-p","u1","ab","revoke",None,
+            "Wrong edge source",Some("r-foreign")).is_err());
+        assert_eq!(list_current_precedence_ids(&db,"u1").unwrap(),vec!["ab".to_string()]);
+        decide_precedence(&db,"good-p","u1","ab","revoke",None,
+            "Author sourced withdrawal",Some("r-local")).unwrap();
+        assert!(list_current_precedence_ids(&db,"u1").unwrap().is_empty());
+        assert_eq!(list_precedences(&db,"u1").unwrap().len(),1);
+        assert_eq!(database::current_schema_version(&db).unwrap(),6);
+    }
+
+    #[test]
+    fn p3av_revoking_one_edge_never_cascades_to_independent_human_relation() {
+        let db=fixture();
+        for id in ["a","b","c"] {
+            create_anchor(&db,draft(id,"u1","unknown")).unwrap();
+        }
+        create_anchor(&db,draft("foreign","u2","unknown")).unwrap();
+        create_precedence(&db,"ab","u1","a","b","Old authored order",None).unwrap();
+        create_precedence(&db,"bc","u1","b","c","Independent authored order",None).unwrap();
+        decide_precedence(&db,"revoke-ab","u1","ab","revoke",None,
+            "Explicitly withdraw only A-B",None).unwrap();
+
+        assert_eq!(list_precedences(&db,"u1").unwrap().len(),2);
+        assert_eq!(list_current_precedence_ids(&db,"u1").unwrap(),vec!["bc".to_string()]);
+        assert_eq!(list_active_precedence_graph(&db,"u1").unwrap(),vec![
+            ActivePrecedence{id:"bc".into(),before_anchor_id:"b".into(),
+                after_anchor_id:"c".into(),origin:"original".into()}
+        ]);
+        assert!(decide_precedence(&db,"alien","u2","bc","revoke",None,
+            "Wrong universe",None).is_err());
+        assert!(decide_precedence(&db,"duplicate","u1","ab","revoke",None,
+            "Already withdrawn",None).is_err());
+        assert!(db.execute("DELETE FROM world_time_precedence_decisions WHERE id='revoke-ab'",[]).is_err());
+        assert!(db.execute("DELETE FROM world_time_precedences WHERE id='ab'",[]).is_err());
+        assert!(create_precedence(&db,"legacy-ba","u1","b","a",
+            "Old path must not override history",None).is_err());
+        assert_eq!(list_precedences(&db,"u1").unwrap().len(),2);
+        assert_eq!(list_current_precedence_ids(&db,"u1").unwrap(),vec!["bc".to_string()]);
+        assert!(list_active_precedence_graph(&db,"u2").unwrap().is_empty());
+        assert_eq!(database::current_schema_version(&db).unwrap(),6);
+    }
+
     #[test]
     fn p3au_explicit_reverse_restatement_keeps_legacy_history_in_ram() {
         let db=fixture();
