@@ -1811,14 +1811,41 @@ async function run() {
       assert.ok((await journal.innerText()).includes("anchor_superseded"));
       assert.ok((await lab.innerText()).includes("Correction fictive confirmée en mémoire ; aucune sauvegarde"));
     });
-    assert.equal(cases.length, 104);
+    await caseRun("105-p3ar-refused-action-invalidates-fictitious-anchor-review",async()=>{
+      await page.getByRole("button",{name:"Ouvrir l'atelier manuel fictif"}).click();
+      const lab=page.getByRole("region",{name:"Atelier manuel M3.2 exclusivement fictif"});
+      const target=lab.getByRole("combobox",{name:"Correction : remplacer une ancre active"});
+      const preview=lab.getByRole("button",{name:"Prévisualiser la correction sans l'appliquer"});
+      const reviewed=lab.getByRole("status",{name:"Avant après correction d'ancre fictive"});
+      await target.selectOption("D");
+      await preview.click();
+      assert.equal(await reviewed.count(),1);
+      const journal=lab.getByRole("region",{name:"Journal des modifications fictives"});
+      const auditBefore=await journal.innerText();
+      // No before/after selection or reason: the independent fictive edge
+      // action must fail closed without changing the RAM baseline.
+      await lab.getByRole("button",{name:"Ajouter avant/après"}).click();
+      assert.equal(await journal.innerText(),auditBefore);
+      assert.equal(await reviewed.count(),0);
+      assert.equal(await lab.getByRole("button",
+        {name:"Confirmer la correction fictive en RAM"}).count(),0);
+      assert.equal(await target.inputValue(),"D");
+      assert.equal(await lab.getByRole("alert").count(),1);
+      await preview.click();
+      assert.equal(await reviewed.count(),1);
+      assert.equal(await lab.getByRole("alert").count(),0);
+      assert.ok((await lab.innerText()).includes(
+        "Prévisualisation fictive seulement ; aucune correction appliquée."));
+      assert.ok(!(await lab.innerText()).includes("Sauvegarde réussie"));
+    });
+    assert.equal(cases.length, 105);
     // Historical PR #146 source marker: M32_BROWSER_REAL_CHROMIUM_PASS 62/62
     // Previous PR #156 marker retained: M32_BROWSER_REAL_CHROMIUM_PASS 70/70
     // PR #260 retained baseline (historical only): M32_BROWSER_REAL_CHROMIUM_PASS 82/82
     // PR #157 historical marker: M32_BROWSER_REAL_CHROMIUM_PASS 76/76
     // Historical P3a baseline, retained for continuity source-only tests:
     // M32_CI_PRECOMPILED_STRICT_CSP_BROWSER_PASS: 85/85
-    console.log("M32_BROWSER_REAL_CHROMIUM_PASS 104/104");
+    console.log("M32_BROWSER_REAL_CHROMIUM_PASS 105/105");
 
     // Actual Chromium enforced-CSP veto, separate from the 36
     // fictional interaction cases. Never make an off-loopback network call.

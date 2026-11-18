@@ -259,6 +259,13 @@ describe("P3aj fiction-only dated supersession review and confirmation",()=>{
    expect(html).toContain("la version historique reste consultable");
    expect(html).not.toContain("Sauvegarde réussie");
  });
+ it("35 explains fictional refusal invalidates previous RAM review",()=>{
+   const html=renderToStaticMarkup(createElement(M32ManualChronologyLab,
+     {initial:scene(),revisions:[]}));
+   expect(html).toContain("Une action fictive refusée annule la prévisualisation précédente");
+   expect(html).toContain("Une nouvelle vérification est nécessaire");
+   expect(html).not.toContain("Sauvegarde réussie");
+ });
  it("13 renders a deliberate review then confirmation entry point, no direct write",()=>{
    const html=renderToStaticMarkup(createElement(M32ManualChronologyLab,{initial:scene(),revisions:[]}));
    expect(html).toContain("Prévisualiser la correction sans l&#x27;appliquer");

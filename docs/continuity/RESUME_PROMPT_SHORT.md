@@ -1,16 +1,16 @@
 # Reprise Fabulaxiom (https://github.com/LaurentCOLL1/Fabulaxiom)
 
 ## Dernier checkpoint
-main=3e705b6d04b1a00f20cd1c773e6c1683869ea731 ; #384 MERGED CI #44125836232 PASS, postmain #44130888195 PASS SHA exact ; date=2026-11-17 ; P3aq remise à zéro après confirmation RAM fictive CANDIDAT ; 9/95 ; M3.2 IN_PROGRESS_NOT_ACCEPTED (~45%).
+main=05f8027328e0fecaac34ffb768e41b9cf3c36c9d ; #385 MERGED CI #44135547659 PASS, postmain #44175488230 PENDING ; date=2026-11-17 ; P3ar refus fictif invalide prévisualisation CANDIDAT ; 9/95 ; M3.2 IN_PROGRESS_NOT_ACCEPTED (~45%).
 
 ## Interdictions actives — STOP
 Writer/R1–R9 NOT_PROVEN ; P4 STOP ; G2B NOT_ACCEPTED ; G2C NOT_AUTHORIZED ; G3 STOP_UNAVAILABLE ; PENDING_EXTERNAL_ATTESTATION(21/3/2), prospective NOT_STARTED ; R2 STOP, R3 partiel, D3c conception, D3b-4/5, D3b-5 STOP ; main/WAL/SHM, live SQLite WAL-index et ABA NOT_PROVEN ; glib #160 OPEN_NOT_REMEDIATED.
 STOP v6/v7, M:\Fabulaxiom, Greenfield, backups, IPC writer, 007, Hello, recovery.
 
 ## Prochaines opérations
-1. P3aq : après confirmation d'une correction fictive réussie, effacer cible, scène/révision et détachement ; Vitest #34 et Chromium #104 CANDIDATS. Aucune admission writer/P4.
-2. Qualifier CI HEAD exacte P3aq ; vérifier diff/reviews/threads et Protect main ACTIVE bypass=[], squash expected_head_sha puis postmain indépendante, issue #38 append-only.
-3. Checklist M3_2_COMPLETION_MASTER_CHECKLIST_20261109.md 104=9/95 ; PRODUCT_FIRST_PARALLEL_SAFETY, STOP inchangés.
+1. Qualifier postmain #44175488230 au SHA exact 05f8027328e0fecaac34ffb768e41b9cf3c36c9d ; si PENDING garder PR P3ar en DRAFT.
+2. P3ar : un refus d'action fictive supprime l'ancienne revue, sans changer brouillon ni sélection ; Vitest #35 et Chromium #105 CANDIDATS ; checklist M3_2_COMPLETION_MASTER_CHECKLIST_20261109.md 104=9/95.
+3. CI HEAD exacte, diff/reviews/threads, Protect main ACTIVE bypass=[], squash expected_head_sha, postmain indépendante, issue #38 append-only ; PRODUCT_FIRST_PARALLEL_SAFETY.
 
 ## Documents d'autorité
 RESUME_PROMPT.md ; HANDOFF_CURRENT.md ; HANDOFF_CURRENT.json ; STATE.md ; NEXT.md ; M3_2_GATE_DECISION_CURRENT.md ; ROADMAP_STATUS_CURRENT.md ; M3_2_SHORT_CYCLE_DELIVERY_20261116.md. Historique : RESUME_PROMPT.md / docs/qualification.

@@ -90,6 +90,9 @@ function Lab({ initial, revisions }: {
       setError(null);
       setNotice(message);
     } catch (err) {
+      // A refused fictional action must not leave a previous confirmation
+      // visually actionable; do not mutate the draft on this failure.
+      setSupersessionPreview(null);
       setError(String(err));
       setNotice(null);
     }
@@ -209,6 +212,8 @@ function Lab({ initial, revisions }: {
       <button type="button" disabled={!replace} onClick={reviewCorrection}>
         Prévisualiser la correction sans l'appliquer
       </button>
+      <p>Une action fictive refusée annule la prévisualisation précédente.
+        Une nouvelle vérification est nécessaire avant confirmation.</p>
       {supersessionPreview && <section role="status"
           aria-label="Avant après correction d'ancre fictive">
         <h3>Correction proposée — données fictives non enregistrées</h3>

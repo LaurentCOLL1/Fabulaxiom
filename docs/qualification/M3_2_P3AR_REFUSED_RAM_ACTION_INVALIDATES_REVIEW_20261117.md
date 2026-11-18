@@ -1,0 +1,16 @@
+# P3ar — toute action fictive refusée invalide la revue précédente (17 novembre 2026)
+
+## Bénéfice produit
+Dans l'atelier React isolé, une prévisualisation de correction d'ancre était encore affichée après le refus d'une action RAM indépendante. Sans donner de pouvoir au runtime, P3ar rend ce refus visuellement fail-closed : la revue précédente disparaît, son bouton de confirmation n'est plus disponible, le brouillon de départ et la sélection de cible sont conservés, et un nouvel examen peut être ouvert explicitement après le refus. Aucun SQLite, writer, Tauri IPC, migration, production, Hello ni recovery.
+
+## Témoins CANDIDATS non qualifiés
+Vitest #35 : texte français explicite annonçant une nouvelle vérification après refus, sans faux succès de sauvegarde. Chromium #105 : l'auteur prévisualise la correction de D, tente une relation avant/après volontairement incomplète (refus non mutateur), vérifie disparition de la revue et de la confirmation, conservation de la cible D et affichage de l'erreur, puis impose une nouvelle revue avant tout choix. Attendu Chromium 105/105 et CSP strict ; **aucun PASS avant CI source indépendante au HEAD exact**.
+
+## Autorité et interdictions
+Parent protected `main=05f8027328e0fecaac34ffb768e41b9cf3c36c9d` après #385 P3aq MERGED sous Protect main ACTIVE strict bypass=[], source Windows CI #44135547659 completed/SUCCESS HEAD exact `a310f3bffc516c0f0cf0e24ab5b9a370869cc0a5`, postmain indépendante #44175488230 PENDING_UNQUALIFIED au pointage. Checklist 104=9 closes/95 ouvertes, M3.2 IN_PROGRESS_NOT_ACCEPTED (~45 % indicatif), PRODUCT_FIRST_PARALLEL_SAFETY. Writer/R1–R9 NOT_PROVEN, P4 STOP, G2B NOT_ACCEPTED, G2C NOT_AUTHORIZED, G3 STOP_UNAVAILABLE, PENDING_EXTERNAL_ATTESTATION(21/3/2) prospective NOT_STARTED, R2 STOP, R3 partiel, D3c conception, D3b-4/5 et D3b-5 STOP, main/WAL/SHM, live WAL-index/ABA NOT_PROVEN, glib #160 OPEN_NOT_REMEDIATED, STOP v6/v7, M:\\Fabulaxiom, Greenfield, backups, IPC writer, 007, Hello, recovery.
+
+## Suite
+DRAFT/STOP MERGE tant que la postmain parent et la CI propre P3ar ne sont pas terminales SUCCESS aux SHA exacts. Diff/reviews/threads, Protect main ACTIVE strict bypass=[], guarded squash expected_head_sha, postmain indépendante, issue #38 append-only. Aucun item de checklist clos par simulation.
+
+## Correction après la CI de la première version
+La CI Windows source [#44176996921](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/44176996921) au HEAD exact `7e28cfebcee47036b5b716ffc0c05b1a7440b6bb` s'est terminée en **FAILURE** uniquement lors du cas Chromium #105 : le scénario de refus puis nouvelle revue atteignait la dernière assertion, qui recherchait à tort « aucune sauvegarde » alors que l'interface de revue affiche « Prévisualisation fictive seulement ; aucune correction appliquée. ». Le nouveau test vérifie ce libellé exact, l'absence de fausse réussite « Sauvegarde réussie », l'audit RAM strictement inchangé après le refus, la revue effacée puis explicitement reconstituée. Aucun contrôle de refus n'est désactivé ; HEAD corrigé et CI séparée à qualifier. Le parent postmain #44175488230 a entre-temps été vérifié completed/SUCCESS sur SHA exact `05f8027328e0fecaac34ffb768e41b9cf3c36c9d`.
