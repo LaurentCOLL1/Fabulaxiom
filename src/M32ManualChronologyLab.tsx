@@ -205,6 +205,19 @@ function Lab({ initial, revisions }: {
         conservée.</p>
       <section aria-label="Vérification de correction fictive" role="status">
         <p>{correctionPreview.reason}</p>
+        {correctionPreview.active_edge_ids.length > 0 && <section
+          role="status" aria-label="Relations humaines actives empêchant la correction">
+          <p>Ces liens humains fictifs actifs empêchent la correction de l'ancre.
+            Chacun doit être révoqué explicitement, avec justification humaine.
+            Cette liste n'effectue aucune révocation automatique.</p>
+          <ul>{correctionPreview.active_edge_ids.map(edgeId => {
+            const edge = edges.find(e => e.id === edgeId);
+            return <li key={edgeId}><code>{edgeId}</code> : {edge
+              ? <><code>{edge.before_anchor_id}</code> avant
+                   <code>{edge.after_anchor_id}</code> — {edge.reason}</>
+              : "relation non retrouvée : correction refusée"}</li>;
+          })}</ul>
+        </section>}
         {correctionPreview.historical_revision_id && <p>
           Révision historique conservée : {correctionPreview.historical_revision_id}
         </p>}

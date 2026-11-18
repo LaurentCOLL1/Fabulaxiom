@@ -1,15 +1,15 @@
 # Reprise Fabulaxiom (https://github.com/LaurentCOLL1/Fabulaxiom)
 
 ## Dernier checkpoint
-main=05f8027328e0fecaac34ffb768e41b9cf3c36c9d ; #385 MERGED CI #44135547659 PASS, postmain #44175488230 PENDING ; date=2026-11-17 ; P3ar refus fictif invalide prévisualisation CANDIDAT ; 9/95 ; M3.2 IN_PROGRESS_NOT_ACCEPTED (~45%).
+main=a28db62c172a09ba8c829748f325f8bc989dba61 ; #386 MERGED CI #44219373831 PASS, postmain #44224404413 PENDING ; date=2026-11-18 ; P3as afficher liens humains bloquant correction fictive CANDIDAT ; 9/95 ; M3.2 IN_PROGRESS_NOT_ACCEPTED (~45%).
 
 ## Interdictions actives — STOP
 Writer/R1–R9 NOT_PROVEN ; P4 STOP ; G2B NOT_ACCEPTED ; G2C NOT_AUTHORIZED ; G3 STOP_UNAVAILABLE ; PENDING_EXTERNAL_ATTESTATION(21/3/2), prospective NOT_STARTED ; R2 STOP, R3 partiel, D3c conception, D3b-4/5, D3b-5 STOP ; main/WAL/SHM, live SQLite WAL-index et ABA NOT_PROVEN ; glib #160 OPEN_NOT_REMEDIATED.
 STOP v6/v7, M:\Fabulaxiom, Greenfield, backups, IPC writer, 007, Hello, recovery.
 
 ## Prochaines opérations
-1. Qualifier postmain #44175488230 au SHA exact 05f8027328e0fecaac34ffb768e41b9cf3c36c9d ; si PENDING garder PR P3ar en DRAFT.
-2. P3ar : un refus d'action fictive supprime l'ancienne revue, sans changer brouillon ni sélection ; Vitest #35 et Chromium #105 CANDIDATS ; checklist M3_2_COMPLETION_MASTER_CHECKLIST_20261109.md 104=9/95.
+1. Qualifier postmain #44224404413 SHA exact a28db62c172a09ba8c829748f325f8bc989dba61; si PENDING garder PR P3as en DRAFT.
+2. P3as : afficher les témoins humains actifs bloquant la correction, sans révocation automatique ; Vitest #36 et Chromium #106 CANDIDATS ; checklist M3_2_COMPLETION_MASTER_CHECKLIST_20261109.md 104=9/95.
 3. CI HEAD exacte, diff/reviews/threads, Protect main ACTIVE bypass=[], squash expected_head_sha, postmain indépendante, issue #38 append-only ; PRODUCT_FIRST_PARALLEL_SAFETY.
 
 ## Documents d'autorité
