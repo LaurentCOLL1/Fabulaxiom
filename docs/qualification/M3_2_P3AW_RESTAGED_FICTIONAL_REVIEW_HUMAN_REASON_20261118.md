@@ -1,0 +1,9 @@
+# P3aw — motif humain effacé à chaque nouveau staging fictif (18 novembre 2026)
+
+Le composant isolé M32P4aStageReviewPanel.tsx permettait de réutiliser par inadvertance un motif saisi lors d'une prévisualisation antérieure. P3aw place setReason("") immédiatement au début de chaque soumission de staging, avant tout résultat accepté ou refusé. Les décisions et reçus précédents restent inchangés.
+
+Le cas Chromium **108-p3aw-restaging-requires-a-fresh-human-reason** prouve sur une page uniquement fictive : second staging efface le motif initial ; confirmation sans nouveau motif refusée ; confirmation avec nouveau motif acceptée uniquement en RAM ; un autre staging efface de nouveau le motif sans effacer les reçus. Ce test est CANDIDAT NON QUALIFIÉ avant sa CI source.
+
+Parent protected main=c2d1c2531d7552621f9906255ee8d1712c463f34, PR #390 MERGED, CI source #44365835407 completed/SUCCESS sur a070e5ced6a21a316ffe6d21c9dbf7b12e6eefa2, postmain indépendante #44384175643 completed/SUCCESS au SHA exact parent, Protect main ACTIVE strict bypass=[]. Nouvelle PR P3aw : CI HEAD exacte, revue diff/reviews/threads, protected squash expected_head_sha, postmain indépendante. Checklist 104=9 clos/95 ouverts ; M32-075 [ ] PARTIEL, M3.2 IN_PROGRESS_NOT_ACCEPTED (~45 % indicatif).
+
+Aucun accès Tauri, IPC, SQLite, profil opérateur, sauvegarde, writer ou migration. Atelier React fictif non monté dans App.tsx. STOP writer/R1–R9 NOT_PROVEN ; P4 STOP ; G2B NOT_ACCEPTED ; G2C NOT_AUTHORIZED ; G3 STOP_UNAVAILABLE ; PENDING_EXTERNAL_ATTESTATION(21/3/2) prospective NOT_STARTED ; R2 STOP, R3 partiel, D3c conception, D3b-4/5 et D3b-5 STOP ; main/WAL/SHM, live SQLite WAL-index et ABA NOT_PROVEN ; glib #160 OPEN_NOT_REMEDIATED ; STOP v6/v7, M:\\Fabulaxiom, Greenfield, backups, IPC writer, 007, Hello, recovery.

@@ -17,6 +17,8 @@ export default function M32P4aFictionalReview({
   const [message, setMessage] = useState("Aucune proposition prévisualisée.");
   function stage(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    // A new review, including a refused review, requires a fresh human motive.
+    setReason("");
     try {
       setProposal(stageP4aFictionalPlan(state,
         choice === "alternate" && alternateCommand ? alternateCommand : command));
