@@ -815,7 +815,7 @@ mod tests {
         assert_eq!(list_current_precedence_ids(&db,"u1").unwrap(),vec!["bc".to_string()]);
         assert_eq!(list_active_precedence_graph(&db,"u1").unwrap(),vec![
             ActivePrecedence{id:"bc".into(),before_anchor_id:"b".into(),
-                after_anchor_id:"c".into(),origin:"original".into()}
+                after_anchor_id:"c".into(),origin:"legacy".into()}
         ]);
         assert!(decide_precedence(&db,"alien","u2","bc","revoke",None,
             "Wrong universe",None).is_err());
