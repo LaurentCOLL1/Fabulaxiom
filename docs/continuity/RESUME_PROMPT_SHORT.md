@@ -13,7 +13,7 @@ STOP v6/v7, M:\Fabulaxiom, Greenfield, backups, IPC writer, 007, Hello, recovery
 3. CI HEAD P3ax, revue diff/reviews/threads, Protect main ACTIVE strict bypass=[], squash attendu expected_head_sha, postmain indépendante, issue #38 append-only, PRODUCT_FIRST_PARALLEL_SAFETY.
 
 ## Documents d'autorité
-RESUME_PROMPT.md ; HANDOFF_CURRENT.md ; HANDOFF_CURRENT.json ; STATE.md ; NEXT.md ; M3_2_GATE_DECISION_CURRENT.md ; ROADMAP_STATUS_CURRENT.md ; M3_2_SHORT_CYCLE_DELIVERY_20261116.md. Historique : RESUME_PROMPT.md / docs/qualification.
+RESUME_PROMPT.md ; HANDOFF_CURRENT.md ; HANDOFF_CURRENT.json ; STATE.md ; NEXT.md ; M3_2_GATE_DECISION_CURRENT.md ; M3_2_COMPLETION_MASTER_CHECKLIST_20261109.md ; ROADMAP_STATUS_CURRENT.md ; M3_2_SHORT_CYCLE_DELIVERY_20261116.md. Historique : RESUME_PROMPT.md / docs/qualification.
 
 ## Index historique (preuves jetables uniquement)
 Sécurité : M3_2_GLIB_ALERT1_UPSTREAM_BLOCKER_20261101.md
