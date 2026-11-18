@@ -1,4 +1,25 @@
 {
+  "m32_20261118_p3av_after_pr389_short_cycle": {
+    "current_phase": "SOURCE_ONLY_CANDIDATE_UNQUALIFIED",
+    "parent_postmain_status": "COMPLETED_SUCCESS_EXACT_MAIN",
+    "attested_postmain_sha": "7e29f3900187ad58d2a129308a962a2a46742f17",
+    "date": "2026-11-18",
+    "status": "PR389_MERGED_POSTMAIN_SUCCESS_P3AV_CANDIDATE_UNQUALIFIED",
+    "parent_main": "7e29f3900187ad58d2a129308a962a2a46742f17",
+    "source_ci_run": 44335035324,
+    "source_ci_head": "c4591d51f4b8a5fbd3a01be2962f8d9abace99db",
+    "source_ci_status": "COMPLETED_SUCCESS_EXACT_HEAD",
+    "pr389_postmain_run": 44338089528,
+    "p3av_rust_cases": 2,
+    "p3av_source_qualified": false,
+    "writer_admitted": false,
+    "operator_accepted": false,
+    "checklist_total": 104,
+    "closed": 9,
+    "open": 95,
+    "gate": "IN_PROGRESS_NOT_ACCEPTED",
+    "strategy": "PRODUCT_FIRST_PARALLEL_SAFETY"
+  },
   "m32_20261118_p3au_after_pr388_short_cycle": {
     "date": "2026-11-18",
     "status": "PR388_MERGED_POSTMAIN_SUCCESS_P3AU_HISTORICAL_RUST_CANDIDATE_UNQUALIFIED",
