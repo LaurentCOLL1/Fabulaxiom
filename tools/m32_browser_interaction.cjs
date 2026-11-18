@@ -1820,9 +1820,12 @@ async function run() {
       await target.selectOption("D");
       await preview.click();
       assert.equal(await reviewed.count(),1);
+      const journal=lab.getByRole("region",{name:"Journal des modifications fictives"});
+      const auditBefore=await journal.innerText();
       // No before/after selection or reason: the independent fictive edge
       // action must fail closed without changing the RAM baseline.
       await lab.getByRole("button",{name:"Ajouter avant/après"}).click();
+      assert.equal(await journal.innerText(),auditBefore);
       assert.equal(await reviewed.count(),0);
       assert.equal(await lab.getByRole("button",
         {name:"Confirmer la correction fictive en RAM"}).count(),0);
@@ -1831,7 +1834,9 @@ async function run() {
       await preview.click();
       assert.equal(await reviewed.count(),1);
       assert.equal(await lab.getByRole("alert").count(),0);
-      assert.ok((await lab.innerText()).includes("aucune sauvegarde"));
+      assert.ok((await lab.innerText()).includes(
+        "Prévisualisation fictive seulement ; aucune correction appliquée."));
+      assert.ok(!(await lab.innerText()).includes("Sauvegarde réussie"));
     });
     assert.equal(cases.length, 105);
     // Historical PR #146 source marker: M32_BROWSER_REAL_CHROMIUM_PASS 62/62

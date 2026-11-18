@@ -11,3 +11,6 @@ Parent protected `main=05f8027328e0fecaac34ffb768e41b9cf3c36c9d` après #385 P3a
 
 ## Suite
 DRAFT/STOP MERGE tant que la postmain parent et la CI propre P3ar ne sont pas terminales SUCCESS aux SHA exacts. Diff/reviews/threads, Protect main ACTIVE strict bypass=[], guarded squash expected_head_sha, postmain indépendante, issue #38 append-only. Aucun item de checklist clos par simulation.
+
+## Correction après la CI de la première version
+La CI Windows source [#44176996921](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/44176996921) au HEAD exact `7e28cfebcee47036b5b716ffc0c05b1a7440b6bb` s'est terminée en **FAILURE** uniquement lors du cas Chromium #105 : le scénario de refus puis nouvelle revue atteignait la dernière assertion, qui recherchait à tort « aucune sauvegarde » alors que l'interface de revue affiche « Prévisualisation fictive seulement ; aucune correction appliquée. ». Le nouveau test vérifie ce libellé exact, l'absence de fausse réussite « Sauvegarde réussie », l'audit RAM strictement inchangé après le refus, la revue effacée puis explicitement reconstituée. Aucun contrôle de refus n'est désactivé ; HEAD corrigé et CI séparée à qualifier. Le parent postmain #44175488230 a entre-temps été vérifié completed/SUCCESS sur SHA exact `05f8027328e0fecaac34ffb768e41b9cf3c36c9d`.
