@@ -1,16 +1,16 @@
 # Reprise Fabulaxiom (https://github.com/LaurentCOLL1/Fabulaxiom)
 
 ## Dernier checkpoint
-main=c2d1c2531d7552621f9906255ee8d1712c463f34 ; #390 MERGED CI #44365835407 PASS, postmain #44384175643 PASS ; date=2026-11-18 ; P3aw motif de confirmation réinitialisé à chaque nouveau staging fictif CANDIDAT ; 9/95 ; M3.2 IN_PROGRESS_NOT_ACCEPTED (~45%).
+main=0667f38e1bc2b1a55d1890c5da5a9ed535fb9e5d ; #391 P3aw MERGED CI #44388441801 PASS, postmain #44394799523 PASS ; date=2026-11-18 ; P3ax filtres de révisions historiques compatibles à l'ancre dans le carnet fictif CANDIDAT ; 9/95 ; M3.2 IN_PROGRESS_NOT_ACCEPTED (~45%).
 
 ## Interdictions actives — STOP
 Writer/R1–R9 NOT_PROVEN ; P4 STOP ; G2B NOT_ACCEPTED ; G2C NOT_AUTHORIZED ; G3 STOP_UNAVAILABLE ; PENDING_EXTERNAL_ATTESTATION(21/3/2), prospective NOT_STARTED ; R2 STOP, R3 partiel, D3c conception, D3b-4/5, D3b-5 STOP ; main/WAL/SHM, live SQLite WAL-index et ABA NOT_PROVEN ; glib #160 OPEN_NOT_REMEDIATED.
 STOP v6/v7, M:\Fabulaxiom, Greenfield, backups, IPC writer, 007, Hello, recovery.
 
 ## Prochaines opérations
-1. Postmain #44384175643 completed/SUCCESS au SHA exact c2d1c2531d7552621f9906255ee8d1712c463f34 ; P3aw motif humain effacé à tout nouveau staging fictif, preuve Chromium #108 CANDIDAT NON QUALIFIÉ.
-2. M32-007/050/075/081 [ ] PARTIELS ; checklist M3_2_COMPLETION_MASTER_CHECKLIST_20261109.md 104=9/95, #35/#215 DRAFT ; aucune admission P4.
-3. CI HEAD exacte P3aw, diff/reviews/threads, Protect main ACTIVE bypass=[], squash expected_head_sha, postmain indépendante, issue #38 append-only ; PRODUCT_FIRST_PARALLEL_SAFETY.
+1. #391 P3aw : source Windows #44388441801 completed/SUCCESS au HEAD exact 1e6cc412e9c7db757cc65b17e13c9d6943a11d73 ; postmain #44394799523 completed/SUCCESS sur 0667f38e1bc2b1a55d1890c5da5a9ed535fb9e5d.
+2. P3ax : seulement les révisions de l'ancre active figurent au choix, aucune sélection implicite, changement d'ancre réinitialise la révision, Chromium #109 et Vitest #19 CANDIDATS NON QUALIFIÉS avant leur CI source exacte. M32-070/071/075 [ ] PARTIELS, checklist 104=9/95, #35/#215 DRAFT.
+3. CI HEAD P3ax, revue diff/reviews/threads, Protect main ACTIVE strict bypass=[], squash attendu expected_head_sha, postmain indépendante, issue #38 append-only, PRODUCT_FIRST_PARALLEL_SAFETY.
 
 ## Documents d'autorité
 RESUME_PROMPT.md ; HANDOFF_CURRENT.md ; HANDOFF_CURRENT.json ; STATE.md ; NEXT.md ; M3_2_GATE_DECISION_CURRENT.md ; ROADMAP_STATUS_CURRENT.md ; M3_2_SHORT_CYCLE_DELIVERY_20261116.md. Historique : RESUME_PROMPT.md / docs/qualification.

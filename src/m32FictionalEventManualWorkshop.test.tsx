@@ -8,7 +8,8 @@ import {
   type FictionalEventNotebook, type FictionalEventInput,
 } from "./m32FictionalEventNotebook";
 import M32FictionalEventManualWorkshop, {
-  applyFictionalWorkshopAction, type FictionalWorkshopAction,
+  applyFictionalWorkshopAction, eligibleFictionalEventRevisions,
+  type FictionalWorkshopAction,
 } from "./M32FictionalEventManualWorkshop";
 
 function invented(universe: "fiction-alpha" | "fiction-beta" = "fiction-alpha") {
@@ -56,7 +57,8 @@ describe("M3.2 manual fictional event workshop source-only", () => {
       { initial: invented() }));
     expect(html).toContain("Ancre temporelle explicitement choisie");
     expect(html).toContain("Révision historique explicitement choisie");
-    expect(html).toContain("fiction-alpha-rev-1");
+    expect(html).not.toContain("value=\"fiction-alpha-rev-1\"");
+    expect(html).toContain("Aucune source historique n’est sélectionnée automatiquement.");
     expect(html).toContain("Sans ancre (temps inconnu)");
   });
   it("03 creates only in RAM with a single version and audit entry", () => {
@@ -156,6 +158,22 @@ describe("M3.2 manual fictional event workshop source-only", () => {
       kind: "amend", eventId: "", input, reason: "Refus",
     })).toThrow();
     expect(JSON.stringify(a)).toBe(before);
+  });
+  it("19 offers only the exact current anchor revision, without implicit selection", () => {
+    const book = invented();
+    const unrelated = { ...book.draft.revisions[0],
+      revision_id: "fiction-alpha-rev-unused", revision_label: "Autre source inventée" };
+    const withUnrelated: FictionalEventNotebook = {
+      ...book, draft: { ...book.draft,
+        revisions: [...book.draft.revisions, unrelated] },
+    };
+    const before = JSON.stringify(withUnrelated);
+    expect(eligibleFictionalEventRevisions(withUnrelated, "")).toEqual([]);
+    expect(eligibleFictionalEventRevisions(withUnrelated, "B")).toEqual([]);
+    expect(eligibleFictionalEventRevisions(withUnrelated, "missing")).toEqual([]);
+    expect(eligibleFictionalEventRevisions(withUnrelated, "A")
+      .map(revision => revision.revision_id)).toEqual(["fiction-alpha-rev-1"]);
+    expect(JSON.stringify(withUnrelated)).toBe(before);
   });
   it("18 controller only has 3 human edit actions, not filesystem/IPC", () => {
     const kinds: FictionalWorkshopAction["kind"][] = ["create", "amend", "withdraw"];
