@@ -286,7 +286,7 @@ describe("P3aj fiction-only dated supersession review and confirmation",()=>{
    const done=revokeFictionalPrecedence(d,"fiction-draft-0001",
      "Motif volontaire de révocation distinct");
    expect(done.snapshot.precedences[0].status).toBe("revoked");
-   expect(done.audit.at(-1)?.action).toBe("precedence_revoked");
+   expect(done.audit[done.audit.length - 1]?.action).toBe("precedence_revoked");
    const html=renderToStaticMarkup(createElement(M32ManualChronologyLab,
      {initial:scene(),revisions:[]}));
    expect(html).toContain("Justification de révocation fictive");
