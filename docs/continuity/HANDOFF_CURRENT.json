@@ -1,4 +1,28 @@
 {
+  "m32_20261119_p3ba_after_pr394_short_cycle": {
+    "date": "2026-11-19",
+    "status": "PR394_MERGED_POSTMAIN_SUCCESS_P3BA_ID_STATUS_FILTERS_CANDIDATE",
+    "current_phase": "SOURCE_ONLY_CANDIDATE_UNQUALIFIED",
+    "parent_main": "4c0b1384ef81dadd5e05e5abb51d908f197844b1",
+    "source_ci_run": 44457704272,
+    "source_ci_head": "e4c207bacd21ab3ebe92e419970a90930d70f821",
+    "source_ci_status": "COMPLETED_SUCCESS_EXACT_HEAD",
+    "parent_postmain_run": 44547790648,
+    "parent_postmain_status": "COMPLETED_SUCCESS_EXACT_MAIN",
+    "attested_postmain_sha": "4c0b1384ef81dadd5e05e5abb51d908f197844b1",
+    "p3ba_vitest_cases": [
+      22,
+      23
+    ],
+    "p3ba_source_qualified": false,
+    "writer_admitted": false,
+    "operator_accepted": false,
+    "checklist_total": 104,
+    "closed": 9,
+    "open": 95,
+    "gate": "IN_PROGRESS_NOT_ACCEPTED",
+    "strategy": "PRODUCT_FIRST_PARALLEL_SAFETY"
+  },
   "m32_20261119_p3az_after_pr393_short_cycle": {
     "date": "2026-11-19",
     "status": "PR393_MERGED_POSTMAIN_SUCCESS_P3AZ_MATRIX_OBSERVATIONS_CANDIDATE",
