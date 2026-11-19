@@ -310,6 +310,94 @@ class TraceabilityAndScope(unittest.TestCase):
             set(SCOPED_CLOSED_IDS),
             {r["id"] for r in MATRIX["rows"] if r["status"]=="CLOSED_SCOPED"})
 
+
+    def test_20261119_four_open_requirements_have_exact_scoped_named_chromium_evidence(self):
+        """Real GitHub job logs verified outside CI; source contract must not turn them into admission."""
+        expected = {
+            "M32-070": (392, 44412057826, "c8dce8c150b50d528c04a32779a6e8ded1fbe2c4",
+                        135182534955, 44416272668, "38a9dc204f6f1a9d768c6d9e45519b472e420e8c",
+                        "109-fictional-event-revisions-match-explicit-active-anchor",
+                        "19 offers only the exact current anchor revision, without implicit selection",
+                        "FORM_EXPLICIT_ANCHOR_COMPATIBLE_REVISION_ONLY"),
+            "M32-071": (393, 44453364420, "bd42eaedfc60bb300cce647013540ab62b3b1013",
+                        135322434231, 44455249407, "411d5a677feba151248e3e69c6225dc3a6876aab",
+                        "110-fictional-event-history-readable-after-withdrawal",
+                        "20 exposes an explicit read-only history picker without implicit inspection",
+                        "READONLY_FICTIONAL_EVENT_HISTORY_ONLY"),
+            "M32-075": (393, 44453364420, "bd42eaedfc60bb300cce647013540ab62b3b1013",
+                        135322434231, 44455249407, "411d5a677feba151248e3e69c6225dc3a6876aab",
+                        "111-fictional-event-history-escaped-and-universe-isolated",
+                        None, "REACT_ESCAPE_AND_UNIVERSE_REMOUNT_ONLY"),
+            "M32-081": (393, 44453364420, "bd42eaedfc60bb300cce647013540ab62b3b1013",
+                        135322434231, 44455249407, "411d5a677feba151248e3e69c6225dc3a6876aab",
+                        "110-fictional-event-history-readable-after-withdrawal",
+                        "21 keeps a withdrawn event selectable as history without restoring it",
+                        "WITHDRAWN_EVENT_HISTORY_RETAINED_IN_RAM_ONLY"),
+        }
+        self.assertEqual(MATRIX["latest_named_chromium_observation_review_date"], "2026-11-19")
+        self.assertEqual(MATRIX["latest_named_chromium_observation_status"],
+                         "FOUR_OPEN_REQUIREMENTS_HAVE_PARTIAL_FICTIONAL_CASE_LOGS_NO_ADMISSION")
+        self.assertEqual({row["id"] for row in MATRIX["rows"]
+                          if "latest_named_chromium_observation" in row}, set(expected))
+        chromium = (ROOT / "tools/m32_browser_interaction.cjs").read_text(encoding="utf-8")
+        vitest = (ROOT / "src/m32FictionalEventManualWorkshop.test.tsx").read_text(encoding="utf-8")
+        self.assertIn("M32_BROWSER_REAL_CHROMIUM_PASS 111/111", chromium)
+        for row in MATRIX["rows"]:
+            if row["id"] not in expected:
+                self.assertNotIn("latest_named_chromium_observation", row)
+                continue
+            (pr, run, sha, job, post, postsha, case, vitest_name, scope) = expected[row["id"]]
+            obs = row["latest_named_chromium_observation"]
+            with self.subTest(requirement=row["id"]):
+                self.assertEqual(row["status"], "OPEN_NOT_ACCEPTED")
+                self.assertEqual(row["evidence"], "NONE_ACCEPTED")
+                self.assertEqual(obs["date"], "2026-11-19")
+                self.assertEqual(obs["evidence_kind"], "EXACT_HEAD_NAMED_CHROMIUM_CASE_LOG_SYNTHETIC_ONLY")
+                self.assertEqual((obs["pull_request_number"], obs["source_workflow_run_id"],
+                                  obs["source_workflow_head_sha"], obs["source_workflow_job_id"]),
+                                 (pr, run, sha, job))
+                self.assertRegex(sha, r"^[0-9a-f]{40}$")
+                self.assertEqual(obs["source_log_locator"],
+                                 f"https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/{run}/job/{job}")
+                self.assertEqual(obs["source_workflow_conclusion"], "completed_success")
+                self.assertEqual((obs["independent_postmain_run_id"],
+                                  obs["independent_postmain_head_sha"],
+                                  obs["independent_postmain_conclusion"]),
+                                 (post, postsha, "completed_success"))
+                self.assertEqual(obs["named_chromium_case"], case)
+                self.assertIn(case, chromium)
+                self.assertEqual(obs["chromium_source_file"], "tools/m32_browser_interaction.cjs")
+                self.assertEqual(obs["scoped_vitest_suite"],
+                                 "src/m32FictionalEventManualWorkshop.test.tsx")
+                self.assertEqual(obs["scoped_vitest_case_title"], vitest_name)
+                if vitest_name:
+                    self.assertIn(vitest_name, vitest)
+                self.assertEqual(obs["observation_scope"], scope)
+                for flag in ("requirement_acceptance", "writer_admission",
+                             "operator_acceptance", "p4_runtime_authorized"):
+                    self.assertIs(obs[flag], False)
+                self.assertIs(obs["individual_case_is_not_entire_requirement"], True)
+                self.assertIsNone(row["proof_audit"]["individual_test_step_result"])
+                self.assertIsNone(row["workflow_step_audit"]["job_id"])
+        self.assertIn("- [ ] **M32-078**", CHECK)
+        self.assertEqual((MATRIX["total"], MATRIX["closed"], MATRIX["open"]), (104, 9, 95))
+
+    def test_20261119_traceability_observation_cannot_promote_open_requirements(self):
+        """Adversarial tampering to a source SHA or operator flag must fail the scoped contract."""
+        observed = {
+            row["id"]: row["latest_named_chromium_observation"]
+            for row in MATRIX["rows"] if "latest_named_chromium_observation" in row
+        }
+        for requirement in ("M32-070", "M32-071", "M32-075", "M32-081"):
+            value = observed[requirement]
+            with self.subTest(requirement=requirement):
+                self.assertNotEqual(value["source_workflow_head_sha"], "0" * 40)
+                self.assertIs(value["operator_acceptance"], False)
+                self.assertIs(value["writer_admission"], False)
+                self.assertEqual(next(row for row in MATRIX["rows"]
+                                      if row["id"] == requirement)["status"], "OPEN_NOT_ACCEPTED")
+        self.assertEqual(MATRIX["gate"], "IN_PROGRESS_NOT_ACCEPTED")
+
     def test_metadata_does_not_grant_writer_admission(self):
         self.assertEqual(MATRIX["gate"],"IN_PROGRESS_NOT_ACCEPTED")
         for term in ("R1–R9 NOT_PROVEN","G3 STOP_UNAVAILABLE","P4 STOP","Greenfield"):

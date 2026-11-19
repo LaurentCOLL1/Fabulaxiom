@@ -2597,6 +2597,29 @@
         "step_log_locator": null,
         "CI_step_does_not_equal_individual_test_assertion": true,
         "Windows_operator_workflow_admission": false
+      },
+      "latest_named_chromium_observation": {
+        "date": "2026-11-19",
+        "evidence_kind": "EXACT_HEAD_NAMED_CHROMIUM_CASE_LOG_SYNTHETIC_ONLY",
+        "pull_request_number": 392,
+        "source_workflow_run_id": 44412057826,
+        "source_workflow_head_sha": "c8dce8c150b50d528c04a32779a6e8ded1fbe2c4",
+        "source_workflow_job_id": 135182534955,
+        "source_workflow_conclusion": "completed_success",
+        "source_log_locator": "https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/44412057826/job/135182534955",
+        "named_chromium_case": "109-fictional-event-revisions-match-explicit-active-anchor",
+        "chromium_source_file": "tools/m32_browser_interaction.cjs",
+        "scoped_vitest_suite": "src/m32FictionalEventManualWorkshop.test.tsx",
+        "scoped_vitest_case_title": "19 offers only the exact current anchor revision, without implicit selection",
+        "independent_postmain_run_id": 44416272668,
+        "independent_postmain_head_sha": "38a9dc204f6f1a9d768c6d9e45519b472e420e8c",
+        "independent_postmain_conclusion": "completed_success",
+        "observation_scope": "FORM_EXPLICIT_ANCHOR_COMPATIBLE_REVISION_ONLY",
+        "requirement_acceptance": false,
+        "writer_admission": false,
+        "operator_acceptance": false,
+        "p4_runtime_authorized": false,
+        "individual_case_is_not_entire_requirement": true
       }
     },
     {
@@ -2634,6 +2657,29 @@
         "step_log_locator": null,
         "CI_step_does_not_equal_individual_test_assertion": true,
         "Windows_operator_workflow_admission": false
+      },
+      "latest_named_chromium_observation": {
+        "date": "2026-11-19",
+        "evidence_kind": "EXACT_HEAD_NAMED_CHROMIUM_CASE_LOG_SYNTHETIC_ONLY",
+        "pull_request_number": 393,
+        "source_workflow_run_id": 44453364420,
+        "source_workflow_head_sha": "bd42eaedfc60bb300cce647013540ab62b3b1013",
+        "source_workflow_job_id": 135322434231,
+        "source_workflow_conclusion": "completed_success",
+        "source_log_locator": "https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/44453364420/job/135322434231",
+        "named_chromium_case": "110-fictional-event-history-readable-after-withdrawal",
+        "chromium_source_file": "tools/m32_browser_interaction.cjs",
+        "scoped_vitest_suite": "src/m32FictionalEventManualWorkshop.test.tsx",
+        "scoped_vitest_case_title": "20 exposes an explicit read-only history picker without implicit inspection",
+        "independent_postmain_run_id": 44455249407,
+        "independent_postmain_head_sha": "411d5a677feba151248e3e69c6225dc3a6876aab",
+        "independent_postmain_conclusion": "completed_success",
+        "observation_scope": "READONLY_FICTIONAL_EVENT_HISTORY_ONLY",
+        "requirement_acceptance": false,
+        "writer_admission": false,
+        "operator_acceptance": false,
+        "p4_runtime_authorized": false,
+        "individual_case_is_not_entire_requirement": true
       }
     },
     {
@@ -2837,6 +2883,29 @@
         "requirement_acceptance": false,
         "sqlite_writer_acceptance": false,
         "windows_operator_acceptance": false
+      },
+      "latest_named_chromium_observation": {
+        "date": "2026-11-19",
+        "evidence_kind": "EXACT_HEAD_NAMED_CHROMIUM_CASE_LOG_SYNTHETIC_ONLY",
+        "pull_request_number": 393,
+        "source_workflow_run_id": 44453364420,
+        "source_workflow_head_sha": "bd42eaedfc60bb300cce647013540ab62b3b1013",
+        "source_workflow_job_id": 135322434231,
+        "source_workflow_conclusion": "completed_success",
+        "source_log_locator": "https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/44453364420/job/135322434231",
+        "named_chromium_case": "111-fictional-event-history-escaped-and-universe-isolated",
+        "chromium_source_file": "tools/m32_browser_interaction.cjs",
+        "scoped_vitest_suite": "src/m32FictionalEventManualWorkshop.test.tsx",
+        "scoped_vitest_case_title": null,
+        "independent_postmain_run_id": 44455249407,
+        "independent_postmain_head_sha": "411d5a677feba151248e3e69c6225dc3a6876aab",
+        "independent_postmain_conclusion": "completed_success",
+        "observation_scope": "REACT_ESCAPE_AND_UNIVERSE_REMOUNT_ONLY",
+        "requirement_acceptance": false,
+        "writer_admission": false,
+        "operator_acceptance": false,
+        "p4_runtime_authorized": false,
+        "individual_case_is_not_entire_requirement": true
       }
     },
     {
@@ -3170,6 +3239,29 @@
         "step_log_locator": null,
         "CI_step_does_not_equal_individual_test_assertion": true,
         "Windows_operator_workflow_admission": false
+      },
+      "latest_named_chromium_observation": {
+        "date": "2026-11-19",
+        "evidence_kind": "EXACT_HEAD_NAMED_CHROMIUM_CASE_LOG_SYNTHETIC_ONLY",
+        "pull_request_number": 393,
+        "source_workflow_run_id": 44453364420,
+        "source_workflow_head_sha": "bd42eaedfc60bb300cce647013540ab62b3b1013",
+        "source_workflow_job_id": 135322434231,
+        "source_workflow_conclusion": "completed_success",
+        "source_log_locator": "https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/44453364420/job/135322434231",
+        "named_chromium_case": "110-fictional-event-history-readable-after-withdrawal",
+        "chromium_source_file": "tools/m32_browser_interaction.cjs",
+        "scoped_vitest_suite": "src/m32FictionalEventManualWorkshop.test.tsx",
+        "scoped_vitest_case_title": "21 keeps a withdrawn event selectable as history without restoring it",
+        "independent_postmain_run_id": 44455249407,
+        "independent_postmain_head_sha": "411d5a677feba151248e3e69c6225dc3a6876aab",
+        "independent_postmain_conclusion": "completed_success",
+        "observation_scope": "WITHDRAWN_EVENT_HISTORY_RETAINED_IN_RAM_ONLY",
+        "requirement_acceptance": false,
+        "writer_admission": false,
+        "operator_acceptance": false,
+        "p4_runtime_authorized": false,
+        "individual_case_is_not_entire_requirement": true
       }
     },
     {
@@ -4192,5 +4284,7 @@
     "requirement_acceptance": false,
     "windows_operator_acceptance": false,
     "writer_acceptance": false
-  }
+  },
+  "latest_named_chromium_observation_review_date": "2026-11-19",
+  "latest_named_chromium_observation_status": "FOUR_OPEN_REQUIREMENTS_HAVE_PARTIAL_FICTIONAL_CASE_LOGS_NO_ADMISSION"
 }
