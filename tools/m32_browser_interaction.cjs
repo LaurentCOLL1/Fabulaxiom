@@ -1952,14 +1952,71 @@ async function run() {
       assert.ok((await eventRegion().innerText()).includes("Événements courants (1)"));
       assert.ok((await eventRegion().getByRole("status").innerText()).includes("Aucune sauvegarde"));
     });
-    assert.equal(cases.length, 109);
+    await caseRun("110-fictional-event-history-readable-after-withdrawal",async()=>{
+      await openEventForm();
+      const form=eventForm();
+      await form.getByRole("textbox",{name:"Titre de l'événement (obligatoire)"})
+        .fill("Première version inventée");
+      await form.getByRole("combobox",{name:"Ancre temporelle explicitement choisie"})
+        .selectOption("A");
+      await form.getByRole("combobox",{name:"Révision historique explicitement choisie"})
+        .selectOption("invented-rev-A");
+      await form.getByRole("button",{name:"Créer en mémoire"}).click();
+      await amendLive("Version corrigée inventée");
+      const detail=eventRegion().getByRole("region",{
+        name:"Historique détaillé des événements fictifs",
+      });
+      const list=detail.getByRole("list",{name:"Versions historiques fictives"});
+      assert.equal(await list.count(),0,"Historical content appeared without explicit choice");
+      const picker=detail.getByRole("combobox",{name:"Événement fictif à examiner"});
+      await picker.selectOption("fiction-world-one-event-0001");
+      assert.equal(await list.getByRole("listitem").count(),2);
+      assert.ok((await list.innerText()).includes("Première version inventée"));
+      assert.ok((await list.innerText()).includes("Version corrigée inventée"));
+      assert.ok((await list.innerText()).includes("invented-rev-A"));
+      assert.ok((await list.innerText()).includes("Correction humaine inventée"));
+      assert.ok((await list.innerText()).includes("Écart : title"));
+      await eventRegion().getByRole("button",{name:/Corriger ou retirer/}).click();
+      await form.getByRole("textbox",{name:"Justification de correction ou de retrait"})
+        .fill("Retrait explicite et motivé en RAM");
+      await form.getByRole("button",{name:"Retirer en conservant l'historique"}).click();
+      assert.ok((await eventRegion().innerText()).includes("Événements courants (0)"));
+      assert.equal(await picker.inputValue(),"fiction-world-one-event-0001");
+      assert.equal(await list.getByRole("listitem").count(),3);
+      assert.ok((await list.innerText()).includes("withdrawn"));
+      assert.ok((await list.innerText()).includes("Retrait explicite et motivé en RAM"));
+      assert.ok((await detail.innerText()).includes("aucune restauration"));
+      assert.equal(await detail.getByRole("button").count(),0);
+    });
+    await caseRun("111-fictional-event-history-escaped-and-universe-isolated",async()=>{
+      await openEventForm();
+      await createInventedEvent("<script>window.__fictionInjected=1</script>");
+      const detail=eventRegion().getByRole("region",{
+        name:"Historique détaillé des événements fictifs",
+      });
+      await detail.getByRole("combobox",{name:"Événement fictif à examiner"})
+        .selectOption("fiction-world-one-event-0001");
+      assert.ok((await detail.innerText()).includes("<script>window.__fictionInjected=1</script>"));
+      assert.equal(await detail.locator("script").count(),0);
+      assert.equal(await page.evaluate(()=>Boolean(window.__fictionInjected)),false);
+      await page.getByRole("button",{name:"Charger un autre univers fictif"}).click();
+      const other=eventRegion().getByRole("region",{
+        name:"Historique détaillé des événements fictifs",
+      });
+      assert.equal(await other.getByRole("combobox",{
+        name:"Événement fictif à examiner",
+      }).inputValue(),"");
+      assert.equal(await other.getByRole("list",{name:"Versions historiques fictives"}).count(),0);
+      assert.ok(!(await other.innerText()).includes("fiction-world-one-event-0001"));
+    });
+    assert.equal(cases.length, 111);
     // Historical PR #146 source marker: M32_BROWSER_REAL_CHROMIUM_PASS 62/62
     // Previous PR #156 marker retained: M32_BROWSER_REAL_CHROMIUM_PASS 70/70
     // PR #260 retained baseline (historical only): M32_BROWSER_REAL_CHROMIUM_PASS 82/82
     // PR #157 historical marker: M32_BROWSER_REAL_CHROMIUM_PASS 76/76
     // Historical P3a baseline, retained for continuity source-only tests:
     // M32_CI_PRECOMPILED_STRICT_CSP_BROWSER_PASS: 85/85
-    console.log("M32_BROWSER_REAL_CHROMIUM_PASS 109/109");
+    console.log("M32_BROWSER_REAL_CHROMIUM_PASS 111/111");
 
     // Actual Chromium enforced-CSP veto, separate from the 36
     // fictional interaction cases. Never make an off-loopback network call.

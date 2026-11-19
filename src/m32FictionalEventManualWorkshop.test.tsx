@@ -180,4 +180,32 @@ describe("M3.2 manual fictional event workshop source-only", () => {
     expect(JSON.stringify(withUnrelated)).toBe(before);
   });
 
+
+  it("20 exposes an explicit read-only history picker without implicit inspection", () => {
+    const book = create(), before = JSON.stringify(book);
+    const html = renderToStaticMarkup(createElement(M32FictionalEventManualWorkshop,
+      { initial: book }));
+    expect(html).toContain("Historique détaillé des événements fictifs");
+    expect(html).toContain("Événement fictif à examiner");
+    expect(html).toContain(book.events[0].event_id);
+    expect(html).toContain("aucune restauration");
+    expect(html).not.toContain("Versions historiques fictives");
+    expect(JSON.stringify(book)).toBe(before);
+  });
+  it("21 keeps a withdrawn event selectable as history without restoring it", () => {
+    const first = create(), id = first.events[0].event_id;
+    const withdrawn = applyFictionalWorkshopAction(first, {
+      kind: "withdraw", eventId: id, reason: "Motif humain de retrait inventé",
+    });
+    expect(currentFictionalEvents(withdrawn)).toHaveLength(0);
+    const before = JSON.stringify(withdrawn);
+    const html = renderToStaticMarkup(createElement(M32FictionalEventManualWorkshop,
+      { initial: withdrawn }));
+    expect(html).toContain("Événements courants (0)");
+    expect(html).toContain(`value="${id}"`);
+    expect(html).not.toContain("Versions historiques fictives");
+    expect(html).not.toContain("Restaurer en production");
+    expect(JSON.stringify(withdrawn)).toBe(before);
+  });
+
 });
