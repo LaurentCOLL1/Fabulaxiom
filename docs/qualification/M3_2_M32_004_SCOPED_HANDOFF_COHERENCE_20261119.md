@@ -1,0 +1,15 @@
+# M32-004 — clôture documentaire ciblée de la cohérence du handoff (19/11/2026)
+
+## Objet limité
+L'exigence M32-004 exige de maintenir cohérents les deux `RESUME_PROMPT`, `HANDOFF_CURRENT.md/json` et `NEXT.md` au fil des changements matériels, avec un prompt court de moins de 3600 octets UTF-8 et conservation des STOP R3, D3c, live WAL-index. Cette clôture concerne **le contrôle automatisé et le checkpoint daté de cette version**, pas une garantie des futures mises à jour. Toute modification future doit repasser les contrôles. Aucune preuve de writer, sauvegarde, IPC ou admission opérateur n'est dérivée de cette clôture.
+
+## Éléments vérifiés avant l'ouverture de la PR de clôture
+- [PR #396 P3bb](https://github.com/LaurentCOLL1/Fabulaxiom/pull/396) MERGED en protected `main=9ec8aef81198f3ce8f376ce78435c43aa320351d` par squash `expected_head_sha=d9a8187aa889d08b6f943a38c539fca5d435f746`.
+- [CI source #44604279698](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/44604279698) completed/SUCCESS au HEAD exact `d9a8187aa889d08b6f943a38c539fca5d435f746`, job Windows #135843672704, étape 31 « M3.2 master completion checklist 104-item closure evidence contracts » SUCCESS. Le journal expose 17 cas nominatifs PASS, notamment cohérence des huit en-têtes, refus SHA, postmain, NEXT, date, source CI et fausses clôtures. Une étape de CI ne prouve toutefois pas automatiquement chaque test futur.
+- [Postmain indépendante #44611547386](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/44611547386) completed/SUCCESS, event `push` au SHA exact `9ec8aef81198f3ce8f376ce78435c43aa320351d`, job Windows #135869172307 completed/SUCCESS, aucun échec.
+- Nouveau test adversarial source-only #18 : retirer R3 du prompt court, D3c de NEXT ou le marqueur « live SQLite WAL-index » du prompt long doit déclencher `STOP safety boundary drift`. Le contrat garde les 104 IDs, impose le compte candidat 10/94 et empêche la promotion de G3/writer. Il sera qualifié uniquement par la CI de la nouvelle PR à son HEAD exact.
+
+## Traçabilité de la clôture proposée
+`M32-004` passe de `OPEN_NOT_ACCEPTED` à `CLOSED_SCOPED` dans la matrice uniquement **sur la branche candidate** ; la clôture n'est effective dans le dépôt protégé qu'après validation et fusion de cette PR et réussite de sa postmain indépendante. `M32-071`, `M32-078` et tous les verrous R1–R9/G2/G3/P4 restent ouverts. Le journal issue #38 continue d'être append-only. Checklist candidate 104=10 clôturées/94 ouvertes, M3.2 `IN_PROGRESS_NOT_ACCEPTED` (~45 % indicatif), PRODUCT_FIRST_PARALLEL_SAFETY.
+
+**STOP conservés :** Writer/R1–R9 NOT_PROVEN ; P4 réel STOP ; G2B NOT_ACCEPTED ; G2C NOT_AUTHORIZED ; G3 STOP_UNAVAILABLE ; PENDING_EXTERNAL_ATTESTATION(21/3/2), prospective NOT_STARTED ; R2 STOP, R3 partiel, D3c conception, D3b-4/5, D3b-5 STOP ; main/WAL/SHM, live SQLite WAL-index et ABA NOT_PROVEN ; glib #160 OPEN_NOT_REMEDIATED. STOP v6/v7, M:\Fabulaxiom, Greenfield, backups, IPC writer, 007, Hello, recovery. Aucun accès aux fichiers ou profils opérateur.
