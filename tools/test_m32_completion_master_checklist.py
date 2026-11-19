@@ -97,6 +97,13 @@ def guard_checkpoint(short,entry,leads,checklist):
             raise ValueError("STOP stale lead "+path)
         if not all(x in head for x in ("IN_PROGRESS_NOT_ACCEPTED","G3 STOP_UNAVAILABLE","PRODUCT_FIRST_PARALLEL_SAFETY")):
             raise ValueError("STOP authority drift "+path)
+
+    # Literal source-only STOP gates may not be lost while advancing checkpoints.
+    for path, text in (("RESUME_PROMPT_SHORT.md", short), *leads.items()):
+        for marker in ("R3 partiel", "D3c conception", "live SQLite WAL-index",
+                       "G3 STOP_UNAVAILABLE", "R1–R9 NOT_PROVEN"):
+            if marker not in text:
+                raise ValueError("STOP safety boundary drift " + path + " " + marker)
     return sha,run,closed
 class M32CrossFileCoherence(unittest.TestCase):
     @classmethod
@@ -196,7 +203,7 @@ class M32DatedStatusTruth(unittest.TestCase):
         sha,run,closed=guard_dated_status(self.short,self.entry,self.leads,self.checklist)
         self.assertRegex(sha,r"^[0-9a-f]{40}$")
         self.assertGreater(run,0)
-        self.assertEqual(closed,9)
+        self.assertEqual(closed,10)
 
     def test_13_falsified_or_stale_date_refused(self):
         bad=dict(self.entry,date="2026-11-12")
@@ -230,12 +237,28 @@ class M32DatedStatusTruth(unittest.TestCase):
 
     def test_17_false_short_counter_or_source_outcome_refused(self):
         with self.assertRaisesRegex(ValueError,"short count drift"):
-            guard_dated_status(self.short.replace("9/95","10/94",1),
+            guard_dated_status(self.short.replace("10/94","11/93",1),
                                self.entry,self.leads,self.checklist)
         with self.assertRaisesRegex(ValueError,"source CI claim"):
             guard_dated_status(self.short,{**self.entry,
                                "source_ci_status":"PENDING_UNQUALIFIED"},
                                self.leads,self.checklist)
+
+    def test_18_missing_safety_boundary_in_resume_or_lead_refused(self):
+        bad_short = self.short.replace("R3 partiel", "R3 absent", 1)
+        with self.assertRaisesRegex(ValueError, "safety boundary drift"):
+            guard_dated_status(bad_short, self.entry, self.leads, self.checklist)
+        bad_leads = dict(self.leads)
+        p = "docs/continuity/NEXT.md"
+        bad_leads[p] = bad_leads[p].replace("D3c conception", "D3c absent", 1)
+        with self.assertRaisesRegex(ValueError, "safety boundary drift"):
+            guard_dated_status(self.short, self.entry, bad_leads, self.checklist)
+        bad_leads = dict(self.leads)
+        p = "docs/continuity/RESUME_PROMPT.md"
+        bad_leads[p] = bad_leads[p].replace("live SQLite WAL-index", "WAL sans garde", 1)
+        with self.assertRaisesRegex(ValueError, "safety boundary drift"):
+            guard_dated_status(self.short, self.entry, bad_leads, self.checklist)
+
 
 if __name__ == "__main__":
     unittest.main()

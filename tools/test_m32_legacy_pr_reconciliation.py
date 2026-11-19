@@ -59,11 +59,11 @@ class LegacyPRReconciliationTests(unittest.TestCase):
         self.assertNotIn("- [x] **M32-007**", self.checklist)
         tasks = re.findall(r"^- \[([ x])\] \*\*(M32-\d{3})\*\*", self.checklist, re.M)
         self.assertEqual(len(tasks), 104)
-        # Eight previous scoped closures plus M32-094 target-graph separation only.
+        # Nine pre-existing scoped closures plus M32-004 documentary coherence only.
         # Neither historical #35/#215 sources, Linux distribution nor R1-R9 writer are admitted.
         actual_closed = {task for state, task in tasks if state == "x"}
         self.assertEqual(actual_closed, {
-            "M32-001", "M32-002", "M32-037", "M32-049",
+            "M32-001", "M32-002", "M32-004", "M32-037", "M32-049",
             "M32-051", "M32-094", "M32-095", "M32-096", "M32-104",
         })
         self.assertIn("- [ ] **M32-078**", self.checklist)
