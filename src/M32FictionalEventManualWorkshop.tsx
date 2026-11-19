@@ -41,6 +41,17 @@ export function matchingFictionalEventHistoryIds(
     });
 }
 
+/** Paged IDs only; never implicitly inspect or mutate a fictional event. */
+export const FICTIONAL_HISTORY_PAGE_SIZE = 10;
+export function pageFictionalEventHistoryIds(ids: readonly string[], page: number):
+  Readonly<{ ids: readonly string[]; index: number; pages: number; total: number }> {
+  if (!Number.isSafeInteger(page) || page < 0) throw Error("Page fictive invalide");
+  const pages = Math.max(1, Math.ceil(ids.length / FICTIONAL_HISTORY_PAGE_SIZE));
+  const index = Math.min(page, pages - 1);
+  return { ids: ids.slice(index * FICTIONAL_HISTORY_PAGE_SIZE,
+    (index + 1) * FICTIONAL_HISTORY_PAGE_SIZE), index, pages, total: ids.length };
+}
+
 /** One action, one invented in-memory state transition; never persisted. */
 export type FictionalWorkshopAction =
   | Readonly<{ kind: "create"; input: FictionalEventInput }>
@@ -79,6 +90,7 @@ export default function M32FictionalEventManualWorkshop({ initial }: {
   const [historicalVersion, setHistoricalVersion] = useState("");
   const [historyEventId, setHistoryEventId] = useState("");
   const [historyIdQuery, setHistoryIdQuery] = useState("");
+  const [historyPage, setHistoryPage] = useState(0);
   const [historyStatus, setHistoryStatus] =
     useState<"all" | "current" | "withdrawn">("all");
 
@@ -88,6 +100,7 @@ export default function M32FictionalEventManualWorkshop({ initial }: {
   // Creation IDs remain available after a withdrawal; a tombstone is history,
   // not permission to restore a past event or change the current manuscript.
   const historyEventIds = matchingFictionalEventHistoryIds(book, historyIdQuery, historyStatus);
+  const historyView = pageFictionalEventHistoryIds(historyEventIds, historyPage);
   const inspectedHistory = historyEventId
     ? auditedFictionalEventHistory(book, historyEventId) : [];
   const editableEvent = currentEvents.find(e => e.event_id === selectedId);
@@ -229,12 +242,15 @@ export default function M32FictionalEventManualWorkshop({ initial }: {
         aucune décision sur le canon ou l’ordre du monde.</p>
       <label>Rechercher un identifiant d'événement fictif
         <input type="search" value={historyIdQuery} maxLength={120}
-          onChange={e => { setHistoryIdQuery(e.currentTarget.value); setHistoryEventId(""); }} />
+          onChange={e => {
+            setHistoryIdQuery(e.currentTarget.value); setHistoryEventId(""); setHistoryPage(0);
+          }} />
       </label>
       <label>Filtrer l'historique par statut
         <select value={historyStatus} onChange={e => {
           setHistoryStatus(e.currentTarget.value as "all" | "current" | "withdrawn");
           setHistoryEventId("");
+          setHistoryPage(0);
         }}>
           <option value="all">Tous, actifs et retirés</option>
           <option value="current">Événements actifs seulement</option>
@@ -243,11 +259,21 @@ export default function M32FictionalEventManualWorkshop({ initial }: {
       </label>
       <p role="note">Le filtrage n'affiche aucune version ni motif historique.
         Choisissez un identifiant pour consulter les versions en lecture seule.</p>
+      <p role="note" aria-live="polite">Page {historyView.index + 1} sur {historyView.pages}
+        {" — "}{historyView.total} identifiants fictifs trouvés.</p>
+      <button type="button" disabled={historyView.index === 0}
+        onClick={() => { setHistoryEventId(""); setHistoryPage(historyView.index - 1); }}>
+        Page précédente
+      </button>
+      <button type="button" disabled={historyView.index + 1 >= historyView.pages}
+        onClick={() => { setHistoryEventId(""); setHistoryPage(historyView.index + 1); }}>
+        Page suivante
+      </button>
       <label>Événement fictif à examiner
         <select value={historyEventId}
           onChange={e => setHistoryEventId(e.currentTarget.value)}>
           <option value="">Choisir un événement historique</option>
-          {historyEventIds.map(id => <option key={id} value={id}>{id}</option>)}
+          {historyView.ids.map(id => <option key={id} value={id}>{id}</option>)}
         </select>
       </label>
       {inspectedHistory.length > 0 && <ol aria-label="Versions historiques fictives">

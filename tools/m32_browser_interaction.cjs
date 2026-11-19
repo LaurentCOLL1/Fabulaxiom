@@ -1986,7 +1986,13 @@ async function run() {
       assert.ok((await list.innerText()).includes("withdrawn"));
       assert.ok((await list.innerText()).includes("Retrait explicite et motivé en RAM"));
       assert.ok((await detail.innerText()).includes("aucune restauration"));
-      assert.equal(await detail.getByRole("button").count(),0);
+      // Pagination adds two navigation controls but must NEVER add a
+      // restoration or mutation control to the read-only audit/history panel.
+      assert.deepEqual((await detail.getByRole("button").allTextContents())
+        .map(text => text.trim()),["Page précédente","Page suivante"]);
+      assert.equal(await list.getByRole("button").count(),0);
+      assert.equal(await detail.getByRole("button",{name:"Page précédente"}).isDisabled(),true);
+      assert.equal(await detail.getByRole("button",{name:"Page suivante"}).isDisabled(),true);
     });
     await caseRun("111-fictional-event-history-escaped-and-universe-isolated",async()=>{
       await openEventForm();
