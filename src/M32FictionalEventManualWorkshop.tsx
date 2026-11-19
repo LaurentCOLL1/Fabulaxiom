@@ -59,10 +59,16 @@ export default function M32FictionalEventManualWorkshop({ initial }: {
   const [isError, setIsError] = useState(false);
   const [compareOpen, setCompareOpen] = useState(false);
   const [historicalVersion, setHistoricalVersion] = useState("");
+  const [historyEventId, setHistoryEventId] = useState("");
 
   const activeAnchors = book.draft.snapshot.anchors.filter(a => a.status === "current");
   const eligibleRevisions = eligibleFictionalEventRevisions(book, anchor);
   const currentEvents = currentFictionalEvents(book);
+  // Creation IDs remain available after a withdrawal; a tombstone is history,
+  // not permission to restore a past event or change the current manuscript.
+  const historyEventIds = book.events.filter(e => e.version === 1).map(e => e.event_id);
+  const inspectedHistory = historyEventId
+    ? auditedFictionalEventHistory(book, historyEventId) : [];
   const editableEvent = currentEvents.find(e => e.event_id === selectedId);
   const olderVersions = editableEvent && editableEvent.version > 1
     ? auditedFictionalEventHistory(book, selectedId).filter(
@@ -196,6 +202,34 @@ export default function M32FictionalEventManualWorkshop({ initial }: {
         Corriger ou retirer {e.event_id}
       </button>
     </li>)}</ul>
+    <section aria-label="Historique détaillé des événements fictifs">
+      <h3>Consulter le passé d’un événement fictif</h3>
+      <p>Historique en lecture seule : aucune restauration, aucune écriture,
+        aucune décision sur le canon ou l’ordre du monde.</p>
+      <label>Événement fictif à examiner
+        <select value={historyEventId}
+          onChange={e => setHistoryEventId(e.currentTarget.value)}>
+          <option value="">Choisir un événement historique</option>
+          {historyEventIds.map(id => <option key={id} value={id}>{id}</option>)}
+        </select>
+      </label>
+      {inspectedHistory.length > 0 && <ol aria-label="Versions historiques fictives">
+        {inspectedHistory.map(entry => <li key={entry.event.version}>
+          <strong>Version {entry.event.version} — {entry.event.status}</strong>
+          <p>Titre historique : {entry.event.title}</p>
+          <p>Note historique : {entry.event.note || "aucune"}</p>
+          <p>Ancre historique : {entry.event.anchor_id ?? "aucune"}</p>
+          <p>Révision source historique : {entry.event.source_revision_id ?? "aucune"}</p>
+          <p>Action fictive : {entry.audit.action}</p>
+          <p>Motif humain historique : {entry.audit.explanation}</p>
+          <p>Champs modifiés : {entry.changed_fields.join(", ") || "aucun (création)"}</p>
+          {entry.field_differences.map(diff => <dl key={diff.field}>
+            <dt>Écart : {diff.field}</dt>
+            <dd>Avant : {diff.before ?? "aucun"} ; après : {diff.after ?? "aucun"}</dd>
+          </dl>)}
+        </li>)}
+      </ol>}
+    </section>
     <button type="button" aria-expanded={compareOpen}
       aria-controls="m32-fictional-live-comparison"
       onClick={() => setCompareOpen(open => !open)}>

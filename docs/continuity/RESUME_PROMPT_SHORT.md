@@ -1,16 +1,16 @@
 # Reprise Fabulaxiom (https://github.com/LaurentCOLL1/Fabulaxiom)
 
 ## Dernier checkpoint
-main=0667f38e1bc2b1a55d1890c5da5a9ed535fb9e5d ; #391 P3aw MERGED CI #44388441801 PASS, postmain #44394799523 PASS ; date=2026-11-18 ; P3ax filtres de révisions historiques compatibles à l'ancre dans le carnet fictif CANDIDAT ; 9/95 ; M3.2 IN_PROGRESS_NOT_ACCEPTED (~45%).
+main=38a9dc204f6f1a9d768c6d9e45519b472e420e8c ; #392 P3ax MERGED CI #44412057826 PASS, postmain #44416272668 PASS ; date=2026-11-19 ; P3ay lecture détaillée de l'historique des événements fictifs, y compris retirés, CANDIDAT ; 9/95 ; M3.2 IN_PROGRESS_NOT_ACCEPTED (~45%).
 
 ## Interdictions actives — STOP
 Writer/R1–R9 NOT_PROVEN ; P4 STOP ; G2B NOT_ACCEPTED ; G2C NOT_AUTHORIZED ; G3 STOP_UNAVAILABLE ; PENDING_EXTERNAL_ATTESTATION(21/3/2), prospective NOT_STARTED ; R2 STOP, R3 partiel, D3c conception, D3b-4/5, D3b-5 STOP ; main/WAL/SHM, live SQLite WAL-index et ABA NOT_PROVEN ; glib #160 OPEN_NOT_REMEDIATED.
 STOP v6/v7, M:\Fabulaxiom, Greenfield, backups, IPC writer, 007, Hello, recovery.
 
 ## Prochaines opérations
-1. #391 P3aw : source Windows #44388441801 completed/SUCCESS au HEAD exact 1e6cc412e9c7db757cc65b17e13c9d6943a11d73 ; postmain #44394799523 completed/SUCCESS sur 0667f38e1bc2b1a55d1890c5da5a9ed535fb9e5d.
-2. P3ax : seulement les révisions de l'ancre active figurent au choix, aucune sélection implicite, changement d'ancre réinitialise la révision, Chromium #109 et Vitest #19 CANDIDATS NON QUALIFIÉS avant leur CI source exacte. M32-070/071/075 [ ] PARTIELS, checklist 104=9/95, #35/#215 DRAFT.
-3. CI HEAD P3ax, revue diff/reviews/threads, Protect main ACTIVE strict bypass=[], squash attendu expected_head_sha, postmain indépendante, issue #38 append-only, PRODUCT_FIRST_PARALLEL_SAFETY.
+1. #392 P3ax : CI Windows #44412057826 completed/SUCCESS HEAD exact c8dce8c150b50d528c04a32779a6e8ded1fbe2c4 ; postmain #44416272668 completed/SUCCESS sur 38a9dc204f6f1a9d768c6d9e45519b472e420e8c.
+2. P3ay : inspection explicite des versions, statuts, sources et motifs, y compris tombstone, sans mutation ; Vitest #20/#21 et Chromium #110/#111 CANDIDATS NON QUALIFIÉS. M32-071/075/081 [ ] PARTIELS ; checklist 104=9/95 ; #35/#215 DRAFT.
+3. CI HEAD exacte P3ay, diff/reviews/threads, Protect main ACTIVE strict bypass=[], squash expected_head_sha, postmain indépendante, issue #38 append-only ; PRODUCT_FIRST_PARALLEL_SAFETY.
 
 ## Documents d'autorité
 RESUME_PROMPT.md ; HANDOFF_CURRENT.md ; HANDOFF_CURRENT.json ; STATE.md ; NEXT.md ; M3_2_GATE_DECISION_CURRENT.md ; M3_2_COMPLETION_MASTER_CHECKLIST_20261109.md ; ROADMAP_STATUS_CURRENT.md ; M3_2_SHORT_CYCLE_DELIVERY_20261116.md. Historique : RESUME_PROMPT.md / docs/qualification.
