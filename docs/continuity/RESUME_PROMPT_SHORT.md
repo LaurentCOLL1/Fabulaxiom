@@ -1,16 +1,16 @@
 # Reprise Fabulaxiom (https://github.com/LaurentCOLL1/Fabulaxiom)
 
 ## Dernier checkpoint
-main=4c0b1384ef81dadd5e05e5abb51d908f197844b1 ; #394 P3az MERGED CI #44457704272 PASS HEAD exact e4c207bacd21ab3ebe92e419970a90930d70f821 ; postmain #44547790648 PASS sur SHA exact main ; date=2026-11-19 ; P3ba filtrage ID/statut des événements fictifs CANDIDAT ; 9/95 ; M3.2 IN_PROGRESS_NOT_ACCEPTED (~45%).
+main=3728ed9b19956e10933e513f9ae1100e2e38edfe ; #395 P3ba MERGED CI #44588755876 PASS HEAD exact 2c5925f0074b94329e68eab047c8496ce5d2ea8e ; postmain #44591817125 PASS sur SHA exact main ; date=2026-11-19 ; P3bb pagination explicite d'IDs fictifs CANDIDAT ; 9/95 ; M3.2 IN_PROGRESS_NOT_ACCEPTED (~45%).
 
 ## Interdictions actives — STOP
 Writer/R1–R9 NOT_PROVEN ; P4 STOP ; G2B NOT_ACCEPTED ; G2C NOT_AUTHORIZED ; G3 STOP_UNAVAILABLE ; PENDING_EXTERNAL_ATTESTATION(21/3/2), prospective NOT_STARTED ; R2 STOP, R3 partiel, D3c conception, D3b-4/5, D3b-5 STOP ; main/WAL/SHM, live SQLite WAL-index et ABA NOT_PROVEN ; glib #160 OPEN_NOT_REMEDIATED.
 STOP v6/v7, M:\Fabulaxiom, Greenfield, backups, IPC writer, 007, Hello, recovery.
 
 ## Prochaines opérations
-1. #394 fusionnée, postmain #44547790648 completed/SUCCESS sur `4c0b1384ef81dadd5e05e5abb51d908f197844b1`.
-2. P3ba : recherche ID et filtre statut actif/retiré, y compris tombstone, sans dévoiler versions ni motifs avant choix explicite ; Vitest #22/#23 CANDIDATS ; laboratoire React fictif non monté. M32-071/075/081 [ ], 104=9/95 ; #35/#215 DRAFT.
-3. CI HEAD exacte P3ba, diff/reviews/threads, Protect main ACTIVE strict bypass=[], squash expected_head_sha, postmain indépendante, issue #38 append-only.
+1. #395 P3ba source #44588755876 PASS HEAD 2c5925f0074b94329e68eab047c8496ce5d2ea8e ; postmain #44591817125 PASS SHA exact 3728ed9b19956e10933e513f9ae1100e2e38edfe.
+2. P3bb : 10 IDs fictifs par page après filtres, sélection vidée à la navigation, tombstones conservées ; Vitest #24/#25 CANDIDATS. M32-071/075/081 [ ], 104=9/95 ; #35/#215 DRAFT.
+3. CI HEAD P3bb, diff/reviews/threads, Protect main ACTIVE strict bypass=[], squash expected_head_sha, postmain indépendante, #38 append-only, PRODUCT_FIRST_PARALLEL_SAFETY.
 
 ## Documents d'autorité
 RESUME_PROMPT.md ; HANDOFF_CURRENT.md ; HANDOFF_CURRENT.json ; STATE.md ; NEXT.md ; M3_2_GATE_DECISION_CURRENT.md ; M3_2_COMPLETION_MASTER_CHECKLIST_20261109.md ; ROADMAP_STATUS_CURRENT.md ; M3_2_SHORT_CYCLE_DELIVERY_20261116.md. Historique : RESUME_PROMPT.md / docs/qualification.

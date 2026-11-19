@@ -1,0 +1,11 @@
+# P3bb — pagination explicite d'IDs d'événements fictifs (19 novembre 2026)
+
+La consultation P3ba est complétée par des pages de 10 identifiants sur le laboratoire inventé React (non monté), après recherche d'ID et filtre actif/retiré. Changer de filtre ou de page efface le choix ; la page ne révèle aucun titre, version ou motif historique avant une sélection explicite. Les tombstones restent disponibles. La page vide est 1/1, la page excédentaire est bornée à la dernière, les indices invalides sont refusés. Aucun ordre chronologique du monde n'est inféré.
+
+Vitest #24 candidat : douze événements, retrait conservé, 10+2 IDs, dernières pages bornées, données inchangées ; Vitest #25 candidat : SSR de la première page uniquement, aucune lecture du passé implicite. Aucun nouveau cas Chromium revendiqué, tests candidats non qualifiés avant CI source HEAD exacte. M32-071/075/081 [ ] ; absence de pagination persistance SQL, filtres complets Universe/roman/personnage, source authentifiée, admission writer ou recette opérateur. Checklist 104=9 closes/95 ouvertes ; M3.2 IN_PROGRESS_NOT_ACCEPTED (~45 % indicatif), PRODUCT_FIRST_PARALLEL_SAFETY.
+
+Parent protected main `3728ed9b19956e10933e513f9ae1100e2e38edfe` après PR #395 MERGED guarded squash `expected_head_sha=2c5925f0074b94329e68eab047c8496ce5d2ea8e` ; CI source [#44588755876](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/44588755876) completed/SUCCESS au HEAD exact, postmain indépendante [#44591817125](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/44591817125) completed/SUCCESS au SHA exact parent. Protect main ACTIVE strict bypass=[] ; #35/#215 DRAFT.
+
+STOP intacts : Writer/R1–R9 NOT_PROVEN ; P4 STOP ; G2B NOT_ACCEPTED ; G2C NOT_AUTHORIZED ; G3 STOP_UNAVAILABLE ; PENDING_EXTERNAL_ATTESTATION(21/3/2), prospective NOT_STARTED ; R2 STOP, R3 partiel, D3c conception, D3b-4/5 et D3b-5 STOP ; main/WAL/SHM, live SQLite WAL-index et ABA NOT_PROVEN ; glib #160 OPEN_NOT_REMEDIATED ; STOP v6/v7, M:\Fabulaxiom, Greenfield, backups, IPC writer, 007, Hello, recovery.
+
+Aucun App.tsx, Tauri, IPC, SQLite, disque, backups, profil opérateur, migration, writer ou restauration. Après CI HEAD exacte, requalifier diff/reviews/threads/ruleset, guarded squash expected_head_sha, postmain indépendante et issue #38 append-only.

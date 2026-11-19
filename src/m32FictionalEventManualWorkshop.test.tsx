@@ -9,7 +9,7 @@ import {
 } from "./m32FictionalEventNotebook";
 import M32FictionalEventManualWorkshop, {
   applyFictionalWorkshopAction, eligibleFictionalEventRevisions,
-  matchingFictionalEventHistoryIds,
+  matchingFictionalEventHistoryIds, pageFictionalEventHistoryIds,
   type FictionalWorkshopAction,
 } from "./M32FictionalEventManualWorkshop";
 
@@ -246,4 +246,44 @@ describe("M3.2 manual fictional event workshop source-only", () => {
     expect(JSON.stringify(withdrawn)).toBe(before);
   });
 
+  it("24 pages 12 fictional IDs and retains withdrawn history without mutation", () => {
+    let book = invented();
+    for (let i = 0; i < 12; i++) book = create(book);
+    const withdrawnId = book.events[0].event_id;
+    book = applyFictionalWorkshopAction(book, {
+      kind: "withdraw", eventId: withdrawnId, reason: "Retrait conservé",
+    });
+    const before = JSON.stringify(book);
+    const ids = matchingFictionalEventHistoryIds(book, "", "all");
+    expect(ids).toHaveLength(12);
+    expect(pageFictionalEventHistoryIds(ids, 0).ids).toEqual(ids.slice(0, 10));
+    expect(pageFictionalEventHistoryIds(ids, 1).ids).toEqual(ids.slice(10));
+    expect(pageFictionalEventHistoryIds(ids, 30).index).toBe(1);
+    expect(pageFictionalEventHistoryIds(ids, 1).pages).toBe(2);
+    expect(pageFictionalEventHistoryIds(
+      matchingFictionalEventHistoryIds(book, "", "withdrawn"), 0).ids)
+      .toEqual([withdrawnId]);
+    expect(pageFictionalEventHistoryIds([], 10))
+      .toEqual({ ids: [], index: 0, pages: 1, total: 0 });
+    expect(() => pageFictionalEventHistoryIds(ids, -1)).toThrow();
+    expect(() => pageFictionalEventHistoryIds(ids, 1.5)).toThrow();
+    expect(JSON.stringify(book)).toBe(before);
+  });
+  it("25 SSR shows first ID page only and no history contents before selection", () => {
+    let book = invented();
+    for (let i = 0; i < 12; i++) book = create(book);
+    const before = JSON.stringify(book);
+    const ids = matchingFictionalEventHistoryIds(book, "", "all");
+    const html = renderToStaticMarkup(createElement(M32FictionalEventManualWorkshop,
+      { initial: book }));
+    expect(html).toContain("Page 1 sur 2");
+    expect(html).toContain("12 identifiants fictifs trouvés");
+    expect(html).toContain(`value="${ids[9]}"`);
+    expect(html).not.toContain(`value="${ids[10]}"`);
+    expect(html).toContain("Page précédente");
+    expect(html).toContain("Page suivante");
+    expect(html).not.toContain("Versions historiques fictives");
+    expect(html).not.toContain("Motif humain historique :");
+    expect(JSON.stringify(book)).toBe(before);
+  });
 });
