@@ -9,6 +9,7 @@ import {
 } from "./m32FictionalEventNotebook";
 import M32FictionalEventManualWorkshop, {
   applyFictionalWorkshopAction, eligibleFictionalEventRevisions,
+  matchingFictionalEventHistoryIds,
   type FictionalWorkshopAction,
 } from "./M32FictionalEventManualWorkshop";
 
@@ -205,6 +206,43 @@ describe("M3.2 manual fictional event workshop source-only", () => {
     expect(html).toContain(`value="${id}"`);
     expect(html).not.toContain("Versions historiques fictives");
     expect(html).not.toContain("Restaurer en production");
+    expect(JSON.stringify(withdrawn)).toBe(before);
+  });
+
+  it("22 filters invented event IDs by latest status, retaining withdrawn tombstones", () => {
+    const first = create(), withdrawnId = first.events[0].event_id;
+    const withdrawn = applyFictionalWorkshopAction(first, {
+      kind: "withdraw", eventId: withdrawnId, reason: "Retrait fictif choisi",
+    });
+    const mixed = create(withdrawn), activeId = mixed.events[mixed.events.length - 1].event_id;
+    const before = JSON.stringify(mixed);
+    expect(matchingFictionalEventHistoryIds(mixed, "", "all"))
+      .toEqual([withdrawnId, activeId]);
+    expect(matchingFictionalEventHistoryIds(mixed, "", "withdrawn"))
+      .toEqual([withdrawnId]);
+    expect(matchingFictionalEventHistoryIds(mixed, "", "current"))
+      .toEqual([activeId]);
+    expect(matchingFictionalEventHistoryIds(mixed, "EVENT-0001", "withdrawn"))
+      .toEqual([withdrawnId]);
+    expect(matchingFictionalEventHistoryIds(mixed, "non-existent", "all"))
+      .toEqual([]);
+    expect(JSON.stringify(mixed)).toBe(before);
+  });
+  it("23 renders the search/status controls without implicit historical inspection", () => {
+    const created = create(), id = created.events[0].event_id;
+    const withdrawn = applyFictionalWorkshopAction(created, {
+      kind: "withdraw", eventId: id, reason: "Retrait pour témoin inventé",
+    });
+    const before = JSON.stringify(withdrawn);
+    const html = renderToStaticMarkup(createElement(M32FictionalEventManualWorkshop,
+      { initial: withdrawn }));
+    expect(html).toContain("Rechercher un identifiant d&#x27;événement fictif");
+    expect(html).toContain("Filtrer l&#x27;historique par statut");
+    expect(html).toContain("Événements retirés seulement");
+    expect(html).toContain(`value="${id}"`);
+    expect(html).not.toContain("Versions historiques fictives");
+    expect(html).not.toContain("Motif humain historique :");
+    expect(html).not.toContain("Retrait pour témoin inventé");
     expect(JSON.stringify(withdrawn)).toBe(before);
   });
 
