@@ -259,7 +259,7 @@ export default function M32FictionalEventManualWorkshop({ initial }: {
       </label>
       <p role="note">Le filtrage n'affiche aucune version ni motif historique.
         Choisissez un identifiant pour consulter les versions en lecture seule.</p>
-      <p role="status">Page {historyView.index + 1} sur {historyView.pages}
+      <p role="note" aria-live="polite">Page {historyView.index + 1} sur {historyView.pages}
         {" — "}{historyView.total} identifiants fictifs trouvés.</p>
       <button type="button" disabled={historyView.index === 0}
         onClick={() => { setHistoryEventId(""); setHistoryPage(historyView.index - 1); }}>

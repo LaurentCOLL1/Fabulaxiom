@@ -277,6 +277,8 @@ describe("M3.2 manual fictional event workshop source-only", () => {
     const html = renderToStaticMarkup(createElement(M32FictionalEventManualWorkshop,
       { initial: book }));
     expect(html).toContain("Page 1 sur 2");
+    expect(html).toContain('role="note" aria-live="polite"');
+    expect(html).not.toContain('role="status">Page');
     expect(html).toContain("12 identifiants fictifs trouvés");
     expect(html).toContain(`value="${ids[9]}"`);
     expect(html).not.toContain(`value="${ids[10]}"`);
