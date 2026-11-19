@@ -214,7 +214,7 @@ describe("M3.2 manual fictional event workshop source-only", () => {
     const withdrawn = applyFictionalWorkshopAction(first, {
       kind: "withdraw", eventId: withdrawnId, reason: "Retrait fictif choisi",
     });
-    const mixed = create(withdrawn), activeId = mixed.events.at(-1)!.event_id;
+    const mixed = create(withdrawn), activeId = mixed.events[mixed.events.length - 1].event_id;
     const before = JSON.stringify(mixed);
     expect(matchingFictionalEventHistoryIds(mixed, "", "all"))
       .toEqual([withdrawnId, activeId]);

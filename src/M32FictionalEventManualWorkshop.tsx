@@ -34,7 +34,8 @@ export function matchingFictionalEventHistoryIds(
   const query = searchId.trim().toLocaleLowerCase();
   return notebook.events.filter(e => e.version === 1).map(e => e.event_id)
     .filter(id => {
-      const latest = notebook.events.filter(e => e.event_id === id).at(-1);
+      const versions = notebook.events.filter(e => e.event_id === id);
+      const latest = versions[versions.length - 1];
       return Boolean(latest && (status === "all" || latest.status === status) &&
         id.toLocaleLowerCase().includes(query));
     });
