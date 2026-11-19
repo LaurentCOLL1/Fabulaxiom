@@ -1,0 +1,11 @@
+# P3ba — recherche d'identifiants et statuts de l'historique fictif (19 novembre 2026)
+
+La sélection d'historique P3ay est explicitement complétée par une recherche d'ID insensible à la casse et un filtre dernier statut all/current/withdrawn. Les tombstones demeurent sélectionnables. Modifier un filtre vide la sélection, donc aucun historique détaillé, titre ancien ni motif de retrait n'est révélé automatiquement. Ce filtre n'écrit ni ne restaure. Aucune recherche dans les titres ou notes historiques n'est faite.
+
+**Témoins candidates, NON QUALIFIÉS avant CI source HEAD exacte :** Vitest #22 liste ordonnée et filtres ID/dernier statut après retrait ; #23 contrôle en SSR de l'absence de détails sans sélection. Aucun nouveau test Chromium n'est revendiqué. C'est une preuve de laboratoire React RAM fictif non monté, pas un usage opérateur, un runtime ou une admission du writer. M32-071/075/081 restent [ ].
+
+**Parent vérifié :** protected main `4c0b1384ef81dadd5e05e5abb51d908f197844b1` après PR #394 P3az MERGED ; source [CI #44457704272](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/44457704272) completed/SUCCESS au HEAD `e4c207bacd21ab3ebe92e419970a90930d70f821` ; postmain indépendante [#44547790648](https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/44547790648) completed/SUCCESS au SHA exact parent. Protect main ACTIVE strict bypass=[] ; checklist 104=9 closes/95 ouvertes ; M3.2 IN_PROGRESS_NOT_ACCEPTED (~45 % indicatif), PRODUCT_FIRST_PARALLEL_SAFETY ; #35/#215 DRAFT.
+
+**STOP intacts :** Writer/R1–R9 NOT_PROVEN ; P4 réel STOP ; G2B NOT_ACCEPTED ; G2C NOT_AUTHORIZED ; G3 STOP_UNAVAILABLE ; PENDING_EXTERNAL_ATTESTATION(21/3/2) prospective NOT_STARTED ; R2 STOP, R3 partiel, D3c conception, D3b-4/5 et D3b-5 STOP ; main/WAL/SHM, live SQLite WAL-index et ABA NOT_PROVEN ; glib #160 OPEN_NOT_REMEDIATED ; STOP v6/v7, M:\\Fabulaxiom, Greenfield, backups, IPC writer, 007, Hello, recovery.
+
+Aucun accès App.tsx, disque, IPC, Tauri, SQLite, writer, backup ou données opérateur. Requalifier sur CI HEAD exact P3ba, diff/reviews/threads/ruleset, protected squash expected_head_sha et postmain indépendante ; issue #38 append-only.

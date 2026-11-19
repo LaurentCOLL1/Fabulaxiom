@@ -23,6 +23,23 @@ export function eligibleFictionalEventRevisions(
     revision.universe_id === universe && revision.revision_id === anchor.source_revision_id);
 }
 
+/** Only list event IDs, never historical titles/reasons, until explicit inspection.
+ * Last status includes withdrawn tombstones and cannot restore a past event.
+ */
+export function matchingFictionalEventHistoryIds(
+  notebook: FictionalEventNotebook, searchId: string,
+  status: "all" | "current" | "withdrawn" = "all",
+): readonly string[] {
+  inspectFictionalEventNotebook(notebook);
+  const query = searchId.trim().toLocaleLowerCase();
+  return notebook.events.filter(e => e.version === 1).map(e => e.event_id)
+    .filter(id => {
+      const latest = notebook.events.filter(e => e.event_id === id).at(-1);
+      return Boolean(latest && (status === "all" || latest.status === status) &&
+        id.toLocaleLowerCase().includes(query));
+    });
+}
+
 /** One action, one invented in-memory state transition; never persisted. */
 export type FictionalWorkshopAction =
   | Readonly<{ kind: "create"; input: FictionalEventInput }>
@@ -60,13 +77,16 @@ export default function M32FictionalEventManualWorkshop({ initial }: {
   const [compareOpen, setCompareOpen] = useState(false);
   const [historicalVersion, setHistoricalVersion] = useState("");
   const [historyEventId, setHistoryEventId] = useState("");
+  const [historyIdQuery, setHistoryIdQuery] = useState("");
+  const [historyStatus, setHistoryStatus] =
+    useState<"all" | "current" | "withdrawn">("all");
 
   const activeAnchors = book.draft.snapshot.anchors.filter(a => a.status === "current");
   const eligibleRevisions = eligibleFictionalEventRevisions(book, anchor);
   const currentEvents = currentFictionalEvents(book);
   // Creation IDs remain available after a withdrawal; a tombstone is history,
   // not permission to restore a past event or change the current manuscript.
-  const historyEventIds = book.events.filter(e => e.version === 1).map(e => e.event_id);
+  const historyEventIds = matchingFictionalEventHistoryIds(book, historyIdQuery, historyStatus);
   const inspectedHistory = historyEventId
     ? auditedFictionalEventHistory(book, historyEventId) : [];
   const editableEvent = currentEvents.find(e => e.event_id === selectedId);
@@ -206,6 +226,22 @@ export default function M32FictionalEventManualWorkshop({ initial }: {
       <h3>Consulter le passé d’un événement fictif</h3>
       <p>Historique en lecture seule : aucune restauration, aucune écriture,
         aucune décision sur le canon ou l’ordre du monde.</p>
+      <label>Rechercher un identifiant d'événement fictif
+        <input type="search" value={historyIdQuery} maxLength={120}
+          onChange={e => { setHistoryIdQuery(e.currentTarget.value); setHistoryEventId(""); }} />
+      </label>
+      <label>Filtrer l'historique par statut
+        <select value={historyStatus} onChange={e => {
+          setHistoryStatus(e.currentTarget.value as "all" | "current" | "withdrawn");
+          setHistoryEventId("");
+        }}>
+          <option value="all">Tous, actifs et retirés</option>
+          <option value="current">Événements actifs seulement</option>
+          <option value="withdrawn">Événements retirés seulement</option>
+        </select>
+      </label>
+      <p role="note">Le filtrage n'affiche aucune version ni motif historique.
+        Choisissez un identifiant pour consulter les versions en lecture seule.</p>
       <label>Événement fictif à examiner
         <select value={historyEventId}
           onChange={e => setHistoryEventId(e.currentTarget.value)}>
