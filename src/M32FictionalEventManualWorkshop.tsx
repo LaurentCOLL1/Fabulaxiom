@@ -29,15 +29,19 @@ export function eligibleFictionalEventRevisions(
 export function matchingFictionalEventHistoryIds(
   notebook: FictionalEventNotebook, searchId: string,
   status: "all" | "current" | "withdrawn" = "all",
+  exactSourceRevisionId = "",
 ): readonly string[] {
   inspectFictionalEventNotebook(notebook);
   const query = searchId.trim().toLocaleLowerCase();
+  // Opaque source IDs use exact matching, including superseded versions.
+  const sourceId = exactSourceRevisionId.trim();
   return notebook.events.filter(e => e.version === 1).map(e => e.event_id)
     .filter(id => {
       const versions = notebook.events.filter(e => e.event_id === id);
       const latest = versions[versions.length - 1];
       return Boolean(latest && (status === "all" || latest.status === status) &&
-        id.toLocaleLowerCase().includes(query));
+        id.toLocaleLowerCase().includes(query) &&
+        (!sourceId || versions.some(v => v.source_revision_id === sourceId)));
     });
 }
 
@@ -90,6 +94,7 @@ export default function M32FictionalEventManualWorkshop({ initial }: {
   const [historicalVersion, setHistoricalVersion] = useState("");
   const [historyEventId, setHistoryEventId] = useState("");
   const [historyIdQuery, setHistoryIdQuery] = useState("");
+  const [historySourceIdQuery, setHistorySourceIdQuery] = useState("");
   const [historyPage, setHistoryPage] = useState(0);
   const [historyStatus, setHistoryStatus] =
     useState<"all" | "current" | "withdrawn">("all");
@@ -99,7 +104,8 @@ export default function M32FictionalEventManualWorkshop({ initial }: {
   const currentEvents = currentFictionalEvents(book);
   // Creation IDs remain available after a withdrawal; a tombstone is history,
   // not permission to restore a past event or change the current manuscript.
-  const historyEventIds = matchingFictionalEventHistoryIds(book, historyIdQuery, historyStatus);
+  const historyEventIds = matchingFictionalEventHistoryIds(
+    book, historyIdQuery, historyStatus, historySourceIdQuery);
   const historyView = pageFictionalEventHistoryIds(historyEventIds, historyPage);
   const inspectedHistory = historyEventId
     ? auditedFictionalEventHistory(book, historyEventId) : [];
@@ -244,6 +250,13 @@ export default function M32FictionalEventManualWorkshop({ initial }: {
         <input type="search" value={historyIdQuery} maxLength={120}
           onChange={e => {
             setHistoryIdQuery(e.currentTarget.value); setHistoryEventId(""); setHistoryPage(0);
+          }} />
+      </label>
+      <label>Filtrer par ID exact de révision source fictive
+        <input type="search" value={historySourceIdQuery} maxLength={256}
+          onChange={e => {
+            setHistorySourceIdQuery(e.currentTarget.value);
+            setHistoryEventId(""); setHistoryPage(0);
           }} />
       </label>
       <label>Filtrer l'historique par statut
