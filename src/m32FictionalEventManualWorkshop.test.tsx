@@ -33,6 +33,29 @@ function invented(universe: "fiction-alpha" | "fiction-beta" = "fiction-alpha") 
   }];
   return startFictionalEventNotebook(startFictionalDraft(snapshot, revisions));
 }
+
+function inventedTwoNovels(): FictionalEventNotebook {
+  const base = invented();
+  const snapshot: M32ChronologyProjection = {
+    ...base.draft.snapshot,
+    anchors: [...base.draft.snapshot.anchors, {
+      ...base.draft.snapshot.anchors[1], id: "C",
+      source_revision_id: "fiction-alpha-rev-2",
+    }],
+    narration: [...base.draft.snapshot.narration, {
+      ...base.draft.snapshot.narration[0], novel_id: "novel-2",
+      novel_title: "Autre roman fictif", scene_id: "scene-2",
+      scene_title: "Scène 2", chapter_id: "ch-2", chapter_title: "Chapitre 2",
+      chapter_order: 1,
+    }],
+  };
+  const revisions: readonly FictionalRevision[] = [...base.draft.revisions, {
+    universe_id: "fiction-alpha", novel_id: "novel-2",
+    scene_id: "scene-2", revision_id: "fiction-alpha-rev-2",
+    revision_label: "Deuxième révision fictive",
+  }];
+  return startFictionalEventNotebook(startFictionalDraft(snapshot, revisions));
+}
 const input: FictionalEventInput = { title: "Rencontre", note: "Fait inventé",
   anchor_id: null, source_revision_id: null };
 function create(book: FictionalEventNotebook = invented()) {
@@ -323,6 +346,56 @@ describe("M3.2 manual fictional event workshop source-only", () => {
     expect(html).not.toContain("Motif humain historique :");
     expect(html).toContain("Page 1 sur 1");
     expect(JSON.stringify(b)).toBe(before);
+  });
+
+  it("28 filters fiction-only source novel and requires same historical version", () => {
+    const first = applyFictionalWorkshopAction(inventedTwoNovels(), {
+      kind: "create", input: { ...input, anchor_id: "A",
+        source_revision_id: "fiction-alpha-rev-1" },
+    }), oldId = first.events[0].event_id;
+    const second = applyFictionalWorkshopAction(first, {
+      kind: "create", input: { ...input, anchor_id: "C",
+        source_revision_id: "fiction-alpha-rev-2" },
+    }), newId = second.events[second.events.length - 1].event_id;
+    const amended = applyFictionalWorkshopAction(second, {
+      kind: "amend", eventId: oldId, reason: "Changement de roman fictif",
+      input: { ...input, title: "Déplacement volontaire",
+        anchor_id: "C", source_revision_id: "fiction-alpha-rev-2" },
+    });
+    const withdrawn = applyFictionalWorkshopAction(amended, {
+      kind: "withdraw", eventId: oldId, reason: "Retrait fictif volontaire",
+    });
+    const book = create(withdrawn), before = JSON.stringify(book);
+    const ids = (source: string, novel: string,
+      status: "all" | "current" | "withdrawn" = "all") =>
+      matchingFictionalEventHistoryIds(book, "", status, source, novel);
+    expect(ids("", "novel-1")).toEqual([oldId]);
+    expect(ids("", "novel-2")).toEqual([oldId, newId]);
+    expect(ids("", "novel-2", "current")).toEqual([newId]);
+    expect(ids("", "novel-1", "withdrawn")).toEqual([oldId]);
+    expect(ids("fiction-alpha-rev-1", "novel-2")).toEqual([]);
+    expect(ids("fiction-alpha-rev-2", "novel-1")).toEqual([]);
+    expect(ids("fiction-alpha-rev-2", "novel-2")).toEqual([oldId, newId]);
+    expect(ids("", "NOVEL-2")).toEqual([]);
+    expect(ids("", "unknown-novel")).toEqual([]);
+    expect(ids("", "")).toHaveLength(3);
+    expect(JSON.stringify(book)).toBe(before);
+  });
+  it("29 SSR exposes novel ID options but not unselected historic notes", () => {
+    const a = applyFictionalWorkshopAction(inventedTwoNovels(), {
+      kind: "create", input: { ...input, note: "DONNEE-HISTORIQUE-PRIVEE",
+        anchor_id: "C", source_revision_id: "fiction-alpha-rev-2" },
+    });
+    const before = JSON.stringify(a);
+    const html = renderToStaticMarkup(createElement(M32FictionalEventManualWorkshop,
+      { initial: a }));
+    expect(html).toContain("Filtrer par roman de révision source fictive");
+    expect(html).toContain('value="novel-1"');
+    expect(html).toContain('value="novel-2"');
+    expect(html).not.toContain("DONNEE-HISTORIQUE-PRIVEE");
+    expect(html).not.toContain("Versions historiques fictives");
+    expect(html).not.toContain("Motif humain historique :");
+    expect(JSON.stringify(a)).toBe(before);
   });
 
 });
