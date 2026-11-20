@@ -56,6 +56,18 @@ function inventedTwoNovels(): FictionalEventNotebook {
   }];
   return startFictionalEventNotebook(startFictionalDraft(snapshot, revisions));
 }
+
+function inventedTwoScenesSameNovel(): FictionalEventNotebook {
+  const two = inventedTwoNovels();
+  const snapshot: M32ChronologyProjection = {
+    ...two.draft.snapshot,
+    narration: two.draft.snapshot.narration.map(n => n.scene_id === "scene-2"
+      ? { ...n, novel_id: "novel-1", novel_title: "Roman inventé" } : n),
+  };
+  const revisions: readonly FictionalRevision[] = two.draft.revisions.map(r =>
+    r.scene_id === "scene-2" ? { ...r, novel_id: "novel-1" } : r);
+  return startFictionalEventNotebook(startFictionalDraft(snapshot, revisions));
+}
 const input: FictionalEventInput = { title: "Rencontre", note: "Fait inventé",
   anchor_id: null, source_revision_id: null };
 function create(book: FictionalEventNotebook = invented()) {
@@ -396,6 +408,74 @@ describe("M3.2 manual fictional event workshop source-only", () => {
     expect(html).not.toContain("Versions historiques fictives");
     expect(html).not.toContain("Motif humain historique :");
     expect(JSON.stringify(a)).toBe(before);
+  });
+
+  it("30 filters source scenes within one novel without cross-version pairing", () => {
+    const first = applyFictionalWorkshopAction(inventedTwoScenesSameNovel(), {
+      kind: "create", input: { ...input,
+        anchor_id: "A", source_revision_id: "fiction-alpha-rev-1" },
+    }), oldId = first.events[0].event_id;
+    const second = applyFictionalWorkshopAction(first, {
+      kind: "create", input: { ...input,
+        anchor_id: "C", source_revision_id: "fiction-alpha-rev-2" },
+    }), newId = second.events[second.events.length - 1].event_id;
+    const amended = applyFictionalWorkshopAction(second, {
+      kind: "amend", eventId: oldId, reason: "Changement de scène fictive",
+      input: { ...input, title: "Scène corrigée",
+        anchor_id: "C", source_revision_id: "fiction-alpha-rev-2" },
+    });
+    const withdrawn = applyFictionalWorkshopAction(amended, {
+      kind: "withdraw", eventId: oldId, reason: "Retrait fictif",
+    }), book = create(withdrawn), before = JSON.stringify(book);
+    const ids = (source: string, novel: string, scene: string,
+      status: "all" | "current" | "withdrawn" = "all") =>
+      matchingFictionalEventHistoryIds(book, "", status, source, novel, scene);
+    expect(ids("", "novel-1", "scene-1")).toEqual([oldId]);
+    expect(ids("", "novel-1", "scene-2")).toEqual([oldId, newId]);
+    expect(ids("", "novel-1", "scene-2", "current")).toEqual([newId]);
+    expect(ids("", "novel-1", "scene-1", "withdrawn")).toEqual([oldId]);
+    expect(ids("fiction-alpha-rev-1", "novel-1", "scene-2")).toEqual([]);
+    expect(ids("fiction-alpha-rev-2", "novel-1", "scene-1")).toEqual([]);
+    expect(ids("fiction-alpha-rev-2", "novel-1", "scene-2")).toEqual([oldId, newId]);
+    expect(ids("", "", "SCENE-2")).toEqual([]);
+    expect(ids("", "", "nonexistent-scene")).toEqual([]);
+    expect(ids("", "", "")).toHaveLength(3);
+    expect(JSON.stringify(book)).toBe(before);
+  });
+  it("31 SSR shows only opaque source-scene IDs before historical inspection", () => {
+    const book = applyFictionalWorkshopAction(inventedTwoScenesSameNovel(), {
+      kind: "create", input: { ...input, note: "SECRET-SCENE-HISTORIQUE",
+        anchor_id: "C", source_revision_id: "fiction-alpha-rev-2" },
+    }), before = JSON.stringify(book);
+    const html = renderToStaticMarkup(createElement(M32FictionalEventManualWorkshop,
+      { initial: book }));
+    expect(html).toContain("Filtrer par scène de révision source fictive");
+    expect(html).toContain('value="scene-1"');
+    expect(html).toContain('value="scene-2"');
+    expect(html).not.toContain("SECRET-SCENE-HISTORIQUE");
+    expect(html).not.toContain("Versions historiques fictives");
+    expect(html).not.toContain("Motif humain historique :");
+    expect(JSON.stringify(book)).toBe(before);
+  });
+  it("32 rejects a novel-scene tuple absent from the same fictional source revision", () => {
+    const a = applyFictionalWorkshopAction(inventedTwoNovels(), {
+      kind: "create", input: { ...input, anchor_id: "A",
+        source_revision_id: "fiction-alpha-rev-1" },
+    }), oldId = a.events[0].event_id;
+    const b = applyFictionalWorkshopAction(a, {
+      kind: "amend", eventId: oldId, reason: "Roman fictif modifié",
+      input: { ...input, anchor_id: "C", source_revision_id: "fiction-alpha-rev-2" },
+    });
+    const before = JSON.stringify(b);
+    expect(matchingFictionalEventHistoryIds(b, "", "all", "", "novel-1", "scene-2"))
+      .toEqual([]);
+    expect(matchingFictionalEventHistoryIds(b, "", "all", "", "novel-2", "scene-1"))
+      .toEqual([]);
+    expect(matchingFictionalEventHistoryIds(b, "", "all",
+      "fiction-alpha-rev-1", "novel-1", "scene-1")).toEqual([oldId]);
+    expect(matchingFictionalEventHistoryIds(b, "", "all",
+      "fiction-alpha-rev-2", "novel-2", "scene-2")).toEqual([oldId]);
+    expect(JSON.stringify(b)).toBe(before);
   });
 
 });
