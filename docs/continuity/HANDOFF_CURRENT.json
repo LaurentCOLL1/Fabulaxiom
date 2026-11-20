@@ -1,4 +1,25 @@
 {
+  "m32_20261120_p3be_after_pr399_source_scene_filter_candidate": {
+    "date": "2026-11-20",
+    "status": "PR399_MERGED_POSTMAIN_SUCCESS_P3BE_SCENE_FILTER_CANDIDATE",
+    "current_phase": "SOURCE_ONLY_CANDIDATE_UNQUALIFIED",
+    "parent_main": "c1c3f5489cd69bcd86c6022ce7a559d2c5c7ac83",
+    "source_ci_run": 44674705475,
+    "source_ci_head": "94eb6fea9ef726327c5d307a2000806c08a20b63",
+    "source_ci_status": "COMPLETED_SUCCESS_EXACT_HEAD",
+    "parent_postmain_run": 44769664255,
+    "parent_postmain_status": "COMPLETED_SUCCESS_EXACT_MAIN",
+    "attested_postmain_sha": "c1c3f5489cd69bcd86c6022ce7a559d2c5c7ac83",
+    "p3be_scene_filter": "EXACT_NOVEL_SCENE_SOURCE_IN_SAME_FICTIONAL_EVENT_VERSION",
+    "p3be_ci_qualified": false,
+    "writer_admitted": false,
+    "operator_accepted": false,
+    "checklist_total": 104,
+    "closed": 10,
+    "open": 94,
+    "gate": "IN_PROGRESS_NOT_ACCEPTED",
+    "strategy": "PRODUCT_FIRST_PARALLEL_SAFETY"
+  },
   "m32_20261120_p3bd_after_pr398_source_novel_filter_candidate": {
     "date": "2026-11-20",
     "status": "PR398_MERGED_POSTMAIN_SUCCESS_P3BD_SOURCE_NOVEL_FILTER_CANDIDATE",
