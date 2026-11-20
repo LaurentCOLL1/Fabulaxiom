@@ -32,6 +32,8 @@ export function matchingFictionalEventHistoryIds(
   exactSourceRevisionId = "",
   exactSourceNovelId = "",
   exactSourceSceneId = "",
+  exactAnchorId = "",
+  exactFictionalDateLabel = "",
 ): readonly string[] {
   inspectFictionalEventNotebook(notebook);
   const query = searchId.trim().toLocaleLowerCase();
@@ -39,6 +41,9 @@ export function matchingFictionalEventHistoryIds(
   const sourceId = exactSourceRevisionId.trim();
   const novelId = exactSourceNovelId.trim();
   const sceneId = exactSourceSceneId.trim();
+  const anchorId = exactAnchorId.trim();
+  const dateLabel = exactFictionalDateLabel.trim();
+  const anchorById = new Map(notebook.draft.snapshot.anchors.map(a => [a.id, a]));
   const sourceRevisionById = new Map(
     notebook.draft.revisions.map(r => [r.revision_id, r]));
   return notebook.events.filter(e => e.version === 1).map(e => e.event_id)
@@ -47,14 +52,20 @@ export function matchingFictionalEventHistoryIds(
       const latest = versions[versions.length - 1];
       return Boolean(latest && (status === "all" || latest.status === status) &&
         id.toLocaleLowerCase().includes(query) &&
-        ((!sourceId && !novelId && !sceneId) || versions.some(v => {
-          // All source selectors must match one historical event version.
-          const revision = v.source_revision_id === null ? undefined :
-            sourceRevisionById.get(v.source_revision_id);
-          return (!sourceId || v.source_revision_id === sourceId) &&
-            (!novelId || revision?.novel_id === novelId) &&
-            (!sceneId || revision?.scene_id === sceneId);
-        })));
+        ((!sourceId && !novelId && !sceneId && !anchorId && !dateLabel) ||
+          versions.some(v => {
+            // All selectors must match one event version, not a union of history.
+            const revision = v.source_revision_id === null ? undefined :
+              sourceRevisionById.get(v.source_revision_id);
+            const anchor = v.anchor_id === null ? undefined :
+              anchorById.get(v.anchor_id);
+            return (!sourceId || v.source_revision_id === sourceId) &&
+              (!novelId || revision?.novel_id === novelId) &&
+              (!sceneId || revision?.scene_id === sceneId) &&
+              (!anchorId || v.anchor_id === anchorId) &&
+              (!dateLabel || (anchor?.time_kind === "exact" &&
+                anchor.fictional_label === dateLabel));
+          })));
     });
 }
 
@@ -110,6 +121,8 @@ export default function M32FictionalEventManualWorkshop({ initial }: {
   const [historySourceIdQuery, setHistorySourceIdQuery] = useState("");
   const [historyNovelId, setHistoryNovelId] = useState("");
   const [historySceneId, setHistorySceneId] = useState("");
+  const [historyAnchorId, setHistoryAnchorId] = useState("");
+  const [historyFictionalDateLabel, setHistoryFictionalDateLabel] = useState("");
   const [historyPage, setHistoryPage] = useState(0);
   const [historyStatus, setHistoryStatus] =
     useState<"all" | "current" | "withdrawn">("all");
@@ -121,9 +134,13 @@ export default function M32FictionalEventManualWorkshop({ initial }: {
   // not permission to restore a past event or change the current manuscript.
   const sourceNovelIds = [...new Set(book.draft.revisions.map(r => r.novel_id))];
   const sourceSceneIds = [...new Set(book.draft.revisions.map(r => r.scene_id))];
+  const historyAnchorIds = book.draft.snapshot.anchors.map(a => a.id);
+  const historyDateLabels = [...new Set(book.draft.snapshot.anchors
+    .filter(a => a.time_kind === "exact" && a.fictional_label !== null)
+    .map(a => a.fictional_label!))];
   const historyEventIds = matchingFictionalEventHistoryIds(
     book, historyIdQuery, historyStatus, historySourceIdQuery, historyNovelId,
-    historySceneId);
+    historySceneId, historyAnchorId, historyFictionalDateLabel);
   const historyView = pageFictionalEventHistoryIds(historyEventIds, historyPage);
   const inspectedHistory = historyEventId
     ? auditedFictionalEventHistory(book, historyEventId) : [];
@@ -293,6 +310,24 @@ export default function M32FictionalEventManualWorkshop({ initial }: {
         }}>
           <option value="">Toutes les scènes sources fictives</option>
           {sourceSceneIds.map(id => <option key={id} value={id}>{id}</option>)}
+        </select>
+      </label>
+      <label>Filtrer par ID exact d'ancre historique fictive
+        <select value={historyAnchorId} onChange={e => {
+          setHistoryAnchorId(e.currentTarget.value);
+          setHistoryEventId(""); setHistoryPage(0);
+        }}>
+          <option value="">Toutes les ancres fictives</option>
+          {historyAnchorIds.map(id => <option key={id} value={id}>{id}</option>)}
+        </select>
+      </label>
+      <label>Filtrer par libellé exact de date fictive
+        <select value={historyFictionalDateLabel} onChange={e => {
+          setHistoryFictionalDateLabel(e.currentTarget.value);
+          setHistoryEventId(""); setHistoryPage(0);
+        }}>
+          <option value="">Toutes les dates fictives exactes</option>
+          {historyDateLabels.map(label => <option key={label} value={label}>{label}</option>)}
         </select>
       </label>
       <label>Filtrer l'historique par statut

@@ -203,7 +203,7 @@ class M32DatedStatusTruth(unittest.TestCase):
         sha,run,closed=guard_dated_status(self.short,self.entry,self.leads,self.checklist)
         self.assertRegex(sha,r"^[0-9a-f]{40}$")
         self.assertGreater(run,0)
-        self.assertEqual(closed,10)
+        self.assertEqual(closed,11)
 
     def test_13_falsified_or_stale_date_refused(self):
         bad=dict(self.entry,date="2026-11-12")
@@ -237,7 +237,7 @@ class M32DatedStatusTruth(unittest.TestCase):
 
     def test_17_false_short_counter_or_source_outcome_refused(self):
         with self.assertRaisesRegex(ValueError,"short count drift"):
-            guard_dated_status(self.short.replace("10/94","11/93",1),
+            guard_dated_status(self.short.replace("11/93","10/94",1),
                                self.entry,self.leads,self.checklist)
         with self.assertRaisesRegex(ValueError,"source CI claim"):
             guard_dated_status(self.short,{**self.entry,
@@ -259,6 +259,28 @@ class M32DatedStatusTruth(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "safety boundary drift"):
             guard_dated_status(self.short, self.entry, bad_leads, self.checklist)
 
+
+    def test_19_old_dated_handoff_checkpoint_preserved(self):
+        """Previous dated record stays in document history, never retroactively updated."""
+        marker = ("**20/11/2026 — PR #399 P3bd FUSIONNÉE CI/POSTMAIN PASS ; "
+                  "P3be FILTRE SCÈNE SOURCE HISTORIQUE FICTIVE CANDIDAT.**")
+        for path in CHECKPOINT_LEADS:
+            with self.subTest(path=path):
+                doc=(ROOT/path).read_text(encoding="utf-8")
+                self.assertEqual(doc.count(marker),1)
+                old_header=doc.split(marker,1)[1].split("\n\n",1)[0]
+                self.assertIn("c1c3f5489cd69bcd86c6022ce7a559d2c5c7ac83",old_header)
+                self.assertIn("#44769664255",old_header)
+                self.assertGreater(doc.index(marker),doc.index("\n\n"))
+
+    def test_20_pending_postmain_not_pass_and_writer_still_refused(self):
+        fake={**self.entry,"parent_postmain_status":"PENDING_UNQUALIFIED",
+              "attested_postmain_sha":None}
+        with self.assertRaisesRegex(ValueError,"pending CI portrayed as success"):
+            guard_dated_status(self.short,fake,self.leads,self.checklist)
+        self.assertEqual(self.entry["gate"],"IN_PROGRESS_NOT_ACCEPTED")
+        self.assertIs(self.entry["writer_admitted"],False)
+        self.assertIs(self.entry["operator_accepted"],False)
 
 if __name__ == "__main__":
     unittest.main()
