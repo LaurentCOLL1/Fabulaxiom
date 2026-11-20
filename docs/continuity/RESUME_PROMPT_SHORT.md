@@ -1,16 +1,16 @@
 # Reprise Fabulaxiom (https://github.com/LaurentCOLL1/Fabulaxiom)
 
 ## Dernier checkpoint
-main=9ec8aef81198f3ce8f376ce78435c43aa320351d ; #396 P3bb MERGED CI #44604279698 PASS HEAD exact d9a8187aa889d08b6f943a38c539fca5d435f746 ; postmain #44611547386 PASS sur SHA exact main ; date=2026-11-19 ; M32-004 clôture documentaire CANDIDATE de cohérence des fichiers, 10/94 à qualifier ; M3.2 IN_PROGRESS_NOT_ACCEPTED (~45%).
+main=d16ea72ea26c66c63cdc1eb0170b6164f42dff72 ; #397 M32-004 MERGED CI #44614740959 PASS HEAD exact faeb6dfd6636b82efde7e42c6299a9e840650940 ; postmain #44620889978 PASS sur SHA exact main ; date=2026-11-20 ; P3bc filtre ID exact source fictive CANDIDAT ; 10/94 ; M3.2 IN_PROGRESS_NOT_ACCEPTED (~45%).
 
 ## Interdictions actives — STOP
 Writer/R1–R9 NOT_PROVEN ; P4 STOP ; G2B NOT_ACCEPTED ; G2C NOT_AUTHORIZED ; G3 STOP_UNAVAILABLE ; PENDING_EXTERNAL_ATTESTATION(21/3/2), prospective NOT_STARTED ; R2 STOP, R3 partiel, D3c conception, D3b-4/5, D3b-5 STOP ; main/WAL/SHM, live SQLite WAL-index et ABA NOT_PROVEN ; glib #160 OPEN_NOT_REMEDIATED.
 STOP v6/v7, M:\Fabulaxiom, Greenfield, backups, IPC writer, 007, Hello, recovery.
 
 ## Prochaines opérations
-1. #396 P3bb CI source #44604279698 PASS HEAD exact d9a8187aa889d08b6f943a38c539fca5d435f746 ; postmain indépendante #44611547386 PASS SHA exact 9ec8aef81198f3ce8f376ce78435c43aa320351d.
-2. M32-004 [x] PROVISOIRE sur branche : contrat de huit en-têtes cohérents, deux prompts, HANDOFF MD/JSON, NEXT, refus des SHA/runs/dates/gates contrefaits, R3/D3c/live WAL conservés ; 104=10/94, M32-071 [ ] ; #35/#215 DRAFT.
-3. Qualifier nouvelle PR source HEAD exact, diff/reviews/threads/Protect main, guarded squash expected_head_sha, postmain indépendante, issue #38 append-only. Clôture M32-004 effective uniquement après la propre CI postmain ; PRODUCT_FIRST_PARALLEL_SAFETY.
+1. #397 source CI #44614740959 PASS HEAD exact faeb6dfd6636b82efde7e42c6299a9e840650940 ; postmain #44620889978 PASS SHA exact d16ea72ea26c66c63cdc1eb0170b6164f42dff72, M32-004 CLOSED_SCOPED 10/94.
+2. P3bc : ID exact révision source fictive même remplacée/retirée, Vitest #26/#27 CANDIDATS ; M32-071/075/078/081 [ ] ; #35/#215 DRAFT.
+3. CI HEAD P3bc, diff/reviews/threads/Protect main ACTIVE bypass=[], squash expected_head_sha, postmain indépendante, #38 append-only ; PRODUCT_FIRST_PARALLEL_SAFETY.
 
 ## Documents d'autorité
 RESUME_PROMPT.md ; HANDOFF_CURRENT.md ; HANDOFF_CURRENT.json ; STATE.md ; NEXT.md ; M3_2_GATE_DECISION_CURRENT.md ; M3_2_COMPLETION_MASTER_CHECKLIST_20261109.md ; ROADMAP_STATUS_CURRENT.md ; M3_2_SHORT_CYCLE_DELIVERY_20261116.md. Historique : RESUME_PROMPT.md / docs/qualification.

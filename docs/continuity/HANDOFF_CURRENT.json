@@ -1,4 +1,25 @@
 {
+  "m32_20261120_p3bc_after_pr397_source_filter_candidate": {
+    "date": "2026-11-20",
+    "status": "PR397_MERGED_POSTMAIN_SUCCESS_P3BC_EXACT_SOURCE_FILTER_CANDIDATE",
+    "current_phase": "SOURCE_ONLY_CANDIDATE_UNQUALIFIED",
+    "parent_main": "d16ea72ea26c66c63cdc1eb0170b6164f42dff72",
+    "source_ci_run": 44614740959,
+    "source_ci_head": "faeb6dfd6636b82efde7e42c6299a9e840650940",
+    "source_ci_status": "COMPLETED_SUCCESS_EXACT_HEAD",
+    "parent_postmain_run": 44620889978,
+    "parent_postmain_status": "COMPLETED_SUCCESS_EXACT_MAIN",
+    "attested_postmain_sha": "d16ea72ea26c66c63cdc1eb0170b6164f42dff72",
+    "p3bc_source_filter": "EXACT_SOURCE_ID_ALL_FICTIONAL_VERSIONS_ONLY",
+    "p3bc_ci_qualified": false,
+    "writer_admitted": false,
+    "operator_accepted": false,
+    "checklist_total": 104,
+    "closed": 10,
+    "open": 94,
+    "gate": "IN_PROGRESS_NOT_ACCEPTED",
+    "strategy": "PRODUCT_FIRST_PARALLEL_SAFETY"
+  },
   "m32_20261119_m32_004_after_pr396_scoped_candidate": {
     "date": "2026-11-19",
     "status": "PR396_MERGED_POSTMAIN_SUCCESS_M32_004_SCOPED_DOCUMENTARY_CLOSURE_CANDIDATE",

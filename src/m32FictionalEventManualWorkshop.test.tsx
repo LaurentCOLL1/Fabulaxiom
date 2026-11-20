@@ -288,4 +288,41 @@ describe("M3.2 manual fictional event workshop source-only", () => {
     expect(html).not.toContain("Motif humain historique :");
     expect(JSON.stringify(book)).toBe(before);
   });
+  it("26 exact source ID filter finds superseded source and withdrawn tombstone", () => {
+    const a = applyFictionalWorkshopAction(invented(), {
+      kind: "create", input: { ...input, anchor_id: "A",
+        source_revision_id: "fiction-alpha-rev-1" },
+    }), id = a.events[0].event_id;
+    const b = change(a, id);
+    const c = applyFictionalWorkshopAction(b, {
+      kind: "withdraw", eventId: id, reason: "Retrait fictif",
+    }), mixed = create(c), before = JSON.stringify(mixed);
+    expect(matchingFictionalEventHistoryIds(mixed, "", "all", "fiction-alpha-rev-1"))
+      .toEqual([id]);
+    expect(matchingFictionalEventHistoryIds(mixed, "", "withdrawn",
+      " fiction-alpha-rev-1 ")).toEqual([id]);
+    expect(matchingFictionalEventHistoryIds(mixed, "", "current", "fiction-alpha-rev-1"))
+      .toEqual([]);
+    expect(matchingFictionalEventHistoryIds(mixed, "", "all", "fiction-alpha-rev"))
+      .toEqual([]);
+    expect(matchingFictionalEventHistoryIds(mixed, "", "all", "FICTION-ALPHA-REV-1"))
+      .toEqual([]);
+    expect(matchingFictionalEventHistoryIds(mixed, "", "all", "")).toHaveLength(2);
+    expect(JSON.stringify(mixed)).toBe(before);
+  });
+  it("27 SSR source filter does not inspect unselected historical data", () => {
+    const b = applyFictionalWorkshopAction(invented(), {
+      kind: "create", input: { ...input, note: "NOTE-CACHEE-SOURCE",
+        anchor_id: "A", source_revision_id: "fiction-alpha-rev-1" },
+    }), before = JSON.stringify(b);
+    const html = renderToStaticMarkup(createElement(M32FictionalEventManualWorkshop,
+      { initial: b }));
+    expect(html).toContain("Filtrer par ID exact de révision source fictive");
+    expect(html).not.toContain("NOTE-CACHEE-SOURCE");
+    expect(html).not.toContain("Versions historiques fictives");
+    expect(html).not.toContain("Motif humain historique :");
+    expect(html).toContain("Page 1 sur 1");
+    expect(JSON.stringify(b)).toBe(before);
+  });
+
 });
