@@ -34,6 +34,7 @@ export function matchingFictionalEventHistoryIds(
   exactSourceSceneId = "",
   exactAnchorId = "",
   exactFictionalDateLabel = "",
+  exactCalendarName = "",
 ): readonly string[] {
   inspectFictionalEventNotebook(notebook);
   const query = searchId.trim().toLocaleLowerCase();
@@ -43,6 +44,7 @@ export function matchingFictionalEventHistoryIds(
   const sceneId = exactSourceSceneId.trim();
   const anchorId = exactAnchorId.trim();
   const dateLabel = exactFictionalDateLabel.trim();
+  const calendarName = exactCalendarName.trim();
   const anchorById = new Map(notebook.draft.snapshot.anchors.map(a => [a.id, a]));
   const sourceRevisionById = new Map(
     notebook.draft.revisions.map(r => [r.revision_id, r]));
@@ -52,7 +54,7 @@ export function matchingFictionalEventHistoryIds(
       const latest = versions[versions.length - 1];
       return Boolean(latest && (status === "all" || latest.status === status) &&
         id.toLocaleLowerCase().includes(query) &&
-        ((!sourceId && !novelId && !sceneId && !anchorId && !dateLabel) ||
+        ((!sourceId && !novelId && !sceneId && !anchorId && !dateLabel && !calendarName) ||
           versions.some(v => {
             // All selectors must match one event version, not a union of history.
             const revision = v.source_revision_id === null ? undefined :
@@ -64,7 +66,9 @@ export function matchingFictionalEventHistoryIds(
               (!sceneId || revision?.scene_id === sceneId) &&
               (!anchorId || v.anchor_id === anchorId) &&
               (!dateLabel || (anchor?.time_kind === "exact" &&
-                anchor.fictional_label === dateLabel));
+                anchor.fictional_label === dateLabel)) &&
+              (!calendarName || (anchor?.time_kind === "exact" &&
+                anchor.calendar_name === calendarName));
           })));
     });
 }
@@ -123,6 +127,7 @@ export default function M32FictionalEventManualWorkshop({ initial }: {
   const [historySceneId, setHistorySceneId] = useState("");
   const [historyAnchorId, setHistoryAnchorId] = useState("");
   const [historyFictionalDateLabel, setHistoryFictionalDateLabel] = useState("");
+  const [historyCalendarName, setHistoryCalendarName] = useState("");
   const [historyPage, setHistoryPage] = useState(0);
   const [historyStatus, setHistoryStatus] =
     useState<"all" | "current" | "withdrawn">("all");
@@ -138,9 +143,12 @@ export default function M32FictionalEventManualWorkshop({ initial }: {
   const historyDateLabels = [...new Set(book.draft.snapshot.anchors
     .filter(a => a.time_kind === "exact" && a.fictional_label !== null)
     .map(a => a.fictional_label!))];
+  const historyCalendarNames = [...new Set(book.draft.snapshot.anchors
+    .filter(a => a.time_kind === "exact" && a.calendar_name !== null)
+    .map(a => a.calendar_name!))];
   const historyEventIds = matchingFictionalEventHistoryIds(
     book, historyIdQuery, historyStatus, historySourceIdQuery, historyNovelId,
-    historySceneId, historyAnchorId, historyFictionalDateLabel);
+    historySceneId, historyAnchorId, historyFictionalDateLabel, historyCalendarName);
   const historyView = pageFictionalEventHistoryIds(historyEventIds, historyPage);
   const inspectedHistory = historyEventId
     ? auditedFictionalEventHistory(book, historyEventId) : [];
@@ -328,6 +336,16 @@ export default function M32FictionalEventManualWorkshop({ initial }: {
         }}>
           <option value="">Toutes les dates fictives exactes</option>
           {historyDateLabels.map(label => <option key={label} value={label}>{label}</option>)}
+        </select>
+      </label>
+      <label>Filtrer par nom exact de calendrier historique fictif
+        <select value={historyCalendarName} onChange={e => {
+          setHistoryCalendarName(e.currentTarget.value);
+          setHistoryEventId(""); setHistoryPage(0);
+        }}>
+          <option value="">Tous les calendriers fictifs exacts</option>
+          {historyCalendarNames.map(name =>
+            <option key={name} value={name}>{name}</option>)}
         </select>
       </label>
       <label>Filtrer l'historique par statut

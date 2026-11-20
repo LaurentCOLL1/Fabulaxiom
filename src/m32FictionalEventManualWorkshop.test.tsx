@@ -82,6 +82,15 @@ function inventedTwoExactDates(): FictionalEventNotebook {
   };
   return startFictionalEventNotebook(startFictionalDraft(snapshot, two.draft.revisions));
 }
+function inventedTwoCalendars(): FictionalEventNotebook {
+  const two = inventedTwoExactDates();
+  const snapshot: M32ChronologyProjection = {
+    ...two.draft.snapshot,
+    anchors: two.draft.snapshot.anchors.map(a =>
+      a.id === "C" ? { ...a, calendar_name: "calendrier-invente-b" } : a),
+  };
+  return startFictionalEventNotebook(startFictionalDraft(snapshot, two.draft.revisions));
+}
 const input: FictionalEventInput = { title: "Rencontre", note: "Fait inventé",
   anchor_id: null, source_revision_id: null };
 function create(book: FictionalEventNotebook = invented()) {
@@ -545,6 +554,45 @@ describe("M3.2 manual fictional event workshop source-only", () => {
     expect(html).toContain('value="Jour inventé 1"');
     expect(html).not.toContain("NOTE-HISTORIQUE-INVISIBLE");
     expect(html).not.toContain("Motif humain historique :");
+    expect(html).not.toContain("Versions historiques fictives");
+    expect(JSON.stringify(book)).toBe(before);
+  });
+
+  it("36 filters exact calendar of the same fictional historical version", () => {
+    const a = applyFictionalWorkshopAction(inventedTwoCalendars(), {
+      kind: "create", input: { ...input, anchor_id: "A",
+        source_revision_id: "fiction-alpha-rev-1" },
+    }), id = a.events[0].event_id;
+    const b = applyFictionalWorkshopAction(a, {
+      kind: "amend", eventId: id, reason: "Calendrier fictif corrigé",
+      input: { ...input, anchor_id: "C", source_revision_id: "fiction-alpha-rev-2" },
+    });
+    const book = applyFictionalWorkshopAction(b, {
+      kind: "withdraw", eventId: id, reason: "Retrait fictif",
+    }), before = JSON.stringify(book);
+    const ids = (source: string, anchor: string, date: string, calendar: string) =>
+      matchingFictionalEventHistoryIds(book, "", "withdrawn",
+        source, "novel-1", "", anchor, date, calendar);
+    expect(ids("fiction-alpha-rev-1","A","Jour inventé 1","calendrier-invente")).toEqual([id]);
+    expect(ids("fiction-alpha-rev-2","C","Jour inventé 2","calendrier-invente-b")).toEqual([id]);
+    expect(ids("fiction-alpha-rev-1","C","Jour inventé 2","calendrier-invente-b")).toEqual([]);
+    expect(ids("","A","Jour inventé 1","calendrier-invente-b")).toEqual([]);
+    expect(ids("","A","Jour inventé 2","calendrier-invente")).toEqual([]);
+    expect(ids("","","","CALENDRIER-INVENTE")).toEqual([]);
+    expect(JSON.stringify(book)).toBe(before);
+  });
+
+  it("37 SSR calendar choices never expose unselected history notes", () => {
+    const book = applyFictionalWorkshopAction(inventedTwoCalendars(), {
+      kind: "create", input: { ...input, note: "SECRET-CALENDRIER",
+        anchor_id: "A", source_revision_id: "fiction-alpha-rev-1" },
+    }), before = JSON.stringify(book);
+    const html = renderToStaticMarkup(createElement(M32FictionalEventManualWorkshop,
+      { initial: book }));
+    expect(html).toContain("Filtrer par nom exact de calendrier historique fictif");
+    expect(html).toContain('value="calendrier-invente"');
+    expect(html).toContain('value="calendrier-invente-b"');
+    expect(html).not.toContain("SECRET-CALENDRIER");
     expect(html).not.toContain("Versions historiques fictives");
     expect(JSON.stringify(book)).toBe(before);
   });
