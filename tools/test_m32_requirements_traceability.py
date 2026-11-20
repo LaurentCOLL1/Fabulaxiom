@@ -12,7 +12,7 @@ ROADMAP = (ROOT / "docs/roadmap/FABULAXIOM_ROADMAP_V1.md").read_text(encoding="u
 TASK = re.compile(r"^- \[([ x])\] \*\*(M32-\d{3})\*\* (.+?)\s*$", re.M)
 
 SCOPED_CLOSED_IDS = frozenset({
-    "M32-001", "M32-002", "M32-004", "M32-037", "M32-049", "M32-051",
+    "M32-001", "M32-002", "M32-004", "M32-005", "M32-037", "M32-049", "M32-051",
     "M32-094", "M32-095", "M32-096", "M32-104",
 })
 
@@ -91,6 +91,7 @@ class TraceabilityAndScope(unittest.TestCase):
             "M32-001": (42699790716, "bef699511ff18e987a4858c797fde7aa88dfc59b", "2026-11-09", "push"),
             "M32-002": (42751838279, "fb523abbc05b636d98fd93240872882f4ee57f61", "2026-11-10", "pull_request"),
             "M32-004": (44604279698, "d9a8187aa889d08b6f943a38c539fca5d435f746", "2026-11-19", "pull_request"),
+            "M32-005": (44778790112, "e0f318ece1fdae29e567e453db455b695e813e9a", "2026-11-20", "pull_request"),
             **{
                 i: (42997104616, "1f5e201d3e7d0ab088a65621411cc911de0472a1", "2026-11-11", "pull_request")
                 for i in ("M32-037", "M32-049", "M32-051", "M32-095", "M32-096")
@@ -104,7 +105,8 @@ class TraceabilityAndScope(unittest.TestCase):
             proof = row["proof_audit"]
             with self.subTest(row=row["id"]):
                 self.assertEqual(proof["record_review_date"],
-                                 "2026-11-19" if row["id"] == "M32-004" else
+                                 "2026-11-20" if row["id"] == "M32-005" else
+                                  "2026-11-19" if row["id"] == "M32-004" else
                                  ("2026-11-14" if row["id"] == "M32-094" else "2026-11-12"))
                 self.assertEqual(proof["test_target_name"], Path(row["verification_target"]).name)
                 self.assertEqual(proof["target_role"],
@@ -138,6 +140,7 @@ class TraceabilityAndScope(unittest.TestCase):
             "M32-001": (129441151373, 28, "M3.2 living handoff source-only contract checks"),
             "M32-002": (129617016279, 28, "M3.2 living handoff source-only contract checks"),
             "M32-004": (135843672704, 31, "M3.2 master completion checklist 104-item closure evidence contracts"),
+            "M32-005": (136435646377, 31, "M3.2 master completion checklist 104-item closure evidence contracts"),
             **{key: (130443816096, 30, "M3.2 five autonomous documentary and SQLite memory audit checks")
                for key in ("M32-037", "M32-049", "M32-051")},
             **{key: (130443816096, 27, "M3.2 V1 roadmap source-only consistency 9 tests")
@@ -152,7 +155,8 @@ class TraceabilityAndScope(unittest.TestCase):
             stage = row["workflow_step_audit"]
             with self.subTest(row=row["id"]):
                 self.assertEqual(stage["step_review_date"],
-                                 "2026-11-19" if row["id"] == "M32-004" else
+                                 "2026-11-20" if row["id"] == "M32-005" else
+                                  "2026-11-19" if row["id"] == "M32-004" else
                                  ("2026-11-14" if row["id"] == "M32-094" else "2026-11-12"))
                 self.assertIs(stage["CI_step_does_not_equal_individual_test_assertion"], True)
                 self.assertIs(stage["Windows_operator_workflow_admission"], False)
@@ -417,6 +421,23 @@ class TraceabilityAndScope(unittest.TestCase):
         self.assertEqual(MATRIX["gate"], "IN_PROGRESS_NOT_ACCEPTED")
         for number in ("009","020","031","039","042","071","078"):
             self.assertIn(f"- [ ] **M32-{number}**", CHECK)
+
+
+    def test_m32_005_scoped_dated_status_truth_without_operator_admission(self):
+        row = next(x for x in MATRIX["rows"] if x["id"] == "M32-005")
+        self.assertEqual(row["status"], "CLOSED_SCOPED")
+        self.assertIn("- [x] **M32-005**", CHECK)
+        self.assertIn("RUN=#44778790112", row["evidence"])
+        self.assertIn("POSTMAIN_RUN=#44789068367", row["evidence"])
+        self.assertIn("POSTMAIN_SHA=087996c2f62e4c7a90b7afc1d57031917d7b3701",
+                      row["evidence"])
+        self.assertIn("NO_OPERATOR_ADMISSION", row["evidence"])
+        self.assertFalse(row["proof_audit"]["operator_runtime_acceptance"])
+        self.assertFalse(row["workflow_step_audit"]["Windows_operator_workflow_admission"])
+        self.assertEqual(MATRIX["gate"], "IN_PROGRESS_NOT_ACCEPTED")
+        for id in ("M32-006","M32-007","M32-071","M32-075","M32-078","M32-081"):
+            self.assertEqual(next(x for x in MATRIX["rows"] if x["id"] == id)["status"],
+                             "OPEN_NOT_ACCEPTED")
 
     def test_metadata_does_not_grant_writer_admission(self):
         self.assertEqual(MATRIX["gate"],"IN_PROGRESS_NOT_ACCEPTED")

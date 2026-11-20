@@ -68,6 +68,20 @@ function inventedTwoScenesSameNovel(): FictionalEventNotebook {
     r.scene_id === "scene-2" ? { ...r, novel_id: "novel-1" } : r);
   return startFictionalEventNotebook(startFictionalDraft(snapshot, revisions));
 }
+
+function inventedTwoExactDates(): FictionalEventNotebook {
+  const two = inventedTwoScenesSameNovel();
+  const snapshot: M32ChronologyProjection = {
+    ...two.draft.snapshot,
+    anchors: two.draft.snapshot.anchors.map(a =>
+      a.id === "A" || a.id === "C"
+        ? { ...a, time_kind: "exact", calendar_name: "calendrier-invente",
+            fictional_label: a.id === "A" ? "Jour inventé 1" : "Jour inventé 2",
+            precision_text: null }
+        : a),
+  };
+  return startFictionalEventNotebook(startFictionalDraft(snapshot, two.draft.revisions));
+}
 const input: FictionalEventInput = { title: "Rencontre", note: "Fait inventé",
   anchor_id: null, source_revision_id: null };
 function create(book: FictionalEventNotebook = invented()) {
@@ -476,6 +490,63 @@ describe("M3.2 manual fictional event workshop source-only", () => {
     expect(matchingFictionalEventHistoryIds(b, "", "all",
       "fiction-alpha-rev-2", "novel-2", "scene-2")).toEqual([oldId]);
     expect(JSON.stringify(b)).toBe(before);
+  });
+
+  it("33 filters exact fictional historical anchor and date label, same version", () => {
+    const a = applyFictionalWorkshopAction(inventedTwoExactDates(), {
+      kind: "create", input: { ...input, anchor_id: "A",
+        source_revision_id: "fiction-alpha-rev-1" },
+    }), id = a.events[0].event_id;
+    const b = applyFictionalWorkshopAction(a, {
+      kind: "amend", eventId: id, reason: "Date fictive corrigée",
+      input: { ...input, anchor_id: "C", source_revision_id: "fiction-alpha-rev-2" },
+    });
+    const withdrawn = applyFictionalWorkshopAction(b, {
+      kind: "withdraw", eventId: id, reason: "Retrait inventé",
+    }), before = JSON.stringify(withdrawn);
+    const ids = (source: string, novel: string, scene: string,
+      anchor: string, date: string, status: "all" | "current" | "withdrawn" = "all") =>
+      matchingFictionalEventHistoryIds(withdrawn, "", status,
+        source, novel, scene, anchor, date);
+    expect(ids("", "", "", "A", "Jour inventé 1")).toEqual([id]);
+    expect(ids("", "", "", "C", "Jour inventé 2", "withdrawn")).toEqual([id]);
+    expect(ids("", "", "", "A", "Jour inventé 2")).toEqual([]);
+    expect(ids("", "", "", "C", "Jour inventé 1")).toEqual([]);
+    expect(ids("fiction-alpha-rev-1", "novel-1", "scene-1",
+      "C", "Jour inventé 2")).toEqual([]);
+    expect(ids("fiction-alpha-rev-2", "novel-1", "scene-2",
+      "C", "Jour inventé 2")).toEqual([id]);
+    expect(ids("", "", "", "A", "jour inventé 1")).toEqual([]);
+    expect(ids("", "", "", "unknown", "")).toEqual([]);
+    expect(ids("", "", "", "", "Jour inventé 1", "current")).toEqual([]);
+    expect(JSON.stringify(withdrawn)).toBe(before);
+  });
+  it("34 keeps unknown and source-less versions out of exact-date filters", () => {
+    const book = create(inventedTwoExactDates());
+    const before = JSON.stringify(book);
+    expect(matchingFictionalEventHistoryIds(book, "", "all",
+      "", "", "", "", "Jour inventé 1")).toEqual([]);
+    expect(matchingFictionalEventHistoryIds(book, "", "all",
+      "", "", "", "B", "")).toEqual([]);
+    expect(matchingFictionalEventHistoryIds(book, "", "all")).toHaveLength(1);
+    expect(JSON.stringify(book)).toBe(before);
+  });
+  it("35 SSR source anchor/date selectors do not expose unselected history", () => {
+    const book = applyFictionalWorkshopAction(inventedTwoExactDates(), {
+      kind: "create", input: { ...input, note: "NOTE-HISTORIQUE-INVISIBLE",
+        anchor_id: "A", source_revision_id: "fiction-alpha-rev-1" },
+    });
+    const before = JSON.stringify(book);
+    const html = renderToStaticMarkup(createElement(M32FictionalEventManualWorkshop,
+      { initial: book }));
+    expect(html).toContain("Filtrer par ID exact d&#x27;ancre historique fictive");
+    expect(html).toContain("Filtrer par libellé exact de date fictive");
+    expect(html).toContain('value="A"');
+    expect(html).toContain('value="Jour inventé 1"');
+    expect(html).not.toContain("NOTE-HISTORIQUE-INVISIBLE");
+    expect(html).not.toContain("Motif humain historique :");
+    expect(html).not.toContain("Versions historiques fictives");
+    expect(JSON.stringify(book)).toBe(before);
   });
 
 });

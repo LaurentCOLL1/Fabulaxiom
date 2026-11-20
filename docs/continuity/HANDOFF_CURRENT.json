@@ -1,4 +1,27 @@
 {
+  "m32_20261120_p3bf_m32_005_scoped_dated_status_candidate_after_pr400": {
+    "date": "2026-11-20",
+    "status": "PR400_MERGED_POSTMAIN_SUCCESS_P3BF_ANCHOR_DATE_AND_M32_005_SCOPED_CLOSURE_CANDIDATE",
+    "current_phase": "SOURCE_ONLY_CANDIDATE_UNQUALIFIED",
+    "parent_main": "087996c2f62e4c7a90b7afc1d57031917d7b3701",
+    "source_ci_run": 44778790112,
+    "source_ci_head": "e0f318ece1fdae29e567e453db455b695e813e9a",
+    "source_ci_status": "COMPLETED_SUCCESS_EXACT_HEAD",
+    "parent_postmain_run": 44789068367,
+    "parent_postmain_status": "COMPLETED_SUCCESS_EXACT_MAIN",
+    "attested_postmain_sha": "087996c2f62e4c7a90b7afc1d57031917d7b3701",
+    "p3bf_anchor_date": "EXACT_FICTIONAL_ANCHOR_AND_DATE_LABEL_WITH_SAME_EVENT_VERSION",
+    "m32_005": "CLOSED_SCOPED_DOCUMENTARY_CANDIDATE_UNTIL_OWN_CI",
+    "m32_005_source_case_run": 44778790112,
+    "writer_admitted": false,
+    "operator_accepted": false,
+    "checklist_total": 104,
+    "closed": 11,
+    "open": 93,
+    "gate": "IN_PROGRESS_NOT_ACCEPTED",
+    "strategy": "PRODUCT_FIRST_PARALLEL_SAFETY",
+    "m32_005_attested_parent_postmain_id": 44789068367
+  },
   "m32_20261120_p3be_after_pr399_source_scene_filter_candidate": {
     "date": "2026-11-20",
     "status": "PR399_MERGED_POSTMAIN_SUCCESS_P3BE_SCENE_FILTER_CANDIDATE",
