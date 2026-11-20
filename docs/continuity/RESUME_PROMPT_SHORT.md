@@ -1,16 +1,16 @@
 # Reprise Fabulaxiom (https://github.com/LaurentCOLL1/Fabulaxiom)
 
 ## Dernier checkpoint
-main=d16ea72ea26c66c63cdc1eb0170b6164f42dff72 ; #397 M32-004 MERGED CI #44614740959 PASS HEAD exact faeb6dfd6636b82efde7e42c6299a9e840650940 ; postmain #44620889978 PASS sur SHA exact main ; date=2026-11-20 ; P3bc filtre ID exact source fictive CANDIDAT ; 10/94 ; M3.2 IN_PROGRESS_NOT_ACCEPTED (~45%).
+main=aea76f0fc3658848278b0ca6b3d5dcbfa8443bb6 ; #398 P3bc MERGED CI #44660619827 PASS HEAD exact 79636ef583e1f948669b8ae47b5d1082113ee3e9 ; postmain #44672210431 PASS sur SHA exact main ; date=2026-11-20 ; P3bd filtre roman source historique fictive CANDIDAT ; 10/94 ; M3.2 IN_PROGRESS_NOT_ACCEPTED (~45%).
 
 ## Interdictions actives — STOP
 Writer/R1–R9 NOT_PROVEN ; P4 STOP ; G2B NOT_ACCEPTED ; G2C NOT_AUTHORIZED ; G3 STOP_UNAVAILABLE ; PENDING_EXTERNAL_ATTESTATION(21/3/2), prospective NOT_STARTED ; R2 STOP, R3 partiel, D3c conception, D3b-4/5, D3b-5 STOP ; main/WAL/SHM, live SQLite WAL-index et ABA NOT_PROVEN ; glib #160 OPEN_NOT_REMEDIATED.
 STOP v6/v7, M:\Fabulaxiom, Greenfield, backups, IPC writer, 007, Hello, recovery.
 
 ## Prochaines opérations
-1. #397 source CI #44614740959 PASS HEAD exact faeb6dfd6636b82efde7e42c6299a9e840650940 ; postmain #44620889978 PASS SHA exact d16ea72ea26c66c63cdc1eb0170b6164f42dff72, M32-004 CLOSED_SCOPED 10/94.
-2. P3bc : ID exact révision source fictive même remplacée/retirée, Vitest #26/#27 CANDIDATS ; M32-071/075/078/081 [ ] ; #35/#215 DRAFT.
-3. CI HEAD P3bc, diff/reviews/threads/Protect main ACTIVE bypass=[], squash expected_head_sha, postmain indépendante, #38 append-only ; PRODUCT_FIRST_PARALLEL_SAFETY.
+1. #398 P3bc CI #44660619827 PASS HEAD exact 79636ef583e1f948669b8ae47b5d1082113ee3e9 ; postmain #44672210431 PASS SHA exact aea76f0fc3658848278b0ca6b3d5dcbfa8443bb6, journal #38 #7030387905.
+2. P3bd source-only : filtre par roman fictif lié à une même révision/version, refus des croisements de provenances ; Vitest #28/#29 CANDIDATS. M32-071/075/078/081 [ ], #35/#215 DRAFT.
+3. Qualifier CI HEAD P3bd, diff/reviews/threads/Protect main ACTIVE strict bypass=[], squash expected_head_sha, postmain indépendante et #38 append-only ; PRODUCT_FIRST_PARALLEL_SAFETY.
 
 ## Documents d'autorité
 RESUME_PROMPT.md ; HANDOFF_CURRENT.md ; HANDOFF_CURRENT.json ; STATE.md ; NEXT.md ; M3_2_GATE_DECISION_CURRENT.md ; M3_2_COMPLETION_MASTER_CHECKLIST_20261109.md ; ROADMAP_STATUS_CURRENT.md ; M3_2_SHORT_CYCLE_DELIVERY_20261116.md. Historique : RESUME_PROMPT.md / docs/qualification.
