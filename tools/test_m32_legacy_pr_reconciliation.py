@@ -137,5 +137,79 @@ class Pr35UnitDispositionContract(unittest.TestCase):
             self.assertIn(token, self.triage)
         self.assertNotIn("AUTORISATION DE WRITE", self.triage)
 
+
+class Pr215UnitDispositionContract(unittest.TestCase):
+    """Offline guard of all 23 historical paths, no GitHub I/O or runtime admission."""
+    @classmethod
+    def setUpClass(cls):
+        cls.text=(ROOT/"docs/qualification/M3_2_PR215_PER_PATH_DISPOSITION_20261121.md").read_text(encoding="utf-8")
+        cls.lines=re.findall(
+            r"^\| `([^`]+)` \| `([0-9a-f]{40})` \| `([0-9a-f]{40})` \| "
+            r"`(IDENTICAL|DIFFERENT)` \| `([A-Z_]+)` \|",cls.text,re.M)
+
+    @staticmethod
+    def original_pr215_paths():
+        text=REPORT.read_text(encoding="utf-8")
+        one=text.split("### pr215 : identical (6)",1)[1].split("### pr215 : different (17)",1)[0]
+        two=text.split("### pr215 : different (17)",1)[1].split("### pr215 : absent (0)",1)[0]
+        return re.findall(r"^- `([^`]+)`$",one+two,re.M)
+
+    def test_09_pr215_23_paths_unique_equal_historic_inventory(self):
+        rows=self.lines
+        paths=[r[0] for r in rows]
+        self.assertEqual(len(rows),23)
+        self.assertEqual(len(set(paths)),23)
+        self.assertEqual(set(paths),set(self.original_pr215_paths()))
+        self.assertEqual(sum(x[3]=="IDENTICAL" for x in rows),6)
+        self.assertEqual(sum(x[3]=="DIFFERENT" for x in rows),17)
+        for path,old,current,status,action in rows:
+            self.assertEqual(old==current,status=="IDENTICAL",(path,status))
+            self.assertNotIn(action,("ADMIT_WRITER","MERGE_DIRECT","RESTORE_OPERATOR"))
+
+    def test_10_pr215_scope_no_runtime_or_historic_rewrite(self):
+        rows=self.lines
+        status={path:action for path,_,_,_,action in rows}
+        self.assertEqual(sum(v=="KEEP_IDENTICAL_PROOF" for v in status.values()),6)
+        self.assertEqual(sum(v=="KEEP_CURRENT_DOC_NO_REBASE" for v in status.values()),13)
+        self.assertEqual(status["src-tauri/src/m32_sqlite_vfs_preopen_tests.rs"],
+                         "REVIEW_CFG_TEST_ONLY")
+        self.assertEqual(status["tools/m32_rust_sqlite_open_inventory.py"],
+                         "REVIEW_READONLY_INVENTORY")
+        self.assertEqual(status["tools/test_m32_handoff_contract.py"],
+                         "REVIEW_HANDOFF_GUARDS")
+        self.assertEqual(status["tools/test_m32_rust_sqlite_open_inventory.py"],
+                         "REVIEW_INVENTORY_TESTS")
+        for fn in D3B:
+            self.assertIn("fn "+fn+"()",VFS.read_text(encoding="utf-8"))
+        self.assertIn("#[cfg(all(test, windows))]\nmod m32_sqlite_vfs_preopen_tests;",
+                      LIB.read_text(encoding="utf-8"))
+        self.assertIn("- [ ] **M32-007**",CHECKLIST.read_text(encoding="utf-8"))
+        self.assertIn("PENDING_EXTERNAL_ATTESTATION(21/3/2)",self.text)
+        self.assertIn("M3.2 IN_PROGRESS_NOT_ACCEPTED",self.text)
+
+    def test_11_pr215_forged_path_or_sha_refused(self):
+        rows=self.lines
+        def guarded(items):
+            names=[x[0] for x in items]
+            if len(items)!=23 or len(set(names))!=23 or set(names)!=set(
+                    self.original_pr215_paths()):
+                raise ValueError("STOP absent duplicate or invented path")
+            for path,old,now,relation,action in items:
+                if (old==now)!=(relation=="IDENTICAL"):
+                    raise ValueError("STOP forged SHA relation")
+                if action not in ("KEEP_IDENTICAL_PROOF","KEEP_CURRENT_DOC_NO_REBASE",
+                                  "REVIEW_CFG_TEST_ONLY","REVIEW_READONLY_INVENTORY",
+                                  "REVIEW_HANDOFF_GUARDS","REVIEW_INVENTORY_TESTS"):
+                    raise ValueError("STOP forbidden admission")
+        guarded(rows)
+        with self.assertRaisesRegex(ValueError,"duplicate"):
+            guarded(rows[:-1]+[rows[0]])
+        forged=list(rows);path,o,n,s,a=forged[0];forged[0]=(path,n,n,s,a)
+        with self.assertRaisesRegex(ValueError,"SHA relation"):
+            guarded(forged)
+        forged=list(rows);path,o,n,s,a=forged[0];forged[0]=(path,o,n,s,"ADMIT_WRITER")
+        with self.assertRaisesRegex(ValueError,"forbidden admission"):
+            guarded(forged)
+
 if __name__ == "__main__":
     unittest.main()

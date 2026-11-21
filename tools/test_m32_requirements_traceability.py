@@ -451,6 +451,31 @@ class TraceabilityAndScope(unittest.TestCase):
         self.assertFalse(row["workflow_step_audit"]["Windows_operator_workflow_admission"])
         self.assertIn("- [ ] **M32-007**",CHECK)
 
+    def test_20261121_pr215_23_path_and_p3bh_observations_do_not_close_gates(self):
+        index={x["id"]:x for x in MATRIX["rows"]}
+        for i in ("M32-007","M32-075"):
+            self.assertEqual(index[i]["status"],"OPEN_NOT_ACCEPTED")
+            self.assertEqual(index[i]["evidence"],"NONE_ACCEPTED")
+            self.assertIn(f"- [ ] **{i}**",CHECK)
+        view=index["M32-007"]["latest_pr215_scoped_observation"]
+        self.assertEqual((view["paths"],view["identical"],view["different"],view["absent"]),
+                         (23,6,17,0))
+        self.assertEqual(view["source_main"],
+                         "c4122c575f1e19b903acf5ca268cc6ab9d09f4fd")
+        self.assertTrue((ROOT/view["report"]).is_file())
+        self.assertFalse(view["old_tree_truncated"])
+        self.assertFalse(view["main_tree_truncated"])
+        self.assertFalse(view["requirement_acceptance"])
+        self.assertFalse(view["writer_admission"])
+        self.assertFalse(view["operator_acceptance"])
+        x=index["M32-075"]["latest_p3bh_candidate"]
+        self.assertIn("38 shows an explicit reset button",x["test_case"])
+        self.assertIn("NOT_RUN",x["source_ci_status"])
+        self.assertFalse(x["browser_click_attested"])
+        self.assertFalse(x["operator_acceptance"])
+        self.assertFalse(x["requirement_acceptance"])
+        self.assertEqual((MATRIX["total"],MATRIX["closed"],MATRIX["open"]),(104,12,92))
+
     def test_metadata_does_not_grant_writer_admission(self):
         self.assertEqual(MATRIX["gate"],"IN_PROGRESS_NOT_ACCEPTED")
         for term in ("R1–R9 NOT_PROVEN","G3 STOP_UNAVAILABLE","P4 STOP","Greenfield"):

@@ -185,6 +185,13 @@ export default function M32FictionalEventManualWorkshop({ initial }: {
       apply({ kind: "create", input });
     }
   }
+  function resetHistoryFilters() {
+    setHistoryIdQuery(""); setHistorySourceIdQuery("");
+    setHistoryNovelId(""); setHistorySceneId("");
+    setHistoryAnchorId(""); setHistoryFictionalDateLabel("");
+    setHistoryCalendarName(""); setHistoryStatus("all");
+    setHistoryPage(0); setHistoryEventId("");
+  }
   function chooseEvent(eventId: string) {
     const selected = currentEvents.find(e => e.event_id === eventId);
     if (!selected) return;
@@ -359,6 +366,9 @@ export default function M32FictionalEventManualWorkshop({ initial }: {
           <option value="withdrawn">Événements retirés seulement</option>
         </select>
       </label>
+      <button type="button" onClick={resetHistoryFilters}>
+        Réinitialiser les filtres historiques fictifs
+      </button>
       <p role="note">Le filtrage n'affiche aucune version ni motif historique.
         Choisissez un identifiant pour consulter les versions en lecture seule.</p>
       <p role="note" aria-live="polite">Page {historyView.index + 1} sur {historyView.pages}
