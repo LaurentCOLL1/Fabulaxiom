@@ -839,7 +839,7 @@ describe("M3.2 manual fictional event workshop source-only", () => {
       ...input,anchor_id:"A",source_revision_id:"fiction-alpha-rev-1"}});
     const id=book.events[0].event_id;
     book=applyFictionalWorkshopAction(book,{kind:"amend",eventId:id,
-      reason:"Découplage inventé",input:{...input,anchor_id:"A",source_revision_id:null}});
+      reason:"Découplage inventé",input:{...input,anchor_id:"B",source_revision_id:null}});
     book=applyFictionalWorkshopAction(book,{kind:"create",input});
     const other=book.events[book.events.length-1].event_id;
     book=applyFictionalWorkshopAction(book,{kind:"withdraw",eventId:other,
@@ -853,7 +853,7 @@ describe("M3.2 manual fictional event workshop source-only", () => {
     expect(filter("","unlinked")).toEqual([id,other]);
     expect(filter("fiction-alpha-rev-1","unlinked")).toEqual([]);
     expect(filter("fiction-alpha-rev-1","linked")).toEqual([id]);
-    expect(filter("","unlinked","A","linked")).toEqual([id]);
+    expect(filter("","unlinked","B","linked")).toEqual([id]);
     expect(filter("","linked","","unlinked")).toEqual([]);
     expect(matchingFictionalEventHistoryIds(book,"","withdrawn",
       "","","","","","","","","unlinked")).toEqual([other]);
@@ -868,7 +868,7 @@ describe("M3.2 manual fictional event workshop source-only", () => {
         note:"NOTE-SECRET-SOURCE"}});
     const book=applyFictionalWorkshopAction(first,{kind:"amend",
       eventId:first.events[0].event_id,reason:"MOTIF-SECRET-SOURCE",
-      input:{...input,anchor_id:"A",source_revision_id:null}});
+      input:{...input,anchor_id:"B",source_revision_id:null}});
     const before=JSON.stringify(book);
     const html=renderToStaticMarkup(createElement(M32FictionalEventManualWorkshop,{initial:book}));
     expect(html).toContain("Filtrer par présence de révision source historique fictive");
