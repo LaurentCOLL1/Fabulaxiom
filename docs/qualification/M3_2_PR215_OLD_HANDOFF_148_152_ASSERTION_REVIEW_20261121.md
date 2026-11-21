@@ -1,0 +1,15 @@
+# PR #215 : assertion-level review des anciens handoff #148–152 (21/11/2026)
+
+Ancien PR [#215](https://github.com/LaurentCOLL1/Fabulaxiom/pull/215) DRAFT HEAD `8203b7323877edc87ffabaad1694c52d2523023d` ; ancien `tools/test_m32_handoff_contract.py` lu **sur le HEAD historique**, aucun code porté. Les numéros #148–152 ont été réemployés par les contrats actuels et n'impliquent aucune équivalence automatique.
+
+| Ancien cas | Ancienne clé checkpoint exacte | Garanties négatives & domaine historique | Verdict |
+| --- | --- | --- | --- |
+| 148 P1 plan | `next_p1_single_owner_session_proof_plan_20261028` | P1 single Rust owner et Ollama RAM **seulement conçus** ; second lecteur SQLite, ouverture atomique, custody WAL/SHM et writer runtime refusés ; 148 contrats attendus à l'époque, non actuels | REVIEW_ASSERTIONS_NOT_PORTED |
+| 149 D2 | `next_p1_d2_disposable_integrated_session_20261028` | D2 Windows **CI jetable seulement**, six nouveaux tests attendus historiquement, pas VFS productif, pas S3/S4, pas IPC/007/Hello | REVIEW_ASSERTIONS_NOT_PORTED |
+| 150 D3 design | `next_p1_d3_wal_shm_crash_restart_documentary_20261028` | D3 crash/restart **conception seule**, zéro nouveau test Rust ; mutex abandonné et dernier handle fermé ne prouvent pas fermeture propre, WAL peut contenir des commits | REVIEW_ASSERTIONS_NOT_PORTED |
+| 151 D3a | `next_p1_d3a_wal_shm_disposable_windows_fixture_20261028` | D3a Windows **fixtures seulement**, quatre nouveaux tests attendus, 22 tests VFS historiques ; FileId SHM et fermeture durable NON PROUVÉS | REVIEW_ASSERTIONS_NOT_PORTED |
+| 152 D3b | `next_p1_d3b_disposable_crash_restart_refusal_fixture_20261028` | D3b Windows **refus avant réouverture SQLite**, quatre tests ajoutés et 26 tests VFS attendus à cette date ; aucune recovery ou réouverture successor autorisée | REVIEW_ASSERTIONS_NOT_PORTED |
+
+La présence de documents historiques ne suffit pas à attester l'équivalence du comportement. Les champs `self.data` historiques ont disparu du HEAD principal actuel ; leurs compteurs 148–152, SHAs, CI et nombres de cas ne sont **pas des seuils actuels**. Les anciennes assertions peuvent être comparées à des garanties modernes seulement par preuve explicite individuelle et négative, jamais par correspondance de numéro. Aucune exception à Protect main, aucun test ancien exécuté, aucune décision d'admission. La revue documentaire des sept anciens cas #146–152 est **inventoriée mais leur équivalence reste NOT_PROVEN** ; 4 chemins PR215 demeurent REVIEW, 68 absents PR35. M32-007/M32-050 [ ] OPEN_NOT_ACCEPTED. `PRODUCT_FIRST_PARALLEL_SAFETY`, M3.2 IN_PROGRESS_NOT_ACCEPTED, checklist 12/92.
+
+STOP Writer/R1–R9 NOT_PROVEN ; P4 STOP ; G2B NOT_ACCEPTED ; G2C NOT_AUTHORIZED ; G3 STOP_UNAVAILABLE ; PENDING_EXTERNAL_ATTESTATION(21/3/2), prospective NOT_STARTED ; R2 STOP ; R3 partiel ; D3c conception ; D3b-4/5, D3b-5 STOP ; main/WAL/SHM, live SQLite WAL-index/ABA NOT_PROVEN ; glib #160 OPEN_NOT_REMEDIATED ; STOP v6/v7, M:\Fabulaxiom, Greenfield, backups, IPC writer, 007, Hello, recovery.
