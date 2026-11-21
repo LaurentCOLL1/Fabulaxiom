@@ -2015,9 +2015,23 @@ async function run() {
       await statusFilter.selectOption("withdrawn");
       assert.equal(await picker.inputValue(),"");
       assert.equal(await list.count(),0);
+      // P3bi: real Chromium bounded page-size selection is always read-only.
+      const size=detail.getByRole("combobox",{
+        name:"Identifiants fictifs par page",
+      });
+      assert.deepEqual(await size.locator("option").evaluateAll(options =>
+        options.map(option => option.value)),["5","10","20"]);
+      assert.equal(await size.inputValue(),"10");
+      await size.selectOption("5");
+      assert.equal(await picker.inputValue(),"");
+      assert.equal(await list.count(),0);
+      await size.selectOption("20");
+      assert.equal(await picker.inputValue(),"");
+      assert.equal(await list.count(),0);
       await detail.getByRole("button",{
         name:"Réinitialiser les filtres historiques fictifs",
       }).click();
+      assert.equal(await size.inputValue(),"10");
       assert.equal(await idFilter.inputValue(),"");
       assert.equal(await sourceFilter.inputValue(),"");
       assert.equal(await anchorFilter.inputValue(),"");

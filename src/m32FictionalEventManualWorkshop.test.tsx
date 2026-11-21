@@ -611,4 +611,49 @@ describe("M3.2 manual fictional event workshop source-only", () => {
     expect(JSON.stringify(book)).toBe(before);
   });
 
+  it("39 only permits bounded 5 10 20 fictional IDs per page", () => {
+    let book = invented();
+    for (let i = 0; i < 12; i++) book = create(book);
+    const before = JSON.stringify(book);
+    const ids = matchingFictionalEventHistoryIds(book, "", "all");
+    const first = pageFictionalEventHistoryIds(ids, 0, 5);
+    expect(first).toEqual({ ids: ids.slice(0, 5), index: 0, pages: 3, total: 12 });
+    expect(pageFictionalEventHistoryIds(ids, 1, 5).ids).toEqual(ids.slice(5, 10));
+    expect(pageFictionalEventHistoryIds(ids, 99, 5).ids).toEqual(ids.slice(10));
+    expect(pageFictionalEventHistoryIds(ids, 0, 10).ids).toEqual(ids.slice(0, 10));
+    expect(pageFictionalEventHistoryIds(ids, 0, 20)).toEqual({
+      ids, index: 0, pages: 1, total: 12,
+    });
+    expect(pageFictionalEventHistoryIds([], 1, 20))
+      .toEqual({ ids: [], index: 0, pages: 1, total: 0 });
+    for (const size of [-1, 0, 4, 6, 11, 64, 5.5, Number.NaN, Infinity]) {
+      expect(() => pageFictionalEventHistoryIds(ids, 0, size)).toThrow(
+        "Taille de page fictive invalide");
+    }
+    expect(() => pageFictionalEventHistoryIds(ids, -1, 5)).toThrow();
+    expect(JSON.stringify(book)).toBe(before);
+  });
+
+  it("40 SSR exposes only bounded page sizes and hides unselected notes", () => {
+    let book = invented();
+    for (let i = 0; i < 12; i++) book = create(book);
+    const secret = applyFictionalWorkshopAction(book, {
+      kind: "amend", eventId: book.events[0].event_id,
+      reason: "MOTIF-SECRET-PAGINATION",
+      input: { ...input, note: "NOTE-SECRET-PAGINATION" },
+    });
+    const before = JSON.stringify(secret);
+    const html = renderToStaticMarkup(createElement(M32FictionalEventManualWorkshop,
+      { initial: secret }));
+    expect(html).toContain("Identifiants fictifs par page");
+    expect(html).toContain('value="5"');
+    expect(html).toContain('value="10"');
+    expect(html).toContain('value="20"');
+    expect(html).toContain("Page 1 sur 2");
+    expect(html).not.toContain("NOTE-SECRET-PAGINATION");
+    expect(html).not.toContain("MOTIF-SECRET-PAGINATION");
+    expect(html).not.toContain("Versions historiques fictives");
+    expect(JSON.stringify(secret)).toBe(before);
+  });
+
 });

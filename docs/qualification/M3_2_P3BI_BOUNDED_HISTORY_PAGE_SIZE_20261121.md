@@ -1,0 +1,7 @@
+# P3bi — pagination de l'historique fictif 5/10/20, 21/11/2026
+
+Dans l'atelier React fictif NON monté, l'auteur peut choisir **5, 10 ou 20 identifiants par page**. Le contrôle est une liste de tailles autorisées, non un curseur, et n'inspecte jamais les notes d'un événement non explicitement sélectionné. Le changement de taille réinitialise la page à zéro et supprime la sélection historique. Le bouton de réinitialisation P3bh rétablit aussi la taille par défaut 10. Toute taille hors de la liste et toute page non entière sont refusées par la fonction pure ; les événements retirés restent visibles à condition de choisir leur ID explicitement.
+
+Preuves candidates : Vitest #39 calcul 12 IDs, tailles 5/10/20, refus de valeurs 0/4/6/11/64/non entières/NaN/Infini, tombstone et non mutation ; Vitest #40 rendu SSR, options bornées et absence de notes/motifs historiques avant sélection ; Chromium cas #110, choix via vrai navigateur et reset à 10, ne prouve pas la pagination de 513 ancres. **SOURCE_ONLY_CANDIDATE_UNQUALIFIED** tant que la CI source exacte et postmain indépendante ne sont pas complètes.
+
+Parent protégé `main=ac3fd7c8ba04eaed46342175c7cbef958ca5f9c6`, PR #403 fusionnée source #44870740154 PASS HEAD exact `891c3da3c020681e52134e7aa4ec459e2ec7b4fc`, postmain #44871959462 initialement IN_PROGRESS_NON_QUALIFIÉE. Pas de portage de curseur Stage 23 #35, voir `M3_2_PR35_CURSOR_NON_EQUIVALENCE_20261121.md`. M32-007/071/075 [ ] et M3.2 IN_PROGRESS_NOT_ACCEPTED, PRODUCT_FIRST_PARALLEL_SAFETY. Aucune admission writer/SQLite/Tauri/IPC/opérateur/Greenfield.

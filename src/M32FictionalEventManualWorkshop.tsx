@@ -75,13 +75,18 @@ export function matchingFictionalEventHistoryIds(
 
 /** Paged IDs only; never implicitly inspect or mutate a fictional event. */
 export const FICTIONAL_HISTORY_PAGE_SIZE = 10;
-export function pageFictionalEventHistoryIds(ids: readonly string[], page: number):
+export const FICTIONAL_HISTORY_PAGE_SIZES = [5, 10, 20] as const;
+export function pageFictionalEventHistoryIds(
+  ids: readonly string[], page: number, pageSize: number = FICTIONAL_HISTORY_PAGE_SIZE,
+):
   Readonly<{ ids: readonly string[]; index: number; pages: number; total: number }> {
   if (!Number.isSafeInteger(page) || page < 0) throw Error("Page fictive invalide");
-  const pages = Math.max(1, Math.ceil(ids.length / FICTIONAL_HISTORY_PAGE_SIZE));
+  if (!FICTIONAL_HISTORY_PAGE_SIZES.some(size => size === pageSize))
+    throw Error("Taille de page fictive invalide");
+  const pages = Math.max(1, Math.ceil(ids.length / pageSize));
   const index = Math.min(page, pages - 1);
-  return { ids: ids.slice(index * FICTIONAL_HISTORY_PAGE_SIZE,
-    (index + 1) * FICTIONAL_HISTORY_PAGE_SIZE), index, pages, total: ids.length };
+  return { ids: ids.slice(index * pageSize, (index + 1) * pageSize),
+    index, pages, total: ids.length };
 }
 
 /** One action, one invented in-memory state transition; never persisted. */
@@ -129,6 +134,7 @@ export default function M32FictionalEventManualWorkshop({ initial }: {
   const [historyFictionalDateLabel, setHistoryFictionalDateLabel] = useState("");
   const [historyCalendarName, setHistoryCalendarName] = useState("");
   const [historyPage, setHistoryPage] = useState(0);
+  const [historyPageSize, setHistoryPageSize] = useState<number>(FICTIONAL_HISTORY_PAGE_SIZE);
   const [historyStatus, setHistoryStatus] =
     useState<"all" | "current" | "withdrawn">("all");
 
@@ -149,7 +155,7 @@ export default function M32FictionalEventManualWorkshop({ initial }: {
   const historyEventIds = matchingFictionalEventHistoryIds(
     book, historyIdQuery, historyStatus, historySourceIdQuery, historyNovelId,
     historySceneId, historyAnchorId, historyFictionalDateLabel, historyCalendarName);
-  const historyView = pageFictionalEventHistoryIds(historyEventIds, historyPage);
+  const historyView = pageFictionalEventHistoryIds(historyEventIds, historyPage, historyPageSize);
   const inspectedHistory = historyEventId
     ? auditedFictionalEventHistory(book, historyEventId) : [];
   const editableEvent = currentEvents.find(e => e.event_id === selectedId);
@@ -191,6 +197,7 @@ export default function M32FictionalEventManualWorkshop({ initial }: {
     setHistoryAnchorId(""); setHistoryFictionalDateLabel("");
     setHistoryCalendarName(""); setHistoryStatus("all");
     setHistoryPage(0); setHistoryEventId("");
+    setHistoryPageSize(FICTIONAL_HISTORY_PAGE_SIZE);
   }
   function chooseEvent(eventId: string) {
     const selected = currentEvents.find(e => e.event_id === eventId);
@@ -371,6 +378,15 @@ export default function M32FictionalEventManualWorkshop({ initial }: {
       </button>
       <p role="note">Le filtrage n'affiche aucune version ni motif historique.
         Choisissez un identifiant pour consulter les versions en lecture seule.</p>
+      <label>Identifiants fictifs par page
+        <select value={historyPageSize} onChange={e => {
+          setHistoryPageSize(Number(e.currentTarget.value));
+          setHistoryPage(0); setHistoryEventId("");
+        }}>
+          {FICTIONAL_HISTORY_PAGE_SIZES.map(size =>
+            <option key={size} value={size}>{size} identifiants</option>)}
+        </select>
+      </label>
       <p role="note" aria-live="polite">Page {historyView.index + 1} sur {historyView.pages}
         {" — "}{historyView.total} identifiants fictifs trouvés.</p>
       <button type="button" disabled={historyView.index === 0}

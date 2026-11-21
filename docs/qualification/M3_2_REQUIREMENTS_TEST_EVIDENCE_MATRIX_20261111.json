@@ -284,6 +284,20 @@
         "requirement_acceptance": false,
         "operator_acceptance": false,
         "writer_admission": false
+      },
+      "latest_pr35_cursor_non_equivalence": {
+        "review_date": "2026-11-21",
+        "source_main": "ac3fd7c8ba04eaed46342175c7cbef958ca5f9c6",
+        "pr_number": 35,
+        "pr_head_sha": "41ce7b915e76d22785d53d7fffe288d113dd0bf5",
+        "report": "docs/qualification/M3_2_PR35_CURSOR_NON_EQUIVALENCE_20261121.md",
+        "stage23_status": "NOT_PORTED",
+        "numeric_id_paging_equivalence": false,
+        "old_missing_paths": 68,
+        "pr215_review_pending": 4,
+        "requirement_acceptance": false,
+        "writer_admission": false,
+        "operator_acceptance": false
       }
     },
     {
@@ -2698,6 +2712,22 @@
         "operator_acceptance": false,
         "p4_runtime_authorized": false,
         "individual_case_is_not_entire_requirement": true
+      },
+      "latest_p3bi_candidate": {
+        "review_date": "2026-11-21",
+        "parent_main": "ac3fd7c8ba04eaed46342175c7cbef958ca5f9c6",
+        "source_file": "src/M32FictionalEventManualWorkshop.tsx",
+        "test_file": "src/m32FictionalEventManualWorkshop.test.tsx",
+        "allowed_page_sizes": [
+          5,
+          10,
+          20
+        ],
+        "source_ci_status": "NOT_RUN_FOR_P3BI_CANDIDATE",
+        "browser_click_attested": false,
+        "operator_acceptance": false,
+        "writer_admission": false,
+        "requirement_acceptance": false
       }
     },
     {
