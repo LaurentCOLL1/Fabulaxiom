@@ -203,7 +203,7 @@ class M32DatedStatusTruth(unittest.TestCase):
         sha,run,closed=guard_dated_status(self.short,self.entry,self.leads,self.checklist)
         self.assertRegex(sha,r"^[0-9a-f]{40}$")
         self.assertGreater(run,0)
-        self.assertEqual(closed,11)
+        self.assertEqual(closed,12)
 
     def test_13_falsified_or_stale_date_refused(self):
         bad=dict(self.entry,date="2026-11-12")
@@ -237,7 +237,7 @@ class M32DatedStatusTruth(unittest.TestCase):
 
     def test_17_false_short_counter_or_source_outcome_refused(self):
         with self.assertRaisesRegex(ValueError,"short count drift"):
-            guard_dated_status(self.short.replace("11/93","10/94",1),
+            guard_dated_status(self.short.replace("12/92","11/93",1),
                                self.entry,self.leads,self.checklist)
         with self.assertRaisesRegex(ValueError,"source CI claim"):
             guard_dated_status(self.short,{**self.entry,
@@ -281,6 +281,36 @@ class M32DatedStatusTruth(unittest.TestCase):
         self.assertEqual(self.entry["gate"],"IN_PROGRESS_NOT_ACCEPTED")
         self.assertIs(self.entry["writer_admitted"],False)
         self.assertIs(self.entry["operator_accepted"],False)
+
+
+    def test_21_issue38_scoped_metadata_audit(self):
+        doc=(ROOT/"docs/qualification/M3_2_M32_006_ISSUE38_APPEND_ONLY_SCOPED_AUDIT_20261120.md").read_text(encoding="utf-8")
+        for marker in ("737 commentaires accessibles","737 IDs uniques",
+                       "#6194801978","#7050753731","#44800008968",
+                       "#44800413136","#44818205234","NOT_PROVEN"):
+            self.assertIn(marker,doc)
+        self.assertIn("- [x] **M32-006**",self.checklist)
+        self.assertIn("- [ ] **M32-007**",self.checklist)
+        self.assertEqual(self.entry["m32_006_comment_count"],737)
+        self.assertEqual(self.entry["m32_006_unique_comments"],737)
+        self.assertIs(self.entry["m32_006_historical_deletions_proven_absent"],False)
+
+    def test_22_false_issue38_historical_assertion_refused(self):
+        doc=(ROOT/"docs/qualification/M3_2_M32_006_ISSUE38_APPEND_ONLY_SCOPED_AUDIT_20261120.md").read_text(encoding="utf-8")
+        def guard(text, entry):
+            if "737 commentaires accessibles" not in text or "#7050753731" not in text:
+                raise ValueError("STOP journal baseline drift")
+            if "#44800008968" not in text or "FAILURE" not in text:
+                raise ValueError("STOP failure erased")
+            if entry.get("m32_006_historical_deletions_proven_absent") is not False:
+                raise ValueError("STOP deletion absence invented")
+        guard(doc,self.entry)
+        with self.assertRaisesRegex(ValueError,"baseline drift"):
+            guard(doc.replace("737 commentaires accessibles","738 commentaires accessibles"),self.entry)
+        with self.assertRaisesRegex(ValueError,"failure erased"):
+            guard(doc.replace("FAILURE","PASS"),self.entry)
+        with self.assertRaisesRegex(ValueError,"deletion absence"):
+            guard(doc,{**self.entry,"m32_006_historical_deletions_proven_absent":True})
 
 if __name__ == "__main__":
     unittest.main()

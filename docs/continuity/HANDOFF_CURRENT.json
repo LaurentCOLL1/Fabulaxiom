@@ -1,4 +1,27 @@
 {
+  "m32_20261120_p3bg_m32_006_candidate_after_pr401": {
+    "date": "2026-11-20",
+    "status": "PR401_MERGED_POSTMAIN_SUCCESS_P3BG_M32_006_CANDIDATE",
+    "current_phase": "SOURCE_ONLY_CANDIDATE_UNQUALIFIED",
+    "parent_main": "ad5ffc5a3e997e20d17d50538f89bc3a18604b5d",
+    "source_ci_run": 44800413136,
+    "source_ci_head": "27edacd94728f87b0e0ed6ff70bccc9e99331a08",
+    "source_ci_status": "COMPLETED_SUCCESS_EXACT_HEAD",
+    "parent_postmain_run": 44818205234,
+    "parent_postmain_status": "COMPLETED_SUCCESS_EXACT_MAIN",
+    "attested_postmain_sha": "ad5ffc5a3e997e20d17d50538f89bc3a18604b5d",
+    "m32_006_comment_count": 737,
+    "m32_006_unique_comments": 737,
+    "m32_006_edited_metadata": 0,
+    "m32_006_historical_deletions_proven_absent": false,
+    "writer_admitted": false,
+    "operator_accepted": false,
+    "checklist_total": 104,
+    "closed": 12,
+    "open": 92,
+    "gate": "IN_PROGRESS_NOT_ACCEPTED",
+    "strategy": "PRODUCT_FIRST_PARALLEL_SAFETY"
+  },
   "m32_20261120_p3bf_m32_005_scoped_dated_status_candidate_after_pr400": {
     "date": "2026-11-20",
     "status": "PR400_MERGED_POSTMAIN_SUCCESS_P3BF_ANCHOR_DATE_AND_M32_005_SCOPED_CLOSURE_CANDIDATE",

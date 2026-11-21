@@ -1,16 +1,16 @@
 # Reprise Fabulaxiom (https://github.com/LaurentCOLL1/Fabulaxiom)
 
 ## Dernier checkpoint
-main=087996c2f62e4c7a90b7afc1d57031917d7b3701 ; #400 P3be MERGED CI #44778790112 PASS HEAD exact e0f318ece1fdae29e567e453db455b695e813e9a ; postmain #44789068367 PASS sur SHA exact main ; date=2026-11-20 ; P3bf ancre/date fictive CANDIDAT, M32-005 [x] CLÔTURE DOCUMENTAIRE CIBLÉE CANDIDATE CI ; 11/93 ; M3.2 IN_PROGRESS_NOT_ACCEPTED (~45%).
+main=ad5ffc5a3e997e20d17d50538f89bc3a18604b5d ; #401 P3bf/M32-005 MERGED CI #44800413136 PASS HEAD exact 27edacd94728f87b0e0ed6ff70bccc9e99331a08 ; postmain #44818205234 PASS sur SHA exact main ; date=2026-11-20 ; P3bg calendrier fictif CANDIDAT, M32-006 [x] journal ciblé CANDIDAT ; 12/92 ; M3.2 IN_PROGRESS_NOT_ACCEPTED (~45%).
 
 ## Interdictions actives — STOP
 Writer/R1–R9 NOT_PROVEN ; P4 STOP ; G2B NOT_ACCEPTED ; G2C NOT_AUTHORIZED ; G3 STOP_UNAVAILABLE ; PENDING_EXTERNAL_ATTESTATION(21/3/2), prospective NOT_STARTED ; R2 STOP, R3 partiel, D3c conception, D3b-4/5, D3b-5 STOP ; main/WAL/SHM, live SQLite WAL-index et ABA NOT_PROVEN ; glib #160 OPEN_NOT_REMEDIATED.
 STOP v6/v7, M:\Fabulaxiom, Greenfield, backups, IPC writer, 007, Hello, recovery.
 
 ## Prochaines opérations
-1. #400 P3be CI #44778790112 PASS HEAD exact e0f318ece1fdae29e567e453db455b695e813e9a ; postmain #44789068367 PASS SHA exact 087996c2f62e4c7a90b7afc1d57031917d7b3701, #38 #7046951178 ; 11/93 M32-005 [x] CANDIDATE jusqu'aux CI.
-2. P3bf : filtres ancre et libellé de date fictive exacte de la MÊME version, sans ordre temporel automatique, Vitest #33/#34/#35 CANDIDATS ; M32-071/075/078/081 [ ], #35/#215 DRAFT.
-3. CI HEAD P3bf+M32-005, diff/reviews/threads/Protect main ACTIVE strict bypass=[], squash expected_head_sha, postmain indépendante, #38 append-only ; PRODUCT_FIRST_PARALLEL_SAFETY.
+1. #401 CI #44800413136 PASS HEAD exact 27edacd94728f87b0e0ed6ff70bccc9e99331a08 ; postmain #44818205234 PASS SHA exact ad5ffc5a3e997e20d17d50538f89bc3a18604b5d ; #38 #7050753731.
+2. P3bg calendrier fictif exact de la même version, Vitest #36/#37 CANDIDATS ; M32-006 [x] audit limité 737 commentaires accessibles, absence suppressions NON PROUVÉE ; 12/92 ; M32-007/071/075/078/081 [ ], #35/#215 DRAFT.
+3. CI HEAD P3bg/M32-006, diff/reviews/threads/Protect main ACTIVE strict bypass=[], guarded squash expected_head_sha, postmain indépendante, #38 append-only ; PRODUCT_FIRST_PARALLEL_SAFETY.
 
 ## Documents d'autorité
 RESUME_PROMPT.md ; HANDOFF_CURRENT.md ; HANDOFF_CURRENT.json ; STATE.md ; NEXT.md ; M3_2_GATE_DECISION_CURRENT.md ; M3_2_COMPLETION_MASTER_CHECKLIST_20261109.md ; ROADMAP_STATUS_CURRENT.md ; M3_2_SHORT_CYCLE_DELIVERY_20261116.md. Historique : RESUME_PROMPT.md / docs/qualification.
