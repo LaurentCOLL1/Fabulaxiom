@@ -1986,13 +1986,47 @@ async function run() {
       assert.ok((await list.innerText()).includes("withdrawn"));
       assert.ok((await list.innerText()).includes("Retrait explicite et motivé en RAM"));
       assert.ok((await detail.innerText()).includes("aucune restauration"));
-      // Pagination adds two navigation controls but must NEVER add a
-      // restoration or mutation control to the read-only audit/history panel.
+      // A read-only reset control is allowed alongside the two pagination
+      // controls; no recovery, restoration or mutation button is admitted.
       assert.deepEqual((await detail.getByRole("button").allTextContents())
-        .map(text => text.trim()),["Page précédente","Page suivante"]);
+        .map(text => text.trim()),[
+          "Réinitialiser les filtres historiques fictifs",
+          "Page précédente","Page suivante",
+        ]);
       assert.equal(await list.getByRole("button").count(),0);
       assert.equal(await detail.getByRole("button",{name:"Page précédente"}).isDisabled(),true);
       assert.equal(await detail.getByRole("button",{name:"Page suivante"}).isDisabled(),true);
+      // P3bh: exercise the real Chromium click, not only its SSR presence.
+      const idFilter=detail.getByRole("searchbox",{
+        name:"Rechercher un identifiant d'événement fictif",
+      });
+      const sourceFilter=detail.getByRole("searchbox",{
+        name:"Filtrer par ID exact de révision source fictive",
+      });
+      const anchorFilter=detail.getByRole("combobox",{
+        name:"Filtrer par ID exact d'ancre historique fictive",
+      });
+      const statusFilter=detail.getByRole("combobox",{
+        name:"Filtrer l'historique par statut",
+      });
+      await idFilter.fill("aucun-evenement-correspondant");
+      await sourceFilter.fill("aucune-revision-correspondante");
+      await anchorFilter.selectOption("A");
+      await statusFilter.selectOption("withdrawn");
+      assert.equal(await picker.inputValue(),"");
+      assert.equal(await list.count(),0);
+      await detail.getByRole("button",{
+        name:"Réinitialiser les filtres historiques fictifs",
+      }).click();
+      assert.equal(await idFilter.inputValue(),"");
+      assert.equal(await sourceFilter.inputValue(),"");
+      assert.equal(await anchorFilter.inputValue(),"");
+      assert.equal(await statusFilter.inputValue(),"all");
+      assert.equal(await picker.inputValue(),"");
+      assert.equal(await list.count(),0,"History must stay hidden until explicitly selected");
+      assert.ok((await detail.innerText()).includes("1 identifiants fictifs trouvés."));
+      assert.ok((await eventRegion().innerText()).includes("Événements courants (0)"));
+      assert.equal(await detail.getByRole("button",{name:/restaurer|réactiver/i}).count(),0);
     });
     await caseRun("111-fictional-event-history-escaped-and-universe-isolated",async()=>{
       await openEventForm();
