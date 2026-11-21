@@ -113,6 +113,41 @@ function inventedFourTimeKinds(): FictionalEventNotebook {
   return startFictionalEventNotebook(startFictionalDraft(snapshot, base.draft.revisions));
 }
 
+
+/** P3bn: independent fictional universes, two novels, four temporal anchor kinds. */
+function inventedFourKindsTwoNovels(
+  universe: "fiction-alpha" | "fiction-beta",
+): FictionalEventNotebook {
+  const base=invented(universe);
+  const a=base.draft.snapshot.anchors;
+  const revisionTwo: FictionalRevision={
+    universe_id:universe,novel_id:"novel-2",scene_id:"scene-2",
+    revision_id:universe+"-rev-2",revision_label:"Deuxième roman inventé",
+  };
+  const snapshot: M32ChronologyProjection={
+    ...base.draft.snapshot,
+    anchors:[
+      {...a[0],time_kind:"exact" as const,calendar_name:"cycle-fictif",
+        fictional_label:"Jour inventé 1",precision_text:null},
+      {...a[1],time_kind:"approximate" as const,calendar_name:"cycle-fictif",
+        fictional_label:null,precision_text:"Vers la saison fictive"},
+      {...a[1],id:"C",time_kind:"relative" as const,calendar_name:null,
+        fictional_label:null,precision_text:null,
+        source_revision_id:revisionTwo.revision_id},
+      {...a[1],id:"D",time_kind:"unknown" as const,calendar_name:null,
+        fictional_label:null,precision_text:null},
+    ],
+    narration:[...base.draft.snapshot.narration,{
+      ...base.draft.snapshot.narration[0],novel_id:"novel-2",
+      novel_title:"Deuxième roman inventé",chapter_id:"ch-2",
+      chapter_title:"Chapitre 2",chapter_order:1,
+      scene_id:"scene-2",scene_title:"Scène 2",
+    }],
+  };
+  return startFictionalEventNotebook(startFictionalDraft(snapshot,
+    [...base.draft.revisions,revisionTwo]));
+}
+
 const input: FictionalEventInput = { title: "Rencontre", note: "Fait inventé",
   anchor_id: null, source_revision_id: null };
 function create(book: FictionalEventNotebook = invented()) {
@@ -878,5 +913,66 @@ describe("M3.2 manual fictional event workshop source-only", () => {
     expect(html).not.toContain("MOTIF-SECRET-SOURCE");
     expect(html).not.toContain("Versions historiques fictives");
     expect(JSON.stringify(book)).toBe(before);
+  });
+
+  it("49 tests four historical temporal kinds in each of two isolated fictional universes and novels",()=>{
+    for(const universe of ["fiction-alpha","fiction-beta"] as const){
+      let book=inventedFourKindsTwoNovels(universe);
+      const inputs:[string,string|null,string][]=[
+        ["A",universe+"-rev-1","exact"],
+        ["B",null,"approximate"],
+        ["C",universe+"-rev-2","relative"],
+        ["D",null,"unknown"],
+      ];
+      const ids:string[]=[];
+      for(const [anchor,source] of inputs){
+        book=applyFictionalWorkshopAction(book,{kind:"create",
+          input:{...input,anchor_id:anchor,source_revision_id:source}});
+        ids.push(book.events[book.events.length-1].event_id);
+      }
+      const before=JSON.stringify(book);
+      for(let i=0;i<inputs.length;i++){
+        const kind=inputs[i][2] as "exact"|"approximate"|"relative"|"unknown";
+        const found=matchingFictionalEventHistoryIds(book,"","all",
+          "","","","","","",kind);
+        expect(found).toEqual([ids[i]]);
+      }
+      expect(matchingFictionalEventHistoryIds(book,"","all",
+        "","novel-1","","","","","relative")).toEqual([]);
+      expect(matchingFictionalEventHistoryIds(book,"","all",
+        "","novel-2","","","","","relative")).toEqual([ids[2]]);
+      expect(matchingFictionalEventHistoryIds(book,"","all",
+        "","novel-2","","","","","exact")).toEqual([]);
+      expect(matchingFictionalEventHistoryIds(book,"","all",
+        universe+"-rev-1","novel-2","","","","","")).toEqual([]);
+      expect(JSON.stringify(book)).toBe(before);
+    }
+  });
+  it("50 rejects cross-universe source IDs and preserves withdrawn history without restoration",()=>{
+    const alphaBase=inventedFourKindsTwoNovels("fiction-alpha");
+    const betaBase=inventedFourKindsTwoNovels("fiction-beta");
+    const alpha=applyFictionalWorkshopAction(alphaBase,{kind:"create",input:{
+      ...input,anchor_id:"C",source_revision_id:"fiction-alpha-rev-2",
+      note:"NOTE-FICTIVE-ALPHA"}});
+    const betaCreated=applyFictionalWorkshopAction(betaBase,{kind:"create",input:{
+      ...input,anchor_id:"C",source_revision_id:"fiction-beta-rev-2",
+      note:"NOTE-FICTIVE-BETA"}});
+    const alphaId=alpha.events[0].event_id;
+    const betaId=betaCreated.events[0].event_id;
+    const beta=applyFictionalWorkshopAction(betaCreated,{
+      kind:"withdraw",eventId:betaId,reason:"Retrait beta fictif"});
+    expect(alphaId).not.toBe(betaId);
+    const beforeAlpha=JSON.stringify(alpha),beforeBeta=JSON.stringify(beta);
+    expect(matchingFictionalEventHistoryIds(alpha,"","all",
+      "fiction-beta-rev-2")).toEqual([]);
+    expect(matchingFictionalEventHistoryIds(beta,"","all",
+      "fiction-alpha-rev-2")).toEqual([]);
+    expect(matchingFictionalEventHistoryIds(beta,alphaId)).toEqual([]);
+    expect(matchingFictionalEventHistoryIds(beta,"","withdrawn",
+      "fiction-beta-rev-2","novel-2","","C","","","relative")).toEqual([betaId]);
+    expect(matchingFictionalEventHistoryIds(beta,"","current")).toEqual([]);
+    expect(matchingFictionalEventHistoryIds(alpha,"","current")).toEqual([alphaId]);
+    expect(JSON.stringify(alpha)).toBe(beforeAlpha);
+    expect(JSON.stringify(beta)).toBe(beforeBeta);
   });
 });
