@@ -38,6 +38,7 @@ export function matchingFictionalEventHistoryIds(
   exactTimeKind: "" | "exact" | "approximate" | "relative" | "unknown" = "",
   anchorLink: "" | "linked" | "unlinked" = "",
   sourceLink: "" | "linked" | "unlinked" = "",
+  changedField: "" | "title" | "note" | "anchor_id" | "source_revision_id" = "",
 ): readonly string[] {
   inspectFictionalEventNotebook(notebook);
   const query = searchId.trim().toLocaleLowerCase();
@@ -55,6 +56,8 @@ export function matchingFictionalEventHistoryIds(
     throw Error("Lien d'ancre fictive invalide");
   if (!["", "linked", "unlinked"].includes(sourceLink))
     throw Error("Lien de révision source fictive invalide");
+  if (!["", "title", "note", "anchor_id", "source_revision_id"].includes(changedField))
+    throw Error("Champ historique fictif invalide");
   const anchorById = new Map(notebook.draft.snapshot.anchors.map(a => [a.id, a]));
   const sourceRevisionById = new Map(
     notebook.draft.revisions.map(r => [r.revision_id, r]));
@@ -65,8 +68,8 @@ export function matchingFictionalEventHistoryIds(
       return Boolean(latest && (status === "all" || latest.status === status) &&
         id.toLocaleLowerCase().includes(query) &&
         ((!sourceId && !novelId && !sceneId && !anchorId && !dateLabel && !calendarName &&
-          !timeKind && !anchorLink && !sourceLink) ||
-          versions.some(v => {
+          !timeKind && !anchorLink && !sourceLink && !changedField) ||
+          versions.some((v, index) => {
             // All selectors must match one event version, not a union of history.
             const revision = v.source_revision_id === null ? undefined :
               sourceRevisionById.get(v.source_revision_id);
@@ -84,7 +87,9 @@ export function matchingFictionalEventHistoryIds(
               (!anchorLink || (anchorLink === "linked" ?
                 v.anchor_id !== null : v.anchor_id === null)) &&
               (!sourceLink || (sourceLink === "linked" ?
-                v.source_revision_id !== null : v.source_revision_id === null));
+                v.source_revision_id !== null : v.source_revision_id === null)) &&
+              (!changedField || (index > 0 &&
+                v[changedField] !== versions[index - 1][changedField]));
           })));
     });
 }
@@ -163,6 +168,8 @@ export default function M32FictionalEventManualWorkshop({ initial }: {
     useState<"" | "linked" | "unlinked">("");
   const [historySourceLink, setHistorySourceLink] =
     useState<"" | "linked" | "unlinked">("");
+  const [historyChangedField, setHistoryChangedField] =
+    useState<"" | "title" | "note" | "anchor_id" | "source_revision_id">("");
   const [historyPage, setHistoryPage] = useState(0);
   const [historyPageSize, setHistoryPageSize] = useState<number>(FICTIONAL_HISTORY_PAGE_SIZE);
   const [historyIdOrder, setHistoryIdOrder] = useState<FictionalHistoryIdOrder>("insertion");
@@ -186,7 +193,7 @@ export default function M32FictionalEventManualWorkshop({ initial }: {
   const historyEventIds = matchingFictionalEventHistoryIds(
     book, historyIdQuery, historyStatus, historySourceIdQuery, historyNovelId,
     historySceneId, historyAnchorId, historyFictionalDateLabel, historyCalendarName,
-    historyTimeKind, historyAnchorLink, historySourceLink);
+    historyTimeKind, historyAnchorLink, historySourceLink, historyChangedField);
   const orderedHistoryIds = orderFictionalEventHistoryIds(historyEventIds, historyIdOrder);
   const historyView = pageFictionalEventHistoryIds(orderedHistoryIds, historyPage, historyPageSize);
   const inspectedHistory = historyEventId
@@ -229,7 +236,7 @@ export default function M32FictionalEventManualWorkshop({ initial }: {
     setHistoryNovelId(""); setHistorySceneId("");
     setHistoryAnchorId(""); setHistoryFictionalDateLabel("");
     setHistoryCalendarName(""); setHistoryTimeKind(""); setHistoryAnchorLink("");
-    setHistorySourceLink("");
+    setHistorySourceLink(""); setHistoryChangedField("");
     setHistoryStatus("all");
     setHistoryPage(0); setHistoryEventId("");
     setHistoryPageSize(FICTIONAL_HISTORY_PAGE_SIZE);
@@ -436,6 +443,21 @@ export default function M32FictionalEventManualWorkshop({ initial }: {
       </label>
       <small role="note">Sans source ne signifie ni sans ancre ni temps inconnu.
         Tous les filtres portent sur une même version historique.</small>
+      <label>Filtrer par champ modifié entre versions historiques fictives
+        <select value={historyChangedField} onChange={e => {
+          setHistoryChangedField(e.currentTarget.value as typeof historyChangedField);
+          setHistoryEventId(""); setHistoryPage(0);
+        }}>
+          <option value="">Toutes les corrections historiques fictives</option>
+          <option value="title">Titre modifié</option>
+          <option value="note">Note modifiée</option>
+          <option value="anchor_id">Ancre modifiée</option>
+          <option value="source_revision_id">Révision source modifiée</option>
+        </select>
+      </label>
+      <small role="note">Seules les versions corrigées sont prises en compte,
+        sans afficher le texte passé avant une inspection explicite.
+        Le retrait seul ne constitue pas une correction.</small>
       <label>Filtrer l'historique par statut
         <select value={historyStatus} onChange={e => {
           setHistoryStatus(e.currentTarget.value as "all" | "current" | "withdrawn");
