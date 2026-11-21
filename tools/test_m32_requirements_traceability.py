@@ -601,6 +601,43 @@ class TraceabilityAndScope(unittest.TestCase):
             self.assertIn(f"- [ ] **{key}**",CHECK)
         self.assertEqual((MATRIX["total"],MATRIX["closed"],MATRIX["open"]),(104,12,92))
 
+    def test_m32_078_accepted_proof_gap_ledger_never_invents_runtime(self):
+        ledger=json.loads((ROOT/"docs/qualification/M3_2_M32_078_ACCEPTED_PROOF_GAPS_20261122.json").read_text(encoding="utf-8"))
+        self.assertEqual(ledger["schema"],"M32_078_ACCEPTED_PROOF_GAPS_V1")
+        self.assertEqual(ledger["origin_matrix"],
+                         "docs/qualification/M3_2_REQUIREMENTS_TEST_EVIDENCE_MATRIX_20261111.json")
+        self.assertEqual((ledger["total"],ledger["closed_scoped"],ledger["open_not_accepted"]),(104,12,92))
+        open_rows=[row for row in MATRIX["rows"] if row["status"]=="OPEN_NOT_ACCEPTED"]
+        closed_rows=[row for row in MATRIX["rows"] if row["status"]=="CLOSED_SCOPED"]
+        self.assertEqual(ledger["closed_ids"],[r["id"] for r in closed_rows])
+        self.assertEqual([r["id"] for r in ledger["open_rows"]],
+                         [r["id"] for r in open_rows])
+        for key in ("track","gate"):
+            expected={v:sum(r[key]==v for r in open_rows)
+                      for v in sorted({r[key] for r in open_rows})}
+            self.assertEqual(ledger[key+"_open_counts"],expected)
+        for stored,canonical in zip(ledger["open_rows"],open_rows):
+            with self.subTest(requirement=canonical["id"]):
+                for key in ("id","track","gate","verification_target"):
+                    self.assertEqual(stored[key],canonical[key])
+                self.assertEqual(stored["next_proof"],canonical["next_proof"])
+                self.assertEqual(stored["accepted_evidence"],"NONE_ACCEPTED")
+                self.assertEqual(canonical["evidence"],"NONE_ACCEPTED")
+                self.assertIsNone(stored["accepted_workflow_head_sha"])
+                self.assertIsNone(stored["accepted_workflow_run_id"])
+                self.assertIsNone(stored["accepted_job_id"])
+                self.assertIsNone(canonical["proof_audit"]["workflow_head_sha"])
+                self.assertIsNone(canonical["proof_audit"]["workflow_run_id"])
+                self.assertIsNone(canonical["workflow_step_audit"]["job_id"])
+                self.assertFalse(stored["accepted_operator_runtime"])
+        candidate=next(r for r in MATRIX["rows"] if r["id"]=="M32-078")
+        audit=candidate["latest_accepted_proof_gap_ledger_candidate"]
+        self.assertFalse(audit["operator_acceptance"])
+        self.assertFalse(audit["requirement_acceptance"])
+        self.assertIn("NOT_RUN",audit["source_ci_status"])
+        self.assertIn("- [ ] **M32-078**",CHECK)
+        self.assertEqual(MATRIX["gate"],"IN_PROGRESS_NOT_ACCEPTED")
+
     def test_metadata_does_not_grant_writer_admission(self):
         self.assertEqual(MATRIX["gate"],"IN_PROGRESS_NOT_ACCEPTED")
         for term in ("R1–R9 NOT_PROVEN","G3 STOP_UNAVAILABLE","P4 STOP","Greenfield"):
