@@ -274,9 +274,19 @@ class M32DatedStatusTruth(unittest.TestCase):
                 self.assertGreater(doc.index(marker),doc.index("\n\n"))
 
     def test_20_pending_postmain_not_pass_and_writer_still_refused(self):
-        fake={**self.entry,"parent_postmain_status":"PENDING_UNQUALIFIED",
-              "attested_postmain_sha":None}
-        with self.assertRaisesRegex(ValueError,"pending CI portrayed as success"):
+        """Invert the actual dated status; never treat pending as success or vice versa."""
+        state=self.entry["parent_postmain_status"]
+        if state=="PENDING_UNQUALIFIED":
+            fake={**self.entry,"parent_postmain_status":"COMPLETED_SUCCESS_EXACT_MAIN",
+                  "attested_postmain_sha":self.entry["parent_main"]}
+            expected="postmain success without same SHA attestation"
+        elif state=="COMPLETED_SUCCESS_EXACT_MAIN":
+            fake={**self.entry,"parent_postmain_status":"PENDING_UNQUALIFIED",
+                  "attested_postmain_sha":None}
+            expected="pending CI portrayed as success"
+        else:
+            self.fail("STOP unknown postmain state in negative test")
+        with self.assertRaisesRegex(ValueError,expected):
             guard_dated_status(self.short,fake,self.leads,self.checklist)
         self.assertEqual(self.entry["gate"],"IN_PROGRESS_NOT_ACCEPTED")
         self.assertIs(self.entry["writer_admitted"],False)

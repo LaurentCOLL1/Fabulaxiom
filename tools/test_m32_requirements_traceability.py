@@ -476,6 +476,26 @@ class TraceabilityAndScope(unittest.TestCase):
         self.assertFalse(x["requirement_acceptance"])
         self.assertEqual((MATRIX["total"],MATRIX["closed"],MATRIX["open"]),(104,12,92))
 
+    def test_20261121_p3bi_bounded_pages_and_pr35_cursor_stay_partial(self):
+        index={x["id"]:x for x in MATRIX["rows"]}
+        for k in ("M32-007","M32-071"):
+            self.assertEqual(index[k]["status"],"OPEN_NOT_ACCEPTED")
+            self.assertIn(f"- [ ] **{k}**",CHECK)
+        former=index["M32-007"]["latest_pr35_cursor_non_equivalence"]
+        self.assertEqual(former["source_main"],"ac3fd7c8ba04eaed46342175c7cbef958ca5f9c6")
+        self.assertTrue((ROOT/former["report"]).is_file())
+        self.assertEqual(former["stage23_status"],"NOT_PORTED")
+        self.assertIs(former["numeric_id_paging_equivalence"],False)
+        self.assertEqual((former["old_missing_paths"],former["pr215_review_pending"]),(68,4))
+        self.assertFalse(former["requirement_acceptance"])
+        candidate=index["M32-071"]["latest_p3bi_candidate"]
+        self.assertEqual(candidate["allowed_page_sizes"],[5,10,20])
+        self.assertTrue((ROOT/candidate["source_file"]).is_file())
+        self.assertIn("NOT_RUN",candidate["source_ci_status"])
+        self.assertFalse(candidate["browser_click_attested"])
+        self.assertFalse(candidate["operator_acceptance"])
+        self.assertEqual((MATRIX["total"],MATRIX["closed"],MATRIX["open"]),(104,12,92))
+
     def test_metadata_does_not_grant_writer_admission(self):
         self.assertEqual(MATRIX["gate"],"IN_PROGRESS_NOT_ACCEPTED")
         for term in ("R1–R9 NOT_PROVEN","G3 STOP_UNAVAILABLE","P4 STOP","Greenfield"):

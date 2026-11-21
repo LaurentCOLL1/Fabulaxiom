@@ -1,4 +1,39 @@
 {
+  "m32_20261121_p3bi_pr35_cursor_candidate_after_pr403": {
+    "date": "2026-11-21",
+    "status": "PR403_MERGED_SOURCE_SUCCESS_POSTMAIN_PENDING_P3BI_PR35_NON_EQUIVALENCE_CANDIDATE",
+    "current_phase": "SOURCE_ONLY_CANDIDATE_UNQUALIFIED",
+    "parent_main": "ac3fd7c8ba04eaed46342175c7cbef958ca5f9c6",
+    "source_ci_run": 44870740154,
+    "source_ci_head": "891c3da3c020681e52134e7aa4ec459e2ec7b4fc",
+    "source_ci_status": "COMPLETED_SUCCESS_EXACT_HEAD",
+    "source_failures_preserved": [
+      44868871806,
+      44869063206
+    ],
+    "parent_postmain_run": 44871959462,
+    "parent_postmain_status": "PENDING_UNQUALIFIED",
+    "attested_postmain_sha": null,
+    "p3bi": "BOUNDED_ID_HISTORY_PAGES_5_10_20_UNMOUNTED_SOURCE_ONLY",
+    "p3bi_test_names": [
+      "39 only permits bounded 5 10 20 fictional IDs per page",
+      "40 SSR exposes only bounded page sizes and hides unselected notes"
+    ],
+    "p3bi_browser_case": "110-fictional-event-history-readable-after-withdrawal_EXTENDED_CANDIDATE",
+    "pr35_cursor_stage23": "NOT_PORTED_NON_EQUIVALENT_TO_NUMERIC_ID_PAGING",
+    "pr35_head": "41ce7b915e76d22785d53d7fffe288d113dd0bf5",
+    "pr35_unported_paths": 68,
+    "pr215_review_pending": 4,
+    "m32_007_closed": false,
+    "m32_071_closed": false,
+    "writer_admitted": false,
+    "operator_accepted": false,
+    "checklist_total": 104,
+    "closed": 12,
+    "open": 92,
+    "gate": "IN_PROGRESS_NOT_ACCEPTED",
+    "strategy": "PRODUCT_FIRST_PARALLEL_SAFETY"
+  },
   "m32_20261121_p3bh_pr215_per_path_candidate_after_pr402": {
     "date": "2026-11-21",
     "status": "PR402_MERGED_POSTMAIN_SUCCESS_P3BH_RESET_PR215_23_PATH_TRIAGE_CANDIDATE",

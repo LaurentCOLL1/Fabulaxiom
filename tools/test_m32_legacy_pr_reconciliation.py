@@ -211,5 +211,35 @@ class Pr215UnitDispositionContract(unittest.TestCase):
         with self.assertRaisesRegex(ValueError,"forbidden admission"):
             guarded(forged)
 
+
+class Pr35PaginationCursorNonEquivalence(unittest.TestCase):
+    """Archive comparison only; never imports old PR #35 pagination runtime."""
+
+    def test_12_old_cursor_contract_not_claimed_by_current_id_pages(self):
+        report=(ROOT/"docs/qualification/M3_2_PR35_CURSOR_NON_EQUIVALENCE_20261121.md").read_text(encoding="utf-8")
+        source=(ROOT/"src/M32FictionalEventManualWorkshop.tsx").read_text(encoding="utf-8")
+        self.assertIn("M32-007 [ ]",report)
+        self.assertIn("cursor stale-snapshot veto NOT_PORTED",report)
+        self.assertIn("MAX_CURSOR_BYTES=4096",report)
+        self.assertIn("MAX_PAGE_SIZE=64",report)
+        self.assertIn("FICTIONAL_HISTORY_PAGE_SIZES = [5, 10, 20]",source)
+        self.assertIn("if (!FICTIONAL_HISTORY_PAGE_SIZES.some",source)
+        self.assertNotIn("cursor fingerprint authority proven",report)
+        self.assertNotIn("ADMIT_WRITER",report)
+        self.assertIn("- [ ] **M32-007**",CHECKLIST.read_text(encoding="utf-8"))
+
+    def test_13_cannot_promote_old_cursor_as_writer_proof(self):
+        report=(ROOT/"docs/qualification/M3_2_PR35_CURSOR_NON_EQUIVALENCE_20261121.md").read_text(encoding="utf-8")
+        def guard(text):
+            if "NOT_PORTED" not in text or "OPEN_NOT_ACCEPTED" not in text:
+                raise ValueError("STOP old cursor promoted")
+            if "same function" in text or "cursor fingerprint authority proven" in text:
+                raise ValueError("STOP unsafe equivalence")
+        guard(report)
+        with self.assertRaisesRegex(ValueError,"promoted"):
+            guard(report.replace("NOT_PORTED","REUSED_AS_IS"))
+        with self.assertRaisesRegex(ValueError,"unsafe equivalence"):
+            guard(report + "\nsame function\n")
+
 if __name__ == "__main__":
     unittest.main()

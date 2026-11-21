@@ -1,16 +1,16 @@
 # Reprise Fabulaxiom (https://github.com/LaurentCOLL1/Fabulaxiom)
 
 ## Dernier checkpoint
-main=c4122c575f1e19b903acf5ca268cc6ab9d09f4fd ; #402 P3bg/M32-006 MERGED CI #44833261630 PASS HEAD exact 258b8d518400fb9c5e7bf3dc13dac1f526a9cf6f ; postmain #44863983163 PASS sur SHA exact main ; date=2026-11-21 ; P3bh reset historique CANDIDAT, M32-007 PR215 23 chemins PARTIEL NON CLOS ; 12/92 ; M3.2 IN_PROGRESS_NOT_ACCEPTED (~45%).
+main=ac3fd7c8ba04eaed46342175c7cbef958ca5f9c6 ; #403 P3bh+PR215 partiel MERGED CI #44870740154 PASS HEAD exact 891c3da3c020681e52134e7aa4ec459e2ec7b4fc ; postmain #44871959462 PENDING sur SHA exact main (NON QUALIFIÉ) ; date=2026-11-21 ; P3bi page 5/10/20 CANDIDAT, #35 curseur NON PORTÉ M32-007 PARTIEL ; 12/92 ; M3.2 IN_PROGRESS_NOT_ACCEPTED (~45%).
 
 ## Interdictions actives — STOP
 Writer/R1–R9 NOT_PROVEN ; P4 STOP ; G2B NOT_ACCEPTED ; G2C NOT_AUTHORIZED ; G3 STOP_UNAVAILABLE ; PENDING_EXTERNAL_ATTESTATION(21/3/2), prospective NOT_STARTED ; R2 STOP, R3 partiel, D3c conception, D3b-4/5, D3b-5 STOP ; main/WAL/SHM, live SQLite WAL-index et ABA NOT_PROVEN ; glib #160 OPEN_NOT_REMEDIATED.
 STOP v6/v7, M:\Fabulaxiom, Greenfield, backups, IPC writer, 007, Hello, recovery.
 
 ## Prochaines opérations
-1. #402 CI source #44833261630 PASS HEAD exact 258b8d518400fb9c5e7bf3dc13dac1f526a9cf6f ; postmain #44863983163 PASS SHA exact c4122c575f1e19b903acf5ca268cc6ab9d09f4fd, issue #38 #7057590831 ; 12/92.
-2. P3bh bouton de réinitialisation des filtres fictifs, SSR Vitest #38 CANDIDAT sans preuve du clic navigateur ; PR #215 23 chemins SHA 6 identiques/17 divergents, triage orienté non admissif ; M32-007/071/075/078/081 [ ], #35/#215 DRAFT.
-3. CI HEAD P3bh+M32-007 partiel, diff/reviews/threads/Protect main ACTIVE strict bypass=[], squash expected_head_sha, postmain indépendante, #38 append-only ; PRODUCT_FIRST_PARALLEL_SAFETY.
+1. #403 CI source #44870740154 PASS HEAD exact 891c3da3c020681e52134e7aa4ec459e2ec7b4fc, postmain #44871959462 PENDING SHA exact ac3fd7c8ba04eaed46342175c7cbef958ca5f9c6 ; 12/92 ; #38 commentaire #7058085959. Qualifier résultat terminal avant PASS.
+2. P3bi pages 5/10/20 de l'historique fictif, Vitest #39/#40 et Chromium #110 CANDIDATS ; PR #35 ancien curseur Stage23 NOT_PORTED et non équivalent ; M32-007/071/075/078/081 [ ], #35/#215 DRAFT.
+3. CI HEAD P3bi + audit #35, diff/reviews/threads/Protect main ACTIVE strict bypass=[], guarded squash expected_head_sha, postmain indépendante, issue #38 append-only ; PRODUCT_FIRST_PARALLEL_SAFETY.
 
 ## Documents d'autorité
 RESUME_PROMPT.md ; HANDOFF_CURRENT.md ; HANDOFF_CURRENT.json ; STATE.md ; NEXT.md ; M3_2_GATE_DECISION_CURRENT.md ; M3_2_COMPLETION_MASTER_CHECKLIST_20261109.md ; ROADMAP_STATUS_CURRENT.md ; M3_2_SHORT_CYCLE_DELIVERY_20261116.md. Historique : RESUME_PROMPT.md / docs/qualification.
