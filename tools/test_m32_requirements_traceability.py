@@ -553,6 +553,30 @@ class TraceabilityAndScope(unittest.TestCase):
             self.assertIn(f"- [ ] **{key}**",CHECK)
         self.assertEqual((MATRIX["total"],MATRIX["closed"],MATRIX["open"]),(104,12,92))
 
+    def test_p3bn_and_seven_old_pr215_cases_stay_source_only(self):
+        idx={r["id"]:r for r in MATRIX["rows"]}
+        for key in ("M32-007","M32-050"):
+            rec=idx[key]["latest_pr215_old148_152_assertion_review"]
+            self.assertEqual(rec["cases_reviewed"],[148,149,150,151,152])
+            self.assertEqual(rec["total_old_handoff_cases_inventory"],7)
+            self.assertFalse(rec["semantic_equivalence_attested"])
+            self.assertFalse(rec["writer_admission"])
+            self.assertIn("NOT_RUN",rec["source_ci_status"])
+            self.assertTrue((ROOT/rec["report"]).is_file())
+            self.assertIn(f"- [ ] **{key}**",CHECK)
+        for key in ("M32-079","M32-082"):
+            rec=idx[key]["latest_p3bn_candidate"]
+            self.assertEqual(rec["universes"],["fiction-alpha","fiction-beta"])
+            self.assertEqual(rec["temporal_kinds"],["exact","approximate","relative","unknown"])
+            self.assertEqual(rec["novels_per_universe"],2)
+            self.assertEqual(rec["vitest_cases"],[49,50])
+            self.assertFalse(rec["operator_acceptance"])
+            self.assertFalse(rec["runtime_acceptance"])
+            self.assertIn("NOT_RUN",rec["source_ci_status"])
+            self.assertTrue((ROOT/rec["report"]).is_file())
+            self.assertIn(f"- [ ] **{key}**",CHECK)
+        self.assertEqual((MATRIX["total"],MATRIX["closed"],MATRIX["open"]),(104,12,92))
+
     def test_metadata_does_not_grant_writer_admission(self):
         self.assertEqual(MATRIX["gate"],"IN_PROGRESS_NOT_ACCEPTED")
         for term in ("R1–R9 NOT_PROVEN","G3 STOP_UNAVAILABLE","P4 STOP","Greenfield"):
