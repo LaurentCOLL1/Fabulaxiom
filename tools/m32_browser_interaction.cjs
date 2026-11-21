@@ -2009,6 +2009,18 @@ async function run() {
       const statusFilter=detail.getByRole("combobox",{
         name:"Filtrer l'historique par statut",
       });
+      const temporalKind=detail.getByRole("combobox",{
+        name:"Filtrer par type temporel historique fictif",
+      });
+      assert.deepEqual(await temporalKind.locator("option").evaluateAll(options =>
+        options.map(option=>option.value)),
+        ["","exact","approximate","relative","unknown"]);
+      await temporalKind.selectOption("exact");
+      assert.equal(await picker.inputValue(),"");
+      assert.equal(await list.count(),0);
+      await temporalKind.selectOption("unknown");
+      assert.equal(await picker.inputValue(),"");
+      assert.equal(await list.count(),0);
       await idFilter.fill("aucun-evenement-correspondant");
       await sourceFilter.fill("aucune-revision-correspondante");
       await anchorFilter.selectOption("A");
@@ -2047,6 +2059,7 @@ async function run() {
       assert.equal(await sourceFilter.inputValue(),"");
       assert.equal(await anchorFilter.inputValue(),"");
       assert.equal(await statusFilter.inputValue(),"all");
+      assert.equal(await temporalKind.inputValue(),"");
       assert.equal(await picker.inputValue(),"");
       assert.equal(await list.count(),0,"History must stay hidden until explicitly selected");
       assert.ok((await detail.innerText()).includes("1 identifiants fictifs trouvés."));
