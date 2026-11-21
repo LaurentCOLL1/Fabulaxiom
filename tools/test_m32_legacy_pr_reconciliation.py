@@ -351,5 +351,21 @@ class Pr215Old148To152AssertionReview(unittest.TestCase):
         self.assertIn("- [ ] **M32-007**",checklist)
         self.assertIn("- [ ] **M32-050**",checklist)
 
+class Pr215FourReviewLiteralOnlyScope(unittest.TestCase):
+    def test_21_four_paths_remain_review_non_accepted_after_literal_triage(self):
+        report=(ROOT/"docs/qualification/M3_2_PR215_FOUR_REVIEW_LITERAL_SCOPE_AUDIT_20261121.md").read_text(encoding="utf-8")
+        self.assertEqual(report.count("| REVIEW_NON_ACCEPTED |"),4)
+        for name in ("m32_sqlite_vfs_preopen_tests.rs",
+                     "m32_rust_sqlite_open_inventory.py",
+                     "test_m32_rust_sqlite_open_inventory.py",
+                     "test_m32_handoff_contract.py",
+                     "M3_2_PR215_OLD_HANDOFF_146_147_ASSERTION_REVIEW_20261121.md",
+                     "M3_2_PR215_OLD_HANDOFF_148_152_ASSERTION_REVIEW_20261121.md",
+                     "aucune preuve", "OPEN_NOT_ACCEPTED", "R1–R9 NOT_PROVEN"):
+            self.assertIn(name,report)
+        check=CHECKLIST.read_text(encoding="utf-8")
+        self.assertIn("- [ ] **M32-007**",check)
+        self.assertIn("- [ ] **M32-050**",check)
+
 if __name__ == "__main__":
     unittest.main()
