@@ -283,7 +283,14 @@ class M32DatedStatusTruth(unittest.TestCase):
         self.assertIs(self.entry["operator_accepted"],False)
 
 
+    @staticmethod
+    def issue38_scoped_audit_entry():
+        """M32-006 belongs to its original dated evidence, not latest handoff."""
+        data=json.loads((ROOT/"docs/continuity/HANDOFF_CURRENT.json").read_text(encoding="utf-8"))
+        return data["m32_20261120_p3bg_m32_006_candidate_after_pr401"]
+
     def test_21_issue38_scoped_metadata_audit(self):
+        audit=self.issue38_scoped_audit_entry()
         doc=(ROOT/"docs/qualification/M3_2_M32_006_ISSUE38_APPEND_ONLY_SCOPED_AUDIT_20261120.md").read_text(encoding="utf-8")
         for marker in ("737 commentaires accessibles","737 IDs uniques",
                        "#6194801978","#7050753731","#44800008968",
@@ -291,11 +298,12 @@ class M32DatedStatusTruth(unittest.TestCase):
             self.assertIn(marker,doc)
         self.assertIn("- [x] **M32-006**",self.checklist)
         self.assertIn("- [ ] **M32-007**",self.checklist)
-        self.assertEqual(self.entry["m32_006_comment_count"],737)
-        self.assertEqual(self.entry["m32_006_unique_comments"],737)
-        self.assertIs(self.entry["m32_006_historical_deletions_proven_absent"],False)
+        self.assertEqual(audit["m32_006_comment_count"],737)
+        self.assertEqual(audit["m32_006_unique_comments"],737)
+        self.assertIs(audit["m32_006_historical_deletions_proven_absent"],False)
 
     def test_22_false_issue38_historical_assertion_refused(self):
+        audit=self.issue38_scoped_audit_entry()
         doc=(ROOT/"docs/qualification/M3_2_M32_006_ISSUE38_APPEND_ONLY_SCOPED_AUDIT_20261120.md").read_text(encoding="utf-8")
         def guard(text, entry):
             if "737 commentaires accessibles" not in text or "#7050753731" not in text:
@@ -304,13 +312,13 @@ class M32DatedStatusTruth(unittest.TestCase):
                 raise ValueError("STOP failure erased")
             if entry.get("m32_006_historical_deletions_proven_absent") is not False:
                 raise ValueError("STOP deletion absence invented")
-        guard(doc,self.entry)
+        guard(doc,audit)
         with self.assertRaisesRegex(ValueError,"baseline drift"):
-            guard(doc.replace("737 commentaires accessibles","738 commentaires accessibles"),self.entry)
+            guard(doc.replace("737 commentaires accessibles","738 commentaires accessibles"),audit)
         with self.assertRaisesRegex(ValueError,"failure erased"):
-            guard(doc.replace("FAILURE","PASS"),self.entry)
+            guard(doc.replace("FAILURE","PASS"),audit)
         with self.assertRaisesRegex(ValueError,"deletion absence"):
-            guard(doc,{**self.entry,"m32_006_historical_deletions_proven_absent":True})
+            guard(doc,{**audit,"m32_006_historical_deletions_proven_absent":True})
 
 if __name__ == "__main__":
     unittest.main()
