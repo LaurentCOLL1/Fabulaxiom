@@ -203,6 +203,7 @@
   **Preuve de clôture :** SHA, run ID/attempt, résultats adversariaux, changements de périmètre et échecs ; zéro réécriture d'éléments historiques.
   **Acquis 20/11/2026 (2026-11-20) — CLÔTURE DOCUMENTAIRE CIBLÉE CANDIDATE :** GitHub issue #38 paginée : 737 commentaires accessibles / 737 IDs distincts / 0 `created_at != updated_at`, bornes #6194801978 à #7050753731. Première CI #44800008968 FAILURE non effacée ; CI corrigée #44800413136 SUCCESS SHA exact `27edacd94728f87b0e0ed6ff70bccc9e99331a08`, postmain indépendante #44818205234 SUCCESS SHA exact `ad5ffc5a3e997e20d17d50538f89bc3a18604b5d` tentative 1. Rapport `M3_2_M32_006_ISSUE38_APPEND_ONLY_SCOPED_AUDIT_20261120.md` et négatifs Python #21/#22 CANDIDATS jusqu'à CI propre. L'absence de suppression passée n'est pas prouvée et le journal exige toujours des ajouts append-only. M32-007 [ ] reste ouverte ; aucun writer ou opérateur admis.
 - [ ] **M32-007** Concilier les deux anciennes PR #35 et #215 avant toute décision sur leur devenir  
+  **21/11/2026 — PARTIEL :** arbres non tronqués, PR #35 84 chemins (5 identiques, 11 divergents, 68 absents), quatre REVIEW PR #215 en attente, rapport docs/qualification/M3_2_PR35_84_PATH_TREE_AUDIT_20261121.md. M32-007 [ ] OPEN_NOT_ACCEPTED.
   **P3bi / audit PR #35 (21/11/2026) — TOUJOURS NON CLOSE :** ancien module de pagination Stage 23 lié à un snapshot (curseur) non équivalent à la pagination ID 5/10/20 actuelle. Rapport docs/qualification/M3_2_PR35_CURSOR_NON_EQUIVALENCE_20261121.md, négatifs Python #12/#13 CANDIDATS avant CI. Curseur NOT_PORTED, 68 chemins absents de #35 et quatre REVIEW de #215 NON ADMIS ; M32-007 [ ].
   **P3q partiel (11/11/2026, NON close) :** sélection d'ID Unicode ≤256 points de code sur aperçus fictifs, rapprochement Stage 25/26 PR #35, et divergence insertion/IDs + pagination/filtres encore à décider. CI P3q À QUALIFIER ; aucune admission produit/writer.
   **Preuve de clôture :** Vérifier diff de ces brouillons historiques et overlaps avec main ; portage ciblé sur branche actuelle ou clôture explicitement justifiée, jamais merge direct/aveugle.
@@ -317,6 +318,7 @@
 **Priorité :** P1 produit. P2/P3/Rust test-only, SQLite RAM et v7 jetables déjà largement couverts ; les opérations réelles hors fixtures ne sont pas qualifiées.
 
 - [ ] **M32-050** Réconcilier la PR historique #35 sans la fusionner en bloc  
+  **21/11/2026 — PARTIEL :** audit SHA pour 84 chemins, décisions de portage ciblé et comportement non qualifiés ; M32-050 [ ].
   **Preuve de clôture :** Porter uniquement les éléments utiles sur base main moderne ; détecter overlaps SQL/lib.rs/workflow, aucun effet runtime implicite.
 - [x] **M32-051** Documenter le contrat de données v7 existant  
   **Preuve de clôture :** Calendriers fictifs scoped Universe, ancres, precedences, précision exacte/approximative/relative/inconnue, STRICT/FK/index, ids immuables.
@@ -372,6 +374,7 @@
 - [ ] **M32-070** Concevoir formulaires calendrier et événement utilisables sans IA  
   **Preuve de clôture :** Création, saisie précision, validité, estimation, source, révision ; messages explicites sans obligation Ollama.
 - [ ] **M32-071** Concevoir liste/consultation et inspection des sources historiques  
+  **P3bj 21/11 — CANDIDAT :** affichage IDs fictifs dans l'ordre d'ajout/inverse, reset sélection/page, tests Vitest #41/#42 et Chromium #110 avant CI. Pas d'opérateur, M32-071 [ ].
   **P3bi 21/11 — CANDIDAT SOURCE-ONLY NON ACCEPTÉ :** sélection bornée de taille de page 5/10/20 dans atelier fictif, reset page et sélection, Vitest #39/#40 et extension Chromium #110 CANDIDATS ; aucun portage du curseur Stage 23 ni liste opérateur réelle, M32-071 [ ] maintenue.
   **P3bh 21/11 — CANDIDAT NON ACCEPTÉ :** commande explicite de remise à zéro des filtres d'historique dans l'atelier React fictif non monté ; test SSR Vitest #38 CANDIDAT ; navigation clavier/clic navigateur/offline opérateur non qualifiés, M32-075 [ ] maintenue.
   **P3ab 14/11 — CANDIDAT :** suggestions sources fictives seulement ; inspection de sources réelles non prouvée, tâche ouverte.

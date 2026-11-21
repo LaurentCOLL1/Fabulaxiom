@@ -1,0 +1,5 @@
+# P3bj — affichage des IDs fictifs dans l'ordre d'ajout ou inverse (21/11/2026)
+
+Atelier React NON MONTÉ : sélectionner « Premiers ajouts d'abord » ou « Derniers ajouts d'abord ». Filtre d'abord, puis ordre d'insertion/ordre inverse, puis pagination 5/10/20. Ce n'est ni la chronologie du monde, ni l'ordre de narration ou de révélation. Les IDs retirés restent dans l'historique, aucune version n'est restaurée.
+
+Changement d'ordre efface sélection et revient à page zéro ; reset P3bh restaure insertion et 10 IDs. Fonction pure refuse ordre inattendu. Vitest #41 (12 événements, retrait, non mutation), #42 (SSR sans note/motif non sélectionnés), Chromium #110 étendu CANDIDATS jusqu'à CI source HEAD exact. Parent protected main=`f1d3d0539c437f1111a300c8a955798d7c8e529c`, #404 CI source #44872633364 completed/SUCCESS HEAD exact `1e14e9b2f578c6bbef61a9553fb6d02f1e60ee0f`, postmain #44875762284 completed/SUCCESS SHA exact main. M32-071/075/078 [ ], M3.2 IN_PROGRESS_NOT_ACCEPTED, PRODUCT_FIRST_PARALLEL_SAFETY ; STOP R1–R9 NOT_PROVEN, P4 STOP, G3 STOP_UNAVAILABLE, R3 partiel, D3c conception, live SQLite WAL-index NOT_PROVEN.

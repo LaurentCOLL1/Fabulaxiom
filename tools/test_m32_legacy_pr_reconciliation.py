@@ -241,5 +241,36 @@ class Pr35PaginationCursorNonEquivalence(unittest.TestCase):
         with self.assertRaisesRegex(ValueError,"unsafe equivalence"):
             guard(report + "\nsame function\n")
 
+class Pr35FullTreeScoping(unittest.TestCase):
+    """Git blob triage only; no writer admission."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.doc=(ROOT/"docs/qualification/M3_2_PR35_84_PATH_TREE_AUDIT_20261121.md").read_text(encoding="utf-8")
+        cls.rows=[line.strip("| ").split(" | ") for line in cls.doc.splitlines()
+                  if line.startswith("| `")]
+
+    def test_14_unique_path_counts_and_sha_relations(self):
+        self.assertEqual(len(self.rows),84)
+        self.assertEqual(len({r[0] for r in self.rows}),84)
+        self.assertEqual([sum(r[3]==s for r in self.rows) for s in ("IDENTICAL","DIVERGENT","ABSENT")],[5,11,68])
+        for path,old,now,state,action in self.rows:
+            self.assertEqual(len(old),42)
+            if state=="IDENTICAL": self.assertEqual(old,now)
+            elif state=="ABSENT": self.assertEqual(now,"ABSENT")
+            else: self.assertNotEqual(old,now)
+        for key in ("M32-007","M32-050"):
+            self.assertIn(f"- [ ] **{key}**",CHECKLIST.read_text(encoding="utf-8"))
+
+    def test_15_absent_groups_remain_non_admitted(self):
+        absent=[r[0].strip(chr(96)) for r in self.rows if r[3]=="ABSENT"]
+        self.assertEqual(sum(s.startswith("docs/") for s in absent),26)
+        self.assertEqual(sum(s.startswith("tools/test_") for s in absent),20)
+        self.assertEqual(sum(s.startswith("tools/") and not s.startswith("tools/test_") for s in absent),20)
+        self.assertEqual(sum(s.startswith("src-tauri/") for s in absent),2)
+        self.assertIn("M32-007 [ ] et M32-050 [ ] OPEN_NOT_ACCEPTED",self.doc)
+        self.assertIn("DRAFT",self.doc)
+        self.assertIn("NOT_PROVEN",self.doc)
+
 if __name__ == "__main__":
     unittest.main()

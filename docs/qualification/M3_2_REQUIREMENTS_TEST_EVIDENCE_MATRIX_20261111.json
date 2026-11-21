@@ -298,6 +298,17 @@
         "requirement_acceptance": false,
         "writer_admission": false,
         "operator_acceptance": false
+      },
+      "latest_pr35_84path_candidate": {
+        "source_main": "f1d3d0539c437f1111a300c8a955798d7c8e529c",
+        "old_head": "41ce7b915e76d22785d53d7fffe288d113dd0bf5",
+        "report": "docs/qualification/M3_2_PR35_84_PATH_TREE_AUDIT_20261121.md",
+        "paths": 84,
+        "identical": 5,
+        "divergent": 11,
+        "absent": 68,
+        "requirement_acceptance": false,
+        "writer_admission": false
       }
     },
     {
@@ -1889,6 +1900,17 @@
         "step_log_locator": null,
         "CI_step_does_not_equal_individual_test_assertion": true,
         "Windows_operator_workflow_admission": false
+      },
+      "latest_pr35_84path_candidate": {
+        "source_main": "f1d3d0539c437f1111a300c8a955798d7c8e529c",
+        "old_head": "41ce7b915e76d22785d53d7fffe288d113dd0bf5",
+        "report": "docs/qualification/M3_2_PR35_84_PATH_TREE_AUDIT_20261121.md",
+        "paths": 84,
+        "identical": 5,
+        "divergent": 11,
+        "absent": 68,
+        "requirement_acceptance": false,
+        "writer_admission": false
       }
     },
     {
@@ -2728,6 +2750,16 @@
         "operator_acceptance": false,
         "writer_admission": false,
         "requirement_acceptance": false
+      },
+      "latest_p3bj_candidate": {
+        "source_file": "src/M32FictionalEventManualWorkshop.tsx",
+        "report": "docs/qualification/M3_2_P3BJ_FICTIONAL_HISTORY_INSERTION_ORDER_20261121.md",
+        "orders": [
+          "insertion",
+          "reverse-insertion"
+        ],
+        "source_ci_status": "NOT_RUN_ON_NEW_HEAD",
+        "operator_acceptance": false
       }
     },
     {
