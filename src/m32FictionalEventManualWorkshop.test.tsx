@@ -718,7 +718,7 @@ describe("M3.2 manual fictional event workshop source-only", () => {
   });
   it("43 historical time-kind filter covers four explicit anchor kinds, one version at a time", () => {
     let book = inventedFourTimeKinds();
-    const make = (anchor_id: string, source_revision_id: string | null) => {
+    const make = (anchor_id: string | null, source_revision_id: string | null) => {
       book = applyFictionalWorkshopAction(book, {
         kind: "create", input: { ...input, anchor_id, source_revision_id },
       });
@@ -728,7 +728,7 @@ describe("M3.2 manual fictional event workshop source-only", () => {
     const e2 = make("B", null);
     const e3 = make("C", null);
     const e4 = make("D", null);
-    make("", null);
+    make(null, null);
     book = applyFictionalWorkshopAction(book, {
       kind: "amend", eventId: e1, reason: "Correction fictive du type",
       input: { ...input, anchor_id: "B", source_revision_id: null },

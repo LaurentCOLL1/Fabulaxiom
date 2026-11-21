@@ -309,6 +309,22 @@
         "absent": 68,
         "requirement_acceptance": false,
         "writer_admission": false
+      },
+      "latest_pr215_four_review_named_test_audit": {
+        "source_main": "8ad583528179061c473359b3a62713afc38c4cbe",
+        "old_head": "8203b7323877edc87ffabaad1694c52d2523023d",
+        "report": "docs/qualification/M3_2_PR215_FOUR_REVIEW_SOURCE_TEST_COVERAGE_20261121.md",
+        "review_paths": 4,
+        "old_rust_functions": 26,
+        "current_rust_functions": 34,
+        "old_inventory_tests": 41,
+        "current_inventory_tests": 69,
+        "old_handoff_tests": 152,
+        "current_handoff_tests": 183,
+        "old_handoff_names_absent": 7,
+        "semantic_equivalence_attested": false,
+        "requirement_acceptance": false,
+        "writer_admitted": false
       }
     },
     {
@@ -1911,6 +1927,22 @@
         "absent": 68,
         "requirement_acceptance": false,
         "writer_admission": false
+      },
+      "latest_pr215_four_review_named_test_audit": {
+        "source_main": "8ad583528179061c473359b3a62713afc38c4cbe",
+        "old_head": "8203b7323877edc87ffabaad1694c52d2523023d",
+        "report": "docs/qualification/M3_2_PR215_FOUR_REVIEW_SOURCE_TEST_COVERAGE_20261121.md",
+        "review_paths": 4,
+        "old_rust_functions": 26,
+        "current_rust_functions": 34,
+        "old_inventory_tests": 41,
+        "current_inventory_tests": 69,
+        "old_handoff_tests": 152,
+        "current_handoff_tests": 183,
+        "old_handoff_names_absent": 7,
+        "semantic_equivalence_attested": false,
+        "requirement_acceptance": false,
+        "writer_admitted": false
       }
     },
     {
@@ -2760,6 +2792,20 @@
         ],
         "source_ci_status": "NOT_RUN_ON_NEW_HEAD",
         "operator_acceptance": false
+      },
+      "latest_p3bk_candidate": {
+        "source_file": "src/M32FictionalEventManualWorkshop.tsx",
+        "report": "docs/qualification/M3_2_P3BK_HISTORY_TIME_KIND_FILTER_20261121.md",
+        "values": [
+          "exact",
+          "approximate",
+          "relative",
+          "unknown"
+        ],
+        "source_ci_status": "NOT_RUN_ON_NEW_HEAD",
+        "browser_click_attested": false,
+        "operator_acceptance": false,
+        "requirement_acceptance": false
       }
     },
     {
@@ -3202,6 +3248,20 @@
         "requirement_acceptance": false,
         "sqlite_writer_acceptance": false,
         "windows_operator_acceptance": false
+      },
+      "latest_p3bk_candidate": {
+        "source_file": "src/M32FictionalEventManualWorkshop.tsx",
+        "report": "docs/qualification/M3_2_P3BK_HISTORY_TIME_KIND_FILTER_20261121.md",
+        "values": [
+          "exact",
+          "approximate",
+          "relative",
+          "unknown"
+        ],
+        "source_ci_status": "NOT_RUN_ON_NEW_HEAD",
+        "browser_click_attested": false,
+        "operator_acceptance": false,
+        "requirement_acceptance": false
       }
     },
     {

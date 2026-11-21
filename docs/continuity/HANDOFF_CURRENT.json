@@ -1,4 +1,36 @@
 {
+  "m32_20261121_p3bk_pr215_fourreview_candidate_after_pr405": {
+    "date": "2026-11-21",
+    "status": "PR405_MERGED_SOURCE_SUCCESS_POSTMAIN_PENDING_P3BK_PR215_CANDIDATE",
+    "current_phase": "SOURCE_ONLY_CANDIDATE_UNQUALIFIED",
+    "parent_main": "8ad583528179061c473359b3a62713afc38c4cbe",
+    "source_ci_run": 44890030315,
+    "source_ci_head": "1e0e4d382bb45696093f25197c8af56b39c3b80f",
+    "source_ci_status": "COMPLETED_SUCCESS_EXACT_HEAD",
+    "parent_postmain_run": 44905630336,
+    "parent_postmain_status": "PENDING_UNQUALIFIED",
+    "attested_postmain_sha": null,
+    "pr405_initial_failure_run": 44889889982,
+    "p3bk": "HISTORIC_FOUR_TIME_KINDS_SAME_VERSION_FICTIONAL_ONLY",
+    "p3bk_vitest": [
+      "43 historical time-kind filter covers four explicit anchor kinds, one version at a time",
+      "44 SSR temporal-kind controls hide all unselected historical reasons"
+    ],
+    "p3bk_browser": "110-fictional-event-history-readable-after-withdrawal_EXTENDED_CANDIDATE",
+    "pr215_review_count": 4,
+    "pr215_handoff_old_only_names": 7,
+    "m32_007_closed": false,
+    "m32_050_closed": false,
+    "m32_071_closed": false,
+    "m32_079_closed": false,
+    "writer_admitted": false,
+    "operator_accepted": false,
+    "checklist_total": 104,
+    "closed": 12,
+    "open": 92,
+    "gate": "IN_PROGRESS_NOT_ACCEPTED",
+    "strategy": "PRODUCT_FIRST_PARALLEL_SAFETY"
+  },
   "m32_20261121_p3bj_pr35_84path_candidate_after_pr404": {
     "date": "2026-11-21",
     "status": "PR404_MERGED_SOURCE_POSTMAIN_SUCCESS_P3BJ_PR35_CANDIDATE",
