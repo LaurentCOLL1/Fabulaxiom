@@ -1,16 +1,16 @@
 # Reprise Fabulaxiom (https://github.com/LaurentCOLL1/Fabulaxiom)
 
 ## Dernier checkpoint
-main=57a43c397b831f2f336a6fd9ee3837ea25a761c2 ; #407 P3bl MERGED CI #44913548368 PASS HEAD exact 68a76ef5c12f90a6a1e6fd9375a35c39c8658e19 ; postmain #44917189406 PASS sur SHA exact main ; date=2026-11-21 ; P3bm filtre source liée/absente CANDIDAT, PR215 #146/#147 PARTIEL ; 12/92 ; M3.2 IN_PROGRESS_NOT_ACCEPTED (~45%).
+main=c86722f598dbdf9b0e2bd0b6fdc8d8621c53ad1c ; #408 P3bm MERGED CI #44927756690 PASS HEAD exact 2e409b91b357426217bdcde1e8bc0442fc05b3a1 ; postmain #44932132566 PENDING sur SHA exact main (NON QUALIFIÉ) ; date=2026-11-21 ; P3bn 2 Univers/4 temporalités CANDIDAT ; PR215 anciens #148–152 PARTIEL ; 12/92 ; M3.2 IN_PROGRESS_NOT_ACCEPTED (~45%).
 
 ## Interdictions actives — STOP
 Writer/R1–R9 NOT_PROVEN ; P4 STOP ; G2B NOT_ACCEPTED ; G2C NOT_AUTHORIZED ; G3 STOP_UNAVAILABLE ; PENDING_EXTERNAL_ATTESTATION(21/3/2), prospective NOT_STARTED ; R2 STOP, R3 partiel, D3c conception, D3b-4/5, D3b-5 STOP ; main/WAL/SHM, live SQLite WAL-index et ABA NOT_PROVEN ; glib #160 OPEN_NOT_REMEDIATED.
 STOP v6/v7, M:\Fabulaxiom, Greenfield, backups, IPC writer, 007, Hello, recovery.
 
 ## Prochaines opérations
-1. #407 CI #44913548368 PASS HEAD exact 68a76ef5c12f90a6a1e6fd9375a35c39c8658e19 ; postmain #44917189406 PASS SHA exact 57a43c397b831f2f336a6fd9ee3837ea25a761c2 ; issue #38 #7064592762 ; 12/92.
-2. P3bm filtre révision source liée/absente Vitest #47/#48 Chromium #110 CANDIDATS ; #215 anciens #146/#147 revus, #148–152 à étudier, #35 68 absents ; M32-007/050/071/075/078/081 [ ], PR35/215 DRAFT.
-3. CI HEAD P3bm et PR215, diff/reviews/threads/Protect main ACTIVE strict bypass=[], squash expected_head_sha, postmain indépendante, #38 append-only ; PRODUCT_FIRST_PARALLEL_SAFETY.
+1. #408 CI #44927756690 PASS HEAD exact 2e409b91b357426217bdcde1e8bc0442fc05b3a1 ; postmain #44932132566 PENDING SHA exact c86722f598dbdf9b0e2bd0b6fdc8d8621c53ad1c ; issue #38 #7066778778 ; 12/92.
+2. P3bn Vitest #49/#50 2 Univers fictifs, 4 temporalités, 2 romans CANDIDATS ; #215 sept anciens handoff inventoriés, équivalence NOT_PROVEN ; #35 68 absents ; M32-007/050/079/082 [ ], PR35/215 DRAFT.
+3. CI HEAD P3bn et audit PR215, diff/reviews/threads/Protect main ACTIVE strict bypass=[], squash expected_head_sha, postmain indépendante, #38 append-only ; PRODUCT_FIRST_PARALLEL_SAFETY.
 
 ## Documents d'autorité
 RESUME_PROMPT.md ; HANDOFF_CURRENT.md ; HANDOFF_CURRENT.json ; STATE.md ; NEXT.md ; M3_2_GATE_DECISION_CURRENT.md ; M3_2_COMPLETION_MASTER_CHECKLIST_20261109.md ; ROADMAP_STATUS_CURRENT.md ; M3_2_SHORT_CYCLE_DELIVERY_20261116.md. Historique : RESUME_PROMPT.md / docs/qualification.

@@ -353,6 +353,20 @@
         "semantic_equivalence_attested": false,
         "writer_admission": false,
         "source_ci_status": "NOT_RUN_CANDIDATE"
+      },
+      "latest_pr215_old148_152_assertion_review": {
+        "cases_reviewed": [
+          148,
+          149,
+          150,
+          151,
+          152
+        ],
+        "total_old_handoff_cases_inventory": 7,
+        "report": "docs/qualification/M3_2_PR215_OLD_HANDOFF_148_152_ASSERTION_REVIEW_20261121.md",
+        "semantic_equivalence_attested": false,
+        "writer_admission": false,
+        "source_ci_status": "NOT_RUN_CANDIDATE"
       }
     },
     {
@@ -1999,6 +2013,20 @@
         "semantic_equivalence_attested": false,
         "writer_admission": false,
         "source_ci_status": "NOT_RUN_CANDIDATE"
+      },
+      "latest_pr215_old148_152_assertion_review": {
+        "cases_reviewed": [
+          148,
+          149,
+          150,
+          151,
+          152
+        ],
+        "total_old_handoff_cases_inventory": 7,
+        "report": "docs/qualification/M3_2_PR215_OLD_HANDOFF_148_152_ASSERTION_REVIEW_20261121.md",
+        "semantic_equivalence_attested": false,
+        "writer_admission": false,
+        "source_ci_status": "NOT_RUN_CANDIDATE"
       }
     },
     {
@@ -3341,6 +3369,27 @@
         "browser_click_attested": false,
         "operator_acceptance": false,
         "requirement_acceptance": false
+      },
+      "latest_p3bn_candidate": {
+        "universes": [
+          "fiction-alpha",
+          "fiction-beta"
+        ],
+        "temporal_kinds": [
+          "exact",
+          "approximate",
+          "relative",
+          "unknown"
+        ],
+        "novels_per_universe": 2,
+        "vitest_cases": [
+          49,
+          50
+        ],
+        "report": "docs/qualification/M3_2_P3BN_TWO_UNIVERSES_FOUR_KINDS_TWO_NOVELS_20261121.md",
+        "source_ci_status": "NOT_RUN_CANDIDATE",
+        "operator_acceptance": false,
+        "runtime_acceptance": false
       }
     },
     {
@@ -3609,6 +3658,27 @@
         "requirement_acceptance": false,
         "sqlite_writer_acceptance": false,
         "windows_operator_acceptance": false
+      },
+      "latest_p3bn_candidate": {
+        "universes": [
+          "fiction-alpha",
+          "fiction-beta"
+        ],
+        "temporal_kinds": [
+          "exact",
+          "approximate",
+          "relative",
+          "unknown"
+        ],
+        "novels_per_universe": 2,
+        "vitest_cases": [
+          49,
+          50
+        ],
+        "report": "docs/qualification/M3_2_P3BN_TWO_UNIVERSES_FOUR_KINDS_TWO_NOVELS_20261121.md",
+        "source_ci_status": "NOT_RUN_CANDIDATE",
+        "operator_acceptance": false,
+        "runtime_acceptance": false
       }
     },
     {

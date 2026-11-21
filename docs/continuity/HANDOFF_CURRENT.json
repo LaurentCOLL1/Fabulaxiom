@@ -1,4 +1,43 @@
 {
+  "m32_20261121_p3bn_two_universes_pr215_148152_candidate_after_pr408": {
+    "date": "2026-11-21",
+    "parent_main": "c86722f598dbdf9b0e2bd0b6fdc8d8621c53ad1c",
+    "source_ci_run": 44927756690,
+    "source_ci_head": "2e409b91b357426217bdcde1e8bc0442fc05b3a1",
+    "source_ci_status": "COMPLETED_SUCCESS_EXACT_HEAD",
+    "parent_postmain_run": 44932132566,
+    "parent_postmain_status": "PENDING_UNQUALIFIED",
+    "attested_postmain_sha": null,
+    "p3bn": "TWO_INVENTED_UNIVERSES_FOUR_TIME_KINDS_TWO_NOVELS_SOURCE_ONLY",
+    "p3bn_vitest": [
+      49,
+      50
+    ],
+    "pr215_old_handoff_reviewed": [
+      146,
+      147,
+      148,
+      149,
+      150,
+      151,
+      152
+    ],
+    "pr215_semantic_equivalence": false,
+    "pr215_four_path_review_unresolved": true,
+    "pr35_absent_paths": 68,
+    "m32_007_closed": false,
+    "m32_050_closed": false,
+    "m32_079_closed": false,
+    "m32_082_closed": false,
+    "checklist_total": 104,
+    "closed": 12,
+    "open": 92,
+    "gate": "IN_PROGRESS_NOT_ACCEPTED",
+    "writer_admitted": false,
+    "operator_accepted": false,
+    "strategy": "PRODUCT_FIRST_PARALLEL_SAFETY",
+    "current_phase": "SOURCE_ONLY_CANDIDATE_UNQUALIFIED"
+  },
   "m32_20261121_p3bm_source_link_pr215_146147_candidate_after_pr407": {
     "date": "2026-11-21",
     "parent_main": "57a43c397b831f2f336a6fd9ee3837ea25a761c2",

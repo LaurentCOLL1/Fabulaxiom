@@ -333,5 +333,23 @@ class Pr215Old146147AssertionReview(unittest.TestCase):
         self.assertIn("- [ ] **M32-007**",check)
         self.assertIn("- [ ] **M32-050**",check)
 
+class Pr215Old148To152AssertionReview(unittest.TestCase):
+    def test_20_five_historical_assertion_domains_are_not_reused_or_admitted(self):
+        report=(ROOT/"docs/qualification/M3_2_PR215_OLD_HANDOFF_148_152_ASSERTION_REVIEW_20261121.md").read_text(encoding="utf-8")
+        self.assertEqual(report.count("REVIEW_ASSERTIONS_NOT_PORTED"),5)
+        for key in ("next_p1_single_owner_session_proof_plan_20261028",
+                    "next_p1_d2_disposable_integrated_session_20261028",
+                    "next_p1_d3_wal_shm_crash_restart_documentary_20261028",
+                    "next_p1_d3a_wal_shm_disposable_windows_fixture_20261028",
+                    "next_p1_d3b_disposable_crash_restart_refusal_fixture_20261028"):
+            self.assertIn(key,report)
+        for token in ("aucune recovery", "NOT_PROVEN","OPEN_NOT_ACCEPTED",
+                      "R1–R9 NOT_PROVEN","Protect main",
+                      "aucun code porté"):
+            self.assertIn(token,report)
+        checklist=CHECKLIST.read_text(encoding="utf-8")
+        self.assertIn("- [ ] **M32-007**",checklist)
+        self.assertIn("- [ ] **M32-050**",checklist)
+
 if __name__ == "__main__":
     unittest.main()
