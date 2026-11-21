@@ -833,4 +833,50 @@ describe("M3.2 manual fictional event workshop source-only", () => {
     expect(html).not.toContain("Versions historiques fictives");
     expect(JSON.stringify(book)).toBe(before);
   });
+
+  it("47 source-link filter remains scoped to one version and separated from anchors",()=>{
+    let book=applyFictionalWorkshopAction(invented(),{kind:"create",input:{
+      ...input,anchor_id:"A",source_revision_id:"fiction-alpha-rev-1"}});
+    const id=book.events[0].event_id;
+    book=applyFictionalWorkshopAction(book,{kind:"amend",eventId:id,
+      reason:"Découplage inventé",input:{...input,anchor_id:"A",source_revision_id:null}});
+    book=applyFictionalWorkshopAction(book,{kind:"create",input});
+    const other=book.events[book.events.length-1].event_id;
+    book=applyFictionalWorkshopAction(book,{kind:"withdraw",eventId:other,
+      reason:"Retrait inventé"});
+    const before=JSON.stringify(book);
+    const filter=(source:string,link:""|"linked"|"unlinked",
+      anchor="",anchorLink:""|"linked"|"unlinked"="")=>
+      matchingFictionalEventHistoryIds(book,"","all",source,"","",anchor,
+        "","","",anchorLink,link);
+    expect(filter("","linked")).toEqual([id]);
+    expect(filter("","unlinked")).toEqual([id,other]);
+    expect(filter("fiction-alpha-rev-1","unlinked")).toEqual([]);
+    expect(filter("fiction-alpha-rev-1","linked")).toEqual([id]);
+    expect(filter("","unlinked","A","linked")).toEqual([id]);
+    expect(filter("","linked","","unlinked")).toEqual([]);
+    expect(matchingFictionalEventHistoryIds(book,"","withdrawn",
+      "","","","","","","","","unlinked")).toEqual([other]);
+    expect(()=>matchingFictionalEventHistoryIds(book,"","all",
+      "","","","","","","","","invalid" as never))
+      .toThrow("Lien de révision source fictive invalide");
+    expect(JSON.stringify(book)).toBe(before);
+  });
+  it("48 SSR exposes source link options but hides private unselected past",()=>{
+    const first=applyFictionalWorkshopAction(invented(),{kind:"create",
+      input:{...input,anchor_id:"A",source_revision_id:"fiction-alpha-rev-1",
+        note:"NOTE-SECRET-SOURCE"}});
+    const book=applyFictionalWorkshopAction(first,{kind:"amend",
+      eventId:first.events[0].event_id,reason:"MOTIF-SECRET-SOURCE",
+      input:{...input,anchor_id:"A",source_revision_id:null}});
+    const before=JSON.stringify(book);
+    const html=renderToStaticMarkup(createElement(M32FictionalEventManualWorkshop,{initial:book}));
+    expect(html).toContain("Filtrer par présence de révision source historique fictive");
+    expect(html).toContain("Avec révision source explicite");
+    expect(html).toContain("Sans révision source explicite");
+    expect(html).not.toContain("NOTE-SECRET-SOURCE");
+    expect(html).not.toContain("MOTIF-SECRET-SOURCE");
+    expect(html).not.toContain("Versions historiques fictives");
+    expect(JSON.stringify(book)).toBe(before);
+  });
 });
