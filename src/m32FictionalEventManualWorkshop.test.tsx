@@ -597,4 +597,18 @@ describe("M3.2 manual fictional event workshop source-only", () => {
     expect(JSON.stringify(book)).toBe(before);
   });
 
+  it("38 shows an explicit reset button without inspecting fictional history", () => {
+    const book=applyFictionalWorkshopAction(inventedTwoCalendars(), {
+      kind:"create",input:{...input, note:"SECRET-HISTORY-RESET",
+        anchor_id:"A",source_revision_id:"fiction-alpha-rev-1"},
+    }), before=JSON.stringify(book);
+    const html=renderToStaticMarkup(createElement(M32FictionalEventManualWorkshop,
+      {initial:book}));
+    expect(html).toContain('type="button"');
+    expect(html).toContain("Réinitialiser les filtres historiques fictifs");
+    expect(html).not.toContain("SECRET-HISTORY-RESET");
+    expect(html).not.toContain("Versions historiques fictives");
+    expect(JSON.stringify(book)).toBe(before);
+  });
+
 });

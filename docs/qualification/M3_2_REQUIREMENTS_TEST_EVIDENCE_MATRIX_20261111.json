@@ -266,6 +266,24 @@
         "step_log_locator": null,
         "CI_step_does_not_equal_individual_test_assertion": true,
         "Windows_operator_workflow_admission": false
+      },
+      "latest_pr215_scoped_observation": {
+        "review_date": "2026-11-21",
+        "source_main": "c4122c575f1e19b903acf5ca268cc6ab9d09f4fd",
+        "pr_number": 215,
+        "pr_head_sha": "8203b7323877edc87ffabaad1694c52d2523023d",
+        "report": "docs/qualification/M3_2_PR215_PER_PATH_DISPOSITION_20261121.md",
+        "old_tree_truncated": false,
+        "main_tree_truncated": false,
+        "paths": 23,
+        "identical": 6,
+        "different": 17,
+        "absent": 0,
+        "decisions": "NON_ADMISSIVE_PRELIMINARY_ORIENTATION_ONLY",
+        "pr35_remaining_absent": 68,
+        "requirement_acceptance": false,
+        "operator_acceptance": false,
+        "writer_admission": false
       }
     },
     {
@@ -2906,6 +2924,18 @@
         "operator_acceptance": false,
         "p4_runtime_authorized": false,
         "individual_case_is_not_entire_requirement": true
+      },
+      "latest_p3bh_candidate": {
+        "review_date": "2026-11-21",
+        "source_main": "c4122c575f1e19b903acf5ca268cc6ab9d09f4fd",
+        "source_file": "src/M32FictionalEventManualWorkshop.tsx",
+        "scoped_test": "src/m32FictionalEventManualWorkshop.test.tsx",
+        "test_case": "38 shows an explicit reset button without inspecting fictional history",
+        "source_ci_status": "NOT_RUN_FOR_P3BH_CANDIDATE",
+        "browser_click_attested": false,
+        "operator_acceptance": false,
+        "writer_admission": false,
+        "requirement_acceptance": false
       }
     },
     {
