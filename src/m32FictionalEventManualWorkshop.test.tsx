@@ -777,4 +777,60 @@ describe("M3.2 manual fictional event workshop source-only", () => {
     expect(html).not.toContain("Versions historiques fictives");
     expect(JSON.stringify(book)).toBe(before);
   });
+  it("45 anchor linkage filters per historical version without conflating unknown time", () => {
+    let book = inventedFourTimeKinds();
+    book = applyFictionalWorkshopAction(book, {
+      kind: "create", input: { ...input, anchor_id: "D", source_revision_id: null },
+    });
+    const firstId=book.events[0].event_id;
+    book = applyFictionalWorkshopAction(book, {
+      kind: "amend", eventId: firstId, reason: "Détachement fictif volontaire",
+      input: { ...input, anchor_id: null, source_revision_id: null },
+    });
+    book = applyFictionalWorkshopAction(book, {
+      kind: "create", input: { ...input, anchor_id: null, source_revision_id: null },
+    });
+    const secondId=book.events[book.events.length-1].event_id;
+    book=applyFictionalWorkshopAction(book, {
+      kind: "withdraw", eventId: secondId, reason: "Retrait fictif historique",
+    });
+    const snapshot=JSON.stringify(book);
+    const filter=(kind: ""|"unknown",link: ""|"linked"|"unlinked",
+      anchor="")=>matchingFictionalEventHistoryIds(book,"","all",
+        "","","",anchor,"","",kind,link);
+    expect(filter("unknown","linked")).toEqual([firstId]);
+    expect(filter("unknown","unlinked")).toEqual([]);
+    expect(filter("","unlinked")).toEqual([firstId,secondId]);
+    expect(filter("","linked")).toEqual([firstId]);
+    expect(filter("","unlinked","D")).toEqual([]);
+    expect(filter("unknown","linked","D")).toEqual([firstId]);
+    expect(matchingFictionalEventHistoryIds(book,"","withdrawn",
+      "","","","","","","","unlinked")).toEqual([secondId]);
+    expect(()=>matchingFictionalEventHistoryIds(book,"","all",
+      "","","","","","","","bogus" as never))
+      .toThrow("Lien d'ancre fictive invalide");
+    expect(JSON.stringify(book)).toBe(snapshot);
+  });
+  it("46 SSR anchor linkage choice remains opaque until user selects a history", () => {
+    const first = applyFictionalWorkshopAction(inventedFourTimeKinds(), {
+      kind: "create", input: { ...input, anchor_id: "D", source_revision_id: null,
+        note: "NOTE-SECRET-LIAISON" },
+    });
+    const book = applyFictionalWorkshopAction(first, {
+      kind: "amend", eventId: first.events[0].event_id,
+      reason: "MOTIF-SECRET-LIAISON",
+      input: { ...input, anchor_id: null, source_revision_id: null },
+    });
+    const before=JSON.stringify(book);
+    const html=renderToStaticMarkup(createElement(M32FictionalEventManualWorkshop,
+      {initial:book}));
+    expect(html).toContain("Filtrer par présence d&#x27;ancre historique fictive");
+    expect(html).toContain('value="linked"');
+    expect(html).toContain('value="unlinked"');
+    expect(html).toContain("Sans ancre ne vaut jamais");
+    expect(html).not.toContain("NOTE-SECRET-LIAISON");
+    expect(html).not.toContain("MOTIF-SECRET-LIAISON");
+    expect(html).not.toContain("Versions historiques fictives");
+    expect(JSON.stringify(book)).toBe(before);
+  });
 });

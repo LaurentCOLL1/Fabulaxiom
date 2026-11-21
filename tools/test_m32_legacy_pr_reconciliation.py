@@ -301,5 +301,23 @@ class Pr215FourReviewCoverageSourceContract(unittest.TestCase):
         self.assertIn("R3/R4",self.doc)
         self.assertIn("NOT_PROVEN",self.doc)
 
+class Pr215SevenOldHandoffScopesContract(unittest.TestCase):
+    """Old historical domains may be referenced, never auto-admitted."""
+
+    def test_18_old_handoff_documents_exist_but_not_equivalence(self):
+        path=ROOT/"docs/qualification/M3_2_PR215_SEVEN_OLD_HANDOFF_ASSERTION_SCOPES_20261121.md"
+        report=path.read_text(encoding="utf-8")
+        rows=[s for s in report.splitlines() if s.startswith("| 1") and
+              "REVIEW_ASSERTIONS_NOT_PORTED" in s]
+        self.assertEqual(len(rows),7)
+        docs=[row.split(" | ")[2].strip("`") for row in rows]
+        # Each of seven sources may cite the same historical design file.
+        self.assertEqual(len(docs),7)
+        self.assertTrue(all((ROOT/"docs/qualification"/d).is_file() for d in docs))
+        self.assertIn("aucune exigence ne peut être fermée",report)
+        self.assertIn("- [ ] **M32-007**",CHECKLIST.read_text(encoding="utf-8"))
+        self.assertIn("OPEN_NOT_ACCEPTED",report)
+        self.assertIn("NOT_PROVEN",report)
+
 if __name__ == "__main__":
     unittest.main()

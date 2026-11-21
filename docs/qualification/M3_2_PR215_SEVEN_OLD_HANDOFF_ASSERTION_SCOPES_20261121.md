@@ -1,0 +1,19 @@
+# PR #215 : sept anciens tests handoff renumérotés — domaines source (21/11/2026)
+
+Ancienne PR [#215](https://github.com/LaurentCOLL1/Fabulaxiom/pull/215) DRAFT HEAD `8203b7323877edc87ffabaad1694c52d2523023d`. Comparé à protected main `e2372e1c7eda4cac3212a125e4fb27963beca799` (#406 source CI #44906058889 PASS, postmain #44912953958 PENDING au relevé). **Revue source-only des sept anciennes définitions nommées** de `tools/test_m32_handoff_contract.py`. Les noms anciens #146–152 sont absents de la version actuelle et leurs numéros ont été réutilisés par d'autres tests : pas de régression inférée à partir de cette renumérotation.
+
+| N° ancien | Domaine de l'assertion historique | Document historique toujours cité par le contrat actuel | Clé/checkpoint dans le test ancien (absent textuellement du contrat actuel lorsque fournie) | Conclusion |
+| --- | --- | --- | --- | --- |
+| 146 | Production writer custody design | `M3_2_V7_PRODUCTION_WRITER_CUSTODY_DESIGN_STUDY_20261028.md` | `Aucune entrée de checkpoint dans l'ancien test ; bornes R1–R9, absence de writer runtime` | REVIEW_ASSERTIONS_NOT_PORTED |
+| 147 | Same-SID / Ollama owner design | `M3_2_V7_PRODUCTION_WRITER_CUSTODY_DESIGN_STUDY_20261028.md` | `owner_p1_same_sid_ollama_design_decision_20261028` | REVIEW_ASSERTIONS_NOT_PORTED |
+| 148 | Single owner proof plan | `M3_2_V7_P1_SINGLE_OWNER_SESSION_PROOF_PLAN_20261028.md` | `next_p1_single_owner_session_proof_plan_20261028` | REVIEW_ASSERTIONS_NOT_PORTED |
+| 149 | D2 disposable integrated session | `M3_2_V7_P1_D2_DISPOSABLE_SESSION_VFS_WAL_SHM_EXPERIMENT_20261028.md` | `next_p1_d2_disposable_integrated_session_20261028` | REVIEW_ASSERTIONS_NOT_PORTED |
+| 150 | D3 WAL/SHM crash design | `M3_2_V7_P1_D3_WAL_SHM_LIFECYCLE_CRASH_RESTART_DESIGN_20261028.md` | `next_p1_d3_wal_shm_crash_restart_documentary_20261028` | REVIEW_ASSERTIONS_NOT_PORTED |
+| 151 | D3a Windows delegated SHM fixture | `M3_2_V7_P1_D3A_WAL_SHM_HANDLE_CUSTODY_DISPOSABLE_WINDOWS_FIXTURE_20261028.md` | `next_p1_d3a_wal_shm_disposable_windows_fixture_20261028` | REVIEW_ASSERTIONS_NOT_PORTED |
+| 152 | D3b crash/restart refusal | `M3_2_V7_P1_D3B_DISPOSABLE_WINDOWS_CRASH_RESTART_REFUSAL_FIXTURE_20261028.md` | `next_p1_d3b_disposable_crash_restart_refusal_fixture_20261028` | REVIEW_ASSERTIONS_NOT_PORTED |
+
+Sur les sept anciens tests, **sept références documentaires anciennes sont toujours textuellement présentes** dans le contrat actuel (le même dossier apparaît pour #146 et #147) ; les six anciennes clés `self.data` #147–152 n'apparaissent pas textuellement dans ce contrat actuel, remplacées par des clés contemporaines. **Cela ne prouve ni la conservation ni la perte des assertions** : les anciennes valeurs exactes de SHA/CI et de compteurs historiques pourraient encore avoir un rôle, mais aucune exigence ne peut être fermée sur ces seuls rapprochements.
+
+Le contrat actuel comprend les nouveaux tests #146–152 portant sur D3c/R7, provenance du recovery, D2/D3a/b CI jetables, matrices phases et R2/R3 ; leur existence ne prouve pas qu'ils couvrent exhaustivement les conditions anciennes. **Suite :** lire assertion par assertion les anciens cas 146–152, comparer à la matrice moderne et aux preuves Windows, ne porter des témoins que sur fixtures jetables sans dégrader les protections actuelles. Aucun code de #215 n'est copié ici. Quatre chemins restent REVIEW, 68 absents PR #35 sont non admis, M32-007 [ ] / M32-050 [ ] OPEN_NOT_ACCEPTED.
+
+M3.2 IN_PROGRESS_NOT_ACCEPTED, PRODUCT_FIRST_PARALLEL_SAFETY, checklist 104=12/92. STOP Writer/R1–R9 NOT_PROVEN ; P4 STOP ; G2B NOT_ACCEPTED ; G2C NOT_AUTHORIZED ; G3 STOP_UNAVAILABLE ; PENDING_EXTERNAL_ATTESTATION(21/3/2), prospective NOT_STARTED ; R2 STOP, R3 partiel, D3c conception, D3b-4/5, D3b-5 STOP ; main/WAL/SHM, live SQLite WAL-index et ABA NOT_PROVEN ; glib #160 OPEN_NOT_REMEDIATED ; STOP v6/v7, M:\Fabulaxiom, Greenfield, backups, IPC writer, 007, Hello, recovery.

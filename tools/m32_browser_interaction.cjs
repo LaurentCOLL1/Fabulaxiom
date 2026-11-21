@@ -2021,6 +2021,19 @@ async function run() {
       await temporalKind.selectOption("unknown");
       assert.equal(await picker.inputValue(),"");
       assert.equal(await list.count(),0);
+      // P3bl: explicit link state is distinct from a real unknown-time anchor.
+      const link=detail.getByRole("combobox",{
+        name:"Filtrer par présence d'ancre historique fictive",
+      });
+      assert.deepEqual(await link.locator("option").evaluateAll(options =>
+        options.map(option=>option.value)),["","linked","unlinked"]);
+      assert.equal(await link.inputValue(),"");
+      await link.selectOption("linked");
+      assert.equal(await picker.inputValue(),"");
+      assert.equal(await list.count(),0);
+      await link.selectOption("unlinked");
+      assert.equal(await picker.inputValue(),"");
+      assert.equal(await list.count(),0);
       await idFilter.fill("aucun-evenement-correspondant");
       await sourceFilter.fill("aucune-revision-correspondante");
       await anchorFilter.selectOption("A");
@@ -2060,6 +2073,7 @@ async function run() {
       assert.equal(await anchorFilter.inputValue(),"");
       assert.equal(await statusFilter.inputValue(),"all");
       assert.equal(await temporalKind.inputValue(),"");
+      assert.equal(await link.inputValue(),"");
       assert.equal(await picker.inputValue(),"");
       assert.equal(await list.count(),0,"History must stay hidden until explicitly selected");
       assert.ok((await detail.innerText()).includes("1 identifiants fictifs trouvés."));

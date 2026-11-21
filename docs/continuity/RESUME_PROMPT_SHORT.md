@@ -1,16 +1,16 @@
 # Reprise Fabulaxiom (https://github.com/LaurentCOLL1/Fabulaxiom)
 
 ## Dernier checkpoint
-main=8ad583528179061c473359b3a62713afc38c4cbe ; #405 P3bj MERGED CI #44890030315 PASS HEAD exact 1e0e4d382bb45696093f25197c8af56b39c3b80f ; postmain #44905630336 PENDING sur SHA exact main (NON QUALIFIÉ) ; date=2026-11-21 ; P3bk quatre types historiques CANDIDAT, #215 quatre REVIEW PARTIEL ; 12/92 ; M3.2 IN_PROGRESS_NOT_ACCEPTED (~45%).
+main=e2372e1c7eda4cac3212a125e4fb27963beca799 ; #406 P3bk MERGED CI #44906058889 PASS HEAD exact 3be244c33cafdcb878f810dd656e7c314975633f ; postmain #44912953958 PENDING sur SHA exact main (NON QUALIFIÉ) ; date=2026-11-21 ; P3bl ancre liée/sans ancre CANDIDAT, PR215 sept anciens handoff PARTIEL ; 12/92 ; M3.2 IN_PROGRESS_NOT_ACCEPTED (~45%).
 
 ## Interdictions actives — STOP
 Writer/R1–R9 NOT_PROVEN ; P4 STOP ; G2B NOT_ACCEPTED ; G2C NOT_AUTHORIZED ; G3 STOP_UNAVAILABLE ; PENDING_EXTERNAL_ATTESTATION(21/3/2), prospective NOT_STARTED ; R2 STOP, R3 partiel, D3c conception, D3b-4/5, D3b-5 STOP ; main/WAL/SHM, live SQLite WAL-index et ABA NOT_PROVEN ; glib #160 OPEN_NOT_REMEDIATED.
 STOP v6/v7, M:\Fabulaxiom, Greenfield, backups, IPC writer, 007, Hello, recovery.
 
 ## Prochaines opérations
-1. #405 CI source #44890030315 PASS HEAD exact 1e0e4d382bb45696093f25197c8af56b39c3b80f ; postmain #44905630336 PENDING SHA exact 8ad583528179061c473359b3a62713afc38c4cbe ; issue #38 #7062812097 ; 12/92.
-2. P3bk filtre 4 types temporels dans l'historique fictif, Vitest #43/#44, Chromium #110 CANDIDATS ; #215 4 REVIEW, 7 tests handoff noms anciens à vérifier, #35 68 absents ; M32-007/050/071/075/078/079 [ ], PR35/215 DRAFT.
-3. CI HEAD P3bk+PR215, diff/reviews/threads/Protect main ACTIVE strict bypass=[], squash expected_head_sha, postmain indépendante, #38 append-only ; PRODUCT_FIRST_PARALLEL_SAFETY.
+1. #406 CI #44906058889 PASS HEAD exact 3be244c33cafdcb878f810dd656e7c314975633f ; postmain #44912953958 PENDING SHA exact e2372e1c7eda4cac3212a125e4fb27963beca799 ; issue #38 #7062875141 ; 12/92.
+2. P3bl filtre présence d'ancre, Vitest #45/#46, Chromium #110 CANDIDATS ; #215 7 handoff anciens à comparer, #35 68 absents ; M32-007/050/071/075/078/081 [ ], PR35/215 DRAFT.
+3. CI HEAD P3bl et PR215, diff/reviews/threads/Protect main ACTIVE strict bypass=[], squash expected_head_sha, postmain indépendante, #38 append-only ; PRODUCT_FIRST_PARALLEL_SAFETY.
 
 ## Documents d'autorité
 RESUME_PROMPT.md ; HANDOFF_CURRENT.md ; HANDOFF_CURRENT.json ; STATE.md ; NEXT.md ; M3_2_GATE_DECISION_CURRENT.md ; M3_2_COMPLETION_MASTER_CHECKLIST_20261109.md ; ROADMAP_STATUS_CURRENT.md ; M3_2_SHORT_CYCLE_DELIVERY_20261116.md. Historique : RESUME_PROMPT.md / docs/qualification.
