@@ -2034,6 +2034,18 @@ async function run() {
       await link.selectOption("unlinked");
       assert.equal(await picker.inputValue(),"");
       assert.equal(await list.count(),0);
+      // P3bm: source linkage is distinct from an anchor linkage.
+      const sourceLink=detail.getByRole("combobox",{
+        name:"Filtrer par présence de révision source historique fictive",
+      });
+      assert.deepEqual(await sourceLink.locator("option").evaluateAll(options=>
+        options.map(option=>option.value)),["","linked","unlinked"]);
+      await sourceLink.selectOption("linked");
+      assert.equal(await picker.inputValue(),"");
+      assert.equal(await list.count(),0);
+      await sourceLink.selectOption("unlinked");
+      assert.equal(await picker.inputValue(),"");
+      assert.equal(await list.count(),0);
       await idFilter.fill("aucun-evenement-correspondant");
       await sourceFilter.fill("aucune-revision-correspondante");
       await anchorFilter.selectOption("A");
@@ -2074,6 +2086,7 @@ async function run() {
       assert.equal(await statusFilter.inputValue(),"all");
       assert.equal(await temporalKind.inputValue(),"");
       assert.equal(await link.inputValue(),"");
+      assert.equal(await sourceLink.inputValue(),"");
       assert.equal(await picker.inputValue(),"");
       assert.equal(await list.count(),0,"History must stay hidden until explicitly selected");
       assert.ok((await detail.innerText()).includes("1 identifiants fictifs trouvés."));

@@ -37,6 +37,7 @@ export function matchingFictionalEventHistoryIds(
   exactCalendarName = "",
   exactTimeKind: "" | "exact" | "approximate" | "relative" | "unknown" = "",
   anchorLink: "" | "linked" | "unlinked" = "",
+  sourceLink: "" | "linked" | "unlinked" = "",
 ): readonly string[] {
   inspectFictionalEventNotebook(notebook);
   const query = searchId.trim().toLocaleLowerCase();
@@ -52,6 +53,8 @@ export function matchingFictionalEventHistoryIds(
   const timeKind = exactTimeKind;
   if (!["", "linked", "unlinked"].includes(anchorLink))
     throw Error("Lien d'ancre fictive invalide");
+  if (!["", "linked", "unlinked"].includes(sourceLink))
+    throw Error("Lien de révision source fictive invalide");
   const anchorById = new Map(notebook.draft.snapshot.anchors.map(a => [a.id, a]));
   const sourceRevisionById = new Map(
     notebook.draft.revisions.map(r => [r.revision_id, r]));
@@ -62,7 +65,7 @@ export function matchingFictionalEventHistoryIds(
       return Boolean(latest && (status === "all" || latest.status === status) &&
         id.toLocaleLowerCase().includes(query) &&
         ((!sourceId && !novelId && !sceneId && !anchorId && !dateLabel && !calendarName &&
-          !timeKind && !anchorLink) ||
+          !timeKind && !anchorLink && !sourceLink) ||
           versions.some(v => {
             // All selectors must match one event version, not a union of history.
             const revision = v.source_revision_id === null ? undefined :
@@ -79,7 +82,9 @@ export function matchingFictionalEventHistoryIds(
                 anchor.calendar_name === calendarName)) &&
               (!timeKind || anchor?.time_kind === timeKind) &&
               (!anchorLink || (anchorLink === "linked" ?
-                v.anchor_id !== null : v.anchor_id === null));
+                v.anchor_id !== null : v.anchor_id === null)) &&
+              (!sourceLink || (sourceLink === "linked" ?
+                v.source_revision_id !== null : v.source_revision_id === null));
           })));
     });
 }
@@ -156,6 +161,8 @@ export default function M32FictionalEventManualWorkshop({ initial }: {
     useState<"" | "exact" | "approximate" | "relative" | "unknown">("");
   const [historyAnchorLink, setHistoryAnchorLink] =
     useState<"" | "linked" | "unlinked">("");
+  const [historySourceLink, setHistorySourceLink] =
+    useState<"" | "linked" | "unlinked">("");
   const [historyPage, setHistoryPage] = useState(0);
   const [historyPageSize, setHistoryPageSize] = useState<number>(FICTIONAL_HISTORY_PAGE_SIZE);
   const [historyIdOrder, setHistoryIdOrder] = useState<FictionalHistoryIdOrder>("insertion");
@@ -179,7 +186,7 @@ export default function M32FictionalEventManualWorkshop({ initial }: {
   const historyEventIds = matchingFictionalEventHistoryIds(
     book, historyIdQuery, historyStatus, historySourceIdQuery, historyNovelId,
     historySceneId, historyAnchorId, historyFictionalDateLabel, historyCalendarName,
-    historyTimeKind, historyAnchorLink);
+    historyTimeKind, historyAnchorLink, historySourceLink);
   const orderedHistoryIds = orderFictionalEventHistoryIds(historyEventIds, historyIdOrder);
   const historyView = pageFictionalEventHistoryIds(orderedHistoryIds, historyPage, historyPageSize);
   const inspectedHistory = historyEventId
@@ -222,6 +229,7 @@ export default function M32FictionalEventManualWorkshop({ initial }: {
     setHistoryNovelId(""); setHistorySceneId("");
     setHistoryAnchorId(""); setHistoryFictionalDateLabel("");
     setHistoryCalendarName(""); setHistoryTimeKind(""); setHistoryAnchorLink("");
+    setHistorySourceLink("");
     setHistoryStatus("all");
     setHistoryPage(0); setHistoryEventId("");
     setHistoryPageSize(FICTIONAL_HISTORY_PAGE_SIZE);
@@ -416,6 +424,18 @@ export default function M32FictionalEventManualWorkshop({ initial }: {
       </label>
       <small role="note">Sans ancre ne vaut jamais « ancre au temps inconnu ».
         Les filtres doivent correspondre à une même version.</small>
+      <label>Filtrer par présence de révision source historique fictive
+        <select value={historySourceLink} onChange={e => {
+          setHistorySourceLink(e.currentTarget.value as typeof historySourceLink);
+          setHistoryEventId(""); setHistoryPage(0);
+        }}>
+          <option value="">Toutes les liaisons sources fictives</option>
+          <option value="linked">Avec révision source explicite</option>
+          <option value="unlinked">Sans révision source explicite</option>
+        </select>
+      </label>
+      <small role="note">Sans source ne signifie ni sans ancre ni temps inconnu.
+        Tous les filtres portent sur une même version historique.</small>
       <label>Filtrer l'historique par statut
         <select value={historyStatus} onChange={e => {
           setHistoryStatus(e.currentTarget.value as "all" | "current" | "withdrawn");
