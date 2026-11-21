@@ -319,5 +319,19 @@ class Pr215SevenOldHandoffScopesContract(unittest.TestCase):
         self.assertIn("OPEN_NOT_ACCEPTED",report)
         self.assertIn("NOT_PROVEN",report)
 
+class Pr215Old146147AssertionReview(unittest.TestCase):
+    def test_19_old_146_147_assertions_remain_unported(self):
+        report=(ROOT/"docs/qualification/M3_2_PR215_OLD_HANDOFF_146_147_ASSERTION_REVIEW_20261121.md").read_text(encoding="utf-8")
+        self.assertEqual(report.count("REVIEW_OLD_ASSERTIONS_NOT_PORTED"),2)
+        for term in ("next_production_writer_custody_design_study_20261028",
+                     "owner_p1_same_sid_ollama_design_decision_20261028",
+                     "candidate_ci_qualified=false","external_writer_absence=NOT_PROVEN",
+                     "a0_existing_profile_cross_process=STOP",
+                     "Aucune équivalence","OPEN_NOT_ACCEPTED","R1–R9 NOT_PROVEN"):
+            self.assertIn(term,report)
+        check=CHECKLIST.read_text(encoding="utf-8")
+        self.assertIn("- [ ] **M32-007**",check)
+        self.assertIn("- [ ] **M32-050**",check)
+
 if __name__ == "__main__":
     unittest.main()

@@ -336,6 +336,23 @@
         "semantic_equivalence_attested": false,
         "requirement_acceptance": false,
         "writer_admission": false
+      },
+      "latest_pr215_old146_147_assertion_review": {
+        "old_cases": [
+          146,
+          147
+        ],
+        "review_remaining": [
+          148,
+          149,
+          150,
+          151,
+          152
+        ],
+        "report": "docs/qualification/M3_2_PR215_OLD_HANDOFF_146_147_ASSERTION_REVIEW_20261121.md",
+        "semantic_equivalence_attested": false,
+        "writer_admission": false,
+        "source_ci_status": "NOT_RUN_CANDIDATE"
       }
     },
     {
@@ -1965,6 +1982,23 @@
         "semantic_equivalence_attested": false,
         "requirement_acceptance": false,
         "writer_admission": false
+      },
+      "latest_pr215_old146_147_assertion_review": {
+        "old_cases": [
+          146,
+          147
+        ],
+        "review_remaining": [
+          148,
+          149,
+          150,
+          151,
+          152
+        ],
+        "report": "docs/qualification/M3_2_PR215_OLD_HANDOFF_146_147_ASSERTION_REVIEW_20261121.md",
+        "semantic_equivalence_attested": false,
+        "writer_admission": false,
+        "source_ci_status": "NOT_RUN_CANDIDATE"
       }
     },
     {
@@ -2840,6 +2874,17 @@
         "source_ci_status": "NOT_RUN_ON_NEW_HEAD",
         "operator_acceptance": false,
         "requirement_acceptance": false
+      },
+      "latest_p3bm_candidate": {
+        "choices": [
+          "linked",
+          "unlinked"
+        ],
+        "same_historical_version": true,
+        "source_link_distinct_from_anchor_link": true,
+        "report": "docs/qualification/M3_2_P3BM_HISTORY_SOURCE_LINK_VS_ANCHOR_20261121.md",
+        "source_ci_status": "NOT_RUN_CANDIDATE",
+        "operator_acceptance": false
       }
     },
     {
@@ -3460,6 +3505,17 @@
         "source_ci_status": "NOT_RUN_ON_NEW_HEAD",
         "operator_acceptance": false,
         "requirement_acceptance": false
+      },
+      "latest_p3bm_candidate": {
+        "choices": [
+          "linked",
+          "unlinked"
+        ],
+        "same_historical_version": true,
+        "source_link_distinct_from_anchor_link": true,
+        "report": "docs/qualification/M3_2_P3BM_HISTORY_SOURCE_LINK_VS_ANCHOR_20261121.md",
+        "source_ci_status": "NOT_RUN_CANDIDATE",
+        "operator_acceptance": false
       }
     },
     {

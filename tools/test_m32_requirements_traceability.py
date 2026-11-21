@@ -531,6 +531,28 @@ class TraceabilityAndScope(unittest.TestCase):
             self.assertIn(f"- [ ] **{key}**",CHECK)
         self.assertEqual((MATRIX["total"],MATRIX["closed"],MATRIX["open"]),(104,12,92))
 
+    def test_p3bm_and_pr215_old_146_147_remain_partial(self):
+        idx={r["id"]:r for r in MATRIX["rows"]}
+        for key in ("M32-007","M32-050"):
+            rec=idx[key]["latest_pr215_old146_147_assertion_review"]
+            self.assertEqual(rec["old_cases"],[146,147])
+            self.assertEqual(rec["review_remaining"],[148,149,150,151,152])
+            self.assertFalse(rec["semantic_equivalence_attested"])
+            self.assertFalse(rec["writer_admission"])
+            self.assertIn("NOT_RUN",rec["source_ci_status"])
+            self.assertTrue((ROOT/rec["report"]).is_file())
+            self.assertIn(f"- [ ] **{key}**",CHECK)
+        for key in ("M32-071","M32-081"):
+            rec=idx[key]["latest_p3bm_candidate"]
+            self.assertEqual(rec["choices"],["linked","unlinked"])
+            self.assertTrue(rec["same_historical_version"])
+            self.assertTrue(rec["source_link_distinct_from_anchor_link"])
+            self.assertFalse(rec["operator_acceptance"])
+            self.assertIn("NOT_RUN",rec["source_ci_status"])
+            self.assertTrue((ROOT/rec["report"]).is_file())
+            self.assertIn(f"- [ ] **{key}**",CHECK)
+        self.assertEqual((MATRIX["total"],MATRIX["closed"],MATRIX["open"]),(104,12,92))
+
     def test_metadata_does_not_grant_writer_admission(self):
         self.assertEqual(MATRIX["gate"],"IN_PROGRESS_NOT_ACCEPTED")
         for term in ("R1–R9 NOT_PROVEN","G3 STOP_UNAVAILABLE","P4 STOP","Greenfield"):
