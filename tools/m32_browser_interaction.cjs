@@ -2046,6 +2046,18 @@ async function run() {
       await sourceLink.selectOption("unlinked");
       assert.equal(await picker.inputValue(),"");
       assert.equal(await list.count(),0);
+      // P3bo: explicit changed-field inspection remains ID-only until picker.
+      const fieldChange=detail.getByRole("combobox",{
+        name:"Filtrer par champ modifié entre versions historiques fictives",
+      });
+      assert.deepEqual(await fieldChange.locator("option").evaluateAll(options=>
+        options.map(option=>option.value)),["","title","note","anchor_id","source_revision_id"]);
+      await fieldChange.selectOption("note");
+      assert.equal(await picker.inputValue(),"");
+      assert.equal(await list.count(),0);
+      await fieldChange.selectOption("source_revision_id");
+      assert.equal(await picker.inputValue(),"");
+      assert.equal(await list.count(),0);
       await idFilter.fill("aucun-evenement-correspondant");
       await sourceFilter.fill("aucune-revision-correspondante");
       await anchorFilter.selectOption("A");
@@ -2087,6 +2099,7 @@ async function run() {
       assert.equal(await temporalKind.inputValue(),"");
       assert.equal(await link.inputValue(),"");
       assert.equal(await sourceLink.inputValue(),"");
+      assert.equal(await fieldChange.inputValue(),"");
       assert.equal(await picker.inputValue(),"");
       assert.equal(await list.count(),0,"History must stay hidden until explicitly selected");
       assert.ok((await detail.innerText()).includes("1 identifiants fictifs trouvés."));

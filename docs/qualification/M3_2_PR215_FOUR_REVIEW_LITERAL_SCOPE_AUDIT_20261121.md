@@ -1,0 +1,14 @@
+# PR #215 — périmètre des quatre chemins REVIEW, preuves littérales seulement (21/11/2026)
+
+PR historique [#215](https://github.com/LaurentCOLL1/Fabulaxiom/pull/215) **DRAFT**, HEAD `8203b7323877edc87ffabaad1694c52d2523023d`, comparée par lecture au protected `main=e19641ab1d01eda784034735382edd4ded0f0696`. Réconciliation **source-only**, sans exécuter ni porter les anciens tests, ni toucher à v6/v7, SQLite opérateur, Rust production ou aux deux PR DRAFT.
+
+| Chemin historique REVIEW | Observation littérale documentée, NON sémantique | Décision |
+| --- | --- | --- |
+| `src-tauri/src/m32_sqlite_vfs_preopen_tests.rs` | 26 fonctions nommées anciennes toujours présentes parmi 34 modernes, 25 blocs identiques au découpage textuel et un bloc différent, 8 nouvelles ; les frontières externes et Win32 restent NON PROUVÉES | REVIEW_NON_ACCEPTED |
+| `tools/m32_rust_sqlite_open_inventory.py` | Les trois fonctions top-level `counts`, `audit_inventory`, `repository_inventory` ont des blocs identiques ; fichier complet non identique (9 165 vs 13 342 caractères à la comparaison), pas d'attestation de l'import/module/flags | REVIEW_NON_ACCEPTED |
+| `tools/test_m32_rust_sqlite_open_inventory.py` | 41 noms historiques présents parmi 69 ; 35 blocs littéraux identiques, six modifiés, avec seuils `(22,0,0,0,0,23,0)` devenus `(27,0,0,0,0,28,0)` dans #37–40 ; aucun signe de disparition de nom | REVIEW_NON_ACCEPTED |
+| `tools/test_m32_handoff_contract.py` | 145 anciens noms sur 152 toujours présents, 7 noms #146–152 absents sous leurs anciens intitulés ; les sept ensembles d'assertions sont inventoriés dans les deux rapports `M3_2_PR215_OLD_HANDOFF_146_147_ASSERTION_REVIEW_20261121.md` et `M3_2_PR215_OLD_HANDOFF_148_152_ASSERTION_REVIEW_20261121.md`. Aucune équivalence de clés `self.data` ou de nouvelles définitions attestée | REVIEW_NON_ACCEPTED |
+
+**Quatre chemins sur quatre examinés au niveau des noms/blocs, quatre toujours REVIEW_NON_ACCEPTED**. Les différences textuelles et les décomptes de tests ne constituent aucune preuve d'exécution Windows, de couverture d'assertions modernes, de non-régression de Win32 VFS, de fichier SHM live/ABA ni de recovery. Toute admission nécessitera une comparaison sémantique ciblée et indépendante, ou une décision de rejet explicite étayée. Aucun portage par défaut. PR #35 possède toujours 68 chemins absents et reste DRAFT ; M32-007/M32-050 OPEN_NOT_ACCEPTED ; checklist 104=12/92, M3.2 IN_PROGRESS_NOT_ACCEPTED, PRODUCT_FIRST_PARALLEL_SAFETY.
+
+STOP Writer/R1–R9 NOT_PROVEN ; P4 STOP ; G2B NOT_ACCEPTED ; G2C NOT_AUTHORIZED ; G3 STOP_UNAVAILABLE ; PENDING_EXTERNAL_ATTESTATION(21/3/2) prospective NOT_STARTED ; R2 STOP, R3 partiel, D3c conception, D3b-4/5, D3b-5 STOP ; main/WAL/SHM, live SQLite WAL-index et ABA NOT_PROVEN ; glib #160 OPEN_NOT_REMEDIATED ; STOP v6/v7, M:\Fabulaxiom, Greenfield, backups, IPC writer, 007, Hello, recovery.

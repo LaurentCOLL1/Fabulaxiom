@@ -367,6 +367,15 @@
         "semantic_equivalence_attested": false,
         "writer_admission": false,
         "source_ci_status": "NOT_RUN_CANDIDATE"
+      },
+      "latest_pr215_four_review_literal_scope": {
+        "historical_review_paths": 4,
+        "literal_comparison_paths": 4,
+        "accepted_paths": 0,
+        "report": "docs/qualification/M3_2_PR215_FOUR_REVIEW_LITERAL_SCOPE_AUDIT_20261121.md",
+        "semantic_equivalence_attested": false,
+        "writer_admission": false,
+        "source_ci_status": "NOT_RUN_CANDIDATE"
       }
     },
     {
@@ -2027,6 +2036,15 @@
         "semantic_equivalence_attested": false,
         "writer_admission": false,
         "source_ci_status": "NOT_RUN_CANDIDATE"
+      },
+      "latest_pr215_four_review_literal_scope": {
+        "historical_review_paths": 4,
+        "literal_comparison_paths": 4,
+        "accepted_paths": 0,
+        "report": "docs/qualification/M3_2_PR215_FOUR_REVIEW_LITERAL_SCOPE_AUDIT_20261121.md",
+        "semantic_equivalence_attested": false,
+        "writer_admission": false,
+        "source_ci_status": "NOT_RUN_CANDIDATE"
       }
     },
     {
@@ -2913,6 +2931,24 @@
         "report": "docs/qualification/M3_2_P3BM_HISTORY_SOURCE_LINK_VS_ANCHOR_20261121.md",
         "source_ci_status": "NOT_RUN_CANDIDATE",
         "operator_acceptance": false
+      },
+      "latest_p3bo_candidate": {
+        "choices": [
+          "title",
+          "note",
+          "anchor_id",
+          "source_revision_id"
+        ],
+        "same_historical_version": true,
+        "withdrawal_not_correction": true,
+        "vitest_cases": [
+          51,
+          52
+        ],
+        "browser_case": 110,
+        "report": "docs/qualification/M3_2_P3BO_HISTORICAL_CHANGED_FIELD_FILTER_20261121.md",
+        "operator_acceptance": false,
+        "source_ci_status": "NOT_RUN_CANDIDATE"
       }
     },
     {
@@ -3565,6 +3601,24 @@
         "report": "docs/qualification/M3_2_P3BM_HISTORY_SOURCE_LINK_VS_ANCHOR_20261121.md",
         "source_ci_status": "NOT_RUN_CANDIDATE",
         "operator_acceptance": false
+      },
+      "latest_p3bo_candidate": {
+        "choices": [
+          "title",
+          "note",
+          "anchor_id",
+          "source_revision_id"
+        ],
+        "same_historical_version": true,
+        "withdrawal_not_correction": true,
+        "vitest_cases": [
+          51,
+          52
+        ],
+        "browser_case": 110,
+        "report": "docs/qualification/M3_2_P3BO_HISTORICAL_CHANGED_FIELD_FILTER_20261121.md",
+        "operator_acceptance": false,
+        "source_ci_status": "NOT_RUN_CANDIDATE"
       }
     },
     {

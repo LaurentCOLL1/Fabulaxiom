@@ -975,4 +975,59 @@ describe("M3.2 manual fictional event workshop source-only", () => {
     expect(JSON.stringify(alpha)).toBe(beforeAlpha);
     expect(JSON.stringify(beta)).toBe(beforeBeta);
   });
+
+  it("51 changed-field history filter only matches the same historical amended version",()=>{
+    const first=applyFictionalWorkshopAction(invented(),{
+      kind:"create",input:{...input,anchor_id:"A",
+        source_revision_id:"fiction-alpha-rev-1"}});
+    const id=first.events[0].event_id;
+    let book=applyFictionalWorkshopAction(first,{
+      kind:"amend",eventId:id,reason:"Révision 2 fictive",
+      input:{...input,title:"Titre modifié",anchor_id:"B",source_revision_id:null}});
+    book=applyFictionalWorkshopAction(book,{
+      kind:"amend",eventId:id,reason:"Révision 3 fictive",
+      input:{...input,title:"Titre modifié",note:"Note modifiée",
+        anchor_id:"B",source_revision_id:null}});
+    const other=applyFictionalWorkshopAction(book,{kind:"create",input});
+    book=applyFictionalWorkshopAction(other,{
+      kind:"withdraw",eventId:other.events[other.events.length-1].event_id,
+      reason:"Retrait seul sans changement de contenu"});
+    const before=JSON.stringify(book);
+    const filter=(field:""|"title"|"note"|"anchor_id"|"source_revision_id",
+      anchor="",source="",status:"all"|"withdrawn"="all")=>
+      matchingFictionalEventHistoryIds(book,"",status,source,"","",anchor,
+        "","","","","",field);
+    for(const field of ["title","note","anchor_id","source_revision_id"] as const)
+      expect(filter(field)).toEqual([id]);
+    expect(filter("title","B")).toEqual([id]);
+    expect(filter("title","A")).toEqual([]);
+    expect(filter("note","B")).toEqual([id]);
+    expect(filter("note","","fiction-alpha-rev-1")).toEqual([]);
+    expect(filter("title","","","withdrawn")).toEqual([]);
+    expect(filter("")).toHaveLength(2);
+    expect(()=>matchingFictionalEventHistoryIds(book,"","all",
+      "","","","","","","","","","bad" as never))
+      .toThrow("Champ historique fictif invalide");
+    expect(JSON.stringify(book)).toBe(before);
+  });
+  it("52 SSR changed-field filter hides old text, audit reasons and corrected contents",()=>{
+    const first=applyFictionalWorkshopAction(invented(),{
+      kind:"create",input:{...input,anchor_id:"A",source_revision_id:"fiction-alpha-rev-1",
+        note:"NOTE-PRIVÉE-V1"}});
+    const book=applyFictionalWorkshopAction(first,{
+      kind:"amend",eventId:first.events[0].event_id,
+      reason:"JUSTIFICATION-PRIVÉE-V2",
+      input:{...input,title:"Titre public inventé",anchor_id:"B",
+        source_revision_id:null,note:"NOTE-PRIVÉE-V2"}});
+    const before=JSON.stringify(book);
+    const html=renderToStaticMarkup(createElement(M32FictionalEventManualWorkshop,{initial:book}));
+    expect(html).toContain("Filtrer par champ modifié entre versions historiques fictives");
+    for(const key of ["title","note","anchor_id","source_revision_id"])
+      expect(html).toContain('value="'+key+'"');
+    expect(html).not.toContain("NOTE-PRIVÉE-V1");
+    expect(html).not.toContain("NOTE-PRIVÉE-V2");
+    expect(html).not.toContain("JUSTIFICATION-PRIVÉE-V2");
+    expect(html).not.toContain("Versions historiques fictives");
+    expect(JSON.stringify(book)).toBe(before);
+  });
 });

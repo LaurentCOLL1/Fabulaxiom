@@ -1,4 +1,42 @@
 {
+  "m32_20261121_p3bo_changed_field_and_pr215_four_review_candidate_after_pr409": {
+    "date": "2026-11-21",
+    "parent_main": "e19641ab1d01eda784034735382edd4ded0f0696",
+    "source_ci_run": 44932692704,
+    "source_ci_head": "eb6ea3bac819c074a0d530482ad9df46aaabc9d1",
+    "source_ci_status": "COMPLETED_SUCCESS_EXACT_HEAD",
+    "parent_postmain_run": 44940078966,
+    "parent_postmain_status": "PENDING_UNQUALIFIED",
+    "attested_postmain_sha": null,
+    "p3bo": "FICTITIOUS_HISTORIC_FIELD_DIFFERENCE_SAME_VERSION_ID_ONLY",
+    "p3bo_fields": [
+      "title",
+      "note",
+      "anchor_id",
+      "source_revision_id"
+    ],
+    "p3bo_vitest_cases": [
+      51,
+      52
+    ],
+    "pr215_review_paths": 4,
+    "pr215_literally_triaged": 4,
+    "pr215_accepted_paths": 0,
+    "pr215_semantic_equivalence": false,
+    "pr35_absent_paths": 68,
+    "m32_007_closed": false,
+    "m32_050_closed": false,
+    "m32_071_closed": false,
+    "m32_081_closed": false,
+    "checklist_total": 104,
+    "closed": 12,
+    "open": 92,
+    "gate": "IN_PROGRESS_NOT_ACCEPTED",
+    "writer_admitted": false,
+    "operator_accepted": false,
+    "strategy": "PRODUCT_FIRST_PARALLEL_SAFETY",
+    "current_phase": "SOURCE_ONLY_CANDIDATE_UNQUALIFIED"
+  },
   "m32_20261121_p3bn_two_universes_pr215_148152_candidate_after_pr408": {
     "date": "2026-11-21",
     "parent_main": "c86722f598dbdf9b0e2bd0b6fdc8d8621c53ad1c",
