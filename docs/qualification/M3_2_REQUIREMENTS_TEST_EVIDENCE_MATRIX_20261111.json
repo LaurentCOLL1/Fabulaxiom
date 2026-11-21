@@ -325,6 +325,17 @@
         "semantic_equivalence_attested": false,
         "requirement_acceptance": false,
         "writer_admitted": false
+      },
+      "latest_pr215_seven_handoff_scoping": {
+        "source_main": "e2372e1c7eda4cac3212a125e4fb27963beca799",
+        "head_215": "8203b7323877edc87ffabaad1694c52d2523023d",
+        "report": "docs/qualification/M3_2_PR215_SEVEN_OLD_HANDOFF_ASSERTION_SCOPES_20261121.md",
+        "old_tests": 7,
+        "document_references": 7,
+        "old_self_data_keys_no_longer_literal": 6,
+        "semantic_equivalence_attested": false,
+        "requirement_acceptance": false,
+        "writer_admission": false
       }
     },
     {
@@ -1943,6 +1954,17 @@
         "semantic_equivalence_attested": false,
         "requirement_acceptance": false,
         "writer_admitted": false
+      },
+      "latest_pr215_seven_handoff_scoping": {
+        "source_main": "e2372e1c7eda4cac3212a125e4fb27963beca799",
+        "head_215": "8203b7323877edc87ffabaad1694c52d2523023d",
+        "report": "docs/qualification/M3_2_PR215_SEVEN_OLD_HANDOFF_ASSERTION_SCOPES_20261121.md",
+        "old_tests": 7,
+        "document_references": 7,
+        "old_self_data_keys_no_longer_literal": 6,
+        "semantic_equivalence_attested": false,
+        "requirement_acceptance": false,
+        "writer_admission": false
       }
     },
     {
@@ -2806,6 +2828,18 @@
         "browser_click_attested": false,
         "operator_acceptance": false,
         "requirement_acceptance": false
+      },
+      "latest_p3bl_candidate": {
+        "source_file": "src/M32FictionalEventManualWorkshop.tsx",
+        "report": "docs/qualification/M3_2_P3BL_HISTORY_ANCHOR_LINK_VS_UNKNOWN_20261121.md",
+        "choices": [
+          "linked",
+          "unlinked"
+        ],
+        "unlinked_not_unknown": true,
+        "source_ci_status": "NOT_RUN_ON_NEW_HEAD",
+        "operator_acceptance": false,
+        "requirement_acceptance": false
       }
     },
     {
@@ -3414,6 +3448,18 @@
         "operator_acceptance": false,
         "p4_runtime_authorized": false,
         "individual_case_is_not_entire_requirement": true
+      },
+      "latest_p3bl_candidate": {
+        "source_file": "src/M32FictionalEventManualWorkshop.tsx",
+        "report": "docs/qualification/M3_2_P3BL_HISTORY_ANCHOR_LINK_VS_UNKNOWN_20261121.md",
+        "choices": [
+          "linked",
+          "unlinked"
+        ],
+        "unlinked_not_unknown": true,
+        "source_ci_status": "NOT_RUN_ON_NEW_HEAD",
+        "operator_acceptance": false,
+        "requirement_acceptance": false
       }
     },
     {
