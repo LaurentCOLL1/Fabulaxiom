@@ -1,4 +1,35 @@
 {
+  "m32_20261122_078_accepted_proof_gaps_after_pr410": {
+    "date": "2026-11-22",
+    "parent_main": "ed8d555d8253f7adb7b8ec6689b9be5331786eaf",
+    "source_ci_run": 44940607024,
+    "source_ci_head": "12bc1a101129aa1fd18dbd705bc8c92426ef0cbc",
+    "source_ci_status": "COMPLETED_SUCCESS_EXACT_HEAD",
+    "source_ci_windows_steps": 93,
+    "parent_postmain_run": 44962009501,
+    "parent_postmain_status": "PENDING_UNQUALIFIED",
+    "attested_postmain_sha": null,
+    "issue38_previous_comment": 7070909032,
+    "m32_078_gap_ledger_report": "docs/qualification/M3_2_M32_078_ACCEPTED_PROOF_GAPS_20261122.json",
+    "m32_078_gap_ledger_status": "CANDIDATE_SOURCE_ONLY",
+    "gate_open_counts": {
+      "RUNTIME_NOT_ADMITTED": 42,
+      "REQUIRES_INDEPENDENT_R1_G2_PROOFS": 39,
+      "SCOPED_EVIDENCE_REQUIRED": 11
+    },
+    "m32_078_closed": false,
+    "pr215_review_paths": 4,
+    "pr215_accepted_paths": 0,
+    "pr35_absent_paths": 68,
+    "checklist_total": 104,
+    "closed": 12,
+    "open": 92,
+    "gate": "IN_PROGRESS_NOT_ACCEPTED",
+    "writer_admitted": false,
+    "operator_accepted": false,
+    "strategy": "PRODUCT_FIRST_PARALLEL_SAFETY",
+    "current_phase": "DOCUMENTARY_ACCEPTED_PROOF_GAPS_UNQUALIFIED"
+  },
   "m32_20261121_p3bo_changed_field_and_pr215_four_review_candidate_after_pr409": {
     "date": "2026-11-21",
     "parent_main": "e19641ab1d01eda784034735382edd4ded0f0696",
