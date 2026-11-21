@@ -35,6 +35,7 @@ export function matchingFictionalEventHistoryIds(
   exactAnchorId = "",
   exactFictionalDateLabel = "",
   exactCalendarName = "",
+  exactTimeKind: "" | "exact" | "approximate" | "relative" | "unknown" = "",
 ): readonly string[] {
   inspectFictionalEventNotebook(notebook);
   const query = searchId.trim().toLocaleLowerCase();
@@ -45,6 +46,9 @@ export function matchingFictionalEventHistoryIds(
   const anchorId = exactAnchorId.trim();
   const dateLabel = exactFictionalDateLabel.trim();
   const calendarName = exactCalendarName.trim();
+  if (!["", "exact", "approximate", "relative", "unknown"].includes(exactTimeKind))
+    throw Error("Type temporel fictif invalide");
+  const timeKind = exactTimeKind;
   const anchorById = new Map(notebook.draft.snapshot.anchors.map(a => [a.id, a]));
   const sourceRevisionById = new Map(
     notebook.draft.revisions.map(r => [r.revision_id, r]));
@@ -54,7 +58,8 @@ export function matchingFictionalEventHistoryIds(
       const latest = versions[versions.length - 1];
       return Boolean(latest && (status === "all" || latest.status === status) &&
         id.toLocaleLowerCase().includes(query) &&
-        ((!sourceId && !novelId && !sceneId && !anchorId && !dateLabel && !calendarName) ||
+        ((!sourceId && !novelId && !sceneId && !anchorId && !dateLabel && !calendarName &&
+          !timeKind) ||
           versions.some(v => {
             // All selectors must match one event version, not a union of history.
             const revision = v.source_revision_id === null ? undefined :
@@ -68,7 +73,8 @@ export function matchingFictionalEventHistoryIds(
               (!dateLabel || (anchor?.time_kind === "exact" &&
                 anchor.fictional_label === dateLabel)) &&
               (!calendarName || (anchor?.time_kind === "exact" &&
-                anchor.calendar_name === calendarName));
+                anchor.calendar_name === calendarName)) &&
+              (!timeKind || anchor?.time_kind === timeKind);
           })));
     });
 }
@@ -141,6 +147,8 @@ export default function M32FictionalEventManualWorkshop({ initial }: {
   const [historyAnchorId, setHistoryAnchorId] = useState("");
   const [historyFictionalDateLabel, setHistoryFictionalDateLabel] = useState("");
   const [historyCalendarName, setHistoryCalendarName] = useState("");
+  const [historyTimeKind, setHistoryTimeKind] =
+    useState<"" | "exact" | "approximate" | "relative" | "unknown">("");
   const [historyPage, setHistoryPage] = useState(0);
   const [historyPageSize, setHistoryPageSize] = useState<number>(FICTIONAL_HISTORY_PAGE_SIZE);
   const [historyIdOrder, setHistoryIdOrder] = useState<FictionalHistoryIdOrder>("insertion");
@@ -163,7 +171,8 @@ export default function M32FictionalEventManualWorkshop({ initial }: {
     .map(a => a.calendar_name!))];
   const historyEventIds = matchingFictionalEventHistoryIds(
     book, historyIdQuery, historyStatus, historySourceIdQuery, historyNovelId,
-    historySceneId, historyAnchorId, historyFictionalDateLabel, historyCalendarName);
+    historySceneId, historyAnchorId, historyFictionalDateLabel, historyCalendarName,
+    historyTimeKind);
   const orderedHistoryIds = orderFictionalEventHistoryIds(historyEventIds, historyIdOrder);
   const historyView = pageFictionalEventHistoryIds(orderedHistoryIds, historyPage, historyPageSize);
   const inspectedHistory = historyEventId
@@ -205,7 +214,7 @@ export default function M32FictionalEventManualWorkshop({ initial }: {
     setHistoryIdQuery(""); setHistorySourceIdQuery("");
     setHistoryNovelId(""); setHistorySceneId("");
     setHistoryAnchorId(""); setHistoryFictionalDateLabel("");
-    setHistoryCalendarName(""); setHistoryStatus("all");
+    setHistoryCalendarName(""); setHistoryTimeKind(""); setHistoryStatus("all");
     setHistoryPage(0); setHistoryEventId("");
     setHistoryPageSize(FICTIONAL_HISTORY_PAGE_SIZE);
     setHistoryIdOrder("insertion");
@@ -373,6 +382,20 @@ export default function M32FictionalEventManualWorkshop({ initial }: {
             <option key={name} value={name}>{name}</option>)}
         </select>
       </label>
+      <label>Filtrer par type temporel historique fictif
+        <select value={historyTimeKind} onChange={e => {
+          setHistoryTimeKind(e.currentTarget.value as typeof historyTimeKind);
+          setHistoryEventId(""); setHistoryPage(0);
+        }}>
+          <option value="">Tous les types temporels fictifs</option>
+          <option value="exact">Date fictive exacte</option>
+          <option value="approximate">Période fictive approximative</option>
+          <option value="relative">Position fictive relative</option>
+          <option value="unknown">Ancre fictive à temps inconnu</option>
+        </select>
+      </label>
+      <small role="note">Type de l'ancre citée par une même version historique,
+        sans inférence de date. Sans ancre ne signifie pas temps inconnu attesté.</small>
       <label>Filtrer l'historique par statut
         <select value={historyStatus} onChange={e => {
           setHistoryStatus(e.currentTarget.value as "all" | "current" | "withdrawn");

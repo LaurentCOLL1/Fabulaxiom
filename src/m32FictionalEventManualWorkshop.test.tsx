@@ -92,6 +92,27 @@ function inventedTwoCalendars(): FictionalEventNotebook {
   };
   return startFictionalEventNotebook(startFictionalDraft(snapshot, two.draft.revisions));
 }
+
+function inventedFourTimeKinds(): FictionalEventNotebook {
+  const base = invented();
+  const original = base.draft.snapshot.anchors;
+  const universe_id = base.draft.snapshot.universe_id;
+  const snapshot: M32ChronologyProjection = {
+    ...base.draft.snapshot,
+    anchors: [
+      { ...original[0], time_kind: "exact", calendar_name: "cycle-invente",
+        fictional_label: "Jour inventé 1", precision_text: null },
+      { ...original[1], time_kind: "approximate", calendar_name: "cycle-invente",
+        fictional_label: null, precision_text: "Autour du solstice fictif" },
+      { ...original[1], id: "C", universe_id, time_kind: "relative",
+        calendar_name: null, fictional_label: null, precision_text: null },
+      { ...original[1], id: "D", universe_id, time_kind: "unknown",
+        calendar_name: null, fictional_label: null, precision_text: null },
+    ],
+  };
+  return startFictionalEventNotebook(startFictionalDraft(snapshot, base.draft.revisions));
+}
+
 const input: FictionalEventInput = { title: "Rencontre", note: "Fait inventé",
   anchor_id: null, source_revision_id: null };
 function create(book: FictionalEventNotebook = invented()) {
@@ -692,6 +713,67 @@ describe("M3.2 manual fictional event workshop source-only", () => {
     expect(html).toContain("jamais l&#x27;ordre du monde");
     expect(html).not.toContain("NOTE-SECRET-ORDRE");
     expect(html).not.toContain("MOTIF-SECRET-ORDRE");
+    expect(html).not.toContain("Versions historiques fictives");
+    expect(JSON.stringify(book)).toBe(before);
+  });
+  it("43 historical time-kind filter covers four explicit anchor kinds, one version at a time", () => {
+    let book = inventedFourTimeKinds();
+    const make = (anchor_id: string | null, source_revision_id: string | null) => {
+      book = applyFictionalWorkshopAction(book, {
+        kind: "create", input: { ...input, anchor_id, source_revision_id },
+      });
+      return book.events[book.events.length - 1].event_id;
+    };
+    const e1 = make("A", "fiction-alpha-rev-1");
+    const e2 = make("B", null);
+    const e3 = make("C", null);
+    const e4 = make("D", null);
+    make(null, null);
+    book = applyFictionalWorkshopAction(book, {
+      kind: "amend", eventId: e1, reason: "Correction fictive du type",
+      input: { ...input, anchor_id: "B", source_revision_id: null },
+    });
+    book = applyFictionalWorkshopAction(book, {
+      kind: "withdraw", eventId: e3, reason: "Retrait fictif conservé",
+    });
+    const before = JSON.stringify(book);
+    const ids = (kind: "exact"|"approximate"|"relative"|"unknown",
+      source = "", status: "all"|"withdrawn" = "all") =>
+      matchingFictionalEventHistoryIds(book, "", status,
+        source, "", "", "", "", "", kind);
+    expect(ids("exact")).toEqual([e1]);
+    expect(ids("approximate")).toEqual([e1, e2]);
+    expect(ids("relative")).toEqual([e3]);
+    expect(ids("unknown")).toEqual([e4]);
+    expect(ids("relative", "", "withdrawn")).toEqual([e3]);
+    expect(ids("approximate", "fiction-alpha-rev-1")).toEqual([]);
+    expect(ids("exact", "fiction-alpha-rev-1")).toEqual([e1]);
+    expect(() => matchingFictionalEventHistoryIds(book, "", "all",
+      "", "", "", "", "", "", "invalid" as never))
+      .toThrow("Type temporel fictif invalide");
+    expect(JSON.stringify(book)).toBe(before);
+  });
+  it("44 SSR temporal-kind controls hide all unselected historical reasons", () => {
+    const initial = inventedFourTimeKinds();
+    const created = applyFictionalWorkshopAction(initial, {
+      kind: "create", input: { ...input, anchor_id: "A",
+        source_revision_id: "fiction-alpha-rev-1", note: "NOTE-SECRET-TEMPS" },
+    });
+    const book = applyFictionalWorkshopAction(created, {
+      kind: "amend", eventId: created.events[0].event_id,
+      reason: "MOTIF-SECRET-TEMPS",
+      input: { ...input, anchor_id: "B", source_revision_id: null },
+    });
+    const before = JSON.stringify(book);
+    const html = renderToStaticMarkup(createElement(M32FictionalEventManualWorkshop,
+      { initial: book }));
+    expect(html).toContain("Filtrer par type temporel historique fictif");
+    for (const kind of ["exact", "approximate", "relative", "unknown"]) {
+      expect(html).toContain('value="' + kind + '"');
+    }
+    expect(html).toContain("Sans ancre ne signifie pas temps inconnu attesté.");
+    expect(html).not.toContain("NOTE-SECRET-TEMPS");
+    expect(html).not.toContain("MOTIF-SECRET-TEMPS");
     expect(html).not.toContain("Versions historiques fictives");
     expect(JSON.stringify(book)).toBe(before);
   });

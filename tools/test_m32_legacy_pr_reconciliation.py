@@ -272,5 +272,34 @@ class Pr35FullTreeScoping(unittest.TestCase):
         self.assertIn("DRAFT",self.doc)
         self.assertIn("NOT_PROVEN",self.doc)
 
+class Pr215FourReviewCoverageSourceContract(unittest.TestCase):
+    """Named tests and scoped old/modern review only; no admission of the writer."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.doc=(ROOT/"docs/qualification/M3_2_PR215_FOUR_REVIEW_SOURCE_TEST_COVERAGE_20261121.md").read_text(encoding="utf-8")
+        cls.rows=[line.strip("| ").split(" | ") for line in cls.doc.splitlines()
+                  if line.startswith("| `")]
+
+    def test_16_four_scoped_paths_keep_review_nonadmission(self):
+        self.assertEqual(len(self.rows),4)
+        self.assertEqual(len({r[0] for r in self.rows}),4)
+        self.assertEqual([r[-1] for r in self.rows],[
+            "REVIEW_CFG_TEST_ONLY","REVIEW_READONLY_INVENTORY",
+            "REVIEW_HANDOFF_GUARDS","REVIEW_INVENTORY_TESTS"])
+        self.assertIn("145 noms anciens sur 152",self.doc)
+        self.assertIn("les 7 absents",self.doc)
+        self.assertIn("26/26",self.doc)
+        self.assertIn("41/41",self.doc)
+        self.assertIn("- [ ] **M32-007**",CHECKLIST.read_text(encoding="utf-8"))
+        self.assertIn("- [ ] **M32-050**",CHECKLIST.read_text(encoding="utf-8"))
+
+    def test_17_renamed_tests_are_not_claimed_as_runtime_proof(self):
+        self.assertIn("Noms disparus ≠ garanties perdues",self.doc)
+        self.assertIn("OPEN_NOT_ACCEPTED",self.doc)
+        self.assertIn("D3b-4/5",self.doc)
+        self.assertIn("R3/R4",self.doc)
+        self.assertIn("NOT_PROVEN",self.doc)
+
 if __name__ == "__main__":
     unittest.main()
