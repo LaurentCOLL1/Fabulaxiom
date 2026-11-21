@@ -1,4 +1,43 @@
 {
+  "m32_20261121_p3bm_source_link_pr215_146147_candidate_after_pr407": {
+    "date": "2026-11-21",
+    "parent_main": "57a43c397b831f2f336a6fd9ee3837ea25a761c2",
+    "source_ci_run": 44913548368,
+    "source_ci_head": "68a76ef5c12f90a6a1e6fd9375a35c39c8658e19",
+    "source_ci_status": "COMPLETED_SUCCESS_EXACT_HEAD",
+    "parent_postmain_run": 44917189406,
+    "parent_postmain_status": "COMPLETED_SUCCESS_EXACT_MAIN",
+    "attested_postmain_sha": "57a43c397b831f2f336a6fd9ee3837ea25a761c2",
+    "p3bm": "HISTORICAL_SOURCE_LINK_DISTINCT_FROM_ANCHOR_LINK_FICTIONAL_ONLY",
+    "p3bm_vitest": [
+      47,
+      48
+    ],
+    "pr215_old_handoff_assertions_reviewed": [
+      146,
+      147
+    ],
+    "pr215_semantic_equivalence": false,
+    "remaining_old_handoff_tests": [
+      148,
+      149,
+      150,
+      151,
+      152
+    ],
+    "m32_007_closed": false,
+    "m32_050_closed": false,
+    "m32_071_closed": false,
+    "m32_081_closed": false,
+    "checklist_total": 104,
+    "closed": 12,
+    "open": 92,
+    "gate": "IN_PROGRESS_NOT_ACCEPTED",
+    "writer_admitted": false,
+    "operator_accepted": false,
+    "strategy": "PRODUCT_FIRST_PARALLEL_SAFETY",
+    "current_phase": "SOURCE_ONLY_CANDIDATE_UNQUALIFIED"
+  },
   "m32_20261121_p3bl_7handoff_candidate_after_pr406": {
     "date": "2026-11-21",
     "parent_main": "e2372e1c7eda4cac3212a125e4fb27963beca799",
