@@ -10,6 +10,7 @@ import {
 import M32FictionalEventManualWorkshop, {
   applyFictionalWorkshopAction, eligibleFictionalEventRevisions,
   matchingFictionalEventHistoryIds, pageFictionalEventHistoryIds,
+  orderFictionalEventHistoryIds,
   type FictionalWorkshopAction,
 } from "./M32FictionalEventManualWorkshop";
 
@@ -656,4 +657,42 @@ describe("M3.2 manual fictional event workshop source-only", () => {
     expect(JSON.stringify(secret)).toBe(before);
   });
 
+  it("41 reverses fictional ID display, including withdrawal, without mutation", () => {
+    let book = invented();
+    for (let i = 0; i < 12; i++) book = create(book);
+    const withdrawn = book.events[0].event_id;
+    book = applyFictionalWorkshopAction(book, {
+      kind: "withdraw", eventId: withdrawn, reason: "Retrait inventé",
+    });
+    const before = JSON.stringify(book);
+    const ids = matchingFictionalEventHistoryIds(book, "", "all");
+    expect(ids).toHaveLength(12);
+    expect(ids).toContain(withdrawn);
+    expect(orderFictionalEventHistoryIds(ids, "insertion")).toEqual(ids);
+    const inverted = orderFictionalEventHistoryIds(ids, "reverse-insertion");
+    expect(inverted).toEqual([...ids].reverse());
+    expect(pageFictionalEventHistoryIds(inverted, 0, 5).ids).toEqual(
+      [...ids].reverse().slice(0, 5));
+    expect(() => orderFictionalEventHistoryIds(ids, "world" as never))
+      .toThrow("Ordre de consultation fictif invalide");
+    expect(JSON.stringify(book)).toBe(before);
+  });
+  it("42 SSR shows only order choices, no unselected historical notes", () => {
+    const first = create(invented());
+    const book = applyFictionalWorkshopAction(first, {
+      kind: "amend", eventId: first.events[0].event_id,
+      reason: "MOTIF-SECRET-ORDRE",
+      input: { ...input, note: "NOTE-SECRET-ORDRE" },
+    });
+    const before = JSON.stringify(book);
+    const html = renderToStaticMarkup(createElement(M32FictionalEventManualWorkshop,
+      { initial: book }));
+    expect(html).toContain("Ordre d&#x27;ajout des identifiants fictifs");
+    expect(html).toContain('value="reverse-insertion"');
+    expect(html).toContain("jamais l&#x27;ordre du monde");
+    expect(html).not.toContain("NOTE-SECRET-ORDRE");
+    expect(html).not.toContain("MOTIF-SECRET-ORDRE");
+    expect(html).not.toContain("Versions historiques fictives");
+    expect(JSON.stringify(book)).toBe(before);
+  });
 });

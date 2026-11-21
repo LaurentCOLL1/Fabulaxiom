@@ -496,6 +496,22 @@ class TraceabilityAndScope(unittest.TestCase):
         self.assertFalse(candidate["operator_acceptance"])
         self.assertEqual((MATRIX["total"],MATRIX["closed"],MATRIX["open"]),(104,12,92))
 
+    def test_pr35_84path_and_p3bj_not_accepted(self):
+        index={r["id"]:r for r in MATRIX["rows"]}
+        for key in ("M32-007","M32-050"):
+            rec=index[key]["latest_pr35_84path_candidate"]
+            self.assertEqual((rec["paths"],rec["identical"],rec["divergent"],rec["absent"]),(84,5,11,68))
+            self.assertTrue((ROOT/rec["report"]).is_file())
+            self.assertFalse(rec["requirement_acceptance"])
+            self.assertFalse(rec["writer_admission"])
+            self.assertIn(f"- [ ] **{key}**",CHECK)
+        rec=index["M32-071"]["latest_p3bj_candidate"]
+        self.assertEqual(rec["orders"],["insertion","reverse-insertion"])
+        self.assertIn("NOT_RUN",rec["source_ci_status"])
+        self.assertFalse(rec["operator_acceptance"])
+        self.assertIn("- [ ] **M32-071**",CHECK)
+        self.assertEqual((MATRIX["total"],MATRIX["closed"],MATRIX["open"]),(104,12,92))
+
     def test_metadata_does_not_grant_writer_admission(self):
         self.assertEqual(MATRIX["gate"],"IN_PROGRESS_NOT_ACCEPTED")
         for term in ("R1–R9 NOT_PROVEN","G3 STOP_UNAVAILABLE","P4 STOP","Greenfield"):

@@ -2028,9 +2028,20 @@ async function run() {
       await size.selectOption("20");
       assert.equal(await picker.inputValue(),"");
       assert.equal(await list.count(),0);
+      const order=detail.getByRole("combobox",{
+        name:"Ordre d'ajout des identifiants fictifs",
+      });
+      assert.deepEqual(await order.locator("option").evaluateAll(options =>
+        options.map(option=>option.value)),["insertion","reverse-insertion"]);
+      assert.equal(await order.inputValue(),"insertion");
+      await order.selectOption("reverse-insertion");
+      assert.equal(await picker.inputValue(),"");
+      assert.equal(await list.count(),0);
+      assert.ok((await detail.innerText()).includes("jamais l'ordre du monde"));
       await detail.getByRole("button",{
         name:"Réinitialiser les filtres historiques fictifs",
       }).click();
+      assert.equal(await order.inputValue(),"insertion");
       assert.equal(await size.inputValue(),"10");
       assert.equal(await idFilter.inputValue(),"");
       assert.equal(await sourceFilter.inputValue(),"");

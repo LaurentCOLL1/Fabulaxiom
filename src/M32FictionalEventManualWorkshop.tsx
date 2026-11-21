@@ -76,6 +76,14 @@ export function matchingFictionalEventHistoryIds(
 /** Paged IDs only; never implicitly inspect or mutate a fictional event. */
 export const FICTIONAL_HISTORY_PAGE_SIZE = 10;
 export const FICTIONAL_HISTORY_PAGE_SIZES = [5, 10, 20] as const;
+export type FictionalHistoryIdOrder = "insertion" | "reverse-insertion";
+/** Only opaque ID display ordering, never world/narration/revelation chronology. */
+export function orderFictionalEventHistoryIds(ids: readonly string[],
+  order: FictionalHistoryIdOrder): readonly string[] {
+  if (order !== "insertion" && order !== "reverse-insertion")
+    throw Error("Ordre de consultation fictif invalide");
+  return order === "insertion" ? [...ids] : [...ids].reverse();
+}
 export function pageFictionalEventHistoryIds(
   ids: readonly string[], page: number, pageSize: number = FICTIONAL_HISTORY_PAGE_SIZE,
 ):
@@ -135,6 +143,7 @@ export default function M32FictionalEventManualWorkshop({ initial }: {
   const [historyCalendarName, setHistoryCalendarName] = useState("");
   const [historyPage, setHistoryPage] = useState(0);
   const [historyPageSize, setHistoryPageSize] = useState<number>(FICTIONAL_HISTORY_PAGE_SIZE);
+  const [historyIdOrder, setHistoryIdOrder] = useState<FictionalHistoryIdOrder>("insertion");
   const [historyStatus, setHistoryStatus] =
     useState<"all" | "current" | "withdrawn">("all");
 
@@ -155,7 +164,8 @@ export default function M32FictionalEventManualWorkshop({ initial }: {
   const historyEventIds = matchingFictionalEventHistoryIds(
     book, historyIdQuery, historyStatus, historySourceIdQuery, historyNovelId,
     historySceneId, historyAnchorId, historyFictionalDateLabel, historyCalendarName);
-  const historyView = pageFictionalEventHistoryIds(historyEventIds, historyPage, historyPageSize);
+  const orderedHistoryIds = orderFictionalEventHistoryIds(historyEventIds, historyIdOrder);
+  const historyView = pageFictionalEventHistoryIds(orderedHistoryIds, historyPage, historyPageSize);
   const inspectedHistory = historyEventId
     ? auditedFictionalEventHistory(book, historyEventId) : [];
   const editableEvent = currentEvents.find(e => e.event_id === selectedId);
@@ -198,6 +208,7 @@ export default function M32FictionalEventManualWorkshop({ initial }: {
     setHistoryCalendarName(""); setHistoryStatus("all");
     setHistoryPage(0); setHistoryEventId("");
     setHistoryPageSize(FICTIONAL_HISTORY_PAGE_SIZE);
+    setHistoryIdOrder("insertion");
   }
   function chooseEvent(eventId: string) {
     const selected = currentEvents.find(e => e.event_id === eventId);
@@ -378,6 +389,17 @@ export default function M32FictionalEventManualWorkshop({ initial }: {
       </button>
       <p role="note">Le filtrage n'affiche aucune version ni motif historique.
         Choisissez un identifiant pour consulter les versions en lecture seule.</p>
+      <label>Ordre d'ajout des identifiants fictifs
+        <select value={historyIdOrder} onChange={e => {
+          setHistoryIdOrder(e.currentTarget.value as FictionalHistoryIdOrder);
+          setHistoryPage(0); setHistoryEventId("");
+        }}>
+          <option value="insertion">Premiers ajouts d'abord</option>
+          <option value="reverse-insertion">Derniers ajouts d'abord</option>
+        </select>
+      </label>
+      <small role="note">Ordre d'ajout uniquement, jamais l'ordre du monde,
+        de narration ou de révélation.</small>
       <label>Identifiants fictifs par page
         <select value={historyPageSize} onChange={e => {
           setHistoryPageSize(Number(e.currentTarget.value));
