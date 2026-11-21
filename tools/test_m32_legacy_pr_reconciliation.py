@@ -310,7 +310,7 @@ class Pr215SevenOldHandoffScopesContract(unittest.TestCase):
         rows=[s for s in report.splitlines() if s.startswith("| 1") and
               "REVIEW_ASSERTIONS_NOT_PORTED" in s]
         self.assertEqual(len(rows),7)
-        docs=re.findall(r"`(M3_2_V7_[^\`]+\\.md)`",report)
+        docs=[row.split(" | ")[2].strip("`") for row in rows]
         # Each of seven sources may cite the same historical design file.
         self.assertEqual(len(docs),7)
         self.assertTrue(all((ROOT/"docs/qualification"/d).is_file() for d in docs))
