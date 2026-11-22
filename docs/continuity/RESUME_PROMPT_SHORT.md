@@ -1,16 +1,16 @@
 # Reprise Fabulaxiom (https://github.com/LaurentCOLL1/Fabulaxiom)
 
 ## Dernier checkpoint
-main=7bc17f9cb2c9b8d17d7b0cf53f8446e9f6bdf7fb ; #415 MERGED CI #45006510217 PASS HEAD exact f452c3f37f760f8c35a7be7370d95a12c7d9bd52 ; postmain #45029746719 PENDING sur SHA exact main (NON QUALIFIÉ) ; date=2026-11-22 ; M32-003 [x] CLOSED_SCOPED protocole Protect main CANDIDAT CI ; 13/91 ; M3.2 IN_PROGRESS_NOT_ACCEPTED (~45%).
+main=9bcb444aa078d84d87ea5b1ad1e5f802e72d8926 ; #416 MERGED CI #45030589221 PASS HEAD exact 790cab9cd8ca46d2a9277e5cac659e16e5a467d8 ; postmain #45042934529 PASS sur SHA exact main ; date=2026-11-22 ; P3br filtre action historique fictive CANDIDAT, 13/91 ; M3.2 IN_PROGRESS_NOT_ACCEPTED (~45%).
 
 ## Interdictions actives — STOP
 Writer/R1–R9 NOT_PROVEN ; P4 STOP ; G2B NOT_ACCEPTED ; G2C NOT_AUTHORIZED ; G3 STOP_UNAVAILABLE ; PENDING_EXTERNAL_ATTESTATION(21/3/2), prospective NOT_STARTED ; R2 STOP, R3 partiel, D3c conception, D3b-4/5, D3b-5 STOP ; main/WAL/SHM, live SQLite WAL-index et ABA NOT_PROVEN ; glib #160 OPEN_NOT_REMEDIATED.
 STOP v6/v7, M:\Fabulaxiom, Greenfield, backups, IPC writer, 007, Hello, recovery.
 
 ## Prochaines opérations
-1. #415 CI #45006510217 PASS HEAD exact f452c3f37f760f8c35a7be7370d95a12c7d9bd52 ; postmain #45029746719 PENDING exact 7bc17f9cb2c9b8d17d7b0cf53f8446e9f6bdf7fb ; journal #38 #7080128468 ; M32-003 [x] CANDIDAT 13/91.
-2. M32-003 portée protocole GITHUB seulement ; obligation active de diff/reviews/threads/ruleset/CI exact et guarded squash à CHAQUE future PR ; aucune admission writer. PR #35/#215 DRAFT, M32-007/050/078 [ ].
-3. Qualifier CI HEAD propre à M32-003 et parent postmain, diff/reviews/threads/Protect main ACTIVE bypass=[], squash expected_head_sha après PASS, postmain indépendante, #38 append-only ; PRODUCT_FIRST_PARALLEL_SAFETY.
+1. #416 CI #45030589221 PASS HEAD exact 790cab9cd8ca46d2a9277e5cac659e16e5a467d8 ; postmain #45042934529 PASS SHA exact 9bcb444aa078d84d87ea5b1ad1e5f802e72d8926 ; journal #38 #7081957535 ; 13/91.
+2. P3br filtre action historique fictive (created/amended/withdrawn), tests Vitest #55/#56 CANDIDATS sur atelier non monté ; M32-071/075/078/081 [ ], PR35/215 DRAFT NON ADMISES.
+3. PR P3br DRAFT puis CI HEAD, diff/reviews/threads/Protect main ACTIVE bypass=[], guarded squash expected_head_sha après PASS, postmain indépendant et #38 append-only ; PRODUCT_FIRST_PARALLEL_SAFETY.
 
 ## Documents d'autorité
 RESUME_PROMPT.md ; HANDOFF_CURRENT.md ; HANDOFF_CURRENT.json ; STATE.md ; NEXT.md ; M3_2_GATE_DECISION_CURRENT.md ; M3_2_COMPLETION_MASTER_CHECKLIST_20261109.md ; ROADMAP_STATUS_CURRENT.md ; M3_2_SHORT_CYCLE_DELIVERY_20261116.md. Historique : RESUME_PROMPT.md / docs/qualification.
