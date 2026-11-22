@@ -1078,4 +1078,49 @@ describe("M3.2 manual fictional event workshop source-only", () => {
     expect(html).not.toContain("Versions historiques fictives");
     expect(JSON.stringify(book)).toBe(before);
   });
+  it("55 filters created amended withdrawn actions on the same version",()=>{
+    const first=applyFictionalWorkshopAction(invented(),{kind:"create",
+      input:{...input,note:"Début inventé"}});
+    const id=first.events[0].event_id;
+    const second=applyFictionalWorkshopAction(first,{kind:"amend",eventId:id,
+      reason:"Correction humaine fictive",
+      input:{...input,note:"Note de correction inventée"}});
+    const book=applyFictionalWorkshopAction(second,{kind:"withdraw",eventId:id,
+      reason:"Retrait humain fictif"});
+    const before=JSON.stringify(book);
+    const find=(action:""|"created"|"amended"|"withdrawn",version=0,
+      field:""|"title"|"note"|"anchor_id"|"source_revision_id"="")=>
+      matchingFictionalEventHistoryIds(book,"","withdrawn","","","","",
+        "","","","","",field,version,action);
+    expect(find("created",1)).toEqual([id]);
+    expect(find("created",2)).toEqual([]);
+    expect(find("amended",2,"note")).toEqual([id]);
+    expect(find("amended",1)).toEqual([]);
+    expect(find("withdrawn",3)).toEqual([id]);
+    expect(find("withdrawn",2)).toEqual([]);
+    expect(find("withdrawn",3,"note")).toEqual([]);
+    expect(find("",0)).toEqual([id]);
+    expect(()=>matchingFictionalEventHistoryIds(book,"","all","","","","",
+      "","","","","","",0,"removed" as never))
+      .toThrow("Action historique fictive invalide");
+    expect(JSON.stringify(book)).toBe(before);
+  });
+  it("56 historical action filter SSR never leaks uninspected notes or reasons",()=>{
+    const first=applyFictionalWorkshopAction(invented(),{kind:"create",
+      input:{...input,note:"NOTE_ACTION_PRIVÉE_1"}});
+    const book=applyFictionalWorkshopAction(first,{kind:"amend",
+      eventId:first.events[0].event_id,reason:"MOTIF_ACTION_PRIVÉ",
+      input:{...input,note:"NOTE_ACTION_PRIVÉE_2"}});
+    const before=JSON.stringify(book);
+    const html=renderToStaticMarkup(createElement(M32FictionalEventManualWorkshop,{initial:book}));
+    expect(html).toContain("Filtrer par action de version historique fictive");
+    for(const action of ["created","amended","withdrawn"])
+      expect(html).toContain('value="'+action+'"');
+    expect(html).not.toContain("NOTE_ACTION_PRIVÉE_1");
+    expect(html).not.toContain("NOTE_ACTION_PRIVÉE_2");
+    expect(html).not.toContain("MOTIF_ACTION_PRIVÉ");
+    expect(html).not.toContain("Versions historiques fictives");
+    expect(JSON.stringify(book)).toBe(before);
+  });
+
 });
