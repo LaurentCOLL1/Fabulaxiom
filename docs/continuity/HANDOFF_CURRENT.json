@@ -19,7 +19,11 @@
     "gate": "IN_PROGRESS_NOT_ACCEPTED",
     "writer_admitted": false,
     "operator_accepted": false,
-    "strategy": "PRODUCT_FIRST_PARALLEL_SAFETY"
+    "strategy": "PRODUCT_FIRST_PARALLEL_SAFETY",
+    "source_ci_run": 44962625083,
+    "source_ci_head": "e759cd82dbbd139ff68bc5aa37a69d9fac964220",
+    "source_ci_status": "COMPLETED_SUCCESS_EXACT_HEAD",
+    "current_phase": "SOURCE_ONLY_CANDIDATE_UNQUALIFIED"
   },
   "m32_20261122_078_accepted_proof_gaps_after_pr410": {
     "date": "2026-11-22",
