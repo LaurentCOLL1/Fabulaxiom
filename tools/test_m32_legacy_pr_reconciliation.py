@@ -522,5 +522,73 @@ class Pr35TwentyHistoricalPythonPairsSourceOnly(unittest.TestCase):
             self.guard(audit, report,
                        check.replace("- [ ] **M32-050**", "- [x] **M32-050**"))
 
+
+class Pr35Stage24To29PairedHistoricalTestReview(unittest.TestCase):
+    """Recorded Git blob identities and 110 method names are NOT test PASS."""
+
+    REPORT = ROOT / "docs/qualification/M3_2_PR35_STAGE24_25_29_SCOPED_SOURCE_REVIEW_20261122.md"
+    AUDIT = ROOT / "docs/qualification/M3_2_PR35_84_PATH_TREE_AUDIT_20261121.md"
+    PAIRS = (
+        (24, "navigation", "5826f9c79532e11520e139637859b1d778f92e7f",
+         "91fabd546a22fb8f98481f7f0b8cba85600a1490", 50),
+        (25, "comparison", "9f6dfd8d09cb4829b6b2ee168f0a1043212d1885",
+         "6488ec2fdec95566358e48d0c6ef1ddbb5d7fad7", 26),
+        (29, "selection_review", "a6985f28f1f91cd4afc415469ef59c11f867c5c4",
+         "86dac0ab3aa3ae3fe524c2d77a406fd1852d2160", 34),
+    )
+
+    @classmethod
+    def guard(cls, report, audit, checklist):
+        for stage, stem, source_sha, test_sha, expected_count in cls.PAIRS:
+            source = f"tools/m3_2_chronology_{stem}_reference.py"
+            test = f"tools/test_m3_2_chronology_{stem}_reference.py"
+            row = (f"| {stage} | `{source}` | `{test}` | `{source_sha}` | "
+                   f"`{test_sha}` | {expected_count} | SOURCE_REVIEW_ONLY_NOT_EXECUTED |")
+            if row not in report:
+                raise ValueError("STOP historic test signature provenance drift " + stem)
+            for filename, sha in ((source, source_sha), (test, test_sha)):
+                if f"| `{filename}` | `{sha}` | ABSENT | ABSENT |" not in audit:
+                    raise ValueError("STOP historic blob reference drift " + filename)
+                if (ROOT / filename).exists():
+                    raise ValueError("STOP old source reintroduced " + filename)
+        if report.count("REVIEW_ONLY_NOT_PORTED") != 3:
+            raise ValueError("STOP historic module review status drift")
+        for token in ("TOTAL_110_METHOD_NAMES_SOURCE_INSPECTED_NOT_EXECUTED",
+                      "NO_SEMANTIC_EQUIVALENCE", "NO_AUTO_PORT", "NO_RUNTIME_ADMISSION",
+                      "OPEN_NOT_ACCEPTED", "R1–R9 NOT_PROVEN",
+                      "M32-007 [ ]", "M32-050 [ ]", "5 des 20", "15 restent"):
+            if token not in report:
+                raise ValueError("STOP false historic test admission " + token)
+        for task in ("M32-007", "M32-050"):
+            if f"- [ ] **{task}**" not in checklist:
+                raise ValueError("STOP false historic test checklist closure " + task)
+        return len(cls.PAIRS), sum(p[4] for p in cls.PAIRS)
+
+    def test_28_three_paired_stage24_25_29_sha_and_counts_are_source_only(self):
+        self.assertEqual(self.guard(self.REPORT.read_text(encoding="utf-8"),
+                                    self.AUDIT.read_text(encoding="utf-8"),
+                                    CHECKLIST.read_text(encoding="utf-8")), (3, 110))
+
+    def test_29_forged_blob_count_or_admission_is_refused(self):
+        report = self.REPORT.read_text(encoding="utf-8")
+        audit = self.AUDIT.read_text(encoding="utf-8")
+        checklist = CHECKLIST.read_text(encoding="utf-8")
+        for bad in (report.replace(" | 50 | SOURCE_REVIEW_ONLY_NOT_EXECUTED |",
+                                   " | 51 | SOURCE_REVIEW_ONLY_NOT_EXECUTED |"),
+                    report.replace("91fabd546a22fb8f98481f7f0b8cba85600a1490",
+                                   "0"*40),
+                    report.replace("NO_SEMANTIC_EQUIVALENCE", "SEMANTIC_EQUIVALENCE")):
+            with self.subTest(candidate=bad[:30]), self.assertRaisesRegex(
+                    ValueError, "provenance drift|false historic test admission"):
+                self.guard(bad, audit, checklist)
+
+    def test_30_false_requirement_closure_is_refused(self):
+        report = self.REPORT.read_text(encoding="utf-8")
+        audit = self.AUDIT.read_text(encoding="utf-8")
+        checklist = CHECKLIST.read_text(encoding="utf-8")
+        with self.assertRaisesRegex(ValueError, "false historic test checklist closure"):
+            self.guard(report, audit,
+                       checklist.replace("- [ ] **M32-050**", "- [x] **M32-050**"))
+
 if __name__ == "__main__":
     unittest.main()
