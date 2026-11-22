@@ -2103,6 +2103,40 @@ async function run() {
       assert.equal(await picker.inputValue(),"");
       assert.equal(await list.count(),0,"History must stay hidden until explicitly selected");
       assert.ok((await detail.innerText()).includes("1 identifiants fictifs trouvés."));
+      // P3bp: exact historical version filtering in real Chromium, ID-only.
+      const exactVersion=detail.getByRole("combobox",{
+        name:"Filtrer par numéro exact de version historique fictive",
+      });
+      assert.deepEqual(await exactVersion.locator("option").evaluateAll(options=>
+        options.map(option=>option.value)),["0","1","2","3"]);
+      assert.equal(await exactVersion.inputValue(),"0");
+      await exactVersion.selectOption("2");
+      assert.equal(await picker.inputValue(),"");
+      assert.equal(await list.count(),0);
+      await exactVersion.selectOption("3");
+      assert.equal(await picker.inputValue(),"");
+      assert.equal(await list.count(),0);
+      // P3bq / M32-075: navigate real Chromium keyboard focus and require
+      // explicit selection to reveal historical text; reset restores secrecy.
+      await idFilter.focus();
+      assert.equal(await idFilter.evaluate(el => el === document.activeElement), true);
+      await page.keyboard.press("Tab");
+      assert.equal(await sourceFilter.evaluate(el => el === document.activeElement), true);
+      await picker.focus();
+      await picker.press("ArrowDown");
+      await picker.press("Enter");
+      assert.equal(await picker.inputValue(), "fiction-world-one-event-0001");
+      assert.equal(await list.getByRole("listitem").count(), 3);
+      await detail.getByRole("button", {
+        name: "Réinitialiser les filtres historiques fictifs",
+      }).focus();
+      await page.keyboard.press("Enter");
+      assert.equal(await picker.inputValue(), "");
+      assert.equal(await list.count(), 0,
+        "Keyboard reset must hide inspected fictional history");
+      assert.equal(await exactVersion.inputValue(),"0");
+      assert.equal(await idFilter.inputValue(), "");
+      assert.equal(await sourceFilter.inputValue(), "");
       assert.ok((await eventRegion().innerText()).includes("Événements courants (0)"));
       assert.equal(await detail.getByRole("button",{name:/restaurer|réactiver/i}).count(),0);
     });
