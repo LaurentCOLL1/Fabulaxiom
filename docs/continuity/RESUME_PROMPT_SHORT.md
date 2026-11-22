@@ -1,14 +1,14 @@
 # Reprise Fabulaxiom (https://github.com/LaurentCOLL1/Fabulaxiom)
 
 ## Dernier checkpoint
-main=c2e26c9e803681d5b842564c085c9c106dbc6d36 ; #418 MERGED CI #45069291391 PASS HEAD exact 274fea168e2d729e11dd7062c774be3803eef487 ; postmain #45070570845 PENDING sur SHA exact main (NON QUALIFIÉ) ; date=2026-11-22 ; PR35 20/20 paires Python HISTORIQUES revues source-only sans portage ni équivalence, 13/91 ; M3.2 IN_PROGRESS_NOT_ACCEPTED (~45%).
+main=c2e26c9e803681d5b842564c085c9c106dbc6d36 ; #418 MERGED CI #45069291391 PASS HEAD exact 274fea168e2d729e11dd7062c774be3803eef487 ; postmain #45070570845 PASS sur SHA exact main ; date=2026-11-22 ; PR35 20/20 paires Python HISTORIQUES revues source-only sans portage ni équivalence, 13/91 ; M3.2 IN_PROGRESS_NOT_ACCEPTED (~45%).
 
 ## Interdictions actives — STOP
 Writer/R1–R9 NOT_PROVEN ; P4 STOP ; G2B NOT_ACCEPTED ; G2C NOT_AUTHORIZED ; G3 STOP_UNAVAILABLE ; PENDING_EXTERNAL_ATTESTATION(21/3/2), prospective NOT_STARTED ; R2 STOP, R3 partiel, D3c conception, D3b-4/5, D3b-5 STOP ; main/WAL/SHM, live SQLite WAL-index et ABA NOT_PROVEN ; glib #160 OPEN_NOT_REMEDIATED.
 STOP v6/v7, M:\Fabulaxiom, Greenfield, backups, IPC writer, 007, Hello, recovery.
 
 ## Prochaines opérations
-1. #418 CI #45069291391 PASS HEAD exact 274fea168e2d729e11dd7062c774be3803eef487 ; postmain #45070570845 PENDING exact c2e26c9e803681d5b842564c085c9c106dbc6d36 ; journal #38 #7085847631 ; 13/91.
+1. #418 CI #45069291391 PASS HEAD exact 274fea168e2d729e11dd7062c774be3803eef487 ; postmain #45070570845 PASS exact c2e26c9e803681d5b842564c085c9c106dbc6d36 ; journal #38 #7085847631 ; 13/91.
 2. PR35 20/20 paires source-only décrites, 0 portées, 0 équivalentes, 0 tests anciens exécutés ; 15 paires supplémentaires, 384 noms de méthodes de tests, gardes #31/#32/#33 CANDIDATS. PR #35/#215 DRAFT NON ADMISES ; M32-007/050/078 [ ].
 3. Qualifier postmain exact ; nouvelle PR candidate DRAFT + CI HEAD exacte, diff/reviews/threads/Protect main ACTIVE strict bypass=[], guarded squash expected_head_sha après PASS, nouveau postmain indépendant et #38 append-only ; PRODUCT_FIRST_PARALLEL_SAFETY.
 
