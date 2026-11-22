@@ -6,14 +6,14 @@
   "scope": "DOCUMENTARY_OPEN_GAP_LEDGER_ONLY_NO_OPERATOR_ACCEPTANCE",
   "gate": "IN_PROGRESS_NOT_ACCEPTED",
   "total": 104,
-  "closed_scoped": 12,
-  "open_not_accepted": 92,
+  "closed_scoped": 13,
+  "open_not_accepted": 91,
   "track_open_counts": {
     "ACCEPTANCE_AND_SCOPE": 7,
     "DATA_AND_CHRONOLOGY": 16,
     "EVIDENCE_AND_TESTS": 16,
     "G2_TO_G6": 10,
-    "GH_PROTOCOL": 3,
+    "GH_PROTOCOL": 2,
     "HISTORICAL_ATTESTATION": 6,
     "REACT_FICTIONAL": 11,
     "WRITER_R1_R9": 23
@@ -21,11 +21,12 @@
   "gate_open_counts": {
     "REQUIRES_INDEPENDENT_R1_G2_PROOFS": 39,
     "RUNTIME_NOT_ADMITTED": 42,
-    "SCOPED_EVIDENCE_REQUIRED": 11
+    "SCOPED_EVIDENCE_REQUIRED": 10
   },
   "closed_ids": [
     "M32-001",
     "M32-002",
+    "M32-003",
     "M32-004",
     "M32-005",
     "M32-006",
@@ -38,18 +39,6 @@
     "M32-104"
   ],
   "open_rows": [
-    {
-      "id": "M32-003",
-      "track": "GH_PROTOCOL",
-      "gate": "SCOPED_EVIDENCE_REQUIRED",
-      "verification_target": "tools/test_m32_handoff_contract.py",
-      "next_proof": "Required Windows frontend and Rust checks strict, bypass=[], aucune discussion non résolue, squash expected_head_sha.",
-      "accepted_evidence": "NONE_ACCEPTED",
-      "accepted_workflow_head_sha": null,
-      "accepted_workflow_run_id": null,
-      "accepted_job_id": null,
-      "accepted_operator_runtime": false
-    },
     {
       "id": "M32-007",
       "track": "GH_PROTOCOL",
