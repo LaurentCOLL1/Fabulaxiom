@@ -1,16 +1,16 @@
 # Reprise Fabulaxiom (https://github.com/LaurentCOLL1/Fabulaxiom)
 
 ## Dernier checkpoint
-main=10f34444533d0a8a6760378f71a92a9e5c6fa57e ; #417 MERGED CI #45046140595 PASS HEAD exact dc09106bf1fdc87df2e1258b8e8398e580f3cb9a ; postmain #45053850972 PENDING sur SHA exact main (NON QUALIFIÉ) ; date=2026-11-22 ; PR35 Stage24/25/29 110 définitions de tests inspectées CANDIDATES, 13/91 ; M3.2 IN_PROGRESS_NOT_ACCEPTED (~45%).
+main=c2e26c9e803681d5b842564c085c9c106dbc6d36 ; #418 MERGED CI #45069291391 PASS HEAD exact 274fea168e2d729e11dd7062c774be3803eef487 ; postmain #45070570845 PENDING sur SHA exact main (NON QUALIFIÉ) ; date=2026-11-22 ; PR35 20/20 paires Python HISTORIQUES revues source-only sans portage ni équivalence, 13/91 ; M3.2 IN_PROGRESS_NOT_ACCEPTED (~45%).
 
 ## Interdictions actives — STOP
 Writer/R1–R9 NOT_PROVEN ; P4 STOP ; G2B NOT_ACCEPTED ; G2C NOT_AUTHORIZED ; G3 STOP_UNAVAILABLE ; PENDING_EXTERNAL_ATTESTATION(21/3/2), prospective NOT_STARTED ; R2 STOP, R3 partiel, D3c conception, D3b-4/5, D3b-5 STOP ; main/WAL/SHM, live SQLite WAL-index et ABA NOT_PROVEN ; glib #160 OPEN_NOT_REMEDIATED.
 STOP v6/v7, M:\Fabulaxiom, Greenfield, backups, IPC writer, 007, Hello, recovery.
 
 ## Prochaines opérations
-1. #417 CI #45046140595 PASS HEAD exact dc09106bf1fdc87df2e1258b8e8398e580f3cb9a ; postmain #45053850972 PENDING exact 10f34444533d0a8a6760378f71a92a9e5c6fa57e ; journal #38 #7083446356 ; 13/91.
-2. PR35 Stage24/25/29 : 3 paires source/test revues, 110 définitions test_* recensées sans exécution ni équivalence ; 5/20 paires partiellement examinées ; 15/20 nominales. M32-007/050/078 [ ], PR #35/#215 DRAFT NON ADMISES.
-3. Qualifier postmain parent, PR candidate CI HEAD exacte, diff/reviews/threads/Protect main ACTIVE bypass=[], guarded squash expected_head_sha seulement après PASS, postmain indépendant, #38 append-only ; PRODUCT_FIRST_PARALLEL_SAFETY.
+1. #418 CI #45069291391 PASS HEAD exact 274fea168e2d729e11dd7062c774be3803eef487 ; postmain #45070570845 PENDING exact c2e26c9e803681d5b842564c085c9c106dbc6d36 ; journal #38 #7085847631 ; 13/91.
+2. PR35 20/20 paires source-only décrites, 0 portées, 0 équivalentes, 0 tests anciens exécutés ; 15 paires supplémentaires, 384 noms de méthodes de tests, gardes #31/#32/#33 CANDIDATS. PR #35/#215 DRAFT NON ADMISES ; M32-007/050/078 [ ].
+3. Qualifier postmain exact ; nouvelle PR candidate DRAFT + CI HEAD exacte, diff/reviews/threads/Protect main ACTIVE strict bypass=[], guarded squash expected_head_sha après PASS, nouveau postmain indépendant et #38 append-only ; PRODUCT_FIRST_PARALLEL_SAFETY.
 
 ## Documents d'autorité
 RESUME_PROMPT.md ; HANDOFF_CURRENT.md ; HANDOFF_CURRENT.json ; STATE.md ; NEXT.md ; M3_2_GATE_DECISION_CURRENT.md ; M3_2_COMPLETION_MASTER_CHECKLIST_20261109.md ; ROADMAP_STATUS_CURRENT.md ; M3_2_SHORT_CYCLE_DELIVERY_20261116.md. Historique : RESUME_PROMPT.md / docs/qualification.
