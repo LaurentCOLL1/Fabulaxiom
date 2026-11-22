@@ -450,5 +450,77 @@ class Pr35AbsentRustSafetyEvidence(unittest.TestCase):
             self.guard(self.lib, self.chron, self.doc,
                        self.checklist.replace("- [ ] **M32-007**", "- [x] **M32-007**"))
 
+
+class Pr35TwentyHistoricalPythonPairsSourceOnly(unittest.TestCase):
+    """Historic absent 20 scripts + 20 tests: names only, never import their code."""
+
+    AUDIT = ROOT / "docs/qualification/M3_2_PR35_84_PATH_TREE_AUDIT_20261121.md"
+    REPORT = ROOT / "docs/qualification/M3_2_PR35_TWENTY_PYTHON_PAIRS_SCOPE_20261122.md"
+
+    @staticmethod
+    def guard(audit: str, report: str, checklist: str):
+        absent = re.findall(
+            r"(?m)^\| \`([^\`]+)\` \| \`[0-9a-f]{40}\` \| ABSENT \| ABSENT \|",
+            audit,
+        )
+        scripts = sorted(x for x in absent if x.startswith("tools/m3_2_"))
+        tests = sorted(x for x in absent if x.startswith("tools/test_m3_2_"))
+        if (len(scripts), len(tests), len(set(absent))) != (20, 20, 68):
+            raise ValueError("STOP PR35 20+20+68 source inventory drift")
+        expected = [(s, "tools/test_" + s.removeprefix("tools/")) for s in scripts]
+        if sorted(tests) != sorted(t for _, t in expected):
+            raise ValueError("STOP PR35 paired test inventory drift")
+        observed = re.findall(
+            r"(?m)^\| \`(tools/m3_2_[^\`]+\.py)\` \| "
+            r"\`(tools/test_m3_2_[^\`]+\.py)\` \| (NOT_PORTED_SOURCE_ONLY) \|$",
+            report,
+        )
+        if sorted(observed) != sorted((s, t, "NOT_PORTED_SOURCE_ONLY") for s, t in expected):
+            raise ValueError("STOP PR35 pair decision/evidence mismatch")
+        for s, t in expected:
+            if (ROOT / s).exists() or (ROOT / t).exists():
+                raise ValueError("STOP historic Python source imported without fresh review")
+        for marker in (
+            "NO_SEMANTIC_EQUIVALENCE", "NO_RUNTIME_ADMISSION",
+            "NOT_PROVEN", "PRODUCT_FIRST_PARALLEL_SAFETY",
+            "G3 STOP_UNAVAILABLE", "PENDING_EXTERNAL_ATTESTATION(21/3/2)",
+            "M32-007 [ ]", "M32-050 [ ]",
+        ):
+            if marker not in report:
+                raise ValueError("STOP PR35 Python boundary lost " + marker)
+        for task in ("M32-007", "M32-050"):
+            if f"- [ ] **{task}**" not in checklist:
+                raise ValueError("STOP PR35 false checklist closure " + task)
+        return len(expected), len(absent)
+
+    def test_25_twenty_python_modules_pair_with_twenty_historic_tests(self):
+        self.assertEqual(self.guard(self.AUDIT.read_text(encoding="utf-8"),
+                                    self.REPORT.read_text(encoding="utf-8"),
+                                    CHECKLIST.read_text(encoding="utf-8")), (20, 68))
+
+    def test_26_lost_or_forged_historic_pairs_are_refused(self):
+        report = self.REPORT.read_text(encoding="utf-8")
+        audit = self.AUDIT.read_text(encoding="utf-8")
+        check = CHECKLIST.read_text(encoding="utf-8")
+        first = next(line for line in report.splitlines() if line.startswith("| `tools/m3_2_"))
+        with self.assertRaisesRegex(ValueError, "pair decision/evidence mismatch"):
+            self.guard(audit, report.replace(first, ""), check)
+        with self.assertRaisesRegex(ValueError, "pair decision/evidence mismatch"):
+            self.guard(audit, report.replace(first, first.replace(
+                "NOT_PORTED_SOURCE_ONLY", "ADMITTED")), check)
+        with self.assertRaisesRegex(ValueError, "source inventory drift"):
+            self.guard(audit.replace("| ABSENT | ABSENT |", "| INVENTED | ABSENT |", 1),
+                       report, check)
+
+    def test_27_no_false_python_admission_or_checklist_promotion(self):
+        audit = self.AUDIT.read_text(encoding="utf-8")
+        report = self.REPORT.read_text(encoding="utf-8")
+        check = CHECKLIST.read_text(encoding="utf-8")
+        with self.assertRaisesRegex(ValueError, "Python boundary lost"):
+            self.guard(audit, report.replace("NO_RUNTIME_ADMISSION", "RUNTIME_ADMITTED"), check)
+        with self.assertRaisesRegex(ValueError, "false checklist closure"):
+            self.guard(audit, report,
+                       check.replace("- [ ] **M32-050**", "- [x] **M32-050**"))
+
 if __name__ == "__main__":
     unittest.main()

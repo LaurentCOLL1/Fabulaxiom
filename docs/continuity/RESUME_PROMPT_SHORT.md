@@ -1,16 +1,16 @@
 # Reprise Fabulaxiom (https://github.com/LaurentCOLL1/Fabulaxiom)
 
 ## Dernier checkpoint
-main=e9b40532b3f2f902ac259ba1cf9a97bee715ab35 ; #413 P3bq MERGED CI #44993572932 PASS HEAD exact b4132fdd736afb1f92ab88364f3abb0f2d4271f2 ; postmain #44995841970 PENDING sur SHA exact main (NON QUALIFIÉ) ; date=2026-11-22 ; PR35 deux modules Rust absents M32-007/050 CANDIDATS ; 12/92 ; M3.2 IN_PROGRESS_NOT_ACCEPTED (~45%).
+main=856ccba4af54d7c517f98db9471e8e2c5ce84cae ; #414 M32-007/050 PARTIEL MERGED CI #44996107844 PASS HEAD exact 3718fd81f52ca3f7f537b8af1c474dfc99d7cac6 ; postmain #45006027231 PENDING sur SHA exact main (NON QUALIFIÉ) ; date=2026-11-22 ; PR35 20 paires Python absentes CANDIDATES ; 12/92 ; M3.2 IN_PROGRESS_NOT_ACCEPTED (~45%).
 
 ## Interdictions actives — STOP
 Writer/R1–R9 NOT_PROVEN ; P4 STOP ; G2B NOT_ACCEPTED ; G2C NOT_AUTHORIZED ; G3 STOP_UNAVAILABLE ; PENDING_EXTERNAL_ATTESTATION(21/3/2), prospective NOT_STARTED ; R2 STOP, R3 partiel, D3c conception, D3b-4/5, D3b-5 STOP ; main/WAL/SHM, live SQLite WAL-index et ABA NOT_PROVEN ; glib #160 OPEN_NOT_REMEDIATED.
 STOP v6/v7, M:\Fabulaxiom, Greenfield, backups, IPC writer, 007, Hello, recovery.
 
 ## Prochaines opérations
-1. #413 CI #44993572932 PASS HEAD exact b4132fdd736afb1f92ab88364f3abb0f2d4271f2 ; postmain #44995841970 PENDING exact e9b40532b3f2f902ac259ba1cf9a97bee715ab35 ; journal #38 #7075604969 ; 12/92.
-2. M32-007/050 PR35 deux modules Rust absents, trois tests WAL scratch/11 API modernes ; ancien IPC BLOCK_RUNTIME_IPC, tests négatifs #22-24 CANDIDATS, aucun portage ni clôture ; PR #215 quatre REVIEW_NON_ACCEPTED.
-3. CI HEAD audit, diff/reviews/threads/Protect main ACTIVE bypass=[], guarded squash expected_head_sha après parent postmain PASS, nouveau postmain, #38 append-only ; PRODUCT_FIRST_PARALLEL_SAFETY.
+1. #414 CI #44996107844 PASS HEAD exact 3718fd81f52ca3f7f537b8af1c474dfc99d7cac6 ; postmain #45006027231 PENDING exact 856ccba4af54d7c517f98db9471e8e2c5ce84cae ; journal #38 #7076957682 ; 12/92.
+2. PR35 20 outils Python et 20 tests absents appariés, 40/40 inventoriés sans portage ni équivalence ; tests source-only #25-27 CANDIDATS, M32-007/050/078 [ ], PR215 4 REVIEW_NON_ACCEPTED.
+3. CI HEAD PR415, diff/reviews/threads/Protect main ACTIVE bypass=[], squash expected_head_sha après postmain parent PASS, postmain indépendant, #38 append-only ; PRODUCT_FIRST_PARALLEL_SAFETY.
 
 ## Documents d'autorité
 RESUME_PROMPT.md ; HANDOFF_CURRENT.md ; HANDOFF_CURRENT.json ; STATE.md ; NEXT.md ; M3_2_GATE_DECISION_CURRENT.md ; M3_2_COMPLETION_MASTER_CHECKLIST_20261109.md ; ROADMAP_STATUS_CURRENT.md ; M3_2_SHORT_CYCLE_DELIVERY_20261116.md. Historique : RESUME_PROMPT.md / docs/qualification.
