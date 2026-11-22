@@ -367,5 +367,88 @@ class Pr215FourReviewLiteralOnlyScope(unittest.TestCase):
         self.assertIn("- [ ] **M32-007**",check)
         self.assertIn("- [ ] **M32-050**",check)
 
+
+class Pr35AbsentRustSafetyEvidence(unittest.TestCase):
+    """Scoped textual negatives, not a live SQLite, preflight or IPC proof."""
+
+    CASES = (
+        "two_connections_hide_uncommitted_chain_and_serialize_writers",
+        "rollback_of_withdrawal_and_replacement_is_atomic_across_connections",
+        "two_connection_readonly_and_cycle_guards_reject_cross_handle_bypass",
+    )
+    API = (
+        "create_anchor", "create_precedence", "decide_precedence",
+        "restate_revoked_precedence", "revoke_restatement",
+        "succeed_withdrawn_restatement", "revoke_successor",
+        "list_active_precedence_graph", "append_chain_correction",
+        "revoke_chain_correction", "create_calendar",
+    )
+
+    @classmethod
+    def setUpClass(cls):
+        cls.lib = LIB.read_text(encoding="utf-8")
+        cls.chron = (ROOT / "src-tauri/src/m32_manual_chronology.rs").read_text(encoding="utf-8")
+        cls.doc = (ROOT / "docs/qualification/"
+                   "M3_2_PR35_TWO_ABSENT_RUST_MODULES_SCOPE_20261122.md").read_text(encoding="utf-8")
+        cls.checklist = CHECKLIST.read_text(encoding="utf-8")
+
+    @classmethod
+    def guard(cls, lib, chron, doc, checklist):
+        if "#[cfg(test)]\nmod m32_manual_chronology;" not in lib:
+            raise ValueError("STOP chronology test-only scope lost")
+        for name in ("m32_isolated_preflight", "m32_sqlite_concurrency_tests"):
+            if re.search(r"\bmod\s+" + name + r"\s*;", lib):
+                raise ValueError("STOP historical module registration " + name)
+        if "m32_isolated_preflight_status" in lib:
+            raise ValueError("STOP historical command registration")
+        for name in cls.API:
+            if not re.search(r"\bfn\s+" + name + r"\s*\(", chron):
+                raise ValueError("STOP modern chronology symbol drift " + name)
+            if name not in doc:
+                raise ValueError("STOP missing API scope " + name)
+        for name in cls.CASES:
+            if name not in doc:
+                raise ValueError("STOP historical SQLite test unreviewed " + name)
+        for marker in ("BLOCK_RUNTIME_IPC", "REVIEW_CI_ONLY", "NOT_PORTED",
+                       "NOT_PROVEN", "OPEN_NOT_ACCEPTED", "PENDING_EXTERNAL_ATTESTATION(21/3/2)",
+                       "source-only"):
+            if marker not in doc:
+                raise ValueError("STOP false old Rust admission " + marker)
+        for task in ("M32-007", "M32-050"):
+            if "- [ ] **" + task + "**" not in checklist:
+                raise ValueError("STOP legacy reconciliation prematurely closed " + task)
+        return len(cls.CASES), len(cls.API)
+
+    def test_22_three_old_sqlite_cases_and_eleven_modern_symbols_not_admitted(self):
+        self.assertEqual(self.guard(self.lib, self.chron, self.doc, self.checklist), (3, 11))
+
+    def test_23_old_runtime_preflight_and_concurrency_mod_registration_refused(self):
+        for candidate in (
+            "\nmod m32_isolated_preflight;",
+            "\n#[cfg(test)]\nmod m32_sqlite_concurrency_tests;",
+            "\n#[cfg(all(test, windows))]\nmod m32_isolated_preflight;",
+            "\nuse crate::m32_isolated_preflight_status;",
+        ):
+            with self.subTest(candidate=candidate), self.assertRaisesRegex(
+                ValueError, "historical module registration|historical command registration"
+            ):
+                self.guard(self.lib + candidate, self.chron, self.doc, self.checklist)
+
+    def test_24_old_code_or_safety_scope_falsification_refused(self):
+        with self.assertRaisesRegex(ValueError, "chronology test-only"):
+            self.guard(self.lib.replace("#[cfg(test)]\nmod m32_manual_chronology;",
+                                        "mod m32_manual_chronology;"),
+                       self.chron, self.doc, self.checklist)
+        with self.assertRaisesRegex(ValueError, "modern chronology symbol drift"):
+            self.guard(self.lib, re.sub(r"\bfn\s+append_chain_correction\s*\(",
+                                        "fn renamed_chain_correction(",
+                                        self.chron, count=1), self.doc, self.checklist)
+        with self.assertRaisesRegex(ValueError, "old Rust admission"):
+            self.guard(self.lib, self.chron, self.doc.replace("NOT_PORTED", "ADMITTED"),
+                       self.checklist)
+        with self.assertRaisesRegex(ValueError, "prematurely closed"):
+            self.guard(self.lib, self.chron, self.doc,
+                       self.checklist.replace("- [ ] **M32-007**", "- [x] **M32-007**"))
+
 if __name__ == "__main__":
     unittest.main()
