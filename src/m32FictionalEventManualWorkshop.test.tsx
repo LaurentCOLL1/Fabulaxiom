@@ -1030,4 +1030,52 @@ describe("M3.2 manual fictional event workshop source-only", () => {
     expect(html).not.toContain("Versions historiques fictives");
     expect(JSON.stringify(book)).toBe(before);
   });
+  it("53 filters exact historical version with same-version corrected fields",()=>{
+    const first=applyFictionalWorkshopAction(invented(),{kind:"create",
+      input:{...input,anchor_id:"A",source_revision_id:"fiction-alpha-rev-1"}});
+    const id=first.events[0].event_id;
+    const second=applyFictionalWorkshopAction(first,{kind:"amend",eventId:id,
+      reason:"Passage fictif à la version deux",
+      input:{...input,note:"Note fictive modifiée",anchor_id:"B",source_revision_id:null}});
+    const book=applyFictionalWorkshopAction(second,{kind:"amend",eventId:id,
+      reason:"Passage fictif à la version trois",
+      input:{...input,title:"Titre version trois",note:"Note fictive modifiée",
+        anchor_id:"B",source_revision_id:null}});
+    const before=JSON.stringify(book);
+    const find=(version:number,
+      field:""|"title"|"note"|"anchor_id"|"source_revision_id"="",anchor="")=>
+      matchingFictionalEventHistoryIds(book,"","all","","","",anchor,
+        "","","","","",field,version);
+    expect(find(0)).toEqual([id]);
+    expect(find(1,"","A")).toEqual([id]);
+    expect(find(1,"title")).toEqual([]);
+    expect(find(2,"note","B")).toEqual([id]);
+    expect(find(2,"note","A")).toEqual([]);
+    expect(find(2,"source_revision_id")).toEqual([id]);
+    expect(find(2,"title")).toEqual([]);
+    expect(find(3,"title","B")).toEqual([id]);
+    expect(find(3,"source_revision_id")).toEqual([]);
+    expect(find(4)).toEqual([]);
+    for(const bad of [-1,1.5,NaN,Infinity])
+      expect(()=>find(bad)).toThrow("Version historique fictive invalide");
+    expect(JSON.stringify(book)).toBe(before);
+  });
+  it("54 SSR shows only version numbers before historical inspection",()=>{
+    const first=applyFictionalWorkshopAction(invented(),{kind:"create",
+      input:{...input,note:"NOTE-PRIVÉE-VERSION-1"}});
+    const book=applyFictionalWorkshopAction(first,{kind:"amend",
+      eventId:first.events[0].event_id,reason:"MOTIF-PRIVÉ-VERSION-2",
+      input:{...input,note:"NOTE-PRIVÉE-VERSION-2"}});
+    const before=JSON.stringify(book);
+    const html=renderToStaticMarkup(createElement(M32FictionalEventManualWorkshop,{initial:book}));
+    expect(html).toContain("Filtrer par numéro exact de version historique fictive");
+    expect(html).toContain('value="1"');
+    expect(html).toContain('value="2"');
+    expect(html).toContain("Toutes les versions fictives");
+    expect(html).not.toContain("NOTE-PRIVÉE-VERSION-1");
+    expect(html).not.toContain("NOTE-PRIVÉE-VERSION-2");
+    expect(html).not.toContain("MOTIF-PRIVÉ-VERSION-2");
+    expect(html).not.toContain("Versions historiques fictives");
+    expect(JSON.stringify(book)).toBe(before);
+  });
 });
