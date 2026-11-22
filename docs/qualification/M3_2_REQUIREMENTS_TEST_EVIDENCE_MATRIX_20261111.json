@@ -3298,6 +3298,23 @@
         "step_log_locator": null,
         "CI_step_does_not_equal_individual_test_assertion": true,
         "Windows_operator_workflow_admission": false
+      },
+      "latest_accepted_proof_gap_ledger_candidate": {
+        "review_date": "2026-11-22",
+        "report": "docs/qualification/M3_2_M32_078_ACCEPTED_PROOF_GAPS_20261122.json",
+        "note": "docs/qualification/M3_2_M32_078_ACCEPTED_PROOF_GAPS_20261122.md",
+        "source_main": "ed8d555d8253f7adb7b8ec6689b9be5331786eaf",
+        "total": 104,
+        "closed_scoped": 12,
+        "open_not_accepted": 92,
+        "gate_open_counts": {
+          "REQUIRES_INDEPENDENT_R1_G2_PROOFS": 39,
+          "RUNTIME_NOT_ADMITTED": 42,
+          "SCOPED_EVIDENCE_REQUIRED": 11
+        },
+        "operator_acceptance": false,
+        "requirement_acceptance": false,
+        "source_ci_status": "NOT_RUN_CANDIDATE"
       }
     },
     {
