@@ -12,7 +12,7 @@ ROADMAP = (ROOT / "docs/roadmap/FABULAXIOM_ROADMAP_V1.md").read_text(encoding="u
 TASK = re.compile(r"^- \[([ x])\] \*\*(M32-\d{3})\*\* (.+?)\s*$", re.M)
 
 SCOPED_CLOSED_IDS = frozenset({
-    "M32-001", "M32-002", "M32-004", "M32-005", "M32-006", "M32-037", "M32-049", "M32-051",
+    "M32-001", "M32-002", "M32-003", "M32-004", "M32-005", "M32-006", "M32-037", "M32-049", "M32-051",
     "M32-094", "M32-095", "M32-096", "M32-104",
 })
 
@@ -90,6 +90,7 @@ class TraceabilityAndScope(unittest.TestCase):
         expected = {
             "M32-001": (42699790716, "bef699511ff18e987a4858c797fde7aa88dfc59b", "2026-11-09", "push"),
             "M32-002": (42751838279, "fb523abbc05b636d98fd93240872882f4ee57f61", "2026-11-10", "pull_request"),
+            "M32-003": (45006510217, "f452c3f37f760f8c35a7be7370d95a12c7d9bd52", "2026-11-22", "pull_request"),
             "M32-004": (44604279698, "d9a8187aa889d08b6f943a38c539fca5d435f746", "2026-11-19", "pull_request"),
             "M32-005": (44778790112, "e0f318ece1fdae29e567e453db455b695e813e9a", "2026-11-20", "pull_request"),
             "M32-006": (44800413136, "27edacd94728f87b0e0ed6ff70bccc9e99331a08", "2026-11-20", "pull_request"),
@@ -106,6 +107,7 @@ class TraceabilityAndScope(unittest.TestCase):
             proof = row["proof_audit"]
             with self.subTest(row=row["id"]):
                 self.assertEqual(proof["record_review_date"],
+                                 "2026-11-22" if row["id"] == "M32-003" else
                                  "2026-11-20" if row["id"] in ("M32-005", "M32-006") else
                                   "2026-11-19" if row["id"] == "M32-004" else
                                  ("2026-11-14" if row["id"] == "M32-094" else "2026-11-12"))
@@ -140,6 +142,7 @@ class TraceabilityAndScope(unittest.TestCase):
         expected = {
             "M32-001": (129441151373, 28, "M3.2 living handoff source-only contract checks"),
             "M32-002": (129617016279, 28, "M3.2 living handoff source-only contract checks"),
+            "M32-003": (137159200585, 28, "M3.2 living handoff source-only contract checks"),
             "M32-004": (135843672704, 31, "M3.2 master completion checklist 104-item closure evidence contracts"),
             "M32-005": (136435646377, 31, "M3.2 master completion checklist 104-item closure evidence contracts"),
             "M32-006": (136510779675, 31, "M3.2 master completion checklist 104-item closure evidence contracts"),
@@ -157,6 +160,7 @@ class TraceabilityAndScope(unittest.TestCase):
             stage = row["workflow_step_audit"]
             with self.subTest(row=row["id"]):
                 self.assertEqual(stage["step_review_date"],
+                                 "2026-11-22" if row["id"] == "M32-003" else
                                  "2026-11-20" if row["id"] in ("M32-005", "M32-006") else
                                   "2026-11-19" if row["id"] == "M32-004" else
                                  ("2026-11-14" if row["id"] == "M32-094" else "2026-11-12"))
@@ -474,7 +478,7 @@ class TraceabilityAndScope(unittest.TestCase):
         self.assertFalse(x["browser_click_attested"])
         self.assertFalse(x["operator_acceptance"])
         self.assertFalse(x["requirement_acceptance"])
-        self.assertEqual((MATRIX["total"],MATRIX["closed"],MATRIX["open"]),(104,12,92))
+        self.assertEqual((MATRIX["total"],MATRIX["closed"],MATRIX["open"]),(104,13,91))
 
     def test_20261121_p3bi_bounded_pages_and_pr35_cursor_stay_partial(self):
         index={x["id"]:x for x in MATRIX["rows"]}
@@ -494,7 +498,7 @@ class TraceabilityAndScope(unittest.TestCase):
         self.assertIn("NOT_RUN",candidate["source_ci_status"])
         self.assertFalse(candidate["browser_click_attested"])
         self.assertFalse(candidate["operator_acceptance"])
-        self.assertEqual((MATRIX["total"],MATRIX["closed"],MATRIX["open"]),(104,12,92))
+        self.assertEqual((MATRIX["total"],MATRIX["closed"],MATRIX["open"]),(104,13,91))
 
     def test_pr35_84path_and_p3bj_not_accepted(self):
         index={r["id"]:r for r in MATRIX["rows"]}
@@ -510,7 +514,7 @@ class TraceabilityAndScope(unittest.TestCase):
         self.assertIn("NOT_RUN",rec["source_ci_status"])
         self.assertFalse(rec["operator_acceptance"])
         self.assertIn("- [ ] **M32-071**",CHECK)
-        self.assertEqual((MATRIX["total"],MATRIX["closed"],MATRIX["open"]),(104,12,92))
+        self.assertEqual((MATRIX["total"],MATRIX["closed"],MATRIX["open"]),(104,13,91))
 
     def test_p3bl_and_pr215_seven_old_handoff_scoped_not_accepted(self):
         idx={r["id"]:r for r in MATRIX["rows"]}
@@ -529,7 +533,7 @@ class TraceabilityAndScope(unittest.TestCase):
             self.assertIn("NOT_RUN",feature["source_ci_status"])
             self.assertTrue((ROOT/feature["report"]).is_file())
             self.assertIn(f"- [ ] **{key}**",CHECK)
-        self.assertEqual((MATRIX["total"],MATRIX["closed"],MATRIX["open"]),(104,12,92))
+        self.assertEqual((MATRIX["total"],MATRIX["closed"],MATRIX["open"]),(104,13,91))
 
     def test_p3bm_and_pr215_old_146_147_remain_partial(self):
         idx={r["id"]:r for r in MATRIX["rows"]}
@@ -551,7 +555,7 @@ class TraceabilityAndScope(unittest.TestCase):
             self.assertIn("NOT_RUN",rec["source_ci_status"])
             self.assertTrue((ROOT/rec["report"]).is_file())
             self.assertIn(f"- [ ] **{key}**",CHECK)
-        self.assertEqual((MATRIX["total"],MATRIX["closed"],MATRIX["open"]),(104,12,92))
+        self.assertEqual((MATRIX["total"],MATRIX["closed"],MATRIX["open"]),(104,13,91))
 
     def test_p3bn_and_seven_old_pr215_cases_stay_source_only(self):
         idx={r["id"]:r for r in MATRIX["rows"]}
@@ -575,7 +579,7 @@ class TraceabilityAndScope(unittest.TestCase):
             self.assertIn("NOT_RUN",rec["source_ci_status"])
             self.assertTrue((ROOT/rec["report"]).is_file())
             self.assertIn(f"- [ ] **{key}**",CHECK)
-        self.assertEqual((MATRIX["total"],MATRIX["closed"],MATRIX["open"]),(104,12,92))
+        self.assertEqual((MATRIX["total"],MATRIX["closed"],MATRIX["open"]),(104,13,91))
 
     def test_p3bo_four_fields_and_pr215_literal_review_stay_unaccepted(self):
         index={row["id"]:row for row in MATRIX["rows"]}
@@ -599,14 +603,14 @@ class TraceabilityAndScope(unittest.TestCase):
             self.assertIn("NOT_RUN",rec["source_ci_status"])
             self.assertTrue((ROOT/rec["report"]).is_file())
             self.assertIn(f"- [ ] **{key}**",CHECK)
-        self.assertEqual((MATRIX["total"],MATRIX["closed"],MATRIX["open"]),(104,12,92))
+        self.assertEqual((MATRIX["total"],MATRIX["closed"],MATRIX["open"]),(104,13,91))
 
     def test_m32_078_accepted_proof_gap_ledger_never_invents_runtime(self):
         ledger=json.loads((ROOT/"docs/qualification/M3_2_M32_078_ACCEPTED_PROOF_GAPS_20261122.json").read_text(encoding="utf-8"))
         self.assertEqual(ledger["schema"],"M32_078_ACCEPTED_PROOF_GAPS_V1")
         self.assertEqual(ledger["origin_matrix"],
                          "docs/qualification/M3_2_REQUIREMENTS_TEST_EVIDENCE_MATRIX_20261111.json")
-        self.assertEqual((ledger["total"],ledger["closed_scoped"],ledger["open_not_accepted"]),(104,12,92))
+        self.assertEqual((ledger["total"],ledger["closed_scoped"],ledger["open_not_accepted"]),(104,13,91))
         open_rows=[row for row in MATRIX["rows"] if row["status"]=="OPEN_NOT_ACCEPTED"]
         closed_rows=[row for row in MATRIX["rows"] if row["status"]=="CLOSED_SCOPED"]
         self.assertEqual(ledger["closed_ids"],[r["id"] for r in closed_rows])
@@ -637,6 +641,31 @@ class TraceabilityAndScope(unittest.TestCase):
         self.assertIn("NOT_RUN",audit["source_ci_status"])
         self.assertIn("- [ ] **M32-078**",CHECK)
         self.assertEqual(MATRIX["gate"],"IN_PROGRESS_NOT_ACCEPTED")
+
+    def test_m32_003_protocol_scope_requires_fresh_future_pr_reviews(self):
+        row=next(x for x in MATRIX["rows"] if x["id"]=="M32-003")
+        report_path=ROOT/"docs/qualification/M3_2_M32_003_PROTECT_MAIN_SCOPED_PROOF_20261122.md"
+        self.assertTrue(report_path.is_file())
+        report=report_path.read_text(encoding="utf-8")
+        data=row["m32_003_protect_main_review"]
+        self.assertEqual(row["status"],"CLOSED_SCOPED")
+        self.assertEqual((data["historical_pr"],data["ruleset_id"]),(415,24895490))
+        self.assertEqual(data["ruleset_enforcement"],"active")
+        self.assertEqual(data["bypass_actors"],[])
+        self.assertTrue(data["strict_required_status_checks_policy"])
+        self.assertEqual(data["required_job"],"Windows frontend and Rust checks")
+        self.assertEqual(data["unresolved_review_threads"],0)
+        self.assertTrue(data["future_pr_recheck_required"])
+        self.assertFalse(data["operator_runtime_acceptance"])
+        self.assertFalse(data["writer_admission"])
+        self.assertEqual(row["proof_audit"]["workflow_run_id"],45006510217)
+        self.assertEqual(row["workflow_step_audit"]["job_id"],137159200585)
+        for marker in ("OBLIGATOIRE", "pour chaque PR future", "bypass_actors=[]",
+                       "expected_head_sha", "CI Windows", "M3.2 IN_PROGRESS_NOT_ACCEPTED",
+                       "STOP Writer/R1–R9 NOT_PROVEN"):
+            self.assertIn(marker,report)
+        self.assertIn("- [x] **M32-003**",CHECK)
+        self.assertIn("- [ ] **M32-078**",CHECK)
 
     def test_metadata_does_not_grant_writer_admission(self):
         self.assertEqual(MATRIX["gate"],"IN_PROGRESS_NOT_ACCEPTED")
