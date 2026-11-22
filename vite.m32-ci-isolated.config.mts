@@ -77,9 +77,11 @@ export default defineConfig(() => {
         "X-Content-Type-Options": "nosniff",
         "Referrer-Policy": "no-referrer",
       },
-      hmr: {
-        protocol: "ws", host: "127.0.0.1", clientPort: 14279,
-      },
+      // Chromium fixture CI has no live edits. Do not inject the dev HMR
+      // WebSocket client: late-close during native-select reloads is a
+      // nondeterministic pageerror and adds no product interaction coverage.
+      // The separate precompiled strict-CSP browser run remains mandatory.
+      hmr: false,
       fs: {
         strict: true,
         allow: [stage, path.join(import.meta.dirname, "node_modules")],

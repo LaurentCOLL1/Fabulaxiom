@@ -94,4 +94,17 @@ test("08 empty or unexpected asset type is refused before listening", () => {
   assert.throws(() => pinStaticBytes(second), /unlisted static file/);
 });
 
+test("09 fictional Vite dev suite cannot inject an HMR WebSocket client", () => {
+  const source = fs.readFileSync(
+    path.join(__dirname, "..", "vite.m32-ci-isolated.config.mts"), "utf8");
+  assert.match(source, /\bhmr:\s*false\b/,
+    "STOP: isolated Vite fixture must disable unstable HMR websocket");
+  assert.doesNotMatch(source, /\bhmr:\s*\{/,
+    "STOP: HMR websocket options must not be re-enabled");
+  assert.match(source, /host:\s*"127\.0\.0\.1"/,
+    "STOP: isolated Vite must stay loopback only");
+  assert.match(source, /"connect-src 'self'/,
+    "STOP: existing Vite dev connect-src remains explicit");
+});
+
 console.log("M32_CI_STATIC_RAM_SNAPSHOT_TESTS_DEFINED: source-only Windows CI; no Tauri launch");
