@@ -39,6 +39,7 @@ export function matchingFictionalEventHistoryIds(
   anchorLink: "" | "linked" | "unlinked" = "",
   sourceLink: "" | "linked" | "unlinked" = "",
   changedField: "" | "title" | "note" | "anchor_id" | "source_revision_id" = "",
+  exactVersion = 0,
 ): readonly string[] {
   inspectFictionalEventNotebook(notebook);
   const query = searchId.trim().toLocaleLowerCase();
@@ -49,6 +50,8 @@ export function matchingFictionalEventHistoryIds(
   const anchorId = exactAnchorId.trim();
   const dateLabel = exactFictionalDateLabel.trim();
   const calendarName = exactCalendarName.trim();
+  if (!Number.isSafeInteger(exactVersion) || exactVersion < 0)
+    throw Error("Version historique fictive invalide");
   if (!["", "exact", "approximate", "relative", "unknown"].includes(exactTimeKind))
     throw Error("Type temporel fictif invalide");
   const timeKind = exactTimeKind;
@@ -68,7 +71,7 @@ export function matchingFictionalEventHistoryIds(
       return Boolean(latest && (status === "all" || latest.status === status) &&
         id.toLocaleLowerCase().includes(query) &&
         ((!sourceId && !novelId && !sceneId && !anchorId && !dateLabel && !calendarName &&
-          !timeKind && !anchorLink && !sourceLink && !changedField) ||
+          !timeKind && !anchorLink && !sourceLink && !changedField && !exactVersion) ||
           versions.some((v, index) => {
             // All selectors must match one event version, not a union of history.
             const revision = v.source_revision_id === null ? undefined :
@@ -89,7 +92,8 @@ export function matchingFictionalEventHistoryIds(
               (!sourceLink || (sourceLink === "linked" ?
                 v.source_revision_id !== null : v.source_revision_id === null)) &&
               (!changedField || (index > 0 &&
-                v[changedField] !== versions[index - 1][changedField]));
+                v[changedField] !== versions[index - 1][changedField])) &&
+              (!exactVersion || v.version === exactVersion);
           })));
     });
 }
@@ -170,6 +174,7 @@ export default function M32FictionalEventManualWorkshop({ initial }: {
     useState<"" | "linked" | "unlinked">("");
   const [historyChangedField, setHistoryChangedField] =
     useState<"" | "title" | "note" | "anchor_id" | "source_revision_id">("");
+  const [historyExactVersion, setHistoryExactVersion] = useState(0);
   const [historyPage, setHistoryPage] = useState(0);
   const [historyPageSize, setHistoryPageSize] = useState<number>(FICTIONAL_HISTORY_PAGE_SIZE);
   const [historyIdOrder, setHistoryIdOrder] = useState<FictionalHistoryIdOrder>("insertion");
@@ -184,6 +189,8 @@ export default function M32FictionalEventManualWorkshop({ initial }: {
   const sourceNovelIds = [...new Set(book.draft.revisions.map(r => r.novel_id))];
   const sourceSceneIds = [...new Set(book.draft.revisions.map(r => r.scene_id))];
   const historyAnchorIds = book.draft.snapshot.anchors.map(a => a.id);
+  const historyVersionNumbers = [...new Set(book.events.map(e => e.version))]
+    .sort((a, b) => a - b);
   const historyDateLabels = [...new Set(book.draft.snapshot.anchors
     .filter(a => a.time_kind === "exact" && a.fictional_label !== null)
     .map(a => a.fictional_label!))];
@@ -193,7 +200,8 @@ export default function M32FictionalEventManualWorkshop({ initial }: {
   const historyEventIds = matchingFictionalEventHistoryIds(
     book, historyIdQuery, historyStatus, historySourceIdQuery, historyNovelId,
     historySceneId, historyAnchorId, historyFictionalDateLabel, historyCalendarName,
-    historyTimeKind, historyAnchorLink, historySourceLink, historyChangedField);
+    historyTimeKind, historyAnchorLink, historySourceLink, historyChangedField,
+    historyExactVersion);
   const orderedHistoryIds = orderFictionalEventHistoryIds(historyEventIds, historyIdOrder);
   const historyView = pageFictionalEventHistoryIds(orderedHistoryIds, historyPage, historyPageSize);
   const inspectedHistory = historyEventId
@@ -237,6 +245,7 @@ export default function M32FictionalEventManualWorkshop({ initial }: {
     setHistoryAnchorId(""); setHistoryFictionalDateLabel("");
     setHistoryCalendarName(""); setHistoryTimeKind(""); setHistoryAnchorLink("");
     setHistorySourceLink(""); setHistoryChangedField("");
+    setHistoryExactVersion(0);
     setHistoryStatus("all");
     setHistoryPage(0); setHistoryEventId("");
     setHistoryPageSize(FICTIONAL_HISTORY_PAGE_SIZE);
@@ -443,6 +452,18 @@ export default function M32FictionalEventManualWorkshop({ initial }: {
       </label>
       <small role="note">Sans source ne signifie ni sans ancre ni temps inconnu.
         Tous les filtres portent sur une même version historique.</small>
+      <label>Filtrer par numéro exact de version historique fictive
+        <select value={historyExactVersion} onChange={e => {
+          setHistoryExactVersion(Number(e.currentTarget.value));
+          setHistoryEventId(""); setHistoryPage(0);
+        }}>
+          <option value={0}>Toutes les versions fictives</option>
+          {historyVersionNumbers.map(version =>
+            <option key={version} value={version}>Version {version}</option>)}
+        </select>
+      </label>
+      <small role="note">Sélection d’un numéro de version, sans lecture des
+        titres, notes ou motifs historiques avant inspection explicite.</small>
       <label>Filtrer par champ modifié entre versions historiques fictives
         <select value={historyChangedField} onChange={e => {
           setHistoryChangedField(e.currentTarget.value as typeof historyChangedField);
