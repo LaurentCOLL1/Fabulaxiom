@@ -590,5 +590,97 @@ class Pr35Stage24To29PairedHistoricalTestReview(unittest.TestCase):
             self.guard(report, audit,
                        checklist.replace("- [ ] **M32-050**", "- [x] **M32-050**"))
 
+
+class Pr35RemainingFifteenPythonPairsSourceOnly(unittest.TestCase):
+    """Historic 15 Python pairs: SHA+method-name source inventory, no execution."""
+
+    DOCS = (
+        ROOT / "docs/qualification/M3_2_PR35_STAGE11_18_AUTHORITY_SOURCES_READONLY_SCOPE_20261122.md",
+        ROOT / "docs/qualification/M3_2_PR35_STAGE19_20_22_SOURCE_SCOPE_20261122.md",
+        ROOT / "docs/qualification/M3_2_PR35_STAGE26_27_28_WITNESS_SOURCE_AUDIT_20261122.md",
+        ROOT / "docs/qualification/M3_2_PR35_STAGE30_31_32_BATCH_HANDOFF_SOURCE_REVIEW_20261122.md",
+    )
+    PAIRS = (
+        ("tools/m3_2_operator_readonly_gate.py", "tools/test_m3_2_operator_readonly_gate.py", "6a2281e9b12e2a83f282e1bfd936eb3314ef6108", "ca7ada469eec00f07d984be8aefc4f881661c0c7", 8, 0),
+        ("tools/m3_2_multiroot_readonly.py", "tools/test_m3_2_multiroot_readonly.py", "171fdd7c067f217c2985d510908326507a187d6b", "87d1fe01a8f193a2efddc82f53a1e2d230b4b1ef", 12, 0),
+        ("tools/m3_2_independent_authority_gate.py", "tools/test_m3_2_independent_authority_gate.py", "baafb72e571de8dc85986749a7c9755ef7f5ca44", "d03b32d9e6d18be114fd7096392c6e73f0301088", 14, 0),
+        ("tools/m3_2_m31_semantic_readonly.py", "tools/test_m3_2_m31_semantic_readonly.py", "82044b24c8f70fd9c5f414c53cd20039e98ae682", "d1831b3c2b3b3f09f0f87cd99608fc18123464a4", 21, 0),
+        ("tools/m3_2_direct_custody_readonly.py", "tools/test_m3_2_direct_custody_readonly.py", "b50f86359708e0ccc37679d77a50c79192d58de8", "fd98291dd4590d9c446415bcc0c1d177dd2bafa8", 24, 0),
+        ("tools/m3_2_isolated_v7_physical_readonly.py", "tools/test_m3_2_isolated_v7_physical_readonly.py", "2a6bb6f67eb7e2c97483b25d2e27f5e3dbe37acd", "0b1cd5393ff6943126b4ee8e0fb4bc655ef4fec5", 18, 0),
+        ("tools/m3_2_provenance_triage.py", "tools/test_m3_2_provenance_triage.py", "0f40cc90905b2e22dcde364b3896a86dc7b62200", "6703160f7ca532f6c9c8f99ece2a84e5b01187da", 33, 1),
+        ("tools/m3_2_supersession_reference.py", "tools/test_m3_2_supersession_reference.py", "77ff7cf61e8fe6df581cab3ba83b21cd4e0c5c3a", "cc91ab96c0928974a4f01230a4365dde9e88862b", 25, 1),
+        ("tools/m3_2_chronology_presentation_reference.py", "tools/test_m3_2_chronology_presentation_reference.py", "811f29ba968a401fbafa3dbf423ddee0527c505b", "44f30a03c4fe751513394e1a5f1ab0a1646590cc", 25, 1),
+        ("tools/m3_2_chronology_witness_reference.py", "tools/test_m3_2_chronology_witness_reference.py", "8dfdf8b706593c84be5b151b61080ae44c3dd007", "11e93ed4e45f5da5f488bb01b21e8eb6e05b49f0", 32, 2),
+        ("tools/m3_2_chronology_witness_presentation_reference.py", "tools/test_m3_2_chronology_witness_presentation_reference.py", "c346fbf923ca4e6bf87d188c846b167ea4c479af", "a7b64a754ee42b74c4e8bb0d65e83cb929cd0d8c", 30, 2),
+        ("tools/m3_2_chronology_witness_consultation_reference.py", "tools/test_m3_2_chronology_witness_consultation_reference.py", "93969516981211ffd3723daaa222121c55cf9773", "9b4c19e7c3a62d6f56566655ac489af26e31cc4e", 30, 2),
+        ("tools/m3_2_chronology_comparison_batch_reference.py", "tools/test_m3_2_chronology_comparison_batch_reference.py", "fabc802887e5f7960c0fac255021050d87e03339", "f9696030d20321d9dc9789a1fb12ce5cca3b39c3", 41, 3),
+        ("tools/m3_2_chronology_batch_coherence_reference.py", "tools/test_m3_2_chronology_batch_coherence_reference.py", "092906f5d7c1f71303f3eff0659eebaa42926c9f", "cfea445305060c139f62248f8b01cb812a169296", 37, 3),
+        ("tools/m3_2_chronology_readonly_handoff_reference.py", "tools/test_m3_2_chronology_readonly_handoff_reference.py", "0f3607ad9e74dd1934e0e0ab21a39dd25e9587f2", "131887a4552551eda574f55ad64538026478abe0", 34, 3),
+    )
+    AUDIT = ROOT / "docs/qualification/M3_2_PR35_84_PATH_TREE_AUDIT_20261121.md"
+
+    @classmethod
+    def guard(cls, reports, audit, checklist):
+        if len(reports) != 4:
+            raise ValueError("STOP historic report inventory drift")
+        for report in reports:
+            for token in ("NO_SEMANTIC_EQUIVALENCE", "NO_AUTO_PORT",
+                          "NO_RUNTIME_ADMISSION", "OPEN_NOT_ACCEPTED",
+                          "R1–R9 NOT_PROVEN", "M32-007 [ ]", "M32-050 [ ]"):
+                if token not in report:
+                    raise ValueError("STOP historic source false authority " + token)
+        for source, test, sha, test_sha, count, report_id in cls.PAIRS:
+            # Stage26/27/28 report uses short names; others use full paths.
+            a = source.removeprefix("tools/") if report_id == 2 else source
+            b = test.removeprefix("tools/") if report_id == 2 else test
+            lines = [line for line in reports[report_id].splitlines()
+                     if line.startswith("|") and f"`{a}`" in line
+                     and f"`{b}`" in line and f"`{sha}`" in line
+                     and f"`{test_sha}`" in line and f"**{count}**" in line]
+            if len(lines) != 1:
+                raise ValueError("STOP historic paired blob/count provenance drift " + source)
+            for name, blob in ((source, sha), (test, test_sha)):
+                if f"| `{name}` | `{blob}` | ABSENT | ABSENT |" not in audit:
+                    raise ValueError("STOP historic Git blob audit mismatch " + name)
+                if (ROOT / name).exists():
+                    raise ValueError("STOP old Python module imported " + name)
+        for req in ("M32-007", "M32-050"):
+            if f"- [ ] **{req}**" not in checklist:
+                raise ValueError("STOP false historical checklist closure " + req)
+        if ("20/20 SOURCE_DESCRIBED_NOT_EQUIVALENT" not in reports[0] or
+                "0/20 PORTED" not in reports[0] or
+                "0/20 ADMITTED" not in reports[0]):
+            raise ValueError("STOP false historical equivalence or admission")
+        return len(cls.PAIRS), sum(row[4] for row in cls.PAIRS)
+
+    def test_31_all_15_historic_pairs_have_immutable_blob_and_name_counts(self):
+        reports = [path.read_text(encoding="utf-8") for path in self.DOCS]
+        self.assertEqual(self.guard(reports, self.AUDIT.read_text(encoding="utf-8"),
+                                    CHECKLIST.read_text(encoding="utf-8")), (15, 384))
+
+    def test_32_spoofed_historic_sha_or_method_count_fails_closed(self):
+        reports = [p.read_text(encoding="utf-8") for p in self.DOCS]
+        audit = self.AUDIT.read_text(encoding="utf-8")
+        checklist = CHECKLIST.read_text(encoding="utf-8")
+        for changed in (reports[0].replace("6a2281e9b12e2a83f282e1bfd936eb3314ef6108",
+                                           "0"*40),
+                        reports[0].replace("**8**", "**9**", 1)):
+            candidate = reports.copy()
+            candidate[0] = changed
+            with self.assertRaisesRegex(ValueError, "blob/count provenance drift"):
+                self.guard(candidate, audit, checklist)
+
+    def test_33_refuses_false_admission_and_legacy_checklist_closure(self):
+        reports = [p.read_text(encoding="utf-8") for p in self.DOCS]
+        audit = self.AUDIT.read_text(encoding="utf-8")
+        checklist = CHECKLIST.read_text(encoding="utf-8")
+        mutated = reports.copy()
+        mutated[0] = mutated[0].replace("NO_RUNTIME_ADMISSION", "RUNTIME_ADMITTED")
+        with self.assertRaisesRegex(ValueError, "false authority"):
+            self.guard(mutated, audit, checklist)
+        with self.assertRaisesRegex(ValueError, "false historical checklist closure"):
+            self.guard(reports, audit,
+                       checklist.replace("- [ ] **M32-007**", "- [x] **M32-007**"))
+
 if __name__ == "__main__":
     unittest.main()
