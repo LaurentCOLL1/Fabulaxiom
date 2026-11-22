@@ -1,16 +1,16 @@
 # Reprise Fabulaxiom (https://github.com/LaurentCOLL1/Fabulaxiom)
 
 ## Dernier checkpoint
-main=3b30e12e3337e71e5bfa571fb2d6424e17addc18 ; #411 M32-078 MERGED CI #44962625083 PASS HEAD exact e759cd82dbbd139ff68bc5aa37a69d9fac964220 ; postmain #44973406392 PENDING sur SHA exact main (NON QUALIFIÉ) ; date=2026-11-22 ; P3bp filtre version exacte CANDIDAT ; 12/92 ; M3.2 IN_PROGRESS_NOT_ACCEPTED (~45%).
+main=caba32a25a377bc91a0ef4aed86042525f3d51dc ; #412 P3bp MERGED CI #44978185080 PASS HEAD exact 46b7d2ea22b1f5205662aaf7a9575ca41fb88168 ; postmain #44993381998 PENDING sur SHA exact main (NON QUALIFIÉ) ; date=2026-11-22 ; P3bq clavier/historique Chromium #110 CANDIDAT ; 12/92 ; M3.2 IN_PROGRESS_NOT_ACCEPTED (~45%).
 
 ## Interdictions actives — STOP
 Writer/R1–R9 NOT_PROVEN ; P4 STOP ; G2B NOT_ACCEPTED ; G2C NOT_AUTHORIZED ; G3 STOP_UNAVAILABLE ; PENDING_EXTERNAL_ATTESTATION(21/3/2), prospective NOT_STARTED ; R2 STOP, R3 partiel, D3c conception, D3b-4/5, D3b-5 STOP ; main/WAL/SHM, live SQLite WAL-index et ABA NOT_PROVEN ; glib #160 OPEN_NOT_REMEDIATED.
 STOP v6/v7, M:\Fabulaxiom, Greenfield, backups, IPC writer, 007, Hello, recovery.
 
 ## Prochaines opérations
-1. #411 source CI #44962625083 PASS HEAD exact e759cd82dbbd139ff68bc5aa37a69d9fac964220 ; postmain #44973406392 PENDING exact 3b30e12e3337e71e5bfa571fb2d6424e17addc18 ; issue #38 #7072513016 ; 12/92.
-2. P3bp filtre numéro exact de version historique fictive + Vitest #53/#54 CANDIDATS, aucun runtime ni clôture M32-071/078/081 ; PR #35 68 absents, PR #215 quatre REVIEW_NON_ACCEPTED.
-3. CI HEAD P3bp, diff/reviews/threads/Protect main ACTIVE bypass=[], squash expected_head_sha après postmain parent PASS, postmain indépendante, #38 append-only ; PRODUCT_FIRST_PARALLEL_SAFETY.
+1. #412 source CI #44978185080 PASS HEAD exact 46b7d2ea22b1f5205662aaf7a9575ca41fb88168 ; postmain #44993381998 PENDING exact caba32a25a377bc91a0ef4aed86042525f3d51dc ; issue #38 #7075287132 ; 12/92.
+2. P3bq Chromium #110 test clavier/focus/historique version exacte CANDIDAT, pas de runtime ni clôture M32-071/075/078/081 ; PR #35 68 absents, PR #215 quatre REVIEW_NON_ACCEPTED.
+3. CI HEAD P3bq, diff/reviews/threads/Protect main ACTIVE bypass=[], squash expected_head_sha après parent postmain PASS, postmain indépendante, #38 append-only ; PRODUCT_FIRST_PARALLEL_SAFETY.
 
 ## Documents d'autorité
 RESUME_PROMPT.md ; HANDOFF_CURRENT.md ; HANDOFF_CURRENT.json ; STATE.md ; NEXT.md ; M3_2_GATE_DECISION_CURRENT.md ; M3_2_COMPLETION_MASTER_CHECKLIST_20261109.md ; ROADMAP_STATUS_CURRENT.md ; M3_2_SHORT_CYCLE_DELIVERY_20261116.md. Historique : RESUME_PROMPT.md / docs/qualification.

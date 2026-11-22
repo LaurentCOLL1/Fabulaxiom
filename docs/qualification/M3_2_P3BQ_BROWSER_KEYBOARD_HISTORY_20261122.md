@@ -1,0 +1,9 @@
+# P3bq — contrôles clavier Chromium de l'historique fictif (22/11/2026)
+
+Contrôle supplémentaire dans le cas Chromium existant **#110** : lorsque l'historique des événements inventés est visible, le passage Tab entre champs identifiant et révision doit laisser le focus au bon endroit. L'inspection de trois versions d'un événement retiré doit nécessiter une sélection explicite au clavier (flèche puis Entrée). La réinitialisation via Entrée sur le bouton doit vider la sélection et masquer immédiatement l'historique, sans réactiver ou restaurer l'événement.
+
+Le cas Chromium #110 existant conserve son identité et les compteurs d'ensemble 111/111 : il est étendu, pas renommé. Aucune ouverture de route normale, aucun accès persistant ou opérateur, aucune dépendance réseau hors boucle locale. Tests **CANDIDATS**, Windows CI exacte À EXÉCUTER après préparation de PR séparée ; **M32-075 [ ] reste OPEN_NOT_ACCEPTED**. Une navigation clavier dans un laboratoire fictif ne démontre ni accessibilité complète ni exploitation hors ligne de l'application réelle.
+
+Branche rebasée sur main parent `caba32a25a377bc91a0ef4aed86042525f3d51dc` après PR #412. PR #412 P3bp est MERGED avec CI Windows SUCCESS au HEAD exact ; cette branche ne doit pas être fusionnée avant postmain #44993381998 SUCCESS au SHA exact, validation CI Windows HEAD exact, diff/reviews/threads, Protect main ACTIVE bypass=[], guarded squash expected_head_sha et postmain indépendante. PRODUCT_FIRST_PARALLEL_SAFETY. STOP Writer/R1–R9 NOT_PROVEN, P4/G2B/G2C/G3, WAL/SHM/ABA, glib #160 OPEN_NOT_REMEDIATED ; v6/v7, M:\\Fabulaxiom, Greenfield, backups, 007, Hello, recovery interdits.
+
+Le cas Chromium #110 contrôle désormais aussi le filtre P3bp : versions 0/1/2/3, sélection 2 puis 3 sans divulgation avant inspection, remise à zéro du filtre au clavier. Contrôle **CANDIDAT jusqu'à la CI Windows HEAD exact**.
