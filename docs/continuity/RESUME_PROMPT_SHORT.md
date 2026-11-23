@@ -1,18 +1,16 @@
-**23/11/2026 — #423 MERGED CI SOURCE/POSTMAIN SUCCESS ; P3bt STATUTS FICTIFS CANDIDAT.** main=de4b1fd9415d985d0dc13b47952d1fe908e5ffcd ; #423 source CI #45213903384 completed/SUCCESS HEAD exact 84b563fe26bfe430445deed7951c0425dda358da Windows 93/93 ; postmain #45239305602 event push completed/SUCCESS SHA exact main, job #137919322143 93/93 ; #38 #7110312015 append-only. P3bt React fictif NON MONTÉ : décompte current/revoked/superseded avant filtres, 5 Vitest candidats SOURCE_ONLY_CANDIDATE_UNQUALIFIED (nouvelle CI requise). M32-071/075/078/081 [ ] OPEN_NOT_ACCEPTED ; 104=13 CLOSED_SCOPED/91 OPEN_NOT_ACCEPTED ; M3.2 IN_PROGRESS_NOT_ACCEPTED (~45% indicatif), PRODUCT_FIRST_PARALLEL_SAFETY, #35/#215 DRAFT NON_ADMITTED. STOP Writer/R1–R9 NOT_PROVEN ; P4 STOP ; G2B NOT_ACCEPTED ; G2C NOT_AUTHORIZED ; G3 STOP_UNAVAILABLE ; PENDING_EXTERNAL_ATTESTATION(21/3/2) prospective NOT_STARTED ; R2 STOP, R3 partiel, D3c conception, D3b-4/5 et D3b-5 STOP ; main/WAL/SHM, live SQLite WAL-index et ABA NOT_PROVEN ; glib #160 OPEN_NOT_REMEDIATED ; STOP v6/v7, M:\Fabulaxiom, Greenfield, backups, IPC writer, 007, Hello, recovery. Suite : PR DRAFT, CI Windows HEAD exacte, diff/reviews/threads/Protect main strict bypass=[], guarded squash expected_head_sha après PASS, nouveau postmain et #38 append-only.
-
 # Reprise Fabulaxiom (https://github.com/LaurentCOLL1/Fabulaxiom)
 
 ## Dernier checkpoint
-main=c79494cbe5a7b7adaa3b39be9cfd3997b3f6126b ; #422 MERGED CI #45203664419 PASS HEAD exact 6c8e567f1a6fc2e81a0de8de54315b82cda30f0c ; postmain #45211260869 PENDING sur SHA exact main (NON QUALIFIÉ) ; date=2026-11-23 ; M32-078 ancien rapport 12/92 HISTORIQUE, JSON/matrice actuelle 13/91 CANDIDAT ; M3.2 IN_PROGRESS_NOT_ACCEPTED (~45%).
+main=de4b1fd9415d985d0dc13b47952d1fe908e5ffcd ; #423 MERGED CI #45213903384 PASS HEAD exact 84b563fe26bfe430445deed7951c0425dda358da ; postmain #45239305602 PASS exact main (Windows 93/93) ; date=2026-11-23 ; P3bt répartition statuts fictifs PR #424 DRAFT, premier HEAD ff3888cfab5aaef35af945cbbfa32f521dd8fdd2 CI #45244346692 FAILURE garde short prompt ; correction en cours. Checklist 13/91, M32-071/075/078/081 [ ] ; M3.2 IN_PROGRESS_NOT_ACCEPTED (~45%).
 
 ## Interdictions actives — STOP
 Writer/R1–R9 NOT_PROVEN ; P4 STOP ; G2B NOT_ACCEPTED ; G2C NOT_AUTHORIZED ; G3 STOP_UNAVAILABLE ; PENDING_EXTERNAL_ATTESTATION(21/3/2), prospective NOT_STARTED ; R2 STOP, R3 partiel, D3c conception, D3b-4/5, D3b-5 STOP ; main/WAL/SHM, live SQLite WAL-index et ABA NOT_PROVEN ; glib #160 OPEN_NOT_REMEDIATED.
 STOP v6/v7, M:\Fabulaxiom, Greenfield, backups, IPC writer, 007, Hello, recovery.
 
 ## Prochaines opérations
-1. #422 CI source PASS, postmain indépendante #45211260869 PENDING exact c79494cbe5a7b7adaa3b39be9cfd3997b3f6126b ; issue #38 #7106434972 append-only.
-2. M32-078 rapport daté et trois gardes source-only CANDIDATS : ne jamais afficher 12/92 comme bilan courant, aucun ACCEPTED des 91 ouverts, M32-078 [ ]. Checklist 13/91, #35/#215 DRAFT NON ADMISES.
-3. CI propre PR DRAFT HEAD exacte ; Protect main ACTIVE strict bypass=[], review diff/reviews/threads, guarded squash expected_head_sha après PASS et postmain parent PASS, nouvelle postmain et #38 ; PRODUCT_FIRST_PARALLEL_SAFETY.
+1. #423 MERGED, postmain #45239305602 SUCCESS exact parent ; issue #38 #7110312015 append-only. Ne pas assimiler la CI échouée #45244346692 à un PASS.
+2. P3bt #424 DRAFT : cinq Vitest fictifs et compteurs current/revoked/superseded ; garder M32-071/075/078/081 [ ], PR #35/#215 DRAFT NON ADMISES, 13/91.
+3. Corriger la garde de taille du prompt court, obtenir CI Windows pull_request SUCCESS nouveau HEAD exact ; revue diff/reviews/threads, Protect main ACTIVE strict bypass=[], guarded squash expected_head_sha après PASS, puis postmain indépendante et journal #38. PRODUCT_FIRST_PARALLEL_SAFETY.
 
 ## Documents d'autorité
 RESUME_PROMPT.md ; HANDOFF_CURRENT.md ; HANDOFF_CURRENT.json ; STATE.md ; NEXT.md ; M3_2_GATE_DECISION_CURRENT.md ; M3_2_COMPLETION_MASTER_CHECKLIST_20261109.md ; ROADMAP_STATUS_CURRENT.md ; M3_2_SHORT_CYCLE_DELIVERY_20261116.md. Historique : RESUME_PROMPT.md / docs/qualification.
