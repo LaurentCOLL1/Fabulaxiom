@@ -22,7 +22,10 @@
     "gate": "IN_PROGRESS_NOT_ACCEPTED",
     "strategy": "PRODUCT_FIRST_PARALLEL_SAFETY",
     "writer_admitted": false,
-    "operator_accepted": false
+    "operator_accepted": false,
+    "source_ci_run": 45244745620,
+    "source_ci_head": "4723f0c5e3ee8c867355f12feaadedb3102a318b",
+    "source_ci_status": "COMPLETED_SUCCESS_EXACT_HEAD"
   },
   "m32_20261123_p3bt_after_pr423": {
     "date": "2026-11-23",
