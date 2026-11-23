@@ -682,5 +682,86 @@ class Pr35RemainingFifteenPythonPairsSourceOnly(unittest.TestCase):
             self.guard(reports, audit,
                        checklist.replace("- [ ] **M32-007**", "- [x] **M32-007**"))
 
+
+class Pr35TwentySixDocumentMetadata(unittest.TestCase):
+    """26 immutable historic document blobs, no import or real operator access."""
+    REPORT = ROOT / "docs/qualification/M3_2_PR35_26_ABSENT_DOCUMENTS_SOURCE_TRIAGE_20261123.md"
+    AUDIT = ROOT / "docs/qualification/M3_2_PR35_84_PATH_TREE_AUDIT_20261121.md"
+    DOCS = (
+        ("docs/qualification/M3_2_ACTIVATION_MARKER_INVENTORY.md", "b5529fc9bdcec01478600e699ef0b547e7f8d560", "AUTHORITY"),
+        ("docs/qualification/M3_2_DIRECT_READONLY_CUSTODY.md", "a82b76e5e55c57d3462ebfc081c0ece786a94b79", "AUTHORITY"),
+        ("docs/qualification/M3_2_EXTERNAL_ATTESTATION_RESOLUTION_MATRIX.md", "673fd153df11b479f7bb4893fc8b54c7826f1464", "AUTHORITY"),
+        ("docs/qualification/M3_2_INDEPENDENT_AUTHORITY_GATE.md", "0d5793f2250a2a9b8f2e23ed3c6a50b15177c99c", "AUTHORITY"),
+        ("docs/qualification/M3_2_ISOLATED_IPC_PREFLIGHT.md", "2b2bd2bbc9f20687f7a0a65242f4cdec1aff2457", "AUTHORITY"),
+        ("docs/qualification/M3_2_ISOLATED_V7_PHYSICAL_READONLY.md", "1211d66dd69e2d1bb703c434434e50d02703dbe5", "AUTHORITY"),
+        ("docs/qualification/M3_2_M31_SEMANTIC_HARDENING.md", "31f01f45dcdfe4dc72c90ee36ea854dbe2c96f4c", "AUTHORITY"),
+        ("docs/qualification/M3_2_M31_SEMANTIC_READONLY_GATE.md", "ee96c6a4abb91985aaa7069747ea1a7fc7e4d240", "AUTHORITY"),
+        ("docs/qualification/M3_2_MULTIROOT_READONLY_GATE.md", "a1a515312d40f415ca014888246d820c6ec40aa5", "AUTHORITY"),
+        ("docs/qualification/M3_2_POST_RESTART_GATE.md", "0be718bc9e004daf0abba6e6591cc65e958d00c4", "AUTHORITY"),
+        ("docs/qualification/M3_2_PROVENANCE_CLAIM_TRIAGE.md", "9380c98f9bbbd2147e1db0c2fbe9d6c72c425337", "AUTHORITY"),
+        ("docs/qualification/M3_2_APPEND_ONLY_SUPERSESSION_DESIGN.md", "28a93cb252bdef2b8aba68d3ec369dceccdd83b2", "DESIGN"),
+        ("docs/qualification/M3_2_MANUAL_CHRONOLOGY_STAGE1.md", "2d35b688093bfd75032dfae7082a3ea353857d7f", "DESIGN"),
+        ("docs/qualification/M3_2_MANUAL_CHRONOLOGY_UX_CONTRACT.md", "7372b2c332821faab238dfc4ed113aff963feece", "DESIGN"),
+        ("docs/qualification/M3_2_READONLY_CHRONOLOGY_BATCH_COHERENCE.md", "4238b941a6157a924082813d0c2549aee1bd8b36", "SYNTHETIC"),
+        ("docs/qualification/M3_2_READONLY_CHRONOLOGY_COMPARISON.md", "619cc24ea5ad6f899745b30524b9996242faa6cd", "SYNTHETIC"),
+        ("docs/qualification/M3_2_READONLY_CHRONOLOGY_COMPARISON_BATCH.md", "9eb25d602bc9751bfd57a090a638aaffb4f2f367", "SYNTHETIC"),
+        ("docs/qualification/M3_2_READONLY_CHRONOLOGY_NAVIGATION.md", "02115fe271c6849cdffa60dd8db039927a10e62b", "SYNTHETIC"),
+        ("docs/qualification/M3_2_READONLY_CHRONOLOGY_PAGINATION.md", "9786816bb428abfc703b939f8c2b33bdbc7266f2", "SYNTHETIC"),
+        ("docs/qualification/M3_2_READONLY_CHRONOLOGY_PRESENTATION.md", "809e1772e4b212565f11af1ecec7d9bfdb989cac", "SYNTHETIC"),
+        ("docs/qualification/M3_2_READONLY_CHRONOLOGY_PROJECTION.md", "0650d66851135030a961e506eb1c8cc9c5ebb737", "SYNTHETIC"),
+        ("docs/qualification/M3_2_READONLY_CHRONOLOGY_SELECTION_REVIEW.md", "fe8849a7a4a30d6718d69294f1f34b167db422d8", "SYNTHETIC"),
+        ("docs/qualification/M3_2_READONLY_CHRONOLOGY_WITNESS.md", "62740aed0cc1d959cd1a3abc0ef111f827c3f95e", "SYNTHETIC"),
+        ("docs/qualification/M3_2_READONLY_CHRONOLOGY_WITNESS_CONSULTATION.md", "6ad6585df74e64f59077a8941ad74eb266d7266a", "SYNTHETIC"),
+        ("docs/qualification/M3_2_READONLY_CHRONOLOGY_WITNESS_PRESENTATION.md", "d92c6d9f03b92a77613023bed8ff58c2296ecfa1", "SYNTHETIC"),
+        ("docs/qualification/M3_2_READONLY_HANDOFF_REFERENCE.md", "a0215b0a5b47fabe3d1b7f2871b71f3a4fb02b7c", "SYNTHETIC"),
+    )
+
+    @classmethod
+    def guard(cls, report, audit, checklist):
+        if len(cls.DOCS) != 26 or len({x[0] for x in cls.DOCS}) != 26:
+            raise ValueError("STOP document inventory")
+        for token in ("SOURCE_ONLY_CANDIDATE_UNQUALIFIED", "NO_SEMANTIC_EQUIVALENCE",
+                      "NO_AUTO_PORT", "NO_RUNTIME_ADMISSION", "OPEN_NOT_ACCEPTED",
+                      "26/26 SOURCE_DESCRIBED_NOT_ADMITTED", "R1–R9 NOT_PROVEN"):
+            if token not in report:
+                raise ValueError("STOP false historic document authority " + token)
+        groups = {"AUTHORITY": 0, "DESIGN": 0, "SYNTHETIC": 0}
+        for path, blob, category in cls.DOCS:
+            if category not in groups or (ROOT / path).exists():
+                raise ValueError("STOP historical document import " + path)
+            groups[category] += 1
+            if report.count(f"| `{path}` | `{blob}` | {category} | HISTORICAL_SOURCE_ONLY |") != 1:
+                raise ValueError("STOP historic document SHA mismatch " + path)
+            if f"| `{path}` | `{blob}` | ABSENT | ABSENT | REVIEW_ABSENT_NO_AUTO_PORT |" not in audit:
+                raise ValueError("STOP historic document audit mismatch " + path)
+        if groups != {"AUTHORITY": 11, "DESIGN": 3, "SYNTHETIC": 12}:
+            raise ValueError("STOP historical classification drift")
+        for task in ("M32-007", "M32-050", "M32-078"):
+            if f"- [ ] **{task}**" not in checklist:
+                raise ValueError("STOP false historic document checklist closure " + task)
+        return len(cls.DOCS)
+
+    def test_34_all_historic_documents_source_only(self):
+        self.assertEqual(self.guard(self.REPORT.read_text(encoding="utf-8"),
+                                    self.AUDIT.read_text(encoding="utf-8"),
+                                    CHECKLIST.read_text(encoding="utf-8")), 26)
+
+    def test_35_refuses_forged_blob_and_false_authority(self):
+        report = self.REPORT.read_text(encoding="utf-8")
+        audit = self.AUDIT.read_text(encoding="utf-8")
+        checklist = CHECKLIST.read_text(encoding="utf-8")
+        with self.assertRaisesRegex(ValueError, "SHA mismatch"):
+            self.guard(report.replace("b5529fc9bdcec01478600e699ef0b547e7f8d560", "0"*40), audit, checklist)
+        with self.assertRaisesRegex(ValueError, "false historic document authority"):
+            self.guard(report.replace("NO_RUNTIME_ADMISSION", "RUNTIME_ADMISSION"), audit, checklist)
+
+    def test_36_refuses_false_legacy_requirement_closure(self):
+        report = self.REPORT.read_text(encoding="utf-8")
+        audit = self.AUDIT.read_text(encoding="utf-8")
+        checklist = CHECKLIST.read_text(encoding="utf-8")
+        for task in ("M32-007", "M32-050", "M32-078"):
+            with self.subTest(task=task), self.assertRaisesRegex(ValueError, "false historic document checklist closure"):
+                self.guard(report, audit, checklist.replace(f"- [ ] **{task}**", f"- [x] **{task}**"))
+
 if __name__ == "__main__":
     unittest.main()
