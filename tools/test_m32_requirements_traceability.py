@@ -747,5 +747,61 @@ class M32078CurrentLedgerDatedContract(unittest.TestCase):
         with self.assertRaisesRegex(ValueError,"ID drift"):
             self.guard(report,old,false,MATRIX,CHECK)
 
+
+class M32074CanonBoundarySourceTests(unittest.TestCase):
+    """The fictional UI cannot turn M2 material into canon by import or IPC."""
+    @staticmethod
+    def guard(name, source):
+        bad = (
+            r'''from\s*["']\.?/?(?:FactWorkspace|factDomain|FactErrorBoundary|HierarchyWorkspace|EntityWorkspace|App)(?:\.[jt]sx?)?["']''',
+            r'''from\s*["']@tauri-apps/''',
+            r'''\b(?:invoke|fetch|require|localStorage|sessionStorage|indexedDB)\s*\(''',
+            r'''\bimport\s*\(''',
+            r'''\bAPPROVE_CANON\b''',
+            r'''\bREVOKE_CANON\b''',
+        )
+        for pattern in bad:
+            if re.search(pattern, source):
+                raise ValueError("STOP M32-074 canon boundary " + name)
+        return True
+
+    def test_20261123_m32_074_no_prod_entry_to_fictional_ui(self):
+        root = ROOT / "src"
+        for name in ("App.tsx", "main.tsx"):
+            text = (root / name).read_text(encoding="utf-8")
+            self.assertNotRegex(text, r'''(?:from\s*["']\./|import\s*\(["']\./)[mM]32''')
+            self.assertNotIn("m32BrowserLab", text)
+        modules = sorted(p for p in root.iterdir()
+                         if p.suffix in (".ts", ".tsx")
+                         and p.name.lower().startswith("m32")
+                         and not p.name.endswith((".test.ts", ".test.tsx")))
+        self.assertGreaterEqual(len(modules), 20)
+        for module in modules:
+            with self.subTest(module=module.name):
+                self.assertTrue(self.guard(module.name, module.read_text(encoding="utf-8")))
+
+    def test_20261123_m32_074_m2_canon_requires_human_confirmation(self):
+        domain = (ROOT / "src/factDomain.ts").read_text(encoding="utf-8")
+        ui = (ROOT / "src/FactWorkspace.tsx").read_text(encoding="utf-8")
+        for marker in ("APPROVE_CANON", "REVOKE_CANON", "if(!confirmed)"):
+            self.assertIn(marker, domain)
+        self.assertIn("Je confirme personnellement", ui)
+        self.assertNotIn("m32BrowserLab", ui)
+
+    def test_20261123_m32_074_refuses_cross_boundary_injections(self):
+        for candidate in ('import {approve} from "./factDomain";',
+                          'import {invoke} from "@tauri-apps/api/core";',
+                          'invoke("approve_canon");', 'APPROVE_CANON',
+                          'fetch("/facts")', 'import("./FactWorkspace")'):
+            with self.subTest(candidate=candidate), self.assertRaisesRegex(ValueError, "STOP M32-074"):
+                self.guard("synthetic", candidate)
+
+    def test_20261123_m32_074_stays_open_until_source_ci(self):
+        self.assertIn("- [ ] **M32-074**", CHECK)
+        row = next(x for x in MATRIX["rows"] if x["id"] == "M32-074")
+        self.assertEqual(row["status"], "OPEN_NOT_ACCEPTED")
+        self.assertEqual(row["evidence"], "NONE_ACCEPTED")
+        self.assertEqual(MATRIX["gate"], "IN_PROGRESS_NOT_ACCEPTED")
+
 if __name__=="__main__":
     unittest.main()
