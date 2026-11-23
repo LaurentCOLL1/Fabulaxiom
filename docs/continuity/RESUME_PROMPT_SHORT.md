@@ -1,16 +1,16 @@
 # Reprise Fabulaxiom (https://github.com/LaurentCOLL1/Fabulaxiom)
 
 ## Dernier checkpoint
-main=b5f9f28115dd8acc2b933999e973ebbfcf90a6ba ; #424 MERGED CI #45244745620 PASS HEAD exact 4723f0c5e3ee8c867355f12feaadedb3102a318b ; postmain #45262841960 PENDING sur SHA exact main (NON QUALIFIÉ) ; date=2026-11-23 ; M32-074 garde canon/M2 CANDIDAT, 13/91 ; M3.2 IN_PROGRESS_NOT_ACCEPTED (~45%).
+main=b5f9f28115dd8acc2b933999e973ebbfcf90a6ba ; #424 MERGED CI #45244745620 PASS HEAD exact 4723f0c5e3ee8c867355f12feaadedb3102a318b ; postmain #45262841960 PASS sur SHA exact main ; date=2026-11-23 ; M32-074 [x] CLOSED_SCOPED CANDIDAT SOURCE NON MONTÉ, aucune admission runtime, 14/90 ; M3.2 IN_PROGRESS_NOT_ACCEPTED (~45%).
 
 ## Interdictions actives — STOP
 Writer/R1–R9 NOT_PROVEN ; P4 STOP ; G2B NOT_ACCEPTED ; G2C NOT_AUTHORIZED ; G3 STOP_UNAVAILABLE ; PENDING_EXTERNAL_ATTESTATION(21/3/2), prospective NOT_STARTED ; R2 STOP, R3 partiel, D3c conception, D3b-4/5, D3b-5 STOP ; main/WAL/SHM, live SQLite WAL-index et ABA NOT_PROVEN ; glib #160 OPEN_NOT_REMEDIATED.
 STOP v6/v7, M:\Fabulaxiom, Greenfield, backups, IPC writer, 007, Hello, recovery.
 
 ## Prochaines opérations
-1. #424 MERGED CI PASS, postmain #45262841960 PENDING exact main ; issue #38 #7110312015 append-only.
-2. M32-074 garde canon M2 vs atelier fictif, 4 tests candidats ; M32-074 [ ] ; PR #35/#215 DRAFT NON ADMISES, 13/91.
-3. Après postmain PASS et CI Windows HEAD exacte : diff/reviews/threads, Protect main ACTIVE strict bypass=[], squash expected_head_sha, postmain indépendante et #38 ; PRODUCT_FIRST_PARALLEL_SAFETY.
+1. #424 CI source/postmain PASS exact b5f9f28115dd8acc2b933999e973ebbfcf90a6ba ; issue #38 #7110312015 append-only.
+2. M32-074 [x] candidat sur branche #425 : frontière canon M2 / M32 non monté, aucune permission de writer ; checklist 14/90 ; #35/#215 DRAFT NON ADMISES.
+3. Qualifier CI Windows du HEAD #425 après clôture candidate, diff/reviews/threads, Protect main ACTIVE strict bypass=[], guarded squash expected_head_sha seulement si PASS, nouveau postmain et #38. PRODUCT_FIRST_PARALLEL_SAFETY.
 
 ## Documents d'autorité
 RESUME_PROMPT.md ; HANDOFF_CURRENT.md ; HANDOFF_CURRENT.json ; STATE.md ; NEXT.md ; M3_2_GATE_DECISION_CURRENT.md ; M3_2_COMPLETION_MASTER_CHECKLIST_20261109.md ; ROADMAP_STATUS_CURRENT.md ; M3_2_SHORT_CYCLE_DELIVERY_20261116.md. Historique : RESUME_PROMPT.md / docs/qualification.
