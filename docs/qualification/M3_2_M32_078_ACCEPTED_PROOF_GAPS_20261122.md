@@ -1,5 +1,7 @@
 # M32-078 — inventaire déterministe des preuves acceptées manquantes (22/11/2026)
 
+> **ADDENDUM 23/11/2026 — HISTORICAL_REPORT_SNAPSHOT_NOT_CURRENT.** Les valeurs **12 CLOSED_SCOPED / 92 OPEN_NOT_ACCEPTED** ci-dessous sont la photographie du 22/11, pas le bilan actuel. Le JSON lié, la matrice et la checklist contiennent désormais **13 CLOSED_SCOPED / 91 OPEN_NOT_ACCEPTED**. Voir `docs/qualification/M3_2_M32_078_CURRENT_LEDGER_RECONCILIATION_20261123.md`. **M32-078 [ ] OPEN_NOT_ACCEPTED** ; aucune acceptation automatique de preuves manquantes.
+
 **Checkpoint de référence** `main=ed8d555d8253f7adb7b8ec6689b9be5331786eaf` après PR #410 MERGED, source CI #44940607024 completed/SUCCESS HEAD exact `12bc1a101129aa1fd18dbd705bc8c92426ef0cbc` (93 Windows), postmain indépendante #44962009501 event push sur SHA exact parent **IN_PROGRESS_UNQUALIFIED** au début de cette revue ; le statut doit être revérifié avant une autre fusion.
 
 Le fichier structuré `docs/qualification/M3_2_M32_078_ACCEPTED_PROOF_GAPS_20261122.json` réconcilie **104 critères de checklist**, dont 12 `CLOSED_SCOPED` documentaires et **92 `OPEN_NOT_ACCEPTED`**. Il conserve pour chaque exigence ouverte sa piste, son gate, son chemin de test cible et son `next_proof` tel qu'enregistré. Les 92 exigences ouvertes conservent toutes `NONE_ACCEPTED`, aucun SHA/run/job accepté ni acceptation runtime. Aucune lacune n'est remplie par un faux PASS ou par une CI récente concernant un autre périmètre.

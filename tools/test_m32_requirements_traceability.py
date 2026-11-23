@@ -672,5 +672,80 @@ class TraceabilityAndScope(unittest.TestCase):
         for term in ("R1–R9 NOT_PROVEN","G3 STOP_UNAVAILABLE","P4 STOP","Greenfield"):
             self.assertIn(term,SCOPE)
 
+
+class M32078CurrentLedgerDatedContract(unittest.TestCase):
+    """Historical gap snapshot is not current accepted evidence."""
+    REPORT = ROOT / "docs/qualification/M3_2_M32_078_CURRENT_LEDGER_RECONCILIATION_20261123.md"
+    OLD = ROOT / "docs/qualification/M3_2_M32_078_ACCEPTED_PROOF_GAPS_20261122.md"
+    LEDGER = ROOT / "docs/qualification/M3_2_M32_078_ACCEPTED_PROOF_GAPS_20261122.json"
+
+    @classmethod
+    def guard(cls, report, previous, ledger, matrix, checklist):
+        for token in ("HISTORICAL_REPORT_SNAPSHOT_NOT_CURRENT", "NO_AUTO_ACCEPTANCE",
+                      "NO_RUNTIME_ADMISSION", "12/92 → 13/91",
+                      "13 CLOSED_SCOPED / 91 OPEN_NOT_ACCEPTED",
+                      "R1–R9 NOT_PROVEN", "M32-078 [ ] reste ouverte"):
+            if token not in report:
+                raise ValueError("STOP current report drift " + token)
+        if "HISTORICAL_REPORT_SNAPSHOT_NOT_CURRENT" not in previous:
+            raise ValueError("STOP historical report not labeled")
+        closed=[r for r in matrix["rows"] if r["status"]=="CLOSED_SCOPED"]
+        open_rows=[r for r in matrix["rows"] if r["status"]=="OPEN_NOT_ACCEPTED"]
+        if (matrix["total"],matrix["closed"],matrix["open"])!=(104,13,91) or (
+            ledger["total"],ledger["closed_scoped"],ledger["open_not_accepted"])!=(104,13,91):
+            raise ValueError("STOP ledger counts")
+        if ledger["closed_ids"] != [r["id"] for r in closed] or (
+            [r["id"] for r in ledger["open_rows"]] != [r["id"] for r in open_rows]):
+            raise ValueError("STOP ledger ID drift")
+        for key in ("track","gate"):
+            expected={v:sum(row[key]==v for row in open_rows)
+                      for v in sorted({row[key] for row in open_rows})}
+            if ledger[key+"_open_counts"]!=expected:
+                raise ValueError("STOP gate or track counts")
+        for a,b in zip(ledger["open_rows"],open_rows):
+            for key in ("id","track","gate","verification_target","next_proof"):
+                if a[key]!=b[key]:
+                    raise ValueError("STOP open row drift " + key)
+            if a["accepted_evidence"]!="NONE_ACCEPTED" or b["evidence"]!="NONE_ACCEPTED" or any(
+                a[key] is not None for key in ("accepted_workflow_head_sha",
+                "accepted_workflow_run_id","accepted_job_id")
+            ) or a["accepted_operator_runtime"] is not False:
+                raise ValueError("STOP false acceptance")
+        if "- [x] **M32-003**" not in checklist or "- [ ] **M32-078**" not in checklist:
+            raise ValueError("STOP false M32-078 closure")
+        if matrix["gate"]!="IN_PROGRESS_NOT_ACCEPTED":
+            raise ValueError("STOP gate promotion")
+        return len(open_rows)
+
+    def test_20261123_m32_078_json_matrix_and_report_are_consistent(self):
+        self.assertEqual(self.guard(self.REPORT.read_text(encoding="utf-8"),
+                                    self.OLD.read_text(encoding="utf-8"),
+                                    json.loads(self.LEDGER.read_text(encoding="utf-8")),
+                                    MATRIX,CHECK),91)
+
+    def test_20261123_m32_078_rejects_stale_count_and_false_proof(self):
+        report=self.REPORT.read_text(encoding="utf-8")
+        old=self.OLD.read_text(encoding="utf-8")
+        data=json.loads(self.LEDGER.read_text(encoding="utf-8"))
+        with self.assertRaisesRegex(ValueError,"current report drift"):
+            self.guard(report.replace("12/92 → 13/91","12/92 → 12/92"),
+                       old,data,MATRIX,CHECK)
+        false=json.loads(json.dumps(data))
+        false["open_rows"][0]["accepted_evidence"]="CI_PASS"
+        with self.assertRaisesRegex(ValueError,"false acceptance"):
+            self.guard(report,old,false,MATRIX,CHECK)
+
+    def test_20261123_m32_078_rejects_false_close_and_missing_gap(self):
+        report=self.REPORT.read_text(encoding="utf-8")
+        old=self.OLD.read_text(encoding="utf-8")
+        data=json.loads(self.LEDGER.read_text(encoding="utf-8"))
+        with self.assertRaisesRegex(ValueError,"false M32-078 closure"):
+            self.guard(report,old,data,MATRIX,CHECK.replace(
+                "- [ ] **M32-078**","- [x] **M32-078**"))
+        false=json.loads(json.dumps(data))
+        false["open_rows"].pop()
+        with self.assertRaisesRegex(ValueError,"ID drift"):
+            self.guard(report,old,false,MATRIX,CHECK)
+
 if __name__=="__main__":
     unittest.main()
