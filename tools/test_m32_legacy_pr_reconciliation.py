@@ -839,5 +839,62 @@ class Pr35ElevenDivergentSourceOnly(unittest.TestCase):
                 self.guard(report, audit, checklist.replace(
                     f"- [ ] **{task}**", f"- [x] **{task}**"))
 
+
+class Pr35TwoAbsentRustSourceOnly(unittest.TestCase):
+    """Historic two Rust paths are source-only; never revive old IPC or WAL tests."""
+    REPORT = ROOT / "docs/qualification/M3_2_PR35_TWO_ABSENT_RUST_FILES_SOURCE_REVIEW_20261123.md"
+    AUDIT = ROOT / "docs/qualification/M3_2_PR35_84_PATH_TREE_AUDIT_20261121.md"
+    PATHS = (
+        ("src-tauri/src/m32_isolated_preflight.rs", "49a41a233e342a0ea541f74c4cea7dfedcb887c5", "OLD_METADATA_ONLY_IPC", 3),
+        ("src-tauri/src/m32_sqlite_concurrency_tests.rs", "a940fb0996ae9361c69768979969f4b29ad7f6aa", "CI_SCRATCH_SQLITE_TESTS", 3),
+    )
+
+    @classmethod
+    def guard(cls, report, audit, checklist):
+        if len(cls.PATHS) != 2:
+            raise ValueError("STOP Rust scope")
+        for marker in ("SOURCE_ONLY_CANDIDATE_UNQUALIFIED", "NO_AUTO_PORT",
+                       "NO_RUNTIME_ADMISSION", "NO_SEMANTIC_EQUIVALENCE",
+                       "2/2 ABSENT_NOT_ADMITTED", "0/2 PORTED", "0/2 ADMITTED",
+                       "BLOCK_RUNTIME_IPC", "BLOCK_OPERATOR_SQLITE", "R1–R9 NOT_PROVEN"):
+            if marker not in report:
+                raise ValueError("STOP false Rust historical authority " + marker)
+        for path, blob, role, count in cls.PATHS:
+            if (ROOT / path).exists():
+                raise ValueError("STOP historical Rust module restored " + path)
+            if report.count(f"| `{path}` | `{blob}` | {role} | {count} | HISTORICAL_SOURCE_ONLY |") != 1:
+                raise ValueError("STOP historical Rust SHA/count drift " + path)
+            if f"| `{path}` | `{blob}` | ABSENT | ABSENT | REVIEW_ABSENT_NO_AUTO_PORT |" not in audit:
+                raise ValueError("STOP Rust audit mismatch " + path)
+        for task in ("M32-007", "M32-050", "M32-078"):
+            if f"- [ ] **{task}**" not in checklist:
+                raise ValueError("STOP false Rust checklist closure " + task)
+        return len(cls.PATHS)
+
+    def test_40_rust_two_legacy_source_hashes_and_current_absence(self):
+        self.assertEqual(self.guard(self.REPORT.read_text(encoding="utf-8"),
+                                    self.AUDIT.read_text(encoding="utf-8"),
+                                    CHECKLIST.read_text(encoding="utf-8")), 2)
+
+    def test_41_forged_old_rust_sha_or_runtime_admission_refused(self):
+        report = self.REPORT.read_text(encoding="utf-8")
+        audit = self.AUDIT.read_text(encoding="utf-8")
+        checklist = CHECKLIST.read_text(encoding="utf-8")
+        with self.assertRaisesRegex(ValueError, "SHA/count drift"):
+            self.guard(report.replace("49a41a233e342a0ea541f74c4cea7dfedcb887c5", "0"*40),
+                       audit, checklist)
+        with self.assertRaisesRegex(ValueError, "false Rust historical authority"):
+            self.guard(report.replace("NO_RUNTIME_ADMISSION", "RUNTIME_ADMITTED"), audit, checklist)
+
+    def test_42_rust_old_ipc_or_wal_never_closes_requirements(self):
+        report = self.REPORT.read_text(encoding="utf-8")
+        audit = self.AUDIT.read_text(encoding="utf-8")
+        checklist = CHECKLIST.read_text(encoding="utf-8")
+        for task in ("M32-007", "M32-050", "M32-078"):
+            with self.subTest(task=task), self.assertRaisesRegex(
+                    ValueError, "false Rust checklist closure"):
+                self.guard(report, audit, checklist.replace(f"- [ ] **{task}**",
+                                                             f"- [x] **{task}**"))
+
 if __name__ == "__main__":
     unittest.main()
