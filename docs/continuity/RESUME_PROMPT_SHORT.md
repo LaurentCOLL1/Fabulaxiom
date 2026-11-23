@@ -1,16 +1,16 @@
 # Reprise Fabulaxiom (https://github.com/LaurentCOLL1/Fabulaxiom)
 
 ## Dernier checkpoint
-main=8fca3130315803309ddcfa0a4f82369f5044a005 ; #421 MERGED CI #45111836510 PASS HEAD exact 74ffebf461fb86a44cca13a64522e7e224413906 ; postmain #45202139946 PENDING exact main (NON QUALIFIÉ) ; date=2026-11-23 ; P3bs filtre révoqué/remplacé fictif CANDIDAT, 13/91 ; M3.2 IN_PROGRESS_NOT_ACCEPTED (~45%).
+main=c79494cbe5a7b7adaa3b39be9cfd3997b3f6126b ; #422 MERGED CI #45203664419 PASS HEAD exact 6c8e567f1a6fc2e81a0de8de54315b82cda30f0c ; postmain #45211260869 PENDING sur SHA exact main (NON QUALIFIÉ) ; date=2026-11-23 ; M32-078 ancien rapport 12/92 HISTORIQUE, JSON/matrice actuelle 13/91 CANDIDAT ; M3.2 IN_PROGRESS_NOT_ACCEPTED (~45%).
 
 ## Interdictions actives — STOP
-Writer/R1–R9 NOT_PROVEN ; P4 STOP ; G2B NOT_ACCEPTED ; G2C NOT_AUTHORIZED ; G3 STOP_UNAVAILABLE ; PENDING_EXTERNAL_ATTESTATION(21/3/2), prospective NOT_STARTED ; R2 STOP, R3 partiel, D3c conception, D3b-4/5, D3b-5 STOP ; live SQLite WAL-index, main/WAL/SHM et ABA NOT_PROVEN ; glib #160 OPEN_NOT_REMEDIATED.
+Writer/R1–R9 NOT_PROVEN ; P4 STOP ; G2B NOT_ACCEPTED ; G2C NOT_AUTHORIZED ; G3 STOP_UNAVAILABLE ; PENDING_EXTERNAL_ATTESTATION(21/3/2), prospective NOT_STARTED ; R2 STOP, R3 partiel, D3c conception, D3b-4/5, D3b-5 STOP ; main/WAL/SHM, live SQLite WAL-index et ABA NOT_PROVEN ; glib #160 OPEN_NOT_REMEDIATED.
 STOP v6/v7, M:\Fabulaxiom, Greenfield, backups, IPC writer, 007, Hello, recovery.
 
 ## Prochaines opérations
-1. #421 MERGED CI #45111836510 PASS HEAD exact 74ffebf461fb86a44cca13a64522e7e224413906 ; postmain #45202139946 PENDING exact 8fca3130315803309ddcfa0a4f82369f5044a005 ; issue #38 #7105153311 append-only.
-2. P3bs explorateur historique fictif : filtres revoked/superseded distincts et sept Vitest CANDIDATS ; M32-071/075/078/081 [ ], #35/#215 DRAFT NON ADMISES, 13/91.
-3. Qualifier postmain puis PR DRAFT HEAD CI Windows, Protect main strict bypass=[], diff/reviews/threads, guarded squash expected_head_sha après PASS, nouveau postmain indépendant et #38 append-only ; PRODUCT_FIRST_PARALLEL_SAFETY.
+1. #422 CI source PASS, postmain indépendante #45211260869 PENDING exact c79494cbe5a7b7adaa3b39be9cfd3997b3f6126b ; issue #38 #7106434972 append-only.
+2. M32-078 rapport daté et trois gardes source-only CANDIDATS : ne jamais afficher 12/92 comme bilan courant, aucun ACCEPTED des 91 ouverts, M32-078 [ ]. Checklist 13/91, #35/#215 DRAFT NON ADMISES.
+3. CI propre PR DRAFT HEAD exacte ; Protect main ACTIVE strict bypass=[], review diff/reviews/threads, guarded squash expected_head_sha après PASS et postmain parent PASS, nouvelle postmain et #38 ; PRODUCT_FIRST_PARALLEL_SAFETY.
 
 ## Documents d'autorité
 RESUME_PROMPT.md ; HANDOFF_CURRENT.md ; HANDOFF_CURRENT.json ; STATE.md ; NEXT.md ; M3_2_GATE_DECISION_CURRENT.md ; M3_2_COMPLETION_MASTER_CHECKLIST_20261109.md ; ROADMAP_STATUS_CURRENT.md ; M3_2_SHORT_CYCLE_DELIVERY_20261116.md. Historique : RESUME_PROMPT.md / docs/qualification.
