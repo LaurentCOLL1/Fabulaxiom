@@ -9,7 +9,7 @@ import M32ChronologyConsultation, {
 } from "./M32ChronologyConsultation";
 
 /** Unmounted synthetic laboratory explorer, NEVER a source reader or Tauri IPC. */
-export type M32ExplorerFilter = "all" | "current" | "historical";
+export type M32ExplorerFilter = "all" | "current" | "historical" | "revoked" | "superseded";
 export const M32_EXPLORER_PAGE_SIZE = 8;
 export type M32ExplorerRevisionChoice = Readonly<{
   id: string;
@@ -61,7 +61,8 @@ export function deriveM32Explorer(
     i += scalar > 0xFFFF ? 2 : 1;
   }
   if (typeof query !== "string" || query.length > 160 ||
-      (status !== "all" && status !== "current" && status !== "historical") ||
+      (status !== "all" && status !== "current" && status !== "historical" &&
+       status !== "revoked" && status !== "superseded") ||
       !Number.isSafeInteger(requestedPage) || requestedPage < 0) {
     return refused();
   }
@@ -85,8 +86,10 @@ export function deriveM32Explorer(
     .map(([id, value]) => ({ id, ...value }))
     .sort((a, b) => compareM32IdentityScalars(a.id, b.id));
   const filtered = anchors.filter(a => {
+    // Historical subtypes remain distinguishable: a human can inspect a
+    // revocation without silently conflating it with a supersession.
     const statusMatch = status === "all" ||
-      (status === "current" ? a.status === "current" : a.status !== "current");
+      (status === "historical" ? a.status !== "current" : a.status === status);
     const revisionMatch = sourceRevisionId === "" ||
       a.source_revision_id === sourceRevisionId;
     const textMatch = !normalized ||
@@ -172,7 +175,8 @@ function SyntheticExplorerScenario({
     <select id={id + "-status"} value={status}
       onChange={event => {
         const value = event.currentTarget.value;
-        if (value !== "all" && value !== "current" && value !== "historical") {
+        if (value !== "all" && value !== "current" && value !== "historical" &&
+            value !== "revoked" && value !== "superseded") {
           return refused();
         }
         setStatus(value);
@@ -181,6 +185,8 @@ function SyntheticExplorerScenario({
       <option value="all">Tous les événements</option>
       <option value="current">En vigueur seulement</option>
       <option value="historical">Historique seulement</option>
+      <option value="revoked">Révoqués seulement</option>
+      <option value="superseded">Remplacés seulement</option>
     </select>
     </section>
     <p role="status" aria-label="Résultat du filtrage" aria-atomic="true">
