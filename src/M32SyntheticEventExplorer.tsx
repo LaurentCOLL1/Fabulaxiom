@@ -11,6 +11,7 @@ import M32ChronologyConsultation, {
 /** Unmounted synthetic laboratory explorer, NEVER a source reader or Tauri IPC. */
 export type M32ExplorerFilter = "all" | "current" | "historical" | "revoked" | "superseded";
 export const M32_EXPLORER_PAGE_SIZE = 8;
+export type M32ExplorerStatusCounts = Readonly<{ current: number; revoked: number; superseded: number; total: number; }>;
 export type M32ExplorerRevisionChoice = Readonly<{
   id: string;
   anchor_count: number;
@@ -32,6 +33,7 @@ export type M32ExplorerView = Readonly<{
   can_write: false;
   source_revision_filter: string;
   revision_choices: readonly M32ExplorerRevisionChoice[];
+  status_counts: M32ExplorerStatusCounts;
 }>;
 
 function refused(): never {
@@ -71,8 +73,13 @@ export function deriveM32Explorer(
   const anchors = approved.snapshot?.anchors ?? [];
   // Identity suggestions use the entire validated fictional graph, not the
   // currently visible rows; these counts never authenticate provenance.
+  const status_counts = { current: 0, revoked: 0, superseded: 0, total: anchors.length };
   const counts = new Map<string, { anchor_count: number; historical_count: number }>();
   for (const anchor of anchors) {
+    if (anchor.status === "current") status_counts.current += 1;
+    else if (anchor.status === "revoked") status_counts.revoked += 1;
+    else if (anchor.status === "superseded") status_counts.superseded += 1;
+    else return refused();
     const revision = anchor.source_revision_id;
     // The exact search field is bounded to 256 UTF-16 code units.
     if (revision === null || revision.length > 256) continue;
@@ -112,6 +119,7 @@ export function deriveM32Explorer(
     source_kind: "invented_only", can_write: false,
     source_revision_filter: sourceRevisionId,
     revision_choices,
+    status_counts,
   };
 }
 
@@ -150,6 +158,13 @@ function SyntheticExplorerScenario({
   };
   return <section className="m32-explorer" aria-label="Explorateur M3.2 fictif filtrable">
     <h2>Explorer les assertions fictives</h2>
+    <p aria-label="Répartition des statuts de l’univers fictif">
+      {model.status_counts.total} assertions fictives validées :
+      {" "}{model.status_counts.current} en vigueur,
+      {" "}{model.status_counts.revoked} révoquées,
+      {" "}{model.status_counts.superseded} remplacées.
+      Ces nombres décrivent le graphe fictif complet, pas les résultats filtrés.
+    </p>
     <p>Filtrer cette liste ne modifie pas les relations ni les sélections courantes. Les identifiants de révision sont fictifs, non authentifiés.</p>
     <section role="search" aria-label="Recherche dans la chronologie fictive" className="m32-search-controls">
       <label htmlFor={id + "-query"}>Filtrer les événements</label>
