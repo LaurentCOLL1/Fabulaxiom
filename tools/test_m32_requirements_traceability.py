@@ -13,7 +13,7 @@ TASK = re.compile(r"^- \[([ x])\] \*\*(M32-\d{3})\*\* (.+?)\s*$", re.M)
 
 SCOPED_CLOSED_IDS = frozenset({
     "M32-001", "M32-002", "M32-003", "M32-004", "M32-005", "M32-006", "M32-037", "M32-049", "M32-051",
-    "M32-094", "M32-095", "M32-096", "M32-104",
+    "M32-074", "M32-094", "M32-095", "M32-096", "M32-104",
 })
 
 class TraceabilityAndScope(unittest.TestCase):
@@ -98,6 +98,7 @@ class TraceabilityAndScope(unittest.TestCase):
                 i: (42997104616, "1f5e201d3e7d0ab088a65621411cc911de0472a1", "2026-11-11", "pull_request")
                 for i in ("M32-037", "M32-049", "M32-051", "M32-095", "M32-096")
             },
+            "M32-074": (45244745620, "4723f0c5e3ee8c867355f12feaadedb3102a318b", "2026-11-23", "pull_request"),
             "M32-094": (43594666828, "5206bba7f3196c454a22bf85d0d0dca879ee20e3", "2026-11-14", "pull_request"),
             "M32-104": (43117900804, "c4a04c59934064832dd7c700dcf39e25e729f88a", "2026-11-11", "pull_request"),
         }
@@ -107,6 +108,7 @@ class TraceabilityAndScope(unittest.TestCase):
             proof = row["proof_audit"]
             with self.subTest(row=row["id"]):
                 self.assertEqual(proof["record_review_date"],
+                                 "2026-11-23" if row["id"] == "M32-074" else
                                  "2026-11-22" if row["id"] == "M32-003" else
                                  "2026-11-20" if row["id"] in ("M32-005", "M32-006") else
                                   "2026-11-19" if row["id"] == "M32-004" else
@@ -150,6 +152,7 @@ class TraceabilityAndScope(unittest.TestCase):
                for key in ("M32-037", "M32-049", "M32-051")},
             **{key: (130443816096, 27, "M3.2 V1 roadmap source-only consistency 9 tests")
                for key in ("M32-095", "M32-096")},
+            "M32-074": (137938442997, 32, "M3.2 requirements test evidence 104-task matrix and deferred phase scope"),
             "M32-094": (132446512015, 58,
                 "M3.2 Linux Rust selected GLib/GTK advisory exposure audit (no Linux build)"),
             "M32-104": (130850528111, 32,
@@ -160,6 +163,7 @@ class TraceabilityAndScope(unittest.TestCase):
             stage = row["workflow_step_audit"]
             with self.subTest(row=row["id"]):
                 self.assertEqual(stage["step_review_date"],
+                                 "2026-11-23" if row["id"] == "M32-074" else
                                  "2026-11-22" if row["id"] == "M32-003" else
                                  "2026-11-20" if row["id"] in ("M32-005", "M32-006") else
                                   "2026-11-19" if row["id"] == "M32-004" else
@@ -478,7 +482,7 @@ class TraceabilityAndScope(unittest.TestCase):
         self.assertFalse(x["browser_click_attested"])
         self.assertFalse(x["operator_acceptance"])
         self.assertFalse(x["requirement_acceptance"])
-        self.assertEqual((MATRIX["total"],MATRIX["closed"],MATRIX["open"]),(104,13,91))
+        self.assertEqual((MATRIX["total"],MATRIX["closed"],MATRIX["open"]),(104,14,90))
 
     def test_20261121_p3bi_bounded_pages_and_pr35_cursor_stay_partial(self):
         index={x["id"]:x for x in MATRIX["rows"]}
@@ -498,7 +502,7 @@ class TraceabilityAndScope(unittest.TestCase):
         self.assertIn("NOT_RUN",candidate["source_ci_status"])
         self.assertFalse(candidate["browser_click_attested"])
         self.assertFalse(candidate["operator_acceptance"])
-        self.assertEqual((MATRIX["total"],MATRIX["closed"],MATRIX["open"]),(104,13,91))
+        self.assertEqual((MATRIX["total"],MATRIX["closed"],MATRIX["open"]),(104,14,90))
 
     def test_pr35_84path_and_p3bj_not_accepted(self):
         index={r["id"]:r for r in MATRIX["rows"]}
@@ -514,7 +518,7 @@ class TraceabilityAndScope(unittest.TestCase):
         self.assertIn("NOT_RUN",rec["source_ci_status"])
         self.assertFalse(rec["operator_acceptance"])
         self.assertIn("- [ ] **M32-071**",CHECK)
-        self.assertEqual((MATRIX["total"],MATRIX["closed"],MATRIX["open"]),(104,13,91))
+        self.assertEqual((MATRIX["total"],MATRIX["closed"],MATRIX["open"]),(104,14,90))
 
     def test_p3bl_and_pr215_seven_old_handoff_scoped_not_accepted(self):
         idx={r["id"]:r for r in MATRIX["rows"]}
@@ -533,7 +537,7 @@ class TraceabilityAndScope(unittest.TestCase):
             self.assertIn("NOT_RUN",feature["source_ci_status"])
             self.assertTrue((ROOT/feature["report"]).is_file())
             self.assertIn(f"- [ ] **{key}**",CHECK)
-        self.assertEqual((MATRIX["total"],MATRIX["closed"],MATRIX["open"]),(104,13,91))
+        self.assertEqual((MATRIX["total"],MATRIX["closed"],MATRIX["open"]),(104,14,90))
 
     def test_p3bm_and_pr215_old_146_147_remain_partial(self):
         idx={r["id"]:r for r in MATRIX["rows"]}
@@ -555,7 +559,7 @@ class TraceabilityAndScope(unittest.TestCase):
             self.assertIn("NOT_RUN",rec["source_ci_status"])
             self.assertTrue((ROOT/rec["report"]).is_file())
             self.assertIn(f"- [ ] **{key}**",CHECK)
-        self.assertEqual((MATRIX["total"],MATRIX["closed"],MATRIX["open"]),(104,13,91))
+        self.assertEqual((MATRIX["total"],MATRIX["closed"],MATRIX["open"]),(104,14,90))
 
     def test_p3bn_and_seven_old_pr215_cases_stay_source_only(self):
         idx={r["id"]:r for r in MATRIX["rows"]}
@@ -579,7 +583,7 @@ class TraceabilityAndScope(unittest.TestCase):
             self.assertIn("NOT_RUN",rec["source_ci_status"])
             self.assertTrue((ROOT/rec["report"]).is_file())
             self.assertIn(f"- [ ] **{key}**",CHECK)
-        self.assertEqual((MATRIX["total"],MATRIX["closed"],MATRIX["open"]),(104,13,91))
+        self.assertEqual((MATRIX["total"],MATRIX["closed"],MATRIX["open"]),(104,14,90))
 
     def test_p3bo_four_fields_and_pr215_literal_review_stay_unaccepted(self):
         index={row["id"]:row for row in MATRIX["rows"]}
@@ -603,14 +607,14 @@ class TraceabilityAndScope(unittest.TestCase):
             self.assertIn("NOT_RUN",rec["source_ci_status"])
             self.assertTrue((ROOT/rec["report"]).is_file())
             self.assertIn(f"- [ ] **{key}**",CHECK)
-        self.assertEqual((MATRIX["total"],MATRIX["closed"],MATRIX["open"]),(104,13,91))
+        self.assertEqual((MATRIX["total"],MATRIX["closed"],MATRIX["open"]),(104,14,90))
 
     def test_m32_078_accepted_proof_gap_ledger_never_invents_runtime(self):
         ledger=json.loads((ROOT/"docs/qualification/M3_2_M32_078_ACCEPTED_PROOF_GAPS_20261122.json").read_text(encoding="utf-8"))
         self.assertEqual(ledger["schema"],"M32_078_ACCEPTED_PROOF_GAPS_V1")
         self.assertEqual(ledger["origin_matrix"],
                          "docs/qualification/M3_2_REQUIREMENTS_TEST_EVIDENCE_MATRIX_20261111.json")
-        self.assertEqual((ledger["total"],ledger["closed_scoped"],ledger["open_not_accepted"]),(104,13,91))
+        self.assertEqual((ledger["total"],ledger["closed_scoped"],ledger["open_not_accepted"]),(104,14,90))
         open_rows=[row for row in MATRIX["rows"] if row["status"]=="OPEN_NOT_ACCEPTED"]
         closed_rows=[row for row in MATRIX["rows"] if row["status"]=="CLOSED_SCOPED"]
         self.assertEqual(ledger["closed_ids"],[r["id"] for r in closed_rows])
@@ -683,7 +687,7 @@ class M32078CurrentLedgerDatedContract(unittest.TestCase):
     def guard(cls, report, previous, ledger, matrix, checklist):
         for token in ("HISTORICAL_REPORT_SNAPSHOT_NOT_CURRENT", "NO_AUTO_ACCEPTANCE",
                       "NO_RUNTIME_ADMISSION", "12/92 → 13/91",
-                      "13 CLOSED_SCOPED / 91 OPEN_NOT_ACCEPTED",
+                      "14 CLOSED_SCOPED / 90 OPEN_NOT_ACCEPTED",
                       "R1–R9 NOT_PROVEN", "M32-078 [ ] reste ouverte"):
             if token not in report:
                 raise ValueError("STOP current report drift " + token)
@@ -691,8 +695,8 @@ class M32078CurrentLedgerDatedContract(unittest.TestCase):
             raise ValueError("STOP historical report not labeled")
         closed=[r for r in matrix["rows"] if r["status"]=="CLOSED_SCOPED"]
         open_rows=[r for r in matrix["rows"] if r["status"]=="OPEN_NOT_ACCEPTED"]
-        if (matrix["total"],matrix["closed"],matrix["open"])!=(104,13,91) or (
-            ledger["total"],ledger["closed_scoped"],ledger["open_not_accepted"])!=(104,13,91):
+        if (matrix["total"],matrix["closed"],matrix["open"])!=(104,14,90) or (
+            ledger["total"],ledger["closed_scoped"],ledger["open_not_accepted"])!=(104,14,90):
             raise ValueError("STOP ledger counts")
         if ledger["closed_ids"] != [r["id"] for r in closed] or (
             [r["id"] for r in ledger["open_rows"]] != [r["id"] for r in open_rows]):
@@ -721,7 +725,7 @@ class M32078CurrentLedgerDatedContract(unittest.TestCase):
         self.assertEqual(self.guard(self.REPORT.read_text(encoding="utf-8"),
                                     self.OLD.read_text(encoding="utf-8"),
                                     json.loads(self.LEDGER.read_text(encoding="utf-8")),
-                                    MATRIX,CHECK),91)
+                                    MATRIX,CHECK),90)
 
     def test_20261123_m32_078_rejects_stale_count_and_false_proof(self):
         report=self.REPORT.read_text(encoding="utf-8")
@@ -746,6 +750,70 @@ class M32078CurrentLedgerDatedContract(unittest.TestCase):
         false["open_rows"].pop()
         with self.assertRaisesRegex(ValueError,"ID drift"):
             self.guard(report,old,false,MATRIX,CHECK)
+
+
+class M32074CanonBoundarySourceTests(unittest.TestCase):
+    """The fictional UI cannot turn M2 material into canon by import or IPC."""
+    @staticmethod
+    def guard(name, source):
+        bad = (
+            r'''from\s*["']\.?/?(?:FactWorkspace|factDomain|FactErrorBoundary|HierarchyWorkspace|EntityWorkspace|App)(?:\.[jt]sx?)?["']''',
+            r'''from\s*["']@tauri-apps/''',
+            r'''\b(?:invoke|fetch|require|localStorage|sessionStorage|indexedDB)\s*\(''',
+            r'''\bimport\s*\(''',
+            r'''\bAPPROVE_CANON\b''',
+            r'''\bREVOKE_CANON\b''',
+        )
+        for pattern in bad:
+            if re.search(pattern, source):
+                raise ValueError("STOP M32-074 canon boundary " + name)
+        return True
+
+    def test_20261123_m32_074_no_prod_entry_to_fictional_ui(self):
+        root = ROOT / "src"
+        for name in ("App.tsx", "main.tsx"):
+            text = (root / name).read_text(encoding="utf-8")
+            self.assertNotRegex(text, r'''(?:from\s*["']\./|import\s*\(["']\./)[mM]32''')
+            self.assertNotIn("m32BrowserLab", text)
+        modules = sorted(p for p in root.iterdir()
+                         if p.suffix in (".ts", ".tsx")
+                         and p.name.lower().startswith("m32")
+                         and not p.name.endswith((".test.ts", ".test.tsx")))
+        self.assertGreaterEqual(len(modules), 20)
+        for module in modules:
+            with self.subTest(module=module.name):
+                self.assertTrue(self.guard(module.name, module.read_text(encoding="utf-8")))
+
+    def test_20261123_m32_074_m2_canon_requires_human_confirmation(self):
+        domain = (ROOT / "src/factDomain.ts").read_text(encoding="utf-8")
+        ui = (ROOT / "src/FactWorkspace.tsx").read_text(encoding="utf-8")
+        for marker in ("APPROVE_CANON", "REVOKE_CANON", "if(!confirmed)"):
+            self.assertIn(marker, domain)
+        self.assertIn("Je confirme personnellement", ui)
+        self.assertNotIn("m32BrowserLab", ui)
+
+    def test_20261123_m32_074_refuses_cross_boundary_injections(self):
+        for candidate in ('import {approve} from "./factDomain";',
+                          'import {invoke} from "@tauri-apps/api/core";',
+                          'invoke("approve_canon");', 'APPROVE_CANON',
+                          'fetch("/facts")', 'import("./FactWorkspace")'):
+            with self.subTest(candidate=candidate), self.assertRaisesRegex(ValueError, "STOP M32-074"):
+                self.guard("synthetic", candidate)
+
+    def test_20261123_m32_074_closed_only_on_unmounted_source_boundary(self):
+        self.assertIn("- [x] **M32-074**", CHECK)
+        row = next(x for x in MATRIX["rows"] if x["id"] == "M32-074")
+        self.assertEqual(row["status"], "CLOSED_SCOPED")
+        self.assertEqual(row["gate"], "SCOPED_EVIDENCE_REQUIRED")
+        self.assertIn("RUN=#45244745620", row["evidence"])
+        scope = row["canon_separation_scope"]
+        self.assertEqual(scope["scope"], "SOURCE_ONLY_UNMOUNTED_CHRONOLOGY_CURRENT_TREE")
+        self.assertTrue(scope["source_guard_required_for_future_changes"])
+        self.assertTrue(scope["requires_new_proof_if_m32_mounted"])
+        for key in ("app_mount", "canonical_promotion", "m2_fact_writer_invoke",
+                    "operator_runtime_acceptance", "writer_admission"):
+            self.assertIs(scope[key], False)
+        self.assertEqual(MATRIX["gate"], "IN_PROGRESS_NOT_ACCEPTED")
 
 if __name__=="__main__":
     unittest.main()

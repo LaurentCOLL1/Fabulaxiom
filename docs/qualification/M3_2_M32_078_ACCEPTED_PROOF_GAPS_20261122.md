@@ -1,3 +1,5 @@
+> **ADDENDUM 23/11/2026 — nouveau bilan candidat 14/90.** L'addendum antérieur 13/91 et le rapport original 12/92 sont des instantanés historiques, non le registre courant. Une candidature source-only M32-074 est ajoutée au registre (14 CLOSED_SCOPED / 90 OPEN_NOT_ACCEPTED), sous réserve de CI HEAD exacte et de nouvelle postmain ; les 90 ouverts restent NONE_ACCEPTED. M32-078 [ ] ; NO_AUTO_ACCEPTANCE ; NO_RUNTIME_ADMISSION.
+
 # M32-078 — inventaire déterministe des preuves acceptées manquantes (22/11/2026)
 
 > **ADDENDUM 23/11/2026 — HISTORICAL_REPORT_SNAPSHOT_NOT_CURRENT.** Les valeurs **12 CLOSED_SCOPED / 92 OPEN_NOT_ACCEPTED** ci-dessous sont la photographie du 22/11, pas le bilan actuel. Le JSON lié, la matrice et la checklist contiennent désormais **13 CLOSED_SCOPED / 91 OPEN_NOT_ACCEPTED**. Voir `docs/qualification/M3_2_M32_078_CURRENT_LEDGER_RECONCILIATION_20261123.md`. **M32-078 [ ] OPEN_NOT_ACCEPTED** ; aucune acceptation automatique de preuves manquantes.

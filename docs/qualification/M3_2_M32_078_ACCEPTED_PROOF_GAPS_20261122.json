@@ -6,8 +6,8 @@
   "scope": "DOCUMENTARY_OPEN_GAP_LEDGER_ONLY_NO_OPERATOR_ACCEPTANCE",
   "gate": "IN_PROGRESS_NOT_ACCEPTED",
   "total": 104,
-  "closed_scoped": 13,
-  "open_not_accepted": 91,
+  "closed_scoped": 14,
+  "open_not_accepted": 90,
   "track_open_counts": {
     "ACCEPTANCE_AND_SCOPE": 7,
     "DATA_AND_CHRONOLOGY": 16,
@@ -15,12 +15,12 @@
     "G2_TO_G6": 10,
     "GH_PROTOCOL": 2,
     "HISTORICAL_ATTESTATION": 6,
-    "REACT_FICTIONAL": 11,
+    "REACT_FICTIONAL": 10,
     "WRITER_R1_R9": 23
   },
   "gate_open_counts": {
     "REQUIRES_INDEPENDENT_R1_G2_PROOFS": 39,
-    "RUNTIME_NOT_ADMITTED": 42,
+    "RUNTIME_NOT_ADMITTED": 41,
     "SCOPED_EVIDENCE_REQUIRED": 10
   },
   "closed_ids": [
@@ -33,6 +33,7 @@
     "M32-037",
     "M32-049",
     "M32-051",
+    "M32-074",
     "M32-094",
     "M32-095",
     "M32-096",
@@ -808,18 +809,6 @@
       "accepted_operator_runtime": false
     },
     {
-      "id": "M32-074",
-      "track": "REACT_FICTIONAL",
-      "gate": "RUNTIME_NOT_ADMITTED",
-      "verification_target": "src/m32ChronologyPreview.test.tsx",
-      "next_proof": "Aucun texte de scène, fiche ou assertion M2 n'est promu canon par l'UI chronologique.",
-      "accepted_evidence": "NONE_ACCEPTED",
-      "accepted_workflow_head_sha": null,
-      "accepted_workflow_run_id": null,
-      "accepted_job_id": null,
-      "accepted_operator_runtime": false
-    },
-    {
       "id": "M32-075",
       "track": "REACT_FICTIONAL",
       "gate": "RUNTIME_NOT_ADMITTED",
@@ -1131,5 +1120,6 @@
       "accepted_job_id": null,
       "accepted_operator_runtime": false
     }
-  ]
+  ],
+  "reconciliation_date": "2026-11-23"
 }

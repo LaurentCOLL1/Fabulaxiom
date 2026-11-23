@@ -1,3 +1,5 @@
+**ADDENDUM 23/11/2026 — CANDIDATURE DE CLÔTURE M32-074, registre courant 14/90.** Le bilan 12/92 → 13/91 ci-dessous reste une étape historique. Le registre JSON/matrice/checklist candidats de la branche #425 décrivent désormais **14 CLOSED_SCOPED / 90 OPEN_NOT_ACCEPTED** (13/91 → 14/90). La fermeture M32-074 ne vaut que pour la frontière *source-only non montée* avec aucun chemin canon M2 ; la nouvelle CI HEAD exacte #425 et la postmain restent nécessaires avant admission de cette clôture sur main. **HISTORICAL_REPORT_SNAPSHOT_NOT_CURRENT ; NO_AUTO_ACCEPTANCE ; NO_RUNTIME_ADMISSION ; M32-078 [ ] reste ouverte.** Writer/R1–R9 NOT_PROVEN, G3 STOP_UNAVAILABLE, #160 OPEN_NOT_REMEDIATED. Aucune autre exigence acceptée.
+
 # M32-078 — réconciliation du registre courant et de l'instantané du 22 novembre
 
 **23/11/2026 SOURCE_ONLY_CANDIDATE_UNQUALIFIED ; HISTORICAL_REPORT_SNAPSHOT_NOT_CURRENT ; NO_AUTO_ACCEPTANCE ; NO_RUNTIME_ADMISSION ; OPEN_NOT_ACCEPTED.**
