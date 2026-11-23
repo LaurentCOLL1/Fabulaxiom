@@ -763,5 +763,81 @@ class Pr35TwentySixDocumentMetadata(unittest.TestCase):
             with self.subTest(task=task), self.assertRaisesRegex(ValueError, "false historic document checklist closure"):
                 self.guard(report, audit, checklist.replace(f"- [ ] **{task}**", f"- [x] **{task}**"))
 
+
+class Pr35ElevenDivergentSourceOnly(unittest.TestCase):
+    """Exact historical/current Git blob pairs; never restore legacy code."""
+    REPORT = ROOT / "docs/qualification/M3_2_PR35_ELEVEN_DIVERGENT_BLOBS_SOURCE_REVIEW_20261123.md"
+    AUDIT = ROOT / "docs/qualification/M3_2_PR35_84_PATH_TREE_AUDIT_20261121.md"
+    ROWS = (
+        (".github/workflows/m0-ci.yml", "e12bf78e22ba6eb71ed7678a0ddf4ad54fa35e27", "c35a8f076b2770e676f63da48e9a93b6cc495b81", "BUILD_SECURITY"),
+        ("README.md", "e0191b8f01d84fc97db40f1d5eb5031f0364d06d", "9e3408aeb459170a006a60e94721fabcb1595f3b", "CONTINUITY"),
+        ("docs/continuity/NEXT.md", "b24b245b02c423f26f1a2315de0a6110a724eca0", "6aa0cf07e526aef18977a0d5c42546eaf17f6e80", "CONTINUITY"),
+        ("docs/continuity/STATE.md", "0d05054b5bb5d7e7bbcffab846d09285f3272067", "635f6c15eee06e7502a71a37cd80e35c135592e6", "CONTINUITY"),
+        ("src-tauri/Cargo.toml", "9c0c286062dbf3c881b7d76d1a1ea45d85385766", "50a36053f4772bd11769d2cd13a5b8b633038a78", "BUILD_SECURITY"),
+        ("src-tauri/build.rs", "32adde45c871d1c31639d1debc0fe779c0c69881", "d860e1e6a7cac333c3cc0bc9cb67faf286b07d69", "BUILD_SECURITY"),
+        ("src-tauri/sql/m3_2_chronology_decisions_candidate.sql", "fbd2a6244e6356a68e4fa707a7395fcbafe0449e", "786dc766769467ab6bf3243971855da31ff0dfbd", "SQL_FIXTURE"),
+        ("src-tauri/src/lib.rs", "22cd1cdcbc5ecd9ae08bfa5e926ea56834c6a343", "25796459e334f040f7e8ec8e677636f37f6dc947", "BUILD_SECURITY"),
+        ("src-tauri/src/m32_manual_chronology.rs", "f75e4bc7787b60ac345cbe137355f4888243829c", "c5542fed19b338752563f144a9484a34f9f79688", "ISOLATED_PRODUCT"),
+        ("src/M32ChronologyPreview.tsx", "d7b6e5972a4730f487d346ae4e8116a9f7d84bca", "f57a48f26b4460d9f0aefec23b1880e722a3d860", "ISOLATED_PRODUCT"),
+        ("src/m32ChronologyPreview.test.tsx", "bdc8e0b5ec3d22a784a864e81c82895915d2bc08", "c6aa039d3e8ad0db556dc1a7f53417d82f4c3193", "ISOLATED_PRODUCT"),
+    )
+
+    @classmethod
+    def guard(cls, report, audit, checklist):
+        if len(cls.ROWS) != 11 or len({row[0] for row in cls.ROWS}) != 11:
+            raise ValueError("STOP divergent path partition")
+        for marker in ("SOURCE_ONLY_CANDIDATE_UNQUALIFIED", "NO_RUNTIME_ADMISSION",
+                       "NO_SEMANTIC_EQUIVALENCE", "NO_AUTO_PORT", "OPEN_NOT_ACCEPTED",
+                       "11/11 SOURCE_SCOPED_NOT_ADMITTED", "0/11 PORTED", "0/11 ADMITTED",
+                       "R1–R9 NOT_PROVEN"):
+            if marker not in report:
+                raise ValueError("STOP false legacy divergent authority " + marker)
+        counts = {"BUILD_SECURITY": 0, "CONTINUITY": 0,
+                  "ISOLATED_PRODUCT": 0, "SQL_FIXTURE": 0}
+        for path, oldsha, mainsha, role in cls.ROWS:
+            if role not in counts or oldsha == mainsha or not (ROOT / path).is_file():
+                raise ValueError("STOP old divergent source restored or missing " + path)
+            counts[role] += 1
+            row = f"| `{path}` | `{oldsha}` | `{mainsha}` | {role} | REVIEW_CURRENT_DIFF_NO_OVERRIDE |"
+            if report.count(row) != 1:
+                raise ValueError("STOP divergent SHA or role drift " + path)
+            matched = [line for line in audit.splitlines()
+                       if line.startswith(f"| `{path}` | `{oldsha}` |")
+                       and "| DIVERGENT | REVIEW_CURRENT_DIFF_NO_OVERRIDE |" in line]
+            if len(matched) != 1:
+                raise ValueError("STOP PR35 old audit mismatch " + path)
+        if counts != {"BUILD_SECURITY": 4, "CONTINUITY": 3,
+                      "ISOLATED_PRODUCT": 3, "SQL_FIXTURE": 1}:
+            raise ValueError("STOP divergent scope partition")
+        for task in ("M32-007", "M32-050", "M32-078"):
+            if f"- [ ] **{task}**" not in checklist:
+                raise ValueError("STOP false divergent requirement closure " + task)
+        return 11
+
+    def test_37_all_11_source_only_blob_pairs_remain_divergent(self):
+        self.assertEqual(self.guard(self.REPORT.read_text(encoding="utf-8"),
+                                    self.AUDIT.read_text(encoding="utf-8"),
+                                    CHECKLIST.read_text(encoding="utf-8")), 11)
+
+    def test_38_forged_blob_scope_and_false_admission_refused(self):
+        report = self.REPORT.read_text(encoding="utf-8")
+        audit = self.AUDIT.read_text(encoding="utf-8")
+        checklist = CHECKLIST.read_text(encoding="utf-8")
+        with self.assertRaisesRegex(ValueError, "SHA or role drift"):
+            self.guard(report.replace("e12bf78e22ba6eb71ed7678a0ddf4ad54fa35e27",
+                                      "0"*40), audit, checklist)
+        with self.assertRaisesRegex(ValueError, "false legacy divergent authority"):
+            self.guard(report.replace("NO_RUNTIME_ADMISSION", "RUNTIME_ADMITTED"), audit, checklist)
+
+    def test_39_false_legacy_checklist_closure_refused(self):
+        report = self.REPORT.read_text(encoding="utf-8")
+        audit = self.AUDIT.read_text(encoding="utf-8")
+        checklist = CHECKLIST.read_text(encoding="utf-8")
+        for task in ("M32-007", "M32-050", "M32-078"):
+            with self.subTest(task=task), self.assertRaisesRegex(
+                    ValueError, "false divergent requirement closure"):
+                self.guard(report, audit, checklist.replace(
+                    f"- [ ] **{task}**", f"- [x] **{task}**"))
+
 if __name__ == "__main__":
     unittest.main()
