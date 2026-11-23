@@ -33,7 +33,9 @@
     "gate": "IN_PROGRESS_NOT_ACCEPTED",
     "writer_admitted": false,
     "operator_accepted": false,
-    "strategy": "PRODUCT_FIRST_PARALLEL_SAFETY"
+    "strategy": "PRODUCT_FIRST_PARALLEL_SAFETY",
+    "current_phase": "SOURCE_ONLY_CANDIDATE_UNQUALIFIED",
+    "attested_postmain_sha": "8c7b02ca6f806b6351d8c61eb33c883eeb0478cb"
   },
   "m32_20261122_pr35_20_python_source_scope_after_pr418": {
     "date": "2026-11-22",
