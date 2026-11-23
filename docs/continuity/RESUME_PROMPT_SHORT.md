@@ -1,16 +1,16 @@
 # Reprise Fabulaxiom (https://github.com/LaurentCOLL1/Fabulaxiom)
 
 ## Dernier checkpoint
-main=c2e26c9e803681d5b842564c085c9c106dbc6d36 ; #418 MERGED CI #45069291391 PASS HEAD exact 274fea168e2d729e11dd7062c774be3803eef487 ; postmain #45070570845 PASS sur SHA exact main ; date=2026-11-22 ; PR35 20/20 paires Python HISTORIQUES revues source-only sans portage ni équivalence, 13/91 ; M3.2 IN_PROGRESS_NOT_ACCEPTED (~45%).
+main=8c7b02ca6f806b6351d8c61eb33c883eeb0478cb ; #419 MERGED CI #45071633898 PASS HEAD exact c2dc23707efca30f5d34d86abd404b86dcac3ba5 ; postmain #45073814611 PASS exact main ; date=2026-11-23 ; PR35 26 DOCS HISTORIQUES source-only (11/3/12) CANDIDATS ; 13/91 ; M3.2 IN_PROGRESS_NOT_ACCEPTED (~45%).
 
 ## Interdictions actives — STOP
-Writer/R1–R9 NOT_PROVEN ; P4 STOP ; G2B NOT_ACCEPTED ; G2C NOT_AUTHORIZED ; G3 STOP_UNAVAILABLE ; PENDING_EXTERNAL_ATTESTATION(21/3/2), prospective NOT_STARTED ; R2 STOP, R3 partiel, D3c conception, D3b-4/5, D3b-5 STOP ; main/WAL/SHM, live SQLite WAL-index et ABA NOT_PROVEN ; glib #160 OPEN_NOT_REMEDIATED.
+Writer/R1–R9 NOT_PROVEN ; P4 STOP ; G2B NOT_ACCEPTED ; G2C NOT_AUTHORIZED ; G3 STOP_UNAVAILABLE ; PENDING_EXTERNAL_ATTESTATION(21/3/2), prospective NOT_STARTED ; R2 STOP, R3 partiel ; live SQLite WAL-index, D3c conception, D3b-4/5, D3b-5 STOP ; main/WAL/SHM, live SQLite WAL-index et ABA NOT_PROVEN ; glib #160 OPEN_NOT_REMEDIATED.
 STOP v6/v7, M:\Fabulaxiom, Greenfield, backups, IPC writer, 007, Hello, recovery.
 
 ## Prochaines opérations
-1. #418 CI #45069291391 PASS HEAD exact 274fea168e2d729e11dd7062c774be3803eef487 ; postmain #45070570845 PASS exact c2e26c9e803681d5b842564c085c9c106dbc6d36 ; journal #38 #7085847631 ; 13/91.
-2. PR35 20/20 paires source-only décrites, 0 portées, 0 équivalentes, 0 tests anciens exécutés ; 15 paires supplémentaires, 384 noms de méthodes de tests, gardes #31/#32/#33 CANDIDATS. PR #35/#215 DRAFT NON ADMISES ; M32-007/050/078 [ ].
-3. Qualifier postmain exact ; nouvelle PR candidate DRAFT + CI HEAD exacte, diff/reviews/threads/Protect main ACTIVE strict bypass=[], guarded squash expected_head_sha après PASS, nouveau postmain indépendant et #38 append-only ; PRODUCT_FIRST_PARALLEL_SAFETY.
+1. PR35 26/26 documents source-only, 0 portage/admission, gardes #34–36 CANDIDATS, M32-007/050/078 [ ], #35/#215 DRAFT NON ADMISES.
+2. PR candidate CI HEAD exacte, diff/reviews/threads/Protect main ACTIVE bypass=[], guarded squash expected_head_sha après PASS, postmain indépendante, #38 append-only.
+3. Poursuivre 11 chemins divergents / 2 Rust absents ; M3.2 PRODUCT_FIRST_PARALLEL_SAFETY et checklist 13/91.
 
 ## Documents d'autorité
 RESUME_PROMPT.md ; HANDOFF_CURRENT.md ; HANDOFF_CURRENT.json ; STATE.md ; NEXT.md ; M3_2_GATE_DECISION_CURRENT.md ; M3_2_COMPLETION_MASTER_CHECKLIST_20261109.md ; ROADMAP_STATUS_CURRENT.md ; M3_2_SHORT_CYCLE_DELIVERY_20261116.md. Historique : RESUME_PROMPT.md / docs/qualification.
