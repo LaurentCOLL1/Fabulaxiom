@@ -1,16 +1,16 @@
 # Reprise Fabulaxiom (https://github.com/LaurentCOLL1/Fabulaxiom)
 
 ## Dernier checkpoint
-main=8c7b02ca6f806b6351d8c61eb33c883eeb0478cb ; #419 MERGED CI #45071633898 PASS HEAD exact c2dc23707efca30f5d34d86abd404b86dcac3ba5 ; postmain #45073814611 PASS exact main ; date=2026-11-23 ; PR35 26 DOCS HISTORIQUES source-only (11/3/12) CANDIDATS ; 13/91 ; M3.2 IN_PROGRESS_NOT_ACCEPTED (~45%).
+main=2116f8a7b1725f9fad552be4ffb7795f8a9552eb ; #420 MERGED CI #45108878177 PASS HEAD exact fee8cca7a73a1bb4a9881561c8a663c20fd7bd18 ; postmain #45111189498 PENDING sur SHA exact main (NON QUALIFIÉ) ; date=2026-11-23 ; PR35 11 DIVERGENT + 2 RUST absents SOURCE-ONLY CANDIDATS, 13/91 ; M3.2 IN_PROGRESS_NOT_ACCEPTED (~45%).
 
 ## Interdictions actives — STOP
 Writer/R1–R9 NOT_PROVEN ; P4 STOP ; G2B NOT_ACCEPTED ; G2C NOT_AUTHORIZED ; G3 STOP_UNAVAILABLE ; PENDING_EXTERNAL_ATTESTATION(21/3/2), prospective NOT_STARTED ; R2 STOP, R3 partiel ; live SQLite WAL-index, D3c conception, D3b-4/5, D3b-5 STOP ; main/WAL/SHM, live SQLite WAL-index et ABA NOT_PROVEN ; glib #160 OPEN_NOT_REMEDIATED.
 STOP v6/v7, M:\Fabulaxiom, Greenfield, backups, IPC writer, 007, Hello, recovery.
 
 ## Prochaines opérations
-1. PR35 26/26 documents source-only, 0 portage/admission, gardes #34–36 CANDIDATS, M32-007/050/078 [ ], #35/#215 DRAFT NON ADMISES.
-2. PR candidate CI HEAD exacte, diff/reviews/threads/Protect main ACTIVE bypass=[], guarded squash expected_head_sha après PASS, postmain indépendante, #38 append-only.
-3. Poursuivre 11 chemins divergents / 2 Rust absents ; M3.2 PRODUCT_FIRST_PARALLEL_SAFETY et checklist 13/91.
+1. #420 source CI #45108878177 PASS HEAD exact fee8cca7a73a1bb4a9881561c8a663c20fd7bd18 ; postmain #45111189498 PENDING exact 2116f8a7b1725f9fad552be4ffb7795f8a9552eb, journal #38 #7091494697 append-only.
+2. PR35 11 chemins divergents et 2 Rust absents : noms+SHA+portées source-only, 0 portés/équivalents/admis, gardes #37–42 CANDIDATS. M32-007/050/078 [ ], #35/#215 DRAFT NON ADMISES ; 13/91.
+3. PR DRAFT HEAD CI, diff/reviews/threads/Protect main ACTIVE strict bypass=[], squash gardé expected_head_sha après PASS et postmain parent PASS exact, nouveau postmain indépendant, #38 append-only ; PRODUCT_FIRST_PARALLEL_SAFETY.
 
 ## Documents d'autorité
 RESUME_PROMPT.md ; HANDOFF_CURRENT.md ; HANDOFF_CURRENT.json ; STATE.md ; NEXT.md ; M3_2_GATE_DECISION_CURRENT.md ; M3_2_COMPLETION_MASTER_CHECKLIST_20261109.md ; ROADMAP_STATUS_CURRENT.md ; M3_2_SHORT_CYCLE_DELIVERY_20261116.md. Historique : RESUME_PROMPT.md / docs/qualification.
