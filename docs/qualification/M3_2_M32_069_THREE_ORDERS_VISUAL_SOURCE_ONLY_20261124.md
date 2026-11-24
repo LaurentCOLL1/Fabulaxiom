@@ -1,0 +1,13 @@
+# M32-069 — trois ordres visuellement distincts dans le laboratoire fictif (24/11/2026)
+
+**CANDIDAT DE CLÔTURE CLOSED_SCOPED — SOURCE_ONLY_UNMOUNTED ; nouvelle CI HEAD exacte et postmain indépendante obligatoires.**
+
+Parent protected main `4ed7da3538b8248ace9c28aa11b98168ae9fe027`, #426 M32-076 MERGED. CI source Windows `pull_request` #45328690361 attempt 1 `completed/SUCCESS` HEAD exact `b9cdaae9ff4895584128c358c56ffe7d0429c9ab`, job #138224328237 93/93 étapes ; postmain parent #45427732180 event push sur SHA exact parent **PENDING_UNQUALIFIED à la préparation**, ne pas inventer un PASS.
+
+**Problème produit :** les trois coordonnées étaient trois paragraphes sous un titre général. L'atelier React `src/M32ManualChronologyLab.tsx` les sépare maintenant en trois panneaux accessibles et visuellement distincts (grille responsive) : **temps du monde** avec actions fictives humaines explicites ; **ordre de narration** lecture seule des positions du manuscrit ; **révélation au lecteur** lecture seule, statut non renseigné. Aucun de ces panneaux ne peut déduire un autre ordre, et aucun système ne produit automatiquement une date fictive, une conversion, un canon ni une opération writer.
+
+**Quatre tests Vitest candidats #61–64** dans `src/m32ManualChronologyLab.test.tsx` : panneaux visibles séparés et étiquetés, narration distincte entre deux romans même avec lien de temps du monde, absence de chronologie inférée à partir de deux scènes ordonnées du même roman, refus d'une scène inconnue sans fabrication de coordonnées. Deux garde-fous Python candidats `tools/test_m32_requirements_traceability.py` empêchent la promotion runtime/SQLite ou opérateur. Les nouvelles assertions sont **NON QUALIFIÉES** jusqu'à leur propre Windows `pull_request` CI SUCCESS au HEAD exact, puis guarded squash et postmain indépendante.
+
+**M32-069 [x] CLOSED_SCOPED CANDIDAT**, limité au laboratoire fictif non monté et à ses interfaces d'observation. L'intégration dans `App.tsx`, une vraie édition persistée ou une recette opérateur exigent une requalification préalable. M32-067/068/070/071/075/077/078/088/099 demeurent [ ] OPEN_NOT_ACCEPTED. Checklist candidate : **104 = 16 CLOSED_SCOPED / 88 OPEN_NOT_ACCEPTED** ; M3.2 `IN_PROGRESS_NOT_ACCEPTED` (~45% indicatif), PRODUCT_FIRST_PARALLEL_SAFETY ; PR #35/#215 DRAFT NON_ADMITTED.
+
+STOP Writer/R1–R9 NOT_PROVEN ; P4 STOP ; G2B NOT_ACCEPTED ; G2C NOT_AUTHORIZED ; G3 STOP_UNAVAILABLE ; PENDING_EXTERNAL_ATTESTATION(21/3/2) prospective NOT_STARTED ; R2 STOP, R3 partiel, D3c conception, D3b-4/5 et D3b-5 STOP ; live SQLite main/WAL/SHM et ABA NOT_PROVEN ; glib #160 OPEN_NOT_REMEDIATED ; STOP v6/v7, M:\Fabulaxiom, Greenfield, backups, IPC writer, 007, Hello, recovery.
