@@ -1,3 +1,4 @@
+import M32FictionalPersistenceNotice from "./m32FictionalPersistenceNotice";
 import { useId, useState, type FormEvent, type ReactElement } from "react";
 import M32ChronologyPreview from "./M32ChronologyPreview";
 import type { M32ChronologyProjection, M32TimeKind } from "./M32ChronologyPreview";
@@ -143,6 +144,7 @@ function FictionalPanel({ initial, revisions }: {
   }
   return <section aria-label="P3a atelier de commandes de chronologie fictive">
     <h2>Créer une date dans le monde fictif — contrat P3a</h2>
+    <M32FictionalPersistenceNotice state={error ? "action_refused" : "fixture"} />
     <p><strong>Simulation navigateur exclusivement.</strong> Cette interface
       ne communique pas avec Rust et ne sauvegarde aucune modification.</p>
     <p>Univers explicite : <code>{snapshot.universe_id}</code>.

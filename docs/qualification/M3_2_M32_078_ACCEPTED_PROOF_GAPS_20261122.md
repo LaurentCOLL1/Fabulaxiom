@@ -1,3 +1,5 @@
+> **ADDENDUM 24/11/2026 — 15/89 CANDIDAT.** Les bilans antérieurs 12/92, 13/91 et 14/90 sont historiques. Matrice+ledger courants candidats : **15 CLOSED_SCOPED / 89 OPEN_NOT_ACCEPTED** avec clôture M32-076 limitée aux fixtures non montées, sans réel writer. **M32-078 [ ]**, NO_AUTO_ACCEPTANCE, NO_RUNTIME_ADMISSION, preuve HEAD/postmain nouvelle requise.
+
 > **ADDENDUM 23/11/2026 — nouveau bilan candidat 14/90.** L'addendum antérieur 13/91 et le rapport original 12/92 sont des instantanés historiques, non le registre courant. Une candidature source-only M32-074 est ajoutée au registre (14 CLOSED_SCOPED / 90 OPEN_NOT_ACCEPTED), sous réserve de CI HEAD exacte et de nouvelle postmain ; les 90 ouverts restent NONE_ACCEPTED. M32-078 [ ] ; NO_AUTO_ACCEPTANCE ; NO_RUNTIME_ADMISSION.
 
 # M32-078 — inventaire déterministe des preuves acceptées manquantes (22/11/2026)
