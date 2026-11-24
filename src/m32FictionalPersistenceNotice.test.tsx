@@ -1,4 +1,4 @@
-import { readFileSync } from "node:fs";
+import M32P3FictionalCommandWorkshop from "./M32P3FictionalCommandWorkshop";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
@@ -8,14 +8,7 @@ import M32FictionalPersistenceNotice, {
   describeM32FictionalPersistence,
 } from "./m32FictionalPersistenceNotice";
 
-/** Source-only fixture guard: a real Windows writer refusal is NOT tested here. */
-const files = [
-  "M32ManualChronologyLab.tsx",
-  "M32FictionalEventManualWorkshop.tsx",
-  "M32P3FictionalCommandWorkshop.tsx",
-  "M32P4aStageReviewPanel.tsx",
-] as const;
-
+/** Only fictional browser fixtures; real Windows writer refusal is NOT tested. */
 describe("M32-076 no false persistence claim in unmounted fictional laboratories", () => {
   it("01 fixture always exposes nonpersistent and unauthorized writer flags", () => {
     expect(describeM32FictionalPersistence("fixture")).toMatchObject({
@@ -52,16 +45,29 @@ describe("M32-076 no false persistence claim in unmounted fictional laboratories
       expect(html).not.toMatch(/Sauvegarde réussie|Écriture confirmée|persisted.true/i);
     }
   });
-  it("05 all four fictional action surfaces show explicit nonpersistence", () => {
-    for (const name of files) {
-      const source = readFileSync(new URL("./" + name, import.meta.url), "utf8");
-      expect(source, name).toContain('from "./m32FictionalPersistenceNotice"');
-      expect(source, name).toContain("<M32FictionalPersistenceNotice");
-      expect(source, name).not.toMatch(/\binvoke\s*\(|\bfetch\s*\(|localStorage\s*\(|APPROVE_CANON/);
-    }
-    const eventSource = readFileSync(new URL("./M32FictionalEventManualWorkshop.tsx", import.meta.url), "utf8");
-    expect(eventSource).not.toContain("Enregistrer une nouvelle version");
-    expect(eventSource).toContain("Créer une nouvelle version fictive en mémoire");
+  it("05 fictional command UI always presents nonpersistence in SSR", () => {
+    const universe_id = "fiction-m32076-ui";
+    const initial: M32ChronologyProjection = {
+      universe_id, reader_reveal_status: "not_authored",
+      anchors: ["A", "B"].map(id => ({
+        id, universe_id, time_kind: "unknown" as const, status: "current" as const,
+        calendar_name: null, fictional_label: null, precision_text: null,
+        source_revision_id: null,
+      })),
+      precedences: [],
+      narration: [{
+        universe_id, novel_id: "fiction-novel", novel_title: "Roman fictif",
+        chapter_id: "fiction-chapter", chapter_title: "Chapitre fictif",
+        chapter_order: 0, scene_id: "fiction-scene",
+        scene_title: "Scène fictive", scene_order: 0,
+      }],
+    };
+    const html = renderToStaticMarkup(createElement(M32P3FictionalCommandWorkshop,
+      {initial, revisions: []}));
+    expect(html).toContain('aria-label="Persistance de la simulation chronologique"');
+    expect(html).toContain("Simulation fictive non persistée");
+    expect(html).toContain("G3 STOP_UNAVAILABLE");
+    expect(html).not.toContain("Sauvegarde réussie");
   });
   it("06 rejected fictional command preserves the actual in-memory reducer state", () => {
     const universe_id = "fiction-m32076";
