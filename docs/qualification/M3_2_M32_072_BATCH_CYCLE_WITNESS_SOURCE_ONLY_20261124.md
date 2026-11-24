@@ -1,3 +1,5 @@
+**ADDENDUM 25/11/2026 — 17 CLOSED_SCOPED / 87 OPEN_NOT_ACCEPTED CANDIDAT sur branche #428 (16/88 sur main).** M32-072 conception du laboratoire fictif non monté : source CI #45483223730 SUCCESS HEAD exact a6b4535f18a7b3c5d2b2b9f1757f129b5e86c044 ; job #138761622120 étape 35, suites 22 + 12 tests PASS observées, sans attestation individuelle. Nouvelle CI du registre et postmain requises. M32-078 [ ] reste ouverte ; HISTORICAL_REPORT_SNAPSHOT_NOT_CURRENT ; NO_AUTO_ACCEPTANCE ; NO_RUNTIME_ADMISSION ; R1–R9 NOT_PROVEN ; G3 STOP_UNAVAILABLE. Aucun writer ni opérateur. M32-070 [ ] reste ouverte.
+
 # M32-072 — témoins exacts de refus par lot fictif (24/11/2026)
 
 Parent main 41801b5b792b8204e8aabfc555ec63a8b62b6242 ; #427 MERGED source #45429799963 PASS exact HEAD a5523b4b1d094396775c0d5b4739e1d107644996 ; postmain #45469647606 PASS exact main. 16/88 ; IN_PROGRESS_NOT_ACCEPTED ; PRODUCT_FIRST_PARALLEL_SAFETY.
