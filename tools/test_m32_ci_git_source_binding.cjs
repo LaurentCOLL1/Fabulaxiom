@@ -38,7 +38,7 @@ test("01 exact SHA and 29 Git blobs match fictional-only sources", () => {
   const f = fixture();
   const evidence = bindSourcesToCheckout(f.root, f.head, MANIFEST);
   assert.equal(evidence.gitHead, f.head);
-  // P3a historical inventory baseline: 19; 29 exact fictional files are now bound
+  // P3a historical inventory baseline: evidence.inventory.length, 19 (current 29).
   assert.equal(evidence.inventory.length, 29);
   assert.ok(MANIFEST.includes("src/m32FictionalPersistenceNotice.tsx"));
   assert.ok(MANIFEST.includes("src/m32FictionalAnchorSupersessionPreview.ts"));
