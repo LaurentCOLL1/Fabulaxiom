@@ -34,7 +34,7 @@ describe("M32-076 no false persistence claim in unmounted fictional laboratories
     const initial = renderToStaticMarkup(createElement(M32FictionalPersistenceNotice));
     const refused = renderToStaticMarkup(createElement(M32FictionalPersistenceNotice,
       {state: "action_refused"}));
-    expect(initial).toContain('role="status"');
+    expect(initial).toContain('role="note"');
     expect(initial).toContain("Simulation fictive non persistée");
     expect(refused).toContain('role="alert"');
     expect(refused).toContain("Action fictive refusée");

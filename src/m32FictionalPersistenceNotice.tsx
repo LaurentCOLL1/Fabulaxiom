@@ -32,7 +32,7 @@ export default function M32FictionalPersistenceNotice({
   state = "fixture",
 }: { state?: M32FictionalPersistenceState }): ReactElement {
   const claim = describeM32FictionalPersistence(state);
-  return <p role={state === "action_refused" ? "alert" : "status"}
+  return <p role={state === "action_refused" ? "alert" : "note"}
     aria-label="Persistance de la simulation chronologique">
     {claim.message}
   </p>;
