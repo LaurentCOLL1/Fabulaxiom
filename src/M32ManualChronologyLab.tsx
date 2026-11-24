@@ -356,9 +356,24 @@ function Lab({ initial, revisions }: {
         </option>)}
       </select>
       <section role="status" aria-label="Comparaison des trois ordres fictifs">
-        <p>Ordre de narration : {threeOrders.narration_reason}</p>
-        <p>{threeOrders.world_reason}</p>
-        <p>{threeOrders.reader_reason}</p>
+        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit, minmax(14rem, 1fr))",gap:"0.75rem"}}>
+          <section aria-label="Chronologie du monde fictif" style={{border:"1px solid currentColor",padding:"0.75rem",borderRadius:"0.5rem"}}>
+            <h4>Temps du monde — décision humaine</h4>
+            <p>Modification possible seulement par les actions fictives explicites de création, correction ou révocation.</p>
+            <p>{threeOrders.world_reason}</p>
+          </section>
+          <section aria-label="Ordre de narration fictif" style={{border:"1px solid currentColor",padding:"0.75rem",borderRadius:"0.5rem"}}>
+            <h4>Ordre de narration — lecture seule du manuscrit</h4>
+            <p>Ordre de narration : {threeOrders.narration_reason}</p>
+            <p>La position dans le roman n'est pas une preuve du temps du monde.</p>
+          </section>
+          <section aria-label="Révélation au lecteur fictive" style={{border:"1px solid currentColor",padding:"0.75rem",borderRadius:"0.5rem"}}>
+            <h4>Révélation au lecteur — lecture seule</h4>
+            <p>{threeOrders.reader_reason}</p>
+            <p>Aucun ordre de révélation calculé ni renseigné par cette comparaison.</p>
+          </section>
+        </div>
+        <p>Aucune conversion silencieuse entre temps du monde, narration et révélation.</p>
       </section>
       <section aria-label="Preuve du temps du monde par révisions exactes">
         <h3>Preuve du temps du monde — révisions explicites</h3>

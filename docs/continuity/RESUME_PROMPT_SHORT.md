@@ -1,16 +1,16 @@
 # Reprise Fabulaxiom (https://github.com/LaurentCOLL1/Fabulaxiom)
 
 ## Dernier checkpoint
-main=30504ae58a89f9eb63c81f9eab9dae7922fb1e7a ; #425 MERGED CI #45266445764 PASS HEAD exact 718499765d2fe7dda5a0d78759f213f4efb5576b ; postmain #45268854723 PASS sur SHA exact main ; date=2026-11-24 ; M32-076 [x] NON-PERSISTANCE FICTIVE CANDIDATE, CI propre à qualifier ; 15/89 ; M3.2 IN_PROGRESS_NOT_ACCEPTED (~45%).
+main=4ed7da3538b8248ace9c28aa11b98168ae9fe027 ; #426 MERGED CI #45328690361 PASS HEAD exact b9cdaae9ff4895584128c358c56ffe7d0429c9ab ; postmain #45427732180 PENDING sur SHA exact main (NON QUALIFIÉ) ; date=2026-11-24 ; M32-069 [x] TROIS ORDRES FICTIFS CANDIDAT, CI propre à qualifier ; 16/88 BRANCHE, 15/89 main ; M3.2 IN_PROGRESS_NOT_ACCEPTED (~45%).
 
 ## Interdictions actives — STOP
 Writer/R1–R9 NOT_PROVEN ; P4 STOP ; G2B NOT_ACCEPTED ; G2C NOT_AUTHORIZED ; G3 STOP_UNAVAILABLE ; PENDING_EXTERNAL_ATTESTATION(21/3/2), prospective NOT_STARTED ; R2 STOP, R3 partiel, D3c conception, D3b-4/5, D3b-5 STOP ; main/WAL/SHM, live SQLite WAL-index et ABA NOT_PROVEN ; glib #160 OPEN_NOT_REMEDIATED.
 STOP v6/v7, M:\Fabulaxiom, Greenfield, backups, IPC writer, 007, Hello, recovery.
 
 ## Prochaines opérations
-1. #425 MERGED source CI #45266445764 PASS HEAD exact 718499765d2fe7dda5a0d78759f213f4efb5576b, postmain #45268854723 PASS exact main ; #38 #7114371908 append-only.
-2. M32-076 [x] candidat SOURCE NON MONTÉ : 6 Vitest + 2 contrats Python ; **vrai writer NON TESTÉ** ; checklist 15/89, #35/#215 DRAFT NON ADMISES.
-3. DRAFT PR nouvelle CI Windows pull_request HEAD exacte, diff/reviews/threads, Protect main ACTIVE strict bypass=[], guarded squash expected_head_sha après PASS, postmain indépendante et #38 ; PRODUCT_FIRST_PARALLEL_SAFETY.
+1. #426 MERGED CI #45328690361 PASS HEAD exact b9cdaae9ff4895584128c358c56ffe7d0429c9ab ; postmain #45427732180 PENDING exact main ; #38 #7136361212 append-only.
+2. M32-069 [x] candidat SOURCE NON MONTÉ : trois panneaux monde/narration/révélation, 4 Vitest et 2 gardes Python ; 16/88 BRANCHE, 15/89 main ; #35/#215 DRAFT NON ADMISES.
+3. PR DRAFT nouvelle CI Windows HEAD exacte, parent postmain PASS, diff/reviews/threads, Protect main ACTIVE strict bypass=[], guarded squash expected_head_sha après PASS, postmain indépendante et #38 ; PRODUCT_FIRST_PARALLEL_SAFETY.
 
 ## Documents d'autorité
 RESUME_PROMPT.md ; HANDOFF_CURRENT.md ; HANDOFF_CURRENT.json ; STATE.md ; NEXT.md ; M3_2_GATE_DECISION_CURRENT.md ; M3_2_COMPLETION_MASTER_CHECKLIST_20261109.md ; ROADMAP_STATUS_CURRENT.md ; M3_2_SHORT_CYCLE_DELIVERY_20261116.md. Historique : RESUME_PROMPT.md / docs/qualification.

@@ -527,6 +527,47 @@ describe("M3.2 manually authored fictional-only chronology laboratory", () => {
     expect(renderToStaticMarkup(createElement(M32ManualChronologyLab, { initial: invented, revisions: history })))
       .toContain("Preuve du temps du monde — révisions explicites");
   });
+  it("61 shows three labelled visual panels without converting their coordinates", () => {
+    const html=renderToStaticMarkup(createElement(M32ManualChronologyLab,
+      {initial:invented,revisions:history}));
+    for(const label of ["Chronologie du monde fictif","Ordre de narration fictif",
+                       "Révélation au lecteur fictive"]) {
+      expect(html).toContain('aria-label="'+label+'"');
+    }
+    expect(html).toContain("Temps du monde — décision humaine");
+    expect(html).toContain("Ordre de narration — lecture seule du manuscrit");
+    expect(html).toContain("Révélation au lecteur — lecture seule");
+    expect(html).toContain("Aucune conversion silencieuse");
+    expect(html).toContain("grid-template-columns:");
+  });
+  it("62 preserves unknown reader reveal with a human fictional world edge", () => {
+    const d=createFictionalPrecedence(startFictionalDraft(invented),"A","B","A avant B");
+    const before=JSON.stringify(d);
+    const data=previewFictionalThreeOrders(d,"s-one","s-two");
+    expect(data.narration).toBe("separate_novels");
+    expect(data.world_reason).toContain("indéterminée");
+    expect(data.reader_reason).toContain("non renseignée");
+    expect(d.snapshot.reader_reveal_status).toBe("not_authored");
+    expect(JSON.stringify(d)).toBe(before);
+  });
+  it("63 cannot infer world time from two ordered scenes of the same novel", () => {
+    const scene1=invented.narration[0];
+    const scene2={...scene1,scene_id:"s-later",scene_order:3,scene_title:"Suite fictive"};
+    const draft=startFictionalDraft({...invented,narration:[...invented.narration,scene2]});
+    const comparison=previewFictionalThreeOrders(draft,"s-one","s-later");
+    expect(comparison.narration).toBe("before");
+    expect(comparison.world_reason).toContain("indéterminée");
+    expect(comparison.reader_reason).toContain("non renseignée");
+    expect(draft.real_g3_authorized).toBe(false);
+  });
+  it("64 rejects unknown scene without manufacturing a world or reader order", () => {
+    const draft=startFictionalDraft(invented);
+    const data=previewFictionalThreeOrders(draft,"s-one","foreign-scene");
+    expect(data.verdict).toBe("blocked");
+    expect(data.world_reason).toContain("indéterminée");
+    expect(data.reader_reason).toContain("non renseignée");
+    expect(data.narration_reason).toContain("refusée");
+  });
   it("13 refuses malformed legacy edge and forbids promotion to G3", () => {
     const d = startFictionalDraft(invented);
     expect(d.real_g3_authorized).toBe(false);
