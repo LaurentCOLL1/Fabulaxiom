@@ -1,3 +1,4 @@
+import M32FictionalPersistenceNotice from "./m32FictionalPersistenceNotice";
 import { useState, type FormEvent, type ReactElement } from "react";
 import type { P3Command, P3State } from "./m32P3FictionalCommandContract";
 import {
@@ -49,6 +50,7 @@ export default function M32P4aFictionalReview({
   }
   return <section aria-label="P4a revue humaine fictive isolée">
     <h2>P4a — vérifier avant de confirmer une décision fictive</h2>
+    <M32FictionalPersistenceNotice />
     <p>Préparation du parcours produit, sans admission P4 ni écrivain réel.
        Aucune commande Tauri, aucun disque, aucune sauvegarde.</p>
     <p>Univers inventé : <code>{state.draft.snapshot.universe_id}</code></p>

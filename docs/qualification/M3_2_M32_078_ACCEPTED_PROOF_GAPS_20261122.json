@@ -6,8 +6,8 @@
   "scope": "DOCUMENTARY_OPEN_GAP_LEDGER_ONLY_NO_OPERATOR_ACCEPTANCE",
   "gate": "IN_PROGRESS_NOT_ACCEPTED",
   "total": 104,
-  "closed_scoped": 14,
-  "open_not_accepted": 90,
+  "closed_scoped": 15,
+  "open_not_accepted": 89,
   "track_open_counts": {
     "ACCEPTANCE_AND_SCOPE": 7,
     "DATA_AND_CHRONOLOGY": 16,
@@ -15,12 +15,12 @@
     "G2_TO_G6": 10,
     "GH_PROTOCOL": 2,
     "HISTORICAL_ATTESTATION": 6,
-    "REACT_FICTIONAL": 10,
+    "REACT_FICTIONAL": 9,
     "WRITER_R1_R9": 23
   },
   "gate_open_counts": {
     "REQUIRES_INDEPENDENT_R1_G2_PROOFS": 39,
-    "RUNTIME_NOT_ADMITTED": 41,
+    "RUNTIME_NOT_ADMITTED": 40,
     "SCOPED_EVIDENCE_REQUIRED": 10
   },
   "closed_ids": [
@@ -34,6 +34,7 @@
     "M32-049",
     "M32-051",
     "M32-074",
+    "M32-076",
     "M32-094",
     "M32-095",
     "M32-096",
@@ -821,18 +822,6 @@
       "accepted_operator_runtime": false
     },
     {
-      "id": "M32-076",
-      "track": "REACT_FICTIONAL",
-      "gate": "RUNTIME_NOT_ADMITTED",
-      "verification_target": "src/m32ChronologyPreview.test.tsx",
-      "next_proof": "État « fictif/non persisté » tant que fixture ; si refus du writer, affichage explicite et aucune modification prétendue.",
-      "accepted_evidence": "NONE_ACCEPTED",
-      "accepted_workflow_head_sha": null,
-      "accepted_workflow_run_id": null,
-      "accepted_job_id": null,
-      "accepted_operator_runtime": false
-    },
-    {
       "id": "M32-077",
       "track": "REACT_FICTIONAL",
       "gate": "RUNTIME_NOT_ADMITTED",
@@ -1121,5 +1110,5 @@
       "accepted_operator_runtime": false
     }
   ],
-  "reconciliation_date": "2026-11-23"
+  "reconciliation_date": "2026-11-24"
 }

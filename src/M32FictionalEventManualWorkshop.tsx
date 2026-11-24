@@ -1,3 +1,4 @@
+import M32FictionalPersistenceNotice from "./m32FictionalPersistenceNotice";
 import { useState, type FormEvent, type ReactElement } from "react";
 import {
   amendFictionalEvent, createFictionalEvent, currentFictionalEvents,
@@ -289,6 +290,7 @@ export default function M32FictionalEventManualWorkshop({ initial }: {
   }
   return <section aria-label="Atelier manuel fictif d'événements M3.2">
     <h2>Atelier fictif — événements de {book.draft.snapshot.universe_id}</h2>
+    <M32FictionalPersistenceNotice />
     <p role="note">Démonstration exclusivement en mémoire du navigateur.
       Aucun enregistrement, aucun accès SQLite, aucune commande Tauri,
       aucune chronologie ou révélation du lecteur calculée automatiquement.</p>
@@ -344,7 +346,7 @@ export default function M32FictionalEventManualWorkshop({ initial }: {
           aucune modification enregistrée avant justification et validation.
           Aucun événement retiré ne peut être réactivé ainsi.</p>
       </fieldset>}
-      <button type="submit">{selectedId ? "Enregistrer une nouvelle version" :
+      <button type="submit">{selectedId ? "Créer une nouvelle version fictive en mémoire" :
         "Créer en mémoire"}</button>
       {selectedId && <button type="button" onClick={() =>
         apply({ kind: "withdraw", eventId: selectedId, reason })}>

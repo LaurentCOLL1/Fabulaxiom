@@ -22,6 +22,7 @@ const MANIFEST = Object.freeze([
   "src/m32FictionalManualChronology.ts",
   "src/m32FictionalEventNotebook.ts",
   "src/M32FictionalEventManualWorkshop.tsx",
+  "src/m32FictionalPersistenceNotice.tsx",
   "src/M32FictionalEventNotebookPreview.tsx",
   "src/M32FictionalEventVersionPairLab.tsx",
   "src/m32FictionalRevocationImpact.ts",
