@@ -112,7 +112,7 @@ function Lab({ initial, revisions }: {
   }
   return <section aria-label="Atelier manuel M3.2 exclusivement fictif">
     <h2>Atelier de chronologie — simulation sans sauvegarde</h2>
-    <M32FictionalPersistenceNotice state={error ? "action_refused" : "fixture"} />
+    <M32FictionalPersistenceNotice />
     <p role="note">Toutes les modifications restent en mémoire dans ce navigateur de test.
       Aucun univers réel, fichier SQLite, commande Tauri, migration ou canon n'est modifié.</p>
     <p><strong>Univers imaginaire :</strong> {draft.snapshot.universe_id}</p>

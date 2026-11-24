@@ -290,7 +290,7 @@ export default function M32FictionalEventManualWorkshop({ initial }: {
   }
   return <section aria-label="Atelier manuel fictif d'événements M3.2">
     <h2>Atelier fictif — événements de {book.draft.snapshot.universe_id}</h2>
-    <M32FictionalPersistenceNotice state={isError ? "action_refused" : "fixture"} />
+    <M32FictionalPersistenceNotice />
     <p role="note">Démonstration exclusivement en mémoire du navigateur.
       Aucun enregistrement, aucun accès SQLite, aucune commande Tauri,
       aucune chronologie ou révélation du lecteur calculée automatiquement.</p>

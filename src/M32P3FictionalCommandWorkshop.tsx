@@ -144,7 +144,7 @@ function FictionalPanel({ initial, revisions }: {
   }
   return <section aria-label="P3a atelier de commandes de chronologie fictive">
     <h2>Créer une date dans le monde fictif — contrat P3a</h2>
-    <M32FictionalPersistenceNotice state={error ? "action_refused" : "fixture"} />
+    <M32FictionalPersistenceNotice />
     <p><strong>Simulation navigateur exclusivement.</strong> Cette interface
       ne communique pas avec Rust et ne sauvegarde aucune modification.</p>
     <p>Univers explicite : <code>{snapshot.universe_id}</code>.
