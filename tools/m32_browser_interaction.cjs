@@ -882,7 +882,7 @@ async function run() {
       await eventForm().getByRole("textbox", {
         name: "Justification de correction ou de retrait",
       }).fill("Rédaction historique");
-      await eventForm().getByRole("button", { name: "Enregistrer une nouvelle version" }).click();
+      await eventForm().getByRole("button", { name: "Créer une nouvelle version fictive en mémoire" }).click();
       assert.ok((await eventRegion().innerText()).includes("Rencontre amendée"));
       assert.ok((await eventRegion().innerText()).includes("version 2"));
       assert.ok((await eventRegion().innerText()).includes("2 versions"));
@@ -1053,7 +1053,7 @@ async function run() {
       await eventForm().getByRole("textbox", {
         name: "Justification de correction ou de retrait",
       }).fill("Correction humaine inventée");
-      await eventForm().getByRole("button", { name: "Enregistrer une nouvelle version" }).click();
+      await eventForm().getByRole("button", { name: "Créer une nouvelle version fictive en mémoire" }).click();
     }
     await caseRun("71-live-workshop-comparison-hidden-until-author-requests", async () => {
       await openEventForm();
@@ -1184,7 +1184,7 @@ async function run() {
       await eventForm().getByRole("textbox", {
         name: "Justification de correction ou de retrait",
       }).fill("Retour manuel explicite à la version 1");
-      await eventForm().getByRole("button", { name: "Enregistrer une nouvelle version" }).click();
+      await eventForm().getByRole("button", { name: "Créer une nouvelle version fictive en mémoire" }).click();
       assert.ok((await eventRegion().innerText()).includes("version 3"));
       assert.ok((await eventRegion().innerText()).includes("3 versions"));
       await liveComparisonButton().click();

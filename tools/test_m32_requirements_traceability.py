@@ -837,6 +837,9 @@ class M32076NoFalsePersistenceSourceContract(unittest.TestCase):
         event_ui=(ROOT/"src/M32FictionalEventManualWorkshop.tsx").read_text(encoding="utf-8")
         self.assertNotIn("Enregistrer une nouvelle version",event_ui)
         self.assertIn("Créer une nouvelle version fictive en mémoire",event_ui)
+        browser=(ROOT/"tools/m32_browser_interaction.cjs").read_text(encoding="utf-8")
+        self.assertEqual(browser.count('name: "Créer une nouvelle version fictive en mémoire"'),3)
+        self.assertNotIn('name: "Enregistrer une nouvelle version"',browser)
 
     def test_20261124_076_proof_never_claims_real_writer_or_operator(self):
         row=next(a for a in MATRIX["rows"] if a["id"]=="M32-076")
