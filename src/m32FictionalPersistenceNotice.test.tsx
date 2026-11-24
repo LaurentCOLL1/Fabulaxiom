@@ -2,6 +2,8 @@ import { readFileSync } from "node:fs";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
+import type { M32ChronologyProjection } from "./M32ChronologyPreview";
+import { startP3FictionalState, applyP3FictionalCommand } from "./m32P3FictionalCommandContract";
 import M32FictionalPersistenceNotice, {
   describeM32FictionalPersistence,
 } from "./m32FictionalPersistenceNotice";
@@ -61,13 +63,28 @@ describe("M32-076 no false persistence claim in unmounted fictional laboratories
     expect(eventSource).not.toContain("Enregistrer une nouvelle version");
     expect(eventSource).toContain("Créer une nouvelle version fictive en mémoire");
   });
-  it("06 refusal messages cannot overwrite real state or imply writer admission", () => {
-    const old = Object.freeze({data_origin:"fictional_browser_memory_only", writer_admitted:false,
-      version:1, saved:false});
-    const next = describeM32FictionalPersistence("action_refused");
-    expect(old.saved).toBe(false);
-    expect(old.version).toBe(1);
-    expect(next.persisted).toBe(false);
-    expect(next.writer_authorized).toBe(false);
+  it("06 rejected fictional command preserves the actual in-memory reducer state", () => {
+    const universe_id = "fiction-m32076";
+    const snapshot: M32ChronologyProjection = {
+      universe_id, reader_reveal_status: "not_authored",
+      anchors: ["A", "B"].map(id => ({
+        id, universe_id, time_kind: "unknown" as const, status: "current" as const,
+        calendar_name: null, fictional_label: null, precision_text: null,
+        source_revision_id: null,
+      })),
+      precedences: [], narration: [],
+    };
+    const state = startP3FictionalState(snapshot, []);
+    const before = JSON.stringify(state);
+    expect(() => applyP3FictionalCommand(state, {
+      kind: "create_precedence", universe_id,
+      relation: {before_anchor_id: "A", after_anchor_id: "A", reason: "Refus de boucle"},
+    })).toThrow();
+    expect(JSON.stringify(state)).toBe(before);
+    expect(state.draft.real_g3_authorized).toBe(false);
+    const feedback = describeM32FictionalPersistence("action_refused");
+    expect(feedback.persisted).toBe(false);
+    expect(feedback.writer_called).toBe(false);
+    expect(feedback.writer_authorized).toBe(false);
   });
 });
