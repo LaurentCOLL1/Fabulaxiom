@@ -1,0 +1,3 @@
+## 25/11/2026 — M32-070 parcours manuel fictif candidat
+
+Parent 987894607b9a971425e590823157022a239cfa54 ; #429 CI #45651308498 SUCCESS HEAD 9e969eb098bbc7030c9a523e61ef6e49faeaa0ae ; postmain #45663320119 initialement IN_PROGRESS. Le formulaire événement propose désormais une préparation explicite calendrier/ancre exacte ou estimée et révision choisie. Aucune sélection automatique de l'ancre ou de la source événement. Tests 57–61 candidats : création/correction, estimation, refus, absence de mutation et rendu SSR. M32-070 [ ] ; aucune preuve Chromium de clic complet ni admission réelle. M32-078 [ ] ; 17/87 ; IN_PROGRESS_NOT_ACCEPTED ; PRODUCT_FIRST_PARALLEL_SAFETY. Aucun writer ni persistance.

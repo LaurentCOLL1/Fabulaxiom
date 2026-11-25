@@ -7,7 +7,26 @@ import {
   type FictionalEventInput, type FictionalEventNotebook,
 } from "./m32FictionalEventNotebook";
 import M32FictionalEventVersionPairLab from "./M32FictionalEventVersionPairLab";
-import type { FictionalRevision } from "./m32FictionalManualChronology";
+import { createFictionalAnchor, type FictionalRevision } from "./m32FictionalManualChronology";
+import { addFictionalCalendar, selectFictionalCalendar, type FictionalCalendarEntry } from "./M32ManualChronologyLab";
+
+/** Append a human-dated anchor without creating or changing any event. RAM only. */
+export function appendFictionalCalendarAnchor(
+  book: FictionalEventNotebook, catalogue: readonly FictionalCalendarEntry[],
+  calendarId: string, kind: "exact" | "approximate", dateText: string, revisionId: string,
+): FictionalEventNotebook {
+  inspectFictionalEventNotebook(book);
+  if (kind !== "exact" && kind !== "approximate") throw Error("Type de date fictive invalide.");
+  const calendar = selectFictionalCalendar(catalogue, calendarId);
+  const rev = book.draft.revisions.find(r => r.revision_id === revisionId);
+  if (revisionId && !rev) throw Error("Révision fictive absente ou étrangère.");
+  const draft = createFictionalAnchor(book.draft, {
+    kind, calendar, label: kind === "exact" ? dateText : "",
+    precision: kind === "approximate" ? dateText : "",
+    source_revision_id: rev?.revision_id ?? null, source_scene_id: rev?.scene_id ?? null,
+  });
+  return inspectFictionalEventNotebook({...book, draft});
+}
 
 /** Offer only an active anchor's exact historical source, without choosing it.
  * Fictional browser memory only; neither a source authority nor a persistence gate.
@@ -156,6 +175,34 @@ export default function M32FictionalEventManualWorkshop({ initial }: {
 }): ReactElement {
   inspectFictionalEventNotebook(initial);
   const [book, setBook] = useState(initial);
+  const [calendarOpen, setCalendarOpen] = useState(false);
+  const [calendars, setCalendars] = useState<readonly FictionalCalendarEntry[]>([]);
+  const [calendarName, setCalendarName] = useState("");
+  const [calendarId, setCalendarId] = useState("");
+  const [dateKind, setDateKind] = useState<"exact" | "approximate">("exact");
+  const [dateText, setDateText] = useState("");
+  const [dateRevision, setDateRevision] = useState("");
+  const [dateFeedback, setDateFeedback] = useState("");
+  const [dateError, setDateError] = useState(false);
+  function createCalendar() {
+    try {
+      setCalendars(addFictionalCalendar(calendars, calendarName));
+      setCalendarName(""); setDateError(false);
+      setDateFeedback("Calendrier créé ; aucune ancre ni aucun événement créé.");
+    } catch (error) {
+      setDateError(true); setDateFeedback(String(error));
+    }
+  }
+  function createDateAnchor() {
+    try {
+      const next = appendFictionalCalendarAnchor(book, calendars, calendarId, dateKind, dateText, dateRevision);
+      setBook(next); setDateText(""); setDateError(false);
+      setDateFeedback("Ancre créée : " + next.draft.snapshot.anchors[next.draft.snapshot.anchors.length - 1].id +
+        ". Choisissez-la explicitement dans le formulaire événement.");
+    } catch (error) {
+      setDateError(true); setDateFeedback(String(error));
+    }
+  }
   const [selectedId, setSelectedId] = useState("");
   const [title, setTitle] = useState("");
   const [note, setNote] = useState("");
@@ -294,6 +341,41 @@ export default function M32FictionalEventManualWorkshop({ initial }: {
     <p role="note">Démonstration exclusivement en mémoire du navigateur.
       Aucun enregistrement, aucun accès SQLite, aucune commande Tauri,
       aucune chronologie ou révélation du lecteur calculée automatiquement.</p>
+    <button type="button" aria-expanded={calendarOpen} onClick={() => setCalendarOpen(!calendarOpen)}>
+      {calendarOpen ? "Masquer la préparation temporelle" : "Préparer un calendrier et une ancre fictifs"}
+    </button>
+    {calendarOpen && <fieldset>
+      <legend>Préparation temporelle manuelle sans IA</legend>
+      <label>Nom du calendrier à créer
+        <input value={calendarName} maxLength={160} onChange={e => setCalendarName(e.target.value)} />
+      </label>
+      <button type="button" onClick={createCalendar}>Créer le calendrier fictif</button>
+      <label>Calendrier créé explicitement choisi
+        <select value={calendarId} onChange={e => setCalendarId(e.target.value)}>
+          <option value="">Choisir un calendrier</option>
+          {calendars.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+        </select>
+      </label>
+      <label>Validité temporelle de l'ancre
+        <select value={dateKind} onChange={e => {setDateKind(e.target.value as "exact" | "approximate");setDateText("");}}>
+          <option value="exact">Date exacte</option>
+          <option value="approximate">Date estimée</option>
+        </select>
+      </label>
+      <label>{dateKind === "exact" ? "Date fictive exacte" : "Précision ou intervalle estimé"}
+        <input value={dateText} maxLength={160} onChange={e => setDateText(e.target.value)} />
+      </label>
+      <label>Révision source de la nouvelle ancre
+        <select value={dateRevision} onChange={e => setDateRevision(e.target.value)}>
+          <option value="">Sans source explicite</option>
+          {book.draft.revisions.map(r => <option key={r.revision_id} value={r.revision_id}>
+            {r.revision_label} — {r.revision_id}
+          </option>)}
+        </select>
+      </label>
+      <button type="button" onClick={createDateAnchor}>Créer l'ancre datée en mémoire</button>
+      {dateFeedback && <p role={dateError ? "alert" : "status"}>{dateFeedback}</p>}
+    </fieldset>}
     <form onSubmit={submit} aria-label="Formulaire d'événement fictif">
       <h3>{selectedId ? "Corriger un événement" : "Créer un événement"}</h3>
       <label>Titre de l'événement (obligatoire)
