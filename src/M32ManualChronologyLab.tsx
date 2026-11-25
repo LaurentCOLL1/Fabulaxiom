@@ -30,6 +30,25 @@ export function fictionalSelectionIsHistorical(
   return [left, right].some(id => id !== "" && !available.has(id));
 }
 
+/** Separate catalogue of names, local to the invented laboratory only. */
+export type FictionalCalendarEntry = Readonly<{ id: string; name: string }>;
+export function addFictionalCalendar(catalogue: readonly FictionalCalendarEntry[], raw: string): readonly FictionalCalendarEntry[] {
+  const name = raw.trim().normalize("NFC");
+  if (!name || name.length > 160 || /[\u0000-\u001f\u007f]/.test(name))
+    throw Error("Nom de calendrier fictif invalide.");
+  if (catalogue.length >= 128) throw Error("Catalogue fictif complet.");
+  if (catalogue.some(entry => entry.name.normalize("NFC").toLowerCase() === name.toLowerCase()))
+    throw Error("Calendrier fictif déjà créé.");
+  const id = "fiction-calendar-" + String(catalogue.length + 1).padStart(4, "0");
+  if (catalogue.some(entry => entry.id === id)) throw Error("Identifiant fictif déjà utilisé.");
+  return [...catalogue, { id, name }];
+}
+export function selectFictionalCalendar(catalogue: readonly FictionalCalendarEntry[], id: string): string {
+  const matches = catalogue.filter(entry => entry.id === id);
+  if (matches.length !== 1) throw Error("Calendrier fictif absent ou ambigu.");
+  return matches[0].name;
+}
+
 /** Isolated browser-only fictional UX lab. No App.tsx, Tauri invoke, storage or network. */
 function Lab({ initial, revisions }: {
   initial: M32ChronologyProjection;
@@ -39,6 +58,32 @@ function Lab({ initial, revisions }: {
   const [draft, setDraft] = useState<FictionalDraft>(() => startFictionalDraft(initial, revisions));
   const [kind, setKind] = useState<M32TimeKind>("unknown");
   const [calendar, setCalendar] = useState("");
+  const [calendarCatalogue, setCalendarCatalogue] = useState<readonly FictionalCalendarEntry[]>([]);
+  const [newCalendarName, setNewCalendarName] = useState("");
+  const [calendarFeedback, setCalendarFeedback] = useState("");
+  const [calendarError, setCalendarError] = useState(false);
+  function createCalendar() {
+    try {
+      setCalendarCatalogue(addFictionalCalendar(calendarCatalogue, newCalendarName));
+      setNewCalendarName("");
+      setCalendarError(false);
+      setCalendarFeedback("Calendrier créé en mémoire ; aucune date ni ancre créée.");
+    } catch (err) {
+      setCalendarError(true);
+      setCalendarFeedback(String(err));
+    }
+  }
+  function chooseCalendar(calendarId: string) {
+    try {
+      setCalendar(selectFictionalCalendar(calendarCatalogue, calendarId));
+      setSupersessionPreview(null);
+      setCalendarError(false);
+      setCalendarFeedback("Calendrier choisi explicitement pour la prochaine saisie.");
+    } catch (err) {
+      setCalendarError(true);
+      setCalendarFeedback(String(err));
+    }
+  }
   const [label, setLabel] = useState("");
   const [precision, setPrecision] = useState("");
   const [sceneId, setSceneId] = useState("");
@@ -116,6 +161,24 @@ function Lab({ initial, revisions }: {
     <p role="note">Toutes les modifications restent en mémoire dans ce navigateur de test.
       Aucun univers réel, fichier SQLite, commande Tauri, migration ou canon n'est modifié.</p>
     <p><strong>Univers imaginaire :</strong> {draft.snapshot.universe_id}</p>
+    <fieldset>
+      <legend>Créer un calendrier fictif</legend>
+      <p>Catalogue local de noms, sans conversion de dates ni création automatique d'événement.</p>
+      <label htmlFor={id + "-new-calendar"}>Nom du nouveau calendrier</label>
+      <input id={id + "-new-calendar"} value={newCalendarName} maxLength={160}
+        onChange={e => setNewCalendarName(e.currentTarget.value)} />
+      <button type="button" onClick={createCalendar}>Créer le calendrier en mémoire</button>
+      {calendarCatalogue.length === 0 && <p>Aucun calendrier créé dans ce catalogue.</p>}
+      <ul aria-label="Calendriers fictifs créés">
+        {calendarCatalogue.map(entry => <li key={entry.id}>
+          {entry.name} — {entry.id}{" "}
+          <button type="button" onClick={() => chooseCalendar(entry.id)}>
+            Choisir {entry.name} pour la saisie
+          </button>
+        </li>)}
+      </ul>
+      {calendarFeedback && <p role={calendarError ? "alert" : "status"}>{calendarFeedback}</p>}
+    </fieldset>
     <fieldset>
       <legend>Créer ou remplacer une ancre temporelle</legend>
       <label htmlFor={id + "-kind"}>Type de date</label>
