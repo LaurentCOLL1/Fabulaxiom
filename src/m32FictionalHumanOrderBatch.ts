@@ -1,6 +1,6 @@
 import { compareM32WorldOrder, type M32WorldComparison } from "./M32WorldOrderComparison";
 import {
-  createFictionalPrecedence, revokeFictionalPrecedence, inspectFictionalDraft, type FictionalDraft,
+  createFictionalPrecedence, revokeFictionalPrecedence, inspectFictionalDraft, previewFictionalPrecedence, type FictionalDraft,
 } from "./m32FictionalManualChronology";
 
 /** Only a local, invented transaction. This is NOT SQLite atomicity or writer admission. */
@@ -43,6 +43,13 @@ export function previewFictionalHumanOrderBatch(
       after_anchor_id: action.after_anchor_id,
       reason: action.reason,
     };
+    const check = previewFictionalPrecedence(candidate, row.before_anchor_id, row.after_anchor_id);
+    if (check.verdict !== "allowed") {
+      const witness = check.witness_edge_ids.length
+        ? " ; témoins du lot fictif : " + check.witness_edge_ids.join(", ") : "";
+      throw new Error("Proposition " + (rows.length + 1) + " refusée : " + check.reason +
+        witness + " ; aucune modification appliquée.");
+    }
     candidate = createFictionalPrecedence(candidate,
       row.before_anchor_id, row.after_anchor_id, row.reason);
     rows.push(row);

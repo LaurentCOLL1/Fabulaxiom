@@ -143,4 +143,29 @@ describe("M3.2 P3ac fictional batch of explicit human world-order relations", ()
     expect(p.candidate.snapshot.precedences.map(x => x.before_anchor_id))
       .toEqual(["C", "A"]);
   });
+  it("19 explains the exact cycle and its proposed edge IDs before confirmation", () => {
+    const d = draft(), bytes = JSON.stringify(d);
+    expect(() => previewFictionalHumanOrderBatch(d, [...plan, row("C", "A")]))
+      .toThrow(/Proposition 3 refusée : cycle temporel.*fiction-draft-0001, fiction-draft-0002/);
+    expect(JSON.stringify(d)).toBe(bytes);
+  });
+  it("20 names the existing edge witness on a reverse proposal", () => {
+    const d = createFictionalPrecedence(draft(), "A", "B", "Original");
+    const edge = d.snapshot.precedences[0].id;
+    expect(() => previewFictionalHumanOrderBatch(d, [row("B", "A")]))
+      .toThrow(edge);
+    expect(d.snapshot.precedences).toHaveLength(1);
+  });
+  it("21 identifies the duplicate proposal without returning a partial draft", () => {
+    const d = draft(), bytes = JSON.stringify(d);
+    expect(() => previewFictionalHumanOrderBatch(d, [row("A", "B"), row("A", "B")]))
+      .toThrow(/Proposition 2 refusée.*fiction-draft-0001/);
+    expect(JSON.stringify(d)).toBe(bytes);
+  });
+  it("22 refuses a historical anchor without inventing a witness", () => {
+    const d = draft();
+    expect(() => previewFictionalHumanOrderBatch(d, [row("A", "retired")]))
+      .toThrow(/Proposition 1 refusée : Référence étrangère, absente ou historique/);
+    expect(d.audit).toHaveLength(0);
+  });
 });
