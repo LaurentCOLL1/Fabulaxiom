@@ -1,0 +1,3 @@
+## 25/11/2026 — M32-070 Chromium manuel candidat
+
+Parent 53c9eb46515a36c16b06e0a8b0e83ea6d3ec6423 ; #430 CI #45663727734 SUCCESS HEAD exact d1cb97d28405a7d06c7015a42ed2c346b424b2ac ; postmain #45676367467 NON QUALIFIÉE au contrôle initial. Cas Chromium 112 candidat : création/refus calendrier, sélection sans automatisme, date exacte et révision explicite, refus de source manquante, création/correction et historique, date estimée sans source, isolation d'univers. Aucun PASS du cas avant CI exacte ; M32-070 [ ] et M32-078 [ ], 17/87. Aucun changement runtime, stockage, IPC, writer ou opérateur. IN_PROGRESS_NOT_ACCEPTED ; PRODUCT_FIRST_PARALLEL_SAFETY.

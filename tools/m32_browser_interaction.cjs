@@ -2161,14 +2161,76 @@ async function run() {
       assert.equal(await other.getByRole("list",{name:"Versions historiques fictives"}).count(),0);
       assert.ok(!(await other.innerText()).includes("fiction-world-one-event-0001"));
     });
-    assert.equal(cases.length, 111);
+    await caseRun("112-m32070-manual-calendar-dated-event-correction", async () => {
+      await openEventForm();
+      const region = eventRegion(), form = eventForm();
+      const preparation = region.getByRole("button",{name:"Préparer un calendrier et une ancre fictifs"});
+      await preparation.click();
+      const panel = region.getByRole("group",{name:"Préparation temporelle manuelle sans IA"});
+      const name = panel.getByRole("textbox",{name:"Nom du calendrier à créer"});
+      const add = panel.getByRole("button",{name:"Créer le calendrier fictif"});
+      const calendar = panel.getByRole("combobox",{name:"Calendrier créé explicitement choisi"});
+      const addAnchor = panel.getByRole("button",{name:"Créer l'ancre datée en mémoire"});
+      const anchor = form.getByRole("combobox",{name:"Ancre temporelle explicitement choisie"});
+      const source = form.getByRole("combobox",{name:"Révision historique explicitement choisie"});
+      const originalAnchorCount = await anchor.locator("option").count();
+      await add.click();
+      assert.ok((await panel.getByRole("alert").innerText()).includes("invalide"));
+      await name.fill("Marées inventées"); await add.click();
+      assert.equal(await calendar.inputValue(),"");
+      assert.equal(await anchor.locator("option").count(),originalAnchorCount);
+      await name.fill("MARÉES INVENTÉES"); await add.click();
+      assert.ok((await panel.getByRole("alert").innerText()).includes("déjà créé"));
+      assert.equal(await calendar.locator("option").count(),2);
+      await calendar.selectOption("fiction-calendar-0001");
+      await addAnchor.click();
+      assert.equal(await panel.getByRole("alert").count(),1);
+      assert.equal(await anchor.locator("option").count(),originalAnchorCount);
+      await panel.getByRole("textbox",{name:"Date fictive exacte"}).fill("Cloche XII");
+      await panel.getByRole("combobox",{name:"Révision source de la nouvelle ancre"}).selectOption("invented-rev-A");
+      await addAnchor.click();
+      assert.equal(await anchor.locator("option").count(),originalAnchorCount+1);
+      assert.equal(await anchor.inputValue(),"");
+      assert.equal(await source.isDisabled(),true);
+      await anchor.selectOption("fiction-draft-0001");
+      assert.equal(await source.inputValue(),"");
+      await form.getByRole("textbox",{name:"Titre de l'événement (obligatoire)"}).fill("Rencontre datée inventée");
+      await form.getByRole("button",{name:"Créer en mémoire"}).click();
+      assert.ok((await region.getByRole("alert").innerText()).includes("révision"));
+      assert.ok((await region.innerText()).includes("Événements courants (0)"));
+      await source.selectOption("invented-rev-A");
+      await form.getByRole("button",{name:"Créer en mémoire"}).click();
+      await amendLive("Rencontre datée corrigée");
+      const history = region.getByRole("region",{name:"Historique détaillé des événements fictifs"});
+      await history.getByRole("combobox",{name:"Événement fictif à examiner"}).selectOption("fiction-world-one-event-0001");
+      const versions = history.getByRole("list",{name:"Versions historiques fictives"});
+      assert.equal(await versions.getByRole("listitem").count(),2);
+      for(const witness of ["Rencontre datée inventée","Rencontre datée corrigée","invented-rev-A","fiction-draft-0001"])
+        assert.ok((await versions.innerText()).includes(witness));
+      await panel.getByRole("combobox",{name:"Validité temporelle de l'ancre"}).selectOption("approximate");
+      await panel.getByRole("textbox",{name:"Précision ou intervalle estimé"}).fill("Vers le solstice");
+      await panel.getByRole("combobox",{name:"Révision source de la nouvelle ancre"}).selectOption("");
+      await addAnchor.click();
+      assert.equal(await anchor.locator("option").count(),originalAnchorCount+2);
+      assert.equal(await anchor.inputValue(),"");
+      await anchor.selectOption("fiction-draft-0002");
+      assert.equal(await source.isDisabled(),true);
+      await createInventedEvent("Événement estimé inventé");
+      assert.ok((await region.innerText()).includes("Événements courants (2)"));
+      await page.getByRole("button",{name:"Charger un autre univers fictif"}).click();
+      const other = eventRegion();
+      assert.ok((await other.innerText()).includes("Événements courants (0)"));
+      assert.equal(await other.getByRole("button",{name:"Préparer un calendrier et une ancre fictifs"}).getAttribute("aria-expanded"),"false");
+    });
+    assert.equal(cases.length, 112);
     // Historical PR #146 source marker: M32_BROWSER_REAL_CHROMIUM_PASS 62/62
     // Previous PR #156 marker retained: M32_BROWSER_REAL_CHROMIUM_PASS 70/70
     // PR #260 retained baseline (historical only): M32_BROWSER_REAL_CHROMIUM_PASS 82/82
     // PR #157 historical marker: M32_BROWSER_REAL_CHROMIUM_PASS 76/76
     // Historical P3a baseline, retained for continuity source-only tests:
     // M32_CI_PRECOMPILED_STRICT_CSP_BROWSER_PASS: 85/85
-    console.log("M32_BROWSER_REAL_CHROMIUM_PASS 111/111");
+    // Historical source marker before M32-070: M32_BROWSER_REAL_CHROMIUM_PASS 111/111
+    console.log("M32_BROWSER_REAL_CHROMIUM_PASS 112/112");
 
     // Actual Chromium enforced-CSP veto, separate from the 36
     // fictional interaction cases. Never make an off-loopback network call.
