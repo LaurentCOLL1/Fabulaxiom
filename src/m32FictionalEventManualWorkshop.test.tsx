@@ -10,7 +10,7 @@ import {
 import M32FictionalEventManualWorkshop, {
   applyFictionalWorkshopAction, eligibleFictionalEventRevisions,
   matchingFictionalEventHistoryIds, pageFictionalEventHistoryIds,
-  orderFictionalEventHistoryIds,
+  orderFictionalEventHistoryIds, appendFictionalCalendarAnchor,
   type FictionalWorkshopAction,
 } from "./M32FictionalEventManualWorkshop";
 
@@ -147,6 +147,8 @@ function inventedFourKindsTwoNovels(
   return startFictionalEventNotebook(startFictionalDraft(snapshot,
     [...base.draft.revisions,revisionTwo]));
 }
+
+import { addFictionalCalendar } from "./M32ManualChronologyLab";
 
 const input: FictionalEventInput = { title: "Rencontre", note: "Fait inventé",
   anchor_id: null, source_revision_id: null };
@@ -1123,4 +1125,47 @@ describe("M3.2 manual fictional event workshop source-only", () => {
     expect(JSON.stringify(book)).toBe(before);
   });
 
+});
+
+describe("M32-070 calendar anchor event manual pathway candidate", () => {
+  it("57 creates calendar then exact sourced anchor then explicit event and correction", () => {
+    const book = invented(), bytes = JSON.stringify(book);
+    const catalogue = addFictionalCalendar([], "Marées");
+    const dated = appendFictionalCalendarAnchor(book,catalogue,catalogue[0].id,"exact","Jour XII","fiction-alpha-rev-1");
+    const a = dated.draft.snapshot.anchors[dated.draft.snapshot.anchors.length-1];
+    expect(a).toMatchObject({calendar_name:"Marées",fictional_label:"Jour XII",source_revision_id:"fiction-alpha-rev-1"});
+    expect(dated.events).toHaveLength(0);
+    const created = applyFictionalWorkshopAction(dated,{kind:"create",input:{...input,anchor_id:a.id,source_revision_id:a.source_revision_id}});
+    const revised = applyFictionalWorkshopAction(created,{kind:"amend",eventId:created.events[0].event_id,reason:"Correction humaine",input:{...input,title:"Rencontre corrigée",anchor_id:a.id,source_revision_id:a.source_revision_id}});
+    expect(revised.events.map(e=>[e.version,e.status,e.anchor_id,e.source_revision_id])).toEqual([[1,"superseded",a.id,a.source_revision_id],[2,"current",a.id,a.source_revision_id]]);
+    expect(JSON.stringify(book)).toBe(bytes);
+    expect(revised.real_g3_authorized).toBe(false);
+  });
+  it("58 preserves estimation and optional absence of source without deriving a date", () => {
+    const book = invented(), catalogue = addFictionalCalendar([], "Lunes");
+    const dated = appendFictionalCalendarAnchor(book,catalogue,catalogue[0].id,"approximate","Vers le solstice","");
+    const a = dated.draft.snapshot.anchors[dated.draft.snapshot.anchors.length-1];
+    expect(a).toMatchObject({calendar_name:"Lunes",time_kind:"approximate",precision_text:"Vers le solstice",fictional_label:null,source_revision_id:null});
+    expect(applyFictionalWorkshopAction(dated,{kind:"create",input:{...input,anchor_id:a.id}}).events).toHaveLength(1);
+  });
+  it("59 rejects missing calendar, blank estimation and foreign revision without mutation", () => {
+    const book=invented(), bytes=JSON.stringify(book), catalogue=addFictionalCalendar([],"Lunes");
+    expect(()=>appendFictionalCalendarAnchor(book,catalogue,"foreign","exact","Jour","")).toThrow();
+    expect(()=>appendFictionalCalendarAnchor(book,catalogue,catalogue[0].id,"approximate"," ","")).toThrow();
+    expect(()=>appendFictionalCalendarAnchor(book,catalogue,catalogue[0].id,"exact","Jour","fiction-beta-rev-1")).toThrow();
+    expect(JSON.stringify(book)).toBe(bytes);
+  });
+  it("60 requires explicit event source even after creation of a sourced anchor", () => {
+    const catalogue=addFictionalCalendar([],"Lunes");
+    const dated=appendFictionalCalendarAnchor(invented(),catalogue,catalogue[0].id,"exact","Jour","fiction-alpha-rev-1");
+    const a=dated.draft.snapshot.anchors[dated.draft.snapshot.anchors.length-1];
+    expect(()=>applyFictionalWorkshopAction(dated,{kind:"create",input:{...input,anchor_id:a.id}})).toThrow(/révision/);
+    expect(dated.events).toHaveLength(0);
+  });
+  it("61 presents a distinct opt-in preparation before the event form", () => {
+    const html=renderToStaticMarkup(createElement(M32FictionalEventManualWorkshop,{initial:invented()}));
+    expect(html).toContain("Préparer un calendrier et une ancre fictifs");
+    expect(html).toContain('aria-expanded="false"');
+    expect(html.indexOf("Préparer un calendrier et une ancre fictifs")).toBeLessThan(html.indexOf("Créer un événement"));
+  });
 });
