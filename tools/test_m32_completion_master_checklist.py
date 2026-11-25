@@ -24,8 +24,9 @@ class M32MasterChecklistContract(unittest.TestCase):
         closed = sum(x.group(1) == "x" for x in self.tasks)
         opened = sum(x.group(1) == " " for x in self.tasks)
         self.assertEqual(closed + opened, 104)
-        self.assertRegex(self.content, rf"104 tâches identifiées : {closed} clôturées")
-        self.assertIn(f"{opened} encore ouvertes", self.content)
+        current = self.content.split("\n\n", 1)[0]
+        self.assertRegex(current, rf"104 tâches identifiées : {closed} clôturées")
+        self.assertIn(f"{opened} encore ouvertes", current)
 
     def test_03_checked_tasks_have_dated_scoped_qualification(self):
         for i, m in enumerate(self.tasks):

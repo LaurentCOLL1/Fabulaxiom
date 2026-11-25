@@ -235,8 +235,8 @@ class TraceabilityAndScope(unittest.TestCase):
                     continue
                 pr, run, sha, job, suite, count = groups[row["id"]]
                 obs = row["synthetic_suite_observation"]
-                self.assertEqual(row["status"], "CLOSED_SCOPED" if row["id"]=="M32-070" else "OPEN_NOT_ACCEPTED")
-                if row["id"]!="M32-070": self.assertEqual(row["evidence"], "NONE_ACCEPTED")
+                self.assertEqual(row["status"], "OPEN_NOT_ACCEPTED")
+                self.assertEqual(row["evidence"], "NONE_ACCEPTED")
                 self.assertIsNone(row["proof_audit"]["individual_test_step_result"])
                 self.assertIsNone(row["workflow_step_audit"]["job_id"])
                 self.assertEqual(obs["observation_date"], "2026-11-13")
@@ -381,8 +381,13 @@ class TraceabilityAndScope(unittest.TestCase):
             (pr, run, sha, job, post, postsha, case, vitest_name, scope) = expected[row["id"]]
             obs = row["latest_named_chromium_observation"]
             with self.subTest(requirement=row["id"]):
-                self.assertEqual(row["status"], "OPEN_NOT_ACCEPTED")
-                self.assertEqual(row["evidence"], "NONE_ACCEPTED")
+                # This historical observation stays partial; the later case 112 is separate evidence.
+                if row["id"] == "M32-070":
+                    self.assertEqual(row["status"], "CLOSED_SCOPED")
+                    self.assertIn("CHROMIUM_CASE_112_PASS", row["evidence"])
+                else:
+                    self.assertEqual(row["status"], "OPEN_NOT_ACCEPTED")
+                    self.assertEqual(row["evidence"], "NONE_ACCEPTED")
                 self.assertEqual(obs["date"], "2026-11-19")
                 self.assertEqual(obs["evidence_kind"], "EXACT_HEAD_NAMED_CHROMIUM_CASE_LOG_SYNTHETIC_ONLY")
                 self.assertEqual((obs["pull_request_number"], obs["source_workflow_run_id"],
@@ -431,6 +436,26 @@ class TraceabilityAndScope(unittest.TestCase):
                                       if row["id"] == requirement)["status"], "CLOSED_SCOPED" if requirement=="M32-070" else "OPEN_NOT_ACCEPTED")
         self.assertEqual(MATRIX["gate"], "IN_PROGRESS_NOT_ACCEPTED")
 
+
+    def test_m32_070_named_case_112_scope_and_negative_boundary(self):
+        row = next(x for x in MATRIX["rows"] if x["id"] == "M32-070")
+        scope = row["m32_070_scope"]
+        self.assertEqual(row["status"], "CLOSED_SCOPED")
+        self.assertEqual(scope["scope"], "UNMOUNTED_FICTIONAL_MANUAL_CALENDAR_EVENT_DESIGN_ONLY")
+        self.assertEqual(scope["named_case"], "112-m32070-manual-calendar-dated-event-correction")
+        self.assertEqual(scope["observed_case_pass_occurrences"], 2)
+        self.assertEqual(scope["observed_browser_suite"], "112/112")
+        self.assertEqual((scope["observed_manual_chronology_suite_tests"],
+                          scope["observed_event_workshop_suite_tests"]), (69, 61))
+        self.assertEqual(row["proof_audit"]["workflow_run_id"], 45676775940)
+        self.assertEqual(row["workflow_step_audit"]["job_id"], 139426293333)
+        for flag in ("writer_admitted", "runtime_app_mounted", "operator_acceptance"):
+            self.assertIs(scope[flag], False)
+        self.assertIs(scope["new_head_ci_and_postmain_required"], True)
+        self.assertIs(scope["requalify_on_live_integration"], True)
+        self.assertIs(row["latest_named_chromium_observation"]["requirement_acceptance"], False)
+        self.assertIn(scope["named_case"], (ROOT/"tools/m32_browser_interaction.cjs").read_text(encoding="utf-8"))
+        self.assertIn("- [ ] **M32-078**", CHECK)
 
     def test_m32_004_scoped_handoff_closure_retains_negative_scope(self):
         row = next(x for x in MATRIX["rows"] if x["id"] == "M32-004")
