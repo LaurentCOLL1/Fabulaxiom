@@ -1,15 +1,15 @@
 # Reprise Fabulaxiom (https://github.com/LaurentCOLL1/Fabulaxiom)
 
 ## Dernier checkpoint
-main=41801b5b792b8204e8aabfc555ec63a8b62b6242 ; #427 MERGED CI #45429799963 PASS HEAD exact a5523b4b1d094396775c0d5b4739e1d107644996 ; postmain #45469647606 PASS SHA exact main ; date=2026-11-25 ; #428 CI #45483223730 PASS produit ; M32-072 [x] CANDIDAT 17/87 branche, 16/88 main ; M3.2 IN_PROGRESS_NOT_ACCEPTED (~45%).
+main=bf356885f142cd33359e6b0706342a6df26a560d ; #428 MERGED CI #45507639007 PASS HEAD exact 0fbb96404a20db06b5bab6d4a89c8ff119f3d75a ; postmain #45648108765 PASS SHA exact main ; date=2026-11-25 ; M32-072 [x] scoped qualifiée ; M32-070 [ ] candidat ; 17/87 ; M3.2 IN_PROGRESS_NOT_ACCEPTED (~45%).
 
 ## Interdictions actives — STOP
 Writer/R1–R9 NOT_PROVEN ; P4 STOP ; G2B NOT_ACCEPTED ; G2C NOT_AUTHORIZED ; G3 STOP_UNAVAILABLE ; PENDING_EXTERNAL_ATTESTATION(21/3/2), prospective NOT_STARTED ; R2 STOP, R3 partiel, D3c conception, D3b-4/5, D3b-5 STOP ; main/WAL/SHM, live SQLite WAL-index et ABA NOT_PROVEN ; glib #160 OPEN_NOT_REMEDIATED.
 STOP v6/v7, M:\Fabulaxiom, Greenfield, backups, IPC writer, 007, Hello, recovery.
 
 ## Prochaines opérations
-1. #427 postmain PASS ; #428 CI #45483223730 PASS HEAD exact a6b4535f18a7b3c5d2b2b9f1757f129b5e86c044 ; #38 #7143902858.
-2. M32-072 [x] candidat non monté, nouvelle CI HEAD requise ; M32-070 [ ] création calendrier ; #35/#215 DRAFT NON ADMISES.
+1. #428 postmain PASS ; #38 #7167254481 append-only.
+2. M32-070 [ ] calendrier fictif créé/choisi séparément, 5 Vitest candidats ; M32-078 [ ] ; #35/#215 DRAFT NON ADMISES.
 3. PR DRAFT nouvelle CI Windows HEAD exacte, parent postmain PASS, diff/reviews/threads, Protect main ACTIVE strict bypass=[], guarded squash expected_head_sha après PASS, postmain indépendante et #38 ; PRODUCT_FIRST_PARALLEL_SAFETY.
 
 ## Documents d'autorité
