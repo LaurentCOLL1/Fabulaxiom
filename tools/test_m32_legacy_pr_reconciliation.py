@@ -59,14 +59,14 @@ class LegacyPRReconciliationTests(unittest.TestCase):
         self.assertNotIn("- [x] **M32-007**", self.checklist)
         tasks = re.findall(r"^- \[([ x])\] \*\*(M32-\d{3})\*\*", self.checklist, re.M)
         self.assertEqual(len(tasks), 104)
-        # Seventeen scoped closures include M32-069/072/074/076 unmounted source boundaries ONLY,
+        # Eighteen scoped closures include M32-069/070/072/074/076 unmounted source boundaries ONLY,
         # plus M32-003, M32-005 and M32-006 documentary scopes.
         # M32-007 and all runtime gates remain open.
         # Neither historical #35/#215 sources, Linux distribution nor R1-R9 writer are admitted.
         actual_closed = {task for state, task in tasks if state == "x"}
         self.assertEqual(actual_closed, {
             "M32-001", "M32-002", "M32-003", "M32-004", "M32-005", "M32-006", "M32-037", "M32-049",
-            "M32-051", "M32-069", "M32-072", "M32-074", "M32-076", "M32-094", "M32-095", "M32-096", "M32-104",
+            "M32-051", "M32-069", "M32-070", "M32-072", "M32-074", "M32-076", "M32-094", "M32-095", "M32-096", "M32-104",
         })
         self.assertIn("- [ ] **M32-078**", self.checklist)
         self.assertIn("AUCUNE case nouvelle clôturée", self.doc)

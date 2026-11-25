@@ -6,8 +6,8 @@
   "scope": "DOCUMENTARY_OPEN_GAP_LEDGER_ONLY_NO_OPERATOR_ACCEPTANCE",
   "gate": "IN_PROGRESS_NOT_ACCEPTED",
   "total": 104,
-  "closed_scoped": 17,
-  "open_not_accepted": 87,
+  "closed_scoped": 18,
+  "open_not_accepted": 86,
   "track_open_counts": {
     "ACCEPTANCE_AND_SCOPE": 7,
     "DATA_AND_CHRONOLOGY": 16,
@@ -15,12 +15,12 @@
     "G2_TO_G6": 10,
     "GH_PROTOCOL": 2,
     "HISTORICAL_ATTESTATION": 6,
-    "REACT_FICTIONAL": 7,
+    "REACT_FICTIONAL": 6,
     "WRITER_R1_R9": 23
   },
   "gate_open_counts": {
     "REQUIRES_INDEPENDENT_R1_G2_PROOFS": 39,
-    "RUNTIME_NOT_ADMITTED": 38,
+    "RUNTIME_NOT_ADMITTED": 37,
     "SCOPED_EVIDENCE_REQUIRED": 10
   },
   "closed_ids": [
@@ -34,6 +34,7 @@
     "M32-049",
     "M32-051",
     "M32-069",
+    "M32-070",
     "M32-072",
     "M32-074",
     "M32-076",
@@ -745,18 +746,6 @@
       "gate": "RUNTIME_NOT_ADMITTED",
       "verification_target": "src/m32ChronologyPreview.test.tsx",
       "next_proof": "Aucun accès direct DB/path/SQL/admission token, vérification par session/génération, pas de commande de writer avant R9.",
-      "accepted_evidence": "NONE_ACCEPTED",
-      "accepted_workflow_head_sha": null,
-      "accepted_workflow_run_id": null,
-      "accepted_job_id": null,
-      "accepted_operator_runtime": false
-    },
-    {
-      "id": "M32-070",
-      "track": "REACT_FICTIONAL",
-      "gate": "RUNTIME_NOT_ADMITTED",
-      "verification_target": "src/m32ChronologyPreview.test.tsx",
-      "next_proof": "Création, saisie précision, validité, estimation, source, révision ; messages explicites sans obligation Ollama.",
       "accepted_evidence": "NONE_ACCEPTED",
       "accepted_workflow_head_sha": null,
       "accepted_workflow_run_id": null,
