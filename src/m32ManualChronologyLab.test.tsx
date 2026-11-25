@@ -3,7 +3,7 @@ import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import type { M32ChronologyProjection } from "./M32ChronologyPreview";
 import M32ManualChronologyLab from "./M32ManualChronologyLab";
-import { fictionalSelectionIsHistorical } from "./M32ManualChronologyLab";
+import { fictionalSelectionIsHistorical, addFictionalCalendar, selectFictionalCalendar } from "./M32ManualChronologyLab";
 import { compareM32WorldOrder } from "./M32WorldOrderComparison";
 import { previewFictionalRevocationImpact } from "./m32FictionalRevocationImpact";
 import {
@@ -577,5 +577,46 @@ describe("M3.2 manually authored fictional-only chronology laboratory", () => {
         after_anchor_id: "missing", status: "current" as const, reason: "wrong" },
     ] };
     expect(() => startFictionalDraft(old)).toThrow();
+  });
+});
+
+describe("M32-070 separate fictional calendar creation candidate", () => {
+  it("65 creates a name without mutating the anchor draft", () => {
+    const draft = startFictionalDraft(invented), before = JSON.stringify(draft);
+    const catalogue = addFictionalCalendar([], "  Marées  ");
+    expect(catalogue).toEqual([{id:"fiction-calendar-0001",name:"Marées"}]);
+    expect(JSON.stringify(draft)).toBe(before);
+    const selected = selectFictionalCalendar(catalogue, catalogue[0].id);
+    const dated = createFictionalAnchor(draft, {...exact, calendar:selected});
+    expect(dated.snapshot.anchors[dated.snapshot.anchors.length-1]?.calendar_name).toBe("Marées");
+    expect(JSON.stringify(draft)).toBe(before);
+  });
+  it("66 refuses blank, oversized and control-character names", () => {
+    for (const name of [" ", "x".repeat(161), "A\u0000B"])
+      expect(() => addFictionalCalendar([], name)).toThrow(/invalide/);
+  });
+  it("67 refuses case and Unicode duplicate names without mutation", () => {
+    const catalogue = addFictionalCalendar([], "Étoile");
+    const bytes = JSON.stringify(catalogue);
+    for (const name of ["étoile", "E\u0301toile"])
+      expect(() => addFictionalCalendar(catalogue, name)).toThrow(/déjà créé/);
+    expect(JSON.stringify(catalogue)).toBe(bytes);
+  });
+  it("68 refuses absent or ambiguous selection and preserves earlier names", () => {
+    const first = addFictionalCalendar([], "Lunes");
+    const both = addFictionalCalendar(first, "Marées");
+    expect(selectFictionalCalendar(both, "fiction-calendar-0001")).toBe("Lunes");
+    expect(selectFictionalCalendar(both, "fiction-calendar-0002")).toBe("Marées");
+    expect(() => selectFictionalCalendar(both, "foreign")).toThrow(/absent/);
+    expect(() => selectFictionalCalendar([...both, both[0]], both[0].id)).toThrow(/ambigu/);
+    expect(first).toHaveLength(1);
+  });
+  it("69 renders the calendar creation control before anchor entry", () => {
+    const html = renderToStaticMarkup(createElement(M32ManualChronologyLab,
+      {initial:invented,revisions:history}));
+    expect(html).toContain("Créer le calendrier en mémoire");
+    expect(html).toContain("Aucun calendrier créé dans ce catalogue.");
+    expect(html.indexOf("Créer un calendrier fictif")).toBeLessThan(
+      html.indexOf("Créer ou remplacer une ancre temporelle"));
   });
 });

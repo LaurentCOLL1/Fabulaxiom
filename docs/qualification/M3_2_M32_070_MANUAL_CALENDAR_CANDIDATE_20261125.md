@@ -1,0 +1,3 @@
+## 25/11/2026 M32-070 — candidat fictif non monté
+
+Parent main bf356885f142cd33359e6b0706342a6df26a560d ; #428 CI #45507639007 PASS exact HEAD 0fbb96404a20db06b5bab6d4a89c8ff119f3d75a ; postmain #45648108765 PASS exact main. M32-072 scoped qualifiée ; 17/87. Catalogue de noms distinct de la création d'ancres, choix explicite, cinq Vitest candidats 65–69. La saisie libre des anciennes fixtures est conservée. Aucun passage événement complet ni clic navigateur attesté. M32-070 [ ] ; M32-078 [ ] ; NO_RUNTIME_ADMISSION ; NO_AUTO_ACCEPTANCE ; IN_PROGRESS_NOT_ACCEPTED ; PRODUCT_FIRST_PARALLEL_SAFETY. Aucun writer, stockage ou opérateur. Continuité à synchroniser avant PR.
