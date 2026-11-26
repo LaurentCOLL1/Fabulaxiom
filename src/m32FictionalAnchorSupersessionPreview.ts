@@ -51,6 +51,16 @@ function sourceIdentity(d:FictionalDraft,a:M32AnchorProjection):FictionalRevisio
   return {...rev};
 }
 
+/** Only a recorded predecessor of the selected, still-current replacement can be copied. */
+export function fictionalAnchorPredecessor(draft: FictionalDraft, replacementId: string) {
+  const links = draft.audit.filter(entry => entry.action === "anchor_superseded" &&
+    entry.replacement_anchor_id === replacementId);
+  if (links.length !== 1 || !draft.snapshot.anchors.some(anchor =>
+    anchor.id === replacementId && anchor.status === "current")) return null;
+  return draft.snapshot.anchors.find(anchor =>
+    anchor.id === links[0].id && anchor.status === "superseded") ?? null;
+}
+
 export function previewFictionalAnchorSupersession(
   baseline: FictionalDraft, oldId: string, input: FictionalTimeInput, humanReason?: string,
 ): FictionalAnchorSupersessionReview {

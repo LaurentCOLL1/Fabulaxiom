@@ -2253,7 +2253,92 @@ async function run() {
       assert.ok((await other.innerText()).includes("Événements courants (0)"));
       assert.equal(await other.getByRole("button",{name:"Préparer un calendrier et une ancre fictifs"}).getAttribute("aria-expanded"),"false");
     });
-    assert.equal(cases.length, 112);
+    await caseRun("113-m32073-compensate-confirmed-anchor-with-history", async () => {
+      await page.getByRole("button", { name: "Ouvrir l'atelier manuel fictif" }).click();
+      const lab = page.getByRole("region", { name: "Atelier manuel M3.2 exclusivement fictif" });
+      const kind = lab.getByRole("combobox", { name: "Type de date" });
+      const calendar = lab.getByRole("textbox", { name: "Calendrier fictif", exact: true });
+      const label = lab.getByRole("textbox", { name: "Date exprimée dans ce calendrier" });
+      const scene = lab.getByRole("combobox", { name: "Scène inventée à citer (facultatif)" });
+      const revision = lab.getByRole("combobox", { name: "Révision exacte et immuable de cette scène" });
+      const target = lab.getByRole("combobox", { name: "Correction : remplacer une ancre active" });
+      const reason = lab.getByRole("textbox", { name: "Motif humain du remplacement fictif" });
+      const preview = lab.getByRole("button", { name: "Prévisualiser la correction sans l'appliquer" });
+      const review = lab.getByRole("status", { name: "Avant après correction d'ancre fictive" });
+      const confirm = review.getByRole("button", { name: "Confirmer la correction fictive en RAM" });
+      const journal = lab.getByRole("region", { name: "Journal des modifications fictives" }).getByRole("listitem");
+      await kind.selectOption("exact");
+      await calendar.fill("Calendrier des veilles");
+      await label.fill("Troisième veille");
+      await scene.selectOption("s1");
+      await revision.selectOption("invented-rev-A");
+      await lab.getByRole("button", { name: "Ajouter l'ancre" }).click();
+      await target.selectOption("fiction-draft-0001");
+      await kind.selectOption("unknown");
+      await lab.getByRole("checkbox", { name: "Détacher explicitement la source historique de la version proposée" }).check();
+      await reason.fill("Source mise en doute");
+      await preview.click();
+      await confirm.click();
+      const auditBefore = await journal.allTextContents();
+      assert.equal(auditBefore.length, 2);
+      await target.selectOption("fiction-draft-0002");
+      await lab.getByRole("button", { name: "Préparer l’annulation du remplacement en reprenant la version fiction-draft-0001" }).click();
+      assert.equal(await kind.inputValue(), "exact");
+      assert.equal(await calendar.inputValue(), "Calendrier des veilles");
+      assert.equal(await label.inputValue(), "Troisième veille");
+      assert.equal(await revision.inputValue(), "invented-rev-A");
+      assert.equal(await reason.inputValue(), "");
+      assert.equal(await review.count(), 0);
+      await reason.fill("Source ancienne vérifiée");
+      await preview.click();
+      assert.deepEqual(await journal.allTextContents(), auditBefore);
+      await confirm.click();
+      const history = await journal.allTextContents();
+      assert.deepEqual(history.slice(0, 2), auditBefore);
+      assert.equal(history.length, 3);
+      assert.ok(history[2].includes("Source ancienne vérifiée"));
+      const world = lab.getByRole("region", { name: "Chronologie du monde" });
+      const row = id => world.getByRole("listitem").filter({ has: page.getByText(id, { exact: true }) });
+      assert.ok((await row("fiction-draft-0001").innerText()).includes("invented-rev-A"));
+      assert.ok(!(await row("fiction-draft-0002").innerText()).includes("invented-rev-A"));
+      const restored = await row("fiction-draft-0003").innerText();
+      for (const expected of ["Troisième veille", "Calendrier des veilles", "invented-rev-A"])
+        assert.ok(restored.includes(expected));
+      const options = await target.getByRole("option").allTextContents();
+      assert.ok(!options.includes("fiction-draft-0001") && !options.includes("fiction-draft-0002"));
+      assert.ok(options.includes("fiction-draft-0003"));
+    });
+    await caseRun("114-m32073-compensate-revocation-with-new-human-precedence", async () => {
+      await page.getByRole("button", { name: "Ouvrir l'atelier manuel fictif" }).click();
+      const lab = page.getByRole("region", { name: "Atelier manuel M3.2 exclusivement fictif" });
+      const world = lab.getByRole("region", { name: "Chronologie du monde" });
+      const history = lab.getByRole("region", { name: "Journal des modifications fictives" }).getByRole("listitem");
+      const revoke = lab.getByRole("combobox", { name: "Relation à révoquer (historique conservé)" });
+      await revoke.selectOption("human-bc");
+      await lab.getByRole("textbox", { name: "Justification de révocation fictive" }).fill("Ordre remis en question");
+      assert.ok((await lab.getByRole("status", { name: "Prévisualisation de révocation fictive" }).innerText()).includes("indéterminé"));
+      assert.equal(await history.count(), 0);
+      await lab.getByRole("button", { name: "Révoquer explicitement", exact: true }).click();
+      const retired = world.getByRole("listitem").filter({ hasText: "La porte s'ouvre" });
+      const retiredText = await retired.innerText();
+      assert.ok(retiredText.includes("Révoquée (historique)"));
+      await lab.getByRole("combobox", { name: "Événement antérieur" }).selectOption("B");
+      await lab.getByRole("combobox", { name: "Événement postérieur" }).selectOption("C");
+      assert.ok((await lab.getByRole("status", { name: "Vérification avant/après fictive" }).innerText()).includes("Relation explicite possible"));
+      await lab.getByRole("textbox", { name: "Justification humaine fictive" }).fill("Ordre confirmé par une seconde lecture");
+      assert.equal(await history.count(), 1);
+      await lab.getByRole("button", { name: "Ajouter avant/après", exact: true }).click();
+      const current = world.getByRole("listitem").filter({ hasText: "Ordre confirmé par une seconde lecture" });
+      assert.ok((await current.innerText()).includes("En vigueur"));
+      assert.equal(await retired.innerText(), retiredText);
+      const entries = await history.allTextContents();
+      assert.equal(entries.length, 2);
+      assert.ok(entries[0].includes("human-bc") && entries[0].includes("Ordre remis en question"));
+      assert.ok(entries[1].includes("fiction-draft-0001"));
+      assert.equal(await revoke.locator('option[value="human-bc"]').count(), 0);
+      assert.equal(await revoke.locator('option[value="fiction-draft-0001"]').count(), 1);
+    });
+    assert.equal(cases.length, 114);
     // Historical PR #146 source marker: M32_BROWSER_REAL_CHROMIUM_PASS 62/62
     // Previous PR #156 marker retained: M32_BROWSER_REAL_CHROMIUM_PASS 70/70
     // PR #260 retained baseline (historical only): M32_BROWSER_REAL_CHROMIUM_PASS 82/82
@@ -2261,7 +2346,7 @@ async function run() {
     // Historical P3a baseline, retained for continuity source-only tests:
     // M32_CI_PRECOMPILED_STRICT_CSP_BROWSER_PASS: 85/85
     // Historical source marker before M32-070: M32_BROWSER_REAL_CHROMIUM_PASS 111/111
-    console.log("M32_BROWSER_REAL_CHROMIUM_PASS 112/112");
+    console.log("M32_BROWSER_REAL_CHROMIUM_PASS 114/114");
 
     // Actual Chromium enforced-CSP veto, separate from the 36
     // fictional interaction cases. Never make an off-loopback network call.

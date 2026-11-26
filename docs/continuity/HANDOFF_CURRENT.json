@@ -1,4 +1,36 @@
 {
+  "m32_20261126_m32073_compensation_after_pr432": {
+    "date": "2026-11-26",
+    "parent_main": "fb36a2f5e7857d09e3e461cb8d3a2b84c3cfe57e",
+    "parent_pr": 432,
+    "source_ci_run": 45857121460,
+    "source_ci_head": "9c8b436d7768b0890e7e93a6465035e7749f9cf4",
+    "source_ci_status": "COMPLETED_SUCCESS_EXACT_HEAD",
+    "parent_postmain_run": 45859162191,
+    "parent_postmain_status": "PENDING_UNQUALIFIED",
+    "attested_postmain_sha": null,
+    "parent_windows_job": 140038295559,
+    "parent_postmain_job": null,
+    "issue38_previous_comment": 7197708103,
+    "candidate": "M32-073 compensatory anchor supersession and restoration of revoked precedence on invented RAM data",
+    "candidate_status": "SOURCE_ONLY_CANDIDATE_UNQUALIFIED",
+    "current_phase": "SOURCE_ONLY_CANDIDATE_UNQUALIFIED",
+    "candidate_ci_status": "NOT_RUN_UNQUALIFIED",
+    "candidate_browser_cases": [
+      113,
+      114
+    ],
+    "local_vitest_passed": 681,
+    "checklist_total": 104,
+    "closed": 18,
+    "open": 86,
+    "gate": "IN_PROGRESS_NOT_ACCEPTED",
+    "strategy": "PRODUCT_FIRST_PARALLEL_SAFETY",
+    "writer_admitted": false,
+    "operator_accepted": false,
+    "old_pr35_admitted": false,
+    "old_pr215_admitted": false
+  },
   "m32_20261126_m32073_motive_after_pr431": {
     "date": "2026-11-26",
     "parent_main": "9fffd70cb07acbe466fb49afa64986aa22d961dd",
