@@ -2147,6 +2147,14 @@ async function run() {
       assert.equal(await picker.locator("option").count(),2);
       await picker.selectOption("fiction-world-one-event-0001");
       assert.ok((await list.innerText()).includes("Personnages de la révision source fictive : fiction-character-A"));
+      for(const row of await list.getByRole("listitem").all()){
+        const historical=await row.innerText();
+        for(const marker of ["Univers historique fictif : fiction-world-one","Roman source historique : novel-1",
+          "Scène source historique : s1","Libellé de révision source : Ancienne rédaction A",
+          "Type temporel historique fictif : exact","Calendrier historique fictif : Calendrier des marées",
+          "Date fictive historique : Troisième cloche","Estimation historique fictive : aucune"])
+          assert.ok(historical.includes(marker), "Missing exact history provenance: "+marker);
+      }
       await detail.getByRole("button",{name:"Réinitialiser les filtres historiques fictifs"}).click();
       assert.equal(await characterFilter.inputValue(),"");
       assert.equal(await list.count(),0);

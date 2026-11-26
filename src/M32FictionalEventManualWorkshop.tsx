@@ -43,6 +43,35 @@ export function eligibleFictionalEventRevisions(
     revision.universe_id === universe && revision.revision_id === anchor.source_revision_id);
 }
 
+/** Resolve only the IDs carried by each verified historical event version.
+ * The catalogue is invented RAM data, not a manuscript HEAD or a source authority.
+ */
+export function inspectFictionalEventSourceHistory(book: FictionalEventNotebook, eventId: string) {
+  const history = auditedFictionalEventHistory(book, eventId);
+  const anchors = new Map(book.draft.snapshot.anchors.map(a => [a.id, a]));
+  const revisions = new Map(book.draft.revisions.map(r => [r.revision_id, r]));
+  return history.map(entry => {
+    const event = entry.event;
+    const anchor = event.anchor_id === null ? undefined : anchors.get(event.anchor_id);
+    const revision = event.source_revision_id === null ? undefined : revisions.get(event.source_revision_id);
+    return {
+      ...entry,
+      provenance: {
+        universe_id: event.universe_id,
+        novel_id: revision?.novel_id ?? null,
+        scene_id: revision?.scene_id ?? null,
+        revision_label: revision?.revision_label ?? null,
+        character_ids: [...(revision?.fictional_character_ids ?? [])],
+        time_kind: anchor?.time_kind ?? null,
+        anchor_status: anchor?.status ?? null,
+        calendar_name: anchor?.calendar_name ?? null,
+        fictional_label: anchor?.fictional_label ?? null,
+        precision_text: anchor?.precision_text ?? null,
+      },
+    };
+  });
+}
+
 /** Only list event IDs, never historical titles/reasons, until explicit inspection.
  * Last status includes withdrawn tombstones and cannot restore a past event.
  */
@@ -268,7 +297,7 @@ export default function M32FictionalEventManualWorkshop({ initial }: {
   const orderedHistoryIds = orderFictionalEventHistoryIds(historyEventIds, historyIdOrder);
   const historyView = pageFictionalEventHistoryIds(orderedHistoryIds, historyPage, historyPageSize);
   const inspectedHistory = historyEventId
-    ? auditedFictionalEventHistory(book, historyEventId) : [];
+    ? inspectFictionalEventSourceHistory(book, historyEventId) : [];
   const editableEvent = currentEvents.find(e => e.event_id === selectedId);
   const olderVersions = editableEvent && editableEvent.version > 1
     ? auditedFictionalEventHistory(book, selectedId).filter(
@@ -661,9 +690,16 @@ export default function M32FictionalEventManualWorkshop({ initial }: {
           <p>Note historique : {entry.event.note || "aucune"}</p>
           <p>Ancre historique : {entry.event.anchor_id ?? "aucune"}</p>
           <p>Révision source historique : {entry.event.source_revision_id ?? "aucune"}</p>
-          <p>Personnages de la révision source fictive : {book.draft.revisions
-            .find(r => r.revision_id === entry.event.source_revision_id)
-            ?.fictional_character_ids?.join(", ") || "aucune association explicite"}</p>
+          <p>Univers historique fictif : {entry.provenance.universe_id}</p>
+          <p>Roman source historique : {entry.provenance.novel_id ?? "aucun"}</p>
+          <p>Scène source historique : {entry.provenance.scene_id ?? "aucune"}</p>
+          <p>Libellé de révision source : {entry.provenance.revision_label ?? "aucun"}</p>
+          <p>Personnages de la révision source fictive : {entry.provenance.character_ids.join(", ") || "aucune association explicite"}</p>
+          <p>Type temporel historique fictif : {entry.provenance.time_kind ?? "sans ancre"}</p>
+          <p>Statut de l'ancre historique : {entry.provenance.anchor_status ?? "sans ancre"}</p>
+          <p>Calendrier historique fictif : {entry.provenance.calendar_name ?? "aucun"}</p>
+          <p>Date fictive historique : {entry.provenance.fictional_label ?? "aucune date exacte"}</p>
+          <p>Estimation historique fictive : {entry.provenance.precision_text ?? "aucune"}</p>
           <p>Action fictive : {entry.audit.action}</p>
           <p>Motif humain historique : {entry.audit.explanation}</p>
           <p>Champs modifiés : {entry.changed_fields.join(", ") || "aucun (création)"}</p>

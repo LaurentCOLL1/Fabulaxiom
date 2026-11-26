@@ -9,7 +9,7 @@ import {
 } from "./m32FictionalEventNotebook";
 import M32FictionalEventManualWorkshop, {
   applyFictionalWorkshopAction, eligibleFictionalEventRevisions,
-  matchingFictionalEventHistoryIds, pageFictionalEventHistoryIds,
+  matchingFictionalEventHistoryIds, pageFictionalEventHistoryIds, inspectFictionalEventSourceHistory,
   orderFictionalEventHistoryIds, appendFictionalCalendarAnchor,
   type FictionalWorkshopAction,
 } from "./M32FictionalEventManualWorkshop";
@@ -1224,5 +1224,52 @@ describe("M32-071 explicit historical source character candidate", () => {
     expect(html).not.toContain("NOTE_PERSONNAGE_NON_INSPECTEE");
     expect(html).not.toContain("Versions historiques fictives");
     expect(JSON.stringify(book)).toBe(bytes);
+  });
+});
+
+describe("M32-071 exact historical provenance candidate", () => {
+  it("65 resolves each version independently across novels, exact dates and withdrawal", () => {
+    const base = inventedTwoNovels();
+    const snapshot: M32ChronologyProjection = {...base.draft.snapshot,
+      anchors: base.draft.snapshot.anchors.map(a => a.id === "A" || a.id === "C" ?
+        {...a,time_kind:"exact",calendar_name:a.id==="A"?"Lunes":"Marées",
+          fictional_label:a.id==="A"?"Jour I":"Jour II",precision_text:null} : a)};
+    const initial = startFictionalEventNotebook(startFictionalDraft(snapshot,base.draft.revisions));
+    const first = applyFictionalWorkshopAction(initial,{kind:"create",
+      input:{...input,anchor_id:"A",source_revision_id:"fiction-alpha-rev-1"}});
+    const id=first.events[0].event_id;
+    const corrected=applyFictionalWorkshopAction(first,{kind:"amend",eventId:id,reason:"Correction inventée",
+      input:{...input,anchor_id:"C",source_revision_id:"fiction-alpha-rev-2"}});
+    const book=applyFictionalWorkshopAction(corrected,{kind:"withdraw",eventId:id,reason:"Retrait inventé"});
+    const before=JSON.stringify(book), history=inspectFictionalEventSourceHistory(book,id);
+    expect(history.map(e=>[e.event.version,e.event.status,e.provenance.universe_id,e.provenance.novel_id,
+      e.provenance.scene_id,e.event.source_revision_id,e.provenance.calendar_name,e.provenance.fictional_label]))
+      .toEqual([[1,"superseded","fiction-alpha","novel-1","scene-1","fiction-alpha-rev-1","Lunes","Jour I"],
+        [2,"superseded","fiction-alpha","novel-2","scene-2","fiction-alpha-rev-2","Marées","Jour II"],
+        [3,"withdrawn","fiction-alpha","novel-2","scene-2","fiction-alpha-rev-2","Marées","Jour II"]]);
+    expect(()=>inspectFictionalEventSourceHistory(book,"fiction-beta-event-0001")).toThrow();
+    expect(JSON.stringify(book)).toBe(before);
+  });
+  it("66 distinguishes exact, approximate, relative, unknown and absent anchors", () => {
+    let book=inventedFourTimeKinds();
+    for(const [anchor,source] of [["A","fiction-alpha-rev-1"],["B",null],["C",null],["D",null],[null,null]] as const) {
+      book=applyFictionalWorkshopAction(book,{kind:"create",input:{...input,anchor_id:anchor,source_revision_id:source}});
+    }
+    const views=book.events.map(e=>inspectFictionalEventSourceHistory(book,e.event_id)[0].provenance);
+    expect(views.map(v=>[v.time_kind,v.calendar_name,v.fictional_label,v.precision_text])).toEqual([
+      ["exact","cycle-invente","Jour inventé 1",null],
+      ["approximate","cycle-invente",null,"Autour du solstice fictif"],
+      ["relative",null,null,null],["unknown",null,null,null],[null,null,null,null]]);
+    expect(views[1].novel_id).toBeNull();
+    expect(views[4].scene_id).toBeNull();
+    expect(views[4].anchor_status).toBeNull();
+  });
+  it("67 does not render detailed provenance without explicit history selection", () => {
+    const book=applyFictionalWorkshopAction(inventedTwoExactDates(),{kind:"create",
+      input:{...input,anchor_id:"A",source_revision_id:"fiction-alpha-rev-1"}});
+    const html=renderToStaticMarkup(createElement(M32FictionalEventManualWorkshop,{initial:book}));
+    for(const label of ["Univers historique fictif :","Roman source historique :","Scène source historique :",
+      "Date fictive historique :","Estimation historique fictive :"])
+      expect(html).not.toContain(label);
   });
 });
