@@ -712,15 +712,34 @@ async function run() {
         .innerText()).includes("Ordre indéterminé"));
       await lab.getByRole("combobox", { name: "Correction : remplacer une ancre active" })
         .selectOption("D");
-      await lab.getByRole("button", { name: "Prévisualiser la correction sans l'appliquer" }).click();
-      // The review section explicitly has role="status", overriding <section>'s implicit region.
+      const reason = lab.getByRole("textbox", { name: "Motif humain du remplacement fictif" });
+      const preview = lab.getByRole("button", { name: "Prévisualiser la correction sans l'appliquer" });
+      const journal = lab.getByRole("region", { name: "Journal des modifications fictives" });
       const reviewed=lab.getByRole("status",{name:"Avant après correction d'ancre fictive"});
+      const auditBefore = await journal.innerText();
+      await preview.click();
+      assert.ok((await lab.getByRole("alert").innerText()).includes("Motif humain"));
+      assert.equal(await reviewed.count(), 0);
+      await reason.fill("Hypothèse abandonnée");
+      await preview.click();
+      await reviewed.getByRole("button", { name: "Abandonner la prévisualisation de correction" }).click();
+      assert.equal(await reviewed.count(), 0);
+      assert.equal(await reason.inputValue(), "");
+      assert.equal(await journal.innerText(), auditBefore);
+      const confirmedReason = "Relecture de la date fictive de D";
+      await reason.fill(confirmedReason);
+      await preview.click();
+      assert.ok((await reviewed.innerText()).includes(confirmedReason));
       assert.ok((await reviewed.innerText()).includes("Version historique conservée"));
       assert.ok((await reviewed.innerText()).includes("Libellé historique"));
       assert.ok((await reviewed.innerText()).includes("précision historique"));
       assert.ok((await reviewed.innerText()).includes("Libellé proposé"));
       assert.ok((await reviewed.innerText()).includes("précision proposée"));
       await reviewed.getByRole("button",{name:"Confirmer la correction fictive en RAM"}).click();
+      const audit = journal.getByRole("listitem");
+      assert.equal(await audit.count(), 1);
+      assert.ok((await audit.innerText()).includes(confirmedReason));
+      assert.ok(!(await audit.innerText()).includes("Hypothèse abandonnée"));
       assert.ok((await lab.innerText()).includes("Sélection historique"));
       assert.equal(await lab.getByRole("region", { name: "Comparaison M3.2 isolée" }).count(), 0);
       await lab.getByRole("combobox", { name: "Deuxième ancre à consulter" })
