@@ -2134,6 +2134,22 @@ async function run() {
       assert.equal(await picker.inputValue(),"");
       assert.equal(await list.count(),0,"History must stay hidden until explicitly selected");
       assert.ok((await detail.innerText()).includes("1 identifiants fictifs trouvés."));
+      // M32-071: exact invented character metadata, never text inference.
+      const characterFilter=detail.getByRole("combobox",{name:"Filtrer par personnage de révision source fictive"});
+      assert.deepEqual(await characterFilter.locator("option").evaluateAll(options=>options.map(o=>o.value)),
+        ["","fiction-character-A","fiction-character-B","fiction-character-C"]);
+      await characterFilter.selectOption("fiction-character-B");
+      assert.equal(await picker.locator("option").count(),1);
+      assert.equal(await list.count(),0);
+      await characterFilter.selectOption("fiction-character-A");
+      assert.equal(await picker.inputValue(),"");
+      assert.equal(await list.count(),0);
+      assert.equal(await picker.locator("option").count(),2);
+      await picker.selectOption("fiction-world-one-event-0001");
+      assert.ok((await list.innerText()).includes("Personnages de la révision source fictive : fiction-character-A"));
+      await detail.getByRole("button",{name:"Réinitialiser les filtres historiques fictifs"}).click();
+      assert.equal(await characterFilter.inputValue(),"");
+      assert.equal(await list.count(),0);
       // P3bp: exact historical version filtering in real Chromium, ID-only.
       const exactVersion=detail.getByRole("combobox",{
         name:"Filtrer par numéro exact de version historique fictive",

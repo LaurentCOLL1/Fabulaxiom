@@ -1169,3 +1169,60 @@ describe("M32-070 calendar anchor event manual pathway candidate", () => {
     expect(html.indexOf("Préparer un calendrier et une ancre fictifs")).toBeLessThan(html.indexOf("Créer un événement"));
   });
 });
+
+describe("M32-071 explicit historical source character candidate", () => {
+  function withCharacters() {
+    const base = inventedTwoNovels();
+    const revisions = base.draft.revisions.map((r, i) => ({
+      ...r, fictional_character_ids: [i === 0 ? "fiction-character-A" : "fiction-character-B"],
+    }));
+    return startFictionalEventNotebook(startFictionalDraft(base.draft.snapshot, revisions));
+  }
+  it("62 matches character and all other filters on one historical version only", () => {
+    const first = applyFictionalWorkshopAction(withCharacters(), {kind:"create",
+      input:{...input,anchor_id:"A",source_revision_id:"fiction-alpha-rev-1"}});
+    const id = first.events[0].event_id;
+    const amended = applyFictionalWorkshopAction(first, {kind:"amend",eventId:id,
+      reason:"Correction inventée",input:{...input,anchor_id:"C",source_revision_id:"fiction-alpha-rev-2"}});
+    const withdrawn = applyFictionalWorkshopAction(amended, {kind:"withdraw",eventId:id,
+      reason:"Retrait inventé"});
+    const book = create(withdrawn), bytes = JSON.stringify(book);
+    const find = (character: string, novel = "", source = "", version = 0) =>
+      matchingFictionalEventHistoryIds(book,"","all",source,novel,"","","","","","","","",version,"",character);
+    expect(find("fiction-character-A","novel-1","fiction-alpha-rev-1",1)).toEqual([id]);
+    expect(find("fiction-character-B","novel-2","fiction-alpha-rev-2",2)).toEqual([id]);
+    expect(find("fiction-character-A","novel-2")).toEqual([]);
+    expect(find("fiction-character-B","","fiction-alpha-rev-1")).toEqual([]);
+    expect(find("fiction-character-A","","",2)).toEqual([]);
+    expect(find("fiction-character-missing")).toEqual([]);
+    expect(find("")).toHaveLength(2);
+    expect(()=>find("not-fictional")).toThrow("Identifiant de personnage fictif invalide");
+    expect(JSON.stringify(book)).toBe(bytes);
+  });
+  it("63 rejects invalid, duplicate, or overlong catalogues and clones explicit IDs", () => {
+    const base = invented(), ids = ["fiction-character-A"];
+    const draft = startFictionalDraft(base.draft.snapshot, [{...base.draft.revisions[0],fictional_character_ids:ids}]);
+    ids.push("fiction-character-B");
+    expect(draft.revisions[0].fictional_character_ids).toEqual(["fiction-character-A"]);
+    for (const bad of [["invalid"],["fiction-character-A","fiction-character-A"],
+      Array.from({length:33},(_,i)=>"fiction-character-"+i), ["fiction-character-"+"x".repeat(81)]]) {
+      expect(()=>startFictionalDraft(base.draft.snapshot,[{...base.draft.revisions[0],fictional_character_ids:bad}])).toThrow(/personnages/);
+    }
+    const foreign = invented("fiction-beta");
+    expect(()=>startFictionalDraft(foreign.draft.snapshot,draft.revisions)).toThrow(/étrangère/);
+  });
+  it("64 renders only explicit source IDs and not historical text before selection", () => {
+    const first = applyFictionalWorkshopAction(withCharacters(),{kind:"create",
+      input:{...input,note:"NOTE_PERSONNAGE_NON_INSPECTEE",anchor_id:"A",source_revision_id:"fiction-alpha-rev-1"}});
+    const book = applyFictionalWorkshopAction(first,{kind:"amend",eventId:first.events[0].event_id,
+      reason:"Correction inventée",input:{...input,anchor_id:"A",source_revision_id:"fiction-alpha-rev-1"}});
+    const bytes=JSON.stringify(book);
+    const html=renderToStaticMarkup(createElement(M32FictionalEventManualWorkshop,{initial:book}));
+    expect(html).toContain("Filtrer par personnage de révision source fictive");
+    expect(html).toContain('value="fiction-character-A"');
+    expect(html).toContain('value="fiction-character-B"');
+    expect(html).not.toContain("NOTE_PERSONNAGE_NON_INSPECTEE");
+    expect(html).not.toContain("Versions historiques fictives");
+    expect(JSON.stringify(book)).toBe(bytes);
+  });
+});

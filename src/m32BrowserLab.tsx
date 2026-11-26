@@ -70,11 +70,14 @@ const first: M32ChronologyProjection = {
 /** Literal historical IDs; neither display text nor a mutable scene HEAD. */
 const fictionalRevisions: readonly FictionalRevision[] = [
   { universe_id: "fiction-world-one", novel_id: "novel-1", scene_id: "s1",
-    revision_id: "invented-rev-A", revision_label: "Ancienne rédaction A" },
+    revision_id: "invented-rev-A", revision_label: "Ancienne rédaction A",
+    fictional_character_ids: ["fiction-character-A"] },
   { universe_id: "fiction-world-one", novel_id: "novel-1", scene_id: "s1",
-    revision_id: "invented-rev-B", revision_label: "Autre rédaction B" },
+    revision_id: "invented-rev-B", revision_label: "Autre rédaction B",
+    fictional_character_ids: ["fiction-character-B"] },
   { universe_id: "fiction-world-one", novel_id: "novel-2", scene_id: "s2",
-    revision_id: "invented-rev-C", revision_label: "Deuxième roman - texte historique" },
+    revision_id: "invented-rev-C", revision_label: "Deuxième roman - texte historique",
+    fictional_character_ids: ["fiction-character-C"] },
 ];
 
 const second: M32ChronologyProjection = {

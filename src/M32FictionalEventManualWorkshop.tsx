@@ -7,7 +7,7 @@ import {
   type FictionalEventInput, type FictionalEventNotebook,
 } from "./m32FictionalEventNotebook";
 import M32FictionalEventVersionPairLab from "./M32FictionalEventVersionPairLab";
-import { createFictionalAnchor, type FictionalRevision } from "./m32FictionalManualChronology";
+import { createFictionalAnchor, isFictionalCharacterId, type FictionalRevision } from "./m32FictionalManualChronology";
 import { addFictionalCalendar, selectFictionalCalendar, type FictionalCalendarEntry } from "./M32ManualChronologyLab";
 
 /** Append a human-dated anchor without creating or changing any event. RAM only. */
@@ -61,8 +61,11 @@ export function matchingFictionalEventHistoryIds(
   changedField: "" | "title" | "note" | "anchor_id" | "source_revision_id" = "",
   exactVersion = 0,
   historicalAction: "" | "created" | "amended" | "withdrawn" = "",
+  exactCharacterId = "",
 ): readonly string[] {
   inspectFictionalEventNotebook(notebook);
+  if (exactCharacterId !== "" && !isFictionalCharacterId(exactCharacterId))
+    throw Error("Identifiant de personnage fictif invalide");
   const query = searchId.trim().toLocaleLowerCase();
   // Opaque source IDs use exact matching, including superseded versions.
   const sourceId = exactSourceRevisionId.trim();
@@ -95,7 +98,7 @@ export function matchingFictionalEventHistoryIds(
         id.toLocaleLowerCase().includes(query) &&
         ((!sourceId && !novelId && !sceneId && !anchorId && !dateLabel && !calendarName &&
           !timeKind && !anchorLink && !sourceLink && !changedField && !exactVersion &&
-          !historicalAction) ||
+          !historicalAction && !exactCharacterId) ||
           versions.some((v, index) => {
             // All selectors must match one event version, not a union of history.
             const revision = v.source_revision_id === null ? undefined :
@@ -104,6 +107,7 @@ export function matchingFictionalEventHistoryIds(
               anchorById.get(v.anchor_id);
             return (!sourceId || v.source_revision_id === sourceId) &&
               (!novelId || revision?.novel_id === novelId) &&
+              (!exactCharacterId || revision?.fictional_character_ids?.includes(exactCharacterId)) &&
               (!sceneId || revision?.scene_id === sceneId) &&
               (!anchorId || v.anchor_id === anchorId) &&
               (!dateLabel || (anchor?.time_kind === "exact" &&
@@ -217,6 +221,7 @@ export default function M32FictionalEventManualWorkshop({ initial }: {
   const [historyIdQuery, setHistoryIdQuery] = useState("");
   const [historySourceIdQuery, setHistorySourceIdQuery] = useState("");
   const [historyNovelId, setHistoryNovelId] = useState("");
+  const [historyCharacterId, setHistoryCharacterId] = useState("");
   const [historySceneId, setHistorySceneId] = useState("");
   const [historyAnchorId, setHistoryAnchorId] = useState("");
   const [historyFictionalDateLabel, setHistoryFictionalDateLabel] = useState("");
@@ -244,6 +249,7 @@ export default function M32FictionalEventManualWorkshop({ initial }: {
   // Creation IDs remain available after a withdrawal; a tombstone is history,
   // not permission to restore a past event or change the current manuscript.
   const sourceNovelIds = [...new Set(book.draft.revisions.map(r => r.novel_id))];
+  const sourceCharacterIds = [...new Set(book.draft.revisions.flatMap(r => r.fictional_character_ids ?? []))].sort();
   const sourceSceneIds = [...new Set(book.draft.revisions.map(r => r.scene_id))];
   const historyAnchorIds = book.draft.snapshot.anchors.map(a => a.id);
   const historyVersionNumbers = [...new Set(book.events.map(e => e.version))]
@@ -258,7 +264,7 @@ export default function M32FictionalEventManualWorkshop({ initial }: {
     book, historyIdQuery, historyStatus, historySourceIdQuery, historyNovelId,
     historySceneId, historyAnchorId, historyFictionalDateLabel, historyCalendarName,
     historyTimeKind, historyAnchorLink, historySourceLink, historyChangedField,
-    historyExactVersion, historyAction);
+    historyExactVersion, historyAction, historyCharacterId);
   const orderedHistoryIds = orderFictionalEventHistoryIds(historyEventIds, historyIdOrder);
   const historyView = pageFictionalEventHistoryIds(orderedHistoryIds, historyPage, historyPageSize);
   const inspectedHistory = historyEventId
@@ -298,7 +304,7 @@ export default function M32FictionalEventManualWorkshop({ initial }: {
   }
   function resetHistoryFilters() {
     setHistoryIdQuery(""); setHistorySourceIdQuery("");
-    setHistoryNovelId(""); setHistorySceneId("");
+    setHistoryNovelId(""); setHistorySceneId(""); setHistoryCharacterId("");
     setHistoryAnchorId(""); setHistoryFictionalDateLabel("");
     setHistoryCalendarName(""); setHistoryTimeKind(""); setHistoryAnchorLink("");
     setHistorySourceLink(""); setHistoryChangedField("");
@@ -470,6 +476,16 @@ export default function M32FictionalEventManualWorkshop({ initial }: {
           {sourceNovelIds.map(id => <option key={id} value={id}>{id}</option>)}
         </select>
       </label>
+      <label>Filtrer par personnage de révision source fictive
+        <select value={historyCharacterId} onChange={e => {
+          setHistoryCharacterId(e.currentTarget.value);
+          setHistoryEventId(""); setHistoryPage(0);
+        }}>
+          <option value="">Tous les personnages sources fictifs</option>
+          {sourceCharacterIds.map(id => <option key={id} value={id}>{id}</option>)}
+        </select>
+      </label>
+      <small role="note">Association explicite à la révision source inventée exacte ; aucune inférence depuis le texte.</small>
       <label>Filtrer par scène de révision source fictive
         <select value={historySceneId} onChange={e => {
           setHistorySceneId(e.currentTarget.value);
@@ -645,6 +661,9 @@ export default function M32FictionalEventManualWorkshop({ initial }: {
           <p>Note historique : {entry.event.note || "aucune"}</p>
           <p>Ancre historique : {entry.event.anchor_id ?? "aucune"}</p>
           <p>Révision source historique : {entry.event.source_revision_id ?? "aucune"}</p>
+          <p>Personnages de la révision source fictive : {book.draft.revisions
+            .find(r => r.revision_id === entry.event.source_revision_id)
+            ?.fictional_character_ids?.join(", ") || "aucune association explicite"}</p>
           <p>Action fictive : {entry.audit.action}</p>
           <p>Motif humain historique : {entry.audit.explanation}</p>
           <p>Champs modifiés : {entry.changed_fields.join(", ") || "aucun (création)"}</p>

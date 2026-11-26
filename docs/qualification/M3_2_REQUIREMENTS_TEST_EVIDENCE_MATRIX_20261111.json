@@ -2991,6 +2991,27 @@
         "report": "docs/qualification/M3_2_P3BO_HISTORICAL_CHANGED_FIELD_FILTER_20261121.md",
         "operator_acceptance": false,
         "source_ci_status": "NOT_RUN_CANDIDATE"
+      },
+      "explicit_source_character_candidate_20261126": {
+        "date": "2026-11-26",
+        "parent_main": "5473212f7720b60dee2eb1b16fc6b9aca03388df",
+        "parent_postmain_run": 45879652535,
+        "parent_postmain_conclusion": "completed_success",
+        "source_file": "src/M32FictionalEventManualWorkshop.tsx",
+        "test_file": "src/m32FictionalEventManualWorkshop.test.tsx",
+        "vitest_cases": [
+          62,
+          63,
+          64
+        ],
+        "browser_case": 110,
+        "scope": "UNMOUNTED_FICTIONAL_RAM_EXPLICIT_REVISION_CHARACTER_IDS_ONLY",
+        "same_version_match": true,
+        "text_inference": false,
+        "source_ci_status": "NOT_RUN_CANDIDATE",
+        "writer_admission": false,
+        "operator_acceptance": false,
+        "requirement_acceptance": false
       }
     },
     {
@@ -3123,6 +3144,19 @@
         "operator_acceptance": false,
         "new_head_ci_and_postmain_required": true,
         "requalify_on_live_integration": true
+      },
+      "registry_qualification_20261126": {
+        "source_head_sha": "4f89bb5b4f2d1167cf8fb189e6135285af60775d",
+        "source_run_id": 45867412728,
+        "source_job_id": 140073702864,
+        "postmain_sha": "5473212f7720b60dee2eb1b16fc6b9aca03388df",
+        "postmain_run_id": 45879652535,
+        "postmain_job_id": 140115463090,
+        "source_conclusion": "completed_success",
+        "postmain_conclusion": "completed_success",
+        "writer_admission": false,
+        "operator_acceptance": false,
+        "scope": "CLOSED_SCOPED_UNMOUNTED_FICTIONAL_DESIGN_ONLY"
       }
     },
     {

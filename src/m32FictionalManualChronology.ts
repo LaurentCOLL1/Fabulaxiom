@@ -16,7 +16,17 @@ export type FictionalRevision = Readonly<{
   scene_id: string;
   revision_id: string;
   revision_label: string;
+  /** Explicit invented IDs on this exact revision, never inferred from manuscript text. */
+  fictional_character_ids?: readonly string[];
 }>;
+export function isFictionalCharacterId(value: unknown): value is string {
+  return typeof value === "string" && /^fiction-character-[A-Za-z0-9_-]{1,80}$/.test(value);
+}
+function validateFictionalCharacterIds(ids: readonly string[] | undefined): void {
+  if (ids === undefined) return;
+  if (!Array.isArray(ids) || ids.length > 32 || !ids.every(isFictionalCharacterId) ||
+      new Set(ids).size !== ids.length) veto("personnages de révision fictive invalides");
+}
 export type FictionalAudit = Readonly<{
   action: "anchor_created" | "anchor_superseded" | "precedence_created" | "precedence_revoked";
   id: string; explanation: string;
@@ -90,6 +100,7 @@ export function inspectFictionalDraft(d: FictionalDraft): FictionalDraft {
           n.novel_id === rev.novel_id)) {
       return veto("révision inventée inconnue, dupliquée ou étrangère");
     }
+    validateFictionalCharacterIds(rev.fictional_character_ids);
     available.set(rev.revision_id, rev);
   }
   for (const a of d.snapshot.anchors) {
@@ -111,7 +122,11 @@ export function startFictionalDraft(
     narration: snapshot.narration.map(n => ({ ...n })),
   };
   return inspectFictionalDraft({
-    snapshot: cloned, revisions: revisions.map(r => ({ ...r })), nextId: 1, audit: [],
+    snapshot: cloned, revisions: revisions.map(r => {
+      validateFictionalCharacterIds(r.fictional_character_ids);
+      return r.fictional_character_ids === undefined ? { ...r } :
+        { ...r, fictional_character_ids: Object.freeze([...r.fictional_character_ids]) };
+    }), nextId: 1, audit: [],
     data_origin: "fictional_browser_memory_only", real_g3_authorized: false,
   });
 }
