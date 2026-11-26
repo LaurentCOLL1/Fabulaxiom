@@ -9,3 +9,10 @@ La CI Windows #45857121460 a réussi sur le HEAD `9c8b436d7768b0890e7e93a6465035
 Le candidat ajoute un lien explicite entre une ancre remplacée et sa nouvelle version dans le journal fictif. Pour annuler une correction, l’auteur reprend les valeurs de la version précédente, saisit un nouveau motif et confirme une troisième version. Le scénario 113 vérifie le calendrier, la date, la révision source, les trois lignes et les deux changements de statut. Le scénario 114 vérifie qu’une relation révoquée reste visible après la création motivée d’une nouvelle relation sur la même paire.
 
 Vérification locale Linux du candidat : 681 tests Vitest réussis, TypeScript et scénarios Chromium 45, 113 et 114 réussis. La qualification Windows propre au candidat reste à établir. M32-073 et M32-078 restent ouvertes.
+
+
+### 26/11/2026 — qualification source et postmain de #433
+
+**Acquis 2026-11-26 — CANDIDAT SCOPED :** CI #45859353900 SUCCESS HEAD exact 02ceec4ea52352d0bd47ca3d0d5c0c85682f85ce, job #140046011093 étape 44 ; postmain #45862982772 SUCCESS SHA exact 0d893d24d3dde94c59421646b199c6b16272e933, job #140058520899. Cas 45, 113, 114 observés chacun deux fois sur les deux jobs (Vite et précompilé), 114/114 deux fois, 681 Vitest. Motif non vide, abandon sans mutation, prévisualisation, confirmation, compensation par nouvelle version et nouvelle relation motivée ; historique et révision source conservés. Périmètre conception du laboratoire RAM fictif NON MONTÉ uniquement ; aucune persistance, writer ni opérateur. Nouvelle CI du registre et postmain nécessaires ; requalifier si intégration réelle.
+
+M32-073 [x] candidat de clôture documentaire ; 19/85 sur branche, 18/86 main. M32-078 [ ] ; M3.2 IN_PROGRESS_NOT_ACCEPTED. Tous STOP maintenus.
