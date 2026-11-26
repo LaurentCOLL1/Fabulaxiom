@@ -712,15 +712,34 @@ async function run() {
         .innerText()).includes("Ordre indéterminé"));
       await lab.getByRole("combobox", { name: "Correction : remplacer une ancre active" })
         .selectOption("D");
-      await lab.getByRole("button", { name: "Prévisualiser la correction sans l'appliquer" }).click();
-      // The review section explicitly has role="status", overriding <section>'s implicit region.
+      const reason = lab.getByRole("textbox", { name: "Motif humain du remplacement fictif" });
+      const preview = lab.getByRole("button", { name: "Prévisualiser la correction sans l'appliquer" });
+      const journal = lab.getByRole("region", { name: "Journal des modifications fictives" });
       const reviewed=lab.getByRole("status",{name:"Avant après correction d'ancre fictive"});
+      const auditBefore = await journal.innerText();
+      await preview.click();
+      assert.ok((await lab.getByRole("alert").innerText()).includes("Motif humain"));
+      assert.equal(await reviewed.count(), 0);
+      await reason.fill("Hypothèse abandonnée");
+      await preview.click();
+      await reviewed.getByRole("button", { name: "Abandonner la prévisualisation de correction" }).click();
+      assert.equal(await reviewed.count(), 0);
+      assert.equal(await reason.inputValue(), "");
+      assert.equal(await journal.innerText(), auditBefore);
+      const confirmedReason = "Relecture de la date fictive de D";
+      await reason.fill(confirmedReason);
+      await preview.click();
+      assert.ok((await reviewed.innerText()).includes(confirmedReason));
       assert.ok((await reviewed.innerText()).includes("Version historique conservée"));
       assert.ok((await reviewed.innerText()).includes("Libellé historique"));
       assert.ok((await reviewed.innerText()).includes("précision historique"));
       assert.ok((await reviewed.innerText()).includes("Libellé proposé"));
       assert.ok((await reviewed.innerText()).includes("précision proposée"));
       await reviewed.getByRole("button",{name:"Confirmer la correction fictive en RAM"}).click();
+      const audit = journal.getByRole("listitem");
+      assert.equal(await audit.count(), 1);
+      assert.ok((await audit.innerText()).includes(confirmedReason));
+      assert.ok(!(await audit.innerText()).includes("Hypothèse abandonnée"));
       assert.ok((await lab.innerText()).includes("Sélection historique"));
       assert.equal(await lab.getByRole("region", { name: "Comparaison M3.2 isolée" }).count(), 0);
       await lab.getByRole("combobox", { name: "Deuxième ancre à consulter" })
@@ -1669,6 +1688,7 @@ async function run() {
       const lab=page.getByRole("region",{name:"Atelier manuel M3.2 exclusivement fictif"});
       await lab.getByRole("combobox",{name:"Correction : remplacer une ancre active"})
         .selectOption("D");
+      await lab.getByRole("textbox",{name:"Motif humain du remplacement fictif"}).fill("Motif de correction inventé");
       await lab.getByRole("button",{name:"Prévisualiser la correction sans l'appliquer"}).click();
       assert.equal(await lab.getByRole("status",{name:"Avant après correction d'ancre fictive"}).count(),1);
       await lab.getByRole("combobox",{name:"Type de date"}).selectOption("exact");
@@ -1685,12 +1705,14 @@ async function run() {
       await lab.getByRole("combobox",{name:"Correction : remplacer une ancre active"})
         .selectOption("D");
       assert.equal(await detach.isEnabled(),true);
+      await lab.getByRole("textbox",{name:"Motif humain du remplacement fictif"}).fill("Motif de correction inventé");
       await lab.getByRole("button",{name:"Prévisualiser la correction sans l'appliquer"}).click();
       assert.equal(await lab.getByRole("status",
         {name:"Avant après correction d'ancre fictive"}).count(),1);
       await detach.check();
       assert.equal(await lab.getByRole("status",
         {name:"Avant après correction d'ancre fictive"}).count(),0);
+      await lab.getByRole("textbox",{name:"Motif humain du remplacement fictif"}).fill("Motif de correction inventé");
       await lab.getByRole("button",{name:"Prévisualiser la correction sans l'appliquer"}).click();
       const review=lab.getByRole("status",
         {name:"Avant après correction d'ancre fictive"});
@@ -1714,6 +1736,7 @@ async function run() {
       assert.equal(await detach.isChecked(),false);
       await lab.getByRole("combobox",{name:"Révision exacte et immuable de cette scène"})
         .selectOption("invented-rev-B");
+      await lab.getByRole("textbox",{name:"Motif humain du remplacement fictif"}).fill("Motif de correction inventé");
       await lab.getByRole("button",{name:"Prévisualiser la correction sans l'appliquer"}).click();
       const reviewed=lab.getByRole("status",{name:"Avant après correction d'ancre fictive"});
       assert.ok((await reviewed.innerText()).includes("invented-rev-B"));
@@ -1733,6 +1756,7 @@ async function run() {
       assert.equal(await scene.inputValue(),"");
       assert.equal(await lab.getByRole("combobox",
         {name:"Révision exacte et immuable de cette scène"}).count(),0);
+      await lab.getByRole("textbox",{name:"Motif humain du remplacement fictif"}).fill("Motif de correction inventé");
       await lab.getByRole("button",{name:"Prévisualiser la correction sans l'appliquer"}).click();
       const reviewed=lab.getByRole("status",{name:"Avant après correction d'ancre fictive"});
       assert.ok((await reviewed.innerText()).includes("source envisagée"));
@@ -1746,6 +1770,7 @@ async function run() {
       const lab=page.getByRole("region",{name:"Atelier manuel M3.2 exclusivement fictif"});
       await lab.getByRole("combobox",{name:"Correction : remplacer une ancre active"})
         .selectOption("D");
+      await lab.getByRole("textbox",{name:"Motif humain du remplacement fictif"}).fill("Motif de correction inventé");
       await lab.getByRole("button",{name:"Prévisualiser la correction sans l'appliquer"}).click();
       const reviewed=lab.getByRole("status",{name:"Avant après correction d'ancre fictive"});
       const first=await reviewed.getByText("Décision de provenance :", {exact:false}).innerText();
@@ -1754,6 +1779,7 @@ async function run() {
       await lab.getByRole("combobox",{name:"Révision exacte et immuable de cette scène"})
         .selectOption("invented-rev-C");
       assert.equal(await reviewed.count(),0);
+      await lab.getByRole("textbox",{name:"Motif humain du remplacement fictif"}).fill("Motif de correction inventé");
       await lab.getByRole("button",{name:"Prévisualiser la correction sans l'appliquer"}).click();
       const next=await reviewed.getByText("Décision de provenance :", {exact:false}).innerText();
       assert.ok(next.includes("provenance"));
@@ -1772,6 +1798,7 @@ async function run() {
       await scene.selectOption("s1");
       const revision=lab.getByRole("combobox",{name:"Révision exacte et immuable de cette scène"});
       await revision.selectOption("invented-rev-B");
+      await lab.getByRole("textbox",{name:"Motif humain du remplacement fictif"}).fill("Motif de correction inventé");
       await preview.click();
       assert.ok((await reviewed.innerText()).includes("invented-rev-B"));
       await target.selectOption("C");
@@ -1781,6 +1808,7 @@ async function run() {
       // C has active fictional precedences: its correction correctly remains
       // blocked. Return to D to prove the prior source was not silently reused.
       await target.selectOption("D");
+      await lab.getByRole("textbox",{name:"Motif humain du remplacement fictif"}).fill("Motif de correction inventé");
       await preview.click();
       assert.equal(await reviewed.count(),1);
       assert.ok(!(await reviewed.innerText()).includes("invented-rev-B"));
@@ -1796,6 +1824,7 @@ async function run() {
       await scene.selectOption("s1");
       const revision=lab.getByRole("combobox",{name:"Révision exacte et immuable de cette scène"});
       await revision.selectOption("invented-rev-B");
+      await lab.getByRole("textbox",{name:"Motif humain du remplacement fictif"}).fill("Motif de correction inventé");
       await preview.click();
       const reviewed=lab.getByRole("status",{name:"Avant après correction d'ancre fictive"});
       assert.ok((await reviewed.innerText()).includes("invented-rev-B"));
@@ -1818,6 +1847,7 @@ async function run() {
       const preview=lab.getByRole("button",{name:"Prévisualiser la correction sans l'appliquer"});
       const reviewed=lab.getByRole("status",{name:"Avant après correction d'ancre fictive"});
       await target.selectOption("D");
+      await lab.getByRole("textbox",{name:"Motif humain du remplacement fictif"}).fill("Motif de correction inventé");
       await preview.click();
       assert.equal(await reviewed.count(),1);
       const journal=lab.getByRole("region",{name:"Journal des modifications fictives"});
@@ -1831,6 +1861,7 @@ async function run() {
         {name:"Confirmer la correction fictive en RAM"}).count(),0);
       assert.equal(await target.inputValue(),"D");
       assert.equal(await lab.getByRole("alert").count(),1);
+      await lab.getByRole("textbox",{name:"Motif humain du remplacement fictif"}).fill("Motif de correction inventé");
       await preview.click();
       assert.equal(await reviewed.count(),1);
       assert.equal(await lab.getByRole("alert").count(),0);

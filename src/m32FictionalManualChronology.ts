@@ -150,13 +150,14 @@ export function createFictionalAnchor(d: FictionalDraft, input: FictionalTimeInp
   });
 }
 export function supersedeFictionalAnchor(
-  d: FictionalDraft, oldId: string, input: FictionalTimeInput,
+  d: FictionalDraft, oldId: string, input: FictionalTimeInput, humanReason?: string,
 ): FictionalDraft {
   inspectFictionalDraft(d);
   const old = d.snapshot.anchors.find(a => a.id === oldId && a.status === "current");
   if (!old) return veto("ancre absente ou historique");
   const correction = previewFictionalCorrection(d, oldId);
   if (correction.verdict !== "allowed") return veto(correction.reason);
+  const why = humanReason === undefined ? null : nonblank(humanReason);
   const replacement = makeAnchor(d, input, old);
   return inspectFictionalDraft({
     ...d, nextId: d.nextId + 1,
@@ -165,7 +166,8 @@ export function supersedeFictionalAnchor(
       replacement,
     ] },
     audit: [...d.audit, { action: "anchor_superseded", id: oldId,
-      explanation: "Remplacée par " + replacement.id + " (historique conservé)" }],
+      explanation: "Remplacée par " + replacement.id + " (historique conservé)" +
+        (why === null ? "" : " — Motif humain : " + why) }],
   });
 }
 /** Non-authoritative visual explanation for a proposed edge on fictional active IDs only.
