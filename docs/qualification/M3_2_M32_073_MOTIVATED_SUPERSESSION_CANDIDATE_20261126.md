@@ -16,3 +16,8 @@ Vérification locale Linux du candidat : 681 tests Vitest réussis, TypeScript e
 **Acquis 2026-11-26 — CANDIDAT SCOPED :** CI #45859353900 SUCCESS HEAD exact 02ceec4ea52352d0bd47ca3d0d5c0c85682f85ce, job #140046011093 étape 44 ; postmain #45862982772 SUCCESS SHA exact 0d893d24d3dde94c59421646b199c6b16272e933, job #140058520899. Cas 45, 113, 114 observés chacun deux fois sur les deux jobs (Vite et précompilé), 114/114 deux fois, 681 Vitest. Motif non vide, abandon sans mutation, prévisualisation, confirmation, compensation par nouvelle version et nouvelle relation motivée ; historique et révision source conservés. Périmètre conception du laboratoire RAM fictif NON MONTÉ uniquement ; aucune persistance, writer ni opérateur. Nouvelle CI du registre et postmain nécessaires ; requalifier si intégration réelle.
 
 M32-073 [x] candidat de clôture documentaire ; 19/85 sur branche, 18/86 main. M32-078 [ ] ; M3.2 IN_PROGRESS_NOT_ACCEPTED. Tous STOP maintenus.
+
+
+### 26/11/2026 — première CI du registre #434, échec conservé
+
+CI #45865551864, HEAD exact `827022d3175b7ab83adc9ec4a3ea9a2d918a6320`, job #140067320828 : FAILURE étape 33, `test_04_master_checklist_not_falsely_closed` (liste historique de 18 IDs non synchronisée, M32-073 seule différence). Étapes 28–32 SUCCESS, dont checklist et matrice/registre ; 40/41 tests de réconciliation historique réussis. Correction ciblée : ajout explicite de M32-073 à la liste de 19 clôtures SCOPED, aucun assouplissement des refus M32-007/M32-078, #35/#215, writer et runtime. Nouvelle CI intégrale requise au HEAD corrigé ; aucun PASS hérité de #45865551864. 19/85 branche candidate, 18/86 main.
