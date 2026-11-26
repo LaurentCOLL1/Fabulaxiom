@@ -24,8 +24,9 @@ class M32MasterChecklistContract(unittest.TestCase):
         closed = sum(x.group(1) == "x" for x in self.tasks)
         opened = sum(x.group(1) == " " for x in self.tasks)
         self.assertEqual(closed + opened, 104)
-        self.assertRegex(self.content, rf"104 tâches identifiées : {closed} clôturées")
-        self.assertIn(f"{opened} encore ouvertes", self.content)
+        current = self.content.split("\n\n", 1)[0]
+        self.assertRegex(current, rf"104 tâches identifiées : {closed} clôturées")
+        self.assertIn(f"{opened} encore ouvertes", current)
 
     def test_03_checked_tasks_have_dated_scoped_qualification(self):
         for i, m in enumerate(self.tasks):
@@ -203,7 +204,7 @@ class M32DatedStatusTruth(unittest.TestCase):
         sha,run,closed=guard_dated_status(self.short,self.entry,self.leads,self.checklist)
         self.assertRegex(sha,r"^[0-9a-f]{40}$")
         self.assertGreater(run,0)
-        self.assertEqual(closed,17)
+        self.assertEqual(closed,18)
 
     def test_13_falsified_or_stale_date_refused(self):
         bad=dict(self.entry,date="2026-11-12")
@@ -237,7 +238,7 @@ class M32DatedStatusTruth(unittest.TestCase):
 
     def test_17_false_short_counter_or_source_outcome_refused(self):
         with self.assertRaisesRegex(ValueError,"short count drift"):
-            guard_dated_status(self.short.replace("17/87","12/92",1),
+            guard_dated_status(self.short.replace("18/86","12/92",1),
                                self.entry,self.leads,self.checklist)
         with self.assertRaisesRegex(ValueError,"source CI claim"):
             guard_dated_status(self.short,{**self.entry,
