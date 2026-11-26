@@ -1,15 +1,15 @@
 # Reprise Fabulaxiom (https://github.com/LaurentCOLL1/Fabulaxiom)
 
 ## Dernier checkpoint
-main=fb36a2f5e7857d09e3e461cb8d3a2b84c3cfe57e ; #432 MERGED CI #45857121460 PASS HEAD exact 9c8b436d7768b0890e7e93a6465035e7749f9cf4 ; postmain #45859162191 PENDING SHA exact main ; date=2026-11-26 ; M32-073 [ ] compensation candidate ; 18/86 ; M3.2 IN_PROGRESS_NOT_ACCEPTED (~45%).
+main=0d893d24d3dde94c59421646b199c6b16272e933 ; #433 MERGED CI #45859353900 PASS HEAD exact 02ceec4ea52352d0bd47ca3d0d5c0c85682f85ce ; postmain #45862982772 PASS SHA exact main ; date=2026-11-26 ; M32-073 [x] scoped CANDIDAT registre ; 19/85 branche, 18/86 main ; M3.2 IN_PROGRESS_NOT_ACCEPTED (~45%).
 
 ## Interdictions actives — STOP
 Writer/R1–R9 NOT_PROVEN ; P4 STOP ; G2B NOT_ACCEPTED ; G2C NOT_AUTHORIZED ; G3 STOP_UNAVAILABLE ; PENDING_EXTERNAL_ATTESTATION(21/3/2), prospective NOT_STARTED ; R2 STOP, R3 partiel, D3c conception, D3b-4/5, D3b-5 STOP ; main/WAL/SHM, live SQLite WAL-index et ABA NOT_PROVEN ; glib #160 OPEN_NOT_REMEDIATED.
 STOP v6/v7, M:\Fabulaxiom, Greenfield, backups, IPC writer, 007, Hello, recovery.
 
 ## Prochaines opérations
-1. #432 postmain PENDING. Registre append-only #38 #7197708103.
-2. M32-073 [ ] compensation fictive après confirmation, Chromium 113/114 à qualifier. M32-078 [ ]. #35/#215 DRAFT NON ADMISES.
+1. #433 postmain PASS ; registre append-only #38 #7198241942.
+2. M32-073 [x] CANDIDAT RAM fictive non montée, CI du registre requise ; M32-078 [ ] ; #35/#215 DRAFT NON ADMISES.
 3. PR DRAFT nouvelle CI Windows HEAD exacte, parent postmain PASS, diff/reviews/threads, Protect main ACTIVE strict bypass=[], guarded squash expected_head_sha après PASS, postmain indépendante et #38 ; PRODUCT_FIRST_PARALLEL_SAFETY.
 
 ## Documents d'autorité
