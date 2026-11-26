@@ -3043,6 +3043,29 @@
     },
     {
       "id": "M32-073",
+      "motivated_anchor_observation_20261126": {
+        "record_date": "2026-11-26",
+        "case_name": "45-corrected-anchor-never-remains-active-world-proof",
+        "scope": "Unmounted fictional RAM laboratory on Windows CI",
+        "expectation": "Empty reason refused, abandoned preview leaves the audit unchanged, only the confirmed reason is recorded.",
+        "source_head_sha": "9c8b436d7768b0890e7e93a6465035e7749f9cf4",
+        "source_run_id": 45857121460,
+        "source_job_id": 140038295559,
+        "source_log": "https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/45857121460/job/140038295559",
+        "observed_named_passes": {
+          "vite": 1,
+          "precompiled": 1
+        },
+        "postmain_sha": "fb36a2f5e7857d09e3e461cb8d3a2b84c3cfe57e",
+        "postmain_run_id": 45859162191,
+        "postmain_log": "https://github.com/LaurentCOLL1/Fabulaxiom/actions/runs/45859162191",
+        "postmain_conclusion": null,
+        "prior_failed_run_id": 45755554493,
+        "qualification": "PARTIAL_BROWSER_OBSERVATION",
+        "requirement_acceptance": false,
+        "writer_admission": false,
+        "operator_acceptance": false
+      },
       "criterion": "Concevoir correction/supersession/révocation réversible",
       "status": "OPEN_NOT_ACCEPTED",
       "track": "REACT_FICTIONAL",

@@ -1,7 +1,7 @@
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
-import { previewFictionalAnchorSupersession, confirmFictionalAnchorSupersession,
+import { fictionalAnchorPredecessor, previewFictionalAnchorSupersession, confirmFictionalAnchorSupersession,
  previewMotivatedFictionalAnchorSupersession, confirmMotivatedFictionalAnchorSupersession } from "./m32FictionalAnchorSupersessionPreview";
 import { startFictionalDraft, createFictionalAnchor, createFictionalPrecedence,
   previewFictionalCorrection, revokeFictionalPrecedence } from "./m32FictionalManualChronology";
@@ -303,6 +303,17 @@ describe("P3aj fiction-only dated supersession review and confirmation",()=>{
 });
 
 describe("M32-073 motivated fictional supersession candidate",()=>{
+ it("resolves only the recorded predecessor of a current replacement",()=>{
+  const d = sourced();
+  const first = previewMotivatedFictionalAnchorSupersession(d,"A",input("unknown"),"Correction");
+  const next = first.candidate;
+  expect(fictionalAnchorPredecessor(next,first.new_anchor.id)).toEqual({...first.old_anchor,status:"superseded"});
+  expect(fictionalAnchorPredecessor(next,"A")).toBeNull();
+  expect(fictionalAnchorPredecessor(next,"B")).toBeNull();
+  const legacy = {...next, audit:[{action:"anchor_superseded" as const,id:"A",explanation:next.audit[0].explanation}]};
+  expect(fictionalAnchorPredecessor(legacy,first.new_anchor.id)).toBeNull();
+  expect(fictionalAnchorPredecessor({...next,audit:[...next.audit,...next.audit]},first.new_anchor.id)).toBeNull();
+ });
  it("requires nonblank bounded human reason before strict review",()=>{
   const d=draft(),i=input("unknown"),before=JSON.stringify(d);
   for(const why of [""," ","a".repeat(161)])

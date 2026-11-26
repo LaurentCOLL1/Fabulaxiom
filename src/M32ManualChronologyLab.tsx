@@ -4,7 +4,7 @@ import type { M32ChronologyProjection, M32TimeKind } from "./M32ChronologyPrevie
 import M32ChronologyPreview from "./M32ChronologyPreview";
 import M32WorldOrderComparison from "./M32WorldOrderComparison";
 import { previewFictionalRevocationImpact } from "./m32FictionalRevocationImpact";
-import { previewMotivatedFictionalAnchorSupersession, confirmMotivatedFictionalAnchorSupersession,
+import { fictionalAnchorPredecessor, previewMotivatedFictionalAnchorSupersession, confirmMotivatedFictionalAnchorSupersession,
   type FictionalAnchorSupersessionReview, type FictionalSourceTransition
 } from "./m32FictionalAnchorSupersessionPreview";
 import {
@@ -111,6 +111,7 @@ function Lab({ initial, revisions }: {
   const edges = draft.snapshot.precedences.filter(e => e.status === "current");
   const conflict = previewFictionalPrecedence(draft, before, after);
   const correctionPreview = previewFictionalCorrection(draft, replace);
+  const predecessor = fictionalAnchorPredecessor(draft, replace);
   const revocationImpact = previewFictionalRevocationImpact(draft, revoke);
   const threeOrders = previewFictionalThreeOrders(draft, firstScene, secondScene);
   const sceneWorld = previewFictionalSceneRevisionWorldOrder(
@@ -254,6 +255,20 @@ function Lab({ initial, revisions }: {
         Aucune version historique n'est modifiée.</p>
       <p>Après confirmation fictive réussie, la cible et la source proposées
         sont effacées ; la version historique reste consultable.</p>
+      {predecessor && <button type="button" onClick={() => {
+        const revision = draft.revisions.find(row => row.revision_id === predecessor.source_revision_id);
+        setKind(predecessor.time_kind);
+        setCalendar(predecessor.calendar_name ?? "");
+        setLabel(predecessor.fictional_label ?? "");
+        setPrecision(predecessor.precision_text ?? "");
+        setSceneId(revision?.scene_id ?? "");
+        setRevisionId(revision?.revision_id ?? "");
+        setDetachSource(predecessor.source_revision_id === null);
+        setCorrectionReason("");
+        setSupersessionPreview(null);
+        setError(null);
+        setNotice("Valeurs historiques reprises dans le formulaire. Saisissez un motif puis vérifiez la nouvelle version.");
+      }}>Préparer l’annulation du remplacement en reprenant la version {predecessor.id}</button>}
       <label htmlFor={id + "-detach-source"}>
         <input id={id + "-detach-source"} type="checkbox" checked={detachSource}
           disabled={!replace} onChange={e=>{

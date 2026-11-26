@@ -20,6 +20,7 @@ export type FictionalRevision = Readonly<{
 export type FictionalAudit = Readonly<{
   action: "anchor_created" | "anchor_superseded" | "precedence_created" | "precedence_revoked";
   id: string; explanation: string;
+  replacement_anchor_id?: string;
 }>;
 export type FictionalDraft = Readonly<{
   snapshot: M32ChronologyProjection;
@@ -165,7 +166,7 @@ export function supersedeFictionalAnchor(
       ...d.snapshot.anchors.map(a => a.id === oldId ? { ...a, status: "superseded" as const } : a),
       replacement,
     ] },
-    audit: [...d.audit, { action: "anchor_superseded", id: oldId,
+    audit: [...d.audit, { action: "anchor_superseded", id: oldId, replacement_anchor_id: replacement.id,
       explanation: "Remplacée par " + replacement.id + " (historique conservé)" +
         (why === null ? "" : " — Motif humain : " + why) }],
   });
