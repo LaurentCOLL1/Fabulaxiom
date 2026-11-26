@@ -3012,6 +3012,43 @@
         "writer_admission": false,
         "operator_acceptance": false,
         "requirement_acceptance": false
+      },
+      "explicit_source_character_qualification_20261126": {
+        "source_head_sha": "2470584afeaeb0696568e5d37654b1a4629ddbcd",
+        "source_run_id": 45881808877,
+        "source_job_id": 140122715807,
+        "postmain_sha": "de67be78cc3a2f5d4b65a21af0329777e81ba67d",
+        "postmain_run_id": 45883831854,
+        "postmain_job_id": 140129492544,
+        "source_conclusion": "completed_success",
+        "postmain_conclusion": "completed_success",
+        "scope": "UNMOUNTED_FICTIONAL_CHARACTER_FILTER_ONLY",
+        "vitest_suite": 64,
+        "total_vitest": 684,
+        "browser_case": 110,
+        "browser_occurrences_each_run": 2,
+        "requirement_acceptance": false,
+        "operator_acceptance": false,
+        "writer_admission": false
+      },
+      "exact_history_provenance_candidate_20261126": {
+        "date": "2026-11-26",
+        "parent_main": "de67be78cc3a2f5d4b65a21af0329777e81ba67d",
+        "parent_postmain_run": 45883831854,
+        "parent_postmain_conclusion": "completed_success",
+        "source_file": "src/M32FictionalEventManualWorkshop.tsx",
+        "test_file": "src/m32FictionalEventManualWorkshop.test.tsx",
+        "vitest_cases": [
+          65,
+          66,
+          67
+        ],
+        "browser_case": 110,
+        "scope": "UNMOUNTED_FICTIONAL_RAM_EXACT_VERSION_PROVENANCE_ONLY",
+        "source_ci_status": "NOT_RUN_CANDIDATE",
+        "writer_admission": false,
+        "operator_acceptance": false,
+        "requirement_acceptance": false
       }
     },
     {

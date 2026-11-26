@@ -1,15 +1,15 @@
 # Reprise Fabulaxiom (https://github.com/LaurentCOLL1/Fabulaxiom)
 
 ## Dernier checkpoint
-main=5473212f7720b60dee2eb1b16fc6b9aca03388df ; #434 MERGED CI #45867412728 PASS HEAD exact 4f89bb5b4f2d1167cf8fb189e6135285af60775d ; postmain #45879652535 PASS SHA exact main ; date=2026-11-26 ; M32-073 [x] scoped ; M32-071 [ ] filtre personnage candidat ; 19/85 ; M3.2 IN_PROGRESS_NOT_ACCEPTED (~45%).
+main=de67be78cc3a2f5d4b65a21af0329777e81ba67d ; #435 MERGED CI #45881808877 PASS HEAD exact 2470584afeaeb0696568e5d37654b1a4629ddbcd ; postmain #45883831854 PASS SHA exact main ; date=2026-11-26 ; M32-071 [ ] détail provenance candidat ; 19/85 ; M3.2 IN_PROGRESS_NOT_ACCEPTED (~45%).
 
 ## Interdictions actives — STOP
 Writer/R1–R9 NOT_PROVEN ; P4 STOP ; G2B NOT_ACCEPTED ; G2C NOT_AUTHORIZED ; G3 STOP_UNAVAILABLE ; PENDING_EXTERNAL_ATTESTATION(21/3/2), prospective NOT_STARTED ; R2 STOP, R3 partiel, D3c conception, D3b-4/5, D3b-5 STOP ; main/WAL/SHM, live SQLite WAL-index et ABA NOT_PROVEN ; glib #160 OPEN_NOT_REMEDIATED.
 STOP v6/v7, M:\Fabulaxiom, Greenfield, backups, IPC writer, 007, Hello, recovery.
 
 ## Prochaines opérations
-1. #434 postmain PASS ; registre append-only #38 #7200994145.
-2. M32-071 [ ] association personnage/révision source fictive, 3 Vitest et Chromium 110 candidats ; M32-078 [ ] ; #35/#215 DRAFT NON ADMISES.
+1. #435 postmain PASS ; registre append-only #38 #7201621045.
+2. M32-071 [ ] personnage qualifié, détail provenance/date par version historique, 3 Vitest et Chromium 110 candidats ; M32-078 [ ] ; #35/#215 DRAFT NON ADMISES.
 3. PR DRAFT nouvelle CI Windows HEAD exacte, parent postmain PASS, diff/reviews/threads, Protect main ACTIVE strict bypass=[], guarded squash expected_head_sha après PASS, postmain indépendante et #38 ; PRODUCT_FIRST_PARALLEL_SAFETY.
 
 ## Documents d'autorité
