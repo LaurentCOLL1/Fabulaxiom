@@ -13,6 +13,7 @@ export type FictionalAnchorSupersessionReview = Readonly<{
   old_source: FictionalRevision | null;
   new_source: FictionalRevision | null;
   source_transition: FictionalSourceTransition;
+  human_reason: string | null;
   candidate: FictionalDraft;
   preview_only: true;
   can_write: false;
@@ -51,12 +52,12 @@ function sourceIdentity(d:FictionalDraft,a:M32AnchorProjection):FictionalRevisio
 }
 
 export function previewFictionalAnchorSupersession(
-  baseline: FictionalDraft, oldId: string, input: FictionalTimeInput,
+  baseline: FictionalDraft, oldId: string, input: FictionalTimeInput, humanReason?: string,
 ): FictionalAnchorSupersessionReview {
   inspectFictionalDraft(baseline);
   const old = baseline.snapshot.anchors.find(a => a.id === oldId && a.status === "current");
   if (!old) return stop();
-  const candidate = supersedeFictionalAnchor(baseline,oldId,input);
+  const candidate = supersedeFictionalAnchor(baseline,oldId,input,humanReason);
   const added = candidate.snapshot.anchors.slice(baseline.snapshot.anchors.length);
   const historical = candidate.snapshot.anchors.find(a => a.id === oldId);
   if (added.length !== 1 || !historical || historical.status !== "superseded" ||
@@ -73,6 +74,7 @@ export function previewFictionalAnchorSupersession(
     old_source:oldSource,
     new_source:newSource,
     source_transition:sourceTransition(oldSource,newSource),
+    human_reason:humanReason === undefined ? null : humanReason.trim(),
     candidate,
     preview_only:true,
     can_write:false,
@@ -84,12 +86,29 @@ export function previewFictionalAnchorSupersession(
  * preview / forged fields / absent explicit author confirmation. */
 export function confirmFictionalAnchorSupersession(
   baseline:FictionalDraft,oldId:string,input:FictionalTimeInput,
-  preview:FictionalAnchorSupersessionReview,explicit:boolean,
+  preview:FictionalAnchorSupersessionReview,explicit:boolean,humanReason?:string,
 ):FictionalDraft {
   if (explicit !== true || !preview || preview.preview_only !== true ||
     preview.can_write !== false || preview.total_world_order_inferred !== false)
     return stop();
-  const checked=previewFictionalAnchorSupersession(baseline,oldId,input);
+  const checked=previewFictionalAnchorSupersession(baseline,oldId,input,humanReason);
   if (JSON.stringify(preview)!==JSON.stringify(checked)) return stop();
   return checked.candidate;
+}
+
+/** Strict manual UI path. Legacy fixture calls remain source-only and unchanged. */
+export function previewMotivatedFictionalAnchorSupersession(
+  baseline: FictionalDraft, oldId: string, input: FictionalTimeInput, humanReason: string,
+): FictionalAnchorSupersessionReview {
+  if (typeof humanReason !== "string" || !humanReason.trim() || humanReason.length > 160)
+    throw Error("Motif humain de correction obligatoire (160 caractères maximum).");
+  return previewFictionalAnchorSupersession(baseline,oldId,input,humanReason);
+}
+export function confirmMotivatedFictionalAnchorSupersession(
+  baseline: FictionalDraft, oldId: string, input: FictionalTimeInput,
+  review: FictionalAnchorSupersessionReview, explicit: boolean, humanReason: string,
+): FictionalDraft {
+  const checked = previewMotivatedFictionalAnchorSupersession(baseline,oldId,input,humanReason);
+  if (JSON.stringify(review) !== JSON.stringify(checked)) return stop();
+  return confirmFictionalAnchorSupersession(baseline,oldId,input,review,explicit,humanReason);
 }

@@ -4,7 +4,7 @@ import type { M32ChronologyProjection, M32TimeKind } from "./M32ChronologyPrevie
 import M32ChronologyPreview from "./M32ChronologyPreview";
 import M32WorldOrderComparison from "./M32WorldOrderComparison";
 import { previewFictionalRevocationImpact } from "./m32FictionalRevocationImpact";
-import { previewFictionalAnchorSupersession, confirmFictionalAnchorSupersession,
+import { previewMotivatedFictionalAnchorSupersession, confirmMotivatedFictionalAnchorSupersession,
   type FictionalAnchorSupersessionReview, type FictionalSourceTransition
 } from "./m32FictionalAnchorSupersessionPreview";
 import {
@@ -89,6 +89,7 @@ function Lab({ initial, revisions }: {
   const [sceneId, setSceneId] = useState("");
   const [revisionId, setRevisionId] = useState("");
   const [replace, setReplace] = useState("");
+  const [correctionReason, setCorrectionReason] = useState("");
   const [detachSource, setDetachSource] = useState(false);
   const [supersessionPreview, setSupersessionPreview] = useState<FictionalAnchorSupersessionReview|null>(null);
   const [before, setBefore] = useState("");
@@ -146,7 +147,7 @@ function Lab({ initial, revisions }: {
   }
   function reviewCorrection() {
     try {
-      const candidate = previewFictionalAnchorSupersession(draft,replace,correctionInput);
+      const candidate = previewMotivatedFictionalAnchorSupersession(draft,replace,correctionInput,correctionReason);
       setSupersessionPreview(candidate);
       setNotice("Prévisualisation fictive seulement ; aucune correction appliquée.");
       setError(null);
@@ -237,6 +238,7 @@ function Lab({ initial, revisions }: {
       <select id={id + "-replace"} value={replace}
         onChange={e => {
           setReplace(e.currentTarget.value);
+          setCorrectionReason("");
           // A new correction target must never inherit a different target's
           // proposed immutable scene/revision source.
           setSceneId("");
@@ -292,6 +294,9 @@ function Lab({ initial, revisions }: {
           Révision historique conservée : {correctionPreview.historical_revision_id}
         </p>}
       </section>
+      <label htmlFor={id + "-correction-reason"}>Motif humain du remplacement fictif</label>
+      <input id={id + "-correction-reason"} value={correctionReason} maxLength={160}
+        disabled={!replace} onChange={e => {setCorrectionReason(e.currentTarget.value);setSupersessionPreview(null);}} />
       <button type="button" disabled={!replace} onClick={reviewCorrection}>
         Prévisualiser la correction sans l'appliquer
       </button>
@@ -300,6 +305,11 @@ function Lab({ initial, revisions }: {
       {supersessionPreview && <section role="status"
           aria-label="Avant après correction d'ancre fictive">
         <h3>Correction proposée — données fictives non enregistrées</h3>
+        <p>Motif humain proposé : {supersessionPreview.human_reason}</p>
+        <button type="button" onClick={() => {
+          setSupersessionPreview(null); setCorrectionReason(""); setError(null);
+          setNotice("Prévisualisation abandonnée ; aucune ancre ni aucun historique modifié.");
+        }}>Abandonner la prévisualisation de correction</button>
         <p>Version historique conservée :
           <code>{supersessionPreview.old_anchor.id}</code> —
           {supersessionPreview.old_anchor.time_kind} —
@@ -333,11 +343,12 @@ function Lab({ initial, revisions }: {
         </p>}
         <p>Ni date grégorienne déduite, ni ordre total, ni écriture.</p>
         <button type="button" onClick={() => apply(
-          () => confirmFictionalAnchorSupersession(
-            draft,replace,correctionInput,supersessionPreview,true),
+          () => confirmMotivatedFictionalAnchorSupersession(
+            draft,replace,correctionInput,supersessionPreview,true,correctionReason),
           "Correction fictive confirmée en mémoire ; aucune sauvegarde.",
           () => {
             setReplace("");
+            setCorrectionReason("");
             setSceneId("");
             setRevisionId("");
             setDetachSource(false);

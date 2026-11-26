@@ -1,7 +1,8 @@
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
-import { previewFictionalAnchorSupersession, confirmFictionalAnchorSupersession } from "./m32FictionalAnchorSupersessionPreview";
+import { previewFictionalAnchorSupersession, confirmFictionalAnchorSupersession,
+ previewMotivatedFictionalAnchorSupersession, confirmMotivatedFictionalAnchorSupersession } from "./m32FictionalAnchorSupersessionPreview";
 import { startFictionalDraft, createFictionalAnchor, createFictionalPrecedence,
   previewFictionalCorrection, revokeFictionalPrecedence } from "./m32FictionalManualChronology";
 import type { FictionalTimeInput, FictionalRevision } from "./m32FictionalManualChronology";
@@ -298,5 +299,40 @@ describe("P3aj fiction-only dated supersession review and confirmation",()=>{
    expect(html).toContain("Prévisualiser la correction sans l&#x27;appliquer");
    expect(html).not.toContain("Remplacer sans effacer l&#x27;historique");
    expect(html).not.toContain("Sauvegarde réussie");
+ });
+});
+
+describe("M32-073 motivated fictional supersession candidate",()=>{
+ it("requires nonblank bounded human reason before strict review",()=>{
+  const d=draft(),i=input("unknown"),before=JSON.stringify(d);
+  for(const why of [""," ","a".repeat(161)])
+    expect(()=>previewMotivatedFictionalAnchorSupersession(d,"A",i,why)).toThrow(/Motif humain/);
+  expect(JSON.stringify(d)).toBe(before);
+ });
+ it("binds exact human reason to review and confirmed audit without erasing old anchor",()=>{
+  const d=draft(),i=input("unknown"),before=JSON.stringify(d);
+  const review=previewMotivatedFictionalAnchorSupersession(d,"A",i,"  Nouvelle lecture fictive  ");
+  expect(review.human_reason).toBe("Nouvelle lecture fictive");
+  expect(JSON.stringify(d)).toBe(before);
+  const next=confirmMotivatedFictionalAnchorSupersession(d,"A",i,review,true,"Nouvelle lecture fictive");
+  expect(next.audit[0].explanation).toContain("Motif humain : Nouvelle lecture fictive");
+  expect(next.snapshot.anchors.find(a=>a.id==="A")).toMatchObject({status:"superseded",fictional_label:"Cycle XII"});
+  expect(next.snapshot.anchors).toHaveLength(d.snapshot.anchors.length+1);
+  expect(JSON.stringify(d)).toBe(before);
+ });
+ it("refuses changed reason, forgery, absent confirmation and legacy unmotivated review",()=>{
+  const d=draft(),i=input("unknown"),p=previewMotivatedFictionalAnchorSupersession(d,"A",i,"Motif A");
+  expect(()=>confirmMotivatedFictionalAnchorSupersession(d,"A",i,p,true,"Motif B")).toThrow();
+  expect(()=>confirmMotivatedFictionalAnchorSupersession(d,"A",i,{...p,human_reason:"Motif B"},true,"Motif A")).toThrow();
+  expect(()=>confirmMotivatedFictionalAnchorSupersession(d,"A",i,p,false,"Motif A")).toThrow();
+  expect(()=>confirmMotivatedFictionalAnchorSupersession(d,"A",i,previewFictionalAnchorSupersession(d,"A",i),true,"Motif A")).toThrow();
+  expect(d.audit).toHaveLength(0);
+ });
+ it("abandoning a preview leaves baseline bytes and historical rows unchanged",()=>{
+  const d=sourced(),i=input("relative"),before=JSON.stringify(d);
+  previewMotivatedFictionalAnchorSupersession(d,"A",i,"Motif à abandonner");
+  expect(JSON.stringify(d)).toBe(before);
+  const html=renderToStaticMarkup(createElement(M32ManualChronologyLab,{initial:scene(),revisions:[]}));
+  expect(html).toContain("Motif humain du remplacement fictif");
  });
 });

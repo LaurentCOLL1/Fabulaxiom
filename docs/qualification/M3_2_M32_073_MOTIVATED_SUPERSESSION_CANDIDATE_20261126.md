@@ -1,0 +1,3 @@
+## 26/11/2026 — M32-073 motif humain de supersession candidat
+
+Parent 9fffd70cb07acbe466fb49afa64986aa22d961dd ; #431 CI #45706491192 SUCCESS exact HEAD 9bae11d937221236c3435ff0e1eff44315d1027c ; postmain #45755296134 PENDING au contrôle initial. Motif humain obligatoire pour le formulaire de remplacement, lié à la prévisualisation et au journal RAM ; abandon explicite avant confirmation sans suppression, 4 Vitest candidats, scénarios Chromium existants adaptés (pas encore attestés). Appels historiques de fixtures préservés, aucun writer/runtime admis. M32-073 [ ] : preuve Chromium dédiée et annulation compensatoire après confirmation restent à examiner. 18/86 ; M32-078 [ ] ; IN_PROGRESS_NOT_ACCEPTED ; PRODUCT_FIRST_PARALLEL_SAFETY.
