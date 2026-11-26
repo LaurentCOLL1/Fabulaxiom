@@ -1,0 +1,7 @@
+# M32-071 — filtre explicite par personnage de révision source fictive
+
+**26/11/2026 — SOURCE_ONLY_CANDIDATE_UNQUALIFIED.** Parent protégé 5473212f7720b60dee2eb1b16fc6b9aca03388df, #434 CI #45867412728 SUCCESS HEAD exact 4f89bb5b4f2d1167cf8fb189e6135285af60775d, postmain #45879652535 SUCCESS push exact main, job #140115463090. 681 Vitest et Chromium 114/114 deux fois sur la postmain. M32-073 [x] scoped, 19/85.
+
+Le modèle de révision inventée accepte uniquement des IDs de personnages explicites, optionnels, bornés et sans doublons. Copie indépendante du catalogue ; aucun texte, nom réel ou révision courante ne permet d'inférer un personnage. Le filtre historique par personnage partage le prédicat de version avec source, roman, scène, ancre, date, statut/version/action ; aucun assemblage de preuves de versions différentes. Sélection/page réinitialisées, lecture du détail seulement sur choix explicite. Aucun changement de modèle SQLite, IPC, writer ou App monté.
+
+Candidats Vitest 62–64 : intersection exacte, absence de correspondance, refus des IDs malformés/doublons/catalogues excessifs/étrangers, copie et SSR sans note ancienne ; Chromium 110 étendu : choix explicite, résultat vide, inspection, reset. Aucun résultat de test candidat n'est attesté à la préparation ; nouvelle CI Windows sur HEAD exact puis postmain indépendante. M32-071 [ ] et M32-078 [ ] restent ouvertes. M3.2 IN_PROGRESS_NOT_ACCEPTED ; PRODUCT_FIRST_PARALLEL_SAFETY ; #35/#215 DRAFT NON_ADMITTED ; tous STOP inchangés.
