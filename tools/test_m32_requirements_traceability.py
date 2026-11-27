@@ -389,10 +389,17 @@ class TraceabilityAndScope(unittest.TestCase):
             (pr, run, sha, job, post, postsha, case, vitest_name, scope) = expected[row["id"]]
             obs = row["latest_named_chromium_observation"]
             with self.subTest(requirement=row["id"]):
-                # This historical observation stays partial; the later case 112 is separate evidence.
+                # Historical observations stay partial; later scoped closures need separate evidence.
                 if row["id"] == "M32-070":
                     self.assertEqual(row["status"], "CLOSED_SCOPED")
                     self.assertIn("CHROMIUM_CASE_112_PASS", row["evidence"])
+                elif row["id"] == "M32-071":
+                    self.assertEqual(row["status"], "CLOSED_SCOPED")
+                    self.assertIn("CHROMIUM_CASES_110_111_PASS", row["evidence"])
+                    self.assertIn("UNMOUNTED_FICTIONAL_RAM_ONLY", row["evidence"])
+                    self.assertIn("NEW_HEAD_CI_AND_POSTMAIN_REQUIRED", row["evidence"])
+                    self.assertEqual(row["m32_071_scope"]["scope"],
+                                     "UNMOUNTED_FICTIONAL_RAM_HISTORY_CONSULTATION_DESIGN_ONLY")
                 else:
                     self.assertEqual(row["status"], "OPEN_NOT_ACCEPTED")
                     self.assertEqual(row["evidence"], "NONE_ACCEPTED")
@@ -423,7 +430,10 @@ class TraceabilityAndScope(unittest.TestCase):
                     self.assertIs(obs[flag], False)
                 self.assertIs(obs["individual_case_is_not_entire_requirement"], True)
                 self.assertIsNone(row["proof_audit"]["individual_test_step_result"])
-                if row["id"]!="M32-070": self.assertIsNone(row["workflow_step_audit"]["job_id"])
+                if row["id"] == "M32-071":
+                    self.assertEqual(row["workflow_step_audit"]["job_id"], 140135439282)
+                elif row["id"] != "M32-070":
+                    self.assertIsNone(row["workflow_step_audit"]["job_id"])
         self.assertIn("- [ ] **M32-078**", CHECK)
         self.assertEqual((MATRIX["total"], MATRIX["closed"], MATRIX["open"]),
                          (104, len(SCOPED_CLOSED_IDS), 104-len(SCOPED_CLOSED_IDS)))
@@ -476,8 +486,13 @@ class TraceabilityAndScope(unittest.TestCase):
         self.assertFalse(row["proof_audit"]["operator_runtime_acceptance"])
         self.assertFalse(row["workflow_step_audit"]["Windows_operator_workflow_admission"])
         self.assertEqual(MATRIX["gate"], "IN_PROGRESS_NOT_ACCEPTED")
-        for number in ("009","020","031","039","042","071","078"):
+        for number in ("009","020","031","039","042","078"):
             self.assertIn(f"- [ ] **M32-{number}**", CHECK)
+        history = next(x for x in MATRIX["rows"] if x["id"] == "M32-071")
+        self.assertIn("- [x] **M32-071**", CHECK)
+        self.assertEqual(history["status"], "CLOSED_SCOPED")
+        for flag in ("writer_admitted", "runtime_app_mounted", "operator_acceptance"):
+            self.assertIs(history["m32_071_scope"][flag], False)
 
 
     def test_m32_005_scoped_dated_status_truth_without_operator_admission(self):
