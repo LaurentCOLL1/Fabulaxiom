@@ -13,7 +13,7 @@ TASK = re.compile(r"^- \[([ x])\] \*\*(M32-\d{3})\*\* (.+?)\s*$", re.M)
 
 SCOPED_CLOSED_IDS = frozenset({
     "M32-001", "M32-002", "M32-003", "M32-004", "M32-005", "M32-006", "M32-037", "M32-049", "M32-051",
-    "M32-069", "M32-070", "M32-071", "M32-072", "M32-073", "M32-074", "M32-076", "M32-094", "M32-095", "M32-096", "M32-104",
+    "M32-069", "M32-070", "M32-071", "M32-072", "M32-073", "M32-074", "M32-075", "M32-076", "M32-094", "M32-095", "M32-096", "M32-104",
 })
 
 class TraceabilityAndScope(unittest.TestCase):
@@ -104,6 +104,7 @@ class TraceabilityAndScope(unittest.TestCase):
             "M32-071": (45885610978, "2a75c5fdaa9d2be70780f3d03cf7def614960dce", "2026-11-26", "pull_request"),
             "M32-073": (45859353900, "02ceec4ea52352d0bd47ca3d0d5c0c85682f85ce", "2026-11-26", "pull_request"),
             "M32-074": (45244745620, "4723f0c5e3ee8c867355f12feaadedb3102a318b", "2026-11-23", "pull_request"),
+            "M32-075": (46123075726, "1c54ffeb8b917409462696de4ff95116b599fe63", "2026-11-28", "pull_request"),
             "M32-076": (45266445764, "718499765d2fe7dda5a0d78759f213f4efb5576b", "2026-11-23", "pull_request"),
             "M32-094": (43594666828, "5206bba7f3196c454a22bf85d0d0dca879ee20e3", "2026-11-14", "pull_request"),
             "M32-104": (43117900804, "c4a04c59934064832dd7c700dcf39e25e729f88a", "2026-11-11", "pull_request"),
@@ -114,6 +115,7 @@ class TraceabilityAndScope(unittest.TestCase):
             proof = row["proof_audit"]
             with self.subTest(row=row["id"]):
                 self.assertEqual(proof["record_review_date"],
+                                 "2026-11-28" if row["id"] == "M32-075" else
                                  "2026-11-27" if row["id"] == "M32-071" else
                                  "2026-11-26" if row["id"] == "M32-073" else
                                  "2026-11-25" if row["id"] in ("M32-070", "M32-072") else
@@ -169,6 +171,7 @@ class TraceabilityAndScope(unittest.TestCase):
             "M32-071": (140135439282, 44, "M3.2 real Chromium synthetic-only UI interaction (ephemeral pinned Playwright)"),
             "M32-073": (140046011093, 44, "M3.2 real Chromium synthetic-only UI interaction (ephemeral pinned Playwright)"),
             "M32-074": (137938442997, 32, "M3.2 requirements test evidence 104-task matrix and deferred phase scope"),
+            "M32-075": (140911580319, 44, "M3.2 real Chromium synthetic-only UI interaction (ephemeral pinned Playwright)"),
             "M32-076": (138014495590, 37, "M3.2 isolated synthetic chronology React preview tests"),
             "M32-094": (132446512015, 58,
                 "M3.2 Linux Rust selected GLib/GTK advisory exposure audit (no Linux build)"),
@@ -180,6 +183,7 @@ class TraceabilityAndScope(unittest.TestCase):
             stage = row["workflow_step_audit"]
             with self.subTest(row=row["id"]):
                 self.assertEqual(stage["step_review_date"],
+                                 "2026-11-28" if row["id"] == "M32-075" else
                                  "2026-11-27" if row["id"] == "M32-071" else
                                  "2026-11-26" if row["id"] == "M32-073" else
                                  "2026-11-25" if row["id"] in ("M32-070", "M32-072") else
@@ -243,10 +247,15 @@ class TraceabilityAndScope(unittest.TestCase):
                     continue
                 pr, run, sha, job, suite, count = groups[row["id"]]
                 obs = row["synthetic_suite_observation"]
-                self.assertEqual(row["status"], "OPEN_NOT_ACCEPTED")
-                self.assertEqual(row["evidence"], "NONE_ACCEPTED")
+                # The historical observation remains partial even after a later scoped closure.
+                if row["id"] == "M32-075":
+                    self.assertEqual(row["status"], "CLOSED_SCOPED")
+                    self.assertEqual(row["workflow_step_audit"]["job_id"], 140911580319)
+                else:
+                    self.assertEqual(row["status"], "OPEN_NOT_ACCEPTED")
+                    self.assertEqual(row["evidence"], "NONE_ACCEPTED")
+                    self.assertIsNone(row["workflow_step_audit"]["job_id"])
                 self.assertIsNone(row["proof_audit"]["individual_test_step_result"])
-                self.assertIsNone(row["workflow_step_audit"]["job_id"])
                 self.assertEqual(obs["observation_date"], "2026-11-13")
                 self.assertEqual(obs["kind"], "WINDOWS_GITHUB_ACTIONS_VITEST_SUITE_LOG_ONLY")
                 self.assertEqual(obs["pull_request_number"], pr)
@@ -313,10 +322,14 @@ class TraceabilityAndScope(unittest.TestCase):
             self.assertEqual(obs["scope"], "SYNTHETIC_READ_ONLY_UNMOUNTED")
             for flag in ("requirement_acceptance", "sqlite_writer_acceptance", "windows_operator_acceptance"):
                 self.assertIs(obs[flag], False)
-            self.assertEqual(row["status"], "OPEN_NOT_ACCEPTED")
-            self.assertEqual(row["evidence"], "NONE_ACCEPTED")
+            if row["id"] == "M32-075":
+                self.assertEqual(row["status"], "CLOSED_SCOPED")
+                self.assertEqual(row["workflow_step_audit"]["job_id"], 140911580319)
+            else:
+                self.assertEqual(row["status"], "OPEN_NOT_ACCEPTED")
+                self.assertEqual(row["evidence"], "NONE_ACCEPTED")
+                self.assertIsNone(row["workflow_step_audit"]["job_id"])
             self.assertIsNone(row["proof_audit"]["individual_test_step_result"])
-            self.assertIsNone(row["workflow_step_audit"]["job_id"])
         self.assertEqual((MATRIX["total"], MATRIX["closed"], MATRIX["open"]), (104,len(SCOPED_CLOSED_IDS),104-len(SCOPED_CLOSED_IDS)))
         self.assertIn("- [ ] **M32-078**", CHECK)
 
@@ -400,6 +413,9 @@ class TraceabilityAndScope(unittest.TestCase):
                     self.assertIn("NEW_HEAD_CI_AND_POSTMAIN_REQUIRED", row["evidence"])
                     self.assertEqual(row["m32_071_scope"]["scope"],
                                      "UNMOUNTED_FICTIONAL_RAM_HISTORY_CONSULTATION_DESIGN_ONLY")
+                elif row["id"] == "M32-075":
+                    self.assertEqual(row["status"], "CLOSED_SCOPED")
+                    self.assertIn("UNMOUNTED_FICTIONAL_RAM_ONLY", row["evidence"])
                 else:
                     self.assertEqual(row["status"], "OPEN_NOT_ACCEPTED")
                     self.assertEqual(row["evidence"], "NONE_ACCEPTED")
@@ -432,6 +448,8 @@ class TraceabilityAndScope(unittest.TestCase):
                 self.assertIsNone(row["proof_audit"]["individual_test_step_result"])
                 if row["id"] == "M32-071":
                     self.assertEqual(row["workflow_step_audit"]["job_id"], 140135439282)
+                elif row["id"] == "M32-075":
+                    self.assertEqual(row["workflow_step_audit"]["job_id"], 140911580319)
                 elif row["id"] != "M32-070":
                     self.assertIsNone(row["workflow_step_audit"]["job_id"])
         self.assertIn("- [ ] **M32-078**", CHECK)
@@ -451,7 +469,7 @@ class TraceabilityAndScope(unittest.TestCase):
                 self.assertIs(value["operator_acceptance"], False)
                 self.assertIs(value["writer_admission"], False)
                 self.assertEqual(next(row for row in MATRIX["rows"]
-                                      if row["id"] == requirement)["status"], "CLOSED_SCOPED" if requirement in ("M32-070","M32-071") else "OPEN_NOT_ACCEPTED")
+                                      if row["id"] == requirement)["status"], "CLOSED_SCOPED" if requirement in ("M32-070","M32-071","M32-075") else "OPEN_NOT_ACCEPTED")
         self.assertEqual(MATRIX["gate"], "IN_PROGRESS_NOT_ACCEPTED")
 
 
@@ -507,7 +525,7 @@ class TraceabilityAndScope(unittest.TestCase):
         self.assertFalse(row["proof_audit"]["operator_runtime_acceptance"])
         self.assertFalse(row["workflow_step_audit"]["Windows_operator_workflow_admission"])
         self.assertEqual(MATRIX["gate"], "IN_PROGRESS_NOT_ACCEPTED")
-        for id in ("M32-007","M32-075","M32-078","M32-081"):
+        for id in ("M32-007","M32-078","M32-081"):
             self.assertEqual(next(x for x in MATRIX["rows"] if x["id"] == id)["status"],
                              "OPEN_NOT_ACCEPTED")
 
@@ -523,7 +541,7 @@ class TraceabilityAndScope(unittest.TestCase):
 
     def test_20261121_pr215_23_path_and_p3bh_observations_do_not_close_gates(self):
         index={x["id"]:x for x in MATRIX["rows"]}
-        for i in ("M32-007","M32-075"):
+        for i in ("M32-007",):
             self.assertEqual(index[i]["status"],"OPEN_NOT_ACCEPTED")
             self.assertEqual(index[i]["evidence"],"NONE_ACCEPTED")
             self.assertIn(f"- [ ] **{i}**",CHECK)
@@ -544,7 +562,7 @@ class TraceabilityAndScope(unittest.TestCase):
         self.assertFalse(x["browser_click_attested"])
         self.assertFalse(x["operator_acceptance"])
         self.assertFalse(x["requirement_acceptance"])
-        self.assertEqual((MATRIX["total"],MATRIX["closed"],MATRIX["open"]),(104,20,84))
+        self.assertEqual((MATRIX["total"],MATRIX["closed"],MATRIX["open"]),(104,21,83))
 
     def test_20261121_p3bi_bounded_pages_and_pr35_cursor_stay_partial(self):
         index={x["id"]:x for x in MATRIX["rows"]}
@@ -564,7 +582,7 @@ class TraceabilityAndScope(unittest.TestCase):
         self.assertIn("NOT_RUN",candidate["source_ci_status"])
         self.assertFalse(candidate["browser_click_attested"])
         self.assertFalse(candidate["operator_acceptance"])
-        self.assertEqual((MATRIX["total"],MATRIX["closed"],MATRIX["open"]),(104,20,84))
+        self.assertEqual((MATRIX["total"],MATRIX["closed"],MATRIX["open"]),(104,21,83))
 
     def test_pr35_84path_and_p3bj_not_accepted(self):
         index={r["id"]:r for r in MATRIX["rows"]}
@@ -580,7 +598,7 @@ class TraceabilityAndScope(unittest.TestCase):
         self.assertIn("NOT_RUN",rec["source_ci_status"])
         self.assertFalse(rec["operator_acceptance"])
         self.assertIn("- [x] **M32-071**",CHECK)
-        self.assertEqual((MATRIX["total"],MATRIX["closed"],MATRIX["open"]),(104,20,84))
+        self.assertEqual((MATRIX["total"],MATRIX["closed"],MATRIX["open"]),(104,21,83))
 
     def test_p3bl_and_pr215_seven_old_handoff_scoped_not_accepted(self):
         idx={r["id"]:r for r in MATRIX["rows"]}
@@ -599,7 +617,7 @@ class TraceabilityAndScope(unittest.TestCase):
             self.assertIn("NOT_RUN",feature["source_ci_status"])
             self.assertTrue((ROOT/feature["report"]).is_file())
             self.assertIn(f"- [{'x' if key == 'M32-071' else ' '}] **{key}**",CHECK)
-        self.assertEqual((MATRIX["total"],MATRIX["closed"],MATRIX["open"]),(104,20,84))
+        self.assertEqual((MATRIX["total"],MATRIX["closed"],MATRIX["open"]),(104,21,83))
 
     def test_p3bm_and_pr215_old_146_147_remain_partial(self):
         idx={r["id"]:r for r in MATRIX["rows"]}
@@ -621,7 +639,7 @@ class TraceabilityAndScope(unittest.TestCase):
             self.assertIn("NOT_RUN",rec["source_ci_status"])
             self.assertTrue((ROOT/rec["report"]).is_file())
             self.assertIn(f"- [{'x' if key == 'M32-071' else ' '}] **{key}**",CHECK)
-        self.assertEqual((MATRIX["total"],MATRIX["closed"],MATRIX["open"]),(104,20,84))
+        self.assertEqual((MATRIX["total"],MATRIX["closed"],MATRIX["open"]),(104,21,83))
 
     def test_p3bn_and_seven_old_pr215_cases_stay_source_only(self):
         idx={r["id"]:r for r in MATRIX["rows"]}
@@ -645,7 +663,7 @@ class TraceabilityAndScope(unittest.TestCase):
             self.assertIn("NOT_RUN",rec["source_ci_status"])
             self.assertTrue((ROOT/rec["report"]).is_file())
             self.assertIn(f"- [ ] **{key}**",CHECK)
-        self.assertEqual((MATRIX["total"],MATRIX["closed"],MATRIX["open"]),(104,20,84))
+        self.assertEqual((MATRIX["total"],MATRIX["closed"],MATRIX["open"]),(104,21,83))
 
     def test_p3bo_four_fields_and_pr215_literal_review_stay_unaccepted(self):
         index={row["id"]:row for row in MATRIX["rows"]}
@@ -669,14 +687,14 @@ class TraceabilityAndScope(unittest.TestCase):
             self.assertIn("NOT_RUN",rec["source_ci_status"])
             self.assertTrue((ROOT/rec["report"]).is_file())
             self.assertIn(f"- [{'x' if key == 'M32-071' else ' '}] **{key}**",CHECK)
-        self.assertEqual((MATRIX["total"],MATRIX["closed"],MATRIX["open"]),(104,20,84))
+        self.assertEqual((MATRIX["total"],MATRIX["closed"],MATRIX["open"]),(104,21,83))
 
     def test_m32_078_accepted_proof_gap_ledger_never_invents_runtime(self):
         ledger=json.loads((ROOT/"docs/qualification/M3_2_M32_078_ACCEPTED_PROOF_GAPS_20261122.json").read_text(encoding="utf-8"))
         self.assertEqual(ledger["schema"],"M32_078_ACCEPTED_PROOF_GAPS_V1")
         self.assertEqual(ledger["origin_matrix"],
                          "docs/qualification/M3_2_REQUIREMENTS_TEST_EVIDENCE_MATRIX_20261111.json")
-        self.assertEqual((ledger["total"],ledger["closed_scoped"],ledger["open_not_accepted"]),(104,20,84))
+        self.assertEqual((ledger["total"],ledger["closed_scoped"],ledger["open_not_accepted"]),(104,21,83))
         open_rows=[row for row in MATRIX["rows"] if row["status"]=="OPEN_NOT_ACCEPTED"]
         closed_rows=[row for row in MATRIX["rows"] if row["status"]=="CLOSED_SCOPED"]
         self.assertEqual(ledger["closed_ids"],[r["id"] for r in closed_rows])
@@ -749,7 +767,7 @@ class M32078CurrentLedgerDatedContract(unittest.TestCase):
     def guard(cls, report, previous, ledger, matrix, checklist):
         for token in ("HISTORICAL_REPORT_SNAPSHOT_NOT_CURRENT", "NO_AUTO_ACCEPTANCE",
                       "NO_RUNTIME_ADMISSION", "12/92 → 13/91",
-                      "20 CLOSED_SCOPED / 84 OPEN_NOT_ACCEPTED",
+                      "21 CLOSED_SCOPED / 83 OPEN_NOT_ACCEPTED",
                       "R1–R9 NOT_PROVEN", "M32-078 [ ] reste ouverte"):
             if token not in report:
                 raise ValueError("STOP current report drift " + token)
@@ -757,8 +775,8 @@ class M32078CurrentLedgerDatedContract(unittest.TestCase):
             raise ValueError("STOP historical report not labeled")
         closed=[r for r in matrix["rows"] if r["status"]=="CLOSED_SCOPED"]
         open_rows=[r for r in matrix["rows"] if r["status"]=="OPEN_NOT_ACCEPTED"]
-        if (matrix["total"],matrix["closed"],matrix["open"])!=(104,20,84) or (
-            ledger["total"],ledger["closed_scoped"],ledger["open_not_accepted"])!=(104,20,84):
+        if (matrix["total"],matrix["closed"],matrix["open"])!=(104,21,83) or (
+            ledger["total"],ledger["closed_scoped"],ledger["open_not_accepted"])!=(104,21,83):
             raise ValueError("STOP ledger counts")
         if ledger["closed_ids"] != [r["id"] for r in closed] or (
             [r["id"] for r in ledger["open_rows"]] != [r["id"] for r in open_rows]):
@@ -787,7 +805,7 @@ class M32078CurrentLedgerDatedContract(unittest.TestCase):
         self.assertEqual(self.guard(self.REPORT.read_text(encoding="utf-8"),
                                     self.OLD.read_text(encoding="utf-8"),
                                     json.loads(self.LEDGER.read_text(encoding="utf-8")),
-                                    MATRIX,CHECK),84)
+                                    MATRIX,CHECK),83)
 
     def test_20261123_m32_078_rejects_stale_count_and_false_proof(self):
         report=self.REPORT.read_text(encoding="utf-8")
@@ -992,8 +1010,30 @@ class M32071HistoryConsultationScopedContract(unittest.TestCase):
         self.assertTrue(p["new_head_ci_and_postmain_required"])
         self.assertTrue(p["requalify_on_live_integration"])
         self.assertIn("- [x] **M32-071**",CHECK)
-        for key in ("M32-075","M32-078","M32-081"):
+        for key in ("M32-078","M32-081"):
             self.assertIn(f"- [ ] **{key}**",CHECK)
+        self.assertEqual(MATRIX["gate"],"IN_PROGRESS_NOT_ACCEPTED")
+
+
+class M32075ScopedAccessContract(unittest.TestCase):
+    def test_scoped_evidence_never_admits_real_runtime(self):
+        row=next(x for x in MATRIX["rows"] if x["id"]=="M32-075")
+        proof=row["m32_075_scope"]
+        self.assertEqual(row["status"],"CLOSED_SCOPED")
+        self.assertIn("- [x] **M32-075**",CHECK)
+        self.assertEqual(proof["scope"],"UNMOUNTED_FICTIONAL_RAM_ACCESSIBILITY_AND_LOADED_OFFLINE_DESIGN_ONLY")
+        self.assertEqual((proof["source_run"],proof["source_head"],proof["source_job"]),(46123075726,"1c54ffeb8b917409462696de4ff95116b599fe63",140911580319))
+        self.assertEqual((proof["postmain_run"],proof["postmain_sha"],proof["postmain_job"],proof["postmain_conclusion"]),(46125365604,"215600b328f982521d4e957b9d9551338b9e9f2b",140918658922,"completed_success"))
+        self.assertEqual((proof["named_cases"],proof["occurrences_each_run"],proof["browser_suite"],proof["fictional_manifest_files"]),([10,26,27,110,111],2,"114/114",29))
+        source=(ROOT/"tools/m32_browser_interaction.cjs").read_text(encoding="utf-8")
+        for marker in ("M32_075_HISTORY_ACCESSIBILITY_PASS","M32_075_OFFLINE_HISTORY_KEYBOARD_PASS","M32_CI_CHROMIUM_CSP_CONNECT_BLOCK_PASS"):
+            self.assertIn(marker,proof["markers"])
+            self.assertIn(marker,source)
+        for flag in ("writer_admitted","runtime_app_mounted","operator_acceptance","screen_reader_attested","cold_offline_start_attested","real_ollama_attested"):
+            self.assertIs(proof[flag],False)
+        self.assertTrue(proof["new_head_ci_and_postmain_required"])
+        self.assertTrue(proof["requalify_on_live_integration"])
+        self.assertIn("- [ ] **M32-078**",CHECK)
         self.assertEqual(MATRIX["gate"],"IN_PROGRESS_NOT_ACCEPTED")
 
 if __name__=="__main__":

@@ -34,3 +34,5 @@ Parent protégé `main=c79494cbe5a7b7adaa3b39be9cfd3997b3f6126b` après #422 MER
 **STOP Writer/R1–R9 NOT_PROVEN**, P4 STOP, G2B NOT_ACCEPTED, G2C NOT_AUTHORIZED, G3 STOP_UNAVAILABLE, PENDING_EXTERNAL_ATTESTATION(21/3/2) prospective NOT_STARTED, R2 STOP/R3 partiel/D3c conception/D3b-4/5 et D3b-5 STOP, main/WAL/SHM live SQLite WAL-index et ABA NOT_PROVEN, glib #160 OPEN_NOT_REMEDIATED ; STOP v6/v7, M:\Fabulaxiom, Greenfield, backups, IPC writer, 007, Hello, recovery.
 
 Trois contrôles Python source-only distinguent anciens et nouveaux comptes, interdisent la fausse acceptation et la clôture artificielle. Nouvelle CI Windows HEAD exacte requise.
+
+**ADDENDUM 28/11/2026 — 21 CLOSED_SCOPED / 83 OPEN_NOT_ACCEPTED CANDIDAT ; 20/84 main.** M32-075 conception RAM fictive déjà chargée non montée ; #439 CI #46123075726 et postmain #46125365604 PASS exacts, nouvelle CI registre et postmain requises. 39 R1/G2 indépendantes, 34 runtime non admis, 10 scoped. M32-078 [ ] reste ouverte ; HISTORICAL_REPORT_SNAPSHOT_NOT_CURRENT ; NO_AUTO_ACCEPTANCE ; NO_RUNTIME_ADMISSION ; R1–R9 NOT_PROVEN.
