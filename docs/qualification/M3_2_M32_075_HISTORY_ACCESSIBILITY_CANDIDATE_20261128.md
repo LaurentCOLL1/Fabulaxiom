@@ -1,0 +1,5 @@
+# M32-075 — Accessibilité de la consultation historique fictive
+
+28/11/2026 — CANDIDAT NON QUALIFIÉ. Parent #438, main `70aa89dd4ddce6de3acd825cb2240245c2dddd02`, CI #46118341111 HEAD `70ce2e2350c9ff548960dcca73075cfd9e10b683` et postmain #46119426578 SUCCESS, jobs #140897073194 et #140900422173. Marqueur offline du cas 111 observé deux fois sur chaque run. Chromium 114/114 deux fois, CSP connect veto deux fois, inline veto précompilé une fois sur postmain.
+
+Extension du cas 110 : Tab vers filtre source, focus visible et outline solide >=3px, hauteur de quatre commandes >=44px, compteur aria-live polite 1→0→1 après filtrage, focus conservé, aucune inspection implicite. Marqueur candidat `M32_075_HISTORY_ACCESSIBILITY_PASS`, nouvelle CI exacte obligatoire. CSS laboratoire uniquement. Pas de preuve de lecture par technologie d'assistance, de démarrage à froid offline ou d'Ollama réel. M32-075 [ ] ; M32-078 [ ] registre 20/84 (39 R1/G2 indépendantes, 35 runtime non admis, 10 scoped). Aucun changement d'autorité, tous STOP maintenus. #35/#215 DRAFT NON_ADMITTED.
