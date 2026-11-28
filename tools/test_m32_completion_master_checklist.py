@@ -204,7 +204,7 @@ class M32DatedStatusTruth(unittest.TestCase):
         sha,run,closed=guard_dated_status(self.short,self.entry,self.leads,self.checklist)
         self.assertRegex(sha,r"^[0-9a-f]{40}$")
         self.assertGreater(run,0)
-        self.assertEqual(closed,19)
+        self.assertEqual(closed,20)
 
     def test_13_falsified_or_stale_date_refused(self):
         bad=dict(self.entry,date="2026-11-12")
@@ -238,7 +238,7 @@ class M32DatedStatusTruth(unittest.TestCase):
 
     def test_17_false_short_counter_or_source_outcome_refused(self):
         with self.assertRaisesRegex(ValueError,"short count drift"):
-            guard_dated_status(self.short.replace("19/85","12/92",1),
+            guard_dated_status(self.short.replace("20/84","12/92",1),
                                self.entry,self.leads,self.checklist)
         with self.assertRaisesRegex(ValueError,"source CI claim"):
             guard_dated_status(self.short,{**self.entry,
