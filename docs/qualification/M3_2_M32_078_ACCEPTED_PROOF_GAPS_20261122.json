@@ -6,8 +6,8 @@
   "scope": "DOCUMENTARY_OPEN_GAP_LEDGER_ONLY_NO_OPERATOR_ACCEPTANCE",
   "gate": "IN_PROGRESS_NOT_ACCEPTED",
   "total": 104,
-  "closed_scoped": 20,
-  "open_not_accepted": 84,
+  "closed_scoped": 21,
+  "open_not_accepted": 83,
   "track_open_counts": {
     "ACCEPTANCE_AND_SCOPE": 7,
     "DATA_AND_CHRONOLOGY": 16,
@@ -15,12 +15,12 @@
     "G2_TO_G6": 10,
     "GH_PROTOCOL": 2,
     "HISTORICAL_ATTESTATION": 6,
-    "REACT_FICTIONAL": 4,
+    "REACT_FICTIONAL": 3,
     "WRITER_R1_R9": 23
   },
   "gate_open_counts": {
     "REQUIRES_INDEPENDENT_R1_G2_PROOFS": 39,
-    "RUNTIME_NOT_ADMITTED": 35,
+    "RUNTIME_NOT_ADMITTED": 34,
     "SCOPED_EVIDENCE_REQUIRED": 10
   },
   "closed_ids": [
@@ -39,6 +39,7 @@
     "M32-072",
     "M32-073",
     "M32-074",
+    "M32-075",
     "M32-076",
     "M32-094",
     "M32-095",
@@ -755,18 +756,6 @@
       "accepted_operator_runtime": false
     },
     {
-      "id": "M32-075",
-      "track": "REACT_FICTIONAL",
-      "gate": "RUNTIME_NOT_ADMITTED",
-      "verification_target": "src/m32ChronologyPreview.test.tsx",
-      "next_proof": "Navigation clavier, libellés et messages, absence de fuite par HTML hostile, aucune requête externe ni dépendance à Ollama.",
-      "accepted_evidence": "NONE_ACCEPTED",
-      "accepted_workflow_head_sha": null,
-      "accepted_workflow_run_id": null,
-      "accepted_job_id": null,
-      "accepted_operator_runtime": false
-    },
-    {
       "id": "M32-077",
       "track": "REACT_FICTIONAL",
       "gate": "RUNTIME_NOT_ADMITTED",
@@ -1055,5 +1044,5 @@
       "accepted_operator_runtime": false
     }
   ],
-  "reconciliation_date": "2026-11-27"
+  "reconciliation_date": "2026-11-28"
 }
