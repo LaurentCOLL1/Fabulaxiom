@@ -2177,6 +2177,32 @@ async function run() {
       assert.equal(await idFilter.evaluate(el => el === document.activeElement), true);
       await page.keyboard.press("Tab");
       assert.equal(await sourceFilter.evaluate(el => el === document.activeElement), true);
+      // M32-075: inspect computed keyboard focus and the actual live count.
+      const focus = await sourceFilter.evaluate(el => {
+        const style = getComputedStyle(el);
+        return { visible: el.matches(":focus-visible"), kind: style.outlineStyle,
+          width: parseFloat(style.outlineWidth) };
+      });
+      assert.equal(focus.visible, true);
+      assert.equal(focus.kind, "solid");
+      assert.ok(focus.width >= 3);
+      const reset = detail.getByRole("button",{name:"Réinitialiser les filtres historiques fictifs"});
+      for (const control of [idFilter, sourceFilter, picker, reset]) {
+        assert.ok(await control.evaluate(el => el.getBoundingClientRect().height >= 44));
+      }
+      const resultCount = detail.getByRole("note").filter({hasText:/identifiants fictifs trouvés/});
+      assert.equal(await resultCount.count(),1);
+      assert.equal(await resultCount.getAttribute("aria-live"),"polite");
+      assert.ok((await resultCount.innerText()).includes("1 identifiants fictifs trouvés"));
+      await sourceFilter.fill("aucune-revision-correspondante");
+      assert.ok((await resultCount.innerText()).includes("0 identifiants fictifs trouvés"));
+      assert.equal(await sourceFilter.evaluate(el => el === document.activeElement), true);
+      assert.equal(await list.count(),0);
+      await sourceFilter.fill("");
+      assert.ok((await resultCount.innerText()).includes("1 identifiants fictifs trouvés"));
+      assert.equal(await sourceFilter.evaluate(el => el === document.activeElement), true);
+      assert.equal(await list.count(),0);
+      console.log("M32_075_HISTORY_ACCESSIBILITY_PASS: focus, target height, live count, no implicit inspection");
       await picker.focus();
       await picker.press("ArrowDown");
       await picker.press("Enter");

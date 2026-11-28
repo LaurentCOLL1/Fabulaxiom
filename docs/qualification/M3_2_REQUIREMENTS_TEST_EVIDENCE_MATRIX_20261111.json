@@ -3422,6 +3422,30 @@
         "writer_admission": false,
         "operator_acceptance": false,
         "requirement_acceptance": false
+      },
+      "offline_history_qualified_20261128": {
+        "source_run": 46118341111,
+        "source_head": "70ce2e2350c9ff548960dcca73075cfd9e10b683",
+        "source_job": 140897073194,
+        "postmain_run": 46119426578,
+        "postmain_sha": "70aa89dd4ddce6de3acd825cb2240245c2dddd02",
+        "postmain_job": 140900422173,
+        "postmain_conclusion": "completed_success",
+        "marker": "M32_075_OFFLINE_HISTORY_KEYBOARD_PASS",
+        "occurrences_each_run": 2,
+        "scope": "ALREADY_LOADED_FICTIONAL_RAM_BROWSER_CONTEXT_ONLY",
+        "requirement_acceptance": false,
+        "operator_acceptance": false
+      },
+      "history_accessibility_candidate_20261128": {
+        "source_file": "tools/m32_browser_interaction.cjs",
+        "case": 110,
+        "marker": "M32_075_HISTORY_ACCESSIBILITY_PASS",
+        "scope": "FICTIONAL_HISTORY_KEYBOARD_VISIBLE_FOCUS_TARGET_SIZE_LIVE_COUNT_ONLY",
+        "source_ci_status": "NOT_RUN_CANDIDATE",
+        "writer_admission": false,
+        "operator_acceptance": false,
+        "requirement_acceptance": false
       }
     },
     {
@@ -3599,6 +3623,19 @@
         "postmain_conclusion": "completed_success",
         "closed_scoped": 20,
         "open_not_accepted": 84,
+        "requirement_acceptance": false,
+        "operator_acceptance": false
+      },
+      "registry_reconciliation_20261128_pr438": {
+        "source_main": "70aa89dd4ddce6de3acd825cb2240245c2dddd02",
+        "postmain_run": 46119426578,
+        "closed_scoped": 20,
+        "open_not_accepted": 84,
+        "gate_open_counts": {
+          "REQUIRES_INDEPENDENT_R1_G2_PROOFS": 39,
+          "RUNTIME_NOT_ADMITTED": 35,
+          "SCOPED_EVIDENCE_REQUIRED": 10
+        },
         "requirement_acceptance": false,
         "operator_acceptance": false
       }
