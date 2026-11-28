@@ -3408,6 +3408,20 @@
         "operator_acceptance": false,
         "writer_admission": false,
         "requirement_acceptance": false
+      },
+      "offline_history_candidate_20261128": {
+        "date": "2026-11-28",
+        "parent_main": "ea0720ed8211340d3f692b98efd196b88c2d5628",
+        "parent_postmain_run": 46089632913,
+        "parent_postmain_job": 140807252453,
+        "source_file": "tools/m32_browser_interaction.cjs",
+        "case": 111,
+        "marker": "M32_075_OFFLINE_HISTORY_KEYBOARD_PASS",
+        "scope": "ALREADY_LOADED_FICTIONAL_RAM_BROWSER_CONTEXT_ONLY",
+        "source_ci_status": "NOT_RUN_CANDIDATE",
+        "writer_admission": false,
+        "operator_acceptance": false,
+        "requirement_acceptance": false
       }
     },
     {
@@ -3576,6 +3590,17 @@
         "requirement_acceptance": false,
         "operator_acceptance": false,
         "source_ci_status": "NOT_RUN_CANDIDATE"
+      },
+      "m32_071_registry_qualification_20261128": {
+        "source_run": 46066745561,
+        "source_head": "53785c2822993feb72dfd53843a5f89efe64ef54",
+        "postmain_run": 46089632913,
+        "postmain_sha": "ea0720ed8211340d3f692b98efd196b88c2d5628",
+        "postmain_conclusion": "completed_success",
+        "closed_scoped": 20,
+        "open_not_accepted": 84,
+        "requirement_acceptance": false,
+        "operator_acceptance": false
       }
     },
     {

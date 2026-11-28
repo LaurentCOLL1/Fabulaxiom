@@ -1,0 +1,5 @@
+# M32-075 — Consultation fictive déjà chargée sans réseau
+
+2026-11-28. CANDIDAT NON QUALIFIÉ. Parent #437, SHA `ea0720ed8211340d3f692b98efd196b88c2d5628`, CI #46066745561 et postmain #46089632913 SUCCESS aux SHA exacts. Job postmain #140807252453 : Chromium 110/111 chacun deux fois, 114/114 deux fois, blocage CSP connect-src deux fois, script inline bloqué en mode précompilé. Ces preuves ne sont pas un test hors ligne de Fabulaxiom.
+
+Extension du cas 111 : contexte Playwright offline après chargement du laboratoire, navigator.onLine false, reset et sélection explicites au clavier, historique fictif hostile échappé, aucune nouvelle requête attendue pendant les interactions, retour online dans finally. Marqueur candidat `M32_075_OFFLINE_HISTORY_KEYBOARD_PASS`, aucun PASS revendiqué avant CI du nouveau HEAD. Pas de démarrage à froid offline, audit complet d'accessibilité, application montée, SQLite, Tauri IPC ou Ollama opérateur. M32-075 [ ] et M32-078 [ ] ; aucun changement d'autorité, tous STOP maintenus. #35/#215 DRAFT NON_ADMITTED.
