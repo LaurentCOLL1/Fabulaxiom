@@ -2206,6 +2206,32 @@ async function run() {
       assert.ok((await detail.innerText()).includes("<script>window.__fictionInjected=1</script>"));
       assert.equal(await detail.locator("script").count(),0);
       assert.equal(await page.evaluate(()=>Boolean(window.__fictionInjected)),false);
+      // M32-075: already loaded fictional RAM history only, browser offline.
+      const offlineRequests = [];
+      const recordOfflineRequest = req => offlineRequests.push(req.url());
+      page.on("request", recordOfflineRequest);
+      try {
+        await page.context().setOffline(true);
+        assert.equal(await page.evaluate(() => navigator.onLine), false);
+        const picker = detail.getByRole("combobox",{name:"Événement fictif à examiner"});
+        const reset = detail.getByRole("button",{name:"Réinitialiser les filtres historiques fictifs"});
+        await reset.focus();
+        await page.keyboard.press("Enter");
+        assert.equal(await picker.inputValue(),"");
+        assert.equal(await detail.getByRole("list",{name:"Versions historiques fictives"}).count(),0);
+        await picker.focus();
+        await picker.press("ArrowDown");
+        await picker.press("Enter");
+        assert.equal(await picker.inputValue(),"fiction-world-one-event-0001");
+        assert.ok((await detail.innerText()).includes("<script>window.__fictionInjected=1</script>"));
+        assert.equal(await detail.locator("script").count(),0);
+        assert.equal(await page.evaluate(()=>Boolean(window.__fictionInjected)),false);
+        assert.deepEqual(offlineRequests, [], "STOP: fictional history requested network while offline");
+        console.log("M32_075_OFFLINE_HISTORY_KEYBOARD_PASS: loaded fictional RAM only");
+      } finally {
+        page.off("request",recordOfflineRequest);
+        await page.context().setOffline(false);
+      }
       await page.getByRole("button",{name:"Charger un autre univers fictif"}).click();
       const other=eventRegion().getByRole("region",{
         name:"Historique détaillé des événements fictifs",
